@@ -190,11 +190,15 @@ export async function POST(request: NextRequest) {
         const fetchStartTime = Date.now();
         console.log(`⏳ [Gemini] 嘗試第 ${attempt + 1} 次請求...`);
         
-        const response = await fetch(url, {
+        // 使用 URL 参数方式传递 API Key（更稳定）
+        const urlWithKey = `${url}?key=${apiKey}`;
+        console.log(`🔗 [Gemini] 請求 URL: ${urlWithKey.replace(apiKey, '***HIDDEN***')}`);
+        console.log(`🔑 [Gemini] API Key 前綴: ${apiKey?.substring(0, 15)}...`);
+        
+        const response = await fetch(urlWithKey, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-goog-api-key': apiKey,
           },
           body: JSON.stringify(requestBody),
         });
@@ -212,8 +216,24 @@ export async function POST(request: NextRequest) {
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`❌ [Gemini Error] API 回應錯誤: ${errorText}`);
-          throw new Error(`Gemini API Error: ${response.status} ${response.statusText}`);
+          console.error(`❌ [Gemini Error] API 回應錯誤 (Status: ${response.status}):`, errorText);
+          console.error(`❌ [Gemini Error] 請求 URL:`, url);
+          console.error(`❌ [Gemini Error] 模型名稱:`, model);
+          console.error(`❌ [Gemini Error] API Key 前綴:`, apiKey?.substring(0, 10) + '...');
+          
+          let errorMessage = `Gemini API Error: ${response.status} ${response.statusText}`;
+          try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.error?.message) {
+              errorMessage += ` - ${errorJson.error.message}`;
+              console.error(`❌ [Gemini Error] 詳細錯誤:`, errorJson.error);
+            }
+          } catch (e) {
+            if (errorText.length < 500) {
+              errorMessage += ` - ${errorText}`;
+            }
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
