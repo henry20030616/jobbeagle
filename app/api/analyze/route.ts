@@ -380,7 +380,7 @@ export async function POST(request: NextRequest) {
       console.log('💾 [DB] 插入數據:', {
         user_id: insertData.user_id,
         job_title: insertData.job_title,
-        resume_file_name: insertData.resume_file_name
+        //resume_file_name: insertData.resume_file_name
       });
 
       try {
