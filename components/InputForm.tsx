@@ -22,22 +22,45 @@ interface InputFormProps {
   isLoading: boolean;
   reportHistory: SavedReport[];
   onSelectHistory: (report: SavedReport) => void;
+  onReportGenerated?: () => void; // 報告生成完成的回調
 }
 
-const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistory, onSelectHistory }) => {
+const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistory, onSelectHistory, onReportGenerated }) => {
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState<ResumeInput | null>(null);
   const [inputType, setInputType] = useState<'text' | 'url'>('text');
   const [resumeHistory, setResumeHistory] = useState<SavedResume[]>([]);
+  const [recentReports, setRecentReports] = useState<any[]>([]);
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
+  const [showReportsDropdown, setShowReportsDropdown] = useState(false);
   const [showReportHistory, setShowReportHistory] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadResumeHistory();
+    loadRecentReports();
   }, []);
+
+  // 當報告生成完成時，刷新列表
+  // 使用 ref 追蹤前一次的 loading 狀態
+  const prevLoadingRef = useRef(isLoading);
+  
+  useEffect(() => {
+    // 當 isLoading 從 true 變為 false 時（報告生成完成）
+    if (prevLoadingRef.current && !isLoading) {
+      console.log('🔄 [InputForm] 報告生成完成，2秒後刷新列表...');
+      // 延遲刷新以確保數據庫保存完成
+      const timer = setTimeout(() => {
+        console.log('🔄 [InputForm] 開始刷新報告列表...');
+        loadRecentReports();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    prevLoadingRef.current = isLoading;
+  }, [isLoading]);
 
   const loadResumeHistory = async () => {
     try {
@@ -105,6 +128,51 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
     }
   };
 
+  // 格式化時間：2026/1/17 21:30
+  const formatDateTime = (dateStr: string | number) => {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+  };
+
+  const loadRecentReports = async () => {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log('⚠️ [InputForm] 用戶未登入，無法載入報告');
+        setRecentReports([]);
+        return;
+      }
+
+      console.log('📊 [InputForm] 開始查詢分析報告...');
+      const { data, error } = await supabase
+        .from('analysis_reports')
+        .select('id, job_title, created_at, analysis_data')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10); // 最多 10 個報告
+
+      if (error) {
+        console.error('❌ [InputForm] 無法載入分析報告:', error.message);
+        console.error('錯誤詳情:', JSON.stringify(error, null, 2));
+        setRecentReports([]);
+        return;
+      }
+
+      if (data) {
+        console.log(`✅ [InputForm] 成功載入 ${data.length} 份報告`);
+        setRecentReports(data);
+      } else {
+        console.log('⚠️ [InputForm] 沒有報告數據');
+        setRecentReports([]);
+      }
+    } catch (e) {
+      console.error('❌ [InputForm] 載入分析報告時發生錯誤:', e);
+      setRecentReports([]);
+    }
+  };
+
   useEffect(() => {
     const urlRegex = /^(https?:\/\/[^\s]+)$/;
     if (urlRegex.test(jobDescription.trim())) {
@@ -115,32 +183,17 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
   }, [jobDescription]);
 
   const saveResumeToHistory = async (newResume: ResumeInput) => {
+    const startTime = Date.now();
     try {
       const supabase = createClient();
-      // ============================================
-      // 身分檢查：必須先呼叫 getUser() 確認用戶狀態
-      // ============================================
+      
+      // 快速獲取用戶信息（使用緩存的 session）
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-      // ============================================
-      // 解決 AuthSessionMissingError：在執行任何資料庫操作前，必須先獲取用戶資訊
-      // ============================================
-      // 檢查 getUser() 本身的錯誤
-      if (userError) {
-        const errorString = JSON.stringify(userError, null, 2);
-        console.error('取得用戶資訊失敗：', errorString);
-        console.error('詳細錯誤：', userError.message);
-        alert('請先登入後再執行分析儲存');
-        return; // 直接 return 結束函數，不要強行執行存檔
-      }
-
-      // ============================================
-      // 防禦邏輯：如果 !user，提示使用者並中止執行
-      // ============================================
-      if (!user || !user.id) {
-        console.log('User not logged in, skipping resume save. Please login first.');
-        alert('請先登入後再執行分析儲存');
-        return; // 直接 return 結束函數，不要強行執行存檔
+      if (userError || !user || !user.id) {
+        console.log('User not logged in, skipping resume save.');
+        // 靜默失敗，不打斷用戶流程
+        return;
       }
 
       // ============================================
@@ -157,89 +210,53 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
         created_at: new Date().toISOString(),
       };
 
-      console.log('準備插入資料：', {
-        user_id: user.id,
-        type: insertPayload.type,
-        content_length: insertPayload.content?.length || 0,
-        file_name: insertPayload.file_name,
-      });
-
-      const { data, error } = await supabase
+      // 優化：不等待 select 返回，加快保存速度
+      const { error } = await supabase
         .from('resume_history')
-        .insert(insertPayload)
-        .select();
+        .insert(insertPayload);
 
+      const duration = Date.now() - startTime;
+      
       if (error) {
-        // ============================================
-        // 詳細報錯：使用 console.error 確保能看到隱藏的資訊
-        // ============================================
-        const errorString = JSON.stringify(error, null, 2);
-        const errorMessage = error.message || '未知錯誤';
-        const errorDetails = error.details || null;
-        const errorCode = error.code || 'UNKNOWN';
-
-        console.error('❌ 儲存履歷失敗');
-        console.error('詳細錯誤：', error.message); // 確保能看到隱藏的資訊
-        console.error('錯誤代碼:', errorCode);
-        console.error('錯誤訊息:', errorMessage);
-        console.error('錯誤詳情:', errorDetails);
-        console.error('完整錯誤物件:', errorString);
-
-        // 根據錯誤類型提供具體的處理建議
-        if (errorCode === 'PGRST204' || errorMessage?.includes('Could not find') || errorMessage?.includes('column')) {
-          console.error('❌ 資料庫表結構錯誤：找不到欄位');
-          alert(`資料庫表結構錯誤\n\n錯誤代碼: ${errorCode}\n錯誤訊息: ${errorMessage}\n\n請執行修復 SQL 腳本`);
-          return;
-        }
-
-        if (errorCode === '42P01' || errorMessage?.includes('does not exist')) {
-          console.error('❌ 資料表不存在');
-          alert(`資料表不存在\n\n請在 Supabase SQL Editor 執行修復 SQL 腳本`);
-          return;
-        }
-
-        if (errorCode === '42501' || errorMessage?.includes('permission denied') || errorMessage?.includes('new row violates row-level security')) {
-          console.error('❌ RLS 權限錯誤');
-          alert(`沒有權限寫入資料\n\n錯誤代碼: ${errorCode}\n錯誤訊息: ${errorMessage}\n\n請檢查 RLS policies 設定`);
-          return;
-        }
-
-        // 其他錯誤
-        alert(`儲存失敗\n\n錯誤代碼: ${errorCode}\n錯誤訊息: ${errorMessage}`);
+        console.error('❌ 儲存履歷失敗:', error.message);
+        // 靜默失敗，僅在控制台記錄
         return;
       }
 
       // 成功
-      if (data && data.length > 0) {
-        console.log('✅ 履歷儲存成功:', data[0].id);
-        await loadResumeHistory();
-        setShowSaveSuccess(true);
-        setTimeout(() => setShowSaveSuccess(false), 2000);
-      } else {
-        console.warn('⚠️ 儲存成功但未返回資料');
-      }
+      console.log(`✅ 履歷儲存成功 (${duration}ms)`);
+      
+      // 異步刷新列表，不阻塞UI
+      loadResumeHistory().catch(e => console.warn('刷新履歷列表失敗:', e));
+      
+      // 顯示成功提示
+      setShowSaveSuccess(true);
+      setTimeout(() => setShowSaveSuccess(false), 2000);
+      
     } catch (e: any) {
-      // 錯誤日誌升級：使用 JSON.stringify 確保能完整印出錯誤物件
-      const errorString = JSON.stringify(e, null, 2);
-      const errorMessage = e?.message || '未知例外';
-      console.error('❌ 儲存履歷時發生例外');
-      console.error('例外訊息:', errorMessage);
-      console.error('完整例外物件:', errorString);
-      alert(`儲存時發生例外錯誤\n\n${errorMessage}`);
+      console.error('❌ 儲存履歷時發生例外:', e?.message);
+      // 靜默失敗，不打斷用戶
     }
   };
 
   const handleManualSave = async () => {
-    if (resume) {
-      await saveResumeToHistory(resume);
+    if (resume && !isSaving) {
+      setIsSaving(true);
+      try {
+        await saveResumeToHistory(resume);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (resume) {
-      await saveResumeToHistory(resume);
+      // 不在提交時重複保存履歷，節省時間
+      // 履歷已經在上傳時或手動儲存時保存過
       onSubmit({ jobDescription, resume });
+      // 報告列表會在 useEffect 中自動刷新（當 isLoading 變為 false 時）
     }
   };
 
@@ -519,15 +536,16 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
                   <span className="w-1.5 h-8 bg-violet-500 rounded-full mr-4"></span>
                   2. 您的履歷 (Resume)
                 </h2>
+                {/* 履歷庫按鈕 */}
                 <div className="relative">
-                    <button
-                    type="button"
-                    onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-                    className="flex items-center space-x-1 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-4 py-2 rounded-full border border-indigo-500/20 transition-all"
-                    >
-                    <History className="w-4 h-4" />
-                    <span>履歷庫 {resumeHistory.length > 0 && `(${resumeHistory.length})`}</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
+                        className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
+                      >
+                        <History className="w-4 h-4" />
+                        <span className="font-bold">履歷庫 {resumeHistory.length > 0 && `(${resumeHistory.length})`}</span>
+                      </button>
                     {showHistoryDropdown && (
                     <>
                         <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
@@ -541,13 +559,13 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
                             </div>
                         ) : (
                             resumeHistory.map((historyItem) => (
-                            <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-4 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start">
-                                <FileText className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5 mr-3" />
+                            <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-4 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all active:bg-slate-600">
+                                <FileText className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5 mr-3 group-hover:scale-110 transition-transform" />
                                 <div className="flex-1 overflow-hidden text-left">
-                                <p className="text-sm text-slate-200 font-bold truncate">{historyItem.fileName}</p>
-                                <p className="text-[10px] text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{new Date(historyItem.timestamp).toLocaleDateString()}</p>
+                                <p className="text-sm text-slate-200 font-bold truncate group-hover:text-indigo-300 transition-colors">{historyItem.fileName}</p>
+                                <p className="text-[10px] text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
                                 </div>
-                                <button onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"><X className="w-4 h-4" /></button>
+                                <button onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded transition-all active:scale-90"><X className="w-4 h-4" /></button>
                             </div>
                             ))
                         )}
@@ -575,17 +593,121 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
                          <div className="min-w-0 text-left"><p className="text-base font-bold text-white truncate">{resume.fileName}</p><p className="text-xs text-indigo-300 mt-1">Ready for Analysis</p></div>
                        </div>
                        <div className="flex items-center space-x-3">
-                           <button type="button" onClick={handleManualSave} className="flex items-center space-x-1 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 rounded-lg border border-emerald-500/20 transition-colors relative group"><Save className="w-4 h-4" /><span className="text-xs font-bold">儲存</span>{showSaveSuccess && (<span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] px-2 py-1 rounded shadow animate-fade-in whitespace-nowrap z-10">已儲存!</span>)}</button>
-                           <button type="button" onClick={clearFile} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
+                           <button 
+                             type="button" 
+                             onClick={handleManualSave} 
+                             disabled={isSaving}
+                             className={`flex items-center space-x-1 px-4 py-2 rounded-lg border transition-all relative group ${
+                               isSaving 
+                                 ? 'bg-emerald-500/5 text-emerald-400/50 border-emerald-500/10 cursor-wait' 
+                                 : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border-emerald-500/20 active:scale-95'
+                             }`}
+                           >
+                             {isSaving ? (
+                               <>
+                                 <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                 </svg>
+                                 <span className="text-xs font-bold">儲存中...</span>
+                               </>
+                             ) : (
+                               <>
+                                 <Save className="w-4 h-4" />
+                                 <span className="text-xs font-bold">儲存</span>
+                               </>
+                             )}
+                             {showSaveSuccess && (
+                               <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] px-2 py-1 rounded shadow animate-fade-in whitespace-nowrap z-10">
+                                 ✓ 已儲存!
+                               </span>
+                             )}
+                           </button>
+                           <button type="button" onClick={clearFile} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all active:scale-95"><X className="w-5 h-5" /></button>
                        </div>
                      </div>
                   )}
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.txt,.md" className="hidden" />
               </div>
 
+              {/* 近期分析報告按鈕 */}
+              <div className="relative mb-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowReportsDropdown(!showReportsDropdown)}
+                  className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="font-bold">近期分析報告 {recentReports.length > 0 && `(${recentReports.length})`}</span>
+                </button>
+                
+                {showReportsDropdown && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setShowReportsDropdown(false)} />
+                    <div className="absolute right-0 bottom-full mb-2 w-96 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden max-h-[32rem]">
+                      <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        最近生成的報告 (最多 10 筆)
+                      </div>
+                      {recentReports.length === 0 ? (
+                        <div className="p-6 text-center text-slate-500 text-sm">
+                          <p>尚未生成任何報告</p>
+                        </div>
+                      ) : (
+                        <div className="max-h-[28rem] overflow-y-auto">
+                          {recentReports.map((report) => (
+                            <div 
+                              key={report.id} 
+                              onClick={() => {
+                                onSelectHistory({ id: report.id, timestamp: new Date(report.created_at).getTime(), report: report.analysis_data });
+                                setShowReportsDropdown(false);
+                              }} 
+                              className="p-4 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all active:bg-slate-600"
+                            >
+                              <Briefcase className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5 mr-3 group-hover:scale-110 transition-transform" />
+                              <div className="flex-1 overflow-hidden text-left">
+                                <p className="text-sm text-slate-200 font-bold truncate group-hover:text-indigo-300 transition-colors">{report.job_title}</p>
+                                <p className="text-[10px] text-slate-500 flex items-center mt-1">
+                                  <Clock className="w-3.5 h-3.5 mr-1" />
+                                  {formatDateTime(report.created_at)}
+                                </p>
+                              </div>
+                              <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+
               <div className="pt-4 border-t border-slate-700/50 mt-auto">
-                 <button type="submit" disabled={isLoading || !jobDescription || !resume} className={`w-full py-5 px-6 rounded-xl font-black text-xl text-white shadow-lg transition-all transform active:scale-[0.98] flex justify-center items-center ${isLoading || !jobDescription || !resume ? 'bg-slate-700 cursor-not-allowed text-slate-500' : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/25 ring-1 ring-white/10 shadow-indigo-500/20'}`}>
-                  {isLoading ? (<><svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>生成深度戰略報告...</>) : (<><span className="mr-2">啟動 AI 戰略分析</span><ArrowRight className="w-6 h-6" /></>)}
+                 {/* 啟動 AI 戰略分析按鈕 */}
+                 <button 
+                   type="submit" 
+                   disabled={isLoading || !jobDescription || !resume || isSaving} 
+                   className={`w-full py-5 px-6 rounded-xl font-black text-xl text-white shadow-lg transition-all transform flex justify-center items-center ${
+                     isLoading || !jobDescription || !resume || isSaving
+                       ? 'bg-slate-700 cursor-not-allowed text-slate-500' 
+                       : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/25 ring-1 ring-white/10 shadow-indigo-500/20 active:scale-[0.98] hover:scale-[1.02]'
+                   }`}
+                 >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span className="animate-pulse">生成深度戰略報告...</span>
+                    </>
+                  ) : isSaving ? (
+                    <span className="text-slate-500">請等待儲存完成...</span>
+                  ) : (
+                    <>
+                      <span className="mr-2">啟動 AI 戰略分析</span>
+                      <ArrowRight className="w-6 h-6" />
+                    </>
+                  )}
                 </button>
               </div>
           </div>
