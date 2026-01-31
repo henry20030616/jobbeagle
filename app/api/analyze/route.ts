@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
     }
 
-    const model = 'gemini-2.5-flash';
+    const model = 'gemini-1.5-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     
     const requestBody: any = {
