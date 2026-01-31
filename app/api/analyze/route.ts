@@ -2,8 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
 
-// 設定最大執行時間（雖然 Vercel 免費版由平台控制，但這行可以提醒 Next.js 不要太早斷開）
-export const maxDuration = 60; 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
+// 🟢 設定模型：使用標準名稱，不加 latest 避免路徑問題
+const MODEL_NAME = 'gemini-1.5-flash';
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
 
 const SYSTEM_INSTRUCTION = `
 # Role (角色設定)
@@ -59,7 +73,7 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "rationale": "BRIEF data-driven logic. 2-3 bullet points maximum."
   },
   "market_analysis": {
-    "industry_trends": "簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \n 現況與趨勢: [DETAILED - Can be longer and more detailed]",
+    "industry_trends": "簡介: [DETAILED] \n 現況與趨勢: [DETAILED]",
     "positioning": "BRIEF strategic assessment (1 sentence).",
     "competition_table": [
        {"name": "Competitor (Include Target Co)", "strengths": "BRIEF (1 sentence)", "weaknesses": "BRIEF (1 sentence)"}
@@ -96,56 +110,43 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
 # Rules
 1. **Language**: Traditional Chinese (繁體中文).
 2. **Professional Tone**: Board-level strategic consultant tone.
-3. **Length Control**: 
-   - Keep ALL sections BRIEF and concise (1-3 sentences or 2-4 bullet points maximum per item).
-   - ONLY exception: "industry_trends" can be detailed and comprehensive.
-   - Avoid verbose explanations, redundant information, or unnecessary elaboration.
-   - Focus on actionable insights, not lengthy descriptions.
-
-# CRITICAL JSON FORMAT REQUIREMENTS
-1. **Output MUST be valid JSON only** - Do NOT include any text before or after the JSON object.
-2. **No Markdown code blocks** - Do NOT wrap the JSON in markdown code block markers (three backticks).
-3. **No explanatory text** - Do NOT add comments, explanations, or any text outside the JSON structure.
-4. **Valid JSON syntax** - Ensure all strings are properly quoted, all brackets are matched, and there are no trailing commas.
-5. **Complete structure** - The JSON must include ALL required fields as specified in the Output Format section above.
-
-**Example of CORRECT output:**
-{
-  "basic_analysis": { ... },
-  "salary_analysis": { ... },
-  ...
-}
-
-**Example of INCORRECT output:**
-Do NOT wrap in markdown code blocks or add any text before/after the JSON object.
+3. **CRITICAL JSON FORMAT REQUIREMENTS**: Output MUST be valid JSON only. Do NOT include markdown code blocks.
 `;
+
+function cleanAndParseJSON(text: string): InterviewReport {
+  try {
+    console.log('🔍 [Parsing] 原始回應長度:', text.length);
+    let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const firstBraceIndex = cleanText.indexOf('{');
+    if (firstBraceIndex > 0) cleanText = cleanText.substring(firstBraceIndex);
+    const lastBraceIndex = cleanText.lastIndexOf('}');
+    if (lastBraceIndex > 0 && lastBraceIndex < cleanText.length - 1) {
+      cleanText = cleanText.substring(0, lastBraceIndex + 1);
+    }
+    return JSON.parse(cleanText);
+  } catch (error: any) {
+    console.error('❌ [Parsing Error]', error.message);
+    throw new Error(`AI 資料格式錯誤: ${error.message}`);
+  }
+}
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log('🚀 [API Start] 開始處理分析請求');
+  console.log('🚀 [API Start] 收到分析請求');
+  console.log(`🔥 [Debug] 使用模型: ${MODEL_NAME}`);
 
   try {
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
-    console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length}, Resume 類型: ${resume?.type}`);
-
     if (!jobDescription || !resume) {
-      return NextResponse.json(
-        { error: 'Missing required fields: jobDescription and resume' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+    const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('❌ [Config Error] 找不到 GEMINI_API_KEY');
-      return NextResponse.json(
-        { error: 'Gemini API key not configured' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
     }
-    console.log('🔑 [Config] API Key 存在 (已遮罩)');
 
     let baseJD = jobDescription.trim();
     const match104 = baseJD.match(/104\.com\.tw\/job\/(\w+)/);
@@ -155,22 +156,23 @@ export async function POST(request: NextRequest) {
     if (match104) systemHint = `\n[SYSTEM_HINT]: 104 Job ID: ${match104[1]}`;
     else if (matchLinkedIn) systemHint = `\n[SYSTEM_HINT]: LinkedIn Job ID: ${matchLinkedIn[1]}`;
 
-    const userParts: any[] = [
-      { text: `[CONTEXT: JD ANALYSIS]\n\n${baseJD}${systemHint}` }
-    ];
+    const userParts: any[] = [{ text: `[CONTEXT: JD ANALYSIS]\n\n${baseJD}${systemHint}` }];
     if (resume.type === 'file' && resume.mimeType) {
       userParts.push({ inlineData: { data: resume.content, mimeType: resume.mimeType } });
     } else {
-      userParts.push({ text: `=== RESUME ===\n${resume.content}` });
+      userParts.push({ text: `=== RESUME CONTENT ===\n${resume.content}` });
     }
 
-    const model = 'gemini-1.5-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+    // 🟢 使用 v1beta，網址寫死
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
-    const requestBody: any = {
+    const requestBody = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ parts: userParts }],
-      generationConfig: { temperature: 0.7 },
+      generationConfig: { 
+        temperature: 0.7,
+        response_mime_type: "application/json" 
+      },
       safetySettings: [
         { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
         { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
@@ -179,264 +181,75 @@ export async function POST(request: NextRequest) {
       ],
     };
 
-    console.log(`🤖 [Gemini] 準備發送請求給 ${model}...`);
-
     const maxRetries = 3;
     let lastError: any = null;
     let text = "";
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        const fetchStartTime = Date.now();
-        console.log(`⏳ [Gemini] 嘗試第 ${attempt + 1} 次請求...`);
+        console.log(`⏳ [Attempt ${attempt + 1}] Requesting ${MODEL_NAME}...`);
         
-        // 使用 URL 参数方式传递 API Key（更稳定）
-        const urlWithKey = `${url}?key=${apiKey}`;
-        console.log(`🔗 [Gemini] 請求 URL: ${urlWithKey.replace(apiKey, '***HIDDEN***')}`);
-        console.log(`🔑 [Gemini] API Key 前綴: ${apiKey?.substring(0, 15)}...`);
-        
-        const response = await fetch(urlWithKey, {
+        const response = await fetch(url, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestBody),
+          cache: 'no-store'
         });
 
-        const fetchDuration = (Date.now() - fetchStartTime) / 1000;
-        console.log(`⏱️ [Gemini] 第 ${attempt + 1} 次請求耗時: ${fetchDuration}秒, Status: ${response.status}`);
-
         if (response.status === 503) {
-          const errorText = await response.text();
-          console.warn(`⚠️ [Gemini 503] 伺服器過載，等待重試...`);
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          lastError = new Error(`Server overloaded (503): ${errorText}`);
+          await new Promise(r => setTimeout(r, 2000));
           continue;
         }
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`❌ [Gemini Error] API 回應錯誤 (Status: ${response.status}):`, errorText);
-          console.error(`❌ [Gemini Error] 請求 URL:`, url);
-          console.error(`❌ [Gemini Error] 模型名稱:`, model);
-          console.error(`❌ [Gemini Error] API Key 前綴:`, apiKey?.substring(0, 10) + '...');
-          
-          let errorMessage = `Gemini API Error: ${response.status} ${response.statusText}`;
-          try {
-            const errorJson = JSON.parse(errorText);
-            if (errorJson.error?.message) {
-              errorMessage += ` - ${errorJson.error.message}`;
-              console.error(`❌ [Gemini Error] 詳細錯誤:`, errorJson.error);
-            }
-          } catch (e) {
-            if (errorText.length < 500) {
-              errorMessage += ` - ${errorText}`;
-            }
-          }
-          throw new Error(errorMessage);
+          console.error(`❌ [Gemini Error] ${response.status}: ${errorText}`);
+          throw new Error(`Gemini API Error: ${response.status} - ${errorText.substring(0, 100)}`);
         }
 
         const data = await response.json();
-        
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-          const parts = data.candidates[0].content.parts || [];
-          text = parts.map((part: any) => part.text || '').join('');
-          console.log(`✅ [Gemini] 成功取得回應，長度: ${text.length}`);
+        if (data.candidates?.[0]?.content?.parts) {
+          text = data.candidates[0].content.parts.map((p: any) => p.text).join('');
+          console.log('✅ 成功取得回應');
         } else {
-          console.error('❌ [Gemini] 回應格式異常:', JSON.stringify(data).substring(0, 200));
-          throw new Error('No content in response candidates');
+          throw new Error('No content in response');
         }
-
         break; 
       } catch (error: any) {
         lastError = error;
-        console.error(`❌ [Gemini] 第 ${attempt + 1} 次嘗試失敗:`, error.message);
-        if (attempt < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          continue;
-        }
+        console.error(`❌ 失敗 (${attempt + 1}/${maxRetries}):`, error.message);
+        if (attempt < maxRetries - 1) await new Promise(r => setTimeout(r, 2000));
       }
     }
 
-    if (!text && lastError) {
-      throw lastError || new Error('Failed to generate content after all retries');
-    }
-    
-    // ==========================================
-    // 🛡️ 強化的 JSON 解析防護罩
-    // ==========================================
-    const fullResponseText = text;
-    let report: InterviewReport;
+    if (!text && lastError) throw lastError;
+    const report = cleanAndParseJSON(text);
 
-    try {
-      console.log('🔍 [Parsing] 開始解析 JSON...');
-      console.log('📏 [Parsing] 原始文字長度:', text.length);
-      
-      // 步驟 1: 移除 Markdown 代碼塊標記
-      let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-      
-      // 步驟 2: 移除可能的開頭說明文字（直到第一個 {）
-      const firstBraceIndex = cleanText.indexOf('{');
-      if (firstBraceIndex > 0) {
-        console.log(`⚠️ [Parsing] 發現 ${firstBraceIndex} 個字符的前綴文字，已移除`);
-        cleanText = cleanText.substring(firstBraceIndex);
-      }
-      
-      // 步驟 3: 找到最後一個 } 的位置（處理可能的後綴文字）
-      const lastBraceIndex = cleanText.lastIndexOf('}');
-      if (lastBraceIndex > 0 && lastBraceIndex < cleanText.length - 1) {
-        console.log(`⚠️ [Parsing] 發現後綴文字，已移除`);
-        cleanText = cleanText.substring(0, lastBraceIndex + 1);
-      }
-      
-      // 步驟 4: 嘗試找到完整的 JSON 對象（使用括號匹配）
-      let jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        cleanText = jsonMatch[0];
-      }
-      
-      // 步驟 5: 修復常見的 JSON 格式問題
-      // 移除尾隨逗號
-      cleanText = cleanText.replace(/,(\s*[}\]])/g, '$1');
-      
-      // 步驟 6: 驗證 JSON 結構完整性
-      const openBraces = (cleanText.match(/\{/g) || []).length;
-      const closeBraces = (cleanText.match(/\}/g) || []).length;
-      if (openBraces !== closeBraces) {
-        console.warn(`⚠️ [Parsing] 括號不匹配: { ${openBraces} vs } ${closeBraces}`);
-        // 嘗試修復：如果缺少閉合括號，添加它們
-        if (openBraces > closeBraces) {
-          cleanText += '}'.repeat(openBraces - closeBraces);
-          console.log('🔧 [Parsing] 已自動添加缺失的閉合括號');
-        }
-      }
-      
-      // 步驟 7: 解析 JSON
-      report = JSON.parse(cleanText);
-      console.log('✅ [Parsing] JSON 解析成功');
-      
-      // 步驟 8: 驗證必要字段
-      if (!report.basic_analysis || !report.match_analysis) {
-        throw new Error('JSON 結構不完整：缺少必要字段 (basic_analysis 或 match_analysis)');
-      }
-      
-    } catch (e: any) {
-      console.error('❌ [Parsing Error] JSON 解析失敗！');
-      console.error('錯誤訊息:', e.message);
-      console.error('--- 原始文字開頭 (前 500 字符) ---');
-      console.error(text.substring(0, 500));
-      console.error('--- 原始文字結尾 (後 500 字符) ---');
-      console.error(text.substring(Math.max(0, text.length - 500)));
-      
-      // 容錯：最後嘗試手動修復
-      try {
-        console.log('🔧 [Parsing] 嘗試容錯修復...');
-        let fixedText = text;
-        
-        // 移除所有標記
-        fixedText = fixedText.replace(/```[\w]*\s*/g, '');
-        fixedText = fixedText.replace(/`/g, '');
-        fixedText = fixedText.trim();
-        
-        // 提取 JSON
-        const match = fixedText.match(/\{[\s\S]*\}/);
-        if (match) {
-          fixedText = match[0];
-          fixedText = fixedText.replace(/,(\s*[}\]])/g, '$1');
-          
-          // 修復括號
-          const open = (fixedText.match(/\{/g) || []).length;
-          const close = (fixedText.match(/\}/g) || []).length;
-          if (open > close) {
-            fixedText += '}'.repeat(open - close);
-          }
-          
-          report = JSON.parse(fixedText);
-          console.log('✅ [Parsing] 容錯修復成功！');
-        } else {
-          throw new Error('無法找到有效的 JSON 結構');
-        }
-      } catch (fixError: any) {
-        console.error('❌ [Parsing] 容錯修復也失敗:', fixError);
-        console.error('------------------');
-        
-        return NextResponse.json(
-          { 
-              error: 'AI Generated Invalid JSON', 
-              details: e.message,
-              rawText: text.substring(0, 1000),
-              hint: 'AI 返回的內容不是有效的 JSON 格式。請重試或檢查 API 設定。'
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    // 先返回報告給用戶，提升響應速度
-    const totalDuration = (Date.now() - startTime) / 1000;
-    console.log(`🏁 [API End] AI 分析完成，耗時: ${totalDuration}秒`);
-
-    // 🔥 重要：保存到數據庫（改為同步，確保保存成功）
     const supabase = await createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     
-    console.log('💾 [DB] 準備保存報告到數據庫...');
-    console.log('💾 [DB] 用戶狀態:', user ? `已登入 (ID: ${user.id})` : '未登入');
-    
-    if (!user) {
-      console.warn('⚠️  [DB] 用戶未登入，報告將不會保存到數據庫');
-    } else {
-      const insertData: any = {
+    if (user) {
+      await supabase.from('analysis_reports').insert({
         user_id: user.id,
         job_title: report.basic_analysis?.job_title || 'Unknown',
         job_description: jobDescription,
         resume_file_name: resume.fileName || 'unknown',
         resume_type: resume.type,
         analysis_data: report,
-        content: fullResponseText,
+        content: text,
         created_at: new Date().toISOString(),
-      };
-
-      console.log('💾 [DB] 插入數據:', {
-        user_id: insertData.user_id,
-        job_title: insertData.job_title,
-        //resume_file_name: insertData.resume_file_name
       });
-
-      try {
-        const { data: savedData, error: dbError } = await supabase
-          .from('analysis_reports')
-          .insert(insertData)
-          .select('id, job_title, created_at')
-          .single();
-
-        if (dbError) {
-          console.error('❌ [DB Error] 儲存失敗:', dbError.message);
-          console.error('❌ [DB Error] 錯誤代碼:', dbError.code);
-          console.error('❌ [DB Error] 錯誤詳情:', JSON.stringify(dbError, null, 2));
-        } else if (savedData) {
-          console.log('✅ [DB Success] 報告已成功保存！');
-          console.log('✅ [DB Success] 報告 ID:', savedData.id);
-          console.log('✅ [DB Success] 職位標題:', savedData.job_title);
-          console.log('✅ [DB Success] 保存時間:', savedData.created_at);
-        }
-      } catch (e: any) {
-        console.error('❌ [DB Exception] 保存時發生異常:', e);
-        console.error('❌ [DB Exception] 異常訊息:', e?.message);
-      }
+      console.log('✅ DB 儲存成功');
     }
 
     return NextResponse.json({
       report,
-      modelUsed: model,
-      saved: !!user, // 告訴前端是否已保存
+      modelUsed: MODEL_NAME,
+      saved: !!user
     });
 
   } catch (error: any) {
-    console.error('❌ [Critical Error] API 全局錯誤:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to generate analysis' },
-      { status: 500 }
-    );
+    console.error('❌ [Critical Error]', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
