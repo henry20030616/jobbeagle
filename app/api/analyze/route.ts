@@ -123,9 +123,9 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "matching_points": [{"point": "Fit", "description": "BRIEF professional alignment (1-2 sentences)"}],
     "skill_gaps": [{"gap": "Gap", "description": "BRIEF interview strategy (1-2 sentences)"}]
   },
-  "interview_preparation": {
-    "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "回答建議：[CONCISE advice, 2-3 sentences maximum]"}]
-  },
+    "interview_preparation": {
+      "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "${answerGuideFormat}"}]
+    },
   "references": {
     "deep_research": [{"title": "Title", "url": "URL"}],
     "data_citations": [{"title": "Source", "url": "URL"}]

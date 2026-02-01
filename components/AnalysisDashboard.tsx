@@ -84,29 +84,126 @@ export const BeagleIcon = ({ className, color = "#475569", spotColor = "#5d4037"
   </svg>
 );
 
-const getScoreInfo = (score: number) => {
-  if (score >= 90) return { level: "鑽石米格魯", label: "頂級契合：具備即戰力", description: "您的技能與經驗幾乎完美契合職位需求。", color: "text-cyan-400", fill: "#22d3ee", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" color="#22d3ee" spotColor="#0e7490" /> };
-  if (score >= 75) return { level: "黃金米格魯", label: "高度契合：具備核心潛力", description: "您具備大部分核心技能，只需稍作準備。", color: "text-amber-400", fill: "#fbbf24", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" color="#fbbf24" spotColor="#b45309" /> };
-  if (score >= 60) return { level: "白銀米格魯", label: "中度契合：部分技能重疊", description: "您具備相關基礎，但需強調潛力。", color: "text-slate-300", fill: "#cbd5e1", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(203,213,225,0.4)]" color="#cbd5e1" spotColor="#475569" /> };
-  return { level: "青銅米格魯", label: "低度契合：建議重新評估", description: "目前履歷與職位需求差異較大。", color: "text-orange-400", fill: "#fb923c", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(251,146,60,0.4)]" color="#fb923c" spotColor="#9a3412" /> };
+const getScoreInfo = (score: number, language: 'zh' | 'en' = 'zh') => {
+  if (language === 'en') {
+    if (score >= 90) return { level: "Diamond Beagle", label: "Top Match: Ready to Execute", description: "Your skills and experience almost perfectly match the job requirements.", color: "text-cyan-400", fill: "#22d3ee", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" color="#22d3ee" spotColor="#0e7490" /> };
+    if (score >= 75) return { level: "Gold Beagle", label: "High Match: Core Potential", description: "You have most of the core skills and only need slight preparation.", color: "text-amber-400", fill: "#fbbf24", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" color="#fbbf24" spotColor="#b45309" /> };
+    if (score >= 60) return { level: "Silver Beagle", label: "Moderate Match: Partial Skill Overlap", description: "You have relevant foundations but need to emphasize potential.", color: "text-slate-300", fill: "#cbd5e1", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(203,213,225,0.4)]" color="#cbd5e1" spotColor="#475569" /> };
+    return { level: "Bronze Beagle", label: "Low Match: Re-evaluation Recommended", description: "There is a significant gap between your resume and job requirements.", color: "text-orange-400", fill: "#fb923c", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(251,146,60,0.4)]" color="#fb923c" spotColor="#9a3412" /> };
+  } else {
+    if (score >= 90) return { level: "鑽石米格魯", label: "頂級契合：具備即戰力", description: "您的技能與經驗幾乎完美契合職位需求。", color: "text-cyan-400", fill: "#22d3ee", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" color="#22d3ee" spotColor="#0e7490" /> };
+    if (score >= 75) return { level: "黃金米格魯", label: "高度契合：具備核心潛力", description: "您具備大部分核心技能，只需稍作準備。", color: "text-amber-400", fill: "#fbbf24", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" color="#fbbf24" spotColor="#b45309" /> };
+    if (score >= 60) return { level: "白銀米格魯", label: "中度契合：部分技能重疊", description: "您具備相關基礎，但需強調潛力。", color: "text-slate-300", fill: "#cbd5e1", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(203,213,225,0.4)]" color="#cbd5e1" spotColor="#475569" /> };
+    return { level: "青銅米格魯", label: "低度契合：建議重新評估", description: "目前履歷與職位需求差異較大。", color: "text-orange-400", fill: "#fb923c", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(251,146,60,0.4)]" color="#fb923c" spotColor="#9a3412" /> };
+  }
 };
 
 // ----------------------------------------------------------------------
 // 3. 主儀表板元件
 // ----------------------------------------------------------------------
 
-const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
+const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) => {
   const printRef = useRef<HTMLDivElement>(null); // 隱藏列印層
   const dashboardRef = useRef<HTMLDivElement>(null); // 顯示層
 
   const { basic_analysis, salary_analysis, reviews_analysis, market_analysis, match_analysis, interview_preparation } = data;
-  const scoreInfo = getScoreInfo(match_analysis.score);
+  const scoreInfo = getScoreInfo(match_analysis.score, language);
   const scoreData = [{ name: 'Score', value: match_analysis.score, fill: scoreInfo.fill }];
+
+  // 翻譯對象
+  const translations = {
+    zh: {
+      matchAnalysis: '1. 職位分析與匹配評分',
+      coreAdvantages: '核心優勢',
+      skillGaps: '待補強項目',
+      salaryInfo: '2. 薪資情報與公司評價',
+      estimatedSalary: '預估薪酬 (ESTIMATED VALUE)',
+      analysisLogic: '分析推估邏輯',
+      negotiationStrategy: '請募攻防策略',
+      workplaceEcology: '職場生態與面試實戰情報',
+      companyCulture: '組織文化與氛圍',
+      pros: '優點',
+      cons: '缺點',
+      interviewProcess: '面試環節與難度',
+      realInterviewQuestions: '實戰搜研考題',
+      sourceLink: '來源連結',
+      companyAnalysis: '3. 公司介紹與前景分析',
+      industryOverview: '產業概況',
+      industryTrends: '產業趨勢',
+      coreMoats: '企業核心護城河',
+      strategicRisks: '長期戰略風險',
+      competitors: '競爭對手',
+      strengths: '優勢',
+      weaknesses: '弱點',
+      interviewPrep: '4. 面試考題與策略',
+      scoreStandard: '評分標準',
+      topMatch: '頂級契合',
+      highMatch: '高度契合',
+      moderateMatch: '中度契合',
+      lowMatch: '低度契合',
+      downloadReport: '下載報告 (PDF)',
+      generating: '生成中...',
+      downloadFailed: '下載失敗',
+      jobTitle: '職位',
+      generatedDate: '生成日期',
+      coreAdvantagesAndGaps: '1. 核心優勢與缺口',
+      yourAdvantages: '你的優勢',
+      suggestedImprovements: '建議補強',
+      marketEstimatedSalary: '市場預估年薪',
+      negotiationTips: '談判策略建議：',
+      industryCompetition: '3. 產業競爭分析',
+      mockInterview: '4. 模擬面試題庫',
+    },
+    en: {
+      matchAnalysis: '1. Job Analysis & Match Score',
+      coreAdvantages: 'Core Advantages',
+      skillGaps: 'Skill Gaps',
+      salaryInfo: '2. Salary Intelligence & Company Reviews',
+      estimatedSalary: 'Estimated Salary (ESTIMATED VALUE)',
+      analysisLogic: 'Analysis & Estimation Logic',
+      negotiationStrategy: 'Negotiation Strategy',
+      workplaceEcology: 'Workplace Ecology & Interview Intelligence',
+      companyCulture: 'Organizational Culture & Atmosphere',
+      pros: 'Pros',
+      cons: 'Cons',
+      interviewProcess: 'Interview Process & Difficulty',
+      realInterviewQuestions: 'Real Interview Questions',
+      sourceLink: 'Source Link',
+      companyAnalysis: '3. Company Overview & Prospect Analysis',
+      industryOverview: 'Industry Overview',
+      industryTrends: 'Industry Trends',
+      coreMoats: 'Core Competitive Moats',
+      strategicRisks: 'Long-term Strategic Risks',
+      competitors: 'Competitors',
+      strengths: 'Strengths',
+      weaknesses: 'Weaknesses',
+      interviewPrep: '4. Interview Questions & Strategy',
+      scoreStandard: 'Scoring Standard',
+      topMatch: 'Top Match',
+      highMatch: 'High Match',
+      moderateMatch: 'Moderate Match',
+      lowMatch: 'Low Match',
+      downloadReport: 'Download Report (PDF)',
+      generating: 'Generating...',
+      downloadFailed: 'Download Failed',
+      jobTitle: 'Job Title',
+      generatedDate: 'Generated Date',
+      coreAdvantagesAndGaps: '1. Core Advantages & Gaps',
+      yourAdvantages: 'Your Advantages',
+      suggestedImprovements: 'Suggested Improvements',
+      marketEstimatedSalary: 'Market Estimated Annual Salary',
+      negotiationTips: 'Negotiation Strategy Tips:',
+      industryCompetition: '3. Industry Competition Analysis',
+      mockInterview: '4. Mock Interview Question Bank',
+    }
+  };
+
+  const t = translations[language];
 
   const handleDownload = async () => {
     if (!printRef.current) return;
     const btn = document.getElementById('download-btn');
-    if (btn) btn.innerText = "生成中...";
+    if (btn) btn.innerText = t.generating;
 
     try {
       const element = printRef.current;
@@ -152,9 +249,9 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
 
     } catch (error) {
       console.error('PDF Error:', error);
-      alert('下載失敗');
+      alert(t.downloadFailed);
     } finally {
-      if (btn) btn.innerText = "下載報告 (PDF)";
+      if (btn) btn.innerText = t.downloadReport;
     }
   };
 
@@ -180,7 +277,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
       <div className="space-y-6">
         <div className="flex items-center mb-2">
            <span className="w-1.5 h-6 bg-yellow-500 rounded-full mr-3"></span>
-           <h2 className="text-xl font-bold text-white">1. 職位分析與匹配評分</h2>
+           <h2 className="text-xl font-bold text-white">{t.matchAnalysis}</h2>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col items-center relative overflow-hidden">
@@ -209,23 +306,23 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                   <p className="text-sm text-slate-400 px-4 leading-relaxed mb-3">{scoreInfo.description}</p>
                   {/* 分数评等等级说明 */}
                   <div className="mt-4 pt-4 border-t border-slate-700/50">
-                    <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">評分標準</p>
+                    <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">{t.scoreStandard}</p>
                     <div className="text-xs text-slate-400 space-y-1 text-left px-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-cyan-400">90+ 鑽石米格魯</span>
-                        <span className="text-slate-600">頂級契合</span>
+                        <span className="text-cyan-400">90+ {language === 'zh' ? '鑽石米格魯' : 'Diamond Beagle'}</span>
+                        <span className="text-slate-600">{t.topMatch}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-amber-400">75+ 黃金米格魯</span>
-                        <span className="text-slate-600">高度契合</span>
+                        <span className="text-amber-400">75+ {language === 'zh' ? '黃金米格魯' : 'Gold Beagle'}</span>
+                        <span className="text-slate-600">{t.highMatch}</span>
             </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-300">60+ 白銀米格魯</span>
-                        <span className="text-slate-600">中度契合</span>
+                        <span className="text-slate-300">60+ {language === 'zh' ? '白銀米格魯' : 'Silver Beagle'}</span>
+                        <span className="text-slate-600">{t.moderateMatch}</span>
                   </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-orange-400">&lt;60 青銅米格魯</span>
-                        <span className="text-slate-600">低度契合</span>
+                        <span className="text-orange-400">&lt;60 {language === 'zh' ? '青銅米格魯' : 'Bronze Beagle'}</span>
+                        <span className="text-slate-600">{t.lowMatch}</span>
                   </div>
                   </div>
                </div>
@@ -235,13 +332,13 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
           <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl flex flex-col md:flex-row overflow-hidden">
             <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-slate-700">
               <h3 className="text-base font-bold text-emerald-400 mb-4 flex items-center uppercase tracking-wide">
-                  <CheckCircle2 className="w-4 h-4 mr-2" /> 核心優勢
+                  <CheckCircle2 className="w-4 h-4 mr-2" /> {t.coreAdvantages}
               </h3>
                 <SafeContentList content={match_analysis.matching_points} bulletColor="bg-emerald-500" textColor="text-slate-200" />
             </div>
             <div className="flex-1 p-6 bg-slate-800/50">
               <h3 className="text-base font-bold text-amber-400 mb-4 flex items-center uppercase tracking-wide">
-                  <AlertTriangle className="w-5 h-5 mr-2" /> 待補強項目
+                  <AlertTriangle className="w-5 h-5 mr-2" /> {t.skillGaps}
               </h3>
                 <SafeContentList content={match_analysis.skill_gaps} bulletColor="bg-amber-500" textColor="text-slate-200" />
             </div>
@@ -254,21 +351,21 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
       <div className="space-y-6">
          <div className="flex items-center mb-2">
             <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></span>
-            <h2 className="text-xl font-bold text-white">2. 薪資情報與公司評價</h2>
+            <h2 className="text-xl font-bold text-white">{t.salaryInfo}</h2>
          </div>
              <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-6">
                  {/* 預估薪酬與談判策略 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
-                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Target className="w-4 h-4 mr-2" /> 預估薪酬 (ESTIMATED VALUE)</h4>
+                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Target className="w-4 h-4 mr-2" /> {t.estimatedSalary}</h4>
                            <span className="text-2xl font-black text-white">{cleanText(salary_analysis.estimated_range)}</span>
                         <div className="mt-4">
-                          <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">分析推估邏輯</p>
+                          <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">{t.analysisLogic}</p>
                           <SafeContentList content={salary_analysis.rationale} bulletColor="bg-emerald-500" textColor="text-slate-300"/>
                         </div>
                        </div>
                     <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
-                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Zap className="w-4 h-4 mr-2" /> 請募攻防策略</h4>
+                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Zap className="w-4 h-4 mr-2" /> {t.negotiationStrategy}</h4>
                         <SafeContentList content={salary_analysis.negotiation_tip} bulletColor="bg-emerald-500" textColor="text-slate-300"/>
                     </div>
                   </div>
@@ -278,7 +375,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                    <div className="mt-6 pt-6 border-t border-slate-700/50">
                      <h3 className="text-lg font-bold text-white mb-4 flex items-center">
                        <Users className="w-5 h-5 mr-2 text-indigo-400" />
-                       職場生態與面試實戰情報
+                       {t.workplaceEcology}
                      </h3>
                      
                      {/* 組織文化與氛圍 */}
@@ -286,20 +383,20 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                        <div className="mb-6 bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
                          <h4 className="text-indigo-400 font-bold mb-3 flex items-center">
                            <Building2 className="w-4 h-4 mr-2" />
-                           組織文化與氛圍
+                           {t.companyCulture}
                     </h4>
                          <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-line mb-3">
                            {cleanText(reviews_analysis.company_reviews.summary)}
                   </div>
                          {reviews_analysis.company_reviews.pros && reviews_analysis.company_reviews.pros.length > 0 && (
                            <div className="mt-3">
-                             <p className="text-xs text-emerald-400 mb-2 font-bold">優點</p>
+                             <p className="text-xs text-emerald-400 mb-2 font-bold">{t.pros}</p>
                              <SafeContentList content={reviews_analysis.company_reviews.pros} bulletColor="bg-emerald-500" textColor="text-slate-300"/>
               </div>
                          )}
                          {reviews_analysis.company_reviews.cons && reviews_analysis.company_reviews.cons.length > 0 && (
                            <div className="mt-3">
-                             <p className="text-xs text-rose-400 mb-2 font-bold">缺點</p>
+                             <p className="text-xs text-rose-400 mb-2 font-bold">{t.cons}</p>
                              <SafeContentList content={reviews_analysis.company_reviews.cons} bulletColor="bg-rose-500" textColor="text-slate-300"/>
           </div>
          )}
@@ -311,7 +408,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                        <div className="mb-6 bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
                          <h4 className="text-indigo-400 font-bold mb-3 flex items-center">
                            <FileQuestion className="w-4 h-4 mr-2" />
-                           面試環節與難度
+                           {t.interviewProcess}
                          </h4>
                          <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
                            {cleanText(reviews_analysis.job_reviews.summary)}
@@ -324,7 +421,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                        <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
                          <h4 className="text-indigo-400 font-bold mb-4 flex items-center">
                            <MessageSquare className="w-4 h-4 mr-2" />
-                           實戰搜研考題
+                           {t.realInterviewQuestions}
                          </h4>
                         <div className="space-y-4">
                            {reviews_analysis.real_interview_questions.map((q, idx) => (
@@ -335,7 +432,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                                  {q.year && <span>• {cleanText(q.year)}</span>}
                                  {q.source_url && (
                                    <a href={q.source_url} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300">
-                                     來源連結
+                                     {t.sourceLink}
                                    </a>
                                  )}
                                   </div>
@@ -355,25 +452,25 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
       <div className="space-y-6">
           <div className="flex items-center mb-2">
              <span className="w-1.5 h-6 bg-sky-500 rounded-full mr-3"></span>
-             <h2 className="text-xl font-bold text-white">3. 公司介紹與前景分析</h2>
+             <h2 className="text-xl font-bold text-white">{t.companyAnalysis}</h2>
           </div>
              <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-6">
                 {/* 產業概況 */}
                 <div className="p-5 bg-sky-900/10 border border-sky-800/30 rounded-xl">
-                  <h4 className="text-sky-400 font-bold mb-3 flex items-center text-base"><Globe className="w-5 h-5 mr-2" /> 產業概況</h4>
+                  <h4 className="text-sky-400 font-bold mb-3 flex items-center text-base"><Globe className="w-5 h-5 mr-2" /> {t.industryOverview}</h4>
                   
                   {/* 產業趨勢 */}
                   <div className="mb-4">
-                    <p className="text-xs text-sky-400 mb-2 font-bold uppercase tracking-widest">產業趨勢</p>
-                    <div className="text-base text-slate-300 leading-relaxed whitespace-pre-line">
-                      {cleanText(market_analysis.industry_trends)}
-                    </div>
-                  </div>
-                  
+                    <p className="text-xs text-sky-400 mb-2 font-bold uppercase tracking-widest">{t.industryTrends}</p>
+                <div className="text-base text-slate-300 leading-relaxed whitespace-pre-line">
+                  {cleanText(market_analysis.industry_trends)}
+                </div>
+              </div>
+
                   {/* 企業核心護城河 */}
                   {market_analysis.key_advantages && market_analysis.key_advantages.length > 0 && (
                     <div className="mb-4 pt-4 border-t border-sky-800/30">
-                      <p className="text-xs text-sky-400 mb-3 font-bold uppercase tracking-widest">企業核心護城河</p>
+                      <p className="text-xs text-sky-400 mb-3 font-bold uppercase tracking-widest">{t.coreMoats}</p>
                       <SafeContentList content={market_analysis.key_advantages} bulletColor="bg-sky-500" textColor="text-slate-300"/>
                     </div>
                   )}
@@ -381,7 +478,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                   {/* 長期戰略風險 */}
                   {market_analysis.potential_risks && market_analysis.potential_risks.length > 0 && (
                     <div className="pt-4 border-t border-sky-800/30">
-                      <p className="text-xs text-rose-400 mb-3 font-bold uppercase tracking-widest">長期戰略風險</p>
+                      <p className="text-xs text-rose-400 mb-3 font-bold uppercase tracking-widest">{t.strategicRisks}</p>
                       <SafeContentList content={market_analysis.potential_risks} bulletColor="bg-rose-500" textColor="text-slate-300"/>
                     </div>
                   )}
@@ -392,18 +489,18 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                   <div className="overflow-x-auto rounded-xl border border-slate-700">
                     <table className="w-full text-left text-sm border-collapse min-w-[600px]">
                         <thead className="bg-slate-900/50 text-slate-400">
-                            <tr><th className="p-4 border-r border-slate-700">競爭對手</th><th className="p-4 border-r border-slate-700">優勢</th><th className="p-4">弱點</th></tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-700">
+                            <tr><th className="p-4 border-r border-slate-700">{t.competitors}</th><th className="p-4 border-r border-slate-700">{t.strengths}</th><th className="p-4">{t.weaknesses}</th></tr>
+                       </thead>
+                       <tbody className="divide-y divide-slate-700">
                             {market_analysis.competition_table.map((c, i) => (
                                <tr key={i}><td className="p-4 font-bold text-white border-r border-slate-700">{cleanText(c.name)}</td><td className="p-4 text-emerald-400 border-r border-slate-700">{cleanText(c.strengths)}</td><td className="p-4 text-rose-400">{cleanText(c.weaknesses)}</td></tr>
-                            ))}
-                        </tbody>
+                          ))}
+                       </tbody>
                     </table>
                   </div>
                 )}
-             </div>
-          </div>
+                 </div>
+              </div>
         )}
 
         {/* 4. 面試 (網頁版) */}
@@ -411,7 +508,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
            <div className="space-y-6">
                <div className="flex items-center mb-2">
                    <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3"></span>
-                   <h2 className="text-xl font-bold text-white">4. 面試考題與策略</h2>
+                   <h2 className="text-xl font-bold text-white">{t.interviewPrep}</h2>
                </div>
                <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-xl divide-y divide-slate-700">
                    {interview_preparation.questions.map((q, idx) => (
@@ -437,9 +534,9 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* B1. 頁首 */}
         <div className="border-b-2 border-gray-800 pb-6 mb-8 flex justify-between items-end">
                              <div>
-            <h1 className="text-3xl font-extrabold text-black mb-2">職缺戰略分析報告</h1>
+            <h1 className="text-3xl font-extrabold text-black mb-2">{language === 'zh' ? '職缺戰略分析報告' : 'Job Strategy Analysis Report'}</h1>
             <p className="text-sm text-gray-500">
-              職位：{cleanText(basic_analysis?.job_title)} | 生成日期：{new Date().toLocaleDateString()}
+              {t.jobTitle}：{cleanText(basic_analysis?.job_title)} | {t.generatedDate}：{new Date().toLocaleDateString()}
             </p>
                              </div>
           <div className="text-right">
@@ -450,24 +547,24 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
 
         {/* B2. 匹配分析 */}
         <div className="mb-10">
-          <h2 className="text-xl font-bold border-l-4 border-indigo-600 pl-3 mb-4 text-black">1. 職位分析與匹配評分</h2>
+          <h2 className="text-xl font-bold border-l-4 border-indigo-600 pl-3 mb-4 text-black">{t.matchAnalysis}</h2>
           {/* 分數評等等級說明 */}
           <div className="mb-4 p-3 bg-gray-100 rounded border border-gray-300">
-            <p className="text-sm font-bold text-gray-700 mb-2">評分標準</p>
+            <p className="text-sm font-bold text-gray-700 mb-2">{t.scoreStandard}</p>
             <div className="text-xs text-gray-600 space-y-1">
-              <div className="flex justify-between"><span>90+ 鑽石米格魯</span><span>頂級契合：具備即戰力</span></div>
-              <div className="flex justify-between"><span>75+ 黃金米格魯</span><span>高度契合：具備核心潛力</span></div>
-              <div className="flex justify-between"><span>60+ 白銀米格魯</span><span>中度契合：部分技能重疊</span></div>
-              <div className="flex justify-between"><span>&lt;60 青銅米格魯</span><span>低度契合：建議重新評估</span></div>
+              <div className="flex justify-between"><span>90+ {language === 'zh' ? '鑽石米格魯' : 'Diamond Beagle'}</span><span>{scoreInfo.label}</span></div>
+              <div className="flex justify-between"><span>75+ {language === 'zh' ? '黃金米格魯' : 'Gold Beagle'}</span><span>{language === 'zh' ? '高度契合：具備核心潛力' : 'High Match: Core Potential'}</span></div>
+              <div className="flex justify-between"><span>60+ {language === 'zh' ? '白銀米格魯' : 'Silver Beagle'}</span><span>{language === 'zh' ? '中度契合：部分技能重疊' : 'Moderate Match: Partial Skill Overlap'}</span></div>
+              <div className="flex justify-between"><span>&lt;60 {language === 'zh' ? '青銅米格魯' : 'Bronze Beagle'}</span><span>{language === 'zh' ? '低度契合：建議重新評估' : 'Low Match: Re-evaluation Recommended'}</span></div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-8">
              <div className="bg-green-50 p-5 rounded border border-green-200">
-                <h3 className="font-bold text-green-800 mb-3 text-lg flex items-center"><CheckCircle2 className="w-5 h-5 mr-2"/> 核心優勢與契合點</h3>
+                <h3 className="font-bold text-green-800 mb-3 text-lg flex items-center"><CheckCircle2 className="w-5 h-5 mr-2"/> {t.coreAdvantages}</h3>
                 <SafeContentList content={match_analysis.matching_points} bulletColor="bg-green-600" textColor="text-gray-900" isPdf={true} />
              </div>
              <div className="bg-orange-50 p-5 rounded border border-orange-200">
-                <h3 className="font-bold text-orange-800 mb-3 text-lg flex items-center"><AlertTriangle className="w-5 h-5 mr-2"/> 關鍵待補強項目</h3>
+                <h3 className="font-bold text-orange-800 mb-3 text-lg flex items-center"><AlertTriangle className="w-5 h-5 mr-2"/> {t.skillGaps}</h3>
                 <SafeContentList content={match_analysis.skill_gaps} bulletColor="bg-orange-600" textColor="text-gray-900" isPdf={true} />
               </div>
           </div>
@@ -476,21 +573,21 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* B3. 薪資 */}
         {salary_analysis && (
           <div className="mb-10 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-             <h2 className="text-xl font-bold border-l-4 border-emerald-600 pl-3 mb-4 text-black">2. 薪資情報與公司評價</h2>
+             <h2 className="text-xl font-bold border-l-4 border-emerald-600 pl-3 mb-4 text-black">{t.salaryInfo}</h2>
              
              {/* 預估薪酬 */}
              <div className="mb-6">
-               <h3 className="text-lg font-bold mb-2 text-black">預估薪酬 (ESTIMATED VALUE)</h3>
+               <h3 className="text-lg font-bold mb-2 text-black">{t.estimatedSalary}</h3>
                <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
-                 <span className="font-bold text-gray-500 uppercase text-sm">市場預估年薪</span>
+                 <span className="font-bold text-gray-500 uppercase text-sm">{t.marketEstimatedSalary}</span>
                  <span className="text-3xl font-black text-emerald-700">{cleanText(salary_analysis.estimated_range)}</span>
                </div>
                <div className="mb-4">
-                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">分析推估邏輯</p>
+                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.analysisLogic}</p>
                  <SafeContentList content={salary_analysis.rationale} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
                </div>
                <div>
-                 <h4 className="font-bold text-gray-900 mb-2">請募攻防策略</h4>
+                 <h4 className="font-bold text-gray-900 mb-2">{t.negotiationStrategy}</h4>
                  <SafeContentList content={salary_analysis.negotiation_tip} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
                </div>
              </div>
@@ -498,32 +595,32 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
              {/* 職場生態與面試實戰情報 (PDF版) */}
              {reviews_analysis && (
                <div className="mt-6 pt-6 border-t-2 border-gray-300">
-                 <h3 className="text-lg font-bold mb-4 text-black">職場生態與面試實戰情報</h3>
+                 <h3 className="text-lg font-bold mb-4 text-black">{t.workplaceEcology}</h3>
                  
                  {/* 組織文化與氛圍 */}
                  {reviews_analysis.company_reviews && (
                    <div className="mb-4">
-                     <h4 className="text-base font-bold mb-2 text-black">組織文化與氛圍</h4>
+                     <h4 className="text-base font-bold mb-2 text-black">{t.companyCulture}</h4>
                      <div className="text-sm text-gray-700 mb-2 whitespace-pre-line">{cleanText(reviews_analysis.company_reviews.summary)}</div>
                      {reviews_analysis.company_reviews.pros && reviews_analysis.company_reviews.pros.length > 0 && (
                        <div className="mb-2">
-                         <p className="text-xs font-bold text-gray-600 mb-1">優點</p>
+                         <p className="text-xs font-bold text-gray-600 mb-1">{t.pros}</p>
                          <SafeContentList content={reviews_analysis.company_reviews.pros} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
                        </div>
                      )}
                      {reviews_analysis.company_reviews.cons && reviews_analysis.company_reviews.cons.length > 0 && (
                        <div>
-                         <p className="text-xs font-bold text-gray-600 mb-1">缺點</p>
+                         <p className="text-xs font-bold text-gray-600 mb-1">{t.cons}</p>
                          <SafeContentList content={reviews_analysis.company_reviews.cons} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-                       </div>
+         </div>
                      )}
-                   </div>
+              </div>
                  )}
                  
                  {/* 面試環節與難度 */}
                  {reviews_analysis.job_reviews && (
-                   <div className="mb-4">
-                     <h4 className="text-base font-bold mb-2 text-black">面試環節與難度</h4>
+                    <div className="mb-4">
+                     <h4 className="text-base font-bold mb-2 text-black">{t.interviewProcess}</h4>
                      <div className="text-sm text-gray-700 whitespace-pre-line">{cleanText(reviews_analysis.job_reviews.summary)}</div>
                    </div>
                  )}
@@ -531,7 +628,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                  {/* 實戰搜研考題 */}
                  {reviews_analysis.real_interview_questions && reviews_analysis.real_interview_questions.length > 0 && (
                    <div>
-                     <h4 className="text-base font-bold mb-2 text-black">實戰搜研考題</h4>
+                     <h4 className="text-base font-bold mb-2 text-black">{t.realInterviewQuestions}</h4>
                      <div className="space-y-3">
                        {reviews_analysis.real_interview_questions.map((q, idx) => (
                          <div key={idx} className="p-3 bg-gray-100 border-l-4 border-gray-400">
@@ -545,7 +642,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                      </div>
                    </div>
                  )}
-               </div>
+                      </div>
              )}
                     </div>
         )}
@@ -553,22 +650,22 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* B4. 市場 */}
         {market_analysis && (
           <div className="mb-10">
-             <h2 className="text-xl font-bold border-l-4 border-blue-600 pl-3 mb-4 text-black">3. 公司介紹與前景分析</h2>
+             <h2 className="text-xl font-bold border-l-4 border-blue-600 pl-3 mb-4 text-black">{t.companyAnalysis}</h2>
              
              {/* 產業概況 */}
              <div className="mb-4 p-4 bg-gray-100 border border-gray-300 rounded">
-               <h3 className="text-base font-bold mb-3 text-black">產業概況</h3>
+               <h3 className="text-base font-bold mb-3 text-black">{t.industryOverview}</h3>
                
                {/* 產業趨勢 */}
                <div className="mb-3">
-                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">產業趨勢</p>
+                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.industryTrends}</p>
                  <div className="text-sm text-gray-700 whitespace-pre-line">{cleanText(market_analysis.industry_trends)}</div>
                </div>
                
                {/* 企業核心護城河 */}
                {market_analysis.key_advantages && market_analysis.key_advantages.length > 0 && (
                  <div className="mb-3 pt-3 border-t border-gray-300">
-                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">企業核心護城河</p>
+                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.coreMoats}</p>
                    <SafeContentList content={market_analysis.key_advantages} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
                  </div>
                )}
@@ -576,7 +673,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                {/* 長期戰略風險 */}
                {market_analysis.potential_risks && market_analysis.potential_risks.length > 0 && (
                  <div className="pt-3 border-t border-gray-300">
-                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">長期戰略風險</p>
+                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.strategicRisks}</p>
                    <SafeContentList content={market_analysis.potential_risks} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
                  </div>
                )}
@@ -586,7 +683,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
              {market_analysis.competition_table && market_analysis.competition_table.length > 0 && (
                <table className="w-full text-left text-sm border-collapse border border-gray-300 shadow-sm">
                   <thead className="bg-gray-100 text-gray-800 font-bold">
-                    <tr><th className="p-3 border border-gray-300">競爭對手</th><th className="p-3 border border-gray-300">優勢</th><th className="p-3 border border-gray-300">弱點</th></tr>
+                    <tr><th className="p-3 border border-gray-300">{t.competitors}</th><th className="p-3 border border-gray-300">{t.strengths}</th><th className="p-3 border border-gray-300">{t.weaknesses}</th></tr>
                   </thead>
                   <tbody>
                     {market_analysis.competition_table.map((c, i) => (
@@ -605,7 +702,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* B5. 面試 */}
         {interview_preparation && (
           <div className="mb-10">
-            <h2 className="text-xl font-bold border-l-4 border-purple-600 pl-3 mb-4 text-black">4. 模擬面試題庫</h2>
+            <h2 className="text-xl font-bold border-l-4 border-purple-600 pl-3 mb-4 text-black">{t.mockInterview}</h2>
             <div className="space-y-4">
               {interview_preparation.questions.slice(0, 5).map((q, idx) => (
                 <div key={idx} className="border border-gray-200 rounded p-4 break-inside-avoid">
