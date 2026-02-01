@@ -10,14 +10,13 @@ export const maxDuration = 60;
 // 強制使用動態渲染，防止 Vercel 快取導致 404
 export const dynamic = 'force-dynamic';
 
-// 🟢 設定模型名稱：使用帶版號的 Flash，這是解決 "Not Found" 的關鍵
-// 不要改動這裡，這個名稱是 Google 全球通用的唯一識別碼
-const MODEL_NAME = 'gemini-1.5-flash-001';
+// 🟢 關鍵修正：升級至 2026 年主流模型 Gemini 2.0 Flash
+// 1.5 系列已因生命週期結束而無法存取 (404 Not Found)
+const MODEL_NAME = 'gemini-2.0-flash';
 
 // ==========================================
 // 2. CORS 跨域請求處理 (OPTIONS Method)
 // ==========================================
-// 這段是為了防止前端出現 Access-Control-Allow-Origin 錯誤
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
@@ -32,7 +31,6 @@ export async function OPTIONS(request: NextRequest) {
 // ==========================================
 // 3. 系統核心指令 (System Instruction) - 完整展開版
 // ==========================================
-// 這裡保留了你所有的指令與範例，確保 AI 輸出的品質
 const SYSTEM_INSTRUCTION = `
 # Role (角色設定)
 You are a dual-expert persona with 30 years of top-tier experience:
@@ -164,36 +162,17 @@ Analyze the provided Job Description (JD) and Resume to generate a "Winning Stra
 // ==========================================
 // 4. 輔助函式：JSON 清洗與容錯解析 (Clean & Parse)
 // ==========================================
-// 這是最重要的防護罩，防止 AI 回傳 Markdown 格式或多餘文字導致解析失敗
 function cleanAndParseJSON(text: string): InterviewReport {
   try {
     console.log('🔍 [Parsing] 開始解析回應，原始長度:', text.length);
-    
-    // 步驟 1: 移除 Markdown 代碼塊標記 (```json ... ```)
     let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-    
-    // 步驟 2: 尋找第一個左大括號 '{'
     const firstBraceIndex = cleanText.indexOf('{');
-    if (firstBraceIndex === -1) {
-      throw new Error('回應中找不到 JSON 開始符號 "{"');
-    }
-    
-    // 步驟 3: 尋找最後一個右大括號 '}'
+    if (firstBraceIndex > 0) cleanText = cleanText.substring(firstBraceIndex);
     const lastBraceIndex = cleanText.lastIndexOf('}');
-    if (lastBraceIndex === -1) {
-      throw new Error('回應中找不到 JSON 結束符號 "}"');
+    if (lastBraceIndex > 0 && lastBraceIndex < cleanText.length - 1) {
+      cleanText = cleanText.substring(0, lastBraceIndex + 1);
     }
-    
-    // 步驟 4: 截取有效的 JSON 字串
-    if (firstBraceIndex > 0 || lastBraceIndex < cleanText.length - 1) {
-      cleanText = cleanText.substring(firstBraceIndex, lastBraceIndex + 1);
-    }
-    
-    // 步驟 5: 解析 JSON
-    const parsed = JSON.parse(cleanText);
-    console.log('✅ [Parsing] JSON 解析成功');
-    return parsed;
-
+    return JSON.parse(cleanText);
   } catch (error: any) {
     console.error('❌ [Parsing Error] JSON 解析失敗:', error.message);
     console.error('❌ [Parsing Error] 錯誤片段:', text.substring(0, 200) + '...');
@@ -210,13 +189,11 @@ export async function POST(request: NextRequest) {
   console.log(`🔥 [Config] 使用模型: ${MODEL_NAME}`);
 
   try {
-    // 1. 解析 Request Body
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
     console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length || 0}, Resume 類型: ${resume?.type}`);
 
-    // 基本資料驗證
     if (!jobDescription || !resume) {
       console.error('❌ [Validation] 缺少必要欄位');
       return NextResponse.json(
@@ -225,7 +202,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. 取得 API Key (支援兩種環境變數命名)
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.error('❌ [Config Error] 伺服器未設定 API Key');
@@ -235,7 +211,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. 智能解析 Job ID (104 / LinkedIn)
     let baseJD = jobDescription.trim();
     const match104 = baseJD.match(/104\.com\.tw\/job\/(\w+)/);
     const matchLinkedIn = baseJD.match(/linkedin\.com\/.*currentJobId=(\d+)/) || baseJD.match(/linkedin\.com\/jobs\/view\/(\d+)/);
@@ -249,22 +224,17 @@ export async function POST(request: NextRequest) {
       console.log(`🔍 [Job ID] 偵測到 LinkedIn ID: ${matchLinkedIn[1]}`);
     }
 
-    // 4. 準備發送給 Gemini 的內容
     const userParts: any[] = [
       { text: `[CONTEXT: JOB DESCRIPTION]\n\n${baseJD}${systemHint}` }
     ];
     
-    // 處理履歷內容 (文字或檔案)
     if (resume.type === 'file' && resume.mimeType) {
       userParts.push({ inlineData: { data: resume.content, mimeType: resume.mimeType } });
     } else {
       userParts.push({ text: `=== RESUME CONTENT ===\n${resume.content}` });
     }
 
-    // ==========================================
-    // 6. Gemini API 請求設定
-    // ==========================================
-    // 務必使用 v1beta 接口，並且網址寫死，使用上面定義的 MODEL_NAME
+    // 🟢 使用 v1beta，網址寫死，使用 gemini-2.0-flash
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
     const requestBody = {
@@ -284,9 +254,6 @@ export async function POST(request: NextRequest) {
 
     console.log(`🤖 [Gemini] 準備發送請求至 Google Cloud...`);
 
-    // ==========================================
-    // 7. 執行請求 + 重試機制 (Retry Loop)
-    // ==========================================
     const maxRetries = 3;
     let lastError: any = null;
     let text = "";
@@ -302,7 +269,6 @@ export async function POST(request: NextRequest) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(requestBody),
-          // 🔴 關鍵：防止 Vercel 快取 404 錯誤頁面，每次都強制發新請求
           cache: 'no-store' 
         });
 
@@ -349,14 +315,8 @@ export async function POST(request: NextRequest) {
       throw lastError || new Error('Failed to generate content after all retries');
     }
     
-    // ==========================================
-    // 8. 解析與清洗 JSON
-    // ==========================================
     const report: InterviewReport = cleanAndParseJSON(text);
 
-    // ==========================================
-    // 9. 儲存至 Supabase 資料庫
-    // ==========================================
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
@@ -370,11 +330,11 @@ export async function POST(request: NextRequest) {
       const insertData = {
         user_id: user.id,
         job_title: report.basic_analysis?.job_title || 'Unknown Position',
-        job_description: jobDescription, // 完整保留 JD
+        job_description: jobDescription, 
         resume_file_name: resume.fileName || 'unknown',
         resume_type: resume.type,
-        analysis_data: report, // JSON 報告
-        content: text,         // 原始 AI 回應 (備份用)
+        analysis_data: report, 
+        content: text,         
         created_at: new Date().toISOString(),
       };
 
@@ -387,7 +347,6 @@ export async function POST(request: NextRequest) {
 
         if (dbError) {
           console.error('❌ [DB Error] 資料庫寫入失敗:', dbError.message);
-          console.error('❌ [DB Error Detail]:', JSON.stringify(dbError));
         } else {
           console.log(`✅ [DB Success] 報告已儲存! ID: ${savedData.id}`);
         }
@@ -401,9 +360,6 @@ export async function POST(request: NextRequest) {
     const totalDuration = (Date.now() - startTime) / 1000;
     console.log(`🏁 [API End] 處理完成，總耗時: ${totalDuration}秒`);
 
-    // ==========================================
-    // 10. 回傳結果給前端
-    // ==========================================
     return NextResponse.json({
       report,
       modelUsed: MODEL_NAME,
