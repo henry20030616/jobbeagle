@@ -136,21 +136,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
     }
 
-    // 4. 呼叫 Gemini (標準 Fetch, 無 Tools)
+    // 4. 構建用戶輸入內容
+    const userParts: any[] = [
+      { text: `[CONTEXT: JOB DESCRIPTION]\n\n${jobDescription.trim()}` }
+    ];
+    if (resume.type === 'file' && resume.mimeType) {
+      userParts.push({ inlineData: { data: resume.content, mimeType: resume.mimeType } });
+    } else {
+      userParts.push({ text: `=== RESUME CONTENT ===\n${resume.content}` });
+    }
+
+    // 5. 呼叫 Gemini (標準 Fetch, 無 Tools)
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
     const requestBody = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-      contents: [{ 
-        parts: [
-          { text: `[JD]\n${jobDescription}` },
-          { text: `[RESUME]\n${resume.type === 'text' ? resume.content : 'User uploaded file'}` }
-        ] 
-      }],
+      contents: [{ parts: userParts }],
       generationConfig: { 
         temperature: 0.7,
-        response_mime_type: "application/json" 
-      }
+        response_mime_type: "application/json"
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      ],
     };
 
     const response = await fetch(url, {

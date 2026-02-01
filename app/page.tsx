@@ -42,10 +42,7 @@ export default function Home() {
       
       if (!response.ok) {
         if (result.error === 'AI Generated Invalid JSON') {
-          const errorMsg = `JSON 解析失敗：${result.details || '未知錯誤'}\n\n` +
-            (result.hint ? `提示：${result.hint}\n\n` : '') +
-            '請檢查瀏覽器控制台查看詳細錯誤信息，或稍後重試。';
-          throw new Error(errorMsg);
+          throw new Error('AI 生成格式異常,請重試');
         }
         throw new Error(result.error || '分析失敗');
       }
