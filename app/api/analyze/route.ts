@@ -258,19 +258,19 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // 如果是 404 或 400，尝试使用 v1beta API
+        // 如果是 404 或 400，尝试使用 v1 API（作为后备）
         if (response.status === 404 || response.status === 400) {
-          console.warn(`⚠️ [Gemini] v1 API 失敗 (${response.status})，嘗試 v1beta API...`);
+          console.warn(`⚠️ [Gemini] v1beta API 失敗 (${response.status})，嘗試 v1 API...`);
           if (errorText) {
-            console.warn(`⚠️ [Gemini] v1 錯誤訊息: ${errorText.substring(0, 200)}`);
+            console.warn(`⚠️ [Gemini] v1beta 錯誤訊息: ${errorText.substring(0, 200)}`);
           }
           
-          // 尝试 v1beta API
+          // 尝试 v1 API
           try {
-            const v1betaUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-            console.log(`🔄 [Gemini] 嘗試 v1beta API: ${v1betaUrl.replace(apiKey, 'API_KEY_HIDDEN')}`);
+            const v1Url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+            console.log(`🔄 [Gemini] 嘗試 v1 API: ${v1Url.replace(apiKey, 'API_KEY_HIDDEN')}`);
             
-            const v1betaResponse = await fetch(v1betaUrl, {
+            const v1Response = await fetch(v1Url, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -278,26 +278,26 @@ export async function POST(request: NextRequest) {
               body: JSON.stringify(requestBodyTemplate),
             });
 
-            const v1betaDuration = (Date.now() - fetchStartTime) / 1000;
-            console.log(`⏱️ [Gemini] v1beta 回應時間: ${v1betaDuration}秒, Status: ${v1betaResponse.status}`);
+            const v1Duration = (Date.now() - fetchStartTime) / 1000;
+            console.log(`⏱️ [Gemini] v1 回應時間: ${v1Duration}秒, Status: ${v1Response.status}`);
 
-            if (v1betaResponse.ok) {
-              const v1betaData = await v1betaResponse.json();
-              if (v1betaData.candidates && v1betaData.candidates[0] && v1betaData.candidates[0].content) {
-                const parts = v1betaData.candidates[0].content.parts || [];
+            if (v1Response.ok) {
+              const v1Data = await v1Response.json();
+              if (v1Data.candidates && v1Data.candidates[0] && v1Data.candidates[0].content) {
+                const parts = v1Data.candidates[0].content.parts || [];
                 text = parts.map((part: any) => part.text || '').join('');
                 successfulModel = model;
-                console.log(`✅ [Gemini] v1beta API 成功，回應長度: ${text.length}`);
+                console.log(`✅ [Gemini] v1 API 成功，回應長度: ${text.length}`);
                 break; // 成功，退出循环
               }
             } else {
-              const v1betaErrorText = await v1betaResponse.text();
-              console.error(`❌ [Gemini] v1beta API 也失敗: ${v1betaResponse.status} - ${v1betaErrorText.substring(0, 200)}`);
-              lastError = new Error(`Model ${model} not available in both v1 and v1beta: ${v1betaErrorText.substring(0, 100)}`);
+              const v1ErrorText = await v1Response.text();
+              console.error(`❌ [Gemini] v1 API 也失敗: ${v1Response.status} - ${v1ErrorText.substring(0, 200)}`);
+              lastError = new Error(`Model ${model} not available in both v1beta and v1: ${v1ErrorText.substring(0, 100)}`);
               continue; // 尝试下一个模型
             }
-          } catch (v1betaError: any) {
-            console.error(`❌ [Gemini] v1beta API 請求失敗:`, v1betaError.message);
+          } catch (v1Error: any) {
+            console.error(`❌ [Gemini] v1 API 請求失敗:`, v1Error.message);
             lastError = new Error(`Model ${model} not available: ${response.status} ${errorText.substring(0, 100)}`);
             continue; // 尝试下一个模型
           }
