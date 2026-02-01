@@ -450,14 +450,24 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
 
         {/* B2. 匹配分析 */}
         <div className="mb-10">
-          <h2 className="text-xl font-bold border-l-4 border-indigo-600 pl-3 mb-4 text-black">1. 核心優勢與缺口</h2>
+          <h2 className="text-xl font-bold border-l-4 border-indigo-600 pl-3 mb-4 text-black">1. 職位分析與匹配評分</h2>
+          {/* 分數評等等級說明 */}
+          <div className="mb-4 p-3 bg-gray-100 rounded border border-gray-300">
+            <p className="text-sm font-bold text-gray-700 mb-2">評分標準</p>
+            <div className="text-xs text-gray-600 space-y-1">
+              <div className="flex justify-between"><span>90+ 鑽石米格魯</span><span>頂級契合：具備即戰力</span></div>
+              <div className="flex justify-between"><span>75+ 黃金米格魯</span><span>高度契合：具備核心潛力</span></div>
+              <div className="flex justify-between"><span>60+ 白銀米格魯</span><span>中度契合：部分技能重疊</span></div>
+              <div className="flex justify-between"><span>&lt;60 青銅米格魯</span><span>低度契合：建議重新評估</span></div>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-8">
              <div className="bg-green-50 p-5 rounded border border-green-200">
-                <h3 className="font-bold text-green-800 mb-3 text-lg flex items-center"><CheckCircle2 className="w-5 h-5 mr-2"/> 你的優勢</h3>
+                <h3 className="font-bold text-green-800 mb-3 text-lg flex items-center"><CheckCircle2 className="w-5 h-5 mr-2"/> 核心優勢與契合點</h3>
                 <SafeContentList content={match_analysis.matching_points} bulletColor="bg-green-600" textColor="text-gray-900" isPdf={true} />
              </div>
              <div className="bg-orange-50 p-5 rounded border border-orange-200">
-                <h3 className="font-bold text-orange-800 mb-3 text-lg flex items-center"><AlertTriangle className="w-5 h-5 mr-2"/> 建議補強</h3>
+                <h3 className="font-bold text-orange-800 mb-3 text-lg flex items-center"><AlertTriangle className="w-5 h-5 mr-2"/> 關鍵待補強項目</h3>
                 <SafeContentList content={match_analysis.skill_gaps} bulletColor="bg-orange-600" textColor="text-gray-900" isPdf={true} />
               </div>
           </div>
@@ -466,37 +476,129 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
         {/* B3. 薪資 */}
         {salary_analysis && (
           <div className="mb-10 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-             <h2 className="text-xl font-bold border-l-4 border-emerald-600 pl-3 mb-4 text-black">2. 薪資情報</h2>
-             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
-               <span className="font-bold text-gray-500 uppercase text-sm">市場預估年薪</span>
-               <span className="text-3xl font-black text-emerald-700">{cleanText(salary_analysis.estimated_range)}</span>
-         </div>
-             <div>
-               <h4 className="font-bold text-gray-900 mb-2">談判策略建議：</h4>
-               <SafeContentList content={salary_analysis.negotiation_tip} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-                      </div>
+             <h2 className="text-xl font-bold border-l-4 border-emerald-600 pl-3 mb-4 text-black">2. 薪資情報與公司評價</h2>
+             
+             {/* 預估薪酬 */}
+             <div className="mb-6">
+               <h3 className="text-lg font-bold mb-2 text-black">預估薪酬 (ESTIMATED VALUE)</h3>
+               <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
+                 <span className="font-bold text-gray-500 uppercase text-sm">市場預估年薪</span>
+                 <span className="text-3xl font-black text-emerald-700">{cleanText(salary_analysis.estimated_range)}</span>
+               </div>
+               <div className="mb-4">
+                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">分析推估邏輯</p>
+                 <SafeContentList content={salary_analysis.rationale} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
+               </div>
+               <div>
+                 <h4 className="font-bold text-gray-900 mb-2">請募攻防策略</h4>
+                 <SafeContentList content={salary_analysis.negotiation_tip} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
+               </div>
+             </div>
+             
+             {/* 職場生態與面試實戰情報 (PDF版) */}
+             {reviews_analysis && (
+               <div className="mt-6 pt-6 border-t-2 border-gray-300">
+                 <h3 className="text-lg font-bold mb-4 text-black">職場生態與面試實戰情報</h3>
+                 
+                 {/* 組織文化與氛圍 */}
+                 {reviews_analysis.company_reviews && (
+                   <div className="mb-4">
+                     <h4 className="text-base font-bold mb-2 text-black">組織文化與氛圍</h4>
+                     <div className="text-sm text-gray-700 mb-2 whitespace-pre-line">{cleanText(reviews_analysis.company_reviews.summary)}</div>
+                     {reviews_analysis.company_reviews.pros && reviews_analysis.company_reviews.pros.length > 0 && (
+                       <div className="mb-2">
+                         <p className="text-xs font-bold text-gray-600 mb-1">優點</p>
+                         <SafeContentList content={reviews_analysis.company_reviews.pros} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
+                       </div>
+                     )}
+                     {reviews_analysis.company_reviews.cons && reviews_analysis.company_reviews.cons.length > 0 && (
+                       <div>
+                         <p className="text-xs font-bold text-gray-600 mb-1">缺點</p>
+                         <SafeContentList content={reviews_analysis.company_reviews.cons} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
+                       </div>
+                     )}
+                   </div>
+                 )}
+                 
+                 {/* 面試環節與難度 */}
+                 {reviews_analysis.job_reviews && (
+                   <div className="mb-4">
+                     <h4 className="text-base font-bold mb-2 text-black">面試環節與難度</h4>
+                     <div className="text-sm text-gray-700 whitespace-pre-line">{cleanText(reviews_analysis.job_reviews.summary)}</div>
+                   </div>
+                 )}
+                 
+                 {/* 實戰搜研考題 */}
+                 {reviews_analysis.real_interview_questions && reviews_analysis.real_interview_questions.length > 0 && (
+                   <div>
+                     <h4 className="text-base font-bold mb-2 text-black">實戰搜研考題</h4>
+                     <div className="space-y-3">
+                       {reviews_analysis.real_interview_questions.map((q, idx) => (
+                         <div key={idx} className="p-3 bg-gray-100 border-l-4 border-gray-400">
+                           <p className="text-sm font-bold text-gray-900 mb-1">{cleanText(q.question)}</p>
+                           <div className="text-xs text-gray-600">
+                             {q.job_title && <span>{cleanText(q.job_title)}</span>}
+                             {q.year && <span> • {cleanText(q.year)}</span>}
+                           </div>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                 )}
+               </div>
+             )}
                     </div>
         )}
 
         {/* B4. 市場 */}
         {market_analysis && (
           <div className="mb-10">
-             <h2 className="text-xl font-bold border-l-4 border-blue-600 pl-3 mb-4 text-black">3. 產業競爭分析</h2>
-             <div className="mb-4 text-sm text-gray-700 whitespace-pre-line">{cleanText(market_analysis.industry_trends)}</div>
-             <table className="w-full text-left text-sm border-collapse border border-gray-300 shadow-sm">
-                <thead className="bg-gray-100 text-gray-800 font-bold">
-                  <tr><th className="p-3 border border-gray-300">競爭對手</th><th className="p-3 border border-gray-300">優勢</th><th className="p-3 border border-gray-300">弱點</th></tr>
-                </thead>
-                <tbody>
-                  {market_analysis.competition_table?.map((c, i) => (
-                    <tr key={i} className="odd:bg-white even:bg-gray-50">
-                      <td className="p-3 border border-gray-300 font-bold text-gray-900">{cleanText(c.name)}</td>
-                      <td className="p-3 border border-gray-300 text-green-700">{cleanText(c.strengths)}</td>
-                      <td className="p-3 border border-gray-300 text-red-700">{cleanText(c.weaknesses)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-             </table>
+             <h2 className="text-xl font-bold border-l-4 border-blue-600 pl-3 mb-4 text-black">3. 公司介紹與前景分析</h2>
+             
+             {/* 產業概況 */}
+             <div className="mb-4 p-4 bg-gray-100 border border-gray-300 rounded">
+               <h3 className="text-base font-bold mb-3 text-black">產業概況</h3>
+               
+               {/* 產業趨勢 */}
+               <div className="mb-3">
+                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">產業趨勢</p>
+                 <div className="text-sm text-gray-700 whitespace-pre-line">{cleanText(market_analysis.industry_trends)}</div>
+               </div>
+               
+               {/* 企業核心護城河 */}
+               {market_analysis.key_advantages && market_analysis.key_advantages.length > 0 && (
+                 <div className="mb-3 pt-3 border-t border-gray-300">
+                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">企業核心護城河</p>
+                   <SafeContentList content={market_analysis.key_advantages} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
+                 </div>
+               )}
+               
+               {/* 長期戰略風險 */}
+               {market_analysis.potential_risks && market_analysis.potential_risks.length > 0 && (
+                 <div className="pt-3 border-t border-gray-300">
+                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">長期戰略風險</p>
+                   <SafeContentList content={market_analysis.potential_risks} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
+                 </div>
+               )}
+             </div>
+             
+             {/* 競爭對手表格 */}
+             {market_analysis.competition_table && market_analysis.competition_table.length > 0 && (
+               <table className="w-full text-left text-sm border-collapse border border-gray-300 shadow-sm">
+                  <thead className="bg-gray-100 text-gray-800 font-bold">
+                    <tr><th className="p-3 border border-gray-300">競爭對手</th><th className="p-3 border border-gray-300">優勢</th><th className="p-3 border border-gray-300">弱點</th></tr>
+                  </thead>
+                  <tbody>
+                    {market_analysis.competition_table.map((c, i) => (
+                      <tr key={i} className="odd:bg-white even:bg-gray-50">
+                        <td className="p-3 border border-gray-300 font-bold text-gray-900">{cleanText(c.name)}</td>
+                        <td className="p-3 border border-gray-300 text-green-700">{cleanText(c.strengths)}</td>
+                        <td className="p-3 border border-gray-300 text-red-700">{cleanText(c.weaknesses)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+               </table>
+             )}
           </div>
         )}
 
