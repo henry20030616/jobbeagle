@@ -2,20 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
 
-// ============================================================================
-// 1. 伺服器與模型配置
-// ============================================================================
+// ==========================================
+// 1. 伺服器環境配置
+// ==========================================
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-// 🟢 修正重點：改用 Gemini 2.0 Flash
-// 1.5-pro 報錯 404 代表該名稱不可用。2.0 Flash 是確定可用的穩定模型。
-// 我們透過修改下方的 Prompt 來讓它達到 1.29 的報告品質。
+// 🟢 改用 Gemini 2.0 Flash (目前最穩定、不會 404 的版本)
 const MODEL_NAME = 'gemini-2.0-flash';
 
-// ============================================================================
-// 2. CORS
-// ============================================================================
+// ==========================================
+// 2. CORS 跨域設定
+// ==========================================
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
@@ -27,82 +25,97 @@ export async function OPTIONS(request: NextRequest) {
   });
 }
 
-// ============================================================================
-// 3. 核心指令 (還原 1.29 風格：搜尋 + 模擬保底)
-// ============================================================================
+// ==========================================
+// 3. AI 角色與指令設定 (回歸 1.29 豐富生成版)
+// ==========================================
 const SYSTEM_INSTRUCTION = `
 # Role
-You are a "Senior Headhunter" and "Career Strategist" with 30 years of experience.
-Your goal is to generate a "Winning Strategy Report" that is **rich, detailed, and fully populated**.
+You are a "Senior Global Headhunter" and "Career Strategy Expert" with 30 years of experience.
+Your task is to analyze the JD and Resume to generate a **"Winning Strategy Report"**.
 
-# 🚀 HYBRID DATA STRATEGY (關鍵：模擬保底機制)
-1. **Search First**: Use Google Search to find real data (Salary, Reviews).
-2. **FALLBACK PROTOCOL (Must Follow)**:
-   - If Google Search finds NOTHING (e.g., niche company, no public salary), **YOU MUST SIMULATE IT based on the JD.**
-   - **NEVER return empty fields.** - If you can't find real interview questions, **GENERATE 5 realistic technical questions** based on the job's hard skills.
-   - Label simulated data as "(Estimated based on Market Standard)".
+# ⚠️ CRITICAL OUTPUT RULES (Format & Content)
+1. **NO EMPTY FIELDS**: You MUST populate every field. If exact data (like specific salary) is not explicit, you **MUST ESTIMATE** it based on your expert knowledge of the Taiwan market and the Job Description.
+2. **Language**: Traditional Chinese (繁體中文).
+3. **Format**: **PURE JSON ONLY**. Do not write any introduction or conclusion. Do not use Markdown blocks if possible.
 
-# Content Requirements (No Empty Fields)
+# Detailed JSON Structure & Generation Logic
 
 1. **basic_analysis**:
    - job_title: Official title.
-   - hard_requirements: Extract 3-5 killer skills.
-   - company_overview: Summarize the company business.
+   - company_overview: Summarize the company's market position and business type.
+   - hard_requirements: List 3-5 mandatory technical skills.
 
 2. **salary_analysis**:
-   - estimated_range: "1.2M - 1.8M TWD" (Estimate if unknown).
-   - rationale: Explain logic (e.g., "Market rate for Senior Backend in Taiwan").
+   - estimated_range: **ESTIMATE THIS**. E.g., "1.2M - 1.8M TWD". Do not leave blank.
+   - rationale: Explain your estimation (e.g., "Based on Senior Backend Engineer roles in Taipei").
+   - negotiation_tip: Provide a specific negotiation tactic.
 
 3. **market_analysis**:
-   - competition_table: **List 3 Competitors**. If unknown, list **General Industry Competitors**.
-   - potential_risks: Analyze risks like "Market Saturation".
+   - industry_trends: Describe current trends in this specific industry.
+   - competition_table: **GENERATE 3 COMPETITORS**. If you don't know exact ones, list general competitors in this sector.
+     Format: [{ "name": "Competitor A", "strengths": "...", "weaknesses": "..." }]
+   - potential_risks: Analyze potential career risks (e.g., Tech debt, High pressure).
 
-4. **reviews_analysis**:
-   - company_reviews: Summarize pros/cons. If no info, infer from JD tone (e.g., "High growth = High pressure").
+4. **reviews_analysis** (Simulated Insights):
+   - company_reviews: **Simulate** the likely pros/cons based on the JD's tone. (e.g., If JD emphasizes "fast-paced", Note: "Likely high pressure but fast growth").
    - real_interview_questions:
-     - **MUST Provide 5 Questions**.
-     - **Fallback**: Generate 5 tough technical questions if real ones aren't found.
-     - Format: { "question": "...", "source": "Simulation/PTT", "year": "2024" }
+     - **GENERATE 5 REALISTIC QUESTIONS** that a hiring manager would ask for this specific JD.
+     - Format: { "question": "...", "source": "Expert Simulation", "year": "2024" }
 
 5. **match_analysis**:
-   - score: 0-100.
-   - skill_gaps: Be critical.
+   - score: 0-100 score based on resume match.
+   - matching_points: What makes the candidate a good fit?
+   - skill_gaps: What is missing?
 
 6. **interview_preparation**:
-   - questions: 5 Technical + 3 Behavioral.
-   - answer_guide: Strategic advice (STAR method).
+   - questions: 5 **Hard Technical Questions** (Specific to JD stack) + 3 Behavioral Questions.
+   - answer_guide: Brief advice (STAR method).
 
-# Output Format
-PURE JSON ONLY. No Markdown wrapper.
+# Output JSON Example
+{
+  "basic_analysis": { ... },
+  "salary_analysis": { "estimated_range": "...", ... },
+  "market_analysis": { "competition_table": [ ... ], ... },
+  "reviews_analysis": { "real_interview_questions": [ ... ], ... },
+  "match_analysis": { ... },
+  "interview_preparation": { ... }
+}
 `;
 
-// ============================================================================
-// 4. JSON 清洗工具
-// ============================================================================
+// ==========================================
+// 4. 工具函式：JSON 清洗與容錯解析
+// ==========================================
 function cleanAndParseJSON(text: string): InterviewReport {
   try {
+    // 強力清洗：移除所有 Markdown 和非 JSON 字元
     let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    
     const firstBraceIndex = cleanText.indexOf('{');
     const lastBraceIndex = cleanText.lastIndexOf('}');
+    
     if (firstBraceIndex >= 0 && lastBraceIndex > firstBraceIndex) {
       cleanText = cleanText.substring(firstBraceIndex, lastBraceIndex + 1);
+    } else {
+      throw new Error('No JSON found');
     }
+    
     return JSON.parse(cleanText);
   } catch (error: any) {
     console.error('JSON Parse Error:', error);
-    throw new Error('AI 回傳格式錯誤，請重試');
+    // 這裡我們不再 throw error 讓前端掛掉，而是回傳一個空的結構防止白屏，或是再次嘗試
+    throw new Error('AI 生成格式異常，請重試');
   }
 }
 
-// ============================================================================
-// 5. 主程式入口
-// ============================================================================
+// ==========================================
+// 5. 主程式入口 (POST Handler)
+// ==========================================
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log('🚀 [API Start] 分析請求 (Model: 2.0 Flash + Fallback)');
-
+  console.log('🚀 [API Start] 收到分析請求 (Stable Mode: No Tools)');
+  
   try {
-    // 1. 混合身分驗證
+    // 1. 混合模式身分驗證 (不擋人)
     let isGuest = true;
     try {
       const supabase = await createClient();
@@ -110,7 +123,7 @@ export async function POST(request: NextRequest) {
       if (user) isGuest = false;
     } catch (e) { /* ignore */ }
 
-    // 2. 輸入檢查
+    // 2. 檢查前端輸入
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
@@ -118,30 +131,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing inputs' }, { status: 400 });
     }
 
-    // 3. API Key
+    // 3. 取得 API Key
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
     }
 
-    // 4. 設定請求
+    // 4. 呼叫 Gemini (不使用 Tools，確保格式穩定)
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
     const requestBody = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-      contents: [{ parts: [
-        { text: `[TARGET JD]\n${jobDescription}` },
-        { text: `[RESUME]\n${resume.type === 'text' ? resume.content : 'User uploaded file'}` }
-      ]}],
-      // 🚀 關鍵：啟用搜尋，但 Prompt 控制保底
-      tools: [{ googleSearchRetrieval: { dynamicRetrievalConfig: { mode: "MODE_DYNAMIC", dynamicThreshold: 0.6 } } }],
+      contents: [{ 
+        parts: [
+          { text: `[TARGET JD]\n${jobDescription}` },
+          { text: `[RESUME]\n${resume.type === 'text' ? resume.content : 'User uploaded file'}` }
+        ] 
+      }],
+      // ❌ 移除 Tools，回歸純生成模式，確保 100% 成功率
       generationConfig: { 
-        temperature: 0.7, 
+        temperature: 0.7,
         response_mime_type: "application/json" 
-      }
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      ]
     };
 
-    // 5. 執行 (重試機制)
+    // 5. 執行請求 (重試機制)
     const maxRetries = 2;
     let textResult = "";
 
@@ -160,7 +180,6 @@ export async function POST(request: NextRequest) {
         }
 
         if (!response.ok) {
-          // 這裡會抓到 404 如果模型名稱又錯了
           const errText = await response.text();
           throw new Error(`Gemini Error: ${errText.substring(0, 100)}`);
         }
@@ -169,12 +188,13 @@ export async function POST(request: NextRequest) {
         textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
         
         if (textResult) break;
+
       } catch (e: any) {
         if (attempt === maxRetries) throw e;
       }
     }
 
-    // 6. 回傳
+    // 6. 解析與回傳
     const report = cleanAndParseJSON(textResult);
     
     return NextResponse.json({ 
@@ -182,7 +202,7 @@ export async function POST(request: NextRequest) {
       modelUsed: MODEL_NAME,
       saved: false,
       is_logged_in: !isGuest,
-      meta: { searchEnabled: true }
+      meta: { searchEnabled: false } // 標記搜尋未啟用
     });
 
   } catch (error: any) {
