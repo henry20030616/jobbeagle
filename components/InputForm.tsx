@@ -259,12 +259,15 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
     }
 
     const processFile = (result: string, isPdf: boolean) => {
-      setResume({
-        type: isPdf ? 'file' : 'text',
+      const newResume = {
+        type: (isPdf ? 'file' : 'text') as 'file' | 'text',
         content: result,
         mimeType: isPdf ? 'application/pdf' : undefined,
         fileName: file.name
-      });
+      };
+      setResume(newResume);
+      // 自動儲存履歷
+      saveResumeToHistory(newResume);
     };
 
     if (file.type === 'application/pdf') {

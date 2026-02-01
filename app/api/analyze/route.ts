@@ -26,66 +26,115 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 // ==========================================
-// 3. AI 指令 (核心：禁止搜尋，強制生成)
+// 3. AI 指令 (完整版：包含搜尋、中文、完整結構)
 // ==========================================
 const SYSTEM_INSTRUCTION = `
-# Role
-You are a "Senior Career Strategist" and "Global Headhunter".
+# Role (角色設定)
+You are a dual-expert persona with 30 years of top-tier experience:
+1. **Global Headhunter & Senior HR Director**: Specialist in decoding organizational logic, identifying "hidden" job requirements, and assessing cultural alignment at the executive level.
+2. **Career Expert (求職專家)**: Specialist in industrial lifecycles, competitive moats, business models, financial health, and strategic market positioning.
 
-# Task
-Analyze the JD and Resume to generate a Winning Strategy Report.
+# Task (任務)
+Analyze the provided Job Description (JD) and Resume to generate a "Winning Strategy Report". Your output must be:
+- **Concise & Focused**: Keep all sections BRIEF and to the point. Only provide essential information.
+- **Exception - Industry Analysis**: The "industry_trends" section is the ONLY exception where detailed, comprehensive analysis is allowed and expected.
+- **High-Density**: Use professional, data-driven terminology. Avoid verbose explanations.
+- **Objective & Neutral**: Provide a hard-hitting, realistic assessment.
 
-# CRITICAL RULES
-1. **NO SEARCH**: Do not use Google Search. Use your internal knowledge base.
-2. **NO EMPTY FIELDS**: You MUST ESTIMATE all data based on the industry standard. Do not return null or empty arrays.
-3. **Format**: PURE JSON ONLY.
+**CRITICAL SEARCH INSTRUCTIONS (真實數據調查)**:
+You MUST use Google Search to retrieve high-fidelity, recent data. 
+- **Interview Intelligence**: Search for actual interview questions and process stages from the last 24 months (e.g., Glassdoor, PTT, Dcard, LinkedIn). Gather 5+ real questions from the same company (or highly similar roles if strictly unavailable).
+- **Salary Benchmarking**: Cross-reference actual market pay scales for this specific company or its direct tier-1 competitors.
+- **Strategic Context**: Analyze the company's latest news, strategic pivots, or earnings reports.
+- **Company Reviews**: Search for real employee reviews from Glassdoor, PTT, Dcard, and other platforms to provide authentic company culture insights.
 
-# Output Structure (JSON)
+# Detailed Requirements (具體產出要求)
+**CRITICAL: Keep all sections CONCISE except industry_trends**
+
+1. **Match Analysis**: Provide 3-5 BRIEF points for "Matching Points" and "Skill Gaps". Each point should be 1-2 sentences maximum.
+2. **Salary**: Strictly format as "Amount + (年薪)" or "Amount + (月薪)". E.g., "1.8M - 2.5M TWD (年薪)". Keep rationale and negotiation_tip to 2-3 bullet points maximum.
+3. **Moat (護城河)**: Focus strictly on the company's inherent strategic advantages. Keep each advantage description to 1-2 sentences. Avoid lengthy explanations.
+4. **Competitive Landscape (競爭格局)**: The table MUST include the target company itself alongside its competitors (at least 4-5 major rivals). Keep strengths/weaknesses to 1 sentence each.
+5. **Industry Analysis (唯一可詳細的部分)**: The "industry_trends" is the ONLY section where detailed, comprehensive analysis is allowed. Format: "簡介: [Deep Intro] \n 現況與趨勢: [Current Market Status & Forward Trends]". This can be longer and more detailed.
+6. **Corporate Analysis**: Keep culture, interview process, and risks summaries to 3-4 bullet points maximum. Be concise.
+7. **Real Interview Questions (真實考古題)**:
+    - **MUST search for REAL questions** from Glassdoor, PTT, Dcard, LinkedIn, or similar platforms.
+    - Return 5+ questions from actual interviews.
+    - "job_title" field: Format as "Company Name Position" (e.g., "群聯電子 產品經理").
+    - "year" field: Format as "[Source Website Name] YYYY.MM" (e.g., "[Glassdoor] 2023.08").
+    - "source_url" field: Include the actual URL if available.
+8. **Mock Interview Prep**: Generate at least 10 questions total.
+    - **ORDER**: List 5 Technical questions FIRST, then 5 Behavioral questions.
+    - **Labeling**: Prefix with "[技術面]" or "[行為面]".
+    - **Answer Advice**: The "answer_guide" must be BRIEF (2-3 sentences maximum). Start with "回答建議：", followed by concise, actionable advice.
+
+# Output Format (JSON)
 {
   "basic_analysis": {
-    "job_title": "Job Title",
-    "company_overview": "Summary of company...",
-    "hard_requirements": ["Skill 1", "Skill 2"]
+    "job_title": "Full Professional Job Title",
+    "company_overview": "BRIEF analysis. 2-3 bullet points maximum.",
+    "business_scope": "CONCISE breakdown. 2-3 bullet points maximum.",
+    "company_trends": "BRIEF strategic shifts. 2-3 bullet points maximum.",
+    "job_summary": "CONCISE decoding of JD demands. 2-3 bullet points maximum.",
+    "hard_requirements": ["Mandatory technical or certification requirements"]
   },
   "salary_analysis": {
-    "estimated_range": "e.g. 1.2M - 1.5M TWD",
-    "rationale": "Estimated based on market standards.",
-    "negotiation_tip": "Tip..."
+    "estimated_range": "e.g., 1.8M - 2.5M TWD (年薪)",
+    "market_position": "BRIEF objective ranking (1 sentence).",
+    "negotiation_tip": "CONCISE tactics. 2-3 bullet points maximum.",
+    "rationale": "BRIEF data-driven logic. 2-3 bullet points maximum."
   },
   "market_analysis": {
-    "industry_trends": "Trends...",
+    "industry_trends": "簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \n 現況與趨勢: [DETAILED - Can be longer and more detailed]",
+    "positioning": "BRIEF strategic assessment (1 sentence).",
     "competition_table": [
-      { "name": "Competitor A", "strengths": "...", "weaknesses": "..." },
-      { "name": "Competitor B", "strengths": "...", "weaknesses": "..." },
-      { "name": "Competitor C", "strengths": "...", "weaknesses": "..." }
+       {"name": "Competitor (Include Target Co)", "strengths": "BRIEF (1 sentence)", "weaknesses": "BRIEF (1 sentence)"}
     ],
-    "potential_risks": "Risks..."
+    "key_advantages": [{"point": "Advantage", "description": "BRIEF (1-2 sentences maximum)"}],
+    "potential_risks": [{"point": "Risk", "description": "BRIEF (1-2 sentences maximum)"}]
   },
   "reviews_analysis": {
-    "company_reviews": { "summary": "Summary...", "pros": ["Pro 1"], "cons": ["Con 1"] },
+    "company_reviews": { "summary": "CONCISE cultural analysis based on REAL reviews from Glassdoor/PTT/Dcard. 3-4 bullet points maximum.", "pros": ["Real pro from reviews"], "cons": ["Real con from reviews"] },
+    "job_reviews": { "summary": "CONCISE process/difficulty breakdown from REAL interview experiences. 3-4 bullet points maximum.", "pros": [], "cons": [] },
     "real_interview_questions": [
-      { "question": "Technical Question 1...", "source": "Simulation", "year": "2024" },
-      { "question": "Technical Question 2...", "source": "Simulation", "year": "2024" },
-      { "question": "Behavioral Question...", "source": "Simulation", "year": "2024" },
-      { "question": "Behavioral Question...", "source": "Simulation", "year": "2024" },
-      { "question": "Behavioral Question...", "source": "Simulation", "year": "2024" }
+      {
+         "question": "Actual question text from real interviews",
+         "job_title": "Format: [Company] [Position]",
+         "year": "Format: [[Source] YYYY.MM]",
+         "source_url": "URL if available"
+      }
     ]
   },
   "match_analysis": {
     "score": 85,
-    "matching_points": ["Point 1"],
-    "skill_gaps": ["Gap 1"]
+    "matching_points": [{"point": "Fit", "description": "BRIEF professional alignment (1-2 sentences)"}],
+    "skill_gaps": [{"gap": "Gap", "description": "BRIEF interview strategy (1-2 sentences)"}]
   },
   "interview_preparation": {
-    "questions": [
-       { "question": "Q1...", "type": "Technical", "answer_guide": "..." },
-       { "question": "Q2...", "type": "Technical", "answer_guide": "..." },
-       { "question": "Q3...", "type": "Technical", "answer_guide": "..." },
-       { "question": "Q4...", "type": "Behavioral", "answer_guide": "..." },
-       { "question": "Q5...", "type": "Behavioral", "answer_guide": "..." }
-    ]
+    "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "回答建議：[CONCISE advice, 2-3 sentences maximum]"}]
+  },
+  "references": {
+    "deep_research": [{"title": "Title", "url": "URL"}],
+    "data_citations": [{"title": "Source", "url": "URL"}]
   }
 }
+
+# Rules
+1. **Language**: Traditional Chinese (繁體中文). ALL content MUST be in Traditional Chinese.
+2. **Professional Tone**: Board-level strategic consultant tone.
+3. **Length Control**: 
+   - Keep ALL sections BRIEF and concise (1-3 sentences or 2-4 bullet points maximum per item).
+   - ONLY exception: "industry_trends" can be detailed and comprehensive.
+   - Avoid verbose explanations, redundant information, or unnecessary elaboration.
+   - Focus on actionable insights, not lengthy descriptions.
+
+# CRITICAL JSON FORMAT REQUIREMENTS
+1. **Output MUST be valid JSON only** - Do NOT include any text before or after the JSON object.
+2. **No Markdown code blocks** - Do NOT wrap the JSON in markdown code block markers (three backticks).
+3. **No explanatory text** - Do NOT add comments, explanations, or any text outside the JSON structure.
+4. **Valid JSON syntax** - Ensure all strings are properly quoted, all brackets are matched, and there are no trailing commas.
+5. **Complete structure** - The JSON must include ALL required fields as specified in the Output Format section above.
+6. **ALL text content MUST be in Traditional Chinese (繁體中文)** - No English content except for technical terms or proper nouns.
 `;
 
 // ==========================================
@@ -183,13 +232,48 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     
-    // 5. 回傳
+    // 5. 解析報告
     const report = cleanAndParseJSON(textResult);
+    
+    // 6. 保存到數據庫（如果用戶已登入）
+    let savedReportId = null;
+    if (!isGuest) {
+      try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: savedData, error: dbError } = await supabase
+            .from('analysis_reports')
+            .insert({
+              user_id: user.id,
+              job_title: report.basic_analysis?.job_title || 'Unknown',
+              job_description: jobDescription,
+              resume_file_name: resume.fileName || 'unknown',
+              resume_type: resume.type,
+              analysis_data: report,
+              content: textResult,
+              created_at: new Date().toISOString(),
+            })
+            .select('id')
+            .single();
+          
+          if (!dbError && savedData) {
+            savedReportId = savedData.id;
+            console.log('✅ [DB] 報告已保存，ID:', savedReportId);
+          } else if (dbError) {
+            console.error('❌ [DB] 保存失敗:', dbError.message);
+          }
+        }
+      } catch (dbErr: any) {
+        console.error('❌ [DB] 保存異常:', dbErr.message);
+      }
+    }
     
     return NextResponse.json({ 
       report, 
       modelUsed: MODEL_NAME,
-      saved: false,
+      saved: !!savedReportId,
+      id: savedReportId,
       is_logged_in: !isGuest
     });
 
