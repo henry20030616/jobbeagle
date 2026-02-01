@@ -146,6 +146,8 @@ export async function POST(request: NextRequest) {
       );
     }
     console.log('🔑 [Config] API Key 存在 (已遮罩)');
+    console.log('🔑 [Config] API Key 長度:', apiKey.length);
+    console.log('🔑 [Config] API Key 前綴:', apiKey.substring(0, 10) + '...');
 
     let baseJD = jobDescription.trim();
     const match104 = baseJD.match(/104\.com\.tw\/job\/(\w+)/);
@@ -166,10 +168,10 @@ export async function POST(request: NextRequest) {
 
     // 使用稳定的 Gemini 模型（优先使用 2.0，如果不可用则回退到 1.5）
     // 模型优先级列表（从最好到最差，免费账号优先使用稳定的模型）
+    // 注意：免费账号通常只能使用 gemini-1.5-flash 和 gemini-1.5-pro
     const modelPriority = [
       'gemini-1.5-flash',      // 最稳定，免费账号肯定可用
-      'gemini-1.5-pro',        // 如果可用
-      'gemini-2.0-flash-exp',  // 实验性，可能不可用
+      'gemini-1.5-pro',        // 免费账号可用
     ];
 
     const requestBodyTemplate: any = {
@@ -196,6 +198,7 @@ export async function POST(request: NextRequest) {
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         console.log(`🤖 [Gemini] 嘗試使用模型: ${model}...`);
+        console.log(`🔗 [Gemini] URL: ${url.replace(apiKey, 'API_KEY_HIDDEN')}`);
 
         const fetchStartTime = Date.now();
         const response = await fetch(url, {
@@ -209,12 +212,38 @@ export async function POST(request: NextRequest) {
         const fetchDuration = (Date.now() - fetchStartTime) / 1000;
         console.log(`⏱️ [Gemini] ${model} 回應時間: ${fetchDuration}秒, Status: ${response.status}`);
 
+        // 读取错误响应以便调试
+        let errorText = '';
+        if (!response.ok) {
+          try {
+            errorText = await response.text();
+            console.error(`❌ [Gemini] ${model} 錯誤詳情:`, errorText.substring(0, 500));
+          } catch (e) {
+            console.error(`❌ [Gemini] ${model} 無法讀取錯誤訊息`);
+          }
+        }
+
         // 如果是 404 或 400，说明模型不可用，尝试下一个
         if (response.status === 404 || response.status === 400) {
-          const errorText = await response.text();
-          console.warn(`⚠️ [Gemini] 模型 ${model} 不可用 (${response.status}): ${errorText.substring(0, 100)}`);
+          console.warn(`⚠️ [Gemini] 模型 ${model} 不可用 (${response.status})`);
+          if (errorText) {
+            console.warn(`⚠️ [Gemini] 錯誤訊息: ${errorText.substring(0, 200)}`);
+          }
           console.log(`🔄 [Gemini] 降級到下一個模型...`);
+          lastError = new Error(`Model ${model} not available: ${response.status} ${errorText.substring(0, 100)}`);
           continue; // 尝试下一个模型
+        }
+
+        // 如果是 401，说明 API Key 有问题
+        if (response.status === 401) {
+          console.error(`❌ [Gemini] API Key 無效或過期 (401)`);
+          throw new Error('Gemini API Key 無效或過期，請檢查環境變數 GEMINI_API_KEY');
+        }
+
+        // 如果是 403，说明权限不足
+        if (response.status === 403) {
+          console.error(`❌ [Gemini] 權限不足 (403)`);
+          throw new Error('Gemini API 權限不足，請檢查 API Key 權限或帳號限制');
         }
 
         // 如果是 503，等待后重试同一模型
@@ -277,7 +306,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!text) {
-      throw lastError || new Error(`所有模型都失敗了。已嘗試: ${modelPriority.join(', ')}`);
+      const errorMessage = lastError 
+        ? `所有模型都失敗了。已嘗試: ${modelPriority.join(', ')}。最後錯誤: ${lastError.message}`
+        : `所有模型都失敗了。已嘗試: ${modelPriority.join(', ')}`;
+      console.error(`❌ [Gemini] ${errorMessage}`);
+      throw new Error(errorMessage);
     }
 
     console.log(`🎉 [Gemini] 最終使用模型: ${successfulModel}`);
