@@ -43,9 +43,9 @@ export default function Home() {
       
       if (!response.ok) {
         if (result.error === 'AI Generated Invalid JSON') {
-          throw new Error('AI 生成格式異常,請重試');
+          throw new Error(language === 'zh' ? 'AI 生成格式異常,請重試' : 'AI generated invalid format, please retry');
         }
-        throw new Error(result.error || '分析失敗');
+        throw new Error(result.error || (language === 'zh' ? '分析失敗' : 'Analysis failed'));
       }
 
       // 設定當前報告
@@ -59,25 +59,73 @@ export default function Home() {
     }
   };
 
+  const translations = {
+    zh: {
+      backToHome: '返回首頁列表',
+      analysisFailed: '分析失敗',
+      suggestions: '建議',
+      checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息',
+      retryLater: '稍後重試，可能是 Gemini API 暫時性問題',
+      checkApiKey: '如果持續發生，請檢查 API Key 是否正確',
+    },
+    en: {
+      backToHome: 'Back to Home',
+      analysisFailed: 'Analysis Failed',
+      suggestions: 'Suggestions',
+      checkConsole: 'Check browser console (F12) for detailed error information',
+      retryLater: 'Retry later, may be a temporary Gemini API issue',
+      checkApiKey: 'If it persists, please check if the API Key is correct',
+    }
+  };
+
+  const t = translations[language];
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-end mb-6"><LoginButton /></div>
+        <div className="flex justify-end items-center gap-3 mb-6">
+          {/* Language Switcher */}
+          <div className="flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-lg p-1">
+            <button
+              type="button"
+              onClick={() => setLanguage('zh')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
+                language === 'zh'
+                  ? 'bg-indigo-500 text-white shadow-lg'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              中文
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
+                language === 'en'
+                  ? 'bg-indigo-500 text-white shadow-lg'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              English
+            </button>
+          </div>
+          <LoginButton />
+        </div>
         
         {loading && <DogLoading />}
         {error && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h3 className="text-red-400 font-bold mb-2">❌ 分析失敗</h3>
+                <h3 className="text-red-400 font-bold mb-2">❌ {t.analysisFailed}</h3>
                 <pre className="text-sm text-red-300 whitespace-pre-wrap font-mono">{error}</pre>
-                {error.includes('JSON 解析失敗') && (
+                {(error.includes('JSON 解析失敗') || error.includes('JSON parsing')) && (
                   <div className="mt-3 text-xs text-red-400/80">
-                    <p>💡 建議：</p>
+                    <p>💡 {t.suggestions}：</p>
                     <ul className="list-disc list-inside mt-1 space-y-1">
-                      <li>檢查瀏覽器控制台 (F12) 查看詳細錯誤信息</li>
-                      <li>稍後重試，可能是 Gemini API 暫時性問題</li>
-                      <li>如果持續發生，請檢查 API Key 是否正確</li>
+                      <li>{t.checkConsole}</li>
+                      <li>{t.retryLater}</li>
+                      <li>{t.checkApiKey}</li>
                     </ul>
                   </div>
                 )}
@@ -108,9 +156,9 @@ export default function Home() {
               className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
             >
               <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" /> 
-              返回首頁列表
+              {t.backToHome}
             </button>
-            <AnalysisDashboard data={report} />
+            <AnalysisDashboard data={report} language={language} />
           </div>
         )}
       </main>

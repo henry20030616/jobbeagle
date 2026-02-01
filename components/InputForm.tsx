@@ -285,7 +285,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     if (!file) return;
 
     if (file.size > 4 * 1024 * 1024) {
-      alert("檔案大小超過 4MB，請上傳較小的檔案。");
+      alert(t.fileTooLarge);
       return;
     }
 
@@ -340,7 +340,26 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       recentReports: '近期分析報告',
       noResume: '尚未儲存任何履歷',
       recentlyUploaded: '最近上傳的履歷',
-      // ... 更多翻译
+      engineIntro: '戰略引擎簡介',
+      engineDescription: 'Jobbeagle 搭載 30 年頂級人資與求職專家分析邏輯，深度解析 JD 背後的組織需求與市場格局。不只評估匹配度，更為您提供具備商業深度的薪資情報與攻防建議。',
+      reportOutput: '深度報告產出項',
+      matchAnalysis: '人才職位匹配分析',
+      matchAnalysisDesc: '揭示職位隱藏門檻，精準評估您的核心優勢與缺口。',
+      salaryResearch: '薪酬體系與評價深度研究',
+      salaryResearchDesc: '提供客觀市場估值、談判籌碼分析及員工真實反饋。',
+      industryAnalysis: '產業格局與競爭者分析',
+      industryAnalysisDesc: '從求職專家視角解析公司的市場護城河與未來風險。',
+      interviewPrep: '高階面試模擬與對策',
+      interviewPrepDesc: '網羅真實考題並提供具備深度邏輯的 STAR 回答引導。',
+      jobData: '1. 職缺資訊 (Job Data)',
+      inputJobUrl: '輸入職缺網址或貼上全文',
+      jobUrlPlaceholder: '在此貼上職缺網址 (如 104, LinkedIn...) 或是職缺描述內容...',
+      urlTip: '建議：若為需登入網站，貼上全文能讓分析更準確。',
+      resume: '2. 您的履歷 (Resume)',
+      uploadSupport: '支援 .pdf, .txt, .md (Max 4MB)',
+      waitingSave: '請等待儲存完成...',
+      generating: '生成深度戰略報告...',
+      fileTooLarge: '檔案大小超過 4MB，請上傳較小的檔案。',
     },
     en: {
       title: 'Jobbeagle',
@@ -358,7 +377,26 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       recentReports: 'Recent Analysis Reports',
       noResume: 'No resumes saved yet',
       recentlyUploaded: 'Recently uploaded resumes',
-      // ... 更多翻译
+      engineIntro: 'Strategic Engine Introduction',
+      engineDescription: 'Jobbeagle is equipped with 30 years of top-tier HR and career expert analysis logic, deeply analyzing organizational needs and market dynamics behind JDs. Not only evaluating match, but also providing business-depth salary intelligence and strategic advice.',
+      reportOutput: 'In-Depth Report Outputs',
+      matchAnalysis: 'Talent-Position Match Analysis',
+      matchAnalysisDesc: 'Reveal hidden job thresholds and accurately assess your core strengths and gaps.',
+      salaryResearch: 'Salary System & Evaluation Deep Research',
+      salaryResearchDesc: 'Provide objective market valuation, negotiation leverage analysis, and authentic employee feedback.',
+      industryAnalysis: 'Industry Landscape & Competitor Analysis',
+      industryAnalysisDesc: 'Analyze company market moats and future risks from a career expert perspective.',
+      interviewPrep: 'Advanced Interview Simulation & Strategy',
+      interviewPrepDesc: 'Gather real interview questions and provide in-depth STAR answer guidance.',
+      jobData: '1. Job Information (Job Data)',
+      inputJobUrl: 'Enter job URL or paste full text',
+      jobUrlPlaceholder: 'Paste job URL (e.g., 104, LinkedIn...) or job description content here...',
+      urlTip: 'Tip: If the website requires login, pasting the full text will make the analysis more accurate.',
+      resume: '2. Your Resume',
+      uploadSupport: 'Supports .pdf, .txt, .md (Max 4MB)',
+      waitingSave: 'Please wait for save to complete...',
+      generating: 'Generating in-depth strategic report...',
+      fileTooLarge: 'File size exceeds 4MB, please upload a smaller file.',
     }
   };
 
@@ -366,34 +404,6 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
   return (
     <div className="flex flex-col gap-10">
-      {/* Language Switcher */}
-      <div className="flex justify-end mb-4">
-        <div className="flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-lg p-1">
-          <button
-            type="button"
-            onClick={() => handleLanguageChange('zh')}
-            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-              currentLanguage === 'zh'
-                ? 'bg-indigo-500 text-white shadow-lg'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            中文
-          </button>
-          <button
-            type="button"
-            onClick={() => handleLanguageChange('en')}
-            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-              currentLanguage === 'en'
-                ? 'bg-indigo-500 text-white shadow-lg'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            English
-          </button>
-        </div>
-      </div>
-
       <div className="text-center space-y-3 py-4">
         <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight flex flex-col md:flex-row items-center justify-center">
           <div className="flex items-center">
@@ -421,10 +431,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
            <div className="p-8 pb-6">
                <h2 className="text-2xl font-bold text-white flex items-center mb-5">
                   <span className="w-1.5 h-8 bg-blue-500 rounded-full mr-4"></span>
-                  戰略引擎簡介
+                  {t.engineIntro}
                </h2>
                <p className="text-slate-300 text-lg leading-8 mb-6 bg-slate-700/30 p-5 rounded-xl border border-slate-600/30 font-medium">
-                  Jobbeagle 搭載 30 年頂級人資與求職專家分析邏輯，深度解析 JD 背後的組織需求與市場格局。不只評估匹配度，更為您提供具備商業深度的薪資情報與攻防建議。
+                  {t.engineDescription}
                </p>
            </div>
 
@@ -435,7 +445,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
            <div className="p-8 pt-6 flex-1 flex flex-col">
                <h2 className="text-2xl font-bold text-white flex items-center mb-6">
                   <span className="w-1.5 h-8 bg-emerald-500 rounded-full mr-4"></span>
-                  深度報告產出項
+                  {t.reportOutput}
                </h2>
                
                <div className="grid grid-cols-1 gap-4">
@@ -444,8 +454,8 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                         <Zap className="w-6 h-6 text-yellow-400" />
                      </div>
                      <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">人才職位匹配分析</span>
-                       <span className="text-sm text-slate-400 leading-normal">揭示職位隱藏門檻，精準評估您的核心優勢與缺口。</span>
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.matchAnalysis}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.matchAnalysisDesc}</span>
                      </div>
                   </div>
                   
@@ -454,8 +464,8 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                         <Briefcase className="w-6 h-6 text-emerald-400" />
                      </div>
                      <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">薪酬體系與評價深度研究</span>
-                       <span className="text-sm text-slate-400 leading-normal">提供客觀市場估值、談判籌碼分析及員工真實反饋。</span>
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.salaryResearch}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.salaryResearchDesc}</span>
                      </div>
                   </div>
 
@@ -464,8 +474,8 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                         <TrendingUp className="w-6 h-6 text-sky-400" />
                      </div>
                      <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">產業格局與競爭者分析</span>
-                       <span className="text-sm text-slate-400 leading-normal">從求職專家視角解析公司的市場護城河與未來風險。</span>
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.industryAnalysis}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.industryAnalysisDesc}</span>
                      </div>
                   </div>
 
@@ -474,8 +484,8 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                         <MessageSquare className="w-6 h-6 text-indigo-400" />
                      </div>
                      <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">高階面試模擬與對策</span>
-                       <span className="text-sm text-slate-400 leading-normal">網羅真實考題並提供具備深度邏輯的 STAR 回答引導。</span>
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.interviewPrep}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.interviewPrepDesc}</span>
                      </div>
                   </div>
                </div>
@@ -486,7 +496,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
           <div className="p-6 pb-4">
               <h2 className="text-2xl font-bold text-white flex items-center mb-5">
                 <span className="w-1.5 h-8 bg-indigo-500 rounded-full mr-4"></span>
-                1. 職缺資訊 (Job Data)
+                {t.jobData}
               </h2>
               <label className="block text-base font-medium text-slate-300 mb-3 flex items-center justify-between">
                   <div className="flex items-center">
@@ -495,7 +505,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                   ) : (
                       <FileText className="w-5 h-5 mr-2 text-indigo-400" />
                   )}
-                  輸入職缺網址或貼上全文
+                  {t.inputJobUrl}
                   </div>
               </label>
               <div className="relative">
@@ -504,14 +514,14 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                   className={`w-full min-h-[180px] bg-slate-900 border rounded-xl p-5 text-base text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-y ${
                       inputType === 'url' ? 'border-blue-500/50 text-blue-100' : 'border-slate-700'
                   }`}
-                  placeholder="在此貼上職缺網址 (如 104, LinkedIn...) 或是職缺描述內容..."
+                  placeholder={t.jobUrlPlaceholder}
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   />
                   {inputType === 'url' && (
                   <div className="absolute bottom-3 left-3 right-3 flex items-start p-2 bg-blue-900/40 rounded border border-blue-500/30 text-sm text-blue-200 backdrop-blur-sm">
                       <AlertTriangle className="w-4 h-4 mr-2 shrink-0 text-blue-400 mt-0.5" />
-                      <span>建議：若為需登入網站，貼上全文能讓分析更準確。</span>
+                      <span>{t.urlTip}</span>
                   </div>
                   )}
               </div>
@@ -525,7 +535,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
               <div className="flex justify-between items-center mb-5">
                 <h2 className="text-2xl font-bold text-white flex items-center">
                   <span className="w-1.5 h-8 bg-violet-500 rounded-full mr-4"></span>
-                  2. 您的履歷 (Resume)
+                  {t.resume}
                 </h2>
                 {/* 履歷庫按鈕 */}
                 <div className="relative">
@@ -535,18 +545,18 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                         className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
                       >
                         <History className="w-4 h-4" />
-                        <span className="font-bold">履歷庫 {resumeHistory.length > 0 && `(${resumeHistory.length})`}</span>
+                        <span className="font-bold">{t.resumeLibrary} {resumeHistory.length > 0 && `(${resumeHistory.length})`}</span>
                       </button>
                     {showHistoryDropdown && (
                     <>
                         <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
                         <div className="absolute right-0 top-10 w-80 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
                         <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                            最近上傳的履歷
+                            {t.recentlyUploaded}
                         </div>
                         {resumeHistory.length === 0 ? (
                             <div className="p-6 text-center text-slate-500 text-sm">
-                                <p>尚未儲存任何履歷</p>
+                                <p>{t.noResume}</p>
                             </div>
                         ) : (
                             resumeHistory.map((historyItem) => (
@@ -573,8 +583,8 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                             <div className="p-4 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors mb-3 border border-slate-700 group-hover:border-indigo-500/30">
                                 <Upload className="w-8 h-8 text-slate-400 group-hover:text-indigo-400" />
                             </div>
-                            <p className="text-base text-slate-300 font-bold">點擊上傳 PDF 或文字檔</p>
-                            <p className="text-xs text-slate-500 mt-1 font-medium">支援 .pdf, .txt, .md (Max 4MB)</p>
+                            <p className="text-base text-slate-300 font-bold">{t.upload}</p>
+                            <p className="text-xs text-slate-500 mt-1 font-medium">{t.uploadSupport}</p>
                         </div>
                     </div>
                   ) : (
@@ -639,13 +649,13 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span className="animate-pulse">生成深度戰略報告...</span>
+                      <span className="animate-pulse">{t.generating}</span>
                     </>
                   ) : isSaving ? (
-                    <span className="text-slate-500">請等待儲存完成...</span>
+                    <span className="text-slate-500">{t.waitingSave}</span>
                   ) : (
                     <>
-                      <span className="mr-2">啟動 AI 戰略分析</span>
+                      <span className="mr-2">{t.generate}</span>
                       <ArrowRight className="w-6 h-6" />
                     </>
                   )}

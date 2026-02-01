@@ -12,6 +12,7 @@ import jsPDF from 'jspdf';
 
 interface DashboardProps {
   data: InterviewReport;
+  language?: 'zh' | 'en';
 }
 
 // ----------------------------------------------------------------------
