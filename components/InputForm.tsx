@@ -117,14 +117,18 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
   const saveResumeToHistory = async (newResume: ResumeInput) => {
     const startTime = Date.now();
+    console.log('🔵 [saveResumeToHistory] 開始儲存', { type: newResume.type, fileName: newResume.fileName });
     try {
       const supabase = createClient();
       
       // 快速獲取用戶信息（使用緩存的 session）
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
+      console.log('🔵 [saveResumeToHistory] 用戶檢查', { hasUser: !!user, userError: userError?.message });
+
       if (userError || !user || !user.id) {
-        console.log('User not logged in, skipping resume save.');
+        console.warn('⚠️ [saveResumeToHistory] User not logged in, skipping resume save.');
+        alert('請先登入才能儲存履歷');
         // 靜默失敗，不打斷用戶流程
         return;
       }
@@ -173,13 +177,23 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
   };
 
   const handleManualSave = async () => {
-    if (resume && !isSaving) {
-      setIsSaving(true);
-      try {
-        await saveResumeToHistory(resume);
-      } finally {
-        setIsSaving(false);
-      }
+    console.log('🔵 [handleManualSave] 被调用', { hasResume: !!resume, isSaving });
+    if (!resume) {
+      console.warn('⚠️ 沒有履歷可儲存');
+      return;
+    }
+    if (isSaving) {
+      console.warn('⚠️ 正在儲存中，請稍候');
+      return;
+    }
+    console.log('✅ [handleManualSave] 開始儲存履歷');
+    setIsSaving(true);
+    try {
+      await saveResumeToHistory(resume);
+    } catch (error) {
+      console.error('❌ [handleManualSave] 儲存失敗:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
