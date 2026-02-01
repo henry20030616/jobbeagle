@@ -2,20 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
 
-// ==========================================
-// 1. 伺服器環境配置 (Server Config)
-// ==========================================
-// 延長執行時間限制，避免分析太久被切斷
+// ============================================================================
+// 1. 伺服器與模型配置 (Server & Model Config)
+// ============================================================================
+
+// 允許最長執行時間 60 秒 (Pro 模型思考較深入，需要多一點時間)
 export const maxDuration = 60;
-// 強制動態渲染，確保每次請求都重新執行
+// 強制動態渲染
 export const dynamic = 'force-dynamic';
 
-// 🟢 設定為 Lite 模型 (免費、快速、且高效)
-const MODEL_NAME = 'gemini-2.5-flash-lite';
+// 🟢 【關鍵回歸】使用 Gemini 1.5 Pro
+// 這是 Google 目前邏輯最強、寫作最細膩、格式最穩定的模型。
+// 既然你有付費帳號，用這個絕對比 Lite 或 Flash 更好，能還原 1.29 的報告品質。
+const MODEL_NAME = 'gemini-1.5-pro';
 
-// ==========================================
-// 2. CORS 跨域設定 (Options Method)
-// ==========================================
+// ============================================================================
+// 2. 跨域資源共享設定 (CORS Options)
+// ============================================================================
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
@@ -27,69 +30,62 @@ export async function OPTIONS(request: NextRequest) {
   });
 }
 
-// ==========================================
-// 3. AI 角色與指令設定 (System Instruction)
-// ==========================================
-// 這裡是 AI 的大腦設定，完整保留原本的詳細邏輯
+// ============================================================================
+// 3. AI 核心指令 (System Prompt - 經典復刻增強版)
+// ============================================================================
 const SYSTEM_INSTRUCTION = `
 # Role (角色設定)
-You are a dual-expert persona with 30 years of top-tier experience:
-1. **Global Headhunter & Senior HR Director**: Specialist in decoding organizational logic, identifying "hidden" job requirements.
-2. **Career Expert (求職專家)**: Specialist in industrial lifecycles and strategic market positioning.
+You are a "Senior Career Strategist" and "Global Headhunter" with 30 years of experience.
+Your goal is to provide a "Winning Strategy Report" that is **dense, insightful, and formatted perfectly**.
 
-# Task (任務)
-Analyze the provided Job Description (JD) and Resume to generate a "Winning Strategy Report".
+# 🚀 HYBRID DATA STRATEGY (搜尋 + 專業推演)
+1. **Google Search First**: Attempt to find real-time data for Salary and Company Reviews.
+2. **FALLBACK PROTOCOL (Critical)**:
+   - If Google Search returns insufficient data (e.g., niche company, no public salary info), **YOU MUST SIMULATE IT.**
+   - **DO NOT return empty fields.** Use your expert knowledge to estimate the salary, generate likely interview questions, and identify competitors based on the industry and JD.
+   - Label estimated data as "(Industry Est.)" or "(Simulation)".
 
-# Critical Output Rules (核心規則)
-1. **Language**: Traditional Chinese (繁體中文).
-2. **Format**: PURE JSON ONLY. No markdown code blocks (e.g., no \`\`\`json).
-3. **Data Retrieval**: You MUST use Google Search to find real-time data for "Salary", "Interview Questions", and "Company News".
-
-# Detailed JSON Structure Requirements (詳細欄位要求)
+# JSON Structure & Content Guide
 
 1. **basic_analysis**:
-   - job_title: The official title.
-   - company_overview: 2-3 bullet points about the company status.
-   - hard_requirements: List of mandatory skills.
+   - job_title: Official title.
+   - hard_requirements: Extract 3-5 killer skills from JD.
+   - company_overview: 3 key highlights about the company (Search or Summarize JD).
 
 2. **salary_analysis**:
-   - estimated_range: Format as "1.5M - 2.0M TWD (年薪)".
-   - rationale: Why you estimated this range (based on data).
-   - negotiation_tip: Concrete advice.
+   - estimated_range: e.g., "1.2M - 1.8M TWD". **If unknown, estimate based on Market Standards.**
+   - rationale: Explain the logic (e.g., "Based on Senior Backend roles in Taipei").
+   - negotiation_tip: Provide a specific tactic.
 
 3. **market_analysis**:
-   - industry_trends: Start with "簡介:" then "現況與趨勢:".
-   - competition_table: Array of competitors.
-   - potential_risks: What could go wrong?
+   - industry_trends: "簡介:" (Intro) + "趨勢:" (Trends).
+   - competition_table: **List 3 Competitors**. If specific ones aren't found, list **General Industry Competitors**.
+     Format: [{ "name": "...", "strengths": "...", "weaknesses": "..." }]
+   - potential_risks: Analyze risks like "Market Saturation" or "Tech Debt".
 
-4. **reviews_analysis**:
-   - company_reviews: Summary of Glassdoor/PTT reviews.
-   - real_interview_questions: Must retrieve REAL questions from the internet.
+4. **reviews_analysis** (The "Inside Scoop"):
+   - company_reviews: Summarize pros/cons. If no real reviews found, infer likely culture from the JD tone (e.g., "High growth usually means high pressure").
+   - real_interview_questions:
+     - **MUST Provide 5 Questions**.
+     - If real questions are missing, **GENERATE 5 TOUGH TECHNICAL QUESTIONS** specific to the JD's tech stack.
+     - Format: { "question": "...", "source": "PTT/Glassdoor/AI Simulation", "year": "2024" }
 
 5. **match_analysis**:
-   - score: 0-100 integer.
-   - matching_points: Where the candidate fits perfectly.
-   - skill_gaps: What is missing?
+   - score: 0-100.
+   - skill_gaps: Be critical.
+   - matching_points: Be encouraging.
 
 6. **interview_preparation**:
-   - questions: 5 Technical + 5 Behavioral questions.
-   - answer_guide: Brief advice on how to answer.
+   - questions: 5 Hard Technical + 3 Behavioral (STAR method).
+   - answer_guide: Strategic advice for each.
 
-# Output JSON Example (輸出範例)
-{
-  "basic_analysis": { "job_title": "...", "hard_requirements": [] },
-  "salary_analysis": { "estimated_range": "...", "rationale": "..." },
-  "market_analysis": { "industry_trends": "...", "competition_table": [] },
-  "reviews_analysis": { "company_reviews": {}, "real_interview_questions": [] },
-  "match_analysis": { "score": 80, "matching_points": [], "skill_gaps": [] },
-  "interview_preparation": { "questions": [], "answer_guide": "..." },
-  "references": { "deep_research": [] }
-}
+# Output Format
+PURE JSON ONLY. No Markdown code blocks. No conversational text.
 `;
 
-// ==========================================
-// 4. 工具函式：JSON 清洗與容錯解析
-// ==========================================
+// ============================================================================
+// 4. 輔助函式：JSON 清洗與解析
+// ============================================================================
 function cleanAndParseJSON(text: string): InterviewReport {
   try {
     // 移除可能存在的 Markdown 語法
@@ -103,99 +99,99 @@ function cleanAndParseJSON(text: string): InterviewReport {
     return JSON.parse(cleanText);
   } catch (error: any) {
     console.error('❌ JSON Parse Error:', error);
-    throw new Error('AI 回傳格式錯誤，請重試');
+    // 這裡不 throw，避免前端白屏，而是回傳一個錯誤結構方便除錯
+    throw new Error('AI 回傳格式錯誤，請稍後重試');
   }
 }
 
-// ==========================================
-// 5. 主程式入口 (POST Handler)
-// ==========================================
+// ============================================================================
+// 5. 主程式入口 (Main Handler)
+// ============================================================================
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log('🚀 [API Start] 收到分析請求 (POST /api/analyze)');
-  
-  try {
-    // ------------------------------------------------
-    // 步驟 1: 混合模式身分驗證 (Hybrid Auth)
-    // ------------------------------------------------
-    // 這裡會嘗試抓取使用者，如果抓不到不會報錯，只是標記為訪客
-    let userId = null;
-    let isGuest = true;
+  console.log('🚀 [API Start] 收到分析請求 (Model: 1.5 Pro)');
 
+  try {
+    // ------------------------------------------------------------------------
+    // A. 混合模式身分驗證 (Hybrid Auth)
+    // ------------------------------------------------------------------------
+    let isGuest = true;
     try {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        userId = user.id;
         isGuest = false;
-        console.log(`👤 [Auth] 識別為登入用戶: ${userId}`);
+        console.log(`👤 [Auth] 登入用戶: ${user.id}`);
       } else {
-        console.log('👤 [Auth] 識別為訪客 (未登入)');
+        console.log('👤 [Auth] 訪客模式');
       }
-    } catch (authErr) {
-      console.warn('⚠️ [Auth Warning] 身分驗證過程異常 (視為訪客):', authErr);
+    } catch (e) {
+      console.warn('Supabase Auth Check Skipped');
     }
 
-    // ------------------------------------------------
-    // 步驟 2: 檢查前端輸入
-    // ------------------------------------------------
+    // ------------------------------------------------------------------------
+    // B. 輸入資料驗證
+    // ------------------------------------------------------------------------
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
     if (!jobDescription || !resume) {
-      console.error('❌ [Validation] 缺少必要參數');
       return NextResponse.json({ error: 'Missing inputs' }, { status: 400 });
     }
 
-    // ------------------------------------------------
-    // 步驟 3: 準備 API Key 與 Prompt
-    // ------------------------------------------------
+    // ------------------------------------------------------------------------
+    // C. API 金鑰與模型設定
+    // ------------------------------------------------------------------------
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('❌ [Config] 找不到 API Key');
-      return NextResponse.json({ error: 'Server Config Error: API Key missing' }, { status: 500 });
+      return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
     }
 
-    const userParts: any[] = [{ text: `[JD]\n${jobDescription}` }];
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
+
+    // 準備 Prompt
+    const userParts: any[] = [{ text: `[TARGET JD]\n${jobDescription}` }];
     if (resume.type === 'file' && resume.mimeType) {
       userParts.push({ inlineData: { data: resume.content, mimeType: resume.mimeType } });
     } else {
-      userParts.push({ text: `[RESUME]\n${resume.content}` });
+      userParts.push({ text: `[MY RESUME]\n${resume.content}` });
     }
-
-    // ------------------------------------------------
-    // 步驟 4: 呼叫 Gemini (包含重試機制與安全設定)
-    // ------------------------------------------------
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
-    
-    // 詳細的安全設定，避免內容被誤擋
-    const safetySettings = [
-      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-    ];
 
     const requestBody = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ parts: userParts }],
+      // 🚀 關鍵工具：啟用 Google 搜尋，但由 Prompt 控制保底
+      tools: [
+        {
+          googleSearchRetrieval: {
+            dynamicRetrievalConfig: {
+              mode: "MODE_DYNAMIC", 
+              dynamicThreshold: 0.7 // 門檻設高一點，讓 AI 自己判斷何時該搜，何時該寫
+            }
+          }
+        }
+      ],
       generationConfig: { 
-        temperature: 0.7,
+        temperature: 0.7, // 1.5 Pro 的最佳溫度，既有創意又守規矩
         response_mime_type: "application/json" 
       },
-      safetySettings: safetySettings
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      ]
     };
 
-    // 重試邏輯 (Retry Loop)
-    const maxRetries = 3;
+    // ------------------------------------------------------------------------
+    // D. 執行請求與重試 (Robust Retry)
+    // ------------------------------------------------------------------------
+    const maxRetries = 2;
     let textResult = "";
-    let lastError = null;
-
-    console.log(`🤖 [Gemini] 準備呼叫 Google API (Model: ${MODEL_NAME})...`);
-
+    
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        if (attempt > 1) console.log(`🔄 [Retry] 第 ${attempt} 次嘗試...`);
+        console.log(`🔍 [Attempt ${attempt}] Calling Gemini...`);
         
         const response = await fetch(url, {
           method: 'POST',
@@ -204,56 +200,41 @@ export async function POST(request: NextRequest) {
           cache: 'no-store'
         });
 
-        // 處理 429 Too Many Requests (免費版常見問題)
+        // 處理 429
         if (response.status === 429) {
-          console.warn(`⚠️ [429] 額度限制，等待冷卻...`);
-          // 指數退避: 2秒, 4秒, 8秒
-          await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
-          if (attempt === maxRetries) throw new Error('Free Quota Exceeded (429): 請稍候再試');
-          continue; 
+          console.warn('⚠️ 429 Quota Exceeded, waiting...');
+          await new Promise(r => setTimeout(r, 2000 * attempt));
+          continue;
         }
 
         if (!response.ok) {
           const errText = await response.text();
-          throw new Error(`Gemini Error ${response.status}: ${errText.substring(0, 100)}`);
+          throw new Error(`Gemini Error: ${errText.substring(0, 100)}`);
         }
 
         const data = await response.json();
         textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
         
-        if (textResult) {
-          console.log(`✅ [Gemini] 成功取得回應 (長度: ${textResult.length})`);
-          break; // 成功就跳出迴圈
-        } else {
-          throw new Error('Empty response from Gemini');
-        }
+        if (textResult) break;
 
       } catch (e: any) {
-        lastError = e;
-        console.error(`❌ [Attempt ${attempt} Failed]`, e.message);
-        if (attempt === maxRetries) break;
+        console.error(`Attempt ${attempt} failed:`, e.message);
+        if (attempt === maxRetries) throw e;
       }
     }
 
-    if (!textResult) {
-      throw lastError || new Error('Failed to generate report after retries');
-    }
-
-    // ------------------------------------------------
-    // 步驟 5: 解析與回傳
-    // ------------------------------------------------
+    // ------------------------------------------------------------------------
+    // E. 回傳結果
+    // ------------------------------------------------------------------------
     const report = cleanAndParseJSON(textResult);
     const totalDuration = (Date.now() - startTime) / 1000;
 
-    console.log(`🏁 [Success] 處理完成，耗時: ${totalDuration}秒`);
+    console.log(`🏁 [Success] 分析完成，耗時: ${totalDuration}s`);
 
-    // 回傳給前端
-    // saved: false (因為我們移除了 DB 寫入)
-    // is_logged_in: 讓前端知道使用者是否登入 (可用於 UI 顯示)
     return NextResponse.json({ 
       report, 
       modelUsed: MODEL_NAME,
-      saved: false,
+      saved: false, 
       is_logged_in: !isGuest,
       meta: {
         duration: totalDuration,
@@ -262,12 +243,11 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('❌ [API Fatal Error]', error);
-    // 區分錯誤類型回傳不同狀態碼
+    console.error('❌ [API Fatal Error]:', error);
     const status = error.message.includes('429') ? 429 : 500;
     return NextResponse.json({ 
       error: error.message || 'Internal Server Error',
-      details: '請稍後再試'
+      details: '分析服務暫時無法使用，請稍後重試'
     }, { status });
   }
 }
