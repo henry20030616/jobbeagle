@@ -168,10 +168,10 @@ export async function POST(request: NextRequest) {
 
     // 使用稳定的 Gemini 模型（优先使用 2.0，如果不可用则回退到 1.5）
     // 模型优先级列表（从最好到最差，免费账号优先使用稳定的模型）
-    // 注意：免费账号通常只能使用 gemini-1.5-flash 和 gemini-1.5-pro
+    // 注意：免费账号通常只能使用 gemini-1.5-flash
+    // gemini-1.5-pro 可能需要付费或特定权限
     const modelPriority = [
       'gemini-1.5-flash',      // 最稳定，免费账号肯定可用
-      'gemini-1.5-pro',        // 免费账号可用
     ];
 
     // 免费账号可能不支持 response_mime_type，先不使用
@@ -197,8 +197,9 @@ export async function POST(request: NextRequest) {
     // 按优先级尝试不同模型
     for (const model of modelPriority) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-        console.log(`🤖 [Gemini] 嘗試使用模型: ${model}...`);
+        // 优先尝试 v1 API（免费账号通常使用 v1）
+        let url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+        console.log(`🤖 [Gemini] 嘗試使用模型: ${model} (v1 API)...`);
         console.log(`🔗 [Gemini] URL: ${url.replace(apiKey, 'API_KEY_HIDDEN')}`);
 
         const fetchStartTime = Date.now();
