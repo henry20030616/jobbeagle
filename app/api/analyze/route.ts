@@ -57,21 +57,27 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
 **CRITICAL: Keep all sections CONCISE except industry_trends**
 
 1. **Match Analysis**: Provide 3-5 BRIEF points for "Matching Points" and "Skill Gaps". Each point should be 1-2 sentences maximum.
-2. **Salary**: Strictly format as "Amount + (年薪)" or "Amount + (月薪)". E.g., "1.8M - 2.5M TWD (年薪)". Keep rationale and negotiation_tip to 2-3 bullet points maximum.
-3. **Moat (護城河)**: Focus strictly on the company's inherent strategic advantages. Keep each advantage description to 1-2 sentences. Avoid lengthy explanations.
-4. **Competitive Landscape (競爭格局)**: The table MUST include the target company itself alongside its competitors (at least 4-5 major rivals). Keep strengths/weaknesses to 1 sentence each.
-5. **Industry Analysis (唯一可詳細的部分)**: The "industry_trends" is the ONLY section where detailed, comprehensive analysis is allowed. Format: "簡介: [Deep Intro] \n 現況與趨勢: [Current Market Status & Forward Trends]". This can be longer and more detailed.
+2. **Salary**: ${language === 'zh' 
+    ? 'Strictly format as "Amount + (年薪)" or "Amount + (月薪)". E.g., "1.8M - 2.5M TWD (年薪)".' 
+    : 'Strictly format as "Amount + (Annual Salary)" or "Amount + (Monthly Salary)". E.g., "1.8M - 2.5M TWD (Annual Salary)".'} Keep rationale and negotiation_tip to 2-3 bullet points maximum.
+3. **Moat**: Focus strictly on the company's inherent strategic advantages. Keep each advantage description to 1-2 sentences. Avoid lengthy explanations.
+4. **Competitive Landscape**: The table MUST include the target company itself alongside its competitors (at least 4-5 major rivals). Keep strengths/weaknesses to 1 sentence each.
+5. **Industry Analysis**: The "industry_trends" is the ONLY section where detailed, comprehensive analysis is allowed. ${language === 'zh' 
+    ? 'Format: "簡介: [Deep Intro] \\n 現況與趨勢: [Current Market Status & Forward Trends]"' 
+    : 'Format: "Introduction: [Deep Intro] \\n Current Status & Trends: [Current Market Status & Forward Trends]"'}. This can be longer and more detailed.
 6. **Corporate Analysis**: Keep culture, interview process, and risks summaries to 3-4 bullet points maximum. Be concise.
-7. **Real Interview Questions (真實考古題)**:
+7. **Real Interview Questions**:
     - **MUST search for REAL questions** from Glassdoor, PTT, Dcard, LinkedIn, or similar platforms.
     - Return 5+ questions from actual interviews.
-    - "job_title" field: Format as "Company Name Position" (e.g., "群聯電子 產品經理").
+    - "job_title" field: Format as "Company Name Position" ${language === 'zh' ? '(e.g., "群聯電子 產品經理")' : '(e.g., "TSMC Senior Engineer")'}.
     - "year" field: Format as "[Source Website Name] YYYY.MM" (e.g., "[Glassdoor] 2023.08").
     - "source_url" field: Include the actual URL if available.
 8. **Mock Interview Prep**: Generate at least 10 questions total.
     - **ORDER**: List 5 Technical questions FIRST, then 5 Behavioral questions.
-    - **Labeling**: Prefix with "[技術面]" or "[行為面]".
-    - **Answer Advice**: The "answer_guide" must be BRIEF (2-3 sentences maximum). Start with "回答建議：", followed by concise, actionable advice.
+    - **Labeling**: ${language === 'zh' ? 'Prefix with "[技術面]" or "[行為面]".' : 'Prefix with "[Technical]" or "[Behavioral]".'}
+    - **Answer Advice**: The "answer_guide" must be BRIEF (2-3 sentences maximum). ${language === 'zh' 
+      ? 'Start with "回答建議：", followed by concise, actionable advice.' 
+      : 'Start with "Answer Advice:", followed by concise, actionable advice.'}
 
 # Output Format (JSON)
 {
@@ -84,19 +90,27 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "hard_requirements": ["Mandatory technical or certification requirements"]
   },
   "salary_analysis": {
-    "estimated_range": "e.g., 1.8M - 2.5M TWD (年薪)",
+    "estimated_range": "${language === 'zh' ? 'e.g., 1.8M - 2.5M TWD (年薪)' : 'e.g., 1.8M - 2.5M TWD (Annual Salary)'}",
     "market_position": "BRIEF objective ranking (1 sentence).",
     "negotiation_tip": "CONCISE tactics. 2-3 bullet points maximum.",
-    "rationale": "BRIEF data-driven logic. 2-3 bullet points maximum. Format as '分析推估邏輯：' followed by bullet points."
+    "rationale": "${language === 'zh' 
+      ? 'BRIEF data-driven logic. 2-3 bullet points maximum. Format as \'分析推估邏輯：\' followed by bullet points.' 
+      : 'BRIEF data-driven logic. 2-3 bullet points maximum. Format as \'Analysis & Estimation Logic:\' followed by bullet points.'}"
   },
   "market_analysis": {
-    "industry_trends": "簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \n 現況與趨勢: [DETAILED - Can be longer and more detailed]. MUST include current market status, growth trends, technology adoption, regulatory changes, and future outlook.",
+    "industry_trends": "${language === 'zh' 
+      ? '簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \\n 現況與趨勢: [DETAILED - Can be longer and more detailed]. MUST include current market status, growth trends, technology adoption, regulatory changes, and future outlook.' 
+      : 'Introduction: [DETAILED - This is the ONLY section allowed to be comprehensive] \\n Current Status & Trends: [DETAILED - Can be longer and more detailed]. MUST include current market status, growth trends, technology adoption, regulatory changes, and future outlook.'}",
     "positioning": "BRIEF strategic assessment (1 sentence).",
     "competition_table": [
        {"name": "Competitor (Include Target Co)", "strengths": "BRIEF (1 sentence)", "weaknesses": "BRIEF (1 sentence)"}
     ],
-    "key_advantages": [{"point": "Core Moat/Advantage (e.g., '技術護城河', '品牌優勢', '市場地位')", "description": "BRIEF description of the company's strategic moat (1-2 sentences maximum). Focus on competitive advantages that are hard to replicate."}],
-    "potential_risks": [{"point": "Strategic Risk (e.g., '市場競爭加劇', '技術變革風險', '監管風險')", "description": "BRIEF description of long-term strategic risks (1-2 sentences maximum). Focus on risks that could impact the company's competitive position."}]
+    "key_advantages": [{"point": "${language === 'zh' 
+      ? 'Core Moat/Advantage (e.g., \'技術護城河\', \'品牌優勢\', \'市場地位\')' 
+      : 'Core Moat/Advantage (e.g., \'Technology Moat\', \'Brand Advantage\', \'Market Position\')'}", "description": "BRIEF description of the company's strategic moat (1-2 sentences maximum). Focus on competitive advantages that are hard to replicate."}],
+    "potential_risks": [{"point": "${language === 'zh' 
+      ? 'Strategic Risk (e.g., \'市場競爭加劇\', \'技術變革風險\', \'監管風險\')' 
+      : 'Strategic Risk (e.g., \'Intensified Market Competition\', \'Technological Disruption Risk\', \'Regulatory Risk\')'}", "description": "BRIEF description of long-term strategic risks (1-2 sentences maximum). Focus on risks that could impact the company's competitive position."}]
   },
   "reviews_analysis": {
     "company_reviews": { 
@@ -112,7 +126,9 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "real_interview_questions": [
       {
          "question": "Actual question text from real interviews (search Glassdoor, PTT, Dcard, LinkedIn)",
-         "job_title": "Format: [Company] [Position] (e.g., '台新銀行 AI應用規劃師')",
+         "job_title": "${language === 'zh' 
+           ? 'Format: [Company] [Position] (e.g., \'台新銀行 AI應用規劃師\')' 
+           : 'Format: [Company] [Position] (e.g., \'TSMC Senior Engineer\')'}",
          "year": "Format: [[Source] YYYY.MM] (e.g., '[Glassdoor] 2023.08')",
          "source_url": "URL if available"
       }
