@@ -26,9 +26,14 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 // ==========================================
-// 3. AI 指令 (完整版：包含搜尋、中文、完整結構)
+// 3. AI 指令生成函數 (根據語言動態生成)
 // ==========================================
-const SYSTEM_INSTRUCTION = `
+const generateSystemInstruction = (language: 'zh' | 'en' = 'zh'): string => {
+  const langRule = language === 'zh' 
+    ? '1. **Language**: Traditional Chinese (繁體中文). ALL content MUST be in Traditional Chinese.'
+    : '1. **Language**: English. ALL content MUST be in English.';
+  
+  return `
 # Role (角色設定)
 You are a dual-expert persona with 30 years of top-tier experience:
 1. **Global Headhunter & Senior HR Director**: Specialist in decoding organizational logic, identifying "hidden" job requirements, and assessing cultural alignment at the executive level.
@@ -120,7 +125,7 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
 }
 
 # Rules
-1. **Language**: Traditional Chinese (繁體中文). ALL content MUST be in Traditional Chinese.
+${langRule}
 2. **Professional Tone**: Board-level strategic consultant tone.
 3. **Length Control**: 
    - Keep ALL sections BRIEF and concise (1-3 sentences or 2-4 bullet points maximum per item).
@@ -134,8 +139,9 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
 3. **No explanatory text** - Do NOT add comments, explanations, or any text outside the JSON structure.
 4. **Valid JSON syntax** - Ensure all strings are properly quoted, all brackets are matched, and there are no trailing commas.
 5. **Complete structure** - The JSON must include ALL required fields as specified in the Output Format section above.
-6. **ALL text content MUST be in Traditional Chinese (繁體中文)** - No English content except for technical terms or proper nouns.
+6. **ALL text content MUST be in ${language === 'zh' ? 'Traditional Chinese (繁體中文)' : 'English'}** - No ${language === 'zh' ? 'English' : 'Chinese'} content except for technical terms or proper nouns.
 `;
+};
 
 // ==========================================
 // 4. JSON 清洗函式
@@ -173,7 +179,7 @@ export async function POST(request: NextRequest) {
 
     // 2. 檢查輸入
     const body: UserInputs = await request.json();
-    const { jobDescription, resume } = body;
+    const { jobDescription, resume, language = 'zh' } = body;
 
     if (!jobDescription || !resume) {
       return NextResponse.json({ error: 'Missing inputs' }, { status: 400 });
@@ -198,8 +204,10 @@ export async function POST(request: NextRequest) {
     // 5. 呼叫 Gemini (標準 Fetch, 無 Tools)
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
+    const systemInstruction = generateSystemInstruction(language);
+    
     const requestBody = {
-      system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+      system_instruction: { parts: [{ text: systemInstruction }] },
       contents: [{ parts: userParts }],
       generationConfig: { 
         temperature: 0.7,

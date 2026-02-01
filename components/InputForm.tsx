@@ -14,9 +14,12 @@ interface SavedResume extends ResumeInput {
 interface InputFormProps {
   onSubmit: (inputs: UserInputs) => void;
   isLoading: boolean;
+  language?: 'zh' | 'en';
+  onLanguageChange?: (lang: 'zh' | 'en') => void;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
+const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = 'zh', onLanguageChange }) => {
+  const [currentLanguage, setCurrentLanguage] = useState<'zh' | 'en'>(language);
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState<ResumeInput | null>(null);
   const [inputType, setInputType] = useState<'text' | 'url'>('text');
@@ -170,13 +173,35 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
   };
 
   const handleManualSave = async () => {
-    if (resume && !isSaving) {
-      setIsSaving(true);
-      try {
-        await saveResumeToHistory(resume);
-      } finally {
-        setIsSaving(false);
-      }
+    if (!resume) {
+      console.warn('⚠️ 沒有履歷可儲存');
+      return;
+    }
+    if (isSaving) {
+      console.warn('⚠️ 正在儲存中，請稍候');
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await saveResumeToHistory(resume);
+    } catch (error) {
+      console.error('❌ 儲存失敗:', error);
+      alert(currentLanguage === 'zh' ? '儲存失敗，請重試' : 'Save failed, please try again');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (language !== currentLanguage) {
+      setCurrentLanguage(language);
+    }
+  }, [language]);
+
+  const handleLanguageChange = (lang: 'zh' | 'en') => {
+    setCurrentLanguage(lang);
+    if (onLanguageChange) {
+      onLanguageChange(lang);
     }
   };
 
@@ -185,7 +210,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
     if (resume) {
       // 不在提交時重複保存履歷，節省時間
       // 履歷已經在上傳時或手動儲存時保存過
-      onSubmit({ jobDescription, resume });
+      onSubmit({ jobDescription, resume, language: currentLanguage });
       // 報告列表會在 useEffect 中自動刷新（當 isLoading 變為 false 時）
     }
   };
@@ -295,22 +320,91 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
     }
   };
 
+  const translations = {
+    zh: {
+      title: 'Jobbeagle',
+      subtitle: '(職位分析米格魯)',
+      description: '專家級 AI 職缺戰略分析中心：結合求職專家分析與獵頭視角，助您掌握應對策略。',
+      jobDescription: '職缺描述 (JD)',
+      resume: '履歷',
+      upload: '點擊上傳 PDF 或文字檔',
+      save: '儲存',
+      saving: '儲存中...',
+      saved: '✓ 已儲存!',
+      saveFailed: '儲存失敗，請重試',
+      generate: '啟動AI戰略分析',
+      resumeLibrary: '履歷庫',
+      recentReports: '近期分析報告',
+      noResume: '尚未儲存任何履歷',
+      recentlyUploaded: '最近上傳的履歷',
+      // ... 更多翻译
+    },
+    en: {
+      title: 'Jobbeagle',
+      subtitle: '(Job Analysis Beagle)',
+      description: 'Expert-level AI Job Strategy Analysis Center: Combining career expert analysis with headhunter perspective to help you master response strategies.',
+      jobDescription: 'Job Description (JD)',
+      resume: 'Resume',
+      upload: 'Click to upload PDF or text file',
+      save: 'Save',
+      saving: 'Saving...',
+      saved: '✓ Saved!',
+      saveFailed: 'Save failed, please try again',
+      generate: 'Launch AI Strategy Analysis',
+      resumeLibrary: 'Resume Library',
+      recentReports: 'Recent Analysis Reports',
+      noResume: 'No resumes saved yet',
+      recentlyUploaded: 'Recently uploaded resumes',
+      // ... 更多翻译
+    }
+  };
+
+  const t = translations[currentLanguage];
+
   return (
     <div className="flex flex-col gap-10">
+      {/* Language Switcher */}
+      <div className="flex justify-end mb-4">
+        <div className="flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-lg p-1">
+          <button
+            type="button"
+            onClick={() => handleLanguageChange('zh')}
+            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
+              currentLanguage === 'zh'
+                ? 'bg-indigo-500 text-white shadow-lg'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            中文
+          </button>
+          <button
+            type="button"
+            onClick={() => handleLanguageChange('en')}
+            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
+              currentLanguage === 'en'
+                ? 'bg-indigo-500 text-white shadow-lg'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            English
+          </button>
+        </div>
+      </div>
+
       <div className="text-center space-y-3 py-4">
         <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight flex flex-col md:flex-row items-center justify-center">
           <div className="flex items-center">
             <div className="mr-6">
                <BeagleIcon className="w-16 h-16 md:w-28 md:h-28 drop-shadow-xl" color="#cbd5e1" spotColor="#5d4037" bellyColor="#94a3b8" />
             </div>
-            <span>Jobbeagle</span>
+            <span>{t.title}</span>
           </div>
           <span className="text-xl md:text-3xl font-medium text-slate-500 mt-2 md:mt-0 md:ml-6 tracking-normal">
-            (職位分析米格魯)
+            {t.subtitle}
           </span>
         </h1>
         <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto font-medium">
-          專家級 AI 職缺戰略分析中心：結合求職專家分析與獵頭視角，助您掌握應對策略。
+          {t.description}
         </p>
 
       </div>
@@ -503,17 +597,17 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                  </svg>
-                                 <span className="text-xs font-bold">儲存中...</span>
+                                 <span className="text-xs font-bold">{t.saving}</span>
                                </>
                              ) : (
                                <>
                                  <Save className="w-4 h-4" />
-                                 <span className="text-xs font-bold">儲存</span>
+                                 <span className="text-xs font-bold">{t.save}</span>
                                </>
                              )}
                              {showSaveSuccess && (
                                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] px-2 py-1 rounded shadow animate-fade-in whitespace-nowrap z-10">
-                                 ✓ 已儲存!
+                                 {t.saved}
                                </span>
                              )}
                            </button>

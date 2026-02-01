@@ -14,6 +14,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
 
   useEffect(() => {
     const init = async () => {
@@ -95,7 +96,9 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <InputForm 
               onSubmit={handleGenerate} 
-              isLoading={loading} 
+              isLoading={loading}
+              language={language}
+              onLanguageChange={setLanguage}
             />
           </div>
         ) : (

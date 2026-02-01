@@ -109,4 +109,5 @@ export interface ResumeInput {
 export interface UserInputs {
   jobDescription: string;
   resume: ResumeInput;
+  language?: 'zh' | 'en';
 }
