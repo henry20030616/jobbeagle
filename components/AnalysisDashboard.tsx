@@ -55,7 +55,7 @@ const SafeContentList = ({ content, bulletColor = "bg-slate-500", textColor = "t
                 <div className={`text-sm font-bold ${textColor} leading-relaxed`}>{mainText}</div>
                 {subText && <div className={`text-xs mt-1 ${isPdf ? 'text-gray-500' : 'text-slate-500'}`}>{subText}</div>}
             </div>
-          </li>
+        </li>
         );
       })}
     </ul>
@@ -166,116 +166,242 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
       {/* ========================================================= */}
       <div ref={dashboardRef} className="space-y-8 animate-fade-in p-4 md:p-8 max-w-[1440px] mx-auto mb-20">
         <div className="absolute top-0 right-0 z-10 no-print">
-          <button 
+        <button 
             id="download-btn"
-            onClick={handleDownload}
-            className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg transition-all active:scale-95 border border-white/10"
-          >
-            <Download className="w-5 h-5" />
+          onClick={handleDownload}
+          className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg transition-all active:scale-95 border border-white/10"
+        >
+          <Download className="w-5 h-5" />
             <span>下載報告 (PDF)</span>
-          </button>
-        </div>
-
+        </button>
+      </div>
+      
         {/* 1. 職位匹配 (網頁版) */}
-        <div className="space-y-6">
-          <div className="flex items-center mb-2">
-             <span className="w-1.5 h-6 bg-yellow-500 rounded-full mr-3"></span>
-             <h2 className="text-xl font-bold text-white">1. 職位分析與匹配評分</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col items-center relative overflow-hidden">
+      <div className="space-y-6">
+        <div className="flex items-center mb-2">
+           <span className="w-1.5 h-6 bg-yellow-500 rounded-full mr-3"></span>
+           <h2 className="text-xl font-bold text-white">1. 職位分析與匹配評分</h2>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col items-center relative overflow-hidden">
               <div className="flex items-center justify-center w-full mt-8 mb-8 space-x-8">
-                 <div className="flex flex-col items-center shrink-0">
-                    {scoreInfo.icon}
-                    <div className="flex flex-col items-center mt-3">
-                      <span className={`text-base font-bold ${scoreInfo.color}`}>{scoreInfo.level}</span>
-                    </div>
-                 </div>
+               <div className="flex flex-col items-center shrink-0">
+                  {scoreInfo.icon}
+                  <div className="flex flex-col items-center mt-3">
+                    <span className={`text-base font-bold ${scoreInfo.color}`}>{scoreInfo.level}</span>
+                  </div>
+               </div>
                  <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <RadialBarChart innerRadius="70%" outerRadius="100%" barSize={10} data={scoreData} startAngle={90} endAngle={-270}>
-                        <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                        <RadialBar background dataKey="value" cornerRadius={30} />
-                        </RadialBarChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex items-center justify-center flex-col">
+                  <ResponsiveContainer width="100%" height="100%">
+                      <RadialBarChart innerRadius="70%" outerRadius="100%" barSize={10} data={scoreData} startAngle={90} endAngle={-270}>
+                      <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
+                      <RadialBar background dataKey="value" cornerRadius={30} />
+                      </RadialBarChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
                         <span className={`text-4xl md:text-5xl font-black ${scoreInfo.color}`}>{match_analysis.score}</span>
-                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Score</span>
-                    </div>
-                 </div>
-              </div>
-              <div className="w-full text-center mb-6">
-                  <p className={`text-xl font-bold ${scoreInfo.color} mb-1`}>{scoreInfo.label}</p>
-                  <p className="text-sm text-slate-400 px-4 leading-relaxed">{scoreInfo.description}</p>
-              </div>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Score</span>
+                  </div>
+               </div>
             </div>
+            <div className="w-full text-center mb-6">
+                <p className={`text-xl font-bold ${scoreInfo.color} mb-1`}>{scoreInfo.label}</p>
+                  <p className="text-sm text-slate-400 px-4 leading-relaxed mb-3">{scoreInfo.description}</p>
+                  {/* 分数评等等级说明 */}
+                  <div className="mt-4 pt-4 border-t border-slate-700/50">
+                    <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">評分標準</p>
+                    <div className="text-xs text-slate-400 space-y-1 text-left px-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-cyan-400">90+ 鑽石米格魯</span>
+                        <span className="text-slate-600">頂級契合</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-amber-400">75+ 黃金米格魯</span>
+                        <span className="text-slate-600">高度契合</span>
+            </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-300">60+ 白銀米格魯</span>
+                        <span className="text-slate-600">中度契合</span>
+                  </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-400">&lt;60 青銅米格魯</span>
+                        <span className="text-slate-600">低度契合</span>
+                  </div>
+                  </div>
+               </div>
+            </div>
+          </div>
 
-            <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl flex flex-col md:flex-row overflow-hidden">
-              <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-slate-700">
-                <h3 className="text-base font-bold text-emerald-400 mb-4 flex items-center uppercase tracking-wide">
+          <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl flex flex-col md:flex-row overflow-hidden">
+            <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-slate-700">
+              <h3 className="text-base font-bold text-emerald-400 mb-4 flex items-center uppercase tracking-wide">
                   <CheckCircle2 className="w-4 h-4 mr-2" /> 核心優勢
-                </h3>
+              </h3>
                 <SafeContentList content={match_analysis.matching_points} bulletColor="bg-emerald-500" textColor="text-slate-200" />
-              </div>
-              <div className="flex-1 p-6 bg-slate-800/50">
-                <h3 className="text-base font-bold text-amber-400 mb-4 flex items-center uppercase tracking-wide">
+            </div>
+            <div className="flex-1 p-6 bg-slate-800/50">
+              <h3 className="text-base font-bold text-amber-400 mb-4 flex items-center uppercase tracking-wide">
                   <AlertTriangle className="w-5 h-5 mr-2" /> 待補強項目
-                </h3>
+              </h3>
                 <SafeContentList content={match_analysis.skill_gaps} bulletColor="bg-amber-500" textColor="text-slate-200" />
-              </div>
             </div>
           </div>
         </div>
+      </div>
 
         {/* 2. 薪資 (網頁版) */}
         {salary_analysis && (
-          <div className="space-y-6">
-             <div className="flex items-center mb-2">
-                <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></span>
-                <h2 className="text-xl font-bold text-white">2. 薪資情報與公司評價</h2>
-             </div>
-             <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-6">
+         <div className="flex items-center mb-2">
+            <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></span>
+            <h2 className="text-xl font-bold text-white">2. 薪資情報與公司評價</h2>
+         </div>
+             <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-6">
+                 {/* 預估薪酬與談判策略 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
+                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Target className="w-4 h-4 mr-2" /> 預估薪酬 (ESTIMATED VALUE)</h4>
+                           <span className="text-2xl font-black text-white">{cleanText(salary_analysis.estimated_range)}</span>
+                        <div className="mt-4">
+                          <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">分析推估邏輯</p>
+                          <SafeContentList content={salary_analysis.rationale} bulletColor="bg-emerald-500" textColor="text-slate-300"/>
+                        </div>
+                       </div>
                     <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
-                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Target className="w-4 h-4 mr-2" /> 預估薪酬</h4>
-                        <span className="text-2xl font-black text-white">{cleanText(salary_analysis.estimated_range)}</span>
-                        <div className="mt-4"><SafeContentList content={salary_analysis.rationale} bulletColor="bg-emerald-500" textColor="text-slate-300"/></div>
-                    </div>
-                    <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
-                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Zap className="w-4 h-4 mr-2" /> 談判策略</h4>
+                        <h4 className="text-emerald-400 font-bold mb-4 flex items-center"><Zap className="w-4 h-4 mr-2" /> 請募攻防策略</h4>
                         <SafeContentList content={salary_analysis.negotiation_tip} bulletColor="bg-emerald-500" textColor="text-slate-300"/>
                     </div>
-                 </div>
-             </div>
+                  </div>
+                 
+                 {/* 職場生態與面試實戰情報 */}
+                 {reviews_analysis && (
+                   <div className="mt-6 pt-6 border-t border-slate-700/50">
+                     <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+                       <Users className="w-5 h-5 mr-2 text-indigo-400" />
+                       職場生態與面試實戰情報
+                     </h3>
+                     
+                     {/* 組織文化與氛圍 */}
+                     {reviews_analysis.company_reviews && (
+                       <div className="mb-6 bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
+                         <h4 className="text-indigo-400 font-bold mb-3 flex items-center">
+                           <Building2 className="w-4 h-4 mr-2" />
+                           組織文化與氛圍
+                    </h4>
+                         <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-line mb-3">
+                           {cleanText(reviews_analysis.company_reviews.summary)}
+                  </div>
+                         {reviews_analysis.company_reviews.pros && reviews_analysis.company_reviews.pros.length > 0 && (
+                           <div className="mt-3">
+                             <p className="text-xs text-emerald-400 mb-2 font-bold">優點</p>
+                             <SafeContentList content={reviews_analysis.company_reviews.pros} bulletColor="bg-emerald-500" textColor="text-slate-300"/>
+              </div>
+                         )}
+                         {reviews_analysis.company_reviews.cons && reviews_analysis.company_reviews.cons.length > 0 && (
+                           <div className="mt-3">
+                             <p className="text-xs text-rose-400 mb-2 font-bold">缺點</p>
+                             <SafeContentList content={reviews_analysis.company_reviews.cons} bulletColor="bg-rose-500" textColor="text-slate-300"/>
           </div>
-        )}
+         )}
+                        </div>
+                     )}
+                     
+                     {/* 面試環節與難度 */}
+                     {reviews_analysis.job_reviews && (
+                       <div className="mb-6 bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
+                         <h4 className="text-indigo-400 font-bold mb-3 flex items-center">
+                           <FileQuestion className="w-4 h-4 mr-2" />
+                           面試環節與難度
+                         </h4>
+                         <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                           {cleanText(reviews_analysis.job_reviews.summary)}
+                        </div>
+                    </div>
+                     )}
+                     
+                     {/* 實戰搜研考題 */}
+                     {reviews_analysis.real_interview_questions && reviews_analysis.real_interview_questions.length > 0 && (
+                       <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
+                         <h4 className="text-indigo-400 font-bold mb-4 flex items-center">
+                           <MessageSquare className="w-4 h-4 mr-2" />
+                           實戰搜研考題
+                         </h4>
+                        <div className="space-y-4">
+                           {reviews_analysis.real_interview_questions.map((q, idx) => (
+                             <div key={idx} className="bg-slate-800/50 p-4 rounded-lg border-l-4 border-indigo-500">
+                               <p className="text-sm font-bold text-slate-200 mb-2">{cleanText(q.question)}</p>
+                               <div className="flex items-center text-xs text-slate-500 space-x-3">
+                                 {q.job_title && <span>{cleanText(q.job_title)}</span>}
+                                 {q.year && <span>• {cleanText(q.year)}</span>}
+                                 {q.source_url && (
+                                   <a href={q.source_url} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300">
+                                     來源連結
+                                   </a>
+                                 )}
+                                  </div>
+                              </div>
+                            ))}
+                        </div>
+                        </div>
+                      )}
+                    </div>
+                 )}
+              </div>
+          </div>
+         )}
 
         {/* 3. 市場 (網頁版) */}
         {market_analysis && (
-          <div className="space-y-6">
-             <div className="flex items-center mb-2">
-               <span className="w-1.5 h-6 bg-sky-500 rounded-full mr-3"></span>
-               <h2 className="text-xl font-bold text-white">3. 公司介紹與前景分析</h2>
-             </div>
-             <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
-                <div className="mb-6 p-5 bg-sky-900/10 border border-sky-800/30 rounded-xl">
+      <div className="space-y-6">
+          <div className="flex items-center mb-2">
+             <span className="w-1.5 h-6 bg-sky-500 rounded-full mr-3"></span>
+             <h2 className="text-xl font-bold text-white">3. 公司介紹與前景分析</h2>
+          </div>
+             <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-6">
+                {/* 產業概況 */}
+                <div className="p-5 bg-sky-900/10 border border-sky-800/30 rounded-xl">
                   <h4 className="text-sky-400 font-bold mb-3 flex items-center text-base"><Globe className="w-5 h-5 mr-2" /> 產業概況</h4>
-                  <div className="text-base text-slate-300 leading-relaxed whitespace-pre-line">
-                    {cleanText(market_analysis.industry_trends)}
+                  
+                  {/* 產業趨勢 */}
+                  <div className="mb-4">
+                    <p className="text-xs text-sky-400 mb-2 font-bold uppercase tracking-widest">產業趨勢</p>
+                    <div className="text-base text-slate-300 leading-relaxed whitespace-pre-line">
+                      {cleanText(market_analysis.industry_trends)}
+                    </div>
                   </div>
+                  
+                  {/* 企業核心護城河 */}
+                  {market_analysis.key_advantages && market_analysis.key_advantages.length > 0 && (
+                    <div className="mb-4 pt-4 border-t border-sky-800/30">
+                      <p className="text-xs text-sky-400 mb-3 font-bold uppercase tracking-widest">企業核心護城河</p>
+                      <SafeContentList content={market_analysis.key_advantages} bulletColor="bg-sky-500" textColor="text-slate-300"/>
+                    </div>
+                  )}
+                  
+                  {/* 長期戰略風險 */}
+                  {market_analysis.potential_risks && market_analysis.potential_risks.length > 0 && (
+                    <div className="pt-4 border-t border-sky-800/30">
+                      <p className="text-xs text-rose-400 mb-3 font-bold uppercase tracking-widest">長期戰略風險</p>
+                      <SafeContentList content={market_analysis.potential_risks} bulletColor="bg-rose-500" textColor="text-slate-300"/>
+                    </div>
+                  )}
                 </div>
-                <div className="overflow-x-auto rounded-xl border border-slate-700 mb-6">
+                
+                {/* 競爭對手表格 */}
+                {market_analysis.competition_table && market_analysis.competition_table.length > 0 && (
+                  <div className="overflow-x-auto rounded-xl border border-slate-700">
                     <table className="w-full text-left text-sm border-collapse min-w-[600px]">
                         <thead className="bg-slate-900/50 text-slate-400">
                             <tr><th className="p-4 border-r border-slate-700">競爭對手</th><th className="p-4 border-r border-slate-700">優勢</th><th className="p-4">弱點</th></tr>
                         </thead>
                         <tbody className="divide-y divide-slate-700">
-                            {market_analysis.competition_table?.map((c, i) => (
+                            {market_analysis.competition_table.map((c, i) => (
                                <tr key={i}><td className="p-4 font-bold text-white border-r border-slate-700">{cleanText(c.name)}</td><td className="p-4 text-emerald-400 border-r border-slate-700">{cleanText(c.strengths)}</td><td className="p-4 text-rose-400">{cleanText(c.weaknesses)}</td></tr>
                             ))}
                         </tbody>
                     </table>
-                </div>
+                  </div>
+                )}
              </div>
           </div>
         )}
@@ -292,12 +418,12 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                       <div key={idx} className="p-6">
                           <p className="font-bold text-slate-100 mb-2">Q{idx+1}: {cleanText(q.question)}</p>
                           <div className="bg-slate-900/50 p-4 rounded-lg text-slate-300 text-sm border-l-4 border-indigo-500">{cleanText(q.answer_guide)}</div>
-                      </div>
-                   ))}
+                             </div>
+                       ))}
                </div>
            </div>
         )}
-      </div>
+                 </div>
 
       {/* ========================================================= */}
       {/* B. 列印層：隱藏的白底黑字報告 (專門給 PDF 用) */}
@@ -310,16 +436,16 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
       >
         {/* B1. 頁首 */}
         <div className="border-b-2 border-gray-800 pb-6 mb-8 flex justify-between items-end">
-          <div>
+                             <div>
             <h1 className="text-3xl font-extrabold text-black mb-2">職缺戰略分析報告</h1>
             <p className="text-sm text-gray-500">
               職位：{cleanText(basic_analysis?.job_title)} | 生成日期：{new Date().toLocaleDateString()}
             </p>
-          </div>
+                             </div>
           <div className="text-right">
              <div className="text-4xl font-black text-indigo-700">{match_analysis.score} <span className="text-sm text-gray-400">/ 100</span></div>
              <div className="text-sm font-bold text-gray-600">{scoreInfo.label}</div>
-          </div>
+                 </div>
         </div>
 
         {/* B2. 匹配分析 */}
@@ -333,9 +459,9 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
              <div className="bg-orange-50 p-5 rounded border border-orange-200">
                 <h3 className="font-bold text-orange-800 mb-3 text-lg flex items-center"><AlertTriangle className="w-5 h-5 mr-2"/> 建議補強</h3>
                 <SafeContentList content={match_analysis.skill_gaps} bulletColor="bg-orange-600" textColor="text-gray-900" isPdf={true} />
-             </div>
+              </div>
           </div>
-        </div>
+      </div>
 
         {/* B3. 薪資 */}
         {salary_analysis && (
@@ -344,12 +470,12 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
              <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
                <span className="font-bold text-gray-500 uppercase text-sm">市場預估年薪</span>
                <span className="text-3xl font-black text-emerald-700">{cleanText(salary_analysis.estimated_range)}</span>
-             </div>
+         </div>
              <div>
                <h4 className="font-bold text-gray-900 mb-2">談判策略建議：</h4>
                <SafeContentList content={salary_analysis.negotiation_tip} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-             </div>
-          </div>
+                      </div>
+                    </div>
         )}
 
         {/* B4. 市場 */}
@@ -384,17 +510,17 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data }) => {
                   <div className="font-bold text-purple-900 mb-2 text-lg">Q{idx+1}: {cleanText(q.question)}</div>
                   <div className="text-sm text-gray-800 bg-gray-50 p-3 rounded italic border-l-2 border-purple-300">
                     <span className="font-bold not-italic text-purple-700 mr-2">建議回答:</span>
-                    {cleanText(q.answer_guide)}
+                        {cleanText(q.answer_guide)}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
           </div>
         )}
         
         <div className="text-center text-xs text-gray-400 mt-12 border-t border-gray-300 pt-4">
            此報告由 JobBeagle AI 戰略分析引擎生成
-        </div>
+          </div>
       </div>
 
     </div>

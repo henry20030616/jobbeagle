@@ -87,25 +87,33 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "estimated_range": "e.g., 1.8M - 2.5M TWD (年薪)",
     "market_position": "BRIEF objective ranking (1 sentence).",
     "negotiation_tip": "CONCISE tactics. 2-3 bullet points maximum.",
-    "rationale": "BRIEF data-driven logic. 2-3 bullet points maximum."
+    "rationale": "BRIEF data-driven logic. 2-3 bullet points maximum. Format as '分析推估邏輯：' followed by bullet points."
   },
   "market_analysis": {
-    "industry_trends": "簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \n 現況與趨勢: [DETAILED - Can be longer and more detailed]",
+    "industry_trends": "簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \n 現況與趨勢: [DETAILED - Can be longer and more detailed]. MUST include current market status, growth trends, technology adoption, regulatory changes, and future outlook.",
     "positioning": "BRIEF strategic assessment (1 sentence).",
     "competition_table": [
        {"name": "Competitor (Include Target Co)", "strengths": "BRIEF (1 sentence)", "weaknesses": "BRIEF (1 sentence)"}
     ],
-    "key_advantages": [{"point": "Advantage", "description": "BRIEF (1-2 sentences maximum)"}],
-    "potential_risks": [{"point": "Risk", "description": "BRIEF (1-2 sentences maximum)"}]
+    "key_advantages": [{"point": "Core Moat/Advantage (e.g., '技術護城河', '品牌優勢', '市場地位')", "description": "BRIEF description of the company's strategic moat (1-2 sentences maximum). Focus on competitive advantages that are hard to replicate."}],
+    "potential_risks": [{"point": "Strategic Risk (e.g., '市場競爭加劇', '技術變革風險', '監管風險')", "description": "BRIEF description of long-term strategic risks (1-2 sentences maximum). Focus on risks that could impact the company's competitive position."}]
   },
   "reviews_analysis": {
-    "company_reviews": { "summary": "CONCISE cultural analysis based on REAL reviews from Glassdoor/PTT/Dcard. 3-4 bullet points maximum.", "pros": ["Real pro from reviews"], "cons": ["Real con from reviews"] },
-    "job_reviews": { "summary": "CONCISE process/difficulty breakdown from REAL interview experiences. 3-4 bullet points maximum.", "pros": [], "cons": [] },
+    "company_reviews": { 
+      "summary": "CONCISE cultural analysis based on REAL reviews from Glassdoor/PTT/Dcard. Should cover: work environment, team collaboration, work-life balance, innovation culture. 3-4 bullet points maximum.", 
+      "pros": ["Real positive aspects from reviews (e.g., good benefits, growth opportunities)"], 
+      "cons": ["Real negative aspects from reviews (e.g., high workload, bureaucracy)"] 
+    },
+    "job_reviews": { 
+      "summary": "CONCISE process/difficulty breakdown from REAL interview experiences. Should cover: interview stages, typical difficulty level, common focus areas, preparation tips. 3-4 bullet points maximum.", 
+      "pros": [], 
+      "cons": [] 
+    },
     "real_interview_questions": [
       {
-         "question": "Actual question text from real interviews",
-         "job_title": "Format: [Company] [Position]",
-         "year": "Format: [[Source] YYYY.MM]",
+         "question": "Actual question text from real interviews (search Glassdoor, PTT, Dcard, LinkedIn)",
+         "job_title": "Format: [Company] [Position] (e.g., '台新銀行 AI應用規劃師')",
+         "year": "Format: [[Source] YYYY.MM] (e.g., '[Glassdoor] 2023.08')",
          "source_url": "URL if available"
       }
     ]
