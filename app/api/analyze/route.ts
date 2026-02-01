@@ -3,21 +3,16 @@ import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
 
 // ============================================================================
-// 1. 伺服器與模型配置 (Server & Model Config)
+// 1. 伺服器與模型配置
 // ============================================================================
-
-// 允許最長執行時間 60 秒 (避免搜尋時間過長被卡斷)
 export const maxDuration = 60;
-// 強制動態渲染，確保每次請求都產生新結果
 export const dynamic = 'force-dynamic';
 
-// 🟢 使用 Gemini 2.0 Flash
-// 原因：雖然 2.5 Lite 較新，但 2.0 Flash 對於「搜尋工具 (Tools)」的支援最穩定，
-// 能有效減少 JSON 格式錯誤的問題。
+// 🟢 使用 Gemini 2.0 Flash (支援搜尋 + 強大生成能力)
 const MODEL_NAME = 'gemini-2.0-flash';
 
 // ============================================================================
-// 2. 跨域資源共享設定 (CORS Options)
+// 2. CORS (跨域設定)
 // ============================================================================
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
@@ -31,162 +26,124 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 // ============================================================================
-// 3. AI 核心指令與角色設定 (System Prompt)
+// 3. 核心大腦指令 (已加入「找不到就生成」的強制保底機制)
 // ============================================================================
 const SYSTEM_INSTRUCTION = `
-# Role (角色設定)
-You are a "Ruthless Career Strategist" and "Senior Headhunter" in Taiwan.
-Your goal is to provide **insider intelligence** and **actionable strategy**, not just generic summaries.
+# Role
+You are a "Ruthless Career Strategist" and "Senior Headhunter" with 30 years of experience.
+Your goal is to provide a "Winning Strategy Report" that is **dense, actionable, and comprehensive**.
 
-# 🚀 CRITICAL: GOOGLE SEARCH MANDATE (搜尋指令)
-You **MUST** perform these specific searches using the attached tool to find REAL-TIME data:
-1. "site:ptt.cc {Company Name} 面試" OR "site:dcard.tw {Company Name} 心得"
-2. "site:qollie.com {Company Name} 評價"
-3. "{Company Name} interview questions technical"
-4. "{Job Title} salary Taiwan levels.fyi" OR "{Job Title} 薪水 104"
+# 🚀 HYBRID STRATEGY (The "Search or Simulate" Protocol)
+1. **STEP 1: USE GOOGLE SEARCH** to find real-time data (Salary, Reviews, Specific Questions).
+2. **STEP 2: CRITICAL FALLBACK (The "No Empty Fields" Rule)**: 
+   - If Google Search returns **NO results** or insufficient data for a specific field (e.g., niche company with no PTT discussions):
+   - **YOU MUST GENERATE HIGH-QUALITY SIMULATED DATA based on the Job Description and Industry Standards.**
+   - **DO NOT return empty arrays or null values.**
+   - If generating data, label the source as "(Based on Job Analysis)" or "(Industry Standard)".
 
-# ⚠️ STRICT "NO EMPTY FIELDS" POLICY (禁止留白規則)
-- **NEVER return empty arrays [].**
-- **Competitors**: If exact competitors are unknown, list the top 3 general players in that industry.
-- **Interview Questions**: If no specific questions are found for this company, you MUST provide **"Standard High-Frequency Questions"** for this specific job role and label them as "(Industry Standard)".
-- **Salary**: If unknown, estimate based on market averages for this role level.
-
-# Detailed JSON Structure Requirements
+# Detailed Execution Guide
 
 1. **basic_analysis**:
    - job_title: Official title.
-   - hard_requirements: Extract 3-5 killer skills from JD.
+   - hard_requirements: Extract 3-5 killer skills.
 
 2. **salary_analysis**:
-   - estimated_range: e.g., "1.2M - 1.8M TWD". **DO NOT LEAVE EMPTY.**
-   - rationale: Cite a source (e.g., "104 Market Avg", "Levels.fyi").
-   - negotiation_tip: A concrete tactic to ask for more.
+   - estimated_range: Try to find real data. If not found, **ESTIMATE** based on Taiwan market standards for this seniority. **NEVER LEAVE EMPTY.**
+   - rationale: Explain your estimation logic.
 
 3. **market_analysis**:
-   - competition_table: **MANDATORY**. List at least 3 competitors.
-     Format: [{ "name": "Shopee", "strengths": "Traffic", "weaknesses": "High pressure" }]
-   - potential_risks: Find negative news or "layoff" rumors. If none, write "Stable growth".
+   - competition_table: List 3 competitors.
+     - *Fallback*: If exact competitors are unknown, list **Top 3 General Competitors** in this specific industry sector.
+   - potential_risks: If no specific news found, analyze "General Industry Risks" (e.g., AI replacing jobs).
 
-4. **reviews_analysis** (The "Truth" Section):
-   - company_reviews: Summarize the "Vibe" from PTT/Dcard (e.g., "Overtime", "Culture", "Management").
+4. **reviews_analysis** (CRITICAL SECTION):
+   - company_reviews: Summarize search results. If none, summarize "Typical pros/cons for this type of role/industry".
    - real_interview_questions:
-     - **MUST** provide at least 5 questions.
-     - Format: { "question": "...", "source": "PTT/Glassdoor/Industry Standard", "year": "2024" }
+     - **Goal**: Find 5 REAL questions.
+     - **Fallback**: If 0 real questions found, **GENERATE 5 TOUGH TECHNICAL QUESTIONS** based strictly on the JD's "Hard Requirements".
+     - Format: { "question": "...", "source": "PTT/Glassdoor/AI Simulation", "year": "2024" }
 
-5. **match_analysis**:
+5. **interview_preparation**:
+   - questions: 5 Technical + 3 Behavioral. **These must be specific to the JD's tech stack.**
+   - answer_guide: Provide a strategic answer structure (STAR method).
+
+6. **match_analysis**:
    - score: 0-100.
-   - skill_gaps: Be critical. What is the candidate missing?
-   - matching_points: What makes them a good fit?
-
-6. **interview_preparation**:
-   - questions: 5 **Hard Technical** Questions + 3 Behavioral.
-   - answer_guide: One-sentence pro tip for each.
+   - skill_gaps: Be critical.
+   - matching_points: Be encouraging.
 
 # Output Format
 PURE JSON ONLY. No Markdown wrapper.
 `;
 
 // ============================================================================
-// 4. 輔助函式：JSON 清洗與解析 (Helper Function)
+// 4. JSON 清洗與容錯工具
 // ============================================================================
 function cleanAndParseJSON(text: string): InterviewReport {
   try {
-    // 1. 移除 Markdown 標記 (```json ... ```)
     let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-    
-    // 2. 尋找 JSON 的開頭與結尾 (過濾掉搜尋引擎回傳的前言後語)
+    // 移除搜尋引擎可能產生的前綴廢話
     const firstBraceIndex = cleanText.indexOf('{');
     const lastBraceIndex = cleanText.lastIndexOf('}');
-    
     if (firstBraceIndex >= 0 && lastBraceIndex > firstBraceIndex) {
       cleanText = cleanText.substring(firstBraceIndex, lastBraceIndex + 1);
-    } else {
-      throw new Error('無法在回應中找到有效的 JSON 結構');
     }
-
     return JSON.parse(cleanText);
   } catch (error: any) {
-    console.error('❌ JSON Parse Error:', error);
-    console.error('❌ Raw Text Preview:', text.substring(0, 200) + '...');
-    throw new Error('AI 回傳格式錯誤 (搜尋結果干擾)，請重試');
+    console.error('JSON Parse Error:', error);
+    // 這裡不做 throw，嘗試回傳一個錯誤結構讓前端顯示，避免白屏
+    throw new Error('AI 回傳格式錯誤，請重試');
   }
 }
 
 // ============================================================================
-// 5. 主程式邏輯 (Main Handler)
+// 5. 主程式入口
 // ============================================================================
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log('🚀 [API Start] 收到分析請求 (功能: 搜尋 + 混合驗證)');
+  console.log('🚀 [API Start] 請求開始 (策略: 搜尋優先 -> 生成保底)');
 
   try {
-    // ------------------------------------------------------------------------
-    // A. 混合模式身分驗證 (Hybrid Auth Check)
-    // ------------------------------------------------------------------------
-    let userId: string | null = null;
+    // 1. 混合模式驗證 (User or Guest)
     let isGuest = true;
-
     try {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        userId = user.id;
         isGuest = false;
-        console.log(`👤 [Auth] 識別為登入用戶: ${userId}`);
-      } else {
-        console.log('👤 [Auth] 識別為訪客 (Guest Mode)');
+        console.log(`👤 用戶已登入: ${user.id}`);
       }
-    } catch (e) {
-      console.warn('⚠️ [Auth Warning] Supabase 驗證跳過，視為訪客');
-    }
+    } catch (e) { /* ignore */ }
 
-    // ------------------------------------------------------------------------
-    // B. 輸入資料驗證 (Input Validation)
-    // ------------------------------------------------------------------------
+    // 2. 輸入檢查
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
-    console.log(`📦 [Data] JD長度: ${jobDescription?.length}, Resume類型: ${resume?.type}`);
-
     if (!jobDescription || !resume) {
-      return NextResponse.json({ error: 'Missing inputs: jobDescription or resume' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing inputs' }, { status: 400 });
     }
 
-    // ------------------------------------------------------------------------
-    // C. API 金鑰與模型設定 (Config & Tools)
-    // ------------------------------------------------------------------------
+    // 3. API Key
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('❌ [Config] API Key 未設定');
-      return NextResponse.json({ error: 'Server Config Error: API Key missing' }, { status: 500 });
+      return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
     }
 
+    // 4. 設定請求 (啟用搜尋 + 生成)
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
-
-    // 準備 Prompt 內容
-    const userParts: any[] = [{ text: `[TARGET JOB DESCRIPTION]\n${jobDescription}` }];
-    if (resume.type === 'file' && resume.mimeType) {
-      userParts.push({ inlineData: { data: resume.content, mimeType: resume.mimeType } });
-    } else {
-      userParts.push({ text: `[MY RESUME CONTENT]\n${resume.content}` });
-    }
-
+    
     const requestBody = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-      contents: [{ parts: userParts }],
-      // 🚀 核心功能：啟用 Google 搜尋工具 (Grounding)
-      tools: [
-        {
-          googleSearchRetrieval: {
-            dynamicRetrievalConfig: {
-              mode: "MODE_DYNAMIC", 
-              dynamicThreshold: 0.6 // 數值越低，越容易觸發搜尋
-            }
-          }
-        }
-      ],
+      contents: [{ 
+        parts: [
+          { text: `[TARGET JD]\n${jobDescription}` },
+          { text: `[MY RESUME]\n${resume.type === 'text' ? resume.content : 'User uploaded file'}` }
+        ] 
+      }],
+      // 🚀 關鍵工具設定：啟用 Google 搜尋
+      tools: [{ googleSearchRetrieval: { dynamicRetrievalConfig: { mode: "MODE_DYNAMIC", dynamicThreshold: 0.6 } } }],
       generationConfig: { 
-        temperature: 0.7, // 保持一定創意以利推論
+        temperature: 0.8, // 調高創意度，確保找不到資料時它敢於生成內容
         response_mime_type: "application/json" 
       },
       safetySettings: [
@@ -197,17 +154,13 @@ export async function POST(request: NextRequest) {
       ]
     };
 
-    // ------------------------------------------------------------------------
-    // D. 執行請求與重試機制 (Request Execution & Retry)
-    // ------------------------------------------------------------------------
-    const maxRetries = 2; // 因為搜尋很花時間，重試 2 次就好
+    // 5. 執行 (重試機制)
+    const maxRetries = 2;
     let textResult = "";
-    let lastError = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`🔍 [Gemini Attempt ${attempt}] 發送請求中...`);
-        
+        console.log(`🔍 [Attempt ${attempt}] Calling Gemini...`);
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -215,73 +168,42 @@ export async function POST(request: NextRequest) {
           cache: 'no-store'
         });
 
-        // 處理 429 額度限制 (免費版最常遇到)
         if (response.status === 429) {
-          console.warn(`⚠️ [429] 額度超限，正在冷卻...`);
-          // 指數退避: 等待 2秒, 4秒...
+          console.warn('⚠️ 429 Too Many Requests, waiting...');
           await new Promise(r => setTimeout(r, 2000 * attempt));
-          if (attempt === maxRetries) throw new Error('Free Quota Exceeded (429): 請稍後再試');
           continue;
         }
 
         if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`Gemini Error ${response.status}: ${errText.substring(0, 100)}`);
+          const err = await response.text();
+          throw new Error(`Gemini Error: ${err.substring(0, 100)}`);
         }
 
         const data = await response.json();
         textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
         
-        if (textResult) {
-          console.log(`✅ [Success] 成功取得回應 (長度: ${textResult.length})`);
-          break; // 成功就跳出
-        } else {
-          throw new Error('Gemini 回傳了空的內容');
-        }
+        if (textResult) break;
 
       } catch (e: any) {
-        console.error(`❌ [Attempt ${attempt} Failed]:`, e.message);
-        lastError = e;
-        if (attempt === maxRetries) break; // 最後一次也失敗就不試了
+        console.error(`Attempt ${attempt} failed:`, e.message);
+        if (attempt === maxRetries) throw e;
       }
     }
 
-    if (!textResult) {
-      throw lastError || new Error('Failed to generate report after retries');
-    }
-
-    // ------------------------------------------------------------------------
-    // E. 資料解析與回傳 (Parsing & Response)
-    // ------------------------------------------------------------------------
+    // 6. 回傳
     const report = cleanAndParseJSON(textResult);
-    const totalDuration = (Date.now() - startTime) / 1000;
-
-    console.log(`🏁 [API End] 流程結束，總耗時: ${totalDuration}秒`);
-
-    // 建構回傳資料
-    // saved: false -> 明確告知前端沒有存檔
-    // is_logged_in -> 讓前端 UI 決定是否顯示 "儲存履歷" 按鈕
+    
     return NextResponse.json({ 
       report, 
       modelUsed: MODEL_NAME,
-      saved: false, 
+      saved: false,
       is_logged_in: !isGuest,
-      meta: {
-        duration: totalDuration,
-        timestamp: new Date().toISOString(),
-        searchEnabled: true
-      }
+      meta: { searchEnabled: true }
     });
 
   } catch (error: any) {
-    console.error('❌ [API Fatal Error]:', error);
-    
-    // 根據錯誤類型回傳適當的 HTTP 狀態碼
+    console.error('API Error:', error);
     const status = error.message.includes('429') ? 429 : 500;
-    
-    return NextResponse.json({ 
-      error: error.message || 'Internal Server Error',
-      details: '分析服務暫時無法使用，請稍後重試'
-    }, { status });
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
