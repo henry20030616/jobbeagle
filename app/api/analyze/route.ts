@@ -165,10 +165,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 使用稳定的 Gemini 模型（优先使用 2.0，如果不可用则回退到 1.5）
-    const model = 'gemini-2.0-flash-exp'; // 如果遇到 400 错误，可以改为 'gemini-1.5-flash'
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    
-    const requestBody: any = {
+    // 模型优先级列表（从最好到最差，免费账号优先使用稳定的模型）
+    const modelPriority = [
+      'gemini-1.5-flash',      // 最稳定，免费账号肯定可用
+      'gemini-1.5-pro',        // 如果可用
+      'gemini-2.0-flash-exp',  // 实验性，可能不可用
+    ];
+
+    const requestBodyTemplate: any = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ parts: userParts }],
       generationConfig: { 
@@ -183,40 +187,71 @@ export async function POST(request: NextRequest) {
       ],
     };
 
-    console.log(`🤖 [Gemini] 準備發送請求給 ${model}...`);
-
-    const maxRetries = 3;
-    let lastError: any = null;
     let text = "";
+    let lastError: any = null;
+    let successfulModel = '';
 
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
+    // 按优先级尝试不同模型
+    for (const model of modelPriority) {
       try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        console.log(`🤖 [Gemini] 嘗試使用模型: ${model}...`);
+
         const fetchStartTime = Date.now();
-        console.log(`⏳ [Gemini] 嘗試第 ${attempt + 1} 次請求...`);
-        
         const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(requestBodyTemplate),
         });
 
         const fetchDuration = (Date.now() - fetchStartTime) / 1000;
-        console.log(`⏱️ [Gemini] 第 ${attempt + 1} 次請求耗時: ${fetchDuration}秒, Status: ${response.status}`);
+        console.log(`⏱️ [Gemini] ${model} 回應時間: ${fetchDuration}秒, Status: ${response.status}`);
 
+        // 如果是 404 或 400，说明模型不可用，尝试下一个
+        if (response.status === 404 || response.status === 400) {
+          const errorText = await response.text();
+          console.warn(`⚠️ [Gemini] 模型 ${model} 不可用 (${response.status}): ${errorText.substring(0, 100)}`);
+          console.log(`🔄 [Gemini] 降級到下一個模型...`);
+          continue; // 尝试下一个模型
+        }
+
+        // 如果是 503，等待后重试同一模型
         if (response.status === 503) {
           const errorText = await response.text();
-          console.warn(`⚠️ [Gemini 503] 伺服器過載，等待重試...`);
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          lastError = new Error(`Server overloaded (503): ${errorText}`);
-          continue;
+          console.warn(`⚠️ [Gemini 503] 伺服器過載，等待 2 秒後重試 ${model}...`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // 重试一次
+          const retryResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBodyTemplate),
+          });
+
+          if (!retryResponse.ok) {
+            console.warn(`⚠️ [Gemini] ${model} 重試後仍失敗，降級到下一個模型...`);
+            continue;
+          }
+
+          const retryData = await retryResponse.json();
+          if (retryData.candidates && retryData.candidates[0] && retryData.candidates[0].content) {
+            const parts = retryData.candidates[0].content.parts || [];
+            text = parts.map((part: any) => part.text || '').join('');
+            successfulModel = model;
+            console.log(`✅ [Gemini] ${model} 重試成功，回應長度: ${text.length}`);
+            break;
+          }
         }
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`❌ [Gemini Error] API 回應錯誤: ${errorText}`);
-          throw new Error(`Gemini API Error: ${response.status} ${response.statusText}`);
+          console.error(`❌ [Gemini Error] ${model} API 回應錯誤: ${errorText.substring(0, 200)}`);
+          console.log(`🔄 [Gemini] 降級到下一個模型...`);
+          continue; // 尝试下一个模型
         }
 
         const data = await response.json();
@@ -224,26 +259,28 @@ export async function POST(request: NextRequest) {
         if (data.candidates && data.candidates[0] && data.candidates[0].content) {
           const parts = data.candidates[0].content.parts || [];
           text = parts.map((part: any) => part.text || '').join('');
-          console.log(`✅ [Gemini] 成功取得回應，長度: ${text.length}`);
+          successfulModel = model;
+          console.log(`✅ [Gemini] ${model} 成功取得回應，長度: ${text.length}`);
+          break; // 成功，退出循环
         } else {
-          console.error('❌ [Gemini] 回應格式異常:', JSON.stringify(data).substring(0, 200));
-          throw new Error('No content in response candidates');
+          console.error(`❌ [Gemini] ${model} 回應格式異常:`, JSON.stringify(data).substring(0, 200));
+          console.log(`🔄 [Gemini] 降級到下一個模型...`);
+          continue; // 尝试下一个模型
         }
 
-        break; 
       } catch (error: any) {
+        console.error(`❌ [Gemini] ${model} 請求失敗:`, error.message);
         lastError = error;
-        console.error(`❌ [Gemini] 第 ${attempt + 1} 次嘗試失敗:`, error.message);
-        if (attempt < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          continue;
-        }
+        console.log(`🔄 [Gemini] 降級到下一個模型...`);
+        continue; // 尝试下一个模型
       }
     }
 
-    if (!text && lastError) {
-      throw lastError || new Error('Failed to generate content after all retries');
+    if (!text) {
+      throw lastError || new Error(`所有模型都失敗了。已嘗試: ${modelPriority.join(', ')}`);
     }
+
+    console.log(`🎉 [Gemini] 最終使用模型: ${successfulModel}`);
     
     // ==========================================
     // 🛡️ 強化的 JSON 解析防護罩
