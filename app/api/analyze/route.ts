@@ -448,7 +448,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       report,
-      modelUsed: model,
+      modelUsed: successfulModel || 'unknown',
       saved: !!user, // 告訴前端是否已保存
     });
 
