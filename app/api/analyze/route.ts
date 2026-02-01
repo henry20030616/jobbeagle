@@ -164,13 +164,17 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
     }
 
-    const model = 'Gemini 2.0 Flash-Lite';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+    // 使用稳定的 Gemini 模型（优先使用 2.0，如果不可用则回退到 1.5）
+    const model = 'gemini-2.0-flash-exp'; // 如果遇到 400 错误，可以改为 'gemini-1.5-flash'
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     
     const requestBody: any = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ parts: userParts }],
-      generationConfig: { temperature: 0.7 },
+      generationConfig: { 
+        temperature: 0.7,
+        response_mime_type: "application/json"
+      },
       safetySettings: [
         { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
         { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
@@ -194,7 +198,6 @@ export async function POST(request: NextRequest) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-goog-api-key': apiKey,
           },
           body: JSON.stringify(requestBody),
         });
