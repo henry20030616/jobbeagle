@@ -168,10 +168,11 @@ export async function POST(request: NextRequest) {
 
     // 使用稳定的 Gemini 模型（优先使用 2.0，如果不可用则回退到 1.5）
     // 模型优先级列表（从最好到最差，免费账号优先使用稳定的模型）
-    // 注意：免费账号通常只能使用 gemini-1.5-flash
-    // gemini-1.5-pro 可能需要付费或特定权限
+    // 注意：免费账号可能需要使用带版本号的模型名称
     const modelPriority = [
-      'gemini-1.5-flash',      // 最稳定，免费账号肯定可用
+      'gemini-1.5-flash-001',  // 带版本号的模型名称（免费账号常用）
+      'gemini-1.5-flash',       // 不带版本号的模型名称
+      'gemini-pro',             // 旧版模型（作为后备）
     ];
 
     // 免费账号可能不支持 response_mime_type，先不使用
