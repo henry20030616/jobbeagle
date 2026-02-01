@@ -167,13 +167,44 @@ export async function POST(request: NextRequest) {
     }
 
     // 使用稳定的 Gemini 模型（优先使用 2.0，如果不可用则回退到 1.5）
+    // 首先尝试获取可用模型列表（如果失败则使用默认列表）
+    let availableModels: string[] = [];
+    try {
+      const listModelsUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+      console.log('🔍 [Gemini] 嘗試獲取可用模型列表...');
+      const listResponse = await fetch(listModelsUrl);
+      if (listResponse.ok) {
+        const listData = await listResponse.json();
+        if (listData.models && Array.isArray(listData.models)) {
+          availableModels = listData.models
+            .map((m: any) => m.name?.replace('models/', '') || '')
+            .filter((name: string) => name.includes('gemini') && (name.includes('flash') || name.includes('pro')))
+            .sort((a: string, b: string) => {
+              // 优先排序：flash > pro, 带版本号 > 不带版本号
+              if (a.includes('flash') && !b.includes('flash')) return -1;
+              if (!a.includes('flash') && b.includes('flash')) return 1;
+              if (a.includes('-001') && !b.includes('-001')) return -1;
+              if (!a.includes('-001') && b.includes('-001')) return 1;
+              return 0;
+            });
+          console.log(`✅ [Gemini] 找到 ${availableModels.length} 個可用模型:`, availableModels.slice(0, 5).join(', '));
+        }
+      }
+    } catch (e) {
+      console.warn('⚠️ [Gemini] 無法獲取模型列表，使用默認列表:', e);
+    }
+
     // 模型优先级列表（从最好到最差，免费账号优先使用稳定的模型）
-    // 注意：免费账号可能需要使用带版本号的模型名称
-    const modelPriority = [
-      'gemini-1.5-flash-001',  // 带版本号的模型名称（免费账号常用）
-      'gemini-1.5-flash',       // 不带版本号的模型名称
-      'gemini-pro',             // 旧版模型（作为后备）
+    // 如果获取到了可用模型列表，优先使用；否则使用默认列表
+    const defaultModels = [
+      'gemini-1.5-flash-latest',  // 最新版本
+      'gemini-1.5-flash-001',    // 带版本号的模型名称
+      'gemini-1.5-flash',         // 不带版本号的模型名称
+      'gemini-pro',               // 旧版模型
     ];
+    
+    const modelPriority = availableModels.length > 0 ? availableModels : defaultModels;
+    console.log(`📋 [Gemini] 將嘗試以下模型: ${modelPriority.join(', ')}`);
 
     // 免费账号可能不支持 response_mime_type，先不使用
     const requestBodyTemplate: any = {
