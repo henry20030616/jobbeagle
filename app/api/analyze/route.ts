@@ -198,9 +198,10 @@ export async function POST(request: NextRequest) {
     // 按优先级尝试不同模型
     for (const model of modelPriority) {
       try {
-        // 优先尝试 v1 API（免费账号通常使用 v1）
-        let url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
-        console.log(`🤖 [Gemini] 嘗試使用模型: ${model} (v1 API)...`);
+        // 优先尝试 v1beta API（免费账号通常使用 v1beta）
+        // 注意：v1 API 可能对免费账号不可用，所以先尝试 v1beta
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        console.log(`🤖 [Gemini] 嘗試使用模型: ${model} (v1beta API)...`);
         console.log(`🔗 [Gemini] URL: ${url.replace(apiKey, 'API_KEY_HIDDEN')}`);
 
         const fetchStartTime = Date.now();
