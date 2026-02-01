@@ -8,8 +8,8 @@ import { createClient } from '@/lib/supabase/server';
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-// 🟢 使用最原始穩定的 Gemini 1.5 Flash
-const MODEL_NAME = 'gemini-1.5-flash';
+// 🟢 使用穩定的 Gemini 2.5 Flash
+const MODEL_NAME = 'gemini-2.5-flash';
 
 // ==========================================
 // 2. CORS 設定
