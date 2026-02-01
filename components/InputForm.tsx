@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport } from '@/types';
-import { FileText, Upload, X, Sparkles, Zap, Globe, AlertTriangle, History, Clock, ArrowRight, Save, TrendingUp, MessageSquare, Briefcase } from 'lucide-react';
+import { FileText, Upload, X, Sparkles, Zap, Globe, AlertTriangle, History, Clock, ArrowRight, Save, MessageSquare } from 'lucide-react';
 import { BeagleIcon } from './AnalysisDashboard';
 import { createClient } from '@/lib/supabase/browser';
 
@@ -11,29 +11,17 @@ interface SavedResume extends ResumeInput {
   timestamp: number;
 }
 
-interface SavedReport {
-  id: string;
-  timestamp: number;
-  report: InterviewReport;
-}
-
 interface InputFormProps {
   onSubmit: (inputs: UserInputs) => void;
   isLoading: boolean;
-  reportHistory: SavedReport[];
-  onSelectHistory: (report: SavedReport) => void;
-  onReportGenerated?: () => void; // 報告生成完成的回調
 }
 
-const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistory, onSelectHistory, onReportGenerated }) => {
+const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState<ResumeInput | null>(null);
   const [inputType, setInputType] = useState<'text' | 'url'>('text');
   const [resumeHistory, setResumeHistory] = useState<SavedResume[]>([]);
-  const [recentReports, setRecentReports] = useState<any[]>([]);
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
-  const [showReportsDropdown, setShowReportsDropdown] = useState(false);
-  const [showReportHistory, setShowReportHistory] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -41,26 +29,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
 
   useEffect(() => {
     loadResumeHistory();
-    loadRecentReports();
   }, []);
-
-  // 當報告生成完成時，刷新列表
-  // 使用 ref 追蹤前一次的 loading 狀態
-  const prevLoadingRef = useRef(isLoading);
-  
-  useEffect(() => {
-    // 當 isLoading 從 true 變為 false 時（報告生成完成）
-    if (prevLoadingRef.current && !isLoading) {
-      console.log('🔄 [InputForm] 報告生成完成，2秒後刷新列表...');
-      // 延遲刷新以確保數據庫保存完成
-      const timer = setTimeout(() => {
-        console.log('🔄 [InputForm] 開始刷新報告列表...');
-        loadRecentReports();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    prevLoadingRef.current = isLoading;
-  }, [isLoading]);
 
   const loadResumeHistory = async () => {
     try {
@@ -132,45 +101,6 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
   const formatDateTime = (dateStr: string | number) => {
     const d = new Date(dateStr);
     return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
-  };
-
-  const loadRecentReports = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.log('⚠️ [InputForm] 用戶未登入，無法載入報告');
-        setRecentReports([]);
-        return;
-      }
-
-      console.log('📊 [InputForm] 開始查詢分析報告...');
-      const { data, error } = await supabase
-        .from('analysis_reports')
-        .select('id, job_title, created_at, analysis_data')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10); // 最多 10 個報告
-
-      if (error) {
-        console.error('❌ [InputForm] 無法載入分析報告:', error.message);
-        console.error('錯誤詳情:', JSON.stringify(error, null, 2));
-        setRecentReports([]);
-        return;
-      }
-
-      if (data) {
-        console.log(`✅ [InputForm] 成功載入 ${data.length} 份報告`);
-        setRecentReports(data);
-      } else {
-        console.log('⚠️ [InputForm] 沒有報告數據');
-        setRecentReports([]);
-      }
-    } catch (e) {
-      console.error('❌ [InputForm] 載入分析報告時發生錯誤:', e);
-      setRecentReports([]);
-    }
   };
 
   useEffect(() => {
@@ -380,45 +310,6 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
           專家級 AI 職缺戰略分析中心：結合求職專家分析與獵頭視角，助您掌握應對策略。
         </p>
 
-        {reportHistory.length > 0 && (
-          <div className="pt-4 flex justify-center">
-            <button 
-              onClick={() => setShowReportHistory(!showReportHistory)}
-              className="flex items-center space-x-2 text-sm text-sky-400 bg-sky-900/20 px-4 py-2 rounded-full border border-sky-500/20 hover:bg-sky-900/40 transition-all font-bold"
-            >
-              <TrendingUp className="w-4 h-4" />
-              <span>查看歷史分析報告 ({reportHistory.length})</span>
-            </button>
-          </div>
-        )}
-
-        {showReportHistory && reportHistory.length > 0 && (
-          <div className="mt-4 max-w-2xl mx-auto bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-2xl animate-fade-in">
-             <div className="p-3 bg-slate-900/50 border-b border-slate-700 flex justify-between items-center">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">最近生成的報告</span>
-                <button onClick={() => setShowReportHistory(false)}><X className="w-4 h-4 text-slate-500" /></button>
-             </div>
-             <div className="max-h-64 overflow-y-auto divide-y divide-slate-700/50">
-                {reportHistory.map((item) => (
-                  <button 
-                    key={item.id} 
-                    onClick={() => onSelectHistory(item)}
-                    className="w-full p-4 flex items-center justify-between hover:bg-slate-700/50 transition-colors group"
-                  >
-                    <div className="flex flex-col items-start min-w-0">
-                       <span className="text-sm font-bold text-slate-200 group-hover:text-sky-400 transition-colors truncate w-full text-left">
-                         {item.report.basic_analysis.job_title}
-                       </span>
-                       <span className="text-[10px] text-slate-500 flex items-center mt-1">
-                         <Clock className="w-3 h-3 mr-1" /> {new Date(item.timestamp).toLocaleString()}
-                       </span>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-sky-400 group-hover:translate-x-1 transition-all shrink-0 ml-4" />
-                  </button>
-                ))}
-             </div>
-          </div>
-        )}
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
@@ -630,56 +521,6 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, reportHistor
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.txt,.md" className="hidden" />
               </div>
 
-              {/* 近期分析報告按鈕 */}
-              <div className="relative mb-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowReportsDropdown(!showReportsDropdown)}
-                  className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
-                >
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="font-bold">近期分析報告 {recentReports.length > 0 && `(${recentReports.length})`}</span>
-                </button>
-                
-                {showReportsDropdown && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setShowReportsDropdown(false)} />
-                    <div className="absolute right-0 bottom-full mb-2 w-96 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden max-h-[32rem]">
-                      <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        最近生成的報告 (最多 10 筆)
-                      </div>
-                      {recentReports.length === 0 ? (
-                        <div className="p-6 text-center text-slate-500 text-sm">
-                          <p>尚未生成任何報告</p>
-                        </div>
-                      ) : (
-                        <div className="max-h-[28rem] overflow-y-auto">
-                          {recentReports.map((report) => (
-                            <div 
-                              key={report.id} 
-                              onClick={() => {
-                                onSelectHistory({ id: report.id, timestamp: new Date(report.created_at).getTime(), report: report.analysis_data });
-                                setShowReportsDropdown(false);
-                              }} 
-                              className="p-4 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all active:bg-slate-600"
-                            >
-                              <Briefcase className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5 mr-3 group-hover:scale-110 transition-transform" />
-                              <div className="flex-1 overflow-hidden text-left">
-                                <p className="text-sm text-slate-200 font-bold truncate group-hover:text-indigo-300 transition-colors">{report.job_title}</p>
-                                <p className="text-[10px] text-slate-500 flex items-center mt-1">
-                                  <Clock className="w-3.5 h-3.5 mr-1" />
-                                  {formatDateTime(report.created_at)}
-                                </p>
-                              </div>
-                              <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0" />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
 
               <div className="pt-4 border-t border-slate-700/50 mt-auto">
                  {/* 啟動 AI 戰略分析按鈕 */}

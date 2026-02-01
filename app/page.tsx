@@ -14,69 +14,16 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [recentReports, setRecentReports] = useState<any[]>([]);
-
-  const loadRecentReports = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log('⚠️  [Page] 用戶未登入，無法載入報告');
-        setRecentReports([]);
-        return;
-      }
-      
-      console.log('📊 [Page] 開始載入報告列表...');
-      const { data, error } = await supabase
-        .from('analysis_reports')
-        .select('id, job_title, created_at, analysis_data')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) {
-        console.error('❌ [Page] 載入報告失敗:', error.message);
-        console.error('❌ [Page] 錯誤詳情:', JSON.stringify(error, null, 2));
-        setRecentReports([]);
-        return;
-      }
-
-      if (data) {
-        console.log(`✅ [Page] 成功載入 ${data.length} 份報告`);
-        console.log('📋 [Page] 報告列表:', data.map(r => ({
-          id: r.id,
-          title: r.job_title,
-          time: r.created_at
-        })));
-        
-        // 📌 立即更新狀態
-        setRecentReports(data);
-        console.log('✅ [Page] recentReports 狀態已更新');
-      } else {
-        console.log('⚠️  [Page] 沒有報告數據');
-        setRecentReports([]);
-      }
-    } catch (e) {
-      console.error('❌ [Page] 載入報告異常:', e);
-      setRecentReports([]);
-    }
-  };
 
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
-      if (user) {
-        loadRecentReports();
-      }
     };
     init();
     const { data: { subscription } } = createClient().auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session?.user);
-      if (session?.user) {
-        loadRecentReports();
-      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -103,19 +50,8 @@ export default function Home() {
         throw new Error(result.error || '分析失敗');
       }
 
-      // 1. 設定當前報告
+      // 設定當前報告
       setReport(result.report);
-
-      // 2. [關鍵修正] 強制手動更新列表，不等待 DB 查詢
-      const newReportEntry = {
-        id: result.id || Date.now().toString(),
-        job_title: result.report.basic_analysis?.job_title || '未命名職位',
-        created_at: new Date().toISOString(),
-        analysis_data: result.report
-      };
-      
-      // 將新報告直接插入陣列最前方
-      setRecentReports(prev => [newReportEntry, ...prev]);
 
     } catch (err: any) {
       console.error('❌ [Frontend Error]', err);
@@ -123,10 +59,6 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSelectHistory = (savedReport: any) => {
-    setReport(savedReport.report);
   };
 
   return (
@@ -167,14 +99,6 @@ export default function Home() {
             <InputForm 
               onSubmit={handleGenerate} 
               isLoading={loading} 
-              reportHistory={recentReports.map(r => ({
-                id: r.id,
-                timestamp: new Date(r.created_at).getTime(),
-                report: r.analysis_data
-              }))}
-              onSelectHistory={(selectedReport) => {
-                setReport(selectedReport.report);
-              }}
             />
           </div>
         ) : (
