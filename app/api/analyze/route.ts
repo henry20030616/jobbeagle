@@ -10,9 +10,8 @@ export const maxDuration = 60;
 // 強制使用動態渲染，防止 Vercel 快取
 export const dynamic = 'force-dynamic';
 
-// 🟢 關鍵修正：切換至 Google 最新主力模型 Gemini 2.0 Flash
-// 根據 2026 最新文件，這是目前速度最快且穩定的版本
-const MODEL_NAME = 'gemini-2.0-flash';
+// 🟢 設定為 Lite 模型 (免費且高效)
+const MODEL_NAME = 'gemini-2.5-flash-lite';
 
 // ==========================================
 // 2. CORS 跨域請求處理 (OPTIONS Method)
@@ -189,6 +188,14 @@ export async function POST(request: NextRequest) {
   console.log(`🔥 [Config] 使用模型: ${MODEL_NAME}`);
 
   try {
+    // 1. 驗證登入 (保留安全性：只有登入者能用，但不存資料庫)
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized: 請先登入' }, { status: 401 });
+    }
+
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
@@ -218,10 +225,8 @@ export async function POST(request: NextRequest) {
     let systemHint = "";
     if (match104) {
       systemHint = `\n[SYSTEM_HINT]: This is a 104.com.tw job. ID: ${match104[1]}. Use this ID to find more context via Google Search.`;
-      console.log(`🔍 [Job ID] 偵測到 104 ID: ${match104[1]}`);
     } else if (matchLinkedIn) {
       systemHint = `\n[SYSTEM_HINT]: This is a LinkedIn job. ID: ${matchLinkedIn[1]}.`;
-      console.log(`🔍 [Job ID] 偵測到 LinkedIn ID: ${matchLinkedIn[1]}`);
     }
 
     const userParts: any[] = [
@@ -234,7 +239,7 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME CONTENT ===\n${resume.content}` });
     }
 
-    // 🟢 使用 v1beta，網址寫死，使用 gemini-2.0-flash
+    // 🟢 使用 gemini-2.5-flash-lite
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
     const requestBody = {
@@ -275,13 +280,16 @@ export async function POST(request: NextRequest) {
         const fetchDuration = (Date.now() - fetchStartTime) / 1000;
         console.log(`⏱️ [Gemini] 耗時: ${fetchDuration}秒, Status: ${response.status}`);
 
-        // 處理 429 Too Many Requests (這是你剛剛遇到的問題)
+        // 處理 429 Too Many Requests (免費版常見)
         if (response.status === 429) {
           console.warn(`⚠️ [Gemini 429] 額度超限，等待較長時間重試...`);
-          // 429 通常需要等久一點，這裡設定指數退避
           await new Promise(resolve => setTimeout(resolve, Math.pow(4, attempt) * 1000));
           if (attempt === maxRetries - 1) {
-            throw new Error(`Gemini API Quota Exceeded (429): 請檢查 API Key 額度或稍後再試`);
+            // 讓前端知道這是 Quota 問題
+            return NextResponse.json({ 
+                error: 'Free Quota Limit', 
+                message: '免費額度使用頻率過高，請休息 1 分鐘後再試。' 
+            }, { status: 429 });
           }
           continue;
         }
@@ -328,45 +336,8 @@ export async function POST(request: NextRequest) {
     
     const report: InterviewReport = cleanAndParseJSON(text);
 
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError) {
-      console.warn('⚠️ [Auth Warning] 無法確認使用者身分:', authError.message);
-    }
-    
-    if (user) {
-      console.log(`💾 [DB] 正在為使用者 ${user.id} 儲存報告...`);
-      
-      const insertData = {
-        user_id: user.id,
-        job_title: report.basic_analysis?.job_title || 'Unknown Position',
-        job_description: jobDescription, 
-        resume_file_name: resume.fileName || 'unknown',
-        resume_type: resume.type,
-        analysis_data: report, 
-        content: text,         
-        created_at: new Date().toISOString(),
-      };
-
-      try {
-        const { data: savedData, error: dbError } = await supabase
-          .from('analysis_reports')
-          .insert(insertData)
-          .select('id, job_title')
-          .single();
-
-        if (dbError) {
-          console.error('❌ [DB Error] 資料庫寫入失敗:', dbError.message);
-        } else {
-          console.log(`✅ [DB Success] 報告已儲存! ID: ${savedData.id}`);
-        }
-      } catch (e: any) {
-        console.error('❌ [DB Exception] 資料庫操作發生異常:', e.message);
-      }
-    } else {
-      console.log('ℹ️ [DB Skip] 使用者未登入，跳過儲存步驟');
-    }
+    // 🛑 確認：原本的 Supabase insert logic 已被移除
+    // 我們只將 report 回傳給前端，不會存入 analysis_reports 資料表
 
     const totalDuration = (Date.now() - startTime) / 1000;
     console.log(`🏁 [API End] 處理完成，總耗時: ${totalDuration}秒`);
@@ -374,7 +345,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       report,
       modelUsed: MODEL_NAME,
-      saved: !!user,
+      saved: false, // 明確告知前端未存檔
       meta: {
         duration: totalDuration,
         timestamp: new Date().toISOString()
