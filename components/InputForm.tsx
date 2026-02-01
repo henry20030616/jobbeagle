@@ -155,8 +155,9 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       const duration = Date.now() - startTime;
       
       if (error) {
-        console.error('❌ 儲存履歷失敗:', error.message);
-        // 靜默失敗，僅在控制台記錄
+        console.error('❌ [saveResumeToHistory] 儲存履歷失敗:', error);
+        console.error('❌ [saveResumeToHistory] 錯誤詳情:', JSON.stringify(error, null, 2));
+        alert(`儲存失敗: ${error.message || '未知錯誤'}`);
         return;
       }
 
