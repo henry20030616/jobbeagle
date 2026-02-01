@@ -174,12 +174,13 @@ export async function POST(request: NextRequest) {
       'gemini-1.5-pro',        // 免费账号可用
     ];
 
+    // 免费账号可能不支持 response_mime_type，先不使用
     const requestBodyTemplate: any = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ parts: userParts }],
       generationConfig: { 
         temperature: 0.7,
-        response_mime_type: "application/json"
+        // response_mime_type: "application/json" // 免费账号可能不支持，先注释掉
       },
       safetySettings: [
         { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
