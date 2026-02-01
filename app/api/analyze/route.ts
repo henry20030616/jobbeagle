@@ -277,8 +277,17 @@ export async function POST(request: NextRequest) {
         }
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`❌ [Gemini Error] ${model} API 回應錯誤: ${errorText.substring(0, 200)}`);
+          // 如果之前已经读取过错误文本，就不重复读取
+          if (!errorText) {
+            try {
+              errorText = await response.text();
+            } catch (e) {
+              errorText = `无法读取错误信息: ${e}`;
+            }
+          }
+          console.error(`❌ [Gemini Error] ${model} API 回應錯誤: ${response.status} ${response.statusText}`);
+          console.error(`❌ [Gemini Error] 詳細錯誤: ${errorText.substring(0, 300)}`);
+          lastError = new Error(`Gemini API Error: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
           console.log(`🔄 [Gemini] 降級到下一個模型...`);
           continue; // 尝试下一个模型
         }
