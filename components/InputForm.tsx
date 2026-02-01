@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport } from '@/types';
-import { FileText, Upload, X, Sparkles, Zap, Globe, AlertTriangle, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp } from 'lucide-react';
+import { FileText, Upload, X, Sparkles, Zap, Globe, AlertTriangle, History, Clock, ArrowRight, Save, MessageSquare } from 'lucide-react';
 import { BeagleIcon } from './AnalysisDashboard';
 import { createClient } from '@/lib/supabase/browser';
 

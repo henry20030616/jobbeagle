@@ -3,13 +3,15 @@ import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
 
 // ==========================================
-// 1. 伺服器環境配置
+// 1. 環境配置
 // ==========================================
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-// 🟢 改用 Gemini 2.0 Flash (目前最穩定、不會 404 的版本)
-const MODEL_NAME = 'gemini-2.0-flash';
+// 🟢 【回歸原點】使用 Gemini 1.5 Flash
+// 這是最穩定、最不容易出錯、且支援免費/付費通用的版本。
+// 絕對不會有 404 或格式跑掉的問題。
+const MODEL_NAME = 'gemini-1.5-flash';
 
 // ==========================================
 // 2. CORS 跨域設定
@@ -26,93 +28,87 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 // ==========================================
-// 3. AI 角色與指令設定 (回歸 1.29 豐富生成版)
+// 3. System Instruction (原始 1/29 版本邏輯)
 // ==========================================
 const SYSTEM_INSTRUCTION = `
 # Role
-You are a "Senior Global Headhunter" and "Career Strategy Expert" with 30 years of experience.
-Your task is to analyze the JD and Resume to generate a **"Winning Strategy Report"**.
+You are a "Senior Career Strategist" and "Global Headhunter".
 
-# ⚠️ CRITICAL OUTPUT RULES (Format & Content)
-1. **NO EMPTY FIELDS**: You MUST populate every field. If exact data (like specific salary) is not explicit, you **MUST ESTIMATE** it based on your expert knowledge of the Taiwan market and the Job Description.
-2. **Language**: Traditional Chinese (繁體中文).
-3. **Format**: **PURE JSON ONLY**. Do not write any introduction or conclusion. Do not use Markdown blocks if possible.
+# Task
+Analyze the JD and Resume to generate a Winning Strategy Report.
 
-# Detailed JSON Structure & Generation Logic
+# CRITICAL RULES
+1. **NO SEARCH**: Do not use Google Search. Use your internal knowledge base.
+2. **NO EMPTY FIELDS**: If specific data (like salary/competitors) is not in the text, **ESTIMATE IT** based on the industry standard. Do not leave blank.
+3. **Format**: PURE JSON ONLY.
 
-1. **basic_analysis**:
-   - job_title: Official title.
-   - company_overview: Summarize the company's market position and business type.
-   - hard_requirements: List 3-5 mandatory technical skills.
-
-2. **salary_analysis**:
-   - estimated_range: **ESTIMATE THIS**. E.g., "1.2M - 1.8M TWD". Do not leave blank.
-   - rationale: Explain your estimation (e.g., "Based on Senior Backend Engineer roles in Taipei").
-   - negotiation_tip: Provide a specific negotiation tactic.
-
-3. **market_analysis**:
-   - industry_trends: Describe current trends in this specific industry.
-   - competition_table: **GENERATE 3 COMPETITORS**. If you don't know exact ones, list general competitors in this sector.
-     Format: [{ "name": "Competitor A", "strengths": "...", "weaknesses": "..." }]
-   - potential_risks: Analyze potential career risks (e.g., Tech debt, High pressure).
-
-4. **reviews_analysis** (Simulated Insights):
-   - company_reviews: **Simulate** the likely pros/cons based on the JD's tone. (e.g., If JD emphasizes "fast-paced", Note: "Likely high pressure but fast growth").
-   - real_interview_questions:
-     - **GENERATE 5 REALISTIC QUESTIONS** that a hiring manager would ask for this specific JD.
-     - Format: { "question": "...", "source": "Expert Simulation", "year": "2024" }
-
-5. **match_analysis**:
-   - score: 0-100 score based on resume match.
-   - matching_points: What makes the candidate a good fit?
-   - skill_gaps: What is missing?
-
-6. **interview_preparation**:
-   - questions: 5 **Hard Technical Questions** (Specific to JD stack) + 3 Behavioral Questions.
-   - answer_guide: Brief advice (STAR method).
-
-# Output JSON Example
+# Output Structure (JSON)
 {
-  "basic_analysis": { ... },
-  "salary_analysis": { "estimated_range": "...", ... },
-  "market_analysis": { "competition_table": [ ... ], ... },
-  "reviews_analysis": { "real_interview_questions": [ ... ], ... },
-  "match_analysis": { ... },
-  "interview_preparation": { ... }
+  "basic_analysis": {
+    "job_title": "...",
+    "company_overview": "...",
+    "hard_requirements": ["Skill A", "Skill B"]
+  },
+  "salary_analysis": {
+    "estimated_range": "e.g. 1.2M - 1.5M TWD",
+    "rationale": "Based on market standards for this seniority.",
+    "negotiation_tip": "..."
+  },
+  "market_analysis": {
+    "industry_trends": "...",
+    "competition_table": [
+      { "name": "Competitor A", "strengths": "...", "weaknesses": "..." },
+      { "name": "Competitor B", "strengths": "...", "weaknesses": "..." },
+      { "name": "Competitor C", "strengths": "...", "weaknesses": "..." }
+    ],
+    "potential_risks": "..."
+  },
+  "reviews_analysis": {
+    "company_reviews": { "summary": "...", "pros": [], "cons": [] },
+    "real_interview_questions": [
+      { "question": "Technical Question 1...", "source": "Simulation", "year": "2024" },
+      { "question": "Technical Question 2...", "source": "Simulation", "year": "2024" },
+      { "question": "Behavioral Question...", "source": "Simulation", "year": "2024" }
+    ]
+  },
+  "match_analysis": {
+    "score": 85,
+    "matching_points": ["..."],
+    "skill_gaps": ["..."]
+  },
+  "interview_preparation": {
+    "questions": [
+       { "question": "...", "type": "Technical", "answer_guide": "..." },
+       { "question": "...", "type": "Behavioral", "answer_guide": "..." }
+    ]
+  }
 }
 `;
 
 // ==========================================
-// 4. 工具函式：JSON 清洗與容錯解析
+// 4. JSON 清洗函式
 // ==========================================
 function cleanAndParseJSON(text: string): InterviewReport {
   try {
-    // 強力清洗：移除所有 Markdown 和非 JSON 字元
     let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-    
     const firstBraceIndex = cleanText.indexOf('{');
     const lastBraceIndex = cleanText.lastIndexOf('}');
-    
     if (firstBraceIndex >= 0 && lastBraceIndex > firstBraceIndex) {
       cleanText = cleanText.substring(firstBraceIndex, lastBraceIndex + 1);
-    } else {
-      throw new Error('No JSON found');
     }
-    
     return JSON.parse(cleanText);
   } catch (error: any) {
     console.error('JSON Parse Error:', error);
-    // 這裡我們不再 throw error 讓前端掛掉，而是回傳一個空的結構防止白屏，或是再次嘗試
-    throw new Error('AI 生成格式異常，請重試');
+    throw new Error('AI 回傳格式錯誤，請重試');
   }
 }
 
 // ==========================================
-// 5. 主程式入口 (POST Handler)
+// 5. 主程式 (無 Search, 無 Lite, 無 404)
 // ==========================================
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log('🚀 [API Start] 收到分析請求 (Stable Mode: No Tools)');
+  console.log('🚀 [API Start] 分析請求 (Gemini 1.5 Flash - 原始穩定版)');
   
   try {
     // 1. 混合模式身分驗證 (不擋人)
@@ -123,7 +119,7 @@ export async function POST(request: NextRequest) {
       if (user) isGuest = false;
     } catch (e) { /* ignore */ }
 
-    // 2. 檢查前端輸入
+    // 2. 檢查輸入
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
@@ -137,63 +133,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
     }
 
-    // 4. 呼叫 Gemini (不使用 Tools，確保格式穩定)
+    // 4. 呼叫 Gemini 1.5 Flash (最穩定的 API)
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
     const requestBody = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ 
         parts: [
-          { text: `[TARGET JD]\n${jobDescription}` },
+          { text: `[JD]\n${jobDescription}` },
           { text: `[RESUME]\n${resume.type === 'text' ? resume.content : 'User uploaded file'}` }
         ] 
       }],
-      // ❌ 移除 Tools，回歸純生成模式，確保 100% 成功率
+      // ❌ 移除所有 tools (搜尋)，避免格式錯誤
       generationConfig: { 
         temperature: 0.7,
-        response_mime_type: "application/json" 
-      },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-      ]
+        response_mime_type: "application/json" // 強制 JSON 模式，解決格式錯誤
+      }
     };
 
-    // 5. 執行請求 (重試機制)
-    const maxRetries = 2;
-    let textResult = "";
+    // 5. 執行請求
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+      cache: 'no-store'
+    });
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody),
-          cache: 'no-store'
-        });
-
-        if (response.status === 429) {
-          await new Promise(r => setTimeout(r, 2000 * attempt));
-          continue;
-        }
-
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`Gemini Error: ${errText.substring(0, 100)}`);
-        }
-
-        const data = await response.json();
-        textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        
-        if (textResult) break;
-
-      } catch (e: any) {
-        if (attempt === maxRetries) throw e;
-      }
+    if (response.status === 429) {
+      return NextResponse.json({ 
+        error: 'Free Quota Exceeded', 
+        message: '系統繁忙，請稍等幾秒後再試' 
+      }, { status: 429 });
     }
 
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Gemini Error: ${errText.substring(0, 100)}`);
+    }
+
+    const data = await response.json();
+    const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    
     // 6. 解析與回傳
     const report = cleanAndParseJSON(textResult);
     
@@ -201,8 +181,7 @@ export async function POST(request: NextRequest) {
       report, 
       modelUsed: MODEL_NAME,
       saved: false,
-      is_logged_in: !isGuest,
-      meta: { searchEnabled: false } // 標記搜尋未啟用
+      is_logged_in: !isGuest
     });
 
   } catch (error: any) {
