@@ -124,7 +124,7 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "skill_gaps": [{"gap": "Gap", "description": "BRIEF interview strategy (1-2 sentences)"}]
   },
     "interview_preparation": {
-      "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "${interviewPrepAnswerGuide}"}]
+      "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "${language === 'zh' ? '回答建議：[CONCISE advice, 2-3 sentences maximum]' : 'Answer Advice: [CONCISE advice, 2-3 sentences maximum]'}"}]
     },
   "references": {
     "deep_research": [{"title": "Title", "url": "URL"}],
