@@ -5,13 +5,13 @@ import { createClient } from '@/lib/supabase/server';
 // ==========================================
 // 1. 環境配置 (Environment Config)
 // ==========================================
-// 延長 Vercel Serverless Function 的執行時間限制 (防止 10 秒超時)
+// 延長 Vercel Serverless Function 的執行時間限制
 export const maxDuration = 60;
-// 強制使用動態渲染，防止 Vercel 快取導致 404
+// 強制使用動態渲染，防止 Vercel 快取
 export const dynamic = 'force-dynamic';
 
-// 🟢 關鍵修正：升級至 2026 年主流模型 Gemini 2.0 Flash
-// 1.5 系列已因生命週期結束而無法存取 (404 Not Found)
+// 🟢 關鍵修正：切換至 Google 最新主力模型 Gemini 2.0 Flash
+// 根據 2026 最新文件，這是目前速度最快且穩定的版本
 const MODEL_NAME = 'gemini-2.0-flash';
 
 // ==========================================
@@ -160,7 +160,7 @@ Analyze the provided Job Description (JD) and Resume to generate a "Winning Stra
 `;
 
 // ==========================================
-// 4. 輔助函式：JSON 清洗與容錯解析 (Clean & Parse)
+// 4. 輔助函式：JSON 清洗與容錯解析
 // ==========================================
 function cleanAndParseJSON(text: string): InterviewReport {
   try {
@@ -275,6 +275,17 @@ export async function POST(request: NextRequest) {
         const fetchDuration = (Date.now() - fetchStartTime) / 1000;
         console.log(`⏱️ [Gemini] 耗時: ${fetchDuration}秒, Status: ${response.status}`);
 
+        // 處理 429 Too Many Requests (這是你剛剛遇到的問題)
+        if (response.status === 429) {
+          console.warn(`⚠️ [Gemini 429] 額度超限，等待較長時間重試...`);
+          // 429 通常需要等久一點，這裡設定指數退避
+          await new Promise(resolve => setTimeout(resolve, Math.pow(4, attempt) * 1000));
+          if (attempt === maxRetries - 1) {
+            throw new Error(`Gemini API Quota Exceeded (429): 請檢查 API Key 額度或稍後再試`);
+          }
+          continue;
+        }
+
         if (response.status === 503) {
           console.warn(`⚠️ [Gemini 503] 伺服器忙碌，等待 ${(attempt + 1) * 2} 秒後重試...`);
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
@@ -373,12 +384,12 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('❌ [Critical Error] API 全局錯誤:', error);
     
-    const status = error.message.includes('Gemini API Error') ? 502 : 500;
+    const status = error.message.includes('Gemini API Error') || error.message.includes('Quota Exceeded') ? 502 : 500;
     
     return NextResponse.json(
       { 
         error: error.message || 'Internal Server Error',
-        details: '請稍後再試或聯繫管理員'
+        details: '請稍後再試或檢查 API 額度'
       },
       { status }
     );
