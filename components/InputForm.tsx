@@ -173,22 +173,13 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
   };
 
   const handleManualSave = async () => {
-    if (!resume) {
-      console.warn('⚠️ 沒有履歷可儲存');
-      return;
-    }
-    if (isSaving) {
-      console.warn('⚠️ 正在儲存中，請稍候');
-      return;
-    }
-    setIsSaving(true);
-    try {
-      await saveResumeToHistory(resume);
-    } catch (error) {
-      console.error('❌ 儲存失敗:', error);
-      alert(currentLanguage === 'zh' ? '儲存失敗，請重試' : 'Save failed, please try again');
-    } finally {
-      setIsSaving(false);
+    if (resume && !isSaving) {
+      setIsSaving(true);
+      try {
+        await saveResumeToHistory(resume);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -284,15 +275,12 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     }
 
     const processFile = (result: string, isPdf: boolean) => {
-      const newResume = {
-        type: (isPdf ? 'file' : 'text') as 'file' | 'text',
+      setResume({
+        type: isPdf ? 'file' : 'text',
         content: result,
         mimeType: isPdf ? 'application/pdf' : undefined,
         fileName: file.name
-      };
-      setResume(newResume);
-      // 自動儲存履歷
-      saveResumeToHistory(newResume);
+      });
     };
 
     if (file.type === 'application/pdf') {
