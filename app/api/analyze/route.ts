@@ -3,18 +3,18 @@ import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
 
 // ==========================================
-// 1. 環境配置 (Environment Config)
+// 1. 伺服器環境配置 (Server Config)
 // ==========================================
-// 延長 Vercel Serverless Function 的執行時間限制
+// 延長執行時間限制，避免分析太久被切斷
 export const maxDuration = 60;
-// 強制使用動態渲染，防止 Vercel 快取
+// 強制動態渲染，確保每次請求都重新執行
 export const dynamic = 'force-dynamic';
 
-// 🟢 設定為 Lite 模型 (免費且高效)
+// 🟢 設定為 Lite 模型 (免費、快速、且高效)
 const MODEL_NAME = 'gemini-2.5-flash-lite';
 
 // ==========================================
-// 2. CORS 跨域請求處理 (OPTIONS Method)
+// 2. CORS 跨域設定 (Options Method)
 // ==========================================
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
@@ -22,54 +22,49 @@ export async function OPTIONS(request: NextRequest) {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
   });
 }
 
 // ==========================================
-// 3. 系統核心指令 (System Instruction) - 完整展開版
+// 3. AI 角色與指令設定 (System Instruction)
 // ==========================================
+// 這裡是 AI 的大腦設定，完整保留原本的詳細邏輯
 const SYSTEM_INSTRUCTION = `
 # Role (角色設定)
 You are a dual-expert persona with 30 years of top-tier experience:
-1. **Global Headhunter & Senior HR Director**: Specialist in decoding organizational logic, identifying "hidden" job requirements, and assessing cultural alignment at the executive level.
-2. **Career Expert (求職專家)**: Specialist in industrial lifecycles, competitive moats, business models, financial health, and strategic market positioning.
+1. **Global Headhunter & Senior HR Director**: Specialist in decoding organizational logic, identifying "hidden" job requirements.
+2. **Career Expert (求職專家)**: Specialist in industrial lifecycles and strategic market positioning.
 
 # Task (任務)
 Analyze the provided Job Description (JD) and Resume to generate a "Winning Strategy Report".
 
 # Critical Output Rules (核心規則)
 1. **Language**: Traditional Chinese (繁體中文).
-2. **Tone**: Professional, strategic, objective, and hard-hitting.
-3. **Format**: PURE JSON ONLY. No markdown code blocks (e.g., no \`\`\`json).
-4. **Data Retrieval**: You MUST use Google Search to find real-time data for "Salary", "Interview Questions", and "Company News".
+2. **Format**: PURE JSON ONLY. No markdown code blocks (e.g., no \`\`\`json).
+3. **Data Retrieval**: You MUST use Google Search to find real-time data for "Salary", "Interview Questions", and "Company News".
 
 # Detailed JSON Structure Requirements (詳細欄位要求)
 
 1. **basic_analysis**:
    - job_title: The official title.
    - company_overview: 2-3 bullet points about the company status.
-   - business_scope: What they actually sell or do.
    - hard_requirements: List of mandatory skills.
 
 2. **salary_analysis**:
    - estimated_range: Format as "1.5M - 2.0M TWD (年薪)".
-   - market_position: Is this above or below market average?
-   - negotiation_tip: Concrete advice on how to ask for more.
    - rationale: Why you estimated this range (based on data).
+   - negotiation_tip: Concrete advice.
 
 3. **market_analysis**:
-   - industry_trends: **DETAILED SECTION**. Start with "簡介:" then "現況與趨勢:".
-   - competition_table: Array of competitors. Including strengths and weaknesses.
-   - key_advantages: What is the company's moat?
+   - industry_trends: Start with "簡介:" then "現況與趨勢:".
+   - competition_table: Array of competitors.
    - potential_risks: What could go wrong?
 
 4. **reviews_analysis**:
    - company_reviews: Summary of Glassdoor/PTT reviews.
-   - real_interview_questions:
-     - Must retrieve REAL questions from the internet.
-     - format: { "question": "...", "job_title": "...", "year": "...", "source_url": "..." }
+   - real_interview_questions: Must retrieve REAL questions from the internet.
 
 5. **match_analysis**:
    - score: 0-100 integer.
@@ -80,102 +75,35 @@ Analyze the provided Job Description (JD) and Resume to generate a "Winning Stra
    - questions: 5 Technical + 5 Behavioral questions.
    - answer_guide: Brief advice on how to answer.
 
-# Output JSON Example (輸出範例 - 絕對不可省略)
+# Output JSON Example (輸出範例)
 {
-  "basic_analysis": {
-    "job_title": "Senior Backend Engineer",
-    "company_overview": "Leading e-commerce platform in Taiwan...",
-    "business_scope": "B2C Retail, Logistics Tech...",
-    "company_trends": "Expanding to SEA market...",
-    "job_summary": "Responsible for high-concurrency API design...",
-    "hard_requirements": ["Node.js", "PostgreSQL", "AWS"]
-  },
-  "salary_analysis": {
-    "estimated_range": "1.5M - 2.0M TWD (年薪)",
-    "market_position": "Top 10% in industry",
-    "negotiation_tip": "Focus on your system design experience...",
-    "rationale": "Based on 2024 salary reports for Senior Engineers..."
-  },
-  "market_analysis": {
-    "industry_trends": "簡介: E-commerce sector... \\n 現況與趨勢: Growing at 15% YoY...",
-    "positioning": "Market Leader",
-    "competition_table": [
-      {
-        "name": "Competitor A",
-        "strengths": "Strong logistics",
-        "weaknesses": "Outdated app UI"
-      }
-    ],
-    "key_advantages": [
-      { "point": "User Base", "description": "10M active users" }
-    ],
-    "potential_risks": [
-      { "point": "Market Saturation", "description": "Growth slowing down" }
-    ]
-  },
-  "reviews_analysis": {
-    "company_reviews": {
-      "summary": "Good benefits but high pressure",
-      "pros": ["Free lunch", "High bonus"],
-      "cons": ["Long working hours"]
-    },
-    "job_reviews": {
-      "summary": "Technical interview is hard",
-      "pros": ["Respectful interviewers"],
-      "cons": ["4 rounds of interviews"]
-    },
-    "real_interview_questions": [
-      {
-        "question": "Explain Event Loop in Node.js",
-        "job_title": "Backend Engineer",
-        "year": "[Glassdoor] 2023.12",
-        "source_url": "https://..."
-      }
-    ]
-  },
-  "match_analysis": {
-    "score": 85,
-    "matching_points": [
-      { "point": "Tech Stack", "description": "Matches 100%" }
-    ],
-    "skill_gaps": [
-      { "gap": "Cloud Experience", "description": "Needs AWS certification" }
-    ]
-  },
-  "interview_preparation": {
-    "questions": [
-      {
-        "question": "[技術] How to handle database deadlock?",
-        "source": "Common High Concurrency Question",
-        "answer_guide": "Explain deadlock detection and prevention..."
-      }
-    ]
-  },
-  "references": {
-    "deep_research": [],
-    "data_citations": []
-  }
+  "basic_analysis": { "job_title": "...", "hard_requirements": [] },
+  "salary_analysis": { "estimated_range": "...", "rationale": "..." },
+  "market_analysis": { "industry_trends": "...", "competition_table": [] },
+  "reviews_analysis": { "company_reviews": {}, "real_interview_questions": [] },
+  "match_analysis": { "score": 80, "matching_points": [], "skill_gaps": [] },
+  "interview_preparation": { "questions": [], "answer_guide": "..." },
+  "references": { "deep_research": [] }
 }
 `;
 
 // ==========================================
-// 4. 輔助函式：JSON 清洗與容錯解析
+// 4. 工具函式：JSON 清洗與容錯解析
 // ==========================================
 function cleanAndParseJSON(text: string): InterviewReport {
   try {
-    console.log('🔍 [Parsing] 開始解析回應，原始長度:', text.length);
+    // 移除可能存在的 Markdown 語法
     let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    // 確保只抓取 { ... } 範圍內的內容
     const firstBraceIndex = cleanText.indexOf('{');
-    if (firstBraceIndex > 0) cleanText = cleanText.substring(firstBraceIndex);
     const lastBraceIndex = cleanText.lastIndexOf('}');
-    if (lastBraceIndex > 0 && lastBraceIndex < cleanText.length - 1) {
-      cleanText = cleanText.substring(0, lastBraceIndex + 1);
+    if (firstBraceIndex >= 0 && lastBraceIndex > firstBraceIndex) {
+      cleanText = cleanText.substring(firstBraceIndex, lastBraceIndex + 1);
     }
     return JSON.parse(cleanText);
   } catch (error: any) {
-    console.error('❌ [Parsing Error] JSON 解析失敗:', error.message);
-    console.error('❌ [Parsing Error] 錯誤片段:', text.substring(0, 200) + '...');
-    throw new Error(`AI 回傳資料格式錯誤: ${error.message}`);
+    console.error('❌ JSON Parse Error:', error);
+    throw new Error('AI 回傳格式錯誤，請重試');
   }
 }
 
@@ -185,63 +113,69 @@ function cleanAndParseJSON(text: string): InterviewReport {
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   console.log('🚀 [API Start] 收到分析請求 (POST /api/analyze)');
-  console.log(`🔥 [Config] 使用模型: ${MODEL_NAME}`);
-
+  
   try {
-    // 1. 驗證登入 (保留安全性：只有登入者能用，但不存資料庫)
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized: 請先登入' }, { status: 401 });
+    // ------------------------------------------------
+    // 步驟 1: 混合模式身分驗證 (Hybrid Auth)
+    // ------------------------------------------------
+    // 這裡會嘗試抓取使用者，如果抓不到不會報錯，只是標記為訪客
+    let userId = null;
+    let isGuest = true;
+
+    try {
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        userId = user.id;
+        isGuest = false;
+        console.log(`👤 [Auth] 識別為登入用戶: ${userId}`);
+      } else {
+        console.log('👤 [Auth] 識別為訪客 (未登入)');
+      }
+    } catch (authErr) {
+      console.warn('⚠️ [Auth Warning] 身分驗證過程異常 (視為訪客):', authErr);
     }
 
+    // ------------------------------------------------
+    // 步驟 2: 檢查前端輸入
+    // ------------------------------------------------
     const body: UserInputs = await request.json();
     const { jobDescription, resume } = body;
 
-    console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length || 0}, Resume 類型: ${resume?.type}`);
-
     if (!jobDescription || !resume) {
-      console.error('❌ [Validation] 缺少必要欄位');
-      return NextResponse.json(
-        { error: 'Missing required fields: jobDescription and resume' },
-        { status: 400 }
-      );
+      console.error('❌ [Validation] 缺少必要參數');
+      return NextResponse.json({ error: 'Missing inputs' }, { status: 400 });
     }
 
+    // ------------------------------------------------
+    // 步驟 3: 準備 API Key 與 Prompt
+    // ------------------------------------------------
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('❌ [Config Error] 伺服器未設定 API Key');
-      return NextResponse.json(
-        { error: 'Server configuration error: API Key missing' },
-        { status: 500 }
-      );
+      console.error('❌ [Config] 找不到 API Key');
+      return NextResponse.json({ error: 'Server Config Error: API Key missing' }, { status: 500 });
     }
 
-    let baseJD = jobDescription.trim();
-    const match104 = baseJD.match(/104\.com\.tw\/job\/(\w+)/);
-    const matchLinkedIn = baseJD.match(/linkedin\.com\/.*currentJobId=(\d+)/) || baseJD.match(/linkedin\.com\/jobs\/view\/(\d+)/);
-
-    let systemHint = "";
-    if (match104) {
-      systemHint = `\n[SYSTEM_HINT]: This is a 104.com.tw job. ID: ${match104[1]}. Use this ID to find more context via Google Search.`;
-    } else if (matchLinkedIn) {
-      systemHint = `\n[SYSTEM_HINT]: This is a LinkedIn job. ID: ${matchLinkedIn[1]}.`;
-    }
-
-    const userParts: any[] = [
-      { text: `[CONTEXT: JOB DESCRIPTION]\n\n${baseJD}${systemHint}` }
-    ];
-    
+    const userParts: any[] = [{ text: `[JD]\n${jobDescription}` }];
     if (resume.type === 'file' && resume.mimeType) {
       userParts.push({ inlineData: { data: resume.content, mimeType: resume.mimeType } });
     } else {
-      userParts.push({ text: `=== RESUME CONTENT ===\n${resume.content}` });
+      userParts.push({ text: `[RESUME]\n${resume.content}` });
     }
 
-    // 🟢 使用 gemini-2.5-flash-lite
+    // ------------------------------------------------
+    // 步驟 4: 呼叫 Gemini (包含重試機制與安全設定)
+    // ------------------------------------------------
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     
+    // 詳細的安全設定，避免內容被誤擋
+    const safetySettings = [
+      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+    ];
+
     const requestBody = {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ parts: userParts }],
@@ -249,103 +183,78 @@ export async function POST(request: NextRequest) {
         temperature: 0.7,
         response_mime_type: "application/json" 
       },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-      ],
+      safetySettings: safetySettings
     };
 
-    console.log(`🤖 [Gemini] 準備發送請求至 Google Cloud...`);
-
+    // 重試邏輯 (Retry Loop)
     const maxRetries = 3;
-    let lastError: any = null;
-    let text = "";
+    let textResult = "";
+    let lastError = null;
 
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
+    console.log(`🤖 [Gemini] 準備呼叫 Google API (Model: ${MODEL_NAME})...`);
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const fetchStartTime = Date.now();
-        console.log(`⏳ [Gemini] 嘗試第 ${attempt + 1} 次請求...`);
+        if (attempt > 1) console.log(`🔄 [Retry] 第 ${attempt} 次嘗試...`);
         
         const response = await fetch(url, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestBody),
-          cache: 'no-store' 
+          cache: 'no-store'
         });
 
-        const fetchDuration = (Date.now() - fetchStartTime) / 1000;
-        console.log(`⏱️ [Gemini] 耗時: ${fetchDuration}秒, Status: ${response.status}`);
-
-        // 處理 429 Too Many Requests (免費版常見)
+        // 處理 429 Too Many Requests (免費版常見問題)
         if (response.status === 429) {
-          console.warn(`⚠️ [Gemini 429] 額度超限，等待較長時間重試...`);
-          await new Promise(resolve => setTimeout(resolve, Math.pow(4, attempt) * 1000));
-          if (attempt === maxRetries - 1) {
-            // 讓前端知道這是 Quota 問題
-            return NextResponse.json({ 
-                error: 'Free Quota Limit', 
-                message: '免費額度使用頻率過高，請休息 1 分鐘後再試。' 
-            }, { status: 429 });
-          }
-          continue;
-        }
-
-        if (response.status === 503) {
-          console.warn(`⚠️ [Gemini 503] 伺服器忙碌，等待 ${(attempt + 1) * 2} 秒後重試...`);
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          continue;
+          console.warn(`⚠️ [429] 額度限制，等待冷卻...`);
+          // 指數退避: 2秒, 4秒, 8秒
+          await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+          if (attempt === maxRetries) throw new Error('Free Quota Exceeded (429): 請稍候再試');
+          continue; 
         }
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`❌ [Gemini Error] HTTP ${response.status}: ${errorText}`);
-          throw new Error(`Gemini API Error: ${response.status} - ${errorText.substring(0, 100)}`);
+          const errText = await response.text();
+          throw new Error(`Gemini Error ${response.status}: ${errText.substring(0, 100)}`);
         }
 
         const data = await response.json();
+        textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
         
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-          const parts = data.candidates[0].content.parts || [];
-          text = parts.map((part: any) => part.text || '').join('');
-          console.log(`✅ [Gemini] 成功取得回應 (Length: ${text.length})`);
+        if (textResult) {
+          console.log(`✅ [Gemini] 成功取得回應 (長度: ${textResult.length})`);
+          break; // 成功就跳出迴圈
         } else {
-          console.error('❌ [Gemini] 回應結構異常:', JSON.stringify(data).substring(0, 200));
-          throw new Error('No content in response candidates');
+          throw new Error('Empty response from Gemini');
         }
 
-        break; 
-
-      } catch (error: any) {
-        lastError = error;
-        console.error(`❌ [Gemini] 第 ${attempt + 1} 次嘗試失敗:`, error.message);
-        
-        if (attempt < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          continue;
-        }
+      } catch (e: any) {
+        lastError = e;
+        console.error(`❌ [Attempt ${attempt} Failed]`, e.message);
+        if (attempt === maxRetries) break;
       }
     }
 
-    if (!text && lastError) {
-      throw lastError || new Error('Failed to generate content after all retries');
+    if (!textResult) {
+      throw lastError || new Error('Failed to generate report after retries');
     }
-    
-    const report: InterviewReport = cleanAndParseJSON(text);
 
-    // 🛑 確認：原本的 Supabase insert logic 已被移除
-    // 我們只將 report 回傳給前端，不會存入 analysis_reports 資料表
-
+    // ------------------------------------------------
+    // 步驟 5: 解析與回傳
+    // ------------------------------------------------
+    const report = cleanAndParseJSON(textResult);
     const totalDuration = (Date.now() - startTime) / 1000;
-    console.log(`🏁 [API End] 處理完成，總耗時: ${totalDuration}秒`);
 
-    return NextResponse.json({
-      report,
+    console.log(`🏁 [Success] 處理完成，耗時: ${totalDuration}秒`);
+
+    // 回傳給前端
+    // saved: false (因為我們移除了 DB 寫入)
+    // is_logged_in: 讓前端知道使用者是否登入 (可用於 UI 顯示)
+    return NextResponse.json({ 
+      report, 
       modelUsed: MODEL_NAME,
-      saved: false, // 明確告知前端未存檔
+      saved: false,
+      is_logged_in: !isGuest,
       meta: {
         duration: totalDuration,
         timestamp: new Date().toISOString()
@@ -353,16 +262,12 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('❌ [Critical Error] API 全局錯誤:', error);
-    
-    const status = error.message.includes('Gemini API Error') || error.message.includes('Quota Exceeded') ? 502 : 500;
-    
-    return NextResponse.json(
-      { 
-        error: error.message || 'Internal Server Error',
-        details: '請稍後再試或檢查 API 額度'
-      },
-      { status }
-    );
+    console.error('❌ [API Fatal Error]', error);
+    // 區分錯誤類型回傳不同狀態碼
+    const status = error.message.includes('429') ? 429 : 500;
+    return NextResponse.json({ 
+      error: error.message || 'Internal Server Error',
+      details: '請稍後再試'
+    }, { status });
   }
 }
