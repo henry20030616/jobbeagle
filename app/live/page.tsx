@@ -1,0 +1,155 @@
+'use client';
+
+import React, { useState } from 'react';
+import VideoFeed from '@/components/live/VideoFeed';
+import CreatorStudio from '@/components/live/CreatorStudio';
+import { JobData, AppMode } from '@/types';
+import { Home, PlusSquare, User, Briefcase, MessageCircle, X, AlertCircle } from 'lucide-react';
+
+// Initial sample jobs
+const INITIAL_JOBS: JobData[] = [
+  {
+    id: 'google-01',
+    companyName: 'Google',
+    jobTitle: 'Senior Software Engineer',
+    location: 'Mountain View, CA',
+    salary: 'USD 180k - 250k / yr',
+    description: 'Join the team building the future of AI. We are looking for experienced engineers to work on Gemini and large language models.',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    tags: ['AI', 'React', 'Python'],
+    logoUrl: 'https://logo.clearbit.com/google.com',
+    contactEmail: 'careers@google.com'
+  },
+  {
+    id: 'apple-01',
+    companyName: 'Apple',
+    jobTitle: 'iOS Developer',
+    location: 'Cupertino, CA',
+    salary: 'USD 160k - 230k / yr',
+    description: 'Design and build applications for the iOS platform. Ensure the performance, quality, and responsiveness of applications.',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    tags: ['Swift', 'iOS', 'Mobile'],
+    logoUrl: 'https://logo.clearbit.com/apple.com',
+    contactEmail: 'recruiting@apple.com'
+  },
+  {
+    id: 'microsoft-01',
+    companyName: 'Microsoft',
+    jobTitle: 'Cloud Architect (Azure)',
+    location: 'Redmond, WA',
+    salary: 'USD 150k - 220k / yr',
+    description: 'Lead the design and implementation of secure, scalable, and reliable cloud solutions on Azure.',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    tags: ['Azure', 'Cloud', 'Architecture'],
+    logoUrl: 'https://logo.clearbit.com/microsoft.com',
+    contactEmail: 'azure-hiring@microsoft.com'
+  },
+];
+
+export default function JobLivePage() {
+  const [mode, setMode] = useState<AppMode>(AppMode.FEED);
+  const [jobs, setJobs] = useState<JobData[]>(INITIAL_JOBS);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleJobCreated = (newJob: JobData) => {
+    setJobs([newJob, ...jobs]);
+    setMode(AppMode.FEED);
+    setError(null);
+  };
+
+  const handleError = (message: string) => {
+    setError(message);
+    // Auto-hide error after 5 seconds
+    setTimeout(() => setError(null), 5000);
+  };
+
+  return (
+    <div className="h-[100dvh] w-full bg-black flex flex-col relative overflow-hidden font-sans">
+      
+      {/* Error Toast */}
+      {error && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
+          <div className="bg-red-900/90 backdrop-blur-md border border-red-500/50 rounded-lg p-4 shadow-xl flex items-center gap-3 min-w-[300px] max-w-[90vw]">
+            <AlertCircle className="text-red-400 flex-shrink-0" size={20} />
+            <p className="text-red-100 text-sm flex-1">{error}</p>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-400 hover:text-red-300 flex-shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 h-full w-full relative">
+        {mode === AppMode.FEED ? (
+            <VideoFeed jobs={jobs} />
+        ) : (
+            <CreatorStudio onJobCreated={handleJobCreated} onError={handleError} />
+        )}
+      </div>
+
+      {/* Top Bar (Overlay) - Only visible on Feed for branding */}
+      {mode === AppMode.FEED && (
+          <div className="absolute top-0 left-0 w-full p-4 z-30 pointer-events-none flex justify-between items-start bg-gradient-to-b from-black/60 to-transparent">
+             <div>
+                <h1 className="text-white font-black text-2xl tracking-tighter drop-shadow-lg flex items-center gap-1">
+                    <span className="text-cyan-400">Job</span>Live
+                </h1>
+                <p className="text-xs text-white/60 mt-1">短影音腳本生成 (Beta)</p>
+                <div className="flex gap-4 text-white/80 font-semibold text-sm mt-2 pointer-events-auto">
+                    <span className="border-b-2 border-white pb-1">For You</span>
+                    <span className="opacity-60">Following</span>
+                </div>
+             </div>
+          </div>
+      )}
+
+      {/* Bottom Navigation Bar */}
+      <div className="h-16 bg-black border-t border-gray-900 flex flex-row items-center justify-around z-40 text-gray-400 pb-2">
+        <button 
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${mode === AppMode.FEED ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            onClick={() => setMode(AppMode.FEED)}
+        >
+            <Home size={24} strokeWidth={mode === AppMode.FEED ? 3 : 2} />
+            <span className="text-[10px] font-medium">Home</span>
+        </button>
+        
+        <button 
+             className="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-gray-300"
+        >
+            <Briefcase size={24} />
+            <span className="text-[10px] font-medium">Jobs</span>
+        </button>
+
+        <button 
+            className="flex flex-col items-center justify-center -mt-6"
+            onClick={() => setMode(AppMode.CREATOR)}
+        >
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-900/50 border-2 border-black transition-transform active:scale-95">
+                <PlusSquare size={24} fill="currentColor" className="text-white" />
+            </div>
+        </button>
+
+        <button 
+             className="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-gray-300"
+        >
+            <div className="relative">
+                <div className="w-2 h-2 bg-red-500 rounded-full absolute -top-0 -right-0 animate-pulse"></div>
+                <MessageCircle size={24} />
+            </div>
+            <span className="text-[10px] font-medium">Inbox</span>
+        </button>
+
+        <button 
+             className="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-gray-300"
+        >
+            <User size={24} />
+            <span className="text-[10px] font-medium">Profile</span>
+        </button>
+      </div>
+    </div>
+  );
+}

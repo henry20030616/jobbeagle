@@ -33,3 +33,7 @@ body {
     display: none !important;
   }
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
