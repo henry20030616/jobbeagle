@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import VideoFeed from '@/components/shorts/VideoFeed';
-import CreatorStudio from '@/components/shorts/CreatorStudio';
-import { JobData, AppMode } from '@/types';
-import { Home, PlusSquare, User, Briefcase, MessageCircle, X, AlertCircle } from 'lucide-react';
+import { JobData } from '@/types';
+import { Home, User, Briefcase, MessageCircle, X, AlertCircle } from 'lucide-react';
 
 // Helper function to generate logo URL
 const getLogoUrl = (companyName: string): string => {
@@ -60,17 +59,10 @@ const INITIAL_JOBS: JobData[] = [
 ];
 
 export default function JobbeaglePage() {
-  const [mode, setMode] = useState<AppMode>(AppMode.FEED);
-  const [jobs, setJobs] = useState<JobData[]>(INITIAL_JOBS);
+  const [jobs] = useState<JobData[]>(INITIAL_JOBS);
   const [error, setError] = useState<string | null>(null);
   const [followedJobIds, setFollowedJobIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('foryou');
-
-  const handleJobCreated = (newJob: JobData) => {
-    setJobs([newJob, ...jobs]);
-    setMode(AppMode.FEED);
-    setError(null);
-  };
 
   const handleError = (message: string) => {
     setError(message);
@@ -116,49 +108,42 @@ export default function JobbeaglePage() {
 
       {/* Main Content Area */}
       <div className="flex-1 h-full w-full relative">
-        {mode === AppMode.FEED ? (
-            <VideoFeed 
-              jobs={displayedJobs} 
-              followedJobIds={followedJobIds}
-              onFollowChange={handleFollowChange}
-            />
-        ) : (
-            <CreatorStudio onJobCreated={handleJobCreated} onError={handleError} />
-        )}
+        <VideoFeed 
+          jobs={displayedJobs} 
+          followedJobIds={followedJobIds}
+          onFollowChange={handleFollowChange}
+        />
       </div>
 
-      {/* Top Bar (Overlay) - Only visible on Feed for branding */}
-      {mode === AppMode.FEED && (
-          <div className="absolute top-0 left-0 w-full p-4 z-30 pointer-events-none flex justify-between items-start bg-gradient-to-b from-black/60 to-transparent">
-             <div>
-                <h1 className="text-white font-black text-2xl tracking-tighter drop-shadow-lg flex items-center gap-1">
-                    <span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span> <span className="text-white/80 text-lg font-normal">Shorts</span>
-                </h1>
-                <div className="flex gap-4 text-white/80 font-semibold text-sm mt-2 pointer-events-auto">
-                    <button
-                      onClick={() => setActiveTab('foryou')}
-                      className={`pb-1 transition-colors ${activeTab === 'foryou' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
-                    >
-                      For You
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('following')}
-                      className={`pb-1 transition-colors ${activeTab === 'following' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
-                    >
-                      Following {followedJobIds.size > 0 && `(${followedJobIds.size})`}
-                    </button>
-                </div>
-             </div>
-          </div>
-      )}
+      {/* Top Bar (Overlay) */}
+      <div className="absolute top-0 left-0 w-full p-4 z-30 pointer-events-none flex justify-between items-start bg-gradient-to-b from-black/60 to-transparent">
+         <div>
+            <h1 className="text-white font-black text-2xl tracking-tighter drop-shadow-lg flex items-center gap-1">
+                <span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span> <span className="text-white/80 text-lg font-normal">Shorts</span>
+            </h1>
+            <div className="flex gap-4 text-white/80 font-semibold text-sm mt-2 pointer-events-auto">
+                <button
+                  onClick={() => setActiveTab('foryou')}
+                  className={`pb-1 transition-colors ${activeTab === 'foryou' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
+                >
+                  For You
+                </button>
+                <button
+                  onClick={() => setActiveTab('following')}
+                  className={`pb-1 transition-colors ${activeTab === 'following' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
+                >
+                  Following {followedJobIds.size > 0 && `(${followedJobIds.size})`}
+                </button>
+            </div>
+         </div>
+      </div>
 
       {/* Bottom Navigation Bar */}
       <div className="h-16 bg-black border-t border-gray-900 flex flex-row items-center justify-around z-40 text-gray-400 pb-2">
         <button 
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${mode === AppMode.FEED ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            onClick={() => setMode(AppMode.FEED)}
+            className="flex flex-col items-center gap-1 p-2 text-white"
         >
-            <Home size={24} strokeWidth={mode === AppMode.FEED ? 3 : 2} />
+            <Home size={24} strokeWidth={3} />
             <span className="text-[10px] font-medium">Home</span>
         </button>
         
@@ -167,15 +152,6 @@ export default function JobbeaglePage() {
         >
             <Briefcase size={24} />
             <span className="text-[10px] font-medium">Jobs</span>
-        </button>
-
-        <button 
-            className="flex flex-col items-center justify-center -mt-6"
-            onClick={() => setMode(AppMode.CREATOR)}
-        >
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-900/50 border-2 border-black transition-transform active:scale-95">
-                <PlusSquare size={24} fill="currentColor" className="text-white" />
-            </div>
         </button>
 
         <button 
