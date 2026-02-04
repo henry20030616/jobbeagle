@@ -282,14 +282,23 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    console.log('📁 [File Upload] 文件选择事件触发', { file: file?.name, size: file?.size, type: file?.type });
+    
+    if (!file) {
+      console.warn('⚠️ [File Upload] 没有选择文件');
+      return;
+    }
 
     if (file.size > 4 * 1024 * 1024) {
+      console.error('❌ [File Upload] 文件太大:', file.size);
       alert(t.fileTooLarge);
       return;
     }
 
+    console.log('✅ [File Upload] 开始处理文件:', file.name);
+
     const processFile = (result: string, isPdf: boolean) => {
+      console.log('✅ [File Upload] 文件处理完成', { fileName: file.name, type: isPdf ? 'PDF' : 'Text', contentLength: result.length });
       setResume({
         type: isPdf ? 'file' : 'text',
         content: result,
@@ -298,18 +307,43 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       });
     };
 
-    if (file.type === 'application/pdf') {
+    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+      console.log('📄 [File Upload] 处理 PDF 文件');
       const reader = new FileReader();
+      reader.onerror = (error) => {
+        console.error('❌ [File Upload] PDF 读取错误:', error);
+        alert('读取 PDF 文件时发生错误，请重试');
+      };
       reader.onloadend = () => {
         const result = reader.result as string;
+        if (!result) {
+          console.error('❌ [File Upload] PDF 读取结果为空');
+          alert('读取 PDF 文件失败，请重试');
+          return;
+        }
         const base64String = result.split(',')[1];
+        if (!base64String) {
+          console.error('❌ [File Upload] Base64 编码失败');
+          alert('PDF 文件编码失败，请重试');
+          return;
+        }
         processFile(base64String, true);
       };
       reader.readAsDataURL(file);
     } else {
+      console.log('📝 [File Upload] 处理文本文件');
       const reader = new FileReader();
+      reader.onerror = (error) => {
+        console.error('❌ [File Upload] 文本文件读取错误:', error);
+        alert('读取文本文件时发生错误，请重试');
+      };
       reader.onload = (e) => {
         const text = e.target?.result as string;
+        if (!text) {
+          console.error('❌ [File Upload] 文本读取结果为空');
+          alert('读取文本文件失败，请重试');
+          return;
+        }
         processFile(text, false);
       };
       reader.readAsText(file);
@@ -408,7 +442,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
             <div className="mr-6">
                <BeagleIcon className="w-16 h-16 md:w-28 md:h-28 drop-shadow-xl" color="#cbd5e1" spotColor="#5d4037" bellyColor="#94a3b8" />
             </div>
-            <span>{t.title}</span>
+            <span><span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span></span>
           </div>
           <span className="text-xl md:text-3xl font-medium text-slate-500 mt-2 md:mt-0 md:ml-6 tracking-normal">
             {t.subtitle}
@@ -576,14 +610,26 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
               <div className="mb-6 flex-1">
                   {!resume ? (
-                    <div className="w-full h-full min-h-[180px] border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all">
-                        <div onClick={() => fileInputRef.current?.click()} className="flex flex-col items-center justify-center cursor-pointer hover:bg-slate-700/30 w-full p-6 flex-1 rounded-t-xl group">
+                    <div className="w-full h-full min-h-[180px] border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
+                        <label 
+                          htmlFor="resume-file-input"
+                          className="flex flex-col items-center justify-center cursor-pointer hover:bg-slate-700/30 w-full p-6 flex-1 rounded-t-xl group relative z-10"
+                        >
                             <div className="p-4 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors mb-3 border border-slate-700 group-hover:border-indigo-500/30">
                                 <Upload className="w-8 h-8 text-slate-400 group-hover:text-indigo-400" />
                             </div>
                             <p className="text-base text-slate-300 font-bold">{t.upload}</p>
                             <p className="text-xs text-slate-500 mt-1 font-medium">{t.uploadSupport}</p>
-                        </div>
+                        </label>
+                        <input 
+                          id="resume-file-input"
+                          type="file" 
+                          ref={fileInputRef} 
+                          onChange={handleFileChange} 
+                          accept=".pdf,.txt,.md" 
+                          className="hidden" 
+                          aria-label="Upload resume file"
+                        />
                     </div>
                   ) : (
                      <div className="w-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex items-center justify-between p-6 animate-fade-in h-auto">
@@ -626,7 +672,6 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                        </div>
                      </div>
                   )}
-                  <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.txt,.md" className="hidden" />
               </div>
 
 

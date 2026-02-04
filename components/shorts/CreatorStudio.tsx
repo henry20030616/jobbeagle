@@ -31,13 +31,13 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ onJobCreated, onError }) 
 
   const handleGenerateScript = async () => {
     if (!formData.companyName || !formData.jobTitle) {
-      onError('請填寫公司名稱和職位名稱');
+      onError('Please fill in company name and job title');
       return;
     }
     
     setStep('generating_script');
     try {
-      const response = await fetch('/api/live', {
+      const response = await fetch('/api/shorts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -50,14 +50,14 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ onJobCreated, onError }) 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || '腳本生成失敗');
+        throw new Error(result.error || 'Script generation failed');
       }
 
       setGeneratedContent(result);
       setStep('preview_script');
     } catch (error: any) {
       console.error(error);
-      onError(error.message || '腳本生成失敗，請重試');
+      onError(error.message || 'Script generation failed, please try again');
       setStep('input');
     }
   };
@@ -65,7 +65,7 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ onJobCreated, onError }) 
   const handleGenerateVideo = async () => {
     if (!generatedContent) return;
     
-    onError('影片生成功能 (Veo) 目前需要付費 API Key，此功能暫時不可用');
+    onError('Video generation feature (Veo) currently requires a paid API Key, this feature is temporarily unavailable');
     // Note: Video generation with Veo requires paid API key
     // This is a placeholder for future implementation
     setStep('preview_script');
@@ -102,7 +102,7 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ onJobCreated, onError }) 
     if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         if (file.size > 50 * 1024 * 1024) {
-          onError('檔案大小超過 50MB，請上傳較小的檔案');
+          onError('File size exceeds 50MB, please upload a smaller file');
           return;
         }
         setUploadedFile(file);

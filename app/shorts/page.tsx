@@ -1,10 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import VideoFeed from '@/components/live/VideoFeed';
-import CreatorStudio from '@/components/live/CreatorStudio';
+import VideoFeed from '@/components/shorts/VideoFeed';
+import CreatorStudio from '@/components/shorts/CreatorStudio';
 import { JobData, AppMode } from '@/types';
 import { Home, PlusSquare, User, Briefcase, MessageCircle, X, AlertCircle } from 'lucide-react';
+
+// Helper function to generate logo URL
+const getLogoUrl = (companyName: string): string => {
+  // Try multiple logo APIs as fallback
+  const domain = companyName.toLowerCase().replace(/\s+/g, '');
+  
+  // Option 1: Google Favicon API (most reliable)
+  return `https://www.google.com/s2/favicons?domain=${domain}.com&sz=128`;
+  
+  // Option 2: If Google fails, can use:
+  // return `https://logo.clearbit.com/${domain}.com`;
+  // return `https://api.dicebear.com/7.x/initials/svg?seed=${companyName}`;
+};
 
 // Initial sample jobs
 const INITIAL_JOBS: JobData[] = [
@@ -17,7 +30,7 @@ const INITIAL_JOBS: JobData[] = [
     description: 'Join the team building the future of AI. We are looking for experienced engineers to work on Gemini and large language models.',
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     tags: ['AI', 'React', 'Python'],
-    logoUrl: 'https://logo.clearbit.com/google.com',
+    logoUrl: getLogoUrl('Google'),
     contactEmail: 'careers@google.com'
   },
   {
@@ -29,7 +42,7 @@ const INITIAL_JOBS: JobData[] = [
     description: 'Design and build applications for the iOS platform. Ensure the performance, quality, and responsiveness of applications.',
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
     tags: ['Swift', 'iOS', 'Mobile'],
-    logoUrl: 'https://logo.clearbit.com/apple.com',
+    logoUrl: getLogoUrl('Apple'),
     contactEmail: 'recruiting@apple.com'
   },
   {
@@ -41,15 +54,17 @@ const INITIAL_JOBS: JobData[] = [
     description: 'Lead the design and implementation of secure, scalable, and reliable cloud solutions on Azure.',
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     tags: ['Azure', 'Cloud', 'Architecture'],
-    logoUrl: 'https://logo.clearbit.com/microsoft.com',
+    logoUrl: getLogoUrl('Microsoft'),
     contactEmail: 'azure-hiring@microsoft.com'
   },
 ];
 
-export default function JobLivePage() {
+export default function JobbeaglePage() {
   const [mode, setMode] = useState<AppMode>(AppMode.FEED);
   const [jobs, setJobs] = useState<JobData[]>(INITIAL_JOBS);
   const [error, setError] = useState<string | null>(null);
+  const [followedJobIds, setFollowedJobIds] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('foryou');
 
   const handleJobCreated = (newJob: JobData) => {
     setJobs([newJob, ...jobs]);
@@ -62,6 +77,23 @@ export default function JobLivePage() {
     // Auto-hide error after 5 seconds
     setTimeout(() => setError(null), 5000);
   };
+
+  const handleFollowChange = (jobId: string, followed: boolean) => {
+    setFollowedJobIds(prev => {
+      const newSet = new Set(prev);
+      if (followed) {
+        newSet.add(jobId);
+      } else {
+        newSet.delete(jobId);
+      }
+      return newSet;
+    });
+  };
+
+  // Filter jobs based on active tab
+  const displayedJobs = activeTab === 'following' 
+    ? jobs.filter(job => followedJobIds.has(job.id))
+    : jobs;
 
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col relative overflow-hidden font-sans">
@@ -85,7 +117,11 @@ export default function JobLivePage() {
       {/* Main Content Area */}
       <div className="flex-1 h-full w-full relative">
         {mode === AppMode.FEED ? (
-            <VideoFeed jobs={jobs} />
+            <VideoFeed 
+              jobs={displayedJobs} 
+              followedJobIds={followedJobIds}
+              onFollowChange={handleFollowChange}
+            />
         ) : (
             <CreatorStudio onJobCreated={handleJobCreated} onError={handleError} />
         )}
@@ -96,12 +132,21 @@ export default function JobLivePage() {
           <div className="absolute top-0 left-0 w-full p-4 z-30 pointer-events-none flex justify-between items-start bg-gradient-to-b from-black/60 to-transparent">
              <div>
                 <h1 className="text-white font-black text-2xl tracking-tighter drop-shadow-lg flex items-center gap-1">
-                    <span className="text-cyan-400">Job</span>Live
+                    <span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span> <span className="text-white/80 text-lg font-normal">Shorts</span>
                 </h1>
-                <p className="text-xs text-white/60 mt-1">短影音腳本生成 (Beta)</p>
                 <div className="flex gap-4 text-white/80 font-semibold text-sm mt-2 pointer-events-auto">
-                    <span className="border-b-2 border-white pb-1">For You</span>
-                    <span className="opacity-60">Following</span>
+                    <button
+                      onClick={() => setActiveTab('foryou')}
+                      className={`pb-1 transition-colors ${activeTab === 'foryou' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
+                    >
+                      For You
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('following')}
+                      className={`pb-1 transition-colors ${activeTab === 'following' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
+                    >
+                      Following {followedJobIds.size > 0 && `(${followedJobIds.size})`}
+                    </button>
                 </div>
              </div>
           </div>

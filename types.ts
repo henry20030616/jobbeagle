@@ -112,7 +112,7 @@ export interface UserInputs {
   language?: 'zh' | 'en';
 }
 
-// JobLive types
+// Jobbeagle Shorts types
 export interface JobData {
   id: string;
   companyName: string;

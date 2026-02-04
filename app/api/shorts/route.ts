@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const maxDuration = 120; // 2 minutes for video generation
 
-interface JobLiveRequest {
+interface JobbeagleRequest {
   companyName: string;
   jobTitle: string;
   description: string;
@@ -16,13 +16,13 @@ interface GeneratedContent {
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log('🚀 [JobLive API] 開始處理腳本生成請求');
+  console.log('🚀 [Jobbeagle API] 開始處理腳本生成請求');
 
   try {
-    const body: JobLiveRequest = await request.json();
+    const body: JobbeagleRequest = await request.json();
     const { companyName, jobTitle, description } = body;
 
-    console.log(`📦 [JobLive API] 接收資料: ${companyName} - ${jobTitle}`);
+    console.log(`📦 [Jobbeagle API] 接收資料: ${companyName} - ${jobTitle}`);
 
     if (!companyName || !jobTitle) {
       return NextResponse.json(
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('❌ [JobLive API] 找不到 GEMINI_API_KEY');
+      console.error('❌ [Jobbeagle API] 找不到 GEMINI_API_KEY');
       return NextResponse.json(
         { error: 'Gemini API key not configured' },
         { status: 500 }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       ],
     };
 
-    console.log(`🤖 [JobLive API] 調用 Gemini ${model}...`);
+    console.log(`🤖 [Jobbeagle API] 調用 Gemini ${model}...`);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -89,11 +89,11 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ [JobLive API] Gemini 錯誤: ${response.status}`, errorText.substring(0, 500));
+      console.error(`❌ [Jobbeagle API] Gemini 錯誤: ${response.status}`, errorText.substring(0, 500));
       
       // 如果 v1beta 失敗，嘗試 v1
       if (response.status === 404 || response.status === 400) {
-        console.warn(`⚠️ [JobLive API] v1beta 失敗，嘗試 v1 API...`);
+        console.warn(`⚠️ [Jobbeagle API] v1beta 失敗，嘗試 v1 API...`);
         const v1Url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
         const v1Response = await fetch(v1Url, {
           method: 'POST',
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 
         if (!v1Response.ok) {
           const v1ErrorText = await v1Response.text();
-          console.error(`❌ [JobLive API] v1 API 也失敗: ${v1Response.status}`, v1ErrorText.substring(0, 500));
+          console.error(`❌ [Jobbeagle API] v1 API 也失敗: ${v1Response.status}`, v1ErrorText.substring(0, 500));
           throw new Error(`Gemini API Error: ${v1Response.status} ${v1ErrorText.substring(0, 100)}`);
         }
 
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         const jsonResponse = JSON.parse(cleanedText);
 
         const duration = (Date.now() - startTime) / 1000;
-        console.log(`✅ [JobLive API] 成功生成腳本 (${duration}秒)`);
+        console.log(`✅ [Jobbeagle API] 成功生成腳本 (${duration}秒)`);
 
         const result: GeneratedContent = {
           script: jsonResponse.script || '',
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
     const jsonResponse = JSON.parse(cleanedText);
 
     const duration = (Date.now() - startTime) / 1000;
-    console.log(`✅ [JobLive API] 成功生成腳本 (${duration}秒)`);
+    console.log(`✅ [Jobbeagle API] 成功生成腳本 (${duration}秒)`);
 
     const result: GeneratedContent = {
       script: jsonResponse.script || '',
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
 
   } catch (error: any) {
-    console.error('❌ [JobLive API] 錯誤:', error);
+    console.error('❌ [Jobbeagle API] 錯誤:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to generate script' },
       { status: 500 }
