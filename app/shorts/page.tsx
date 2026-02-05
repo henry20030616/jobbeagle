@@ -297,14 +297,22 @@ export default function JobbeaglePage() {
                         onClick={() => setShowLoginMenu(false)}
                       />
                       <div className="absolute top-full right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
-                        <a
-                          href="/employer/login"
-                          className="flex items-center gap-2 px-4 py-3 hover:bg-slate-700 transition-colors text-white text-sm"
-                          onClick={() => setShowLoginMenu(false)}
+                        <button
+                          onClick={async () => {
+                            const supabase = createClient();
+                            await supabase.auth.signInWithOAuth({
+                              provider: 'google',
+                              options: {
+                                redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts&type=employer`,
+                              },
+                            });
+                            setShowLoginMenu(false);
+                          }}
+                          className="w-full flex items-center gap-2 px-4 py-3 hover:bg-slate-700 transition-colors text-white text-sm text-left"
                         >
                           <Building2 className="w-4 h-4" />
                           <span>{language === 'zh' ? '企業登入' : 'Employer Login'}</span>
-                        </a>
+                        </button>
                         <div className="border-t border-slate-700">
                           <button
                             onClick={async () => {

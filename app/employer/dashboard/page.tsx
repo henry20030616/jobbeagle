@@ -75,6 +75,12 @@ export default function EmployerDashboard() {
         .eq('user_id', userId)
         .single();
 
+      // 如果表不存在，顯示友好錯誤訊息
+      if (companyError && companyError.message?.includes('relation') && companyError.message?.includes('does not exist')) {
+        setError('數據庫表尚未創建。請在 Supabase SQL Editor 中執行 supabase-employer-schema.sql 腳本。');
+        return;
+      }
+
       if (companyError && companyError.code !== 'PGRST116') {
         throw companyError;
       }
@@ -91,7 +97,14 @@ export default function EmployerDashboard() {
           .select()
           .single();
 
-        if (createError) throw createError;
+        if (createError) {
+          // 如果插入失敗且是因為表不存在
+          if (createError.message?.includes('relation') && createError.message?.includes('does not exist')) {
+            setError('數據庫表尚未創建。請在 Supabase SQL Editor 中執行 supabase-employer-schema.sql 腳本。');
+            return;
+          }
+          throw createError;
+        }
         setCompany(newCompany);
       } else {
         setCompany(companyData);
