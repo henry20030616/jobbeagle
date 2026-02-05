@@ -109,7 +109,15 @@ export default function Home() {
               English
             </button>
           </div>
-          <LoginButton />
+          <div className="flex items-center gap-4">
+            <a
+              href="/employer/login"
+              className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors border border-slate-600 rounded-lg hover:border-slate-500"
+            >
+              企业登录
+            </a>
+            <LoginButton />
+          </div>
         </div>
         
         {loading && <DogLoading />}

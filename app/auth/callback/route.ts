@@ -51,5 +51,8 @@ export async function GET(request: Request) {
   }
 
   // URL to redirect to after sign in process completes
-  return NextResponse.redirect(`${origin}/`);
+  // 检查是否有重定向参数（用于企业登录）
+  const redirectTo = requestUrl.searchParams.get('redirect');
+  const finalRedirect = redirectTo ? `${origin}${redirectTo}` : `${origin}/`;
+  return NextResponse.redirect(finalRedirect);
 }
