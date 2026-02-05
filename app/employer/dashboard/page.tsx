@@ -60,10 +60,10 @@ export default function EmployerDashboard() {
     }
 
     setUser(user);
-    await loadCompanyAndVideos(user.id);
+    await loadCompanyAndVideos(user.id, user);
   };
 
-  const loadCompanyAndVideos = async (userId: string) => {
+  const loadCompanyAndVideos = async (userId: string, user: any) => {
     try {
       setLoading(true);
       const supabase = createClient();
@@ -91,8 +91,8 @@ export default function EmployerDashboard() {
           .from('companies')
           .insert({
             user_id: userId,
-            company_name: user.user_metadata?.full_name || user.email?.split('@')[0] || '新企業',
-            company_email: user.email,
+            company_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || '新企業',
+            company_email: user?.email || '',
           })
           .select()
           .single();
@@ -342,7 +342,9 @@ export default function EmployerDashboard() {
           onClose={() => setShowUploadModal(false)}
           onSuccess={() => {
             setShowUploadModal(false);
-            loadCompanyAndVideos(user.id);
+            if (user) {
+              loadCompanyAndVideos(user.id, user);
+            }
             setSuccess('影片上傳成功');
             setTimeout(() => setSuccess(null), 3000);
           }}
