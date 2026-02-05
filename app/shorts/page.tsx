@@ -217,24 +217,27 @@ export default function JobbeaglePage() {
             </div>
          </div>
          {/* Video Generator Tool Button - 右上角 */}
-         <div className="pointer-events-auto relative z-50 flex flex-col items-end gap-2">
+         <div className="pointer-events-auto relative z-50">
             <button
               onClick={() => setShowVideoGenerator(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 hover:from-purple-600 hover:via-pink-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-2xl border-2 border-white/20 hover:border-white/40"
+              className="flex flex-col items-center gap-1.5 px-5 py-3 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-2xl border-2 border-blue-400/30 hover:border-blue-300/50"
             >
-              <Sparkles className="w-5 h-5" />
-              <span className="text-sm font-bold">Video Generator</span>
+              {/* Top row: Sparkles icon + Video Generator text */}
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                <span className="text-sm font-bold">Video Generator</span>
+              </div>
+              {/* Bottom row: Beagle logo + Beagle AI text */}
+              <div className="flex items-center gap-1.5">
+                <BeagleIcon 
+                  className="w-4 h-4" 
+                  color="#ffffff" 
+                  spotColor="#1e40af" 
+                  bellyColor="#3b82f6" 
+                />
+                <span className="text-xs font-medium opacity-90">Beagle AI</span>
+              </div>
             </button>
-            {/* Beagle AI Label with Logo */}
-            <div className="flex items-center gap-1.5 text-white/80">
-              <BeagleIcon 
-                className="w-4 h-4" 
-                color="#cbd5e1" 
-                spotColor="#5d4037" 
-                bellyColor="#94a3b8" 
-              />
-              <span className="text-xs font-medium">Beagle AI</span>
-            </div>
          </div>
       </div>
 
