@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/browser';
-import { LogIn, LogOut, User, Github } from 'lucide-react';
+import { LogIn, LogOut, User } from 'lucide-react';
 
 const LoginButton: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -27,7 +27,7 @@ const LoginButton: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogin = async (provider: 'github' | 'google') => {
+  const handleLogin = async () => {
     try {
       const supabase = createClient();
       
@@ -42,13 +42,13 @@ const LoginButton: React.FC = () => {
       }
 
       console.log('🔐 開始登入流程...', {
-        provider,
+        provider: 'google',
         redirectTo: `${window.location.origin}/auth/callback`,
         supabaseUrl: supabaseUrl.substring(0, 30) + '...',
       });
 
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
+        provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
@@ -63,7 +63,6 @@ const LoginButton: React.FC = () => {
           error,
           message: error.message,
           status: error.status,
-          provider,
         });
         
         // 提供更友善的錯誤訊息
@@ -71,7 +70,7 @@ const LoginButton: React.FC = () => {
         if (error.message?.includes('provider is not enabled') || 
             error.message?.includes('Unsupported provider') ||
             error.status === 400) {
-          errorMessage = `${provider === 'google' ? 'Google' : 'GitHub'} 登入尚未啟用。\n\n請按照以下步驟設定：\n\n1. 前往 Supabase Dashboard\n2. 選擇您的專案\n3. 前往 Authentication → Providers\n4. 找到 ${provider === 'google' ? 'Google' : 'GitHub'} 並點擊\n5. 啟用該 Provider\n6. 設定 OAuth 憑證（Client ID 和 Secret）\n\n詳細步驟請參考 GOOGLE_OAUTH_SETUP.md 文件`;
+          errorMessage = `Google 登入尚未啟用。\n\n請按照以下步驟設定：\n\n1. 前往 Supabase Dashboard\n2. 選擇您的專案\n3. 前往 Authentication → Providers\n4. 找到 Google 並點擊\n5. 啟用該 Provider\n6. 設定 OAuth 憑證（Client ID 和 Secret）\n\n詳細步驟請參考 GOOGLE_OAUTH_SETUP.md 文件`;
         }
         
         alert(`登入失敗：${errorMessage}`);
@@ -153,14 +152,7 @@ const LoginButton: React.FC = () => {
   return (
     <div className="flex items-center space-x-2">
       <button
-        onClick={() => handleLogin('github')}
-        className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors text-sm font-medium border border-slate-600"
-      >
-        <Github className="w-4 h-4" />
-        <span>GitHub</span>
-      </button>
-      <button
-        onClick={() => handleLogin('google')}
+        onClick={handleLogin}
         className="flex items-center space-x-2 px-4 py-2 bg-white hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-medium border border-gray-300"
       >
         <svg className="w-4 h-4" viewBox="0 0 24 24">

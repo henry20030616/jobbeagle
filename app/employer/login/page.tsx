@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 import { useRouter } from 'next/navigation';
-import { Github, Mail, Building2, AlertCircle } from 'lucide-react';
+import { Mail, Building2, AlertCircle } from 'lucide-react';
 
 export default function EmployerLoginPage() {
   const [user, setUser] = useState<any>(null);
@@ -51,13 +51,13 @@ export default function EmployerLoginPage() {
     }
   };
 
-  const handleLogin = async (provider: 'github' | 'google') => {
+  const handleLogin = async () => {
     try {
       setError(null);
       const supabase = createClient();
 
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
+        provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback?redirect=/employer/dashboard`,
           queryParams: {
@@ -110,19 +110,11 @@ export default function EmployerLoginPage() {
           {/* Login Buttons */}
           <div className="space-y-3">
             <button
-              onClick={() => handleLogin('google')}
+              onClick={handleLogin}
               className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white hover:bg-gray-100 text-gray-900 rounded-lg font-medium transition-colors shadow-lg"
             >
               <Mail className="w-5 h-5" />
               <span>使用 Google 登入</span>
-            </button>
-
-            <button
-              onClick={() => handleLogin('github')}
-              className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors shadow-lg"
-            >
-              <Github className="w-5 h-5" />
-              <span>使用 GitHub 登入</span>
             </button>
           </div>
 
