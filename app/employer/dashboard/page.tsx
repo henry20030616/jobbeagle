@@ -68,7 +68,7 @@ export default function EmployerDashboard() {
       setLoading(true);
       const supabase = createClient();
 
-      // 加载企业信息
+      // 載入企業資訊
       const { data: companyData, error: companyError } = await supabase
         .from('companies')
         .select('*')
@@ -79,13 +79,13 @@ export default function EmployerDashboard() {
         throw companyError;
       }
 
-      // 如果企业不存在，创建新企业
+      // 如果企業不存在，建立新企業
       if (!companyData) {
         const { data: newCompany, error: createError } = await supabase
           .from('companies')
           .insert({
             user_id: userId,
-            company_name: user.user_metadata?.full_name || user.email?.split('@')[0] || '新企业',
+            company_name: user.user_metadata?.full_name || user.email?.split('@')[0] || '新企業',
             company_email: user.email,
           })
           .select()
@@ -97,7 +97,7 @@ export default function EmployerDashboard() {
         setCompany(companyData);
       }
 
-      // 加载视频列表
+      // 載入影片列表
       if (companyData || !companyError) {
         const companyId = companyData?.id || (await supabase.from('companies').select('id').eq('user_id', userId).single()).data?.id;
         
@@ -113,7 +113,7 @@ export default function EmployerDashboard() {
         }
       }
     } catch (err: any) {
-      setError(err.message || '加载失败');
+      setError(err.message || '載入失敗');
     } finally {
       setLoading(false);
     }
@@ -126,7 +126,7 @@ export default function EmployerDashboard() {
   };
 
   const handleDeleteVideo = async (videoId: string) => {
-    if (!confirm('确定要删除这个视频吗？')) return;
+    if (!confirm('確定要刪除這個影片嗎？')) return;
 
     try {
       const supabase = createClient();
@@ -138,10 +138,10 @@ export default function EmployerDashboard() {
       if (error) throw error;
 
       setVideos(videos.filter(v => v.id !== videoId));
-      setSuccess('视频已删除');
+      setSuccess('影片已刪除');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err.message || '删除失败');
+      setError(err.message || '刪除失敗');
     }
   };
 
@@ -158,10 +158,10 @@ export default function EmployerDashboard() {
       setVideos(videos.map(v => 
         v.id === videoId ? { ...v, is_published: !currentStatus } : v
       ));
-      setSuccess(currentStatus ? '视频已下架' : '视频已发布');
+      setSuccess(currentStatus ? '影片已下架' : '影片已發布');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err.message || '操作失败');
+      setError(err.message || '操作失敗');
     }
   };
 
@@ -183,7 +183,7 @@ export default function EmployerDashboard() {
               <Building2 className="w-8 h-8 text-blue-400" />
               <div>
                 <h1 className="text-xl font-bold text-white">
-                  <span className="text-white">Job</span><span className="text-blue-400">beagle</span> 企业中心
+                  <span className="text-white">Job</span><span className="text-blue-400">beagle</span> 企業中心
                 </h1>
                 <p className="text-slate-400 text-sm">{company?.company_name}</p>
               </div>
@@ -193,7 +193,7 @@ export default function EmployerDashboard() {
               className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-white transition-colors"
             >
               <LogOut className="w-4 h-4" />
-              <span>退出</span>
+              <span>登出</span>
             </button>
           </div>
         </div>
@@ -228,7 +228,7 @@ export default function EmployerDashboard() {
             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all shadow-lg"
           >
             <Plus className="w-5 h-5" />
-            <span>上传新视频</span>
+            <span>上傳新影片</span>
           </button>
         </div>
 
@@ -236,8 +236,8 @@ export default function EmployerDashboard() {
         {videos.length === 0 ? (
           <div className="text-center py-16">
             <Video className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-400 text-lg mb-2">还没有视频</p>
-            <p className="text-slate-500 text-sm">点击上方按钮上传您的第一个招聘视频</p>
+            <p className="text-slate-400 text-lg mb-2">還沒有影片</p>
+            <p className="text-slate-500 text-sm">點擊上方按鈕上傳您的第一個招聘影片</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -265,7 +265,7 @@ export default function EmployerDashboard() {
                         ? 'bg-green-500/20 text-green-300 border border-green-500/50' 
                         : 'bg-slate-500/20 text-slate-300 border border-slate-500/50'
                     }`}>
-                      {video.is_published ? '已发布' : '草稿'}
+                      {video.is_published ? '已發布' : '草稿'}
                     </span>
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export default function EmployerDashboard() {
                       ) : (
                         <>
                           <Eye className="w-4 h-4" />
-                          <span>发布</span>
+                          <span>發布</span>
                         </>
                       )}
                     </button>
@@ -330,7 +330,7 @@ export default function EmployerDashboard() {
           onSuccess={() => {
             setShowUploadModal(false);
             loadCompanyAndVideos(user.id);
-            setSuccess('视频上传成功');
+            setSuccess('影片上傳成功');
             setTimeout(() => setSuccess(null), 3000);
           }}
         />
@@ -370,7 +370,7 @@ function UploadVideoModal({
     setError(null);
 
     if (!formData.job_title || !formData.description || !formData.video_url) {
-      setError('请填写必填字段：职位名称、描述、视频链接');
+      setError('請填寫必填欄位：職位名稱、描述、影片連結');
       return;
     }
 
@@ -404,7 +404,7 @@ function UploadVideoModal({
 
       onSuccess();
     } catch (err: any) {
-      setError(err.message || '上传失败');
+      setError(err.message || '上傳失敗');
     } finally {
       setUploading(false);
     }
@@ -415,7 +415,7 @@ function UploadVideoModal({
       <div className="bg-slate-800 border border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">上传新视频</h2>
+            <h2 className="text-2xl font-bold text-white">上傳新影片</h2>
             <button
               onClick={onClose}
               className="text-slate-400 hover:text-white transition-colors"
@@ -434,7 +434,7 @@ function UploadVideoModal({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-slate-300 text-sm font-medium mb-2">
-                职位名称 <span className="text-red-400">*</span>
+                職位名稱 <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -448,7 +448,7 @@ function UploadVideoModal({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">地点</label>
+                <label className="block text-slate-300 text-sm font-medium mb-2">地點</label>
                 <input
                   type="text"
                   value={formData.location}
@@ -458,7 +458,7 @@ function UploadVideoModal({
                 />
               </div>
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">薪资</label>
+                <label className="block text-slate-300 text-sm font-medium mb-2">薪資</label>
                 <input
                   type="text"
                   value={formData.salary}
@@ -471,21 +471,21 @@ function UploadVideoModal({
 
             <div>
               <label className="block text-slate-300 text-sm font-medium mb-2">
-                职位描述 <span className="text-red-400">*</span>
+                職位描述 <span className="text-red-400">*</span>
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-                placeholder="详细描述这个职位的要求和职责..."
+                placeholder="詳細描述這個職位的要求和職責..."
                 required
               />
             </div>
 
             <div>
               <label className="block text-slate-300 text-sm font-medium mb-2">
-                视频链接 <span className="text-red-400">*</span>
+                影片連結 <span className="text-red-400">*</span>
               </label>
               <input
                 type="url"
@@ -499,7 +499,7 @@ function UploadVideoModal({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">缩略图链接</label>
+                <label className="block text-slate-300 text-sm font-medium mb-2">縮圖連結</label>
                 <input
                   type="url"
                   value={formData.thumbnail_url}
@@ -509,7 +509,7 @@ function UploadVideoModal({
                 />
               </div>
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">Logo 链接</label>
+                <label className="block text-slate-300 text-sm font-medium mb-2">Logo 連結</label>
                 <input
                   type="url"
                   value={formData.logo_url}
@@ -521,7 +521,7 @@ function UploadVideoModal({
             </div>
 
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">标签（用逗号分隔）</label>
+              <label className="block text-slate-300 text-sm font-medium mb-2">標籤（用逗號分隔）</label>
               <input
                 type="text"
                 value={formData.tags}
@@ -532,7 +532,7 @@ function UploadVideoModal({
             </div>
 
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">联系邮箱</label>
+              <label className="block text-slate-300 text-sm font-medium mb-2">聯絡信箱</label>
               <input
                 type="email"
                 value={formData.contact_email}
@@ -551,12 +551,12 @@ function UploadVideoModal({
                 {uploading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>上传中...</span>
+                    <span>上傳中...</span>
                   </>
                 ) : (
                   <>
                     <Upload className="w-5 h-5" />
-                    <span>上传视频</span>
+                    <span>上傳影片</span>
                   </>
                 )}
               </button>

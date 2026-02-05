@@ -360,7 +360,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
   const translations = {
     zh: {
       title: 'Jobbeagle',
-      subtitle: '(職位分析米格魯)',
+      subtitle: '職位分析米格魯',
       description: '專家級 AI 職缺戰略分析中心：結合求職專家分析與獵頭視角，助您掌握應對策略。',
       jobDescription: '職缺描述 (JD)',
       upload: '點擊上傳 PDF 或文字檔',
@@ -444,7 +444,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
             </div>
             <span><span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span></span>
           </div>
-          <span className="text-xl md:text-3xl font-medium text-slate-500 mt-2 md:mt-0 md:ml-6 tracking-normal">
+          <span className="text-sm md:text-lg font-medium text-slate-500 mt-2 md:mt-0 md:ml-6 tracking-normal">
             {t.subtitle}
           </span>
         </h1>

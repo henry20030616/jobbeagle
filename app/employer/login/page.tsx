@@ -14,18 +14,18 @@ export default function EmployerLoginPage() {
   useEffect(() => {
     const supabase = createClient();
 
-    // 检查是否已登录
+    // 檢查是否已登入
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
       setLoading(false);
       
-      // 如果已登录，检查是否是企业会员，如果是则跳转到 Dashboard
+      // 如果已登入，檢查是否為企業會員，如果是則跳轉到 Dashboard
       if (user) {
         checkEmployerStatus(user.id);
       }
     });
 
-    // 监听认证状态变化
+    // 監聽認證狀態變化
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -68,17 +68,17 @@ export default function EmployerLoginPage() {
       });
 
       if (error) {
-        setError(`登录失败: ${error.message}`);
+        setError(`登入失敗: ${error.message}`);
       }
     } catch (err: any) {
-      setError(`登录失败: ${err.message}`);
+      setError(`登入失敗: ${err.message}`);
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white">加载中...</div>
+        <div className="text-white">載入中...</div>
       </div>
     );
   }
@@ -95,8 +95,8 @@ export default function EmployerLoginPage() {
             <h1 className="text-3xl font-bold text-white mb-2">
               <span className="text-white">Job</span><span className="text-blue-400">beagle</span>
             </h1>
-            <p className="text-slate-400 text-sm">企业会员登录</p>
-            <p className="text-slate-500 text-xs mt-2">与主网站账号互通</p>
+            <p className="text-slate-400 text-sm">企業會員登入</p>
+            <p className="text-slate-500 text-xs mt-2">與主網站帳號互通</p>
           </div>
 
           {/* Error Message */}
@@ -114,7 +114,7 @@ export default function EmployerLoginPage() {
               className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white hover:bg-gray-100 text-gray-900 rounded-lg font-medium transition-colors shadow-lg"
             >
               <Mail className="w-5 h-5" />
-              <span>使用 Google 登录</span>
+              <span>使用 Google 登入</span>
             </button>
 
             <button
@@ -122,16 +122,16 @@ export default function EmployerLoginPage() {
               className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors shadow-lg"
             >
               <Github className="w-5 h-5" />
-              <span>使用 GitHub 登录</span>
+              <span>使用 GitHub 登入</span>
             </button>
           </div>
 
           {/* Info */}
           <div className="mt-6 pt-6 border-t border-slate-700">
             <p className="text-slate-400 text-xs text-center">
-              首次登录将自动创建企业账号
+              首次登入將自動建立企業帳號
               <br />
-              登录后即可上传和管理招聘视频
+              登入後即可上傳和管理招聘影片
             </p>
           </div>
 
@@ -141,7 +141,7 @@ export default function EmployerLoginPage() {
               href="/"
               className="text-slate-400 hover:text-slate-300 text-sm transition-colors"
             >
-              ← 返回首页
+              ← 返回首頁
             </a>
           </div>
         </div>
