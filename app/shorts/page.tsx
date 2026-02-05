@@ -519,10 +519,20 @@ function VideoGeneratorModal({
         }),
       });
 
-      const result = await response.json();
+      let result: any;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        // 如果響應不是 JSON，顯示原始錯誤
+        const text = await response.text();
+        throw new Error(t.errorGenerate + ': ' + (text || '無法解析響應'));
+      }
 
       if (!response.ok) {
-        throw new Error(result.error || t.errorGenerate);
+        // 顯示更詳細的錯誤訊息
+        const errorMsg = result.error || result.detail || t.errorGenerate;
+        const details = result.details ? ` (${result.details})` : '';
+        throw new Error(errorMsg + details);
       }
 
       setProgress(t.completed);
