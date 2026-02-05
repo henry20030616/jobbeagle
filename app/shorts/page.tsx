@@ -7,6 +7,13 @@ import { Home, User, Briefcase, MessageCircle, X, AlertCircle, Loader2, Sparkles
 import { createClient } from '@/lib/supabase/browser';
 import { BeagleIcon } from '@/components/AnalysisDashboard';
 
+// Video Generator Modal Component Props
+interface VideoGeneratorModalProps {
+  language: 'zh' | 'en';
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
 // Helper function to generate logo URL
 const getLogoUrl = (companyName: string): string => {
   // Try multiple logo APIs as fallback
@@ -325,26 +332,27 @@ export default function JobbeaglePage() {
             
             {/* Video Generator Tool Button */}
             <div className="relative z-50">
-            <button
-              onClick={() => setShowVideoGenerator(true)}
-              className="flex flex-col items-center gap-1.5 px-5 py-3 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-2xl border-2 border-blue-400/30 hover:border-blue-300/50"
-            >
-              {/* Top row: Sparkles icon + Video Generator text */}
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5" />
-                <span className="text-sm font-bold">Video Generator</span>
-              </div>
-              {/* Bottom row: Beagle logo + Beagle AI text */}
-              <div className="flex items-center gap-1.5">
-                <BeagleIcon 
-                  className="w-4 h-4" 
-                  color="#ffffff" 
-                  spotColor="#1e40af" 
-                  bellyColor="#3b82f6" 
-                />
-                <span className="text-xs font-medium opacity-90">Beagle AI</span>
-              </div>
-            </button>
+              <button
+                onClick={() => setShowVideoGenerator(true)}
+                className="flex flex-col items-center gap-1.5 px-5 py-3 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-2xl border-2 border-blue-400/30 hover:border-blue-300/50"
+              >
+                {/* Top row: Sparkles icon + Video Generator text */}
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  <span className="text-sm font-bold">Video Generator</span>
+                </div>
+                {/* Bottom row: Beagle logo + Beagle AI text */}
+                <div className="flex items-center gap-1.5">
+                  <BeagleIcon 
+                    className="w-4 h-4" 
+                    color="#ffffff" 
+                    spotColor="#1e40af" 
+                    bellyColor="#3b82f6" 
+                  />
+                  <span className="text-xs font-medium opacity-90">Beagle AI</span>
+                </div>
+              </button>
+            </div>
          </div>
       </div>
 
@@ -404,11 +412,7 @@ function VideoGeneratorModal({
   language,
   onClose, 
   onSuccess 
-}: { 
-  language: 'zh' | 'en';
-  onClose: () => void; 
-  onSuccess: () => void;
-}) {
+}: VideoGeneratorModalProps) {
   const [formData, setFormData] = useState({
     job_description: '',
     company_logo_url: '',
