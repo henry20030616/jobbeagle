@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import VideoFeed from '@/components/shorts/VideoFeed';
 import { JobData } from '@/types';
-import { Home, User, Briefcase, MessageCircle, X, AlertCircle, Loader2, Sparkles, CheckCircle } from 'lucide-react';
+import { Home, User, Briefcase, MessageCircle, X, AlertCircle, Loader2, Sparkles, CheckCircle, LogIn, LogOut, Building2, ChevronDown } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { BeagleIcon } from '@/components/AnalysisDashboard';
 
@@ -68,17 +68,34 @@ export default function JobbeaglePage() {
   const [followedJobIds, setFollowedJobIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('foryou');
   const [showVideoGenerator, setShowVideoGenerator] = useState(false);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+  const [showLoginMenu, setShowLoginMenu] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     loadVideos();
+    checkAuth();
   }, []);
+
+  const checkAuth = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+    
+    // 監聽認證狀態變化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    
+    return () => subscription.unsubscribe();
+  };
 
   const loadVideos = async () => {
     try {
       setLoading(true);
       const supabase = createClient();
 
-      // 从数据库加载已发布的视频
+      // 從資料庫載入已發布的影片
       const { data: videosData, error: videosError } = await supabase
         .from('shorts_videos')
         .select('*')
@@ -87,7 +104,7 @@ export default function JobbeaglePage() {
 
       if (videosError) {
         console.error('Failed to load videos:', videosError);
-        // 如果加载失败，使用 fallback 数据
+        // 如果載入失敗，使用 fallback 資料
         setJobs(FALLBACK_JOBS);
         return;
       }
@@ -108,12 +125,12 @@ export default function JobbeaglePage() {
         }));
         setJobs(convertedJobs);
       } else {
-        // 如果没有视频，使用 fallback 数据
+        // 如果沒有影片，使用 fallback 資料
         setJobs(FALLBACK_JOBS);
       }
     } catch (err: any) {
       console.error('Error loading videos:', err);
-      setError('加载视频失败');
+      setError(language === 'zh' ? '載入影片失敗' : 'Failed to load videos');
       setJobs(FALLBACK_JOBS);
     } finally {
       setLoading(false);
@@ -206,18 +223,108 @@ export default function JobbeaglePage() {
                   onClick={() => setActiveTab('foryou')}
                   className={`pb-1 transition-colors ${activeTab === 'foryou' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
                 >
-                  For You
+                  {language === 'zh' ? '為您推薦' : 'For You'}
                 </button>
                 <button
                   onClick={() => setActiveTab('following')}
                   className={`pb-1 transition-colors ${activeTab === 'following' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
                 >
-                  Following {followedJobIds.size > 0 && `(${followedJobIds.size})`}
+                  {language === 'zh' ? '追蹤中' : 'Following'} {followedJobIds.size > 0 && `(${followedJobIds.size})`}
                 </button>
             </div>
          </div>
-         {/* Video Generator Tool Button - 右上角 */}
-         <div className="pointer-events-auto relative z-50">
+         {/* Right side: Language Switcher + Login Menu + Video Generator */}
+         <div className="pointer-events-auto flex items-center gap-3">
+            {/* Language Switcher */}
+            <div className="flex items-center space-x-1 bg-black/40 backdrop-blur-sm border border-white/20 rounded-lg p-1">
+              <button
+                onClick={() => setLanguage('zh')}
+                className={`px-3 py-1.5 rounded text-xs font-bold transition-all ${
+                  language === 'zh'
+                    ? 'bg-blue-500 text-white shadow-lg'
+                    : 'text-white/60 hover:text-white/80'
+                }`}
+              >
+                中文
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-3 py-1.5 rounded text-xs font-bold transition-all ${
+                  language === 'en'
+                    ? 'bg-blue-500 text-white shadow-lg'
+                    : 'text-white/60 hover:text-white/80'
+                }`}
+              >
+                English
+              </button>
+            </div>
+            
+            {/* Login Menu */}
+            <div className="relative">
+              {user ? (
+                <button
+                  onClick={async () => {
+                    const supabase = createClient();
+                    await supabase.auth.signOut();
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs font-medium hover:bg-black/60 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>{language === 'zh' ? '登出' : 'Logout'}</span>
+                </button>
+              ) : (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowLoginMenu(!showLoginMenu)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs font-medium hover:bg-black/60 transition-colors"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>{language === 'zh' ? '登入' : 'Login'}</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                  
+                  {showLoginMenu && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setShowLoginMenu(false)}
+                      />
+                      <div className="absolute top-full right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                        <a
+                          href="/employer/login"
+                          className="flex items-center gap-2 px-4 py-3 hover:bg-slate-700 transition-colors text-white text-sm"
+                          onClick={() => setShowLoginMenu(false)}
+                        >
+                          <Building2 className="w-4 h-4" />
+                          <span>{language === 'zh' ? '企業登入' : 'Employer Login'}</span>
+                        </a>
+                        <div className="border-t border-slate-700">
+                          <button
+                            onClick={async () => {
+                              const supabase = createClient();
+                              await supabase.auth.signInWithOAuth({
+                                provider: 'google',
+                                options: {
+                                  redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts`,
+                                },
+                              });
+                              setShowLoginMenu(false);
+                            }}
+                            className="w-full flex items-center gap-2 px-4 py-3 hover:bg-slate-700 transition-colors text-white text-sm"
+                          >
+                            <User className="w-4 h-4" />
+                            <span>{language === 'zh' ? '人才登入' : 'Talent Login'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {/* Video Generator Tool Button */}
+            <div className="relative z-50">
             <button
               onClick={() => setShowVideoGenerator(true)}
               className="flex flex-col items-center gap-1.5 px-5 py-3 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-2xl border-2 border-blue-400/30 hover:border-blue-300/50"
@@ -247,14 +354,14 @@ export default function JobbeaglePage() {
             className="flex flex-col items-center gap-1 p-2 text-white"
         >
             <Home size={24} strokeWidth={3} />
-            <span className="text-[10px] font-medium">Home</span>
+            <span className="text-[10px] font-medium">{language === 'zh' ? '首頁' : 'Home'}</span>
         </button>
         
         <button 
              className="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-gray-300"
         >
             <Briefcase size={24} />
-            <span className="text-[10px] font-medium">Jobs</span>
+            <span className="text-[10px] font-medium">{language === 'zh' ? '職缺' : 'Jobs'}</span>
         </button>
 
         <button 
@@ -264,25 +371,26 @@ export default function JobbeaglePage() {
                 <div className="w-2 h-2 bg-red-500 rounded-full absolute -top-0 -right-0 animate-pulse"></div>
                 <MessageCircle size={24} />
             </div>
-            <span className="text-[10px] font-medium">Inbox</span>
+            <span className="text-[10px] font-medium">{language === 'zh' ? '訊息' : 'Inbox'}</span>
         </button>
 
         <button 
              className="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-gray-300"
         >
             <User size={24} />
-            <span className="text-[10px] font-medium">Profile</span>
+            <span className="text-[10px] font-medium">{language === 'zh' ? '個人' : 'Profile'}</span>
         </button>
       </div>
 
       {/* Video Generator Modal */}
       {showVideoGenerator && (
         <VideoGeneratorModal
+          language={language}
           onClose={() => setShowVideoGenerator(false)}
           onSuccess={() => {
             setShowVideoGenerator(false);
             loadVideos();
-            setSuccess('视频生成成功！');
+            setSuccess(language === 'zh' ? '影片生成成功！' : 'Video generated successfully!');
             setTimeout(() => setSuccess(null), 3000);
           }}
         />
@@ -291,11 +399,13 @@ export default function JobbeaglePage() {
   );
 }
 
-// Video Generator Modal Component
+// Video Generator Modal Component - 參考 HeyGen 設計
 function VideoGeneratorModal({ 
+  language,
   onClose, 
   onSuccess 
 }: { 
+  language: 'zh' | 'en';
   onClose: () => void; 
   onSuccess: () => void;
 }) {
@@ -309,19 +419,82 @@ function VideoGeneratorModal({
   const [progress, setProgress] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
+  const translations = {
+    zh: {
+      title: 'AI 影片生成工具',
+      subtitle: '自動生成招聘短影片',
+      jobDescription: '職位描述',
+      companyLogo: '企業 Logo URL',
+      managerPhoto: '主管照片 URL',
+      officeVideo: '辦公室影片 URL',
+      officeVideoOptional: '（選填）',
+      officeVideoHint: '留空將使用 AI 自動生成辦公室背景',
+      placeholder: {
+        jobDescription: '請輸入詳細的職位描述，包括職位要求、職責、公司文化等...',
+        logo: 'https://example.com/logo.png',
+        manager: 'https://example.com/manager.jpg',
+        office: 'https://example.com/office.mp4 (留空將自動生成)',
+      },
+      required: '必填',
+      generating: '生成中...',
+      generatingScript: '正在生成腳本...',
+      generatingAudio: '正在生成語音...',
+      generatingAvatar: '正在生成對嘴影片...',
+      generatingBackground: '正在生成背景...',
+      composing: '正在合成最終影片...',
+      completed: '影片生成完成！',
+      startGenerate: '開始生成影片',
+      cancel: '取消',
+      errorRequired: '請填寫必填欄位：職位描述、企業 Logo、主管照片',
+      errorGenerate: '影片生成失敗',
+      errorRetry: '生成失敗，請重試',
+    },
+    en: {
+      title: 'AI Video Generator',
+      subtitle: 'Automatically generate recruitment short videos',
+      jobDescription: 'Job Description',
+      companyLogo: 'Company Logo URL',
+      managerPhoto: 'Manager Photo URL',
+      officeVideo: 'Office Video URL',
+      officeVideoOptional: '(Optional)',
+      officeVideoHint: 'Leave blank to use AI to automatically generate office background',
+      placeholder: {
+        jobDescription: 'Please enter a detailed job description, including job requirements, responsibilities, company culture, etc...',
+        logo: 'https://example.com/logo.png',
+        manager: 'https://example.com/manager.jpg',
+        office: 'https://example.com/office.mp4 (leave blank to auto-generate)',
+      },
+      required: 'Required',
+      generating: 'Generating...',
+      generatingScript: 'Generating script...',
+      generatingAudio: 'Generating audio...',
+      generatingAvatar: 'Generating avatar video...',
+      generatingBackground: 'Generating background...',
+      composing: 'Composing final video...',
+      completed: 'Video generated successfully!',
+      startGenerate: 'Start Generating',
+      cancel: 'Cancel',
+      errorRequired: 'Please fill in required fields: Job description, Company Logo, Manager photo',
+      errorGenerate: 'Video generation failed',
+      errorRetry: 'Generation failed, please retry',
+    },
+  };
+
+  const t = translations[language];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setProgress('');
 
     if (!formData.job_description || !formData.company_logo_url || !formData.manager_photo_url) {
-      setError('请填写必填字段：职位描述、企业 Logo、主管照片');
+      setError(t.errorRequired);
       return;
     }
 
     try {
       setGenerating(true);
-      setProgress('正在生成脚本...');
+      setProgress(t.generatingScript);
 
       const response = await fetch('/api/video-generator', {
         method: 'POST',
@@ -337,15 +510,15 @@ function VideoGeneratorModal({
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || '视频生成失败');
+        throw new Error(result.error || t.errorGenerate);
       }
 
-      setProgress('视频生成完成！');
+      setProgress(t.completed);
       setTimeout(() => {
         onSuccess();
       }, 2000);
     } catch (err: any) {
-      setError(err.message || '生成失败，请重试');
+      setError(err.message || t.errorRetry);
       setProgress('');
     } finally {
       setGenerating(false);
@@ -353,26 +526,29 @@ function VideoGeneratorModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">AI 视频生成工具</h2>
-                <p className="text-slate-400 text-sm">自动生成招聘短视频</p>
-              </div>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+        {/* Header - 參考 HeyGen 設計 */}
+        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <button
-              onClick={onClose}
-              className="text-slate-400 hover:text-white transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div>
+              <h2 className="text-2xl font-bold text-white">{t.title}</h2>
+              <p className="text-slate-400 text-sm mt-0.5">{t.subtitle}</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto p-6">
 
           {error && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-center gap-2">
@@ -390,90 +566,122 @@ function VideoGeneratorModal({
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">
-                职位描述 <span className="text-red-400">*</span>
+          <form id="video-generator-form" onSubmit={handleSubmit} className="space-y-6">
+            {/* Step 1: Job Description */}
+            <div className="space-y-2">
+              <label className="block text-white text-sm font-semibold">
+                {t.jobDescription} <span className="text-red-400">*</span>
               </label>
               <textarea
                 value={formData.job_description}
                 onChange={(e) => setFormData({ ...formData, job_description: e.target.value })}
-                rows={6}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500"
-                placeholder="请输入详细的职位描述，包括职位要求、职责、公司文化等..."
+                rows={5}
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                placeholder={t.placeholder.jobDescription}
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">
-                企业 Logo URL <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="url"
-                value={formData.company_logo_url}
-                onChange={(e) => setFormData({ ...formData, company_logo_url: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500"
-                placeholder="https://example.com/logo.png"
-                required
-              />
+            {/* Step 2: Media Assets - 參考 HeyGen 的卡片式設計 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Company Logo */}
+              <div className="space-y-2">
+                <label className="block text-white text-sm font-semibold">
+                  {t.companyLogo} <span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="url"
+                    value={formData.company_logo_url}
+                    onChange={(e) => setFormData({ ...formData, company_logo_url: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    placeholder={t.placeholder.logo}
+                    required
+                  />
+                  {formData.company_logo_url && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-8 h-8 rounded-lg overflow-hidden border border-slate-600">
+                        <img src={formData.company_logo_url} alt="Logo preview" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Manager Photo */}
+              <div className="space-y-2">
+                <label className="block text-white text-sm font-semibold">
+                  {t.managerPhoto} <span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="url"
+                    value={formData.manager_photo_url}
+                    onChange={(e) => setFormData({ ...formData, manager_photo_url: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    placeholder={t.placeholder.manager}
+                    required
+                  />
+                  {formData.manager_photo_url && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-8 h-8 rounded-lg overflow-hidden border border-slate-600">
+                        <img src={formData.manager_photo_url} alt="Manager preview" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">
-                主管照片 URL <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="url"
-                value={formData.manager_photo_url}
-                onChange={(e) => setFormData({ ...formData, manager_photo_url: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500"
-                placeholder="https://example.com/manager.jpg"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">
-                办公室视频 URL <span className="text-slate-500 text-xs">(选填)</span>
+            {/* Step 3: Office Video (Optional) */}
+            <div className="space-y-2">
+              <label className="block text-white text-sm font-semibold">
+                {t.officeVideo} <span className="text-slate-500 text-xs font-normal">{t.officeVideoOptional}</span>
               </label>
               <input
                 type="url"
                 value={formData.office_video_url}
                 onChange={(e) => setFormData({ ...formData, office_video_url: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500"
-                placeholder="https://example.com/office.mp4 (留空将自动生成)"
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                placeholder={t.placeholder.office}
               />
-              <p className="text-slate-500 text-xs mt-1">留空将使用 AI 自动生成办公室背景</p>
-            </div>
-
-            <div className="flex items-center gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={generating}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {generating ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>生成中...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-5 h-5" />
-                    <span>开始生成视频</span>
-                  </>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
-              >
-                取消
-              </button>
+              <p className="text-slate-500 text-xs mt-1.5 flex items-center gap-1">
+                <Sparkles className="w-3 h-3" />
+                {t.officeVideoHint}
+              </p>
             </div>
           </form>
+        </div>
+        
+        {/* Footer - Action Buttons */}
+        <div className="border-t border-slate-700 p-6 bg-slate-900/50">
+          <div className="flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+            >
+              {t.cancel}
+            </button>
+            <button
+              type="submit"
+              form="video-generator-form"
+              disabled={generating || !formData.job_description || !formData.company_logo_url || !formData.manager_photo_url}
+              className="px-8 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
+            >
+              {generating ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{t.generating}</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  <span>{t.startGenerate}</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

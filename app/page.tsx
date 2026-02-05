@@ -109,15 +109,7 @@ export default function Home() {
               English
             </button>
           </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="/employer/login"
-              className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors border border-slate-600 rounded-lg hover:border-slate-500"
-            >
-              {language === 'zh' ? '企業登入' : 'Employer Login'}
-            </a>
-            <LoginButton />
-          </div>
+          <LoginButton />
         </div>
         
         {loading && <DogLoading />}
