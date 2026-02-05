@@ -5,6 +5,7 @@ import VideoFeed from '@/components/shorts/VideoFeed';
 import { JobData } from '@/types';
 import { Home, User, Briefcase, MessageCircle, X, AlertCircle, Loader2, Sparkles, CheckCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
+import { BeagleIcon } from '@/components/AnalysisDashboard';
 
 // Helper function to generate logo URL
 const getLogoUrl = (companyName: string): string => {
@@ -216,14 +217,24 @@ export default function JobbeaglePage() {
             </div>
          </div>
          {/* Video Generator Tool Button - 右上角 */}
-         <div className="pointer-events-auto relative z-50">
+         <div className="pointer-events-auto relative z-50 flex flex-col items-end gap-2">
             <button
               onClick={() => setShowVideoGenerator(true)}
               className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 hover:from-purple-600 hover:via-pink-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-2xl border-2 border-white/20 hover:border-white/40"
             >
               <Sparkles className="w-5 h-5" />
-              <span className="text-sm font-bold">AI 视频生成</span>
+              <span className="text-sm font-bold">Video Generator</span>
             </button>
+            {/* Beagle AI Label with Logo */}
+            <div className="flex items-center gap-1.5 text-white/80">
+              <BeagleIcon 
+                className="w-4 h-4" 
+                color="#cbd5e1" 
+                spotColor="#5d4037" 
+                bellyColor="#94a3b8" 
+              />
+              <span className="text-xs font-medium">Beagle AI</span>
+            </div>
          </div>
       </div>
 
