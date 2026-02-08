@@ -7,7 +7,7 @@ import { Upload, ArrowLeft, Loader2, CheckCircle, Copy, AlertCircle } from 'luci
 type UploadState = 'idle' | 'uploading' | 'done' | 'error';
 
 export default function ShortsUploadPage() {
-  const [files, setFiles] = useState<(File | null)>([null, null, null, null]);
+  const [files, setFiles] = useState<(File | null)[]>([null, null, null, null]);
   const [urls, setUrls] = useState<string[]>([]);
   const [state, setState] = useState<UploadState>('idle');
   const [error, setError] = useState<string | null>(null);
