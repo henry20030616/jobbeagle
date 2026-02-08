@@ -375,8 +375,10 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                     <div className="flex flex-col items-center animate-fade-in gap-3">
                         <AlertCircle size={48} className="text-red-500 mb-2" />
                         <p className="text-white font-bold text-lg drop-shadow-md">Video unavailable</p>
-                        <p className="text-white/80 text-sm drop-shadow max-w-[280px] text-center">
-                          影片無法載入。請到 Supabase Dashboard → Storage → 將「shorts-videos」設為 Public。
+                        <p className="text-white/80 text-sm drop-shadow max-w-[300px] text-center">
+                          {videoUrl?.includes('drive.google.com')
+                            ? '此為 Google 雲端硬碟連結，無法直接當影片播放。請在「上傳新影片」時選擇「選擇檔案」上傳影片，或使用 Supabase / 其他直接影片網址。'
+                            : '影片無法載入。請確認影片連結為「直接影片網址」（.mp4），勿使用 Google 雲端硬碟分享連結。'}
                         </p>
                         {videoUrl && (
                           <a
