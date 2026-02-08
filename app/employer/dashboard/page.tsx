@@ -383,20 +383,26 @@ function UploadVideoModal({
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const BUCKET = 'shorts-videos';
+
+  const uploadToSupabase = async (file: File, folder: 'video' | 'logos'): Promise<string> => {
+    const supabase = createClient();
+    const ext = file.name.split('.').pop()?.toLowerCase() || (folder === 'video' ? 'mp4' : 'png');
+    const path = folder === 'video' ? `video-${Date.now()}.${ext}` : `logos/logo-${Date.now()}.${ext}`;
+    const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: '3600', upsert: true });
+    if (error) throw error;
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path);
+    return urlData.publicUrl;
+  };
+
   const handleLogoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
     setUploadingLogo(true);
     try {
-      const form = new FormData();
-      form.append('file', file);
-      form.append('index', String(Date.now()));
-      form.append('type', 'logo');
-      const res = await fetch('/api/shorts/upload', { method: 'POST', body: form });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || '上傳失敗');
-      if (data.url) setFormData(prev => ({ ...prev, logo_url: data.url }));
+      const url = await uploadToSupabase(file, 'logos');
+      setFormData(prev => ({ ...prev, logo_url: url }));
     } catch (err: any) {
       setError(err.message || 'Logo 上傳失敗');
     } finally {
@@ -411,13 +417,8 @@ function UploadVideoModal({
     setError(null);
     setUploadingFile(true);
     try {
-      const form = new FormData();
-      form.append('file', file);
-      form.append('index', String(Date.now()));
-      const res = await fetch('/api/shorts/upload', { method: 'POST', body: form });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || '上傳失敗');
-      if (data.url) setFormData(prev => ({ ...prev, video_url: data.url }));
+      const url = await uploadToSupabase(file, 'video');
+      setFormData(prev => ({ ...prev, video_url: url }));
     } catch (err: any) {
       setError(err.message || '影片上傳失敗');
     } finally {
