@@ -367,6 +367,7 @@ function UploadVideoModal({
   onSuccess: () => void;
 }) {
   const [formData, setFormData] = useState({
+    company_name: companyName,
     job_title: '',
     location: '',
     salary: '',
@@ -378,14 +379,36 @@ function UploadVideoModal({
     contact_email: '',
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setUploadingFile(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('index', String(Date.now()));
+      const res = await fetch('/api/shorts/upload', { method: 'POST', body: form });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || '上傳失敗');
+      if (data.url) setFormData(prev => ({ ...prev, video_url: data.url }));
+    } catch (err: any) {
+      setError(err.message || '影片上傳失敗');
+    } finally {
+      setUploadingFile(false);
+      e.target.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!formData.job_title || !formData.description || !formData.video_url) {
-      setError('請填寫必填欄位：職位名稱、描述、影片連結');
+      setError('請填寫職位名稱、描述，並上傳影片或輸入影片連結');
       return;
     }
 
@@ -403,7 +426,7 @@ function UploadVideoModal({
         .insert({
           company_id: companyId,
           job_title: formData.job_title,
-          company_name: companyName,
+          company_name: formData.company_name || companyName,
           location: formData.location || null,
           salary: formData.salary || null,
           description: formData.description,
@@ -447,6 +470,19 @@ function UploadVideoModal({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-slate-300 text-sm font-medium mb-2">
+                公司名稱 <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.company_name}
+                onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                placeholder="例如：Google Taiwan"
+                required
+              />
+            </div>
             <div>
               <label className="block text-slate-300 text-sm font-medium mb-2">
                 職位名稱 <span className="text-red-400">*</span>
@@ -500,16 +536,28 @@ function UploadVideoModal({
 
             <div>
               <label className="block text-slate-300 text-sm font-medium mb-2">
-                影片連結 <span className="text-red-400">*</span>
+                影片 <span className="text-red-400">*</span>
               </label>
-              <input
-                type="url"
-                value={formData.video_url}
-                onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-                placeholder="https://example.com/video.mp4"
-                required
-              />
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="video/mp4,video/webm"
+                    onChange={handleFileChange}
+                    disabled={uploadingFile}
+                    className="flex-1 text-sm text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white file:disabled:opacity-50"
+                  />
+                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400" />}
+                </div>
+                <p className="text-slate-500 text-xs">或輸入已有影片連結：</p>
+                <input
+                  type="url"
+                  value={formData.video_url}
+                  onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                  placeholder="https://example.com/video.mp4"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

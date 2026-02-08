@@ -59,24 +59,36 @@ class VideoEngine:
             
             # Step 3: Avatar Engine - HeyGen API
             avatar_video_url = await self.generate_avatar_video(manager_photo_url, audio_url)
-            self.update_job_status(job_id, "processing", "对嘴视频生成完成，开始生成背景...")
+            self.update_job_status(job_id, "processing", "对嘴视频生成完成...")
             
-            # Step 4: B-Roll Logic - Kling AI (如果需要)
-            if not office_video_url:
-                office_video_url = await self.generate_office_background()
-                self.update_job_status(job_id, "processing", "背景生成完成，开始合成最终视频...")
+            # Step 4: B-Roll Logic - Kling AI (如果需要且沒有提供 office_video_url)
+            if not office_video_url and self.kling_key:
+                try:
+                    office_video_url = await self.generate_office_background()
+                    self.update_job_status(job_id, "processing", "背景生成完成...")
+                except Exception as e:
+                    # 如果 Kling AI 失敗，繼續使用 None（不會影響後續流程）
+                    self.update_job_status(job_id, "processing", f"背景生成跳過（{str(e)}），繼續處理...")
+                    office_video_url = None
+            
+            # Step 5: Final Editor - Creatomate API (可選)
+            if self.creatomate_key:
+                try:
+                    self.update_job_status(job_id, "processing", "開始合成最終視頻（包含背景、Logo、字幕）...")
+                    final_video_url = await self.compose_final_video(
+                        office_video_url=office_video_url,
+                        avatar_video_url=avatar_video_url,
+                        company_logo_url=company_logo_url,
+                        script=script
+                    )
+                    self.update_job_status(job_id, "completed", "視頻生成完成！（已合成最終版本，包含背景、Logo、字幕）", final_video_url)
+                except Exception as e:
+                    # 如果 Creatomate 失敗，回退到只返回 HeyGen 視頻
+                    self.update_job_status(job_id, "processing", f"合成失敗（{str(e)}），返回對嘴視頻...")
+                    self.update_job_status(job_id, "completed", "視頻生成完成！（僅包含對嘴視頻，未合成背景和Logo）", avatar_video_url)
             else:
-                self.update_job_status(job_id, "processing", "使用提供的背景视频，开始合成最终视频...")
-            
-            # Step 5: Final Editor - Creatomate API
-            final_video_url = await self.compose_final_video(
-                office_video_url=office_video_url,
-                avatar_video_url=avatar_video_url,
-                company_logo_url=company_logo_url,
-                script=script
-            )
-            
-            self.update_job_status(job_id, "completed", "视频生成完成！", final_video_url)
+                # 如果沒有 Creatomate API Key，直接返回 HeyGen 的視頻
+                self.update_job_status(job_id, "completed", "視頻生成完成！（僅包含對嘴視頻，未合成背景和Logo。如需完整版本，請配置 CREATOMATE_KEY）", avatar_video_url)
             
         except Exception as e:
             self.update_job_status(job_id, "failed", f"生成失败: {str(e)}")
@@ -247,6 +259,8 @@ class VideoEngine:
         Layer 1 (底层): 办公室视频
         Layer 2 (中层): HeyGen 绿幕视频（去背，右下角）
         Layer 3 (顶层): Logo（左上角）+ 动态字幕
+        
+        注意：如果沒有 Creatomate API Key，此函數不會被調用
         """
         if not self.creatomate_key:
             raise ValueError("CREATOMATE_KEY not found")

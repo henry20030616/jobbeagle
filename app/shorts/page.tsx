@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import VideoFeed from '@/components/shorts/VideoFeed';
 import { JobData } from '@/types';
-import { Home, User, Briefcase, MessageCircle, X, AlertCircle, Loader2, Sparkles, CheckCircle, LogIn, LogOut, Building2, ChevronDown } from 'lucide-react';
+import { Home, User, Briefcase, MessageCircle, X, AlertCircle, Loader2, Sparkles, CheckCircle, LogIn, LogOut, Building2, ChevronDown, Upload } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { BeagleIcon } from '@/components/AnalysisDashboard';
+import { FALLBACK_VIDEOS } from './fallback-videos';
 
 // Video Generator Modal Component Props
 interface VideoGeneratorModalProps {
@@ -27,45 +28,7 @@ const getLogoUrl = (companyName: string): string => {
   // return `https://api.dicebear.com/7.x/initials/svg?seed=${companyName}`;
 };
 
-// Fallback sample jobs (if no videos in database)
-const FALLBACK_JOBS: JobData[] = [
-  {
-    id: 'google-01',
-    companyName: 'Google',
-    jobTitle: 'Senior Software Engineer',
-    location: 'Mountain View, CA',
-    salary: 'USD 180k - 250k / yr',
-    description: 'Join the team building the future of AI. We are looking for experienced engineers to work on Gemini and large language models.',
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    tags: ['AI', 'React', 'Python'],
-    logoUrl: getLogoUrl('Google'),
-    contactEmail: 'careers@google.com'
-  },
-  {
-    id: 'apple-01',
-    companyName: 'Apple',
-    jobTitle: 'iOS Developer',
-    location: 'Cupertino, CA',
-    salary: 'USD 160k - 230k / yr',
-    description: 'Design and build applications for the iOS platform. Ensure the performance, quality, and responsiveness of applications.',
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    tags: ['Swift', 'iOS', 'Mobile'],
-    logoUrl: getLogoUrl('Apple'),
-    contactEmail: 'recruiting@apple.com'
-  },
-  {
-    id: 'microsoft-01',
-    companyName: 'Microsoft',
-    jobTitle: 'Cloud Architect (Azure)',
-    location: 'Redmond, WA',
-    salary: 'USD 150k - 220k / yr',
-    description: 'Lead the design and implementation of secure, scalable, and reliable cloud solutions on Azure.',
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    tags: ['Azure', 'Cloud', 'Architecture'],
-    logoUrl: getLogoUrl('Microsoft'),
-    contactEmail: 'azure-hiring@microsoft.com'
-  },
-];
+// 後備影片：當資料庫沒有影片時使用（可編輯 app/shorts/fallback-videos.ts 替換成 4 支真實影片）
 
 export default function JobbeaglePage() {
   const [jobs, setJobs] = useState<JobData[]>([]);
@@ -112,7 +75,7 @@ export default function JobbeaglePage() {
       if (videosError) {
         console.error('Failed to load videos:', videosError);
         // 如果載入失敗，使用 fallback 資料
-        setJobs(FALLBACK_JOBS);
+        setJobs(FALLBACK_VIDEOS);
         return;
       }
 
@@ -133,12 +96,12 @@ export default function JobbeaglePage() {
         setJobs(convertedJobs);
       } else {
         // 如果沒有影片，使用 fallback 資料
-        setJobs(FALLBACK_JOBS);
+        setJobs(FALLBACK_VIDEOS);
       }
     } catch (err: any) {
       console.error('Error loading videos:', err);
       setError(language === 'zh' ? '載入影片失敗' : 'Failed to load videos');
-      setJobs(FALLBACK_JOBS);
+      setJobs(FALLBACK_VIDEOS);
     } finally {
       setLoading(false);
     }
@@ -338,6 +301,15 @@ export default function JobbeaglePage() {
               )}
             </div>
             
+            {/* 上傳新影片（顯眼按鈕：含公司、職位、地點等） */}
+            <a
+              href="/employer/dashboard"
+              className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 border-2 border-emerald-400/50 text-white shadow-lg transition-colors"
+              title={language === 'zh' ? '上傳影片並填寫公司、職缺、地點等' : 'Upload video and fill job info'}
+            >
+              <Upload className="w-5 h-5" />
+              <span className="text-xs font-bold whitespace-nowrap">{language === 'zh' ? '上傳新影片' : 'Upload'}</span>
+            </a>
             {/* Video Generator Tool Button */}
             <div className="relative z-50">
               <button
@@ -373,12 +345,13 @@ export default function JobbeaglePage() {
             <span className="text-[10px] font-medium">{language === 'zh' ? '首頁' : 'Home'}</span>
         </button>
         
-        <button 
-             className="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-gray-300"
+        <a
+            href="/employer/dashboard"
+            className="flex flex-col items-center gap-1 p-2 text-emerald-400 hover:text-emerald-300"
         >
-            <Briefcase size={24} />
-            <span className="text-[10px] font-medium">{language === 'zh' ? '職缺' : 'Jobs'}</span>
-        </button>
+            <Upload size={24} />
+            <span className="text-[10px] font-medium">{language === 'zh' ? '上傳' : 'Upload'}</span>
+        </a>
 
         <button 
              className="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-gray-300"
@@ -519,20 +492,10 @@ function VideoGeneratorModal({
         }),
       });
 
-      let result: any;
-      try {
-        result = await response.json();
-      } catch (jsonError) {
-        // 如果響應不是 JSON，顯示原始錯誤
-        const text = await response.text();
-        throw new Error(t.errorGenerate + ': ' + (text || '無法解析響應'));
-      }
+      const result = await response.json();
 
       if (!response.ok) {
-        // 顯示更詳細的錯誤訊息
-        const errorMsg = result.error || result.detail || t.errorGenerate;
-        const details = result.details ? ` (${result.details})` : '';
-        throw new Error(errorMsg + details);
+        throw new Error(result.error || t.errorGenerate);
       }
 
       setProgress(t.completed);
