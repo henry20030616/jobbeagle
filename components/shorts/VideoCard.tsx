@@ -354,26 +354,40 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
              )}
         </div>
 
-        {/* Video Player */}
+        {/* Video Player：Supabase 影片改走同源 proxy，避免 CORS 導致 Video unavailable */}
         {isActive && !hasError && videoUrl ? (
             <video
                 ref={videoRef}
-                src={videoUrl}
+                src={videoUrl.includes('supabase.co/storage/') ? `/api/shorts/proxy?url=${encodeURIComponent(videoUrl)}` : videoUrl}
                 className="w-full h-full object-cover z-10"
                 loop
                 muted={isMuted}
                 playsInline
                 autoPlay
                 preload="auto"
+                crossOrigin="anonymous"
                 onError={() => setHasError(true)}
             />
         ) : (
             <div className="z-10 flex flex-col items-center justify-center text-center p-8">
                  {!isActive && <Play size={48} className="text-white/50 mb-4" />}
                  {hasError && (
-                    <div className="flex flex-col items-center animate-fade-in">
+                    <div className="flex flex-col items-center animate-fade-in gap-3">
                         <AlertCircle size={48} className="text-red-500 mb-2" />
                         <p className="text-white font-bold text-lg drop-shadow-md">Video unavailable</p>
+                        <p className="text-white/80 text-sm drop-shadow max-w-[280px] text-center">
+                          影片無法載入。請到 Supabase Dashboard → Storage → 將「shorts-videos」設為 Public。
+                        </p>
+                        {videoUrl && (
+                          <a
+                            href={videoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-cyan-400 hover:underline"
+                          >
+                            在新分頁開啟連結檢查
+                          </a>
+                        )}
                     </div>
                  )}
             </div>
