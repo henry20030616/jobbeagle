@@ -403,14 +403,30 @@ function UploadVideoModal({
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [videoUploadSuccess, setVideoUploadSuccess] = useState(false);
+  const [logoUploadSuccess, setLogoUploadSuccess] = useState(false);
 
   const BUCKET = 'shorts-videos';
+  const MAX_VIDEO_MB = 50;
+  const MAX_LOGO_MB = 5;
+
+  const getUploadError = (err: unknown): string => {
+    if (err && typeof err === 'object') {
+      const e = err as Record<string, unknown>;
+      if (typeof e.message === 'string') return e.message;
+      if (typeof e.error === 'string') return e.error;
+      if (e.error && typeof e.error === 'object' && typeof (e.error as Record<string, unknown>).message === 'string') return (e.error as Record<string, unknown>).message as string;
+    }
+    return '上傳失敗，請稍後再試';
+  };
 
   const uploadToSupabase = async (file: File, folder: 'video' | 'logos'): Promise<string> => {
     const supabase = createClient();
     const ext = file.name.split('.').pop()?.toLowerCase() || (folder === 'video' ? 'mp4' : 'png');
     const path = folder === 'video' ? `video-${Date.now()}.${ext}` : `logos/logo-${Date.now()}.${ext}`;
-    const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: '3600', upsert: true });
+    const options: { cacheControl: string; upsert: boolean; contentType?: string } = { cacheControl: '3600', upsert: true };
+    if (file.type) options.contentType = file.type;
+    const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, options);
     if (error) throw error;
     const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path);
     return urlData.publicUrl;
@@ -420,12 +436,21 @@ function UploadVideoModal({
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
+    setLogoUploadSuccess(false);
+    if (file.size > MAX_LOGO_MB * 1024 * 1024) {
+      setError(`Logo 請勿超過 ${MAX_LOGO_MB}MB`);
+      return;
+    }
     setUploadingLogo(true);
     try {
       const url = await uploadToSupabase(file, 'logos');
       setFormData(prev => ({ ...prev, logo_url: url }));
-    } catch (err: any) {
-      setError(err.message || 'Logo 上傳失敗');
+      setLogoUploadSuccess(true);
+      setTimeout(() => setLogoUploadSuccess(false), 3000);
+    } catch (err) {
+      const msg = getUploadError(err);
+      console.error('[Upload] Logo upload error:', err);
+      setError('Logo 上傳失敗：' + msg);
     } finally {
       setUploadingLogo(false);
       e.target.value = '';
@@ -436,12 +461,20 @@ function UploadVideoModal({
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
+    setVideoUploadSuccess(false);
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
+      setError(`影片請勿超過 ${MAX_VIDEO_MB}MB`);
+      return;
+    }
     setUploadingFile(true);
     try {
       const url = await uploadToSupabase(file, 'video');
       setFormData(prev => ({ ...prev, video_url: url }));
-    } catch (err: any) {
-      setError(err.message || '影片上傳失敗');
+      setVideoUploadSuccess(true);
+      setTimeout(() => setVideoUploadSuccess(false), 3000);
+    } catch (err) {
+      console.error('[Upload] Video upload error:', err);
+      setError('影片上傳失敗：' + getUploadError(err));
     } finally {
       setUploadingFile(false);
       e.target.value = '';
@@ -584,15 +617,16 @@ function UploadVideoModal({
                 影片 <span className="text-red-400">*</span>
               </label>
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <input
                     type="file"
                     accept="video/mp4,video/webm"
                     onChange={handleFileChange}
                     disabled={uploadingFile}
-                    className="flex-1 text-sm text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white file:disabled:opacity-50"
+                    className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white file:disabled:opacity-50"
                   />
-                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400" />}
+                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400 shrink-0" />}
+                  {videoUploadSuccess && <span className="text-green-400 text-sm font-medium shrink-0">✓ 影片已上傳</span>}
                 </div>
                 <p className="text-slate-500 text-xs">或輸入已有影片連結：</p>
                 <input
@@ -619,15 +653,16 @@ function UploadVideoModal({
               <div>
                 <label className="block text-slate-300 text-sm font-medium mb-2">Logo</label>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <input
                       type="file"
                       accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
                       onChange={handleLogoFileChange}
                       disabled={uploadingLogo}
-                      className="flex-1 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-emerald-600 file:text-white file:disabled:opacity-50"
+                      className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-emerald-600 file:text-white file:disabled:opacity-50"
                     />
-                    {uploadingLogo && <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />}
+                    {uploadingLogo && <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />}
+                    {logoUploadSuccess && <span className="text-green-400 text-sm font-medium shrink-0">✓ Logo 已上傳</span>}
                   </div>
                   <p className="text-slate-500 text-xs">或輸入已有 Logo 連結：</p>
                   <input
@@ -722,13 +757,30 @@ function EditVideoModal({
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [videoUploadSuccess, setVideoUploadSuccess] = useState(false);
+  const [logoUploadSuccess, setLogoUploadSuccess] = useState(false);
 
   const BUCKET = 'shorts-videos';
+  const MAX_VIDEO_MB = 50;
+  const MAX_LOGO_MB = 5;
+
+  const getUploadError = (err: unknown): string => {
+    if (err && typeof err === 'object') {
+      const e = err as Record<string, unknown>;
+      if (typeof e.message === 'string') return e.message;
+      if (typeof e.error === 'string') return e.error;
+      if (e.error && typeof e.error === 'object' && typeof (e.error as Record<string, unknown>).message === 'string') return (e.error as Record<string, unknown>).message as string;
+    }
+    return '上傳失敗，請稍後再試';
+  };
+
   const uploadToSupabase = async (file: File, folder: 'video' | 'logos'): Promise<string> => {
     const supabase = createClient();
     const ext = file.name.split('.').pop()?.toLowerCase() || (folder === 'video' ? 'mp4' : 'png');
     const path = folder === 'video' ? `video-${Date.now()}.${ext}` : `logos/logo-${Date.now()}.${ext}`;
-    const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: '3600', upsert: true });
+    const options: { cacheControl: string; upsert: boolean; contentType?: string } = { cacheControl: '3600', upsert: true };
+    if (file.type) options.contentType = file.type;
+    const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, options);
     if (error) throw error;
     const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path);
     return urlData.publicUrl;
@@ -738,12 +790,20 @@ function EditVideoModal({
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
+    setLogoUploadSuccess(false);
+    if (file.size > MAX_LOGO_MB * 1024 * 1024) {
+      setError(`Logo 請勿超過 ${MAX_LOGO_MB}MB`);
+      return;
+    }
     setUploadingLogo(true);
     try {
       const url = await uploadToSupabase(file, 'logos');
       setFormData(prev => ({ ...prev, logo_url: url }));
-    } catch (err: any) {
-      setError(err.message || 'Logo 上傳失敗');
+      setLogoUploadSuccess(true);
+      setTimeout(() => setLogoUploadSuccess(false), 3000);
+    } catch (err) {
+      console.error('[Edit] Logo upload error:', err);
+      setError('Logo 上傳失敗：' + getUploadError(err));
     } finally {
       setUploadingLogo(false);
       e.target.value = '';
@@ -754,12 +814,20 @@ function EditVideoModal({
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
+    setVideoUploadSuccess(false);
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
+      setError(`影片請勿超過 ${MAX_VIDEO_MB}MB`);
+      return;
+    }
     setUploadingFile(true);
     try {
       const url = await uploadToSupabase(file, 'video');
       setFormData(prev => ({ ...prev, video_url: url }));
-    } catch (err: any) {
-      setError(err.message || '影片上傳失敗');
+      setVideoUploadSuccess(true);
+      setTimeout(() => setVideoUploadSuccess(false), 3000);
+    } catch (err) {
+      console.error('[Edit] Video upload error:', err);
+      setError('影片上傳失敗：' + getUploadError(err));
     } finally {
       setUploadingFile(false);
       e.target.value = '';
@@ -871,9 +939,10 @@ function EditVideoModal({
             <div>
               <label className="block text-slate-300 text-sm font-medium mb-2">影片 <span className="text-red-400">*</span></label>
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <input type="file" accept="video/mp4,video/webm" onChange={handleFileChange} disabled={uploadingFile} className="flex-1 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-600 file:text-white" />
-                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400" />}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input type="file" accept="video/mp4,video/webm" onChange={handleFileChange} disabled={uploadingFile} className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-600 file:text-white" />
+                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400 shrink-0" />}
+                  {videoUploadSuccess && <span className="text-emerald-400 text-sm shrink-0">✓ 影片已上傳</span>}
                 </div>
                 <input
                   type="url"
@@ -896,9 +965,10 @@ function EditVideoModal({
               <div>
                 <label className="block text-slate-300 text-sm font-medium mb-2">Logo</label>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" onChange={handleLogoFileChange} disabled={uploadingLogo} className="flex-1 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-emerald-600 file:text-white" />
-                    {uploadingLogo && <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" onChange={handleLogoFileChange} disabled={uploadingLogo} className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-emerald-600 file:text-white" />
+                    {uploadingLogo && <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />}
+                    {logoUploadSuccess && <span className="text-emerald-400 text-sm shrink-0">✓ Logo 已上傳</span>}
                   </div>
                   <input
                     type="url"
