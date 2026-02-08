@@ -837,33 +837,46 @@ function EditVideoModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!formData.job_title || !formData.description || !formData.video_url) {
-      setError('請填寫職位名稱、描述與影片');
+    if (!formData.job_title?.trim() || !formData.description?.trim() || !formData.video_url?.trim()) {
+      setError('請填寫職位名稱、描述與影片連結');
       return;
     }
     try {
       setUploading(true);
       const supabase = createClient();
       const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(Boolean);
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('shorts_videos')
         .update({
-          job_title: formData.job_title,
-          company_name: formData.company_name,
-          location: formData.location || null,
-          salary: formData.salary || null,
-          description: formData.description,
-          video_url: formData.video_url,
-          thumbnail_url: formData.thumbnail_url || null,
-          logo_url: formData.logo_url || null,
+          job_title: formData.job_title.trim(),
+          company_name: formData.company_name.trim(),
+          location: formData.location?.trim() || null,
+          salary: formData.salary?.trim() || null,
+          description: formData.description.trim(),
+          video_url: formData.video_url.trim(),
+          thumbnail_url: formData.thumbnail_url?.trim() || null,
+          logo_url: formData.logo_url?.trim() || null,
           tags: tagsArray,
-          contact_email: formData.contact_email || null,
+          contact_email: formData.contact_email?.trim() || null,
         })
-        .eq('id', video.id);
-      if (error) throw error;
+        .eq('id', video.id)
+        .select('id')
+        .single();
+      if (error) {
+        console.error('[Edit] Save error:', error);
+        setError('儲存失敗：' + (error.message || '請稍後再試'));
+        return;
+      }
+      if (!data) {
+        setError('儲存失敗：無法更新（請確認已登入且此影片屬於您的公司）');
+        return;
+      }
       onSuccess();
-    } catch (err: any) {
-      setError(err.message || '儲存失敗');
+      onClose();
+    } catch (err) {
+      const msg = getUploadError(err);
+      console.error('[Edit] Save exception:', err);
+      setError('儲存失敗：' + msg);
     } finally {
       setUploading(false);
     }
@@ -997,6 +1010,12 @@ function EditVideoModal({
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
               />
             </div>
+            {error && (
+              <div className="p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-center gap-2" role="alert">
+                <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+                <p className="text-red-200 text-sm">{error}</p>
+              </div>
+            )}
             <div className="flex items-center gap-4 pt-4">
               <button
                 type="submit"
