@@ -44,6 +44,7 @@ export default function EmployerDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [editingVideo, setEditingVideo] = useState<VideoData | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -301,6 +302,14 @@ export default function EmployerDashboard() {
                   {/* Actions */}
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => setEditingVideo(video)}
+                      className="flex items-center justify-center gap-2 px-3 py-2 rounded text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+                      title="編輯"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>編輯</span>
+                    </button>
+                    <button
                       onClick={() => handleTogglePublish(video.id, video.is_published)}
                       className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded text-sm font-medium transition-colors ${
                         video.is_published
@@ -335,17 +344,29 @@ export default function EmployerDashboard() {
       </main>
 
       {/* Upload Modal */}
-      {showUploadModal && (
+      {showUploadModal && !editingVideo && (
         <UploadVideoModal
           companyId={company?.id!}
           companyName={company?.company_name || ''}
           onClose={() => setShowUploadModal(false)}
           onSuccess={() => {
             setShowUploadModal(false);
-            if (user) {
-              loadCompanyAndVideos(user.id, user);
-            }
+            if (user) loadCompanyAndVideos(user.id, user);
             setSuccess('影片上傳成功');
+            setTimeout(() => setSuccess(null), 3000);
+          }}
+        />
+      )}
+
+      {/* Edit Modal */}
+      {editingVideo && (
+        <EditVideoModal
+          video={editingVideo}
+          onClose={() => setEditingVideo(null)}
+          onSuccess={() => {
+            setEditingVideo(null);
+            if (user) loadCompanyAndVideos(user.id, user);
+            setSuccess('已儲存修改');
             setTimeout(() => setSuccess(null), 3000);
           }}
         />
@@ -665,6 +686,256 @@ function UploadVideoModal({
                 onClick={onClose}
                 className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
               >
+                取消
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Edit Video Modal
+function EditVideoModal({
+  video,
+  onClose,
+  onSuccess,
+}: {
+  video: VideoData;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [formData, setFormData] = useState({
+    company_name: video.company_name,
+    job_title: video.job_title,
+    location: video.location || '',
+    salary: video.salary || '',
+    description: video.description,
+    video_url: video.video_url,
+    thumbnail_url: video.thumbnail_url || '',
+    logo_url: video.logo_url || '',
+    tags: (video.tags || []).join(', '),
+    contact_email: video.contact_email || '',
+  });
+  const [uploading, setUploading] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const BUCKET = 'shorts-videos';
+  const uploadToSupabase = async (file: File, folder: 'video' | 'logos'): Promise<string> => {
+    const supabase = createClient();
+    const ext = file.name.split('.').pop()?.toLowerCase() || (folder === 'video' ? 'mp4' : 'png');
+    const path = folder === 'video' ? `video-${Date.now()}.${ext}` : `logos/logo-${Date.now()}.${ext}`;
+    const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: '3600', upsert: true });
+    if (error) throw error;
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path);
+    return urlData.publicUrl;
+  };
+
+  const handleLogoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setUploadingLogo(true);
+    try {
+      const url = await uploadToSupabase(file, 'logos');
+      setFormData(prev => ({ ...prev, logo_url: url }));
+    } catch (err: any) {
+      setError(err.message || 'Logo 上傳失敗');
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setUploadingFile(true);
+    try {
+      const url = await uploadToSupabase(file, 'video');
+      setFormData(prev => ({ ...prev, video_url: url }));
+    } catch (err: any) {
+      setError(err.message || '影片上傳失敗');
+    } finally {
+      setUploadingFile(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!formData.job_title || !formData.description || !formData.video_url) {
+      setError('請填寫職位名稱、描述與影片');
+      return;
+    }
+    try {
+      setUploading(true);
+      const supabase = createClient();
+      const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(Boolean);
+      const { error } = await supabase
+        .from('shorts_videos')
+        .update({
+          job_title: formData.job_title,
+          company_name: formData.company_name,
+          location: formData.location || null,
+          salary: formData.salary || null,
+          description: formData.description,
+          video_url: formData.video_url,
+          thumbnail_url: formData.thumbnail_url || null,
+          logo_url: formData.logo_url || null,
+          tags: tagsArray,
+          contact_email: formData.contact_email || null,
+        })
+        .eq('id', video.id);
+      if (error) throw error;
+      onSuccess();
+    } catch (err: any) {
+      setError(err.message || '儲存失敗');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white">編輯影片</h2>
+            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          {error && (
+            <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-400" />
+              <p className="text-red-200 text-sm">{error}</p>
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-slate-300 text-sm font-medium mb-2">公司名稱 <span className="text-red-400">*</span></label>
+              <input
+                type="text"
+                value={formData.company_name}
+                onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 text-sm font-medium mb-2">職位名稱 <span className="text-red-400">*</span></label>
+              <input
+                type="text"
+                value={formData.job_title}
+                onChange={(e) => setFormData({ ...formData, job_title: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-slate-300 text-sm font-medium mb-2">地點</label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-300 text-sm font-medium mb-2">薪資</label>
+                <input
+                  type="text"
+                  value={formData.salary}
+                  onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-slate-300 text-sm font-medium mb-2">職位描述 <span className="text-red-400">*</span></label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={4}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 text-sm font-medium mb-2">影片 <span className="text-red-400">*</span></label>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input type="file" accept="video/mp4,video/webm" onChange={handleFileChange} disabled={uploadingFile} className="flex-1 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-600 file:text-white" />
+                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400" />}
+                </div>
+                <input
+                  type="url"
+                  value={formData.video_url}
+                  onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-slate-300 text-sm font-medium mb-2">縮圖連結</label>
+                <input
+                  type="url"
+                  value={formData.thumbnail_url}
+                  onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-300 text-sm font-medium mb-2">Logo</label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" onChange={handleLogoFileChange} disabled={uploadingLogo} className="flex-1 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-emerald-600 file:text-white" />
+                    {uploadingLogo && <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />}
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.logo_url}
+                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <label className="block text-slate-300 text-sm font-medium mb-2">標籤（逗號分隔）</label>
+              <input
+                type="text"
+                value={formData.tags}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 text-sm font-medium mb-2">聯絡信箱</label>
+              <input
+                type="email"
+                value={formData.contact_email}
+                onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+              />
+            </div>
+            <div className="flex items-center gap-4 pt-4">
+              <button
+                type="submit"
+                disabled={uploading}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium disabled:opacity-50"
+              >
+                {uploading ? <><Loader2 className="w-5 h-5 animate-spin" />儲存中...</> : <>儲存修改</>}
+              </button>
+              <button type="button" onClick={onClose} className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">
                 取消
               </button>
             </div>
