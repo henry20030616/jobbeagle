@@ -380,7 +380,30 @@ function UploadVideoModal({
   });
   const [uploading, setUploading] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleLogoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setUploadingLogo(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('index', String(Date.now()));
+      form.append('type', 'logo');
+      const res = await fetch('/api/shorts/upload', { method: 'POST', body: form });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || '上傳失敗');
+      if (data.url) setFormData(prev => ({ ...prev, logo_url: data.url }));
+    } catch (err: any) {
+      setError(err.message || 'Logo 上傳失敗');
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = '';
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -572,14 +595,27 @@ function UploadVideoModal({
                 />
               </div>
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">Logo 連結</label>
-                <input
-                  type="url"
-                  value={formData.logo_url}
-                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-                  placeholder="https://example.com/logo.png"
-                />
+                <label className="block text-slate-300 text-sm font-medium mb-2">Logo</label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                      onChange={handleLogoFileChange}
+                      disabled={uploadingLogo}
+                      className="flex-1 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-emerald-600 file:text-white file:disabled:opacity-50"
+                    />
+                    {uploadingLogo && <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />}
+                  </div>
+                  <p className="text-slate-500 text-xs">或輸入已有 Logo 連結：</p>
+                  <input
+                    type="url"
+                    value={formData.logo_url}
+                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                    placeholder="https://example.com/logo.png"
+                  />
+                </div>
               </div>
             </div>
 
