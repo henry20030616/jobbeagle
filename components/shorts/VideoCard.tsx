@@ -26,7 +26,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
   const [commentCount, setCommentCount] = useState(240); // Initial comment count
   const [followed, setFollowed] = useState(isFollowed);
   const [bookmarked, setBookmarked] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [applyState, setApplyState] = useState<'idle' | 'step1' | 'step2' | 'submitting' | 'success'>('idle');
   const [applyStep, setApplyStep] = useState<1 | 2 | 3>(1);

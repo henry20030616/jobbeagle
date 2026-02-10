@@ -119,13 +119,13 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
       salaryInfo: '2. 薪資情報與公司評價',
       estimatedSalary: '預估薪酬 (ESTIMATED VALUE)',
       analysisLogic: '分析推估邏輯',
-      negotiationStrategy: '請募攻防策略',
+      negotiationStrategy: '薪資談判策略',
       workplaceEcology: '職場生態與面試實戰情報',
       companyCulture: '組織文化與氛圍',
       pros: '優點',
       cons: '缺點',
       interviewProcess: '面試環節與難度',
-      realInterviewQuestions: '實戰搜研考題',
+      realInterviewQuestions: '真實面試題目',
       sourceLink: '來源連結',
       companyAnalysis: '3. 公司介紹與前景分析',
       industryOverview: '產業概況',
@@ -203,44 +203,72 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
   const handleDownload = async () => {
     if (!printRef.current) return;
     const btn = document.getElementById('download-btn');
-    if (btn) btn.innerText = t.generating;
+    if (btn) {
+      btn.innerText = t.generating;
+      (btn as HTMLButtonElement).disabled = true;
+    }
 
     try {
       const element = printRef.current;
+      
+      // 顯示列印層並等待內容載入
       element.style.display = 'block';
       element.style.position = 'absolute';
       element.style.top = '0';
       element.style.left = '0';
       element.style.zIndex = '-9999';
+      element.style.visibility = 'visible';
+      
+      // 等待圖片和圖表載入完成（給 SVG 和 Recharts 時間渲染）
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // 確保所有圖片都已載入
+      const images = element.querySelectorAll('img');
+      await Promise.all(Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve; // 即使失敗也繼續
+          setTimeout(resolve, 2000); // 2秒超時
+        });
+      }));
 
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         logging: false,
-        width: 794,
-        windowWidth: 794,
+        width: element.scrollWidth || 794,
+        height: element.scrollHeight,
+        windowWidth: element.scrollWidth || 794,
+        windowHeight: element.scrollHeight,
         backgroundColor: '#ffffff',
+        allowTaint: false,
+        foreignObjectRendering: false,
+        imageTimeout: 15000,
+        removeContainer: true,
       });
 
       element.style.display = 'none';
+      element.style.visibility = 'hidden';
 
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const imgData = canvas.toDataURL('image/png', 0.95); // 使用 PNG 保持質量
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = 210;
       const pdfHeight = 297;
       const imgProps = pdf.getImageProperties(imgData);
+      const imgWidth = pdfWidth;
       const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pdfHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
         heightLeft -= pdfHeight;
       }
 
@@ -249,9 +277,12 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
 
     } catch (error) {
       console.error('PDF Error:', error);
-      alert(t.downloadFailed);
+      alert(t.downloadFailed + (error instanceof Error ? ': ' + error.message : ''));
     } finally {
-      if (btn) btn.innerText = t.downloadReport;
+      if (btn) {
+        btn.innerText = t.downloadReport;
+        (btn as HTMLButtonElement).disabled = false;
+      }
     }
   };
 
@@ -529,7 +560,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
         ref={printRef} 
         id="printable-report"
         className="hidden bg-white text-gray-900 p-10 mx-auto font-sans"
-        style={{ width: '794px', minHeight: '1123px' }}
+        style={{ width: '794px', minHeight: '1123px', overflow: 'visible' }}
       >
         {/* B1. 頁首 */}
         <div className="border-b-2 border-gray-800 pb-6 mb-8 flex justify-between items-end">

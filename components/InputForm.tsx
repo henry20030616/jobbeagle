@@ -307,24 +307,30 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       });
     };
 
-    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-      console.log('📄 [File Upload] 处理 PDF 文件');
+    const fileName = file.name.toLowerCase();
+    const isPdf = file.type === 'application/pdf' || fileName.endsWith('.pdf');
+    const isWord = file.type === 'application/msword' || 
+                   file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                   fileName.endsWith('.doc') || fileName.endsWith('.docx');
+    
+    if (isPdf || isWord) {
+      console.log(`📄 [File Upload] 处理 ${isPdf ? 'PDF' : 'Word'} 文件`);
       const reader = new FileReader();
       reader.onerror = (error) => {
-        console.error('❌ [File Upload] PDF 读取错误:', error);
-        alert('读取 PDF 文件时发生错误，请重试');
+        console.error(`❌ [File Upload] ${isPdf ? 'PDF' : 'Word'} 读取错误:`, error);
+        alert(`读取 ${isPdf ? 'PDF' : 'Word'} 文件时发生错误，请重试`);
       };
       reader.onloadend = () => {
         const result = reader.result as string;
         if (!result) {
-          console.error('❌ [File Upload] PDF 读取结果为空');
-          alert('读取 PDF 文件失败，请重试');
+          console.error(`❌ [File Upload] ${isPdf ? 'PDF' : 'Word'} 读取结果为空`);
+          alert(`读取 ${isPdf ? 'PDF' : 'Word'} 文件失败，请重试`);
           return;
         }
         const base64String = result.split(',')[1];
         if (!base64String) {
           console.error('❌ [File Upload] Base64 编码失败');
-          alert('PDF 文件编码失败，请重试');
+          alert(`${isPdf ? 'PDF' : 'Word'} 文件编码失败，请重试`);
           return;
         }
         processFile(base64String, true);
@@ -389,7 +395,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       jobUrlPlaceholder: '在此貼上職缺網址 (如 104, LinkedIn...) 或是職缺描述內容...',
       urlTip: '建議：若為需登入網站，貼上全文能讓分析更準確。',
       resume: '2. 您的履歷 (Resume)',
-      uploadSupport: '支援 .pdf, .txt, .md (Max 4MB)',
+      uploadSupport: '支援 .pdf, .doc, .docx, .txt, .md (Max 4MB)',
       waitingSave: '請等待儲存完成...',
       generating: '生成深度戰略報告...',
       fileTooLarge: '檔案大小超過 4MB，請上傳較小的檔案。',
@@ -425,7 +431,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       jobUrlPlaceholder: 'Paste job URL (e.g., 104, LinkedIn...) or job description content here...',
       urlTip: 'Tip: If the website requires login, pasting the full text will make the analysis more accurate.',
       resume: '2. Your Resume',
-      uploadSupport: 'Supports .pdf, .txt, .md (Max 4MB)',
+      uploadSupport: 'Supports .pdf, .doc, .docx, .txt, .md (Max 4MB)',
       waitingSave: 'Please wait for save to complete...',
       generating: 'Generating in-depth strategic report...',
       fileTooLarge: 'File size exceeds 4MB, please upload a smaller file.',
@@ -626,7 +632,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                           type="file" 
                           ref={fileInputRef} 
                           onChange={handleFileChange} 
-                          accept=".pdf,.txt,.md" 
+                          accept=".pdf,.doc,.docx,.txt,.md" 
                           className="hidden" 
                           aria-label="Upload resume file"
                         />
