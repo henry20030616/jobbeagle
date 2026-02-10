@@ -22,7 +22,7 @@ class VideoEngine:
         self.kling_key = os.getenv("KLING_KEY")
         
         # API Endpoints
-        self.gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+        self.gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent"
         self.elevenlabs_url = "https://api.elevenlabs.io/v1/text-to-speech"
         self.heygen_url = "https://api.heygen.com/v1/video.generate"
         self.creatomate_url = "https://rest.creatomate.com/v1/renders"

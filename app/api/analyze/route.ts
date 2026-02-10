@@ -166,8 +166,8 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
     }
 
-    // 只使用 Gemini 1.5 Flash
-    const model = 'gemini-1.5-flash';
+    // 只使用 Gemini 2.0 Flash-Lite
+    const model = 'gemini-2.0-flash-lite';
     console.log(`📋 [Gemini] 使用模型: ${model}`);
 
     // 免费账号可能不支持 response_mime_type，先不使用
