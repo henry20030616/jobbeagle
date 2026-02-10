@@ -217,6 +217,64 @@ export async function POST(request: NextRequest) {
       throw new Error('Gemini API 權限不足，請檢查 API Key 權限或帳號限制');
     }
 
+    // 如果是 429，配額用盡，使用指數退避重試
+    if (response.status === 429) {
+      const errorText = await response.text();
+      console.warn(`⚠️ [Gemini 429] 配額用盡，嘗試指數退避重試...`);
+      
+      // 指數退避：5秒、10秒、20秒，最多重試3次
+      const maxRetries = 3;
+      let retryDelay = 5000; // 5秒
+      let lastError: Error | null = null;
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        console.log(`🔄 [Gemini 429] 第 ${attempt}/${maxRetries} 次重試，等待 ${retryDelay/1000} 秒...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        
+        try {
+          const retryResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBodyTemplate),
+          });
+
+          if (retryResponse.ok) {
+            const retryData = await retryResponse.json();
+            if (retryData.candidates && retryData.candidates[0] && retryData.candidates[0].content) {
+              const parts = retryData.candidates[0].content.parts || [];
+              text = parts.map((part: any) => part.text || '').join('');
+              console.log(`✅ [Gemini] ${model} 重試成功（第 ${attempt} 次），回應長度: ${text.length}`);
+              break; // 成功，跳出循環
+            }
+          } else if (retryResponse.status !== 429) {
+            // 如果不是 429，可能是其他錯誤，直接拋出
+            const retryErrorText = await retryResponse.text();
+            throw new Error(`Gemini API Error: ${retryResponse.status} - ${retryErrorText.substring(0, 200)}`);
+          }
+          
+          // 如果還是 429，繼續下一次重試
+          if (attempt < maxRetries) {
+            retryDelay *= 2; // 指數退避：5秒 -> 10秒 -> 20秒
+          }
+        } catch (err: any) {
+          lastError = err;
+          if (attempt === maxRetries) {
+            throw err;
+          }
+        }
+      }
+      
+      // 如果所有重試都失敗
+      if (!text) {
+        const errorMsg = lastError 
+          ? `Gemini API 配額用盡，已重試 ${maxRetries} 次仍失敗。即使付費帳號也可能有配額限制，請稍後再試或檢查 Google Cloud Console 的配額設定。最後錯誤: ${lastError.message}`
+          : `Gemini API 配額用盡，已重試 ${maxRetries} 次仍失敗。即使付費帳號也可能有配額限制，請稍後再試或檢查 Google Cloud Console 的配額設定。`;
+        throw new Error(errorMsg);
+      }
+    }
+
     // 如果是 503，等待后重试
     if (response.status === 503) {
       const errorText = await response.text();
