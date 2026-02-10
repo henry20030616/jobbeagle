@@ -166,45 +166,9 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
     }
 
-    // 使用稳定的 Gemini 模型（优先使用 2.0，如果不可用则回退到 1.5）
-    // 首先尝试获取可用模型列表（如果失败则使用默认列表）
-    let availableModels: string[] = [];
-    try {
-      const listModelsUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-      console.log('🔍 [Gemini] 嘗試獲取可用模型列表...');
-      const listResponse = await fetch(listModelsUrl);
-      if (listResponse.ok) {
-        const listData = await listResponse.json();
-        if (listData.models && Array.isArray(listData.models)) {
-          availableModels = listData.models
-            .map((m: any) => m.name?.replace('models/', '') || '')
-            .filter((name: string) => name.includes('gemini') && (name.includes('flash') || name.includes('pro')))
-            .sort((a: string, b: string) => {
-              // 优先排序：flash > pro, 带版本号 > 不带版本号
-              if (a.includes('flash') && !b.includes('flash')) return -1;
-              if (!a.includes('flash') && b.includes('flash')) return 1;
-              if (a.includes('-001') && !b.includes('-001')) return -1;
-              if (!a.includes('-001') && b.includes('-001')) return 1;
-              return 0;
-            });
-          console.log(`✅ [Gemini] 找到 ${availableModels.length} 個可用模型:`, availableModels.slice(0, 5).join(', '));
-        }
-      }
-    } catch (e) {
-      console.warn('⚠️ [Gemini] 無法獲取模型列表，使用默認列表:', e);
-    }
-
-    // 模型优先级列表（从最好到最差，免费账号优先使用稳定的模型）
-    // 如果获取到了可用模型列表，优先使用；否则使用默认列表
-    const defaultModels = [
-      'gemini-1.5-flash-latest',  // 最新版本
-      'gemini-1.5-flash-001',    // 带版本号的模型名称
-      'gemini-1.5-flash',         // 不带版本号的模型名称
-      'gemini-pro',               // 旧版模型
-    ];
-    
-    const modelPriority = availableModels.length > 0 ? availableModels : defaultModels;
-    console.log(`📋 [Gemini] 將嘗試以下模型: ${modelPriority.join(', ')}`);
+    // 只使用 Gemini 1.5 Flash
+    const model = 'gemini-1.5-flash';
+    console.log(`📋 [Gemini] 使用模型: ${model}`);
 
     // 免费账号可能不支持 response_mime_type，先不使用
     const requestBodyTemplate: any = {
@@ -223,175 +187,87 @@ export async function POST(request: NextRequest) {
     };
 
     let text = "";
-    let lastError: any = null;
-    let successfulModel = '';
 
-    // 按优先级尝试不同模型
-    for (const model of modelPriority) {
-      try {
-        // 优先尝试 v1beta API（免费账号通常使用 v1beta）
-        // 注意：v1 API 可能对免费账号不可用，所以先尝试 v1beta
-        let url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-        console.log(`🤖 [Gemini] 嘗試使用模型: ${model} (v1beta API)...`);
-        console.log(`🔗 [Gemini] URL: ${url.replace(apiKey, 'API_KEY_HIDDEN')}`);
+    // 使用 v1beta API
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    console.log(`🤖 [Gemini] 使用模型: ${model} (v1beta API)`);
+    console.log(`🔗 [Gemini] URL: ${url.replace(apiKey, 'API_KEY_HIDDEN')}`);
 
-        const fetchStartTime = Date.now();
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBodyTemplate),
-        });
+    const fetchStartTime = Date.now();
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBodyTemplate),
+    });
 
-        const fetchDuration = (Date.now() - fetchStartTime) / 1000;
-        console.log(`⏱️ [Gemini] ${model} 回應時間: ${fetchDuration}秒, Status: ${response.status}`);
+    const fetchDuration = (Date.now() - fetchStartTime) / 1000;
+    console.log(`⏱️ [Gemini] ${model} 回應時間: ${fetchDuration}秒, Status: ${response.status}`);
 
-        // 读取错误响应以便调试
-        let errorText = '';
-        if (!response.ok) {
-          try {
-            errorText = await response.text();
-            console.error(`❌ [Gemini] ${model} 錯誤詳情:`, errorText.substring(0, 500));
-          } catch (e) {
-            console.error(`❌ [Gemini] ${model} 無法讀取錯誤訊息`);
-          }
-        }
+    // 如果是 401，说明 API Key 有问题
+    if (response.status === 401) {
+      console.error(`❌ [Gemini] API Key 無效或過期 (401)`);
+      throw new Error('Gemini API Key 無效或過期，請檢查環境變數 GEMINI_API_KEY');
+    }
 
-        // 如果是 404 或 400，尝试使用 v1 API（作为后备）
-        if (response.status === 404 || response.status === 400) {
-          console.warn(`⚠️ [Gemini] v1beta API 失敗 (${response.status})，嘗試 v1 API...`);
-          if (errorText) {
-            console.warn(`⚠️ [Gemini] v1beta 錯誤訊息: ${errorText.substring(0, 200)}`);
-          }
-          
-          // 尝试 v1 API
-          try {
-            const v1Url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
-            console.log(`🔄 [Gemini] 嘗試 v1 API: ${v1Url.replace(apiKey, 'API_KEY_HIDDEN')}`);
-            
-            const v1Response = await fetch(v1Url, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(requestBodyTemplate),
-            });
+    // 如果是 403，说明权限不足
+    if (response.status === 403) {
+      console.error(`❌ [Gemini] 權限不足 (403)`);
+      throw new Error('Gemini API 權限不足，請檢查 API Key 權限或帳號限制');
+    }
 
-            const v1Duration = (Date.now() - fetchStartTime) / 1000;
-            console.log(`⏱️ [Gemini] v1 回應時間: ${v1Duration}秒, Status: ${v1Response.status}`);
+    // 如果是 503，等待后重试
+    if (response.status === 503) {
+      const errorText = await response.text();
+      console.warn(`⚠️ [Gemini 503] 伺服器過載，等待 2 秒後重試...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // 重试一次
+      const retryResponse = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBodyTemplate),
+      });
 
-            if (v1Response.ok) {
-              const v1Data = await v1Response.json();
-              if (v1Data.candidates && v1Data.candidates[0] && v1Data.candidates[0].content) {
-                const parts = v1Data.candidates[0].content.parts || [];
-                text = parts.map((part: any) => part.text || '').join('');
-                successfulModel = model;
-                console.log(`✅ [Gemini] v1 API 成功，回應長度: ${text.length}`);
-                break; // 成功，退出循环
-              }
-            } else {
-              const v1ErrorText = await v1Response.text();
-              console.error(`❌ [Gemini] v1 API 也失敗: ${v1Response.status} - ${v1ErrorText.substring(0, 200)}`);
-              lastError = new Error(`Model ${model} not available in both v1beta and v1: ${v1ErrorText.substring(0, 100)}`);
-              continue; // 尝试下一个模型
-            }
-          } catch (v1Error: any) {
-            console.error(`❌ [Gemini] v1 API 請求失敗:`, v1Error.message);
-            lastError = new Error(`Model ${model} not available: ${response.status} ${errorText.substring(0, 100)}`);
-            continue; // 尝试下一个模型
-          }
-        }
+      if (!retryResponse.ok) {
+        const retryErrorText = await retryResponse.text();
+        throw new Error(`Gemini API Error: ${retryResponse.status} - ${retryErrorText.substring(0, 200)}`);
+      }
 
-        // 如果是 401，说明 API Key 有问题
-        if (response.status === 401) {
-          console.error(`❌ [Gemini] API Key 無效或過期 (401)`);
-          throw new Error('Gemini API Key 無效或過期，請檢查環境變數 GEMINI_API_KEY');
-        }
-
-        // 如果是 403，说明权限不足
-        if (response.status === 403) {
-          console.error(`❌ [Gemini] 權限不足 (403)`);
-          throw new Error('Gemini API 權限不足，請檢查 API Key 權限或帳號限制');
-        }
-
-        // 如果是 503，等待后重试同一模型
-        if (response.status === 503) {
-          const errorText = await response.text();
-          console.warn(`⚠️ [Gemini 503] 伺服器過載，等待 2 秒後重試 ${model}...`);
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          // 重试一次
-          const retryResponse = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBodyTemplate),
-          });
-
-          if (!retryResponse.ok) {
-            console.warn(`⚠️ [Gemini] ${model} 重試後仍失敗，降級到下一個模型...`);
-            continue;
-          }
-
-          const retryData = await retryResponse.json();
-          if (retryData.candidates && retryData.candidates[0] && retryData.candidates[0].content) {
-            const parts = retryData.candidates[0].content.parts || [];
-            text = parts.map((part: any) => part.text || '').join('');
-            successfulModel = model;
-            console.log(`✅ [Gemini] ${model} 重試成功，回應長度: ${text.length}`);
-            break;
-          }
-        }
-
-        if (!response.ok) {
-          // 如果之前已经读取过错误文本，就不重复读取
-          if (!errorText) {
-            try {
-              errorText = await response.text();
-            } catch (e) {
-              errorText = `无法读取错误信息: ${e}`;
-            }
-          }
-          console.error(`❌ [Gemini Error] ${model} API 回應錯誤: ${response.status} ${response.statusText}`);
-          console.error(`❌ [Gemini Error] 詳細錯誤: ${errorText.substring(0, 300)}`);
-          lastError = new Error(`Gemini API Error: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
-          console.log(`🔄 [Gemini] 降級到下一個模型...`);
-          continue; // 尝试下一个模型
-        }
-
-        const data = await response.json();
-        
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-          const parts = data.candidates[0].content.parts || [];
-          text = parts.map((part: any) => part.text || '').join('');
-          successfulModel = model;
-          console.log(`✅ [Gemini] ${model} 成功取得回應，長度: ${text.length}`);
-          break; // 成功，退出循环
-        } else {
-          console.error(`❌ [Gemini] ${model} 回應格式異常:`, JSON.stringify(data).substring(0, 200));
-          console.log(`🔄 [Gemini] 降級到下一個模型...`);
-          continue; // 尝试下一个模型
-        }
-
-      } catch (error: any) {
-        console.error(`❌ [Gemini] ${model} 請求失敗:`, error.message);
-        lastError = error;
-        console.log(`🔄 [Gemini] 降級到下一個模型...`);
-        continue; // 尝试下一个模型
+      const retryData = await retryResponse.json();
+      if (retryData.candidates && retryData.candidates[0] && retryData.candidates[0].content) {
+        const parts = retryData.candidates[0].content.parts || [];
+        text = parts.map((part: any) => part.text || '').join('');
+        console.log(`✅ [Gemini] ${model} 重試成功，回應長度: ${text.length}`);
+      } else {
+        throw new Error('Gemini API 回應格式異常');
+      }
+    } else if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ [Gemini Error] ${model} API 回應錯誤: ${response.status} ${response.statusText}`);
+      console.error(`❌ [Gemini Error] 詳細錯誤: ${errorText.substring(0, 300)}`);
+      throw new Error(`Gemini API Error: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
+    } else {
+      const data = await response.json();
+      
+      if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+        const parts = data.candidates[0].content.parts || [];
+        text = parts.map((part: any) => part.text || '').join('');
+        console.log(`✅ [Gemini] ${model} 成功取得回應，長度: ${text.length}`);
+      } else {
+        console.error(`❌ [Gemini] ${model} 回應格式異常:`, JSON.stringify(data).substring(0, 200));
+        throw new Error('Gemini API 回應格式異常');
       }
     }
 
     if (!text) {
-      const errorMessage = lastError 
-        ? `所有模型都失敗了。已嘗試: ${modelPriority.join(', ')}。最後錯誤: ${lastError.message}`
-        : `所有模型都失敗了。已嘗試: ${modelPriority.join(', ')}`;
-      console.error(`❌ [Gemini] ${errorMessage}`);
-      throw new Error(errorMessage);
+      throw new Error('Gemini API 未返回有效回應');
     }
 
-    console.log(`🎉 [Gemini] 最終使用模型: ${successfulModel}`);
+    console.log(`🎉 [Gemini] 使用模型: ${model}`);
     
     // ==========================================
     // 🛡️ 強化的 JSON 解析防護罩
