@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   Upload, Video, Edit, Trash2, Eye, EyeOff, 
   Plus, Building2, LogOut, AlertCircle, Loader2,
@@ -196,9 +197,11 @@ export default function EmployerDashboard() {
             <div className="flex items-center gap-4">
               <Building2 className="w-8 h-8 text-blue-400" />
               <div>
-                <h1 className="text-xl font-bold text-white">
-                  <span className="text-white">Job</span><span className="text-blue-400">beagle</span> 企業中心
-                </h1>
+                <Link href="/" className="block">
+                  <h1 className="text-xl font-bold text-white hover:text-blue-400 transition-colors cursor-pointer">
+                    <span className="text-white">Job</span><span className="text-blue-400">beagle</span> 企業中心
+                  </h1>
+                </Link>
                 <p className="text-slate-400 text-sm">{company?.company_name}</p>
               </div>
             </div>
