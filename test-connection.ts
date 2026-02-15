@@ -61,7 +61,7 @@ async function testConnections() {
       
       console.log("   正在調用 Gemini API...");
       const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
+        model: 'gemini-2.0-flash-lite',
         contents: {
           parts: [{ text: "請回覆 'Hello World'" }]
         }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
+import mammoth from 'mammoth';
 
 // 設定最大執行時間（雖然 Vercel 免費版由平台控制，但這行可以提醒 Next.js 不要太早斷開）
 export const maxDuration = 60; 
@@ -94,7 +95,7 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
 }
 
 # Rules
-1. **Language**: Traditional Chinese (繁體中文).
+1. **Language**: (See OUTPUT LANGUAGE instruction below - report must match user-selected language.)
 2. **Professional Tone**: Board-level strategic consultant tone.
 3. **Length Control**: 
    - Keep ALL sections BRIEF and concise (1-3 sentences or 2-4 bullet points maximum per item).
@@ -126,9 +127,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: UserInputs = await request.json();
-    const { jobDescription, resume } = body;
+    const { jobDescription, resume, language: reportLanguage = 'zh' } = body;
 
-    console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length}, Resume 類型: ${resume?.type}`);
+    console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length}, Resume 類型: ${resume?.type}, 報告語言: ${reportLanguage}`);
+
+    // 依介面選擇的語言強制報告產出語言（與輸入的 JD/履歷語言無關）
+    const OUTPUT_LANGUAGE_INSTRUCTION = reportLanguage === 'en'
+      ? `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in English. Ignore whether the input JD or resume is in Chinese or English; your output language is English.\n`
+      : `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in Traditional Chinese. Ignore whether the input JD or resume is in English or Chinese; your output language is 繁體中文.\n`;
 
     if (!jobDescription || !resume) {
       return NextResponse.json(
@@ -160,7 +166,34 @@ export async function POST(request: NextRequest) {
     const userParts: any[] = [
       { text: `[CONTEXT: JD ANALYSIS]\n\n${baseJD}${systemHint}` }
     ];
-    if (resume.type === 'file' && resume.mimeType) {
+
+    // Word (.doc/.docx) 無法作為 inlineData 送給 Gemini（會回傳 "The document has no pages"），改為先轉成純文字
+    const isWordMime = resume.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      resume.mimeType === 'application/msword';
+    const isWordFile = resume.type === 'file' && (isWordMime || resume.fileName?.toLowerCase().endsWith('.docx') || resume.fileName?.toLowerCase().endsWith('.doc'));
+
+    if (resume.type === 'file' && isWordFile && typeof resume.content === 'string') {
+      try {
+        const buffer = Buffer.from(resume.content, 'base64');
+        const { value: resumeText } = await mammoth.extractRawText({ buffer });
+        const text = (resumeText || '').trim();
+        if (!text) {
+          console.warn('⚠️ [Docx] 提取到的文字為空');
+          return NextResponse.json(
+            { error: '無法從 Word 檔案中讀取到文字，請改為上傳 PDF 或貼上履歷文字。' },
+            { status: 400 }
+          );
+        }
+        console.log(`📄 [Docx] 已從 Word 提取文字，長度: ${text.length}`);
+        userParts.push({ text: `=== RESUME ===\n${text}` });
+      } catch (docxError: any) {
+        console.error('❌ [Docx] 解析失敗:', docxError);
+        return NextResponse.json(
+          { error: '無法解析 Word 檔案，請改為上傳 PDF 或貼上履歷文字。' },
+          { status: 400 }
+        );
+      }
+    } else if (resume.type === 'file' && resume.mimeType === 'application/pdf') {
       userParts.push({ inlineData: { data: resume.content, mimeType: resume.mimeType } });
     } else {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
@@ -170,13 +203,13 @@ export async function POST(request: NextRequest) {
     const model = 'gemini-2.0-flash-lite';
     console.log(`📋 [Gemini] 使用模型: ${model}`);
 
-    // 免费账号可能不支持 response_mime_type，先不使用
+    // 使用 response_mime_type 確保返回純 JSON（付費帳號支援）；依介面語言附加輸出語言指示
     const requestBodyTemplate: any = {
-      system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+      system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION + OUTPUT_LANGUAGE_INSTRUCTION }] },
       contents: [{ parts: userParts }],
       generationConfig: { 
         temperature: 0.7,
-        // response_mime_type: "application/json" // 免费账号可能不支持，先注释掉
+        response_mime_type: "application/json", // 確保返回純 JSON，避免解析問題
       },
       safetySettings: [
         { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
@@ -268,9 +301,8 @@ export async function POST(request: NextRequest) {
       
       // 如果所有重試都失敗
       if (!text) {
-        const errorMsg = lastError 
-          ? `Gemini API 配額用盡，已重試 ${maxRetries} 次仍失敗。即使付費帳號也可能有配額限制，請稍後再試或檢查 Google Cloud Console 的配額設定。最後錯誤: ${lastError.message}`
-          : `Gemini API 配額用盡，已重試 ${maxRetries} 次仍失敗。即使付費帳號也可能有配額限制，請稍後再試或檢查 Google Cloud Console 的配額設定。`;
+        // 優雅地顯示配額用盡訊息（符合指南建議）
+        const errorMsg = `今日額度已滿，請明天再來。我們已自動重試 ${maxRetries} 次，但 API 配額已用盡。即使付費帳號也可能有配額限制，請稍後再試。`;
         throw new Error(errorMsg);
       }
     }
@@ -499,8 +531,30 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('❌ [Critical Error] API 全局錯誤:', error);
+    console.error('❌ [Critical Error] 錯誤堆疊:', error.stack);
+    
+    // 提供更詳細的錯誤訊息
+    let errorMessage = error.message || 'Failed to generate analysis';
+    let errorCode = 'UNKNOWN_ERROR';
+    
+    // 根據錯誤類型提供更友善的訊息
+    if (errorMessage.includes('配額用盡') || errorMessage.includes('429')) {
+      errorMessage = '今日額度已滿，請明天再來。API 配額已用盡，請稍後再試。';
+      errorCode = 'QUOTA_EXCEEDED';
+    } else if (errorMessage.includes('AI Generated Invalid JSON') || errorMessage.includes('JSON')) {
+      errorMessage = 'AI 生成格式異常，請重試。如果問題持續，請檢查輸入內容是否過長或格式不正確。';
+      errorCode = 'JSON_PARSE_ERROR';
+    } else if (errorMessage.includes('API Key') || errorMessage.includes('401') || errorMessage.includes('403')) {
+      errorMessage = 'API 認證失敗，請檢查 API Key 設定。';
+      errorCode = 'AUTH_ERROR';
+    }
+    
     return NextResponse.json(
-      { error: error.message || 'Failed to generate analysis' },
+      { 
+        error: errorMessage,
+        errorCode: errorCode,
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     );
   }

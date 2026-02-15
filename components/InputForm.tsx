@@ -298,12 +298,15 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
     console.log('✅ [File Upload] 开始处理文件:', file.name);
 
-    const processFile = (result: string, isPdf: boolean) => {
-      console.log('✅ [File Upload] 文件处理完成', { fileName: file.name, type: isPdf ? 'PDF' : 'Text', contentLength: result.length });
+    const processFile = (result: string, isPdf: boolean, isWord: boolean) => {
+      const mimeType = isPdf ? 'application/pdf' : isWord
+        ? (fileName.endsWith('.docx') ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/msword')
+        : undefined;
+      console.log('✅ [File Upload] 文件处理完成', { fileName: file.name, type: isPdf ? 'PDF' : isWord ? 'Word' : 'Text', contentLength: result.length });
       setResume({
-        type: isPdf ? 'file' : 'text',
+        type: isPdf || isWord ? 'file' : 'text',
         content: result,
-        mimeType: isPdf ? 'application/pdf' : undefined,
+        mimeType: mimeType ?? undefined,
         fileName: file.name
       });
     };
@@ -334,7 +337,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
           alert(`${isPdf ? 'PDF' : 'Word'} 文件编码失败，请重试`);
           return;
         }
-        processFile(base64String, true);
+        processFile(base64String, isPdf, isWord);
       };
       reader.readAsDataURL(file);
     } else {
@@ -351,7 +354,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
           alert('读取文本文件失败，请重试');
           return;
         }
-        processFile(text, false);
+        processFile(text, false, false);
       };
       reader.readAsText(file);
     }

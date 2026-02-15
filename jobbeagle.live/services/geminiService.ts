@@ -11,8 +11,8 @@ export const generateJobScriptAndImage = async (
 ): Promise<GeneratedContent> => {
   const ai = getAI();
   
-  // 1. Generate Script and Visual Description using Gemini 3 Pro
-  const modelId = "gemini-3-pro-preview";
+  // 1. Generate Script and Visual Description using Gemini 2.0 Flash-Lite
+  const modelId = "gemini-2.0-flash-lite";
   
   const systemInstruction = `
     You are a top-tier video production expert with 30 years of experience.
@@ -55,34 +55,36 @@ export const generateJobScriptAndImage = async (
     const jsonResponse = JSON.parse(text);
 
     // 2. Generate a Thumbnail Image
-    const imageModelId = "gemini-3-pro-image-preview";
+    // 已停用：僅使用 Gemini 2.0 Flash-Lite，不支援圖片生成
+    // const imageModelId = "gemini-3-pro-image-preview";
     let thumbnailBase64 = undefined;
 
-    try {
-        const imagePrompt = `
-            High quality, cinematic, photorealistic 4k vertical thumbnail.
-            Scene: ${jsonResponse.visualDescription.substring(0, 300)}.
-            Aspect Ratio 9:16.
-        `;
-
-        const imageResponse = await ai.models.generateContent({
-            model: imageModelId,
-            contents: imagePrompt,
-            config: {
-                imageConfig: {
-                    aspectRatio: "9:16",
-                    imageSize: "1K"
-                }
-            }
-        });
-
-        const part = imageResponse.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-        if (part && part.inlineData) {
-            thumbnailBase64 = part.inlineData.data;
-        }
-    } catch (imgError) {
-        console.warn("Image generation failed", imgError);
-    }
+    // 圖片生成功能已停用，僅使用 Gemini 2.0 Flash-Lite
+    // try {
+    //     const imagePrompt = `
+    //         High quality, cinematic, photorealistic 4k vertical thumbnail.
+    //         Scene: ${jsonResponse.visualDescription.substring(0, 300)}.
+    //         Aspect Ratio 9:16.
+    //     `;
+    //
+    //     const imageResponse = await ai.models.generateContent({
+    //         model: imageModelId,
+    //         contents: imagePrompt,
+    //         config: {
+    //             imageConfig: {
+    //                 aspectRatio: "9:16",
+    //                 imageSize: "1K"
+    //             }
+    //         }
+    //     });
+    //
+    //     const part = imageResponse.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    //     if (part && part.inlineData) {
+    //         thumbnailBase64 = part.inlineData.data;
+    //     }
+    // } catch (imgError) {
+    //     console.warn("Image generation failed", imgError);
+    // }
 
     return {
       script: jsonResponse.script,
@@ -99,38 +101,42 @@ export const generateJobScriptAndImage = async (
 export const generateRecruitmentVideo = async (
     visualDescription: string
 ): Promise<string> => {
-    const ai = getAI();
-    // Use Veo model for video generation
-    // Note: This requires a paid API key selected via window.aistudio.openSelectKey()
+    // 已停用：僅使用 Gemini 2.0 Flash-Lite，不支援視頻生成
+    // 此功能使用 veo-3.1-fast-generate-preview，不符合僅使用 Gemini 2.0 Flash-Lite 的要求
+    throw new Error("Video generation is disabled. Only Gemini 2.0 Flash-Lite is allowed.");
     
-    // Shorten prompt for video generation optimization
-    const videoPrompt = `Cinematic, high quality, 9:16 vertical video. ${visualDescription.substring(0, 200)}`;
-
-    try {
-        let operation = await ai.models.generateVideos({
-            model: 'veo-3.1-fast-generate-preview',
-            prompt: videoPrompt,
-            config: {
-                numberOfVideos: 1,
-                resolution: '720p',
-                aspectRatio: '9:16'
-            }
-        });
-
-        // Poll for completion
-        while (!operation.done) {
-            await new Promise(resolve => setTimeout(resolve, 5000)); // Poll every 5s
-            operation = await ai.operations.getVideosOperation({ operation: operation });
-        }
-
-        const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
-        if (!videoUri) throw new Error("Video generation failed to return a URI");
-
-        // Return the URI. The frontend must append &key=API_KEY to fetch/play it.
-        return videoUri;
-
-    } catch (error) {
-        console.error("Veo Video Generation Error:", error);
-        throw error;
-    }
+    // const ai = getAI();
+    // // Use Veo model for video generation
+    // // Note: This requires a paid API key selected via window.aistudio.openSelectKey()
+    // 
+    // // Shorten prompt for video generation optimization
+    // const videoPrompt = `Cinematic, high quality, 9:16 vertical video. ${visualDescription.substring(0, 200)}`;
+    //
+    // try {
+    //     let operation = await ai.models.generateVideos({
+    //         model: 'veo-3.1-fast-generate-preview',
+    //         prompt: videoPrompt,
+    //         config: {
+    //             numberOfVideos: 1,
+    //             resolution: '720p',
+    //             aspectRatio: '9:16'
+    //         }
+    //     });
+    //
+    //     // Poll for completion
+    //     while (!operation.done) {
+    //         await new Promise(resolve => setTimeout(resolve, 5000)); // Poll every 5s
+    //         operation = await ai.operations.getVideosOperation({ operation: operation });
+    //     }
+    //
+    //     const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
+    //     if (!videoUri) throw new Error("Video generation failed to return a URI");
+    //
+    //     // Return the URI. The frontend must append &key=API_KEY to fetch/play it.
+    //     return videoUri;
+    //
+    // } catch (error) {
+    //     console.error("Veo Video Generation Error:", error);
+    //     throw error;
+    // }
 };

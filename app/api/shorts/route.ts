@@ -91,6 +91,12 @@ export async function POST(request: NextRequest) {
       const errorText = await response.text();
       console.error(`❌ [Jobbeagle API] Gemini 錯誤: ${response.status}`, errorText.substring(0, 500));
       
+      // 處理 429 配額用盡錯誤（符合指南建議）
+      if (response.status === 429) {
+        console.warn(`⚠️ [Jobbeagle API] 配額用盡 (429)，優雅地提示用戶`);
+        throw new Error('今日額度已滿，請明天再來。API 配額已用盡，請稍後再試。');
+      }
+      
       // 如果 v1beta 失敗，嘗試 v1
       if (response.status === 404 || response.status === 400) {
         console.warn(`⚠️ [Jobbeagle API] v1beta 失敗，嘗試 v1 API...`);

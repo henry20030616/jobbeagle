@@ -84,6 +84,23 @@ export const BeagleIcon = ({ className, color = "#475569", spotColor = "#5d4037"
   </svg>
 );
 
+// 生成 SVG HTML 字符串（用於 PDF 版本）
+const getBeagleIconSvg = (color: string, spotColor: string, bellyColor: string = "#5d4037", size: string = "64") => {
+  return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+    <path d="M35 65 C30 75 30 85 35 90 C40 95 60 95 65 90 C70 85 70 75 65 65" fill="${color}" stroke="${color}" stroke-width="1.5" />
+    <path d="M40 70 Q50 65 60 70 L62 85 Q50 90 38 85 Z" fill="#f5f5f5" />
+    <ellipse cx="50" cy="80" rx="8" ry="4" fill="${bellyColor}" opacity="0.3" />
+    <path d="M50 20 C65 20 75 30 75 45 C75 55 65 65 50 65 C35 65 25 55 25 45 C25 30 35 20 50 20Z" fill="${color}" stroke="${color}" stroke-width="2" />
+    <path d="M28 28 C20 30 15 45 15 55 C15 65 22 70 28 65" fill="${spotColor}" stroke="${color}" stroke-width="1.5" />
+    <path d="M72 28 C80 30 85 45 85 55 C85 65 78 70 72 65" fill="${spotColor}" stroke="${color}" stroke-width="1.5" />
+    <circle cx="58" cy="40" r="8" stroke="${color}" stroke-width="1.5" fill="rgba(255,255,255,0.2)" />
+    <path d="M64 46 L82 50" stroke="${color}" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="42" cy="40" r="3" fill="#333" />
+    <circle cx="58" cy="40" r="3" fill="#333" />
+    <ellipse cx="50" cy="46" rx="4" ry="2.5" fill="#000" />
+  </svg>`;
+};
+
 const getScoreInfo = (score: number, language: 'zh' | 'en' = 'zh') => {
   if (language === 'en') {
     if (score >= 90) return { level: "Diamond Beagle", label: "Top Match: Ready to Execute", description: "Your skills and experience almost perfectly match the job requirements.", color: "text-cyan-400", fill: "#22d3ee", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" color="#22d3ee" spotColor="#0e7490" /> };
@@ -201,7 +218,8 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
   const t = translations[language];
 
   const handleDownload = async () => {
-    if (!printRef.current) return;
+    const element = printRef.current;
+    if (!element) return;
     const btn = document.getElementById('download-btn');
     if (btn) {
       btn.innerText = t.generating;
@@ -209,7 +227,6 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
     }
 
     try {
-      const element = printRef.current;
       
       // 顯示列印層並等待內容載入
       element.style.display = 'block';
@@ -218,9 +235,13 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
       element.style.left = '0';
       element.style.zIndex = '-9999';
       element.style.visibility = 'visible';
+      element.style.overflow = 'visible'; // 確保內容不被截斷
       
-      // 等待圖片和圖表載入完成（給 SVG 和 Recharts 時間渲染）
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // 強制重新計算佈局
+      element.offsetHeight; // 觸發重排
+      
+      // 等待更長時間確保所有內容載入（SVG、圖表、圖片）
+      await new Promise(resolve => setTimeout(resolve, 2500));
       
       // 確保所有圖片都已載入
       const images = element.querySelectorAll('img');
@@ -229,23 +250,55 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
         return new Promise((resolve) => {
           img.onload = resolve;
           img.onerror = resolve; // 即使失敗也繼續
-          setTimeout(resolve, 2000); // 2秒超時
+          setTimeout(resolve, 3000); // 3秒超時
         });
       }));
+      
+      // 確保所有 SVG 都已渲染
+      const svgs = element.querySelectorAll('svg');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 確保所有字體都已載入
+      await document.fonts.ready;
+      
+      // 再次等待確保所有內容都渲染完成
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 計算實際內容高度（包括所有子元素）
+      const actualHeight = Math.max(
+        element.scrollHeight,
+        element.offsetHeight,
+        Array.from(element.children).reduce((max, child) => {
+          const childHeight = Math.max(
+            (child as HTMLElement).scrollHeight,
+            (child as HTMLElement).offsetHeight
+          );
+          return Math.max(max, childHeight);
+        }, 0)
+      );
 
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         logging: false,
         width: element.scrollWidth || 794,
-        height: element.scrollHeight,
+        height: actualHeight, // 使用實際計算的高度
         windowWidth: element.scrollWidth || 794,
-        windowHeight: element.scrollHeight,
+        windowHeight: actualHeight,
         backgroundColor: '#ffffff',
         allowTaint: false,
-        foreignObjectRendering: false,
-        imageTimeout: 15000,
+        foreignObjectRendering: true, // 啟用以確保 SVG 正確渲染
+        imageTimeout: 20000, // 增加超時時間
         removeContainer: true,
+        onclone: (clonedDoc) => {
+          // 確保克隆的文檔中所有樣式都正確應用
+          const clonedElement = clonedDoc.querySelector('#printable-report') as HTMLElement;
+          if (clonedElement) {
+            clonedElement.style.overflow = 'visible';
+            clonedElement.style.height = 'auto';
+            clonedElement.style.minHeight = 'auto';
+          }
+        },
       });
 
       element.style.display = 'none';
@@ -277,8 +330,37 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
 
     } catch (error) {
       console.error('PDF Error:', error);
-      alert(t.downloadFailed + (error instanceof Error ? ': ' + error.message : ''));
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        element: element ? {
+          scrollHeight: element.scrollHeight,
+          scrollWidth: element.scrollWidth,
+          offsetHeight: element.offsetHeight,
+          offsetWidth: element.offsetWidth,
+        } : 'element is null'
+      });
+      
+      // 提供更詳細的錯誤訊息
+      let errorMessage = t.downloadFailed;
+      if (error instanceof Error) {
+        if (error.message.includes('timeout') || error.message.includes('Timeout')) {
+          errorMessage += ': 生成時間過長，請稍後再試或減少報告內容';
+        } else if (error.message.includes('canvas') || error.message.includes('Canvas')) {
+          errorMessage += ': 渲染失敗，請刷新頁面後重試';
+        } else {
+          errorMessage += ': ' + error.message;
+        }
+      }
+      
+      alert(errorMessage);
     } finally {
+      // 確保打印層被隱藏
+      if (element) {
+        element.style.display = 'none';
+        element.style.visibility = 'hidden';
+      }
+      
       if (btn) {
         btn.innerText = t.downloadReport;
         (btn as HTMLButtonElement).disabled = false;
@@ -560,7 +642,13 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
         ref={printRef} 
         id="printable-report"
         className="hidden bg-white text-gray-900 p-10 mx-auto font-sans"
-        style={{ width: '794px', minHeight: '1123px', overflow: 'visible' }}
+        style={{ 
+          width: '794px', 
+          minHeight: 'auto', 
+          height: 'auto',
+          overflow: 'visible',
+          pageBreakInside: 'avoid'
+        }}
       >
         {/* B1. 頁首 */}
         <div className="border-b-2 border-gray-800 pb-6 mb-8 flex justify-between items-end">
@@ -570,7 +658,22 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
               {t.jobTitle}：{cleanText(basic_analysis?.job_title)} | {t.generatedDate}：{new Date().toLocaleDateString()}
             </p>
                              </div>
-          <div className="text-right">
+          <div className="text-right flex flex-col items-end">
+             {/* 米格魯圖標 - 使用 SVG HTML 字符串確保 PDF 中正確顯示 */}
+             <div className="mb-2 flex items-center justify-end">
+               <div 
+                 className="w-16 h-16 flex-shrink-0"
+                 dangerouslySetInnerHTML={{
+                   __html: match_analysis.score >= 90 
+                     ? getBeagleIconSvg("#22d3ee", "#0e7490", "#0e7490", "64")
+                     : match_analysis.score >= 75
+                     ? getBeagleIconSvg("#fbbf24", "#b45309", "#b45309", "64")
+                     : match_analysis.score >= 60
+                     ? getBeagleIconSvg("#cbd5e1", "#475569", "#475569", "64")
+                     : getBeagleIconSvg("#fb923c", "#9a3412", "#9a3412", "64")
+                 }}
+               />
+             </div>
              <div className="text-4xl font-black text-indigo-700">{match_analysis.score} <span className="text-sm text-gray-400">/ 100</span></div>
              <div className="text-sm font-bold text-gray-600">{scoreInfo.label}</div>
                  </div>
@@ -582,11 +685,35 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
           {/* 分數評等等級說明 */}
           <div className="mb-4 p-3 bg-gray-100 rounded border border-gray-300">
             <p className="text-sm font-bold text-gray-700 mb-2">{t.scoreStandard}</p>
-            <div className="text-xs text-gray-600 space-y-1">
-              <div className="flex justify-between"><span>90+ {language === 'zh' ? '鑽石米格魯' : 'Diamond Beagle'}</span><span>{scoreInfo.label}</span></div>
-              <div className="flex justify-between"><span>75+ {language === 'zh' ? '黃金米格魯' : 'Gold Beagle'}</span><span>{language === 'zh' ? '高度契合：具備核心潛力' : 'High Match: Core Potential'}</span></div>
-              <div className="flex justify-between"><span>60+ {language === 'zh' ? '白銀米格魯' : 'Silver Beagle'}</span><span>{language === 'zh' ? '中度契合：部分技能重疊' : 'Moderate Match: Partial Skill Overlap'}</span></div>
-              <div className="flex justify-between"><span>&lt;60 {language === 'zh' ? '青銅米格魯' : 'Bronze Beagle'}</span><span>{language === 'zh' ? '低度契合：建議重新評估' : 'Low Match: Re-evaluation Recommended'}</span></div>
+            <div className="text-xs text-gray-600 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#22d3ee", "#0e7490", "#0e7490", "20") }} />
+                  90+ {language === 'zh' ? '鑽石米格魯' : 'Diamond Beagle'}
+                </span>
+                <span>{scoreInfo.label}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#fbbf24", "#b45309", "#b45309", "20") }} />
+                  75+ {language === 'zh' ? '黃金米格魯' : 'Gold Beagle'}
+                </span>
+                <span>{language === 'zh' ? '高度契合：具備核心潛力' : 'High Match: Core Potential'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#cbd5e1", "#475569", "#475569", "20") }} />
+                  60+ {language === 'zh' ? '白銀米格魯' : 'Silver Beagle'}
+                </span>
+                <span>{language === 'zh' ? '中度契合：部分技能重疊' : 'Moderate Match: Partial Skill Overlap'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#fb923c", "#9a3412", "#9a3412", "20") }} />
+                  &lt;60 {language === 'zh' ? '青銅米格魯' : 'Bronze Beagle'}
+                </span>
+                <span>{language === 'zh' ? '低度契合：建議重新評估' : 'Low Match: Re-evaluation Recommended'}</span>
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-8">
