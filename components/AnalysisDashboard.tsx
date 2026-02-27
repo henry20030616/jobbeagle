@@ -216,24 +216,95 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
 
   const t = translations[language];
 
-  const handleDownload = () => {
-    // 使用瀏覽器原生列印功能，確保 PDF 樣式與網頁一致，並自動處理分頁
-    window.print();
+  const handleDownload = async () => {
+    if (!dashboardRef.current) return;
+    
+    const btn = document.getElementById('download-btn');
+    const btnContainer = btn?.parentElement;
+    
+    if (btn) {
+      btn.innerText = t.generating;
+      (btn as HTMLButtonElement).disabled = true;
+    }
+
+    try {
+      // 隱藏下載按鈕避免出現在截圖中
+      if (btnContainer) {
+        btnContainer.style.display = 'none';
+      }
+      
+      // 等待所有內容載入完成
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await document.fonts.ready;
+
+      // 直接對深色網頁版截圖，保留所有漂亮的樣式
+      const canvas = await html2canvas(dashboardRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#0f172a', // 保留深色背景
+        allowTaint: false,
+        foreignObjectRendering: true,
+        imageTimeout: 15000,
+        windowWidth: dashboardRef.current.scrollWidth,
+        windowHeight: dashboardRef.current.scrollHeight,
+      });
+
+      // 轉換為 PDF
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgWidth = pdfWidth;
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      // 分頁處理
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+
+      const safeTitle = basic_analysis?.job_title 
+        ? basic_analysis.job_title.replace(/[^\w\s\u4e00-\u9fa5]/gi, '') 
+        : 'report';
+      pdf.save(`JobBeagle_Analysis_${safeTitle}.pdf`);
+
+    } catch (error) {
+      console.error('PDF Error:', error);
+      alert(t.downloadFailed + ': ' + (error instanceof Error ? error.message : String(error)));
+    } finally {
+      // 恢復顯示下載按鈕
+      if (btnContainer) {
+        btnContainer.style.display = 'block';
+      }
+      if (btn) {
+        btn.innerText = t.downloadReport;
+        (btn as HTMLButtonElement).disabled = false;
+      }
+    }
   };
 
   return (
     <div className="relative">
       
       {/* ========================================================= */}
-      {/* 分析報告主介面（支援列印轉 PDF） */}
+      {/* 分析報告主介面 */}
       {/* ========================================================= */}
       <div ref={dashboardRef} className="space-y-8 animate-fade-in p-4 md:p-8 max-w-[1440px] mx-auto mb-20">
-        <div className="absolute top-0 right-0 z-10 no-print">
+        <div className="absolute top-0 right-0 z-10">
         <button 
           id="download-btn"
           onClick={handleDownload}
           className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg transition-all active:scale-95 border border-white/10"
-          title={language === 'zh' ? '開啟列印對話框，選擇「另存為 PDF」即可下載' : 'Open print dialog, select "Save as PDF" to download'}
         >
           <Download className="w-5 h-5" />
           <span>{language === 'zh' ? '下載報告 (PDF)' : 'Download Report (PDF)'}</span>
