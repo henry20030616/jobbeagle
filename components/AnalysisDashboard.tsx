@@ -16,9 +16,9 @@ interface DashboardProps {
 }
 
 // ----------------------------------------------------------------------
-// 1. 核心修復：通用列表元件 (同時修復 PDF 與網頁顯示)
+// 通用列表元件：處理各種格式的列表內容
 // ----------------------------------------------------------------------
-const SafeContentList = ({ content, bulletColor = "bg-slate-500", textColor = "text-slate-300", isPdf = false }: { content: any, bulletColor?: string, textColor?: string, isPdf?: boolean }) => {
+const SafeContentList = ({ content, bulletColor = "bg-slate-500", textColor = "text-slate-300" }: { content: any, bulletColor?: string, textColor?: string }) => {
   if (!content) return null;
   
   let items: any[] = [];
@@ -33,7 +33,7 @@ const SafeContentList = ({ content, bulletColor = "bg-slate-500", textColor = "t
   if (items.length === 0) return null;
 
   return (
-    <ul className={`space-y-3 mt-2 ${isPdf ? 'text-gray-900' : ''}`}>
+    <ul className="space-y-3 mt-2">
       {items.map((item, idx) => {
         // 智慧判斷：解決 [object Object]
         let mainText = "";
@@ -53,7 +53,7 @@ const SafeContentList = ({ content, bulletColor = "bg-slate-500", textColor = "t
             <span className={`mt-2 mr-3 w-1.5 h-1.5 rounded-full ${bulletColor} shrink-0 opacity-80`} />
             <div className="flex-1">
                 <div className={`text-sm font-bold ${textColor} leading-relaxed`}>{mainText}</div>
-                {subText && <div className={`text-xs mt-1 ${isPdf ? 'text-gray-500' : 'text-slate-500'}`}>{subText}</div>}
+                {subText && <div className="text-xs mt-1 text-slate-500">{subText}</div>}
             </div>
         </li>
         );
@@ -120,8 +120,7 @@ const getScoreInfo = (score: number, language: 'zh' | 'en' = 'zh') => {
 // ----------------------------------------------------------------------
 
 const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) => {
-  const printRef = useRef<HTMLDivElement>(null); // 隱藏列印層
-  const dashboardRef = useRef<HTMLDivElement>(null); // 顯示層
+  const dashboardRef = useRef<HTMLDivElement>(null);
 
   const { basic_analysis, salary_analysis, reviews_analysis, market_analysis, match_analysis, interview_preparation } = data;
   const scoreInfo = getScoreInfo(match_analysis.score, language);
@@ -217,172 +216,27 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
 
   const t = translations[language];
 
-  const handleDownload = async () => {
-    const element = printRef.current;
-    if (!element) return;
-    const btn = document.getElementById('download-btn');
-    if (btn) {
-      btn.innerText = t.generating;
-      (btn as HTMLButtonElement).disabled = true;
-    }
-
-    try {
-      
-      // 顯示列印層並等待內容載入
-      element.style.display = 'block';
-      element.style.position = 'absolute';
-      element.style.top = '0';
-      element.style.left = '0';
-      element.style.zIndex = '-9999';
-      element.style.visibility = 'visible';
-      element.style.overflow = 'visible'; // 確保內容不被截斷
-      
-      // 強制重新計算佈局
-      element.offsetHeight; // 觸發重排
-      
-      // 等待更長時間確保所有內容載入（SVG、圖表、圖片）
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      
-      // 確保所有圖片都已載入
-      const images = element.querySelectorAll('img');
-      await Promise.all(Array.from(images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve; // 即使失敗也繼續
-          setTimeout(resolve, 3000); // 3秒超時
-        });
-      }));
-      
-      // 確保所有 SVG 都已渲染
-      const svgs = element.querySelectorAll('svg');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 確保所有字體都已載入
-      await document.fonts.ready;
-      
-      // 再次等待確保所有內容都渲染完成
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // 計算實際內容高度（包括所有子元素）
-      const actualHeight = Math.max(
-        element.scrollHeight,
-        element.offsetHeight,
-        Array.from(element.children).reduce((max, child) => {
-          const childHeight = Math.max(
-            (child as HTMLElement).scrollHeight,
-            (child as HTMLElement).offsetHeight
-          );
-          return Math.max(max, childHeight);
-        }, 0)
-      );
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        width: element.scrollWidth || 794,
-        height: actualHeight, // 使用實際計算的高度
-        windowWidth: element.scrollWidth || 794,
-        windowHeight: actualHeight,
-        backgroundColor: '#ffffff',
-        allowTaint: false,
-        foreignObjectRendering: true, // 啟用以確保 SVG 正確渲染
-        imageTimeout: 20000, // 增加超時時間
-        removeContainer: true,
-        onclone: (clonedDoc) => {
-          // 確保克隆的文檔中所有樣式都正確應用
-          const clonedElement = clonedDoc.querySelector('#printable-report') as HTMLElement;
-          if (clonedElement) {
-            clonedElement.style.overflow = 'visible';
-            clonedElement.style.height = 'auto';
-            clonedElement.style.minHeight = 'auto';
-          }
-        },
-      });
-
-      element.style.display = 'none';
-      element.style.visibility = 'hidden';
-
-      const imgData = canvas.toDataURL('image/png', 0.95); // 使用 PNG 保持質量
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgWidth = pdfWidth;
-      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pdfHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pdfHeight;
-      }
-
-      const safeTitle = basic_analysis?.job_title ? basic_analysis.job_title.replace(/[^\w\s\u4e00-\u9fa5]/gi, '') : 'report';
-      pdf.save(`JobBeagle_Analysis_${safeTitle}.pdf`);
-
-    } catch (error) {
-      console.error('PDF Error:', error);
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        element: element ? {
-          scrollHeight: element.scrollHeight,
-          scrollWidth: element.scrollWidth,
-          offsetHeight: element.offsetHeight,
-          offsetWidth: element.offsetWidth,
-        } : 'element is null'
-      });
-      
-      // 提供更詳細的錯誤訊息
-      let errorMessage = t.downloadFailed;
-      if (error instanceof Error) {
-        if (error.message.includes('timeout') || error.message.includes('Timeout')) {
-          errorMessage += ': 生成時間過長，請稍後再試或減少報告內容';
-        } else if (error.message.includes('canvas') || error.message.includes('Canvas')) {
-          errorMessage += ': 渲染失敗，請刷新頁面後重試';
-        } else {
-          errorMessage += ': ' + error.message;
-        }
-      }
-      
-      alert(errorMessage);
-    } finally {
-      // 確保打印層被隱藏
-      if (element) {
-        element.style.display = 'none';
-        element.style.visibility = 'hidden';
-      }
-      
-      if (btn) {
-        btn.innerText = t.downloadReport;
-        (btn as HTMLButtonElement).disabled = false;
-      }
-    }
+  const handleDownload = () => {
+    // 使用瀏覽器原生列印功能，確保 PDF 樣式與網頁一致，並自動處理分頁
+    window.print();
   };
 
   return (
     <div className="relative">
       
       {/* ========================================================= */}
-      {/* A. 顯示層：網頁版深色介面 (這是你原本漂亮的介面) */}
+      {/* 分析報告主介面（支援列印轉 PDF） */}
       {/* ========================================================= */}
       <div ref={dashboardRef} className="space-y-8 animate-fade-in p-4 md:p-8 max-w-[1440px] mx-auto mb-20">
         <div className="absolute top-0 right-0 z-10 no-print">
         <button 
-            id="download-btn"
+          id="download-btn"
           onClick={handleDownload}
           className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg transition-all active:scale-95 border border-white/10"
+          title={language === 'zh' ? '開啟列印對話框，選擇「另存為 PDF」即可下載' : 'Open print dialog, select "Save as PDF" to download'}
         >
           <Download className="w-5 h-5" />
-            <span>下載報告 (PDF)</span>
+          <span>{language === 'zh' ? '下載報告 (PDF)' : 'Download Report (PDF)'}</span>
         </button>
       </div>
       
@@ -634,251 +488,6 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
            </div>
         )}
                  </div>
-
-      {/* ========================================================= */}
-      {/* B. 列印層：隱藏的白底黑字報告 (專門給 PDF 用) */}
-      {/* ========================================================= */}
-      <div 
-        ref={printRef} 
-        id="printable-report"
-        className="hidden bg-white text-gray-900 p-10 mx-auto font-sans"
-        style={{ 
-          width: '794px', 
-          minHeight: 'auto', 
-          height: 'auto',
-          overflow: 'visible',
-          pageBreakInside: 'avoid'
-        }}
-      >
-        {/* B1. 頁首 */}
-        <div className="border-b-2 border-gray-800 pb-6 mb-8 flex justify-between items-end">
-                             <div>
-            <h1 className="text-3xl font-extrabold text-black mb-2">{language === 'zh' ? '職缺戰略分析報告' : 'Job Strategy Analysis Report'}</h1>
-            <p className="text-sm text-gray-500">
-              {t.jobTitle}：{cleanText(basic_analysis?.job_title)} | {t.generatedDate}：{new Date().toLocaleDateString()}
-            </p>
-                             </div>
-          <div className="text-right flex flex-col items-end">
-             {/* 米格魯圖標 - 使用 SVG HTML 字符串確保 PDF 中正確顯示 */}
-             <div className="mb-2 flex items-center justify-end">
-               <div 
-                 className="w-16 h-16 flex-shrink-0"
-                 dangerouslySetInnerHTML={{
-                   __html: match_analysis.score >= 90 
-                     ? getBeagleIconSvg("#22d3ee", "#0e7490", "#0e7490", "64")
-                     : match_analysis.score >= 75
-                     ? getBeagleIconSvg("#fbbf24", "#b45309", "#b45309", "64")
-                     : match_analysis.score >= 60
-                     ? getBeagleIconSvg("#cbd5e1", "#475569", "#475569", "64")
-                     : getBeagleIconSvg("#fb923c", "#9a3412", "#9a3412", "64")
-                 }}
-               />
-             </div>
-             <div className="text-4xl font-black text-indigo-700">{match_analysis.score} <span className="text-sm text-gray-400">/ 100</span></div>
-             <div className="text-sm font-bold text-gray-600">{scoreInfo.label}</div>
-                 </div>
-        </div>
-
-        {/* B2. 匹配分析 */}
-        <div className="mb-10">
-          <h2 className="text-xl font-bold border-l-4 border-indigo-600 pl-3 mb-4 text-black">{t.matchAnalysis}</h2>
-          {/* 分數評等等級說明 */}
-          <div className="mb-4 p-3 bg-gray-100 rounded border border-gray-300">
-            <p className="text-sm font-bold text-gray-700 mb-2">{t.scoreStandard}</p>
-            <div className="text-xs text-gray-600 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#22d3ee", "#0e7490", "#0e7490", "20") }} />
-                  90+ {language === 'zh' ? '鑽石米格魯' : 'Diamond Beagle'}
-                </span>
-                <span>{scoreInfo.label}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#fbbf24", "#b45309", "#b45309", "20") }} />
-                  75+ {language === 'zh' ? '黃金米格魯' : 'Gold Beagle'}
-                </span>
-                <span>{language === 'zh' ? '高度契合：具備核心潛力' : 'High Match: Core Potential'}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#cbd5e1", "#475569", "#475569", "20") }} />
-                  60+ {language === 'zh' ? '白銀米格魯' : 'Silver Beagle'}
-                </span>
-                <span>{language === 'zh' ? '中度契合：部分技能重疊' : 'Moderate Match: Partial Skill Overlap'}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span dangerouslySetInnerHTML={{ __html: getBeagleIconSvg("#fb923c", "#9a3412", "#9a3412", "20") }} />
-                  &lt;60 {language === 'zh' ? '青銅米格魯' : 'Bronze Beagle'}
-                </span>
-                <span>{language === 'zh' ? '低度契合：建議重新評估' : 'Low Match: Re-evaluation Recommended'}</span>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-8">
-             <div className="bg-green-50 p-5 rounded border border-green-200">
-                <h3 className="font-bold text-green-800 mb-3 text-lg flex items-center"><CheckCircle2 className="w-5 h-5 mr-2"/> {t.coreAdvantages}</h3>
-                <SafeContentList content={match_analysis.matching_points} bulletColor="bg-green-600" textColor="text-gray-900" isPdf={true} />
-             </div>
-             <div className="bg-orange-50 p-5 rounded border border-orange-200">
-                <h3 className="font-bold text-orange-800 mb-3 text-lg flex items-center"><AlertTriangle className="w-5 h-5 mr-2"/> {t.skillGaps}</h3>
-                <SafeContentList content={match_analysis.skill_gaps} bulletColor="bg-orange-600" textColor="text-gray-900" isPdf={true} />
-              </div>
-          </div>
-      </div>
-
-        {/* B3. 薪資 */}
-        {salary_analysis && (
-          <div className="mb-10 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-             <h2 className="text-xl font-bold border-l-4 border-emerald-600 pl-3 mb-4 text-black">{t.salaryInfo}</h2>
-             
-             {/* 預估薪酬 */}
-             <div className="mb-6">
-               <h3 className="text-lg font-bold mb-2 text-black">{t.estimatedSalary}</h3>
-               <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
-                 <span className="font-bold text-gray-500 uppercase text-sm">{t.marketEstimatedSalary}</span>
-                 <span className="text-3xl font-black text-emerald-700">{cleanText(salary_analysis.estimated_range)}</span>
-               </div>
-               <div className="mb-4">
-                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.analysisLogic}</p>
-                 <SafeContentList content={salary_analysis.rationale} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-               </div>
-               <div>
-                 <h4 className="font-bold text-gray-900 mb-2">{t.negotiationStrategy}</h4>
-                 <SafeContentList content={salary_analysis.negotiation_tip} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-               </div>
-             </div>
-             
-             {/* 職場生態與面試實戰情報 (PDF版) */}
-             {reviews_analysis && (
-               <div className="mt-6 pt-6 border-t-2 border-gray-300">
-                 <h3 className="text-lg font-bold mb-4 text-black">{t.workplaceEcology}</h3>
-                 
-                 {/* 組織文化與氛圍 */}
-                 {reviews_analysis.company_reviews && (
-                   <div className="mb-4">
-                     <h4 className="text-base font-bold mb-2 text-black">{t.companyCulture}</h4>
-                     <div className="text-sm text-gray-700 mb-2 whitespace-pre-line">{cleanText(reviews_analysis.company_reviews.summary)}</div>
-                     {reviews_analysis.company_reviews.pros && reviews_analysis.company_reviews.pros.length > 0 && (
-                       <div className="mb-2">
-                         <p className="text-xs font-bold text-gray-600 mb-1">{t.pros}</p>
-                         <SafeContentList content={reviews_analysis.company_reviews.pros} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-                       </div>
-                     )}
-                     {reviews_analysis.company_reviews.cons && reviews_analysis.company_reviews.cons.length > 0 && (
-                       <div>
-                         <p className="text-xs font-bold text-gray-600 mb-1">{t.cons}</p>
-                         <SafeContentList content={reviews_analysis.company_reviews.cons} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-         </div>
-                     )}
-              </div>
-                 )}
-                 
-                 {/* 面試環節與難度 */}
-                 {reviews_analysis.job_reviews && (
-                    <div className="mb-4">
-                     <h4 className="text-base font-bold mb-2 text-black">{t.interviewProcess}</h4>
-                     <div className="text-sm text-gray-700 whitespace-pre-line">{cleanText(reviews_analysis.job_reviews.summary)}</div>
-                   </div>
-                 )}
-                 
-                 {/* 實戰搜研考題 */}
-                 {reviews_analysis.real_interview_questions && reviews_analysis.real_interview_questions.length > 0 && (
-                   <div>
-                     <h4 className="text-base font-bold mb-2 text-black">{t.realInterviewQuestions}</h4>
-                     <div className="space-y-3">
-                       {reviews_analysis.real_interview_questions.map((q, idx) => (
-                         <div key={idx} className="p-3 bg-gray-100 border-l-4 border-gray-400">
-                           <p className="text-sm font-bold text-gray-900 mb-1">{cleanText(q.question)}</p>
-                           <div className="text-xs text-gray-600">
-                             {q.job_title && <span>{cleanText(q.job_title)}</span>}
-                             {q.year && <span> • {cleanText(q.year)}</span>}
-                           </div>
-                         </div>
-                       ))}
-                     </div>
-                   </div>
-                 )}
-                      </div>
-             )}
-                    </div>
-        )}
-
-        {/* B4. 市場 */}
-        {market_analysis && (
-          <div className="mb-10">
-             <h2 className="text-xl font-bold border-l-4 border-blue-600 pl-3 mb-4 text-black">{t.companyAnalysis}</h2>
-             
-             {/* 產業概況 */}
-             <div className="mb-4 p-4 bg-gray-100 border border-gray-300 rounded">
-               <h3 className="text-base font-bold mb-3 text-black">{t.industryOverview}</h3>
-               
-               {/* 產業趨勢 */}
-               <div className="mb-3">
-                 <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.industryTrends}</p>
-                 <div className="text-sm text-gray-700 whitespace-pre-line">{cleanText(market_analysis.industry_trends)}</div>
-               </div>
-               
-               {/* 企業核心護城河 */}
-               {market_analysis.key_advantages && market_analysis.key_advantages.length > 0 && (
-                 <div className="mb-3 pt-3 border-t border-gray-300">
-                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.coreMoats}</p>
-                   <SafeContentList content={market_analysis.key_advantages} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-                 </div>
-               )}
-               
-               {/* 長期戰略風險 */}
-               {market_analysis.potential_risks && market_analysis.potential_risks.length > 0 && (
-                 <div className="pt-3 border-t border-gray-300">
-                   <p className="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">{t.strategicRisks}</p>
-                   <SafeContentList content={market_analysis.potential_risks} bulletColor="bg-gray-400" textColor="text-gray-800" isPdf={true} />
-                 </div>
-               )}
-             </div>
-             
-             {/* 競爭對手表格 */}
-             {market_analysis.competition_table && market_analysis.competition_table.length > 0 && (
-               <table className="w-full text-left text-sm border-collapse border border-gray-300 shadow-sm">
-                  <thead className="bg-gray-100 text-gray-800 font-bold">
-                    <tr><th className="p-3 border border-gray-300">{t.competitors}</th><th className="p-3 border border-gray-300">{t.strengths}</th><th className="p-3 border border-gray-300">{t.weaknesses}</th></tr>
-                  </thead>
-                  <tbody>
-                    {market_analysis.competition_table.map((c, i) => (
-                      <tr key={i} className="odd:bg-white even:bg-gray-50">
-                        <td className="p-3 border border-gray-300 font-bold text-gray-900">{cleanText(c.name)}</td>
-                        <td className="p-3 border border-gray-300 text-green-700">{cleanText(c.strengths)}</td>
-                        <td className="p-3 border border-gray-300 text-red-700">{cleanText(c.weaknesses)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-               </table>
-             )}
-          </div>
-        )}
-
-        {/* B5. 面試 */}
-        {interview_preparation && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold border-l-4 border-purple-600 pl-3 mb-4 text-black">{t.mockInterview}</h2>
-            <div className="space-y-4">
-              {interview_preparation.questions.slice(0, 5).map((q, idx) => (
-                <div key={idx} className="border border-gray-200 rounded p-4 break-inside-avoid">
-                  <div className="font-bold text-purple-900 mb-2 text-lg">Q{idx+1}: {cleanText(q.question)}</div>
-                  <div className="text-sm text-gray-800 bg-gray-50 p-3 rounded italic border-l-2 border-purple-300">
-                    <span className="font-bold not-italic text-purple-700 mr-2">建議回答:</span>
-                        {cleanText(q.answer_guide)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-          </div>
-        )}
-        
-        <div className="text-center text-xs text-gray-400 mt-12 border-t border-gray-300 pt-4">
-           此報告由 JobBeagle AI 戰略分析引擎生成
-          </div>
-      </div>
 
     </div>
   );
