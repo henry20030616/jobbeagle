@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
@@ -34,4 +35,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-舊代碼庫/
+
+# Python virtual environments
+venv/
+__pycache__/
+*.pyc
+
+# Supabase
+supabase/.branches
+supabase/.temp
+
+# Test files with sensitive data
+test-*.ts
+test-*.js
+check-*.js
+check-*.ts
+check-*.sh
+verify-*.js
+update-*.sh
+*-env.md
+UPDATE_*.md
+
+# API keys and credentials
+**/credentials.json
+**/*key*.json
