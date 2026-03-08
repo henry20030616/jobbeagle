@@ -199,8 +199,8 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
     }
 
-    // 只使用 Gemini 2.0 Flash-Lite
-    const model = 'gemini-2.0-flash-lite';
+    // 只使用 Gemini 2.5 Flash-Lite
+    const model = 'gemini-2.5-flash-lite';
     console.log(`📋 [Gemini] 使用模型: ${model}`);
 
     // 使用 response_mime_type 確保返回純 JSON（付費帳號支援）；依介面語言附加輸出語言指示

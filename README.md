@@ -13,7 +13,7 @@
 
 - **前端框架**：Next.js 15 (App Router)
 - **UI 框架**：React 19 + Tailwind CSS
-- **AI 服務**：Google Gemini 3 Pro
+- **AI 服務**：Google Gemini 2.5 Flash-Lite
 - **資料庫**：Supabase (PostgreSQL)
 - **圖表庫**：Recharts
 

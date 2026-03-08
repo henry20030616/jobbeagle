@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 使用 Gemini 2.0 Flash-Lite 生成腳本和視覺描述
-    const model = 'gemini-2.0-flash-lite';
+    // 使用 Gemini 2.5 Flash-Lite 生成腳本和視覺描述
+    const model = 'gemini-2.5-flash-lite';
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const systemInstruction = `
