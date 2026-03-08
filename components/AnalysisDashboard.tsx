@@ -4,11 +4,9 @@ import React, { useRef } from 'react';
 import { InterviewReport } from '@/types';
 import { 
   CheckCircle2, AlertTriangle, Target, Zap, 
-  Activity, Download, Globe, Building2, Users, FileQuestion, MessageSquare
+  Activity, Globe, Building2, Users, FileQuestion
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 interface DashboardProps {
   data: InterviewReport;
@@ -120,7 +118,6 @@ const getScoreInfo = (score: number, language: 'zh' | 'en' = 'zh') => {
 // ----------------------------------------------------------------------
 
 const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) => {
-  const dashboardRef = useRef<HTMLDivElement>(null);
 
   const { basic_analysis, salary_analysis, reviews_analysis, market_analysis, match_analysis, interview_preparation } = data;
   const scoreInfo = getScoreInfo(match_analysis.score, language);
@@ -157,9 +154,6 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
       highMatch: '高度契合',
       moderateMatch: '中度契合',
       lowMatch: '低度契合',
-      downloadReport: '下載報告 (PDF)',
-      generating: '生成中...',
-      downloadFailed: '下載失敗',
       jobTitle: '職位',
       generatedDate: '生成日期',
       coreAdvantagesAndGaps: '1. 核心優勢與缺口',
@@ -199,9 +193,6 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
       highMatch: 'High Match',
       moderateMatch: 'Moderate Match',
       lowMatch: 'Low Match',
-      downloadReport: 'Download Report (PDF)',
-      generating: 'Generating...',
-      downloadFailed: 'Download Failed',
       jobTitle: 'Job Title',
       generatedDate: 'Generated Date',
       coreAdvantagesAndGaps: '1. Core Advantages & Gaps',
@@ -216,100 +207,13 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
 
   const t = translations[language];
 
-  const handleDownload = async () => {
-    if (!dashboardRef.current) return;
-    
-    const btn = document.getElementById('download-btn');
-    const btnContainer = btn?.parentElement;
-    
-    if (btn) {
-      btn.innerText = t.generating;
-      (btn as HTMLButtonElement).disabled = true;
-    }
-
-    try {
-      // 隱藏下載按鈕避免出現在截圖中
-      if (btnContainer) {
-        btnContainer.style.display = 'none';
-      }
-      
-      // 等待所有內容載入完成
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await document.fonts.ready;
-
-      // 直接對深色網頁版截圖，保留所有漂亮的樣式
-      const canvas = await html2canvas(dashboardRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#0f172a', // 保留深色背景
-        allowTaint: false,
-        foreignObjectRendering: true,
-        imageTimeout: 15000,
-        windowWidth: dashboardRef.current.scrollWidth,
-        windowHeight: dashboardRef.current.scrollHeight,
-      });
-
-      // 轉換為 PDF
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgWidth = pdfWidth;
-      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      // 分頁處理
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pdfHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pdfHeight;
-      }
-
-      const safeTitle = basic_analysis?.job_title 
-        ? basic_analysis.job_title.replace(/[^\w\s\u4e00-\u9fa5]/gi, '') 
-        : 'report';
-      pdf.save(`JobBeagle_Analysis_${safeTitle}.pdf`);
-
-    } catch (error) {
-      console.error('PDF Error:', error);
-      alert(t.downloadFailed + ': ' + (error instanceof Error ? error.message : String(error)));
-    } finally {
-      // 恢復顯示下載按鈕
-      if (btnContainer) {
-        btnContainer.style.display = 'block';
-      }
-      if (btn) {
-        btn.innerText = t.downloadReport;
-        (btn as HTMLButtonElement).disabled = false;
-      }
-    }
-  };
-
   return (
     <div className="relative">
       
       {/* ========================================================= */}
       {/* 分析報告主介面 */}
       {/* ========================================================= */}
-      <div ref={dashboardRef} className="space-y-8 animate-fade-in p-4 md:p-8 max-w-[1440px] mx-auto mb-20">
-        <div className="absolute top-0 right-0 z-10">
-        <button 
-          id="download-btn"
-          onClick={handleDownload}
-          className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg transition-all active:scale-95 border border-white/10"
-        >
-          <Download className="w-5 h-5" />
-          <span>{language === 'zh' ? '下載報告 (PDF)' : 'Download Report (PDF)'}</span>
-        </button>
-      </div>
+      <div className="space-y-8 animate-fade-in p-4 md:p-8 max-w-[1440px] mx-auto mb-20">
       
         {/* 1. 職位匹配 (網頁版) */}
       <div className="space-y-6">
@@ -453,32 +357,6 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
                         </div>
                     </div>
                      )}
-                     
-                     {/* 實戰搜研考題 */}
-                     {reviews_analysis.real_interview_questions && reviews_analysis.real_interview_questions.length > 0 && (
-                       <div className="bg-slate-900/30 p-5 rounded-xl border border-slate-700/50">
-                         <h4 className="text-indigo-400 font-bold mb-4 flex items-center">
-                           <MessageSquare className="w-4 h-4 mr-2" />
-                           {t.realInterviewQuestions}
-                         </h4>
-                        <div className="space-y-4">
-                           {reviews_analysis.real_interview_questions.map((q, idx) => (
-                             <div key={idx} className="bg-slate-800/50 p-4 rounded-lg border-l-4 border-indigo-500">
-                               <p className="text-sm font-bold text-slate-200 mb-2">{cleanText(q.question)}</p>
-                               <div className="flex items-center text-xs text-slate-500 space-x-3">
-                                 {q.job_title && <span>{cleanText(q.job_title)}</span>}
-                                 {q.year && <span>• {cleanText(q.year)}</span>}
-                                 {q.source_url && (
-                                   <a href={q.source_url} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300">
-                                     {t.sourceLink}
-                                   </a>
-                                 )}
-                                  </div>
-                              </div>
-                            ))}
-                        </div>
-                        </div>
-                      )}
                     </div>
                  )}
               </div>

@@ -29,7 +29,12 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
 **CRITICAL: Keep all sections CONCISE except industry_trends**
 
 1. **Match Analysis**: Provide 3-5 BRIEF points for "Matching Points" and "Skill Gaps". Each point should be 1-2 sentences maximum.
-2. **Salary**: Strictly format as "Amount + (年薪)" or "Amount + (月薪)". E.g., "1.8M - 2.5M TWD (年薪)". Keep rationale and negotiation_tip to 2-3 bullet points maximum.
+2. **Salary**: 
+   - **MANDATORY**: You MUST provide a specific salary range. NEVER use vague terms like "面議" (negotiable), "依公司規定", or "未提供".
+   - Base your estimate on: job level, candidate's experience/skills, company size/stage, industry standards, and market data.
+   - Format: "Amount + (年薪)" or "Amount + (月薪)". E.g., "1.8M - 2.5M TWD (年薪)", "80K - 120K TWD (月薪)".
+   - Even if the JD doesn't specify salary, you MUST estimate based on the role and market knowledge.
+   - Keep rationale and negotiation_tip to 2-3 bullet points maximum.
 3. **Moat (護城河)**: Focus strictly on the company's inherent strategic advantages. Keep each advantage description to 1-2 sentences. Avoid lengthy explanations.
 4. **Competitive Landscape (競爭格局)**: The table MUST include the target company itself alongside its competitors (at least 4-5 major rivals). Keep strengths/weaknesses to 1 sentence each.
 5. **Industry Analysis (唯一可詳細的部分)**: The "industry_trends" is the ONLY section where detailed, comprehensive analysis is allowed. Format: "簡介: [Deep Intro] \n 現況與趨勢: [Current Market Status & Forward Trends]". This can be longer and more detailed.
@@ -54,10 +59,10 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "hard_requirements": ["Mandatory technical or certification requirements"]
   },
   "salary_analysis": {
-    "estimated_range": "e.g., 1.8M - 2.5M TWD (年薪)",
+    "estimated_range": "MUST be specific numbers. E.g., '1.8M - 2.5M TWD (年薪)' or '80K - 120K TWD (月薪)'. NEVER use '面議' or vague terms.",
     "market_position": "BRIEF objective ranking (1 sentence).",
     "negotiation_tip": "CONCISE tactics. 2-3 bullet points maximum.",
-    "rationale": "BRIEF data-driven logic. 2-3 bullet points maximum."
+    "rationale": "BRIEF data-driven logic explaining how you calculated the salary range. 2-3 bullet points maximum."
   },
   "market_analysis": {
     "industry_trends": "簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \n 現況與趨勢: [DETAILED - Can be longer and more detailed]",
