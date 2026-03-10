@@ -1,0 +1,7 @@
+# 這些是用戶自己產生的圖示檔案
+*.png
+*.jpg
+*.jpeg
+
+# macOS
+.DS_Store

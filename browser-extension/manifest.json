@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "JobBeagle 職位分析助手",
+  "version": "1.0.0",
+  "description": "一鍵抓取 104/LinkedIn 職缺並發送到 JobBeagle 進行 AI 分析",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.104.com.tw/*",
+    "https://www.linkedin.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.104.com.tw/job/*",
+        "https://www.linkedin.com/jobs/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}

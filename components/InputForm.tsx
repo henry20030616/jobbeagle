@@ -17,9 +17,10 @@ interface InputFormProps {
   isLoading: boolean;
   language?: 'zh' | 'en';
   onLanguageChange?: (lang: 'zh' | 'en') => void;
+  initialJobDescription?: string;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = 'zh', onLanguageChange }) => {
+const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = 'zh', onLanguageChange, initialJobDescription }) => {
   const [currentLanguage, setCurrentLanguage] = useState<'zh' | 'en'>(language);
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState<ResumeInput | null>(null);
@@ -33,7 +34,12 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
   useEffect(() => {
     loadResumeHistory();
-  }, []);
+    
+    // 如果有插件傳入的職缺描述，自動填充
+    if (initialJobDescription) {
+      setJobDescription(initialJobDescription);
+    }
+  }, [initialJobDescription]);
 
   const loadResumeHistory = async () => {
     try {

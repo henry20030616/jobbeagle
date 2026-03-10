@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobBeagle 助手</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 350px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    .logo {
+      font-size: 32px;
+      margin-right: 12px;
+    }
+    
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+    
+    .content {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .info {
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      background: rgba(255,255,255,0.25);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+    
+    button:hover {
+      background: rgba(255,255,255,0.35);
+      border-color: rgba(255,255,255,0.5);
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .status {
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+    }
+    
+    .status.success {
+      background: rgba(72, 187, 120, 0.3);
+      border: 1px solid rgba(72, 187, 120, 0.5);
+    }
+    
+    .status.error {
+      background: rgba(245, 101, 101, 0.3);
+      border: 1px solid rgba(245, 101, 101, 0.5);
+    }
+    
+    .status.loading {
+      background: rgba(66, 153, 225, 0.3);
+      border: 1px solid rgba(66, 153, 225, 0.5);
+    }
+    
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 15px;
+    }
+    
+    a {
+      color: white;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🐶</div>
+    <div>
+      <h1>JobBeagle 分析助手</h1>
+      <div class="subtitle">一鍵抓取職缺進行 AI 分析</div>
+    </div>
+  </div>
+  
+  <div class="content">
+    <div class="info" id="info">
+      請確認您正在瀏覽 104 或 LinkedIn 的職缺頁面
+    </div>
+    
+    <button id="captureBtn">
+      📋 抓取職缺並分析
+    </button>
+    
+    <button id="openWebBtn" style="background: rgba(255,255,255,0.15);">
+      🌐 開啟 JobBeagle 網站
+    </button>
+    
+    <div id="status" style="display: none;"></div>
+  </div>
+  
+  <div class="footer">
+    <a href="https://www.jobbeagle.com" target="_blank">www.jobbeagle.com</a>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

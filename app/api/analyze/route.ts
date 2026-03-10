@@ -46,7 +46,11 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
 8. **Mock Interview Prep**: Generate at least 10 questions total.
     - **ORDER**: List 5 Technical questions FIRST, then 5 Behavioral questions.
     - **Labeling**: Prefix with "[技術面]" or "[行為面]".
-    - **Answer Advice**: The "answer_guide" must be BRIEF (2-3 sentences maximum). Start with "回答建議：", followed by concise, actionable advice.
+    - **Answer Advice (CRITICAL)**: 
+      * The "answer_guide" MUST be personalized based on the candidate's resume.
+      * Reference specific experiences, skills, or projects from their background.
+      * Format: Start with "回答建議：", followed by 2-3 sentences that show HOW the candidate should leverage their specific experience.
+      * Example: "回答建議：可以結合你在 [具體公司/專案] 的 [具體技能/經驗]，說明如何應用在 [情境]。強調你曾經 [具體成就]，展現實戰能力。"
 
 # Output Format (JSON)
 {
@@ -91,7 +95,7 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "skill_gaps": [{"gap": "Gap", "description": "BRIEF interview strategy (1-2 sentences)"}]
   },
   "interview_preparation": {
-    "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "回答建議：[CONCISE advice, 2-3 sentences maximum]"}]
+    "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "回答建議：[MUST reference candidate's specific experience/skills from resume, 2-3 sentences maximum. Show HOW to use their background.]"}]
   },
   "references": {
     "deep_research": [{"title": "Title", "url": "URL"}],

@@ -15,12 +15,46 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+  const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
+      
+      // 檢查是否來自插件
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromExtension = urlParams.get('from') === 'extension';
+      const encodedJob = urlParams.get('job');
+      const jobId = urlParams.get('jobId');
+      const source = urlParams.get('source');
+      
+      if (fromExtension) {
+        console.log('🔌 [Extension] 檢測到來自插件，來源:', source);
+        
+        if (encodedJob) {
+          // 從 URL 參數解碼職缺數據
+          try {
+            const decodedData = decodeURIComponent(atob(encodedJob));
+            setExtensionJobData(decodedData);
+            console.log('✅ [Extension] 已從 URL 解碼職缺數據');
+          } catch (e) {
+            console.error('❌ [Extension] 解碼失敗:', e);
+          }
+        } else if (jobId) {
+          // 從 localStorage 讀取（處理大數據情況）
+          const storedData = localStorage.getItem(`jobbeagle_job_${jobId}`);
+          if (storedData) {
+            setExtensionJobData(storedData);
+            localStorage.removeItem(`jobbeagle_job_${jobId}`);
+            console.log('✅ [Extension] 已從本地存儲讀取職缺數據');
+          }
+        }
+        
+        // 清理 URL（移除參數，保持乾淨）
+        window.history.replaceState({}, '', '/');
+      }
     };
     init();
     const { data: { subscription } } = createClient().auth.onAuthStateChange((_event, session) => {
@@ -147,6 +181,7 @@ export default function Home() {
               isLoading={loading}
               language={language}
               onLanguageChange={setLanguage}
+              initialJobDescription={extensionJobData || undefined}
             />
           </div>
         ) : (
