@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GEMINI_VIDEO_MODEL } from '@/constants/models';
 
 export const maxDuration = 120; // 2 minutes for video generation
 
@@ -40,8 +41,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 使用 Gemini 2.5 Flash-Lite 生成腳本和視覺描述
-    const model = 'gemini-2.5-flash-lite';
+    // 使用全域配置的 Gemini 模型生成腳本和視覺描述
+    const model = GEMINI_VIDEO_MODEL;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const systemInstruction = `

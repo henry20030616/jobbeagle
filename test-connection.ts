@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
+import { GEMINI_DEFAULT_MODEL } from "./constants/models";
 
 async function testConnections() {
   console.log("🔍 開始測試連線...\n");
@@ -60,8 +61,9 @@ async function testConnections() {
       const ai = new GoogleGenAI({ apiKey: geminiApiKey });
       
       console.log("   正在調用 Gemini API...");
+      console.log(`   使用模型: ${GEMINI_DEFAULT_MODEL}`);
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-lite',
+        model: GEMINI_DEFAULT_MODEL,
         contents: {
           parts: [{ text: "請回覆 'Hello World'" }]
         }

@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedContent } from '../types';
+import { GEMINI_VIDEO_MODEL } from '../../constants/models';
 
 // Helper to get fresh AI instance
 const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -11,8 +12,8 @@ export const generateJobScriptAndImage = async (
 ): Promise<GeneratedContent> => {
   const ai = getAI();
   
-  // 1. Generate Script and Visual Description using Gemini 2.5 Flash-Lite
-  const modelId = "gemini-2.5-flash-lite";
+  // 1. Generate Script and Visual Description using 全域配置的 Gemini 模型
+  const modelId = GEMINI_VIDEO_MODEL;
   
   const systemInstruction = `
     You are a top-tier video production expert with 30 years of experience.
@@ -55,10 +56,10 @@ export const generateJobScriptAndImage = async (
     const jsonResponse = JSON.parse(text);
 
     // 2. Generate a Thumbnail Image
-    // 已停用：僅使用 Gemini 2.5 Flash-Lite，不支援圖片生成
+    // 已停用：僅使用 Gemini 3.1 Flash-Lite，不支援圖片生成
     let thumbnailBase64 = undefined;
 
-    // 圖片生成功能已停用，僅使用 Gemini 2.5 Flash-Lite
+    // 圖片生成功能已停用，僅使用 Gemini 3.1 Flash-Lite
     // try {
     //     const imagePrompt = `
     //         High quality, cinematic, photorealistic 4k vertical thumbnail.
@@ -100,9 +101,9 @@ export const generateJobScriptAndImage = async (
 export const generateRecruitmentVideo = async (
     visualDescription: string
 ): Promise<string> => {
-    // 已停用：僅使用 Gemini 2.5 Flash-Lite，不支援視頻生成
-    // 此功能使用 veo-3.1-fast-generate-preview，不符合僅使用 Gemini 2.5 Flash-Lite 的要求
-    throw new Error("Video generation is disabled. Only Gemini 2.5 Flash-Lite is allowed.");
+    // 已停用：僅使用 Gemini 3.1 Flash-Lite，不支援視頻生成
+    // 此功能使用 veo-3.1-fast-generate-preview，不符合僅使用 Gemini 3.1 Flash-Lite 的要求
+    throw new Error("Video generation is disabled. Only Gemini 3.1 Flash-Lite is allowed.");
     
     // const ai = getAI();
     // // Use Veo model for video generation

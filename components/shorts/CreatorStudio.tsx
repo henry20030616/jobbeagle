@@ -216,7 +216,7 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ onJobCreated, onError }) 
                                 {step === 'generating_script' ? 'Writing Script...' : 'Generating Video with Veo...'}
                             </h3>
                             <p className="text-gray-400">
-                                {step === 'generating_script' ? 'Creating engaging content with Gemini 2.5 Flash-Lite' : 'This may take up to a minute. Please wait...'}
+                                {step === 'generating_script' ? 'Creating engaging content with Gemini 3.1 Flash-Lite' : 'This may take up to a minute. Please wait...'}
                             </p>
                         </div>
                     </div>

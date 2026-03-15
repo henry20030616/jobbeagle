@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
 import mammoth from 'mammoth';
+import { GEMINI_ANALYSIS_MODEL } from '@/constants/models';
 
 // 設定最大執行時間（雖然 Vercel 免費版由平台控制，但這行可以提醒 Next.js 不要太早斷開）
 export const maxDuration = 60; 
@@ -208,8 +209,8 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
     }
 
-    // 只使用 Gemini 2.5 Flash-Lite
-    const model = 'gemini-2.5-flash-lite';
+    // 使用全域配置的 Gemini 模型
+    const model = GEMINI_ANALYSIS_MODEL;
     console.log(`📋 [Gemini] 使用模型: ${model}`);
 
     // 使用 response_mime_type 確保返回純 JSON（付費帳號支援）；依介面語言附加輸出語言指示

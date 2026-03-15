@@ -9,6 +9,7 @@ import uuid
 import json
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
+from config import GEMINI_MODEL, get_gemini_url
 
 load_dotenv()
 
@@ -22,7 +23,7 @@ class VideoEngine:
         self.kling_key = os.getenv("KLING_KEY")
         
         # API Endpoints
-        self.gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
+        self.gemini_url = get_gemini_url()  # 使用全域配置的模型
         self.elevenlabs_url = "https://api.elevenlabs.io/v1/text-to-speech"
         self.heygen_url = "https://api.heygen.com/v1/video.generate"
         self.creatomate_url = "https://rest.creatomate.com/v1/renders"
