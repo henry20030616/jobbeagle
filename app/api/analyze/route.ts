@@ -1,8 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { InterviewReport, UserInputs } from '@/types';
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createAdminClient } from '@supabase/supabase-js';
 import mammoth from 'mammoth';
+import { createHash } from 'crypto';
 import { GEMINI_ANALYSIS_MODEL } from '@/constants/models';
+
+const FREE_DAILY_LIMIT = 2;
+
+function hashIP(ip: string): string {
+  return createHash('sha256').update(ip + 'jb_rl_salt').digest('hex').substring(0, 24);
+}
+
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return request.headers.get('x-real-ip') ?? 'unknown';
+}
+
+async function checkAndIncrementUsage(ipHash: string): Promise<{ allowed: boolean; remaining: number }> {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!serviceKey || !supabaseUrl) {
+    // If not configured, allow the request (fail open so existing users aren't blocked)
+    console.warn('⚠️ [RateLimit] SUPABASE_SERVICE_ROLE_KEY not set — skipping rate limit check');
+    return { allowed: true, remaining: FREE_DAILY_LIMIT };
+  }
+
+  const admin = createAdminClient(supabaseUrl, serviceKey);
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  const { data, error } = await admin
+    .from('usage_limits')
+    .select('count')
+    .eq('ip_hash', ipHash)
+    .eq('date', today)
+    .maybeSingle();
+
+  if (error) {
+    console.error('⚠️ [RateLimit] DB read error:', error.message);
+    return { allowed: true, remaining: FREE_DAILY_LIMIT }; // fail open
+  }
+
+  const currentCount = data?.count ?? 0;
+
+  if (currentCount >= FREE_DAILY_LIMIT) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  // Upsert incremented count
+  const { error: upsertError } = await admin
+    .from('usage_limits')
+    .upsert(
+      { ip_hash: ipHash, date: today, count: currentCount + 1, updated_at: new Date().toISOString() },
+      { onConflict: 'ip_hash,date' }
+    );
+
+  if (upsertError) {
+    console.error('⚠️ [RateLimit] DB write error:', upsertError.message);
+  }
+
+  return { allowed: true, remaining: FREE_DAILY_LIMIT - (currentCount + 1) };
+}
 
 // 設定最大執行時間（雖然 Vercel 免費版由平台控制，但這行可以提醒 Next.js 不要太早斷開）
 export const maxDuration = 60; 
@@ -152,6 +211,37 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // ── Rate Limiting ─────────────────────────────────────────────────────────
+    const supabase = await createClient();
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+    // Logged-in users bypass the daily free limit (for future membership tiers)
+    if (!currentUser) {
+      const ip = getClientIP(request);
+      const ipHash = hashIP(ip);
+      console.log(`🔒 [RateLimit] Checking IP hash: ${ipHash.substring(0, 8)}...`);
+
+      const { allowed, remaining } = await checkAndIncrementUsage(ipHash);
+
+      if (!allowed) {
+        console.warn(`🚫 [RateLimit] Blocked: ${ipHash.substring(0, 8)}...`);
+        return NextResponse.json(
+          {
+            error: reportLanguage === 'en'
+              ? `You have used all ${FREE_DAILY_LIMIT} free analyses for today. Please try again tomorrow or log in to continue.`
+              : `今日 ${FREE_DAILY_LIMIT} 次免費分析已用完，請明天再試，或登入帳號繼續使用。`,
+            errorCode: 'RATE_LIMIT_EXCEEDED',
+            resetTime: 'tomorrow',
+          },
+          { status: 429 }
+        );
+      }
+      console.log(`✅ [RateLimit] Allowed. Remaining today: ${remaining}`);
+    } else {
+      console.log(`✅ [RateLimit] Logged-in user — no limit applied`);
+    }
+    // ── End Rate Limiting ─────────────────────────────────────────────────────
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
     if (!apiKey) {

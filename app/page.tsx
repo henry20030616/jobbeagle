@@ -68,6 +68,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
 
@@ -148,6 +149,7 @@ export default function Home() {
   const handleGenerate = async (inputs: UserInputs) => {
     setLoading(true);
     setError(null);
+    setErrorCode(null);
     startProgressSimulation(language);
     try {
       const response = await fetch('/api/analyze', {
@@ -159,13 +161,13 @@ export default function Home() {
       const result = await response.json();
       
       if (!response.ok) {
+        if (result.errorCode) setErrorCode(result.errorCode);
         if (result.error === 'AI Generated Invalid JSON') {
           throw new Error(language === 'zh' ? 'AI 生成格式異常,請重試' : 'AI generated invalid format, please retry');
         }
         throw new Error(result.error || (language === 'zh' ? '分析失敗' : 'Analysis failed'));
       }
 
-      // 設定當前報告
       setReport(result.report);
 
     } catch (err: any) {
@@ -240,7 +242,25 @@ export default function Home() {
             language={language}
           />
         )}
-        {error && (
+        {error && errorCode === 'RATE_LIMIT_EXCEEDED' && (
+          <div className="mb-6 p-5 bg-amber-900/20 border border-amber-500/50 rounded-xl">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-amber-300 font-bold text-lg mb-1">
+                  {language === 'zh' ? '⏳ 今日免費次數已用完' : '⏳ Daily Free Limit Reached'}
+                </h3>
+                <p className="text-amber-200/80 text-sm mb-3">{error}</p>
+                <p className="text-xs text-amber-400/60">
+                  {language === 'zh'
+                    ? '💡 登入帳號可繼續使用，未來將推出無限制的進階方案。'
+                    : '💡 Log in to continue. An unlimited premium plan is coming soon.'}
+                </p>
+              </div>
+              <button onClick={() => { setError(null); setErrorCode(null); }} className="ml-4 text-amber-400 hover:text-amber-300">✕</button>
+            </div>
+          </div>
+        )}
+        {error && errorCode !== 'RATE_LIMIT_EXCEEDED' && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -258,7 +278,7 @@ export default function Home() {
                 )}
               </div>
               <button
-                onClick={() => setError(null)}
+                onClick={() => { setError(null); setErrorCode(null); }}
                 className="ml-4 text-red-400 hover:text-red-300"
               >
                 ✕
