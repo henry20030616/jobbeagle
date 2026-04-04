@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import InputForm from '@/components/InputForm';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
 import DogLoading from '@/components/DogLoading';
+import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import { InterviewReport, UserInputs } from '@/types';
 import { ChevronLeft } from 'lucide-react';
@@ -275,6 +276,7 @@ export default function Home() {
               onLanguageChange={setLanguage}
               initialJobDescription={extensionJobData || undefined}
             />
+            <FooterSection language={language} />
           </div>
         ) : (
           <div className="animate-fade-in">
