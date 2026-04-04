@@ -1,0 +1,19 @@
+---
+description: After code changes, always commit and push to GitHub (Vercel auto-deploy)
+alwaysApply: true
+---
+
+# GitHub + Vercel：每次改完都要更新遠端
+
+在完成 **任何有意義的程式或設定變更**（非僅讀檔、非純問答）後，**必須**在對話結束前執行：
+
+1. `git status` 確認變更
+2. `git add` 相關檔案
+3. `git commit -m "..."` 使用簡短、描述清楚的英文或中英訊息
+4. `git push origin main`（或目前工作分支）
+
+**目的：** GitHub 為單一真相來源；若專案已連 Vercel，push 後會自動觸發部署，無需手動改 Vercel 後台。
+
+**例外（須向使用者說明）：** push 失敗（權限、衝突、網路）、使用者明確說不要提交、或僅在協助審查／規劃而未改檔案。
+
+**不要**只改本機而不提交；**不要**假設使用者會自己 push。
