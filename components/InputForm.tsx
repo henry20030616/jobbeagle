@@ -29,6 +29,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [jdError, setJdError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -218,13 +219,60 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     }
   };
 
+  const validateJobDescription = (text: string): string | null => {
+    const trimmed = text.trim();
+    const lang = currentLanguage;
+
+    // URLs are always valid — let the API handle them
+    if (/^https?:\/\/[^\s]+$/.test(trimmed)) return null;
+
+    // 1. Minimum length
+    if (trimmed.length < 40) {
+      return lang === 'zh'
+        ? '⚠️ 職缺描述太短，請貼上完整的職缺內容（至少 40 字元）。'
+        : '⚠️ Job description is too short. Please paste the complete job posting (at least 40 characters).';
+    }
+
+    const noSpace = trimmed.replace(/\s+/g, '');
+
+    // 2. Same character repeating 10+ times in a row (e.g. "aaaaaaaaaa")
+    if (/(.)\1{9,}/.test(noSpace)) {
+      return lang === 'zh'
+        ? '⚠️ 偵測到無效內容（重複字元），請貼上真實的職缺描述。'
+        : '⚠️ Invalid content detected (repeating characters). Please paste a real job description.';
+    }
+
+    // 3. Character diversity: unique chars / total chars < 5% → gibberish
+    const uniqueCount = new Set(noSpace.toLowerCase()).size;
+    if (noSpace.length > 30 && uniqueCount / noSpace.length < 0.05) {
+      return lang === 'zh'
+        ? '⚠️ 職缺描述內容過於單一，疑似無效輸入，請貼上真實職缺資訊。'
+        : '⚠️ Job description content is too repetitive. Please paste a real job posting.';
+    }
+
+    // 4. Meaningful character ratio: letters/CJK chars should be ≥ 20% of total
+    const meaningful = (trimmed.match(/[a-zA-Z\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
+    if (meaningful / trimmed.length < 0.20) {
+      return lang === 'zh'
+        ? '⚠️ 職缺描述中幾乎沒有有效文字（主要為符號或數字），請確認是否已貼上正確內容。'
+        : '⚠️ Job description contains very little readable text (mostly symbols or numbers). Please check the content.';
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const validationError = validateJobDescription(jobDescription);
+    if (validationError) {
+      setJdError(validationError);
+      return;
+    }
+    setJdError(null);
+
     if (resume) {
-      // 不在提交時重複保存履歷，節省時間
-      // 履歷已經在上傳時或手動儲存時保存過
       onSubmit({ jobDescription, resume, language: currentLanguage });
-      // 報告列表會在 useEffect 中自動刷新（當 isLoading 變為 false 時）
     }
   };
 
@@ -566,7 +614,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                   }`}
                   placeholder={t.jobUrlPlaceholder}
                   value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
+                  onChange={(e) => {
+                    setJobDescription(e.target.value);
+                    if (jdError) setJdError(null);
+                  }}
                   />
                   {inputType === 'url' && (
                   <div className="absolute bottom-3 left-3 right-3 flex items-start p-2 bg-blue-900/40 rounded border border-blue-500/30 text-sm text-blue-200 backdrop-blur-sm">
@@ -575,6 +626,12 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                   </div>
                   )}
               </div>
+              {jdError && (
+                <div className="mt-3 flex items-start gap-2 p-3 bg-red-900/30 border border-red-500/50 rounded-xl text-sm text-red-300 animate-fade-in">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
+                  <span>{jdError}</span>
+                </div>
+              )}
           </div>
 
           <div className="px-6">
@@ -700,8 +757,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                    disabled={isLoading || !jobDescription || !resume || isSaving} 
                    className={`w-full py-5 px-6 rounded-xl font-black text-xl text-white shadow-lg transition-all transform flex justify-center items-center ${
                      isLoading || !jobDescription || !resume || isSaving
-                       ? 'bg-slate-700 cursor-not-allowed text-slate-500' 
-                       : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/25 ring-1 ring-white/10 shadow-indigo-500/20 active:scale-[0.98] hover:scale-[1.02]'
+                       ? 'bg-slate-700 cursor-not-allowed text-slate-500'
+                       : jdError
+                         ? 'bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 ring-1 ring-red-500/30 active:scale-[0.98]'
+                         : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/25 ring-1 ring-white/10 shadow-indigo-500/20 active:scale-[0.98] hover:scale-[1.02]'
                    }`}
                  >
                   {isLoading ? (
