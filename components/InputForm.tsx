@@ -450,12 +450,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       interviewPrepDesc: '網羅真實考題並提供具備深度邏輯的 STAR 回答引導。',
       jobData: '1. 職缺資訊 (Job Data)',
       jdFullTextHint:
-        '請在職缺頁面「完整複製職缺全文」（含職稱、公司、工作內容、應徵條件、薪資說明等）後貼上。僅貼網址、標題或片段時，分析容易失準。',
-      inputJobUrl: '職缺全文（建議）或網址',
-      jobUrlPlaceholder:
-        '請完整複製職缺頁面的全部文字並貼上。若只貼網址，部分人力網站（如 LinkedIn、需登入頁面）我們可能無法取得內容，分析會不準確。',
-      urlTip:
-        '偵測到網址：若該站需登入或無法讀取，請回到職缺頁面複製「完整全文」貼上，分析結果才可靠。',
+        '請在職缺頁手動複製「完整」職缺內容後貼上；勿只貼網址或片段。',
+      inputJobUrl: '職缺內容',
+      jobUrlPlaceholder: '手動複製該頁完整職缺內容並貼上（勿只貼連結）…',
+      urlTip: '偵測到網址：請改為到職缺頁手動複製完整內容後貼上。',
       resume: '2. 您的履歷 (Resume)',
       uploadSupport: '支援 .pdf, .doc, .docx, .txt, .md (Max 4MB)',
       waitingSave: '請等待儲存完成...',
@@ -490,12 +488,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       interviewPrepDesc: 'Gather real interview questions and provide in-depth STAR answer guidance.',
       jobData: '1. Job Information (Job Data)',
       jdFullTextHint:
-        'Please copy the entire job posting from the job page (title, company, responsibilities, requirements, compensation notes, etc.) and paste it here. URLs, titles, or short excerpts alone often lead to inaccurate analysis.',
-      inputJobUrl: 'Full job posting (recommended) or URL',
-      jobUrlPlaceholder:
-        'Paste the full text of the job posting from the page. If you only paste a link, some sites (e.g. LinkedIn, login-only pages) may not provide readable content, and results will be unreliable.',
-      urlTip:
-        'URL detected: If the page requires login or we cannot read it, go back to the posting and copy the full job text—paste the complete description for reliable analysis.',
+        'Manually copy the full job posting from the page, then paste here. Do not paste only a URL or a short excerpt.',
+      inputJobUrl: 'Job posting',
+      jobUrlPlaceholder: 'Copy the full job description from the page and paste here (not the link alone)…',
+      urlTip: 'URL detected: open the posting and paste the full copied text instead.',
       resume: '2. Your Resume',
       uploadSupport: 'Supports .pdf, .doc, .docx, .txt, .md (Max 4MB)',
       waitingSave: 'Please wait for save to complete...',
