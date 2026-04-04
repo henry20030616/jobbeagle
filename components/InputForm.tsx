@@ -449,9 +449,13 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       interviewPrep: '高階面試模擬與對策',
       interviewPrepDesc: '網羅真實考題並提供具備深度邏輯的 STAR 回答引導。',
       jobData: '1. 職缺資訊 (Job Data)',
-      inputJobUrl: '輸入職缺網址或貼上全文',
-      jobUrlPlaceholder: '在此貼上職缺網址 (如 104, LinkedIn...) 或是職缺描述內容...',
-      urlTip: '建議：若為需登入網站，貼上全文能讓分析更準確。',
+      jdFullTextHint:
+        '請在職缺頁面「完整複製職缺全文」（含職稱、公司、工作內容、應徵條件、薪資說明等）後貼上。僅貼網址、標題或片段時，分析容易失準。',
+      inputJobUrl: '職缺全文（建議）或網址',
+      jobUrlPlaceholder:
+        '請完整複製職缺頁面的全部文字並貼上。若只貼網址，部分人力網站（如 LinkedIn、需登入頁面）我們可能無法取得內容，分析會不準確。',
+      urlTip:
+        '偵測到網址：若該站需登入或無法讀取，請回到職缺頁面複製「完整全文」貼上，分析結果才可靠。',
       resume: '2. 您的履歷 (Resume)',
       uploadSupport: '支援 .pdf, .doc, .docx, .txt, .md (Max 4MB)',
       waitingSave: '請等待儲存完成...',
@@ -485,9 +489,13 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
       interviewPrep: 'Advanced Interview Simulation & Strategy',
       interviewPrepDesc: 'Gather real interview questions and provide in-depth STAR answer guidance.',
       jobData: '1. Job Information (Job Data)',
-      inputJobUrl: 'Enter job URL or paste full text',
-      jobUrlPlaceholder: 'Paste job URL (e.g., 104, LinkedIn...) or job description content here...',
-      urlTip: 'Tip: If the website requires login, pasting the full text will make the analysis more accurate.',
+      jdFullTextHint:
+        'Please copy the entire job posting from the job page (title, company, responsibilities, requirements, compensation notes, etc.) and paste it here. URLs, titles, or short excerpts alone often lead to inaccurate analysis.',
+      inputJobUrl: 'Full job posting (recommended) or URL',
+      jobUrlPlaceholder:
+        'Paste the full text of the job posting from the page. If you only paste a link, some sites (e.g. LinkedIn, login-only pages) may not provide readable content, and results will be unreliable.',
+      urlTip:
+        'URL detected: If the page requires login or we cannot read it, go back to the posting and copy the full job text—paste the complete description for reliable analysis.',
       resume: '2. Your Resume',
       uploadSupport: 'Supports .pdf, .doc, .docx, .txt, .md (Max 4MB)',
       waitingSave: 'Please wait for save to complete...',
@@ -606,6 +614,9 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                   {t.inputJobUrl}
                   </div>
               </label>
+              <p className="mb-3 text-sm text-amber-200/90 leading-relaxed bg-amber-950/40 border border-amber-600/40 rounded-lg px-3 py-2.5">
+                {t.jdFullTextHint}
+              </p>
               <div className="relative">
                   <textarea
                   required
