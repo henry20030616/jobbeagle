@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   X, Upload, FileText, Sparkles, CheckCircle,
-  Loader2, ChevronDown, ChevronUp, Clock, ExternalLink
+  Loader2, ChevronDown, ChevronUp, Clock, BookmarkPlus, CheckCircle2
 } from 'lucide-react';
 import { ResumeInput, InterviewReport } from '@/types';
 import { createClient } from '@/lib/supabase/browser';
@@ -375,6 +375,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   const [progress, setProgress] = useState(0);
   const [stageLabel, setStageLabel] = useState('');
   const [elapsed, setElapsed] = useState(0);
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'need_login'>('idle');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -468,10 +469,30 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     }
   };
 
-  const openFullReport = () => {
-    const jdText = `${jobTitle} at ${companyName}\n地點：${location}${salary ? `\n薪資：${salary}` : ''}\n\n${jobDescription}`;
-    const encoded = btoa(encodeURIComponent(jdText));
-    window.open(`/?from=extension&job=${encoded}`, '_blank');
+  const handleSaveReport = async () => {
+    if (!report) return;
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setSaveState('need_login');
+      setTimeout(() => setSaveState('idle'), 3000);
+      return;
+    }
+    setSaveState('saving');
+    try {
+      await supabase.from('analysis_reports').insert({
+        user_id: user.id,
+        job_title: report.basic_analysis.job_title || jobTitle,
+        job_description: jobDescription,
+        resume_file_name: 'shorts',
+        resume_type: 'text',
+        analysis_data: report,
+        content: JSON.stringify(report),
+      });
+      setSaveState('saved');
+    } catch {
+      setSaveState('idle');
+    }
   };
 
   if (!isOpen) return null;
@@ -604,12 +625,28 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           {step === 'result' && report && (
             <div>
               <CompactReport report={report} />
-              <button
-                onClick={openFullReport}
-                className="w-full mt-4 mb-2 bg-slate-800 hover:bg-slate-700 text-gray-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-              >
-                <ExternalLink size={15} /> 查看完整報告
-              </button>
+              <div className="mt-4 mb-2 space-y-2">
+                {saveState === 'need_login' ? (
+                  <div className="w-full bg-blue-900/30 border border-blue-500/40 text-blue-300 text-xs font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
+                    💡 請先登入才能儲存報告
+                  </div>
+                ) : saveState === 'saved' ? (
+                  <div className="w-full bg-green-900/30 border border-green-500/40 text-green-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
+                    <CheckCircle2 size={15} /> 報告已儲存
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleSaveReport}
+                    disabled={saveState === 'saving'}
+                    className="w-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-gray-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                    {saveState === 'saving'
+                      ? <><Loader2 size={15} className="animate-spin" /> 儲存中…</>
+                      : <><BookmarkPlus size={15} /> 儲存報告</>
+                    }
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
