@@ -574,7 +574,7 @@ export async function POST(request: NextRequest) {
     console.log(`🏁 [API End] AI 分析完成，耗時: ${totalDuration}秒`);
 
     // 🔥 重要：保存到數據庫（改為同步，確保保存成功）
-    const supabase = await createClient();
+    // supabase client reused from rate-limit check above
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     console.log('💾 [DB] 準備保存報告到數據庫...');
