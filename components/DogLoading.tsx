@@ -3,15 +3,40 @@
 import React from 'react';
 import { BeagleIcon } from './AnalysisDashboard';
 
-/**
- * DogLoading 元件
- * 使用首頁的 BeagleIcon Logo，加上「小狗呼吸」動畫效果
- */
-const DogLoading: React.FC = () => {
+interface DogLoadingProps {
+  progress?: number;
+  stage?: string;
+  elapsed?: number;
+  language?: 'zh' | 'en';
+}
+
+const DogLoading: React.FC<DogLoadingProps> = ({
+  progress = 0,
+  stage,
+  elapsed = 0,
+  language = 'zh',
+}) => {
+  const displayProgress = Math.min(Math.max(Math.round(progress), 0), 99);
+
+  const defaultStage = language === 'zh'
+    ? '小獵犬正在努力嗅探資料中...'
+    : 'Beagle is sniffing for data...';
+
+  const currentStage = stage || defaultStage;
+
+  const estimatedLabel = language === 'zh'
+    ? '通常需要 30–60 秒'
+    : 'Usually takes 30–60 seconds';
+
+  const elapsedLabel = language === 'zh'
+    ? `已分析 ${elapsed} 秒`
+    : `${elapsed}s elapsed`;
+
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-950 z-50">
-      <div className="flex flex-col items-center space-y-6">
-        {/* Logo 動畫：使用 animate-pulse（呼吸效果）和 scale-110（微幅縮放） */}
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-950 z-50 px-6">
+      <div className="flex flex-col items-center space-y-8 w-full max-w-md">
+
+        {/* Logo with breathing animation */}
         <div className="animate-pulse transform scale-110">
           <BeagleIcon
             className="w-24 h-24 md:w-32 md:h-32 drop-shadow-xl"
@@ -21,10 +46,33 @@ const DogLoading: React.FC = () => {
           />
         </div>
 
-        {/* 提示文字 */}
-        <p className="text-slate-400 text-base md:text-lg font-medium animate-pulse">
-          小獵犬正在努力嗅探資料中...
+        {/* Stage text */}
+        <p className="text-slate-300 text-base md:text-lg font-semibold text-center leading-snug min-h-[2rem] transition-all duration-500">
+          {currentStage}
         </p>
+
+        {/* Progress bar container */}
+        <div className="w-full space-y-2">
+          <div className="flex justify-between items-center text-xs text-slate-500">
+            <span>{elapsedLabel}</span>
+            <span className="font-mono text-indigo-400 font-bold">{displayProgress}%</span>
+          </div>
+
+          <div className="relative w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+            {/* Animated shimmer background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.8s_infinite] bg-[length:200%_100%]" />
+            {/* Progress fill */}
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.6)] transition-all duration-500 ease-out"
+              style={{ width: `${displayProgress}%` }}
+            />
+          </div>
+
+          <p className="text-center text-xs text-slate-600">
+            {estimatedLabel}
+          </p>
+        </div>
+
       </div>
     </div>
   );

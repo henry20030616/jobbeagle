@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import InputForm from '@/components/InputForm';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
 import DogLoading from '@/components/DogLoading';
@@ -9,6 +9,59 @@ import { InterviewReport, UserInputs } from '@/types';
 import { ChevronLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 
+// Maps elapsed seconds → simulated progress percentage (capped at 99 until API returns)
+const PROGRESS_SCHEDULE = [
+  { time: 0,   progress: 0  },
+  { time: 4,   progress: 15 },
+  { time: 11,  progress: 35 },
+  { time: 21,  progress: 55 },
+  { time: 34,  progress: 72 },
+  { time: 48,  progress: 85 },
+  { time: 65,  progress: 93 },
+  { time: 100, progress: 99 },
+];
+
+function getProgressAtTime(elapsedSec: number): number {
+  for (let i = 1; i < PROGRESS_SCHEDULE.length; i++) {
+    if (elapsedSec <= PROGRESS_SCHEDULE[i].time) {
+      const prev = PROGRESS_SCHEDULE[i - 1];
+      const next = PROGRESS_SCHEDULE[i];
+      const t = (elapsedSec - prev.time) / (next.time - prev.time);
+      return Math.round(prev.progress + t * (next.progress - prev.progress));
+    }
+  }
+  return 99;
+}
+
+const STAGES: Record<'zh' | 'en', Array<{ minProgress: number; label: string }>> = {
+  zh: [
+    { minProgress: 0,  label: '🔍 讀取職缺資訊...' },
+    { minProgress: 15, label: '📋 分析職缺要求與條件...' },
+    { minProgress: 35, label: '🌐 蒐集市場情報與產業資訊...' },
+    { minProgress: 55, label: '💰 比對薪資市場數據...' },
+    { minProgress: 72, label: '🔎 評估履歷匹配程度...' },
+    { minProgress: 85, label: '🎯 挖掘真實面試情報...' },
+    { minProgress: 93, label: '📊 整合戰略報告中...' },
+  ],
+  en: [
+    { minProgress: 0,  label: '🔍 Reading job description...' },
+    { minProgress: 15, label: '📋 Analyzing job requirements...' },
+    { minProgress: 35, label: '🌐 Gathering market intelligence...' },
+    { minProgress: 55, label: '💰 Benchmarking salary data...' },
+    { minProgress: 72, label: '🔎 Evaluating resume match...' },
+    { minProgress: 85, label: '🎯 Researching interview insights...' },
+    { minProgress: 93, label: '📊 Compiling strategic report...' },
+  ],
+};
+
+function getStageLabel(progress: number, lang: 'zh' | 'en'): string {
+  const stages = STAGES[lang];
+  for (let i = stages.length - 1; i >= 0; i--) {
+    if (progress >= stages[i].minProgress) return stages[i].label;
+  }
+  return stages[0].label;
+}
+
 export default function Home() {
   const [report, setReport] = useState<InterviewReport | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -16,6 +69,12 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
+
+  // Progress simulation state
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [analysisStage, setAnalysisStage] = useState('');
+  const [analysisElapsed, setAnalysisElapsed] = useState(0);
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -63,9 +122,32 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const startProgressSimulation = (lang: 'zh' | 'en') => {
+    const startTime = Date.now();
+    setAnalysisProgress(0);
+    setAnalysisElapsed(0);
+    setAnalysisStage(getStageLabel(0, lang));
+
+    progressTimerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const prog = getProgressAtTime(elapsed);
+      setAnalysisProgress(prog);
+      setAnalysisElapsed(elapsed);
+      setAnalysisStage(getStageLabel(prog, lang));
+    }, 400);
+  };
+
+  const stopProgressSimulation = () => {
+    if (progressTimerRef.current) {
+      clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+    }
+  };
+
   const handleGenerate = async (inputs: UserInputs) => {
     setLoading(true);
     setError(null);
+    startProgressSimulation(language);
     try {
       const response = await fetch('/api/analyze', {
         method: 'POST',
@@ -89,7 +171,10 @@ export default function Home() {
       console.error('❌ [Frontend Error]', err);
       setError(err.message);
     } finally {
+      stopProgressSimulation();
       setLoading(false);
+      setAnalysisProgress(0);
+      setAnalysisElapsed(0);
     }
   };
 
@@ -146,7 +231,14 @@ export default function Home() {
           <LoginButton />
         </div>
         
-        {loading && <DogLoading />}
+        {loading && (
+          <DogLoading
+            progress={analysisProgress}
+            stage={analysisStage}
+            elapsed={analysisElapsed}
+            language={language}
+          />
+        )}
         {error && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
             <div className="flex items-start justify-between">
