@@ -242,17 +242,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
         : '⚠️ Invalid content detected (repeating characters). Please paste a real job description.';
     }
 
-    // 3. Character diversity: unique chars / total chars < 5% → gibberish
-    const uniqueCount = new Set(noSpace.toLowerCase()).size;
-    if (noSpace.length > 30 && uniqueCount / noSpace.length < 0.05) {
-      return lang === 'zh'
-        ? '⚠️ 職缺描述內容過於單一，疑似無效輸入，請貼上真實職缺資訊。'
-        : '⚠️ Job description content is too repetitive. Please paste a real job posting.';
-    }
-
-    // 4. Meaningful character ratio: letters/CJK chars should be ≥ 20% of total
+    // 3. Meaningful character ratio: letters/CJK chars should be ≥ 15% of total
+    //    (lowered from 20% to accommodate LinkedIn/104 formatting with bullets, symbols, whitespace)
     const meaningful = (trimmed.match(/[a-zA-Z\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
-    if (meaningful / trimmed.length < 0.20) {
+    if (meaningful / trimmed.length < 0.15) {
       return lang === 'zh'
         ? '⚠️ 職缺描述中幾乎沒有有效文字（主要為符號或數字），請確認是否已貼上正確內容。'
         : '⚠️ Job description contains very little readable text (mostly symbols or numbers). Please check the content.';
