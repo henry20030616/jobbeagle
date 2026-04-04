@@ -69,10 +69,37 @@ function getStageLabel(progress: number): string {
   return STAGES[0].label;
 }
 
-// ─── Compact mobile report ────────────────────────────────────────────────────
+// ─── Shared section wrapper ───────────────────────────────────────────────────
+
+const Section: React.FC<{
+  id: string;
+  title: string;
+  preview: React.ReactNode;
+  expanded: string | null;
+  onToggle: (id: string) => void;
+  children: React.ReactNode;
+}> = ({ id, title, preview, expanded, onToggle, children }) => {
+  const isOpen = expanded === id;
+  return (
+    <div className="bg-slate-800 rounded-2xl overflow-hidden">
+      <button onClick={() => onToggle(id)} className="w-full flex items-start justify-between px-4 py-3 gap-2 text-left">
+        <div className="flex-1 min-w-0">
+          <div className="font-bold text-white text-sm">{title}</div>
+          {!isOpen && (
+            <div className="text-xs text-gray-500 mt-1 line-clamp-1">{preview}</div>
+          )}
+        </div>
+        {isOpen ? <ChevronUp size={15} className="text-gray-400 shrink-0 mt-0.5" /> : <ChevronDown size={15} className="text-gray-400 shrink-0 mt-0.5" />}
+      </button>
+      {isOpen && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  );
+};
+
+// ─── Full-data mobile report ──────────────────────────────────────────────────
 
 const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
-  const { match_analysis, salary_analysis, reviews_analysis, interview_preparation, basic_analysis } = report;
+  const { match_analysis, salary_analysis, reviews_analysis, interview_preparation, basic_analysis, market_analysis } = report;
   const [expanded, setExpanded] = useState<string | null>('match');
 
   const score = match_analysis.score;
@@ -86,12 +113,11 @@ const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
     score >= 60 ? '中度契合' : '低度契合';
 
   const circumference = 2 * Math.PI * 32;
-
   const toggle = (s: string) => setExpanded(prev => prev === s ? null : s);
 
   return (
     <div className="space-y-3">
-      {/* Score Hero */}
+      {/* ── Score Hero ─────────────────────────────────── */}
       <div className="bg-slate-800 rounded-2xl p-4 flex items-center gap-4">
         <div className="relative w-20 h-20 shrink-0">
           <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">
@@ -117,91 +143,218 @@ const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
         </div>
       </div>
 
-      {/* Strengths & Gaps */}
-      <div className="bg-slate-800 rounded-2xl overflow-hidden">
-        <button onClick={() => toggle('match')} className="w-full flex items-center justify-between px-4 py-3">
-          <span className="font-bold text-white text-sm">✅ 核心優勢與缺口</span>
-          {expanded === 'match' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
-        </button>
-        {expanded === 'match' && (
-          <div className="px-4 pb-4 space-y-2.5">
-            {match_analysis.matching_points.slice(0, 3).map((p, i) => (
-              <div key={i} className="flex gap-2">
-                <span className="text-green-400 text-xs mt-0.5 shrink-0 font-bold">✓</span>
-                <div>
-                  <div className="text-xs font-semibold text-green-300">{p.point}</div>
-                  {p.description && <div className="text-xs text-gray-500 mt-0.5">{p.description}</div>}
+      {/* ── 1. 核心優勢與缺口（全量） ─────────────────── */}
+      <Section
+        id="match" title="✅ 核心優勢與缺口"
+        preview={match_analysis.matching_points[0]?.point}
+        expanded={expanded} onToggle={toggle}
+      >
+        {match_analysis.matching_points.length > 0 && (
+          <div className="mb-3">
+            <div className="text-xs font-bold text-green-400 mb-2 uppercase tracking-wide">你的優勢</div>
+            <div className="space-y-2.5">
+              {match_analysis.matching_points.map((p, i) => (
+                <div key={i} className="flex gap-2">
+                  <span className="text-green-400 text-xs mt-0.5 shrink-0 font-bold">✓</span>
+                  <div>
+                    <div className="text-xs font-semibold text-green-300">{p.point}</div>
+                    {p.description && <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">{p.description}</div>}
+                  </div>
                 </div>
-              </div>
-            ))}
-            {match_analysis.skill_gaps.slice(0, 3).map((g, i) => (
-              <div key={i} className="flex gap-2">
-                <span className="text-amber-400 text-xs mt-0.5 shrink-0 font-bold">!</span>
-                <div>
-                  <div className="text-xs font-semibold text-amber-300">{g.gap}</div>
-                  {g.description && <div className="text-xs text-gray-500 mt-0.5">{g.description}</div>}
+              ))}
+            </div>
+          </div>
+        )}
+        {match_analysis.skill_gaps.length > 0 && (
+          <div>
+            <div className="text-xs font-bold text-amber-400 mb-2 uppercase tracking-wide">待補強</div>
+            <div className="space-y-2.5">
+              {match_analysis.skill_gaps.map((g, i) => (
+                <div key={i} className="flex gap-2">
+                  <span className="text-amber-400 text-xs mt-0.5 shrink-0 font-bold">!</span>
+                  <div>
+                    <div className="text-xs font-semibold text-amber-300">{g.gap}</div>
+                    {g.description && <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">{g.description}</div>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
-      </div>
+      </Section>
 
-      {/* Salary */}
-      <div className="bg-slate-800 rounded-2xl overflow-hidden">
-        <button onClick={() => toggle('salary')} className="w-full flex items-center justify-between px-4 py-3">
-          <span className="font-bold text-white text-sm">💰 薪資情報</span>
-          {expanded === 'salary' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
-        </button>
-        {expanded === 'salary' && (
-          <div className="px-4 pb-4">
-            <div className="text-lg font-black text-amber-400">{salary_analysis.estimated_range}</div>
-            <div className="text-xs text-gray-400 mt-1">{salary_analysis.market_position}</div>
-            {salary_analysis.negotiation_tip && (
-              <div className="mt-2 bg-amber-900/20 border border-amber-600/30 rounded-lg p-2.5">
-                <div className="text-xs text-amber-300">💡 {salary_analysis.negotiation_tip}</div>
-              </div>
-            )}
+      {/* ── 2. 薪資情報（全量） ────────────────────────── */}
+      <Section
+        id="salary" title="💰 薪資情報"
+        preview={salary_analysis.estimated_range}
+        expanded={expanded} onToggle={toggle}
+      >
+        <div className="text-xl font-black text-amber-400 mb-1">{salary_analysis.estimated_range}</div>
+        {salary_analysis.market_position && (
+          <div className="text-xs text-gray-400 mb-3 leading-relaxed">{salary_analysis.market_position}</div>
+        )}
+        {salary_analysis.rationale && (
+          <div className="bg-slate-700/50 rounded-lg p-3 mb-3">
+            <div className="text-xs font-bold text-gray-300 mb-1">推估邏輯</div>
+            <div className="text-xs text-gray-400 leading-relaxed">{salary_analysis.rationale}</div>
           </div>
         )}
-      </div>
-
-      {/* Interview Questions */}
-      <div className="bg-slate-800 rounded-2xl overflow-hidden">
-        <button onClick={() => toggle('interview')} className="w-full flex items-center justify-between px-4 py-3">
-          <span className="font-bold text-white text-sm">🎯 面試考題預測</span>
-          {expanded === 'interview' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
-        </button>
-        {expanded === 'interview' && (
-          <div className="px-4 pb-4 space-y-3">
-            {interview_preparation.questions.slice(0, 3).map((q, i) => (
-              <div key={i} className="border-l-2 border-violet-500 pl-3">
-                <div className="text-xs font-semibold text-white">{q.question}</div>
-                {q.answer_guide && <div className="text-xs text-gray-500 mt-1 line-clamp-3">{q.answer_guide}</div>}
-              </div>
-            ))}
+        {salary_analysis.negotiation_tip && (
+          <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-3">
+            <div className="text-xs font-bold text-amber-400 mb-1">談判策略</div>
+            <div className="text-xs text-amber-300 leading-relaxed">{salary_analysis.negotiation_tip}</div>
           </div>
         )}
-      </div>
+      </Section>
 
-      {/* Real Interview Questions */}
-      {reviews_analysis?.real_interview_questions?.length > 0 && (
-        <div className="bg-slate-800 rounded-2xl overflow-hidden">
-          <button onClick={() => toggle('real')} className="w-full flex items-center justify-between px-4 py-3">
-            <span className="font-bold text-white text-sm">📝 真實面試題目</span>
-            {expanded === 'real' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
-          </button>
-          {expanded === 'real' && (
-            <div className="px-4 pb-4 space-y-2">
-              {reviews_analysis.real_interview_questions.slice(0, 3).map((q, i) => (
-                <div key={i} className="bg-slate-700/50 rounded-lg p-2.5">
-                  <div className="text-xs font-semibold text-white">{q.question}</div>
-                  {q.year && <div className="text-xs text-gray-500 mt-0.5">{q.year}</div>}
+      {/* ── 3. 公司評價（全量，原本缺失） ────────────── */}
+      {(reviews_analysis?.company_reviews || reviews_analysis?.job_reviews) && (
+        <Section
+          id="reviews" title="🏢 公司評價與職場生態"
+          preview={reviews_analysis.company_reviews?.summary}
+          expanded={expanded} onToggle={toggle}
+        >
+          {reviews_analysis.company_reviews?.summary && (
+            <div className="mb-4">
+              <div className="text-xs text-gray-300 leading-relaxed mb-2">{reviews_analysis.company_reviews.summary}</div>
+              {reviews_analysis.company_reviews.pros?.length > 0 && (
+                <div className="mb-2">
+                  <div className="text-xs font-bold text-green-400 mb-1">優點</div>
+                  {reviews_analysis.company_reviews.pros.map((p, i) => (
+                    <div key={i} className="flex gap-1.5 mb-1">
+                      <span className="text-green-400 text-xs shrink-0">✓</span>
+                      <span className="text-xs text-gray-400 leading-relaxed">{p}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {reviews_analysis.company_reviews.cons?.length > 0 && (
+                <div>
+                  <div className="text-xs font-bold text-red-400 mb-1">缺點</div>
+                  {reviews_analysis.company_reviews.cons.map((c, i) => (
+                    <div key={i} className="flex gap-1.5 mb-1">
+                      <span className="text-red-400 text-xs shrink-0">✗</span>
+                      <span className="text-xs text-gray-400 leading-relaxed">{c}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          {reviews_analysis.job_reviews?.summary && (
+            <div className="border-t border-slate-700 pt-3 mt-1">
+              <div className="text-xs font-bold text-gray-300 mb-1">職位評價</div>
+              <div className="text-xs text-gray-400 leading-relaxed mb-2">{reviews_analysis.job_reviews.summary}</div>
+              {reviews_analysis.job_reviews.pros?.length > 0 && (
+                <div className="mb-2">
+                  {reviews_analysis.job_reviews.pros.map((p, i) => (
+                    <div key={i} className="flex gap-1.5 mb-1">
+                      <span className="text-green-400 text-xs shrink-0">✓</span>
+                      <span className="text-xs text-gray-400 leading-relaxed">{p}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {reviews_analysis.job_reviews.cons?.length > 0 && (
+                <div>
+                  {reviews_analysis.job_reviews.cons.map((c, i) => (
+                    <div key={i} className="flex gap-1.5 mb-1">
+                      <span className="text-red-400 text-xs shrink-0">✗</span>
+                      <span className="text-xs text-gray-400 leading-relaxed">{c}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </Section>
+      )}
+
+      {/* ── 4. 公司與產業分析（全量，原本缺失） ──────── */}
+      {(basic_analysis.company_overview || market_analysis?.industry_trends) && (
+        <Section
+          id="market" title="🏭 公司介紹與產業分析"
+          preview={basic_analysis.company_overview}
+          expanded={expanded} onToggle={toggle}
+        >
+          {basic_analysis.company_overview && (
+            <div className="mb-3">
+              <div className="text-xs font-bold text-gray-300 mb-1">公司概況</div>
+              <div className="text-xs text-gray-400 leading-relaxed">{basic_analysis.company_overview}</div>
+            </div>
+          )}
+          {basic_analysis.business_scope && (
+            <div className="mb-3">
+              <div className="text-xs font-bold text-gray-300 mb-1">業務範疇</div>
+              <div className="text-xs text-gray-400 leading-relaxed">{basic_analysis.business_scope}</div>
+            </div>
+          )}
+          {market_analysis?.industry_trends && (
+            <div className="mb-3 border-t border-slate-700 pt-3">
+              <div className="text-xs font-bold text-gray-300 mb-1">產業趨勢</div>
+              <div className="text-xs text-gray-400 leading-relaxed">{market_analysis.industry_trends}</div>
+            </div>
+          )}
+          {market_analysis?.key_advantages?.length > 0 && (
+            <div className="mb-3">
+              <div className="text-xs font-bold text-cyan-400 mb-1">企業核心護城河</div>
+              {market_analysis.key_advantages.map((a, i) => (
+                <div key={i} className="mb-2">
+                  <div className="text-xs font-semibold text-white">{a.point}</div>
+                  {a.description && <div className="text-xs text-gray-500 leading-relaxed">{a.description}</div>}
                 </div>
               ))}
             </div>
           )}
+          {market_analysis?.potential_risks?.length > 0 && (
+            <div>
+              <div className="text-xs font-bold text-red-400 mb-1">長期戰略風險</div>
+              {market_analysis.potential_risks.map((r, i) => (
+                <div key={i} className="mb-2">
+                  <div className="text-xs font-semibold text-red-300">{r.point}</div>
+                  {r.description && <div className="text-xs text-gray-500 leading-relaxed">{r.description}</div>}
+                </div>
+              ))}
+            </div>
+          )}
+        </Section>
+      )}
+
+      {/* ── 5. 面試考題預測（全量） ────────────────────── */}
+      <Section
+        id="interview" title="🎯 面試考題預測"
+        preview={interview_preparation.questions[0]?.question}
+        expanded={expanded} onToggle={toggle}
+      >
+        <div className="space-y-4">
+          {interview_preparation.questions.map((q, i) => (
+            <div key={i} className="border-l-2 border-violet-500 pl-3">
+              <div className="text-xs font-semibold text-white leading-relaxed">{q.question}</div>
+              {q.source && <div className="text-xs text-gray-600 mt-0.5">{q.source}</div>}
+              {q.answer_guide && (
+                <div className="text-xs text-gray-400 mt-1.5 leading-relaxed bg-slate-700/40 rounded-lg p-2">{q.answer_guide}</div>
+              )}
+            </div>
+          ))}
         </div>
+      </Section>
+
+      {/* ── 6. 真實面試題目（全量） ──────────────────── */}
+      {reviews_analysis?.real_interview_questions?.length > 0 && (
+        <Section
+          id="real" title="📝 真實面試題目"
+          preview={reviews_analysis.real_interview_questions[0]?.question}
+          expanded={expanded} onToggle={toggle}
+        >
+          <div className="space-y-2">
+            {reviews_analysis.real_interview_questions.map((q, i) => (
+              <div key={i} className="bg-slate-700/50 rounded-lg p-2.5">
+                <div className="text-xs font-semibold text-white leading-relaxed">{q.question}</div>
+                {q.year && <div className="text-xs text-gray-500 mt-0.5">{q.year}</div>}
+              </div>
+            ))}
+          </div>
+        </Section>
       )}
     </div>
   );
