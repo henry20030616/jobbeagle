@@ -1,0 +1,7 @@
+{
+  "name": "JobLive - 職播",
+  "description": "A TikTok-style video recruitment platform helping companies and seekers connect efficiently.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
