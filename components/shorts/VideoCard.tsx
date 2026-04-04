@@ -7,7 +7,7 @@ import {
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
   Play, X, Mail, Upload, CheckCircle, Loader2, UserPlus, 
   Bookmark, Copy, Facebook, Twitter, Linkedin, 
-  FileText, ChevronRight, ChevronLeft, CheckCircle2, Info
+  FileText, ChevronRight, ChevronLeft, CheckCircle2, Info, Sparkles
 } from 'lucide-react';
 
 interface VideoCardProps {
@@ -181,6 +181,13 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
       console.error('Copy failed:', err);
       alert('Failed to copy link');
     }
+  };
+
+  const handleAnalyzeWithAI = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const jdText = `${job.jobTitle} at ${job.companyName}\n地點：${job.location}${job.salary ? `\n薪資：${job.salary}` : ''}\n\n${job.description}`;
+    const encoded = btoa(encodeURIComponent(jdText));
+    window.location.href = `/?from=extension&job=${encoded}`;
   };
 
   const handleShareSocial = (platform: 'facebook' | 'twitter' | 'linkedin') => {
@@ -572,12 +579,18 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                   </div>
               </div>
               
-              <div className="w-full pl-1">
+              <div className="w-full pl-1 flex flex-col gap-1.5">
                   <button 
                     onClick={() => setShowApplyModal(true)}
                     className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
                   >
                      <Briefcase size={14} /> Quick Apply
+                  </button>
+                  <button
+                    onClick={handleAnalyzeWithAI}
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
+                  >
+                    <Sparkles size={14} /> AI 面試分析
                   </button>
               </div>
             </div>
@@ -637,13 +650,19 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                 </div>
             </div>
 
-            {/* Quick Apply Button */}
-            <div className="px-5 pb-6 pt-2 border-t border-white/10">
+            {/* Action Buttons */}
+            <div className="px-5 pb-6 pt-2 border-t border-white/10 flex flex-col gap-2">
                 <button 
                     onClick={() => { setShowFullDetails(false); handleApplyStart(); }}
                     className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
                 >
                    <Briefcase size={18} /> Quick Apply
+                </button>
+                <button
+                    onClick={handleAnalyzeWithAI}
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                >
+                    <Sparkles size={18} /> 一鍵 AI 面試分析
                 </button>
             </div>
           </div>
