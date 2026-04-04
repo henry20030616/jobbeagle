@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { JobData } from '@/types';
+import AnalysisModal from './AnalysisModal';
 import { 
   Heart, MessageCircle, Share2, MapPin, DollarSign, 
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
@@ -44,6 +45,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
   const [newComment, setNewComment] = useState('');
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDoubleTapLike, setShowDoubleTapLike] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const lastTapRef = useRef<number>(0);
 
   // Sync with parent state
@@ -185,9 +187,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
 
   const handleAnalyzeWithAI = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const jdText = `${job.jobTitle} at ${job.companyName}\n地點：${job.location}${job.salary ? `\n薪資：${job.salary}` : ''}\n\n${job.description}`;
-    const encoded = btoa(encodeURIComponent(jdText));
-    window.location.href = `/?from=extension&job=${encoded}`;
+    setShowAnalysisModal(true);
   };
 
   const handleShareSocial = (platform: 'facebook' | 'twitter' | 'linkedin') => {
@@ -1069,6 +1069,17 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
               </form>
           </div>
       )}
+
+      {/* ── AI Analysis Modal ─────────────────────────────── */}
+      <AnalysisModal
+        isOpen={showAnalysisModal}
+        onClose={() => setShowAnalysisModal(false)}
+        jobTitle={job.jobTitle}
+        companyName={job.companyName}
+        location={job.location}
+        salary={job.salary}
+        jobDescription={job.description}
+      />
     </div>
   );
 };

@@ -1,0 +1,483 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  X, Upload, FileText, Sparkles, CheckCircle,
+  Loader2, ChevronDown, ChevronUp, Clock, ExternalLink
+} from 'lucide-react';
+import { ResumeInput, InterviewReport } from '@/types';
+import { createClient } from '@/lib/supabase/browser';
+
+interface SavedResume {
+  id: string;
+  type: 'text' | 'file';
+  content: string;
+  mimeType?: string;
+  fileName?: string;
+  timestamp: number;
+}
+
+interface AnalysisModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  jobTitle: string;
+  companyName: string;
+  location: string;
+  salary: string;
+  jobDescription: string;
+}
+
+// ─── Progress helpers (mirrors P1 logic) ──────────────────────────────────────
+
+const PROGRESS_SCHEDULE = [
+  { time: 0,   progress: 0  },
+  { time: 4,   progress: 15 },
+  { time: 11,  progress: 35 },
+  { time: 21,  progress: 55 },
+  { time: 34,  progress: 72 },
+  { time: 48,  progress: 85 },
+  { time: 65,  progress: 93 },
+  { time: 100, progress: 99 },
+];
+
+function getProgressAtTime(elapsedSec: number): number {
+  for (let i = 1; i < PROGRESS_SCHEDULE.length; i++) {
+    if (elapsedSec <= PROGRESS_SCHEDULE[i].time) {
+      const prev = PROGRESS_SCHEDULE[i - 1];
+      const next = PROGRESS_SCHEDULE[i];
+      const t = (elapsedSec - prev.time) / (next.time - prev.time);
+      return Math.round(prev.progress + t * (next.progress - prev.progress));
+    }
+  }
+  return 99;
+}
+
+const STAGES = [
+  { minProgress: 0,  label: '🔍 讀取職缺資訊...' },
+  { minProgress: 15, label: '📋 分析職缺要求...' },
+  { minProgress: 35, label: '🌐 蒐集市場情報...' },
+  { minProgress: 55, label: '💰 比對薪資數據...' },
+  { minProgress: 72, label: '🔎 評估履歷匹配...' },
+  { minProgress: 85, label: '🎯 挖掘面試情報...' },
+  { minProgress: 93, label: '📊 整合報告中...' },
+];
+
+function getStageLabel(progress: number): string {
+  for (let i = STAGES.length - 1; i >= 0; i--) {
+    if (progress >= STAGES[i].minProgress) return STAGES[i].label;
+  }
+  return STAGES[0].label;
+}
+
+// ─── Compact mobile report ────────────────────────────────────────────────────
+
+const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
+  const { match_analysis, salary_analysis, reviews_analysis, interview_preparation, basic_analysis } = report;
+  const [expanded, setExpanded] = useState<string | null>('match');
+
+  const score = match_analysis.score;
+  const scoreColor =
+    score >= 90 ? '#22d3ee' :
+    score >= 75 ? '#fbbf24' :
+    score >= 60 ? '#cbd5e1' : '#fb923c';
+  const scoreLabel =
+    score >= 90 ? '頂級契合' :
+    score >= 75 ? '高度契合' :
+    score >= 60 ? '中度契合' : '低度契合';
+
+  const circumference = 2 * Math.PI * 32;
+
+  const toggle = (s: string) => setExpanded(prev => prev === s ? null : s);
+
+  return (
+    <div className="space-y-3">
+      {/* Score Hero */}
+      <div className="bg-slate-800 rounded-2xl p-4 flex items-center gap-4">
+        <div className="relative w-20 h-20 shrink-0">
+          <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#1e293b" strokeWidth="8" />
+            <circle
+              cx="40" cy="40" r="32" fill="none"
+              stroke={scoreColor} strokeWidth="8"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - score / 100)}
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-xl font-black text-white">{score}</span>
+          </div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-base font-bold" style={{ color: scoreColor }}>{scoreLabel}</div>
+          <div className="text-xs text-gray-400 mt-0.5 truncate">{basic_analysis.job_title}</div>
+          {basic_analysis.job_summary && (
+            <div className="text-xs text-gray-500 mt-1 line-clamp-2">{basic_analysis.job_summary}</div>
+          )}
+        </div>
+      </div>
+
+      {/* Strengths & Gaps */}
+      <div className="bg-slate-800 rounded-2xl overflow-hidden">
+        <button onClick={() => toggle('match')} className="w-full flex items-center justify-between px-4 py-3">
+          <span className="font-bold text-white text-sm">✅ 核心優勢與缺口</span>
+          {expanded === 'match' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
+        </button>
+        {expanded === 'match' && (
+          <div className="px-4 pb-4 space-y-2.5">
+            {match_analysis.matching_points.slice(0, 3).map((p, i) => (
+              <div key={i} className="flex gap-2">
+                <span className="text-green-400 text-xs mt-0.5 shrink-0 font-bold">✓</span>
+                <div>
+                  <div className="text-xs font-semibold text-green-300">{p.point}</div>
+                  {p.description && <div className="text-xs text-gray-500 mt-0.5">{p.description}</div>}
+                </div>
+              </div>
+            ))}
+            {match_analysis.skill_gaps.slice(0, 3).map((g, i) => (
+              <div key={i} className="flex gap-2">
+                <span className="text-amber-400 text-xs mt-0.5 shrink-0 font-bold">!</span>
+                <div>
+                  <div className="text-xs font-semibold text-amber-300">{g.gap}</div>
+                  {g.description && <div className="text-xs text-gray-500 mt-0.5">{g.description}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Salary */}
+      <div className="bg-slate-800 rounded-2xl overflow-hidden">
+        <button onClick={() => toggle('salary')} className="w-full flex items-center justify-between px-4 py-3">
+          <span className="font-bold text-white text-sm">💰 薪資情報</span>
+          {expanded === 'salary' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
+        </button>
+        {expanded === 'salary' && (
+          <div className="px-4 pb-4">
+            <div className="text-lg font-black text-amber-400">{salary_analysis.estimated_range}</div>
+            <div className="text-xs text-gray-400 mt-1">{salary_analysis.market_position}</div>
+            {salary_analysis.negotiation_tip && (
+              <div className="mt-2 bg-amber-900/20 border border-amber-600/30 rounded-lg p-2.5">
+                <div className="text-xs text-amber-300">💡 {salary_analysis.negotiation_tip}</div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Interview Questions */}
+      <div className="bg-slate-800 rounded-2xl overflow-hidden">
+        <button onClick={() => toggle('interview')} className="w-full flex items-center justify-between px-4 py-3">
+          <span className="font-bold text-white text-sm">🎯 面試考題預測</span>
+          {expanded === 'interview' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
+        </button>
+        {expanded === 'interview' && (
+          <div className="px-4 pb-4 space-y-3">
+            {interview_preparation.questions.slice(0, 3).map((q, i) => (
+              <div key={i} className="border-l-2 border-violet-500 pl-3">
+                <div className="text-xs font-semibold text-white">{q.question}</div>
+                {q.answer_guide && <div className="text-xs text-gray-500 mt-1 line-clamp-3">{q.answer_guide}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Real Interview Questions */}
+      {reviews_analysis?.real_interview_questions?.length > 0 && (
+        <div className="bg-slate-800 rounded-2xl overflow-hidden">
+          <button onClick={() => toggle('real')} className="w-full flex items-center justify-between px-4 py-3">
+            <span className="font-bold text-white text-sm">📝 真實面試題目</span>
+            {expanded === 'real' ? <ChevronUp size={15} className="text-gray-400" /> : <ChevronDown size={15} className="text-gray-400" />}
+          </button>
+          {expanded === 'real' && (
+            <div className="px-4 pb-4 space-y-2">
+              {reviews_analysis.real_interview_questions.slice(0, 3).map((q, i) => (
+                <div key={i} className="bg-slate-700/50 rounded-lg p-2.5">
+                  <div className="text-xs font-semibold text-white">{q.question}</div>
+                  {q.year && <div className="text-xs text-gray-500 mt-0.5">{q.year}</div>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Main Modal ───────────────────────────────────────────────────────────────
+
+const AnalysisModal: React.FC<AnalysisModalProps> = ({
+  isOpen, onClose, jobTitle, companyName, location, salary, jobDescription,
+}) => {
+  const [step, setStep] = useState<'resume' | 'analyzing' | 'result' | 'error'>('resume');
+  const [resume, setResume] = useState<ResumeInput | null>(null);
+  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoadingResumes, setIsLoadingResumes] = useState(false);
+  const [report, setReport] = useState<InterviewReport | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [stageLabel, setStageLabel] = useState('');
+  const [elapsed, setElapsed] = useState(0);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setStep('resume');
+    setReport(null);
+    setResume(null);
+    setErrorMsg('');
+    setProgress(0);
+    loadUserAndResumes();
+  }, [isOpen]);
+
+  const loadUserAndResumes = async () => {
+    setIsLoadingResumes(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+      if (user) {
+        const { data } = await supabase
+          .from('resume_history')
+          .select('id, type, content, mime_type, file_name, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(3);
+        if (data) {
+          setSavedResumes(data.map((item: any) => ({
+            id: item.id,
+            type: item.type,
+            content: item.content,
+            mimeType: item.mime_type,
+            fileName: item.file_name,
+            timestamp: new Date(item.created_at).getTime(),
+          })));
+        }
+      }
+    } catch {
+      // silent
+    } finally {
+      setIsLoadingResumes(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = (ev.target?.result as string).split(',')[1];
+      setResume({ type: 'file', content: base64, mimeType: file.type, fileName: file.name });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const startProgress = () => {
+    const startTime = Date.now();
+    setProgress(0); setElapsed(0); setStageLabel(getStageLabel(0));
+    progressTimerRef.current = setInterval(() => {
+      const s = Math.floor((Date.now() - startTime) / 1000);
+      const p = getProgressAtTime(s);
+      setProgress(p); setElapsed(s); setStageLabel(getStageLabel(p));
+    }, 400);
+  };
+
+  const stopProgress = () => {
+    if (progressTimerRef.current) { clearInterval(progressTimerRef.current); progressTimerRef.current = null; }
+  };
+
+  const handleAnalyze = async (selectedResume: ResumeInput) => {
+    setStep('analyzing');
+    startProgress();
+    try {
+      const jdText = `${jobTitle} at ${companyName}\n地點：${location}${salary ? `\n薪資：${salary}` : ''}\n\n${jobDescription}`;
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobDescription: jdText, resume: selectedResume, language: 'zh' }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || '分析失敗，請稍後再試');
+      setReport(result.report);
+      setStep('result');
+    } catch (err: any) {
+      setErrorMsg(err.message || '分析失敗，請稍後再試');
+      setStep('error');
+    } finally {
+      stopProgress();
+      setProgress(0);
+    }
+  };
+
+  const openFullReport = () => {
+    const jdText = `${jobTitle} at ${companyName}\n地點：${location}${salary ? `\n薪資：${salary}` : ''}\n\n${jobDescription}`;
+    const encoded = btoa(encodeURIComponent(jdText));
+    window.open(`/?from=extension&job=${encoded}`, '_blank');
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 animate-fade-in" onClick={onClose} />
+
+      {/* Bottom Sheet */}
+      <div className="fixed inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl border-t border-violet-500/30 shadow-2xl animate-slide-up max-h-[92vh] flex flex-col">
+
+        {/* Drag Handle */}
+        <div className="flex justify-center pt-3 pb-1 cursor-pointer shrink-0" onClick={onClose}>
+          <div className="w-12 h-1.5 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors" />
+        </div>
+
+        {/* Header */}
+        <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/10 shrink-0">
+          <Sparkles size={17} className="text-violet-400 shrink-0" />
+          <span className="font-bold text-white text-sm shrink-0">AI 面試分析</span>
+          <span className="text-xs text-gray-400 flex-1 truncate mx-1">{jobTitle} @ {companyName}</span>
+          <button onClick={onClose} className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0">
+            <X size={15} className="text-gray-300" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+
+          {/* ── STEP: resume ─────────────────────────────── */}
+          {step === 'resume' && (
+            <div className="space-y-4">
+              <p className="text-sm text-gray-400">上傳履歷後，AI 將針對「{jobTitle}」生成專屬面試報告</p>
+
+              {isLoadingResumes ? (
+                <div className="flex items-center gap-2 text-gray-500 text-sm py-2">
+                  <Loader2 size={15} className="animate-spin" /> 載入儲存的履歷…
+                </div>
+              ) : savedResumes.length > 0 ? (
+                <div>
+                  <div className="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1">
+                    <Clock size={11} /> 使用儲存的履歷（一鍵分析）
+                  </div>
+                  {savedResumes.map((saved) => (
+                    <button
+                      key={saved.id}
+                      onClick={() => handleAnalyze(saved)}
+                      className="w-full flex items-center gap-3 bg-slate-800 hover:bg-violet-900/40 border border-violet-500/30 rounded-xl p-3 mb-2 transition-all active:scale-95 text-left"
+                    >
+                      <FileText size={19} className="text-violet-400 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-white truncate">{saved.fileName || '文字履歷'}</div>
+                        <div className="text-xs text-gray-500">{new Date(saved.timestamp).toLocaleDateString('zh-TW')}</div>
+                      </div>
+                      <span className="text-xs text-violet-400 font-bold shrink-0">使用 →</span>
+                    </button>
+                  ))}
+                  <div className="relative flex items-center my-3">
+                    <div className="flex-1 border-t border-slate-700" />
+                    <span className="px-3 text-xs text-gray-600">或上傳新履歷</span>
+                    <div className="flex-1 border-t border-slate-700" />
+                  </div>
+                </div>
+              ) : !isLoggedIn ? (
+                <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 text-xs text-blue-300 mb-1">
+                  💡 登入後可儲存履歷，下次免上傳直接分析
+                </div>
+              ) : null}
+
+              {/* Upload Area */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-slate-600 hover:border-violet-500 rounded-xl p-6 flex flex-col items-center gap-2 cursor-pointer transition-colors"
+              >
+                <Upload size={22} className="text-gray-400" />
+                <div className="text-sm text-gray-300 font-semibold">點擊上傳履歷</div>
+                <div className="text-xs text-gray-500">支援 PDF / DOCX / TXT</div>
+                {resume && (
+                  <div className="flex items-center gap-1 mt-1 text-xs text-violet-400">
+                    <CheckCircle size={12} /> {resume.fileName} 已選取
+                  </div>
+                )}
+              </div>
+              <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={handleFileChange} />
+
+              {resume && (
+                <button
+                  onClick={() => handleAnalyze(resume)}
+                  className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+                >
+                  <Sparkles size={17} /> 開始 AI 面試分析
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* ── STEP: analyzing ──────────────────────────── */}
+          {step === 'analyzing' && (
+            <div className="flex flex-col items-center justify-center py-10 gap-6">
+              <div className="relative w-28 h-28">
+                <svg viewBox="0 0 112 112" className="w-28 h-28 -rotate-90">
+                  <circle cx="56" cy="56" r="46" fill="none" stroke="#1e293b" strokeWidth="8" />
+                  <circle
+                    cx="56" cy="56" r="46" fill="none" stroke="#7c3aed" strokeWidth="8"
+                    strokeDasharray={2 * Math.PI * 46}
+                    strokeDashoffset={2 * Math.PI * 46 * (1 - progress / 100)}
+                    strokeLinecap="round"
+                    className="transition-all duration-500"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-2xl font-black text-white">{progress}%</span>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm font-semibold text-white mb-1">{stageLabel}</div>
+                <div className="text-xs text-gray-500">已用時 {elapsed} 秒｜通常 30–60 秒</div>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-2">
+                <div
+                  className="bg-gradient-to-r from-violet-600 to-fuchsia-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ── STEP: result ─────────────────────────────── */}
+          {step === 'result' && report && (
+            <div>
+              <CompactReport report={report} />
+              <button
+                onClick={openFullReport}
+                className="w-full mt-4 mb-2 bg-slate-800 hover:bg-slate-700 text-gray-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+              >
+                <ExternalLink size={15} /> 查看完整報告
+              </button>
+            </div>
+          )}
+
+          {/* ── STEP: error ───────────────────────────────── */}
+          {step === 'error' && (
+            <div className="flex flex-col items-center gap-4 py-10 text-center">
+              <div className="text-4xl">😔</div>
+              <div className="text-sm text-red-400 font-semibold">{errorMsg}</div>
+              <button
+                onClick={() => setStep('resume')}
+                className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all active:scale-95"
+              >
+                重新嘗試
+              </button>
+            </div>
+          )}
+
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default AnalysisModal;
