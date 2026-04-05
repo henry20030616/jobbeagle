@@ -178,7 +178,7 @@ export default function JobbeaglePage() {
       <div className="absolute top-0 left-0 w-full p-4 z-30 pointer-events-none flex justify-between items-start bg-gradient-to-b from-black/60 to-transparent">
          <div className="pointer-events-auto">
             <h1 className="text-white font-black text-2xl tracking-tighter drop-shadow-lg flex items-center gap-1">
-                <span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span> <span className="text-white/80 text-lg font-normal">Shorts</span>
+                <span><span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span></span> <span className="text-white/80 text-lg font-normal">Shorts</span>
             </h1>
             <div className="flex gap-4 text-white/80 font-semibold text-sm mt-2">
                 <button
