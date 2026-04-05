@@ -513,7 +513,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         {/* Header */}
         <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/10 shrink-0">
           <Sparkles size={17} className="text-violet-400 shrink-0" />
-          <span className="font-bold text-white text-sm shrink-0">AI 面試分析</span>
+          <span className="font-bold text-white text-sm shrink-0">AI 匹配度分析</span>
           <span className="text-xs text-gray-400 flex-1 truncate mx-1">{jobTitle} @ {companyName}</span>
           <button onClick={onClose} className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0">
             <X size={15} className="text-gray-300" />
@@ -526,7 +526,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           {/* ── STEP: resume ─────────────────────────────── */}
           {step === 'resume' && (
             <div className="space-y-4">
-              <p className="text-sm text-gray-400">上傳履歷後，AI 將針對「{jobTitle}」生成專屬面試報告</p>
+              <p className="text-sm text-gray-400">上傳履歷後，AI 將針對「{jobTitle}」生成匹配度分析報告</p>
 
               {isLoadingResumes ? (
                 <div className="flex items-center gap-2 text-gray-500 text-sm py-2">
@@ -584,7 +584,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                   onClick={() => handleAnalyze(resume)}
                   className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
                 >
-                  <Sparkles size={17} /> 開始 AI 面試分析
+                  <Sparkles size={17} /> 開始 AI 匹配度分析
                 </button>
               )}
             </div>

@@ -590,7 +590,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                     onClick={handleAnalyzeWithAI}
                     className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
                   >
-                    <Sparkles size={14} /> AI 面試分析
+                    <Sparkles size={14} /> AI 匹配度分析
                   </button>
               </div>
             </div>
@@ -662,7 +662,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                     onClick={handleAnalyzeWithAI}
                     className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
                 >
-                    <Sparkles size={18} /> 一鍵 AI 面試分析
+                    <Sparkles size={18} /> 一鍵 AI 匹配度分析
                 </button>
             </div>
           </div>
