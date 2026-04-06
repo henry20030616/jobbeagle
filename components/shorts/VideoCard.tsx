@@ -218,7 +218,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
       if (showFullDetails || showApplyModal || showShareMenu) {
           setShowFullDetails(false);
           setShowApplyModal(false);
-          setShowCommentsModal(false);
           setShowShareMenu(false);
           return;
       }
