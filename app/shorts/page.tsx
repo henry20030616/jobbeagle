@@ -28,7 +28,6 @@ export default function JobbeagleShortsPage() {
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const [activeTab, setActiveTab] = useState<'foryou' | 'following' | 'saved'>('foryou');
   const [navTab, setNavTab] = useState<'home' | 'saved' | 'profile'>('home');
-  const [showProfile, setShowProfile] = useState(false);
 
   // Follow / Save (persisted via Supabase, also tracked locally)
   const [followedCompanies, setFollowedCompanies] = useState<Set<string>>(new Set());
@@ -139,15 +138,8 @@ export default function JobbeagleShortsPage() {
 
   const handleNavTab = (tab: 'home' | 'saved' | 'profile') => {
     setNavTab(tab);
-    if (tab === 'home') {
-      setActiveTab('foryou');
-      setShowProfile(false);
-    } else if (tab === 'saved') {
-      setActiveTab('saved');
-      setShowProfile(false);
-    } else if (tab === 'profile') {
-      setShowProfile(true);
-    }
+    if (tab === 'home') setActiveTab('foryou');
+    else if (tab === 'saved') setActiveTab('saved');
   };
 
   if (loading) {
@@ -161,6 +153,23 @@ export default function JobbeagleShortsPage() {
   return (
     <div className="h-[100dvh] w-full bg-black flex flex-col relative overflow-hidden font-sans">
 
+      {/* ── PROFILE PAGE (full-screen, hides everything else) ─────────────── */}
+      {navTab === 'profile' && (
+        <>
+          <div className="flex-1 overflow-hidden">
+            <ProfileModal
+              onClose={() => handleNavTab('home')}
+              language={language}
+            />
+          </div>
+          {/* Bottom nav still visible */}
+          <BottomNav navTab={navTab} onNav={handleNavTab} savedCount={savedJobIds.size} t={t} />
+        </>
+      )}
+
+      {/* ── FEED + SAVED views ────────────────────────────────────────────── */}
+      {navTab !== 'profile' && (
+        <>
       {/* Error Toast */}
       {error && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
@@ -309,45 +318,52 @@ export default function JobbeagleShortsPage() {
         </div>
       </div>
 
-      {/* Bottom Navigation Bar */}
-      <div className="h-16 bg-black border-t border-gray-900 flex flex-row items-center justify-around z-40 text-gray-400 pb-2">
-        <button
-          onClick={() => handleNavTab('home')}
-          className={`flex flex-col items-center gap-1 p-2 transition-colors ${navTab === 'home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          <Home size={24} strokeWidth={navTab === 'home' ? 3 : 2} />
-          <span className="text-[10px] font-medium">{t('首頁', 'Home')}</span>
-        </button>
-
-        <button
-          onClick={() => handleNavTab('saved')}
-          className={`flex flex-col items-center gap-1 p-2 transition-colors relative ${navTab === 'saved' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          <Bookmark size={24} strokeWidth={navTab === 'saved' ? 0 : 2} fill={navTab === 'saved' ? 'currentColor' : 'none'} />
-          {savedJobIds.size > 0 && (
-            <span className="absolute -top-0.5 right-0.5 w-4 h-4 bg-blue-500 rounded-full text-white text-[9px] flex items-center justify-center font-bold">
-              {savedJobIds.size > 9 ? '9+' : savedJobIds.size}
-            </span>
-          )}
-          <span className="text-[10px] font-medium">{t('已儲存', 'Saved')}</span>
-        </button>
-
-        <button
-          onClick={() => handleNavTab('profile')}
-          className={`flex flex-col items-center gap-1 p-2 transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          <User size={24} strokeWidth={navTab === 'profile' ? 3 : 2} />
-          <span className="text-[10px] font-medium">{t('個人', 'Profile')}</span>
-        </button>
-      </div>
-
-      {/* Profile Modal */}
-      {showProfile && (
-        <ProfileModal
-          onClose={() => { setShowProfile(false); setNavTab('home'); }}
-          language={language}
-        />
+      <BottomNav navTab={navTab} onNav={handleNavTab} savedCount={savedJobIds.size} t={t} />
+        </>
       )}
+    </div>
+  );
+}
+
+// Extracted bottom nav as a reusable component (used in both views)
+function BottomNav({
+  navTab, onNav, savedCount, t,
+}: {
+  navTab: 'home' | 'saved' | 'profile';
+  onNav: (tab: 'home' | 'saved' | 'profile') => void;
+  savedCount: number;
+  t: (zh: string, en: string) => string;
+}) {
+  return (
+    <div className="h-16 bg-black border-t border-gray-900 flex flex-row items-center justify-around z-40 text-gray-400 pb-2 flex-shrink-0">
+      <button
+        onClick={() => onNav('home')}
+        className={`flex flex-col items-center gap-1 p-2 transition-colors ${navTab === 'home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+      >
+        <Home size={24} strokeWidth={navTab === 'home' ? 3 : 2} />
+        <span className="text-[10px] font-medium">{t('首頁', 'Home')}</span>
+      </button>
+
+      <button
+        onClick={() => onNav('saved')}
+        className={`flex flex-col items-center gap-1 p-2 transition-colors relative ${navTab === 'saved' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+      >
+        <Bookmark size={24} strokeWidth={navTab === 'saved' ? 0 : 2} fill={navTab === 'saved' ? 'currentColor' : 'none'} />
+        {savedCount > 0 && (
+          <span className="absolute -top-0.5 right-0.5 w-4 h-4 bg-blue-500 rounded-full text-white text-[9px] flex items-center justify-center font-bold">
+            {savedCount > 9 ? '9+' : savedCount}
+          </span>
+        )}
+        <span className="text-[10px] font-medium">{t('已儲存', 'Saved')}</span>
+      </button>
+
+      <button
+        onClick={() => onNav('profile')}
+        className={`flex flex-col items-center gap-1 p-2 transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+      >
+        <User size={24} strokeWidth={navTab === 'profile' ? 3 : 2} />
+        <span className="text-[10px] font-medium">{t('個人', 'Profile')}</span>
+      </button>
     </div>
   );
 }
