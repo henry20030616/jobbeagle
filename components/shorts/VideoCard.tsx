@@ -564,9 +564,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   job.applyUrl ? 'grid-cols-[1fr_2fr]' : 'grid-cols-3'
                 }`}
               >
-                {/* 左：職缺文字（與按鈕底對齊，內容可較高、overflow 裁切） */}
-                <div className="min-w-0 max-h-[5rem] sm:max-h-[5.5rem] overflow-hidden flex flex-col justify-end gap-1 pr-0.5 pb-0.5">
-                  <div className="flex flex-row items-center gap-2 min-h-0 shrink-0">
+                {/* 左：職缺介紹（含 ...more）；勿用過小 max-h 以免簡介被裁切不見 */}
+                <div className="min-w-0 max-h-[min(48vh,17rem)] overflow-hidden flex flex-col justify-end gap-1.5 pr-0.5 pb-0.5">
+                  <div className="flex flex-row items-center gap-2 shrink-0">
                     <Link
                       href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                       onClick={(e) => e.stopPropagation()}
@@ -577,52 +577,59 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         <img
                           src={job.logoUrl}
                           alt=""
-                          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/40 bg-white object-contain shadow-lg"
+                          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/40 bg-white object-contain shadow-lg"
                           onError={() => setLogoError(true)}
                         />
                       ) : (
-                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
-                          <span className="text-white font-bold text-base sm:text-lg">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
+                          <span className="text-white font-bold text-sm sm:text-base">
                             {job.companyName.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
                     </Link>
                     <div className="flex flex-col min-w-0 gap-0 justify-center">
-                      <h3 className="text-base sm:text-lg md:text-xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
+                      <h3 className="text-sm sm:text-base md:text-lg font-extrabold drop-shadow-lg leading-snug line-clamp-2">
                         {job.jobTitle}
                       </h3>
                       <Link
                         href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-sm sm:text-base font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
+                        className="text-xs sm:text-sm font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
                       >
                         @{job.companyName}
                       </Link>
                     </div>
                   </div>
-                  <div className="flex flex-nowrap gap-1.5 text-xs sm:text-sm min-h-0 shrink-0 overflow-hidden">
-                    <span className="flex items-center gap-1 bg-slate-800/90 px-2 py-0.5 rounded-md text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
-                      <MapPin size={14} className="shrink-0 opacity-90" />
+                  <div className="flex flex-nowrap gap-1 text-[10px] sm:text-xs shrink-0">
+                    <span className="flex items-center gap-1 bg-slate-800/90 px-1.5 py-0.5 rounded text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
+                      <MapPin size={12} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.location}</span>
                     </span>
-                    <span className="flex items-center gap-1 bg-emerald-950/70 text-emerald-200 px-2 py-0.5 rounded-md border border-emerald-500/25 min-w-0 max-w-[50%]">
-                      <DollarSign size={14} className="shrink-0 opacity-90" />
+                    <span className="flex items-center gap-1 bg-emerald-950/70 text-emerald-200 px-1.5 py-0.5 rounded border border-emerald-500/25 min-w-0 max-w-[50%]">
+                      <DollarSign size={12} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.salary}</span>
                     </span>
                   </div>
-                  <div className="flex items-baseline gap-1.5 min-w-0 min-h-0 shrink text-sm sm:text-base md:text-lg text-gray-100/95 leading-snug">
-                    <p className="line-clamp-1 min-w-0 flex-1 break-words">{job.description}</p>
-                    <button
-                      type="button"
-                      className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform shrink-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowFullDetails(true);
-                      }}
-                    >
-                      ...more
-                    </button>
+                  <div className="min-w-0 shrink-0 space-y-0.5">
+                    <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-white/55">
+                      {language === 'zh' ? '職缺介紹' : 'Job summary'}
+                    </p>
+                    <div className="flex items-end gap-1.5 min-w-0">
+                      <p className="text-xs sm:text-sm text-gray-100/95 leading-snug line-clamp-3 min-w-0 flex-1 break-words">
+                        {job.description}
+                      </p>
+                      <button
+                        type="button"
+                        className="text-cyan-300 font-bold hover:underline cursor-pointer active:scale-95 transition-transform shrink-0 text-xs sm:text-sm pb-0.5"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowFullDetails(true);
+                        }}
+                      >
+                        {language === 'zh' ? '...more' : 'More'}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
