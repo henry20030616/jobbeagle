@@ -9,7 +9,7 @@ import {
   Play, X, Mail, Upload, CheckCircle, Loader2, UserPlus, 
   Bookmark, Copy, Facebook, Twitter, Linkedin, 
   FileText, ChevronRight, ChevronLeft, CheckCircle2, Info, Sparkles, ExternalLink,
-  MessageCircle, Link as LinkIcon
+  MessageCircle, Link as LinkIcon, Building2
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 
@@ -51,6 +51,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [showDoubleTapLike, setShowDoubleTapLike] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const lastTapRef = useRef<number>(0);
+  const likeLoadedRef = useRef(false);
 
   // Sync with parent state
   useEffect(() => { setFollowed(isFollowed); }, [isFollowed]);
@@ -97,22 +98,53 @@ const VideoCard: React.FC<VideoCardProps> = ({
     }
   }, [isActive, job.id, videoUrl]);
 
+  // Load real like count + user's like status once when video becomes active
+  useEffect(() => {
+    if (!isActive || likeLoadedRef.current) return;
+    likeLoadedRef.current = true;
+    const load = async () => {
+      const supabase = createClient();
+      const [{ count }, { data: { user } }] = await Promise.all([
+        supabase.from('video_likes').select('*', { count: 'exact', head: true }).eq('video_id', job.id),
+        supabase.auth.getUser(),
+      ]);
+      if (count !== null) setLikeCount(count);
+      if (user) {
+        const { data } = await supabase.from('video_likes').select('id').eq('user_id', user.id).eq('video_id', job.id).maybeSingle();
+        if (data) setLiked(true);
+      }
+    };
+    load().catch(() => {});
+  }, [isActive]);
+
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsMuted(!isMuted);
+  };
+
+  const persistLike = async (newLiked: boolean) => {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      if (newLiked) {
+        await supabase.from('video_likes').upsert({ user_id: user.id, video_id: job.id }, { onConflict: 'user_id,video_id' });
+      } else {
+        await supabase.from('video_likes').delete().eq('user_id', user.id).eq('video_id', job.id);
+      }
+    } catch { /* silent */ }
   };
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
     const newLiked = !liked;
     setLiked(newLiked);
-    setLikeCount(prev => newLiked ? prev + 1 : prev - 1);
-    
-    // Show animation
+    setLikeCount(prev => Math.max(0, newLiked ? prev + 1 : prev - 1));
     if (newLiked) {
       setShowDoubleTapLike(true);
       setTimeout(() => setShowDoubleTapLike(false), 600);
     }
+    persistLike(newLiked);
   };
 
   // Double tap to like
@@ -120,13 +152,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
     e.stopPropagation();
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
-    
     if (lastTapRef.current && (now - lastTapRef.current) < DOUBLE_TAP_DELAY) {
       if (!liked) {
         setLiked(true);
         setLikeCount(prev => prev + 1);
         setShowDoubleTapLike(true);
         setTimeout(() => setShowDoubleTapLike(false), 600);
+        persistLike(true);
       }
       lastTapRef.current = 0;
     } else {
@@ -280,16 +312,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
       }
   };
 
-  // Close share menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (showShareMenu && !(e.target as Element).closest('.share-menu-container')) {
-        setShowShareMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showShareMenu]);
 
   const handleApplyStart = () => {
     setShowApplyModal(true);
@@ -465,78 +487,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
         </div>
 
         {/* Share Button */}
-        <div className="flex flex-col items-center gap-1 relative share-menu-container">
-             <button 
-              className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white transition-all active:scale-90 hover:scale-110"
-              onClick={handleShareClick}
-            >
-              <Share2 size={26} />
-            </button>
-            <span className="text-[10px] font-semibold drop-shadow-md text-white">Share</span>
-            
-            {/* Share Menu */}
-            {showShareMenu && (
-              <div className="absolute right-12 top-0 bg-slate-900/95 backdrop-blur-md rounded-xl p-3 shadow-2xl border border-slate-700 min-w-[200px] z-50 animate-fade-in">
-                <button
-                  onClick={handleShareNative}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <Share2 size={18} />
-                  <span>{language === 'zh' ? '系統分享' : 'Native Share'}</span>
-                </button>
-                <button
-                  onClick={handleCopyLink}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <Copy size={18} />
-                  <span>{language === 'zh' ? '複製連結' : 'Copy Link'}</span>
-                </button>
-                <button
-                  onClick={handleCopyCompanyLink}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <LinkIcon size={18} className="text-emerald-400" />
-                  <span>{language === 'zh' ? '複製企業頁面' : 'Copy Company Page'}</span>
-                </button>
-                <div className="border-t border-slate-700 my-2"></div>
-                <button
-                  onClick={() => handleShareSocial('line')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <MessageCircle size={18} className="text-green-400" />
-                  <span>LINE</span>
-                </button>
-                <button
-                  onClick={() => handleShareSocial('whatsapp')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <MessageCircle size={18} className="text-green-500" />
-                  <span>WhatsApp</span>
-                </button>
-                <div className="border-t border-slate-700 my-2"></div>
-                <button
-                  onClick={() => handleShareSocial('facebook')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <Facebook size={18} className="text-blue-500" />
-                  <span>Facebook</span>
-                </button>
-                <button
-                  onClick={() => handleShareSocial('twitter')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <Twitter size={18} className="text-blue-400" />
-                  <span>Twitter / X</span>
-                </button>
-                <button
-                  onClick={() => handleShareSocial('linkedin')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
-                >
-                  <Linkedin size={18} className="text-blue-600" />
-                  <span>LinkedIn</span>
-                </button>
-              </div>
-            )}
+        <div className="flex flex-col items-center gap-1">
+          <button
+            className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white transition-all active:scale-90 hover:scale-110"
+            onClick={handleShareClick}
+          >
+            <Share2 size={26} />
+          </button>
+          <span className="text-[10px] font-semibold drop-shadow-md text-white">{language === 'zh' ? '分享' : 'Share'}</span>
         </div>
         
         {/* Mute Toggle */}
@@ -1059,6 +1017,150 @@ const VideoCard: React.FC<VideoCardProps> = ({
         jobDescription={job.description}
         language={language}
       />
+
+      {/* ── TikTok-style Share Bottom Sheet ───────────────── */}
+      {showShareMenu && (
+        <ShareSheet
+          job={job}
+          language={language}
+          onClose={() => setShowShareMenu(false)}
+          onCopyLink={handleCopyLink}
+          onCopyCompanyLink={handleCopyCompanyLink}
+          onShareSocial={handleShareSocial}
+          onShareNative={handleShareNative}
+        />
+      )}
+    </div>
+  );
+};
+
+// ── Share Bottom Sheet ────────────────────────────────────────────────────────
+interface ShareSheetProps {
+  job: JobData;
+  language: string;
+  onClose: () => void;
+  onCopyLink: () => void;
+  onCopyCompanyLink: () => void;
+  onShareSocial: (p: 'facebook' | 'twitter' | 'linkedin' | 'line' | 'whatsapp') => void;
+  onShareNative: () => void;
+}
+
+const ShareSheet: React.FC<ShareSheetProps> = ({
+  job, language, onClose, onCopyLink, onCopyCompanyLink, onShareSocial, onShareNative,
+}) => {
+  const [copiedLink, setCopiedLink] = React.useState<null | 'link' | 'company'>(null);
+
+  const handleCopy = async (type: 'link' | 'company') => {
+    if (type === 'link') await onCopyLink();
+    else await onCopyCompanyLink();
+    setCopiedLink(type);
+    setTimeout(() => setCopiedLink(null), 1500);
+  };
+
+  const platforms = [
+    { id: 'line' as const, name: 'LINE', bg: '#00B900', label: 'L' },
+    { id: 'whatsapp' as const, name: 'WhatsApp', bg: '#25D366', label: 'W' },
+    { id: 'facebook' as const, name: 'Facebook', bg: '#1877F2', label: 'f' },
+    { id: 'twitter' as const, name: 'X', bg: '#000000', label: '𝕏' },
+    { id: 'linkedin' as const, name: 'LinkedIn', bg: '#0A66C2', label: 'in' },
+  ];
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] bg-black/60 flex items-end"
+      onClick={onClose}
+    >
+      <div
+        className="w-full bg-slate-900 rounded-t-3xl pb-safe"
+        onClick={e => e.stopPropagation()}
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
+      >
+        {/* Drag handle */}
+        <div className="w-10 h-1 bg-slate-600 rounded-full mx-auto mt-3 mb-5" />
+
+        {/* Title */}
+        <p className="text-white font-bold text-center text-base mb-1">
+          {language === 'zh' ? '分享' : 'Share'}
+        </p>
+        <p className="text-slate-400 text-xs text-center mb-6 px-8 truncate">
+          {job.jobTitle} @ {job.companyName}
+        </p>
+
+        {/* Platform icons — horizontal scroll */}
+        <div className="flex gap-5 overflow-x-auto px-6 pb-2 mb-5 no-scrollbar">
+          {/* Native share first */}
+          <button
+            onClick={() => { onShareNative(); onClose(); }}
+            className="flex flex-col items-center gap-2 flex-shrink-0"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-slate-700 flex items-center justify-center shadow">
+              <Share2 size={24} className="text-white" />
+            </div>
+            <span className="text-white/70 text-[11px] w-14 text-center leading-tight">
+              {language === 'zh' ? '系統分享' : 'More'}
+            </span>
+          </button>
+
+          {platforms.map(p => (
+            <button
+              key={p.id}
+              onClick={() => { onShareSocial(p.id); onClose(); }}
+              className="flex flex-col items-center gap-2 flex-shrink-0"
+            >
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow"
+                style={{ backgroundColor: p.bg }}
+              >
+                {p.label}
+              </div>
+              <span className="text-white/70 text-[11px] w-14 text-center leading-tight">{p.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Copy / action rows */}
+        <div className="px-4 space-y-2 mb-3">
+          <button
+            onClick={() => handleCopy('link')}
+            className="w-full flex items-center gap-3 px-4 py-3.5 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors"
+          >
+            {copiedLink === 'link'
+              ? <CheckCircle size={18} className="text-green-400" />
+              : <Copy size={18} className="text-white/70" />
+            }
+            <span className="text-white text-sm font-medium">
+              {copiedLink === 'link'
+                ? (language === 'zh' ? '已複製！' : 'Copied!')
+                : (language === 'zh' ? '複製連結' : 'Copy Link')}
+            </span>
+          </button>
+
+          <button
+            onClick={() => handleCopy('company')}
+            className="w-full flex items-center gap-3 px-4 py-3.5 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors"
+          >
+            {copiedLink === 'company'
+              ? <CheckCircle size={18} className="text-green-400" />
+              : <Building2 size={18} className="text-emerald-400" />
+            }
+            <span className="text-white text-sm font-medium">
+              {copiedLink === 'company'
+                ? (language === 'zh' ? '已複製！' : 'Copied!')
+                : (language === 'zh' ? '複製企業頁面連結' : 'Copy Company Page')}
+            </span>
+          </button>
+        </div>
+
+        {/* Cancel */}
+        <div className="px-4">
+          <button
+            onClick={onClose}
+            className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 rounded-2xl text-white/60 text-sm font-medium transition-colors"
+          >
+            {language === 'zh' ? '取消' : 'Cancel'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

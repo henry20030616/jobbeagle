@@ -27,7 +27,7 @@ export default function JobbeagleShortsPage() {
   // UI state
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const [activeTab, setActiveTab] = useState<'foryou' | 'following' | 'saved'>('foryou');
-  const [navTab, setNavTab] = useState<'home' | 'saved' | 'profile'>('home');
+  const [navTab, setNavTab] = useState<'home' | 'profile'>('home');
 
   // Follow / Save (persisted via Supabase, also tracked locally)
   const [followedCompanies, setFollowedCompanies] = useState<Set<string>>(new Set());
@@ -136,10 +136,9 @@ export default function JobbeagleShortsPage() {
     activeTab === 'saved' ? savedJobsData :
     jobs;
 
-  const handleNavTab = (tab: 'home' | 'saved' | 'profile') => {
+  const handleNavTab = (tab: 'home' | 'profile') => {
     setNavTab(tab);
     if (tab === 'home') setActiveTab('foryou');
-    else if (tab === 'saved') setActiveTab('saved');
   };
 
   if (loading) {
@@ -162,8 +161,7 @@ export default function JobbeagleShortsPage() {
               language={language}
             />
           </div>
-          {/* Bottom nav still visible */}
-          <BottomNav navTab={navTab} onNav={handleNavTab} savedCount={savedJobIds.size} t={t} />
+          <BottomNav navTab={navTab} onNav={handleNavTab} t={t} />
         </>
       )}
 
@@ -239,7 +237,7 @@ export default function JobbeagleShortsPage() {
               {t('追蹤中', 'Following')} {followedCompanies.size > 0 && `(${followedCompanies.size})`}
             </button>
             <button
-              onClick={() => handleNavTab('saved')}
+              onClick={() => setActiveTab('saved')}
               className={`pb-1 transition-colors ${activeTab === 'saved' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
             >
               {t('已儲存', 'Saved')} {savedJobIds.size > 0 && `(${savedJobIds.size})`}
@@ -318,20 +316,19 @@ export default function JobbeagleShortsPage() {
         </div>
       </div>
 
-      <BottomNav navTab={navTab} onNav={handleNavTab} savedCount={savedJobIds.size} t={t} />
+      <BottomNav navTab={navTab} onNav={handleNavTab} t={t} />
         </>
       )}
     </div>
   );
 }
 
-// Extracted bottom nav as a reusable component (used in both views)
+// Bottom nav — 首頁 | 個人
 function BottomNav({
-  navTab, onNav, savedCount, t,
+  navTab, onNav, t,
 }: {
-  navTab: 'home' | 'saved' | 'profile';
-  onNav: (tab: 'home' | 'saved' | 'profile') => void;
-  savedCount: number;
+  navTab: 'home' | 'profile';
+  onNav: (tab: 'home' | 'profile') => void;
   t: (zh: string, en: string) => string;
 }) {
   return (
@@ -342,19 +339,6 @@ function BottomNav({
       >
         <Home size={24} strokeWidth={navTab === 'home' ? 3 : 2} />
         <span className="text-[10px] font-medium">{t('首頁', 'Home')}</span>
-      </button>
-
-      <button
-        onClick={() => onNav('saved')}
-        className={`flex flex-col items-center gap-1 p-2 transition-colors relative ${navTab === 'saved' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-      >
-        <Bookmark size={24} strokeWidth={navTab === 'saved' ? 0 : 2} fill={navTab === 'saved' ? 'currentColor' : 'none'} />
-        {savedCount > 0 && (
-          <span className="absolute -top-0.5 right-0.5 w-4 h-4 bg-blue-500 rounded-full text-white text-[9px] flex items-center justify-center font-bold">
-            {savedCount > 9 ? '9+' : savedCount}
-          </span>
-        )}
-        <span className="text-[10px] font-medium">{t('已儲存', 'Saved')}</span>
       </button>
 
       <button
