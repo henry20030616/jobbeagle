@@ -558,10 +558,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
       {(!showFullDetails && !showApplyModal) && (
           <div className="absolute bottom-0 left-0 w-full z-20 text-white pb-[4.75rem] md:pb-9 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pt-8 md:pt-12">
             <div className="pointer-events-auto px-3 md:px-5 w-full max-w-[100vw]">
-              {/* 左欄文字 + 右側並排按鈕；按鈕固定較矮高度（約為先前整列高的一半） */}
-              <div className="flex flex-row items-end gap-2 sm:gap-3">
-                {/* 左：職缺文字 */}
-                <div className="min-w-0 flex-1 max-h-[6.5rem] sm:max-h-[7rem] overflow-hidden flex flex-col justify-end gap-1 pr-0.5">
+              {/* 三等份寬度不變；底對齊，按鈕固定較矮高度（約原先列高一半） */}
+              <div
+                className={`grid gap-2 sm:gap-3 md:gap-4 items-end ${
+                  job.applyUrl ? 'grid-cols-[1fr_2fr]' : 'grid-cols-3'
+                }`}
+              >
+                {/* 左：職缺文字（與按鈕底對齊，內容可較高、overflow 裁切） */}
+                <div className="min-w-0 max-h-[5rem] sm:max-h-[5.5rem] overflow-hidden flex flex-col justify-end gap-1 pr-0.5 pb-0.5">
                   <div className="flex flex-row items-center gap-2 min-h-0 shrink-0">
                     <Link
                       href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
@@ -622,49 +626,53 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   </div>
                 </div>
 
-                {/* 中＋右：固定高度按鈕（約 3rem，為先前 ~6rem 列高之一半） */}
-                {!job.applyUrl ? (
-                  <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+                {/* 中：AI 匹配 — 固定高度 h-12（約 6rem 列高的一半），寬度仍佔欄內全寬 */}
+                {!job.applyUrl && (
+                  <div className="min-w-0 flex items-end justify-center">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleAnalyzeWithAI(e);
                       }}
-                      className="h-12 w-[5.5rem] sm:w-auto sm:min-w-[7.5rem] md:min-w-[8.5rem] px-1.5 sm:px-2.5 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-lg shadow-lg flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition-colors active:scale-[0.99] text-[10px] sm:text-xs border border-violet-400/20"
+                      className="w-full max-w-[9.5rem] sm:max-w-none h-12 min-h-[3rem] max-h-[3rem] bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-lg md:rounded-xl shadow-lg flex flex-row items-center justify-center gap-1.5 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-violet-400/20 px-1.5 sm:px-2 py-0"
                     >
-                      <Sparkles size={15} className="shrink-0" />
+                      <Sparkles size={16} className="shrink-0" />
                       <span className="text-center leading-tight line-clamp-2">
                         {language === 'zh' ? 'AI 匹配度分析' : 'AI Match'}
                       </span>
                     </button>
+                  </div>
+                )}
+
+                {/* 右：一鍵申請 / 外部套用 — 同高 h-12 */}
+                <div className="min-w-0 flex items-end justify-center">
+                  {job.applyUrl ? (
+                    <a
+                      href={job.applyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full h-12 min-h-[3rem] max-h-[3rem] bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg md:rounded-xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-xs sm:text-sm md:text-base border border-white/10 px-2"
+                    >
+                      <ExternalLink size={18} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
+                    </a>
+                  ) : (
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowApplyModal(true);
                       }}
-                      className="h-12 w-[5.5rem] sm:w-auto sm:min-w-[7.5rem] md:min-w-[8.5rem] px-1.5 sm:px-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg shadow-lg flex flex-row items-center justify-center gap-1 sm:gap-1.5 transition-colors active:scale-[0.99] text-[10px] sm:text-xs border border-cyan-400/25"
+                      className="w-full max-w-[9.5rem] sm:max-w-none h-12 min-h-[3rem] max-h-[3rem] bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg md:rounded-xl shadow-lg flex flex-row items-center justify-center gap-1.5 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-cyan-400/25 px-1.5 sm:px-2 py-0"
                     >
-                      <Briefcase size={15} className="shrink-0" />
+                      <Briefcase size={16} className="shrink-0" />
                       <span className="text-center leading-tight line-clamp-2">
                         {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
                       </span>
                     </button>
-                  </div>
-                ) : (
-                  <div className="shrink-0 w-[38%] min-w-[9rem] max-w-[15rem] sm:w-44 sm:max-w-none">
-                    <a
-                      href={job.applyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-12 w-full bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-[0.99] text-xs sm:text-sm border border-white/10 px-2"
-                    >
-                      <ExternalLink size={16} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
-                    </a>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
