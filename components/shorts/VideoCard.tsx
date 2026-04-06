@@ -554,60 +554,66 @@ const VideoCard: React.FC<VideoCardProps> = ({
         </div>
       </div>
 
-      {/* --- Compact Bottom Info Area --- */}
+      {/* --- Bottom: 三等份 — 左文字 / 中 AI / 右申請，減少直向堆疊遮擋影片 --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 z-20 text-white pb-[5.75rem] md:pb-10 pointer-events-none bg-gradient-to-t from-black/95 via-black/40 to-transparent">
-            <div className="flex flex-col items-start w-[92%] md:max-w-2xl pointer-events-auto">
-              
-              <div className="flex flex-row items-center gap-3 md:gap-4 mb-3 md:mb-4">
-                  <Link
-                    href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/50 transition-shadow"
-                    aria-label={language === 'zh' ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
-                  >
-                     {job.logoUrl && !logoError ? (
-                        <img 
-                            src={job.logoUrl} 
-                            alt="" 
-                            className="w-16 h-16 md:w-[5rem] md:h-[5rem] rounded-full border-2 border-white/50 bg-white object-contain shadow-xl" 
-                            onError={() => setLogoError(true)}
+          <div className="absolute bottom-0 left-0 w-full z-20 text-white pb-[4.75rem] md:pb-9 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pt-8 md:pt-12">
+            <div className="pointer-events-auto px-3 md:px-5 w-full max-w-[100vw]">
+              <div
+                className={`grid gap-2 sm:gap-3 md:gap-4 items-end ${
+                  job.applyUrl ? 'grid-cols-[1fr_2fr]' : 'grid-cols-3'
+                }`}
+              >
+                {/* 左：職缺文字（有外部申請時仍約 1/3 寬） */}
+                <div className="min-w-0 flex flex-col gap-1.5 md:gap-2 pb-0.5">
+                  <div className="flex flex-row items-start gap-2 md:gap-2.5">
+                    <Link
+                      href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/50 transition-shadow"
+                      aria-label={language === 'zh' ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
+                    >
+                      {job.logoUrl && !logoError ? (
+                        <img
+                          src={job.logoUrl}
+                          alt=""
+                          className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/40 bg-white object-contain shadow-lg"
+                          onError={() => setLogoError(true)}
                         />
-                     ) : (
-                        <div className="w-16 h-16 md:w-[5rem] md:h-[5rem] rounded-full border-2 border-white/50 bg-gray-700 flex items-center justify-center shadow-xl">
-                            <span className="text-white font-bold text-xl md:text-2xl">
-                                {job.companyName.charAt(0).toUpperCase()}
-                            </span>
+                      ) : (
+                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
+                          <span className="text-white font-bold text-sm sm:text-base">
+                            {job.companyName.charAt(0).toUpperCase()}
+                          </span>
                         </div>
-                     )}
-                  </Link>
-
-                  <div className="flex flex-col min-w-0 gap-1">
-                      <h3 className="text-lg md:text-xl lg:text-2xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">{job.jobTitle}</h3>
+                      )}
+                    </Link>
+                    <div className="flex flex-col min-w-0 gap-0.5">
+                      <h3 className="text-sm sm:text-base md:text-lg font-extrabold drop-shadow-lg leading-tight line-clamp-2">
+                        {job.jobTitle}
+                      </h3>
                       <Link
                         href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-base md:text-lg lg:text-xl font-bold drop-shadow-md truncate text-white/95 hover:underline text-left"
+                        className="text-xs sm:text-sm font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
                       >
                         @{job.companyName}
                       </Link>
+                    </div>
                   </div>
-              </div>
-
-               <div className="flex flex-wrap gap-2 md:gap-2.5 mb-3 md:mb-4 text-sm md:text-base">
-                 <span className="flex items-center gap-2 bg-slate-800/95 px-3.5 py-2 rounded-xl text-gray-100 border border-white/10">
-                    <MapPin size={17} className="shrink-0 opacity-90" /> {job.location}
-                 </span>
-                 <span className="flex items-center gap-2 bg-emerald-950/70 text-emerald-200 px-3.5 py-2 rounded-xl border border-emerald-500/25">
-                    <DollarSign size={17} className="shrink-0 opacity-90" /> {job.salary}
-                 </span>
-            </div>
-
-              <div className="w-full mb-3 md:mb-4">
-                  <div className="text-sm md:text-base text-gray-100/95 flex items-end w-full gap-2 leading-relaxed">
-                    <p className="line-clamp-2 flex-1">{job.description}</p>
-                    <span 
-                      className="text-white font-bold whitespace-nowrap shrink-0 text-base md:text-lg hover:underline cursor-pointer active:scale-95 transition-transform"
+                  <div className="flex flex-wrap gap-1 text-[10px] sm:text-xs">
+                    <span className="flex items-center gap-1 bg-slate-800/90 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-gray-100 border border-white/10 max-w-full">
+                      <MapPin size={12} className="shrink-0 opacity-90" />
+                      <span className="truncate">{job.location}</span>
+                    </span>
+                    <span className="flex items-center gap-1 bg-emerald-950/70 text-emerald-200 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md border border-emerald-500/25 max-w-full">
+                      <DollarSign size={12} className="shrink-0 opacity-90" />
+                      <span className="truncate">{job.salary}</span>
+                    </span>
+                  </div>
+                  <div className="text-[11px] sm:text-xs md:text-sm text-gray-100/95 leading-snug">
+                    <p className="line-clamp-2 inline">{job.description}</p>{' '}
+                    <span
+                      className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform whitespace-nowrap"
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowFullDetails(true);
@@ -616,46 +622,55 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       ...more
                     </span>
                   </div>
-              </div>
-              
-              {/* 同一列：左 AI 匹配度、右一鍵申請；有 applyUrl 時僅顯示套用全寬 */}
-              <div className="w-full flex flex-row flex-wrap gap-2 md:gap-3">
+                </div>
+
+                {/* 中：AI 匹配（僅無外部申請網址時） */}
+                {!job.applyUrl && (
+                  <div className="min-w-0 flex items-end justify-center">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAnalyzeWithAI(e);
+                      }}
+                      className="w-full max-w-[9.5rem] sm:max-w-none bg-violet-600 hover:bg-violet-500 text-white font-bold py-2.5 sm:py-3 md:py-3.5 rounded-xl md:rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-colors active:scale-[0.99] text-[10px] sm:text-xs md:text-sm min-h-[3.25rem] sm:min-h-[3.5rem] md:min-h-[3.75rem] border border-violet-400/20 px-1 sm:px-2"
+                    >
+                      <Sparkles size={18} className="shrink-0 sm:w-[22px] sm:h-[22px]" />
+                      <span className="text-center leading-tight line-clamp-2">
+                        {language === 'zh' ? 'AI 匹配度分析' : 'AI Match'}
+                      </span>
+                    </button>
+                  </div>
+                )}
+
+                {/* 右：一鍵申請；有外部申請時為第二欄（較寬） */}
+                <div className="min-w-0 flex items-end justify-center">
                   {job.applyUrl ? (
                     <a
                       href={job.applyUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2.5 transition-colors active:scale-[0.99] text-base md:text-lg min-h-[52px] border border-white/10"
+                      className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-2.5 sm:py-3 md:py-3.5 rounded-xl md:rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-xs sm:text-sm md:text-base min-h-[3.25rem] sm:min-h-[3.5rem] border border-white/10"
                     >
-                      <ExternalLink size={22} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
+                      <ExternalLink size={20} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
                     </a>
                   ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAnalyzeWithAI(e);
-                        }}
-                        className="flex-1 min-w-0 basis-0 bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base md:text-lg min-h-[52px] border border-violet-400/20 px-2"
-                      >
-                        <Sparkles size={22} className="shrink-0" />
-                        <span className="truncate">{language === 'zh' ? 'AI 匹配度分析' : 'AI Match'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowApplyModal(true);
-                        }}
-                        className="flex-1 min-w-0 basis-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base md:text-lg min-h-[52px] border border-cyan-400/25 px-2"
-                      >
-                        <Briefcase size={22} className="shrink-0" />
-                        <span className="truncate">{language === 'zh' ? '一鍵申請' : 'Quick Apply'}</span>
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowApplyModal(true);
+                      }}
+                      className="w-full max-w-[9.5rem] sm:max-w-none bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 sm:py-3 md:py-3.5 rounded-xl md:rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-colors active:scale-[0.99] text-[10px] sm:text-xs md:text-sm min-h-[3.25rem] sm:min-h-[3.5rem] md:min-h-[3.75rem] border border-cyan-400/25 px-1 sm:px-2"
+                    >
+                      <Briefcase size={18} className="shrink-0 sm:w-[22px] sm:h-[22px]" />
+                      <span className="text-center leading-tight line-clamp-2">
+                        {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
+                      </span>
+                    </button>
                   )}
+                </div>
               </div>
             </div>
           </div>
@@ -670,16 +685,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
             onClick={() => setShowFullDetails(false)}
           />
           
-          {/* Modal Content */}
-          <div className="absolute inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl border-t border-white/10 shadow-2xl animate-slide-up max-h-[85vh] flex flex-col">
+          {/* Modal Content：較高大面板、內文放大 */}
+          <div className="absolute inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-[1.75rem] md:rounded-t-3xl border-t border-white/10 shadow-2xl animate-slide-up min-h-[72vh] max-h-[94vh] md:max-h-[92vh] flex flex-col">
             {/* Drag Handle */}
-            <div className="w-full flex justify-center pt-3 pb-2 cursor-pointer" onClick={() => setShowFullDetails(false)}>
-                <div className="w-12 h-1.5 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors"></div>
+            <div className="w-full flex justify-center pt-4 pb-3 cursor-pointer" onClick={() => setShowFullDetails(false)}>
+                <div className="w-14 h-1.5 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors" />
             </div>
 
             {/* Header */}
-            <div className="flex justify-between items-start mb-4 px-5">
-                <div className="flex items-center gap-3 min-w-0">
+            <div className="flex justify-between items-start gap-3 mb-5 px-6 md:px-8">
+                <div className="flex items-center gap-4 min-w-0">
                      <Link
                        href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                        onClick={(e) => e.stopPropagation()}
@@ -689,24 +704,24 @@ const VideoCard: React.FC<VideoCardProps> = ({
                      {job.logoUrl && !logoError ? (
                         <img 
                             src={job.logoUrl} 
-                            className="w-10 h-10 rounded-full border border-white/20 bg-white object-contain" 
+                            className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-white/20 bg-white object-contain" 
                             alt=""
                             onError={() => setLogoError(true)}
                         />
                      ) : (
-                        <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-xs">
+                        <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-700 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-lg md:text-xl">
                                 {job.companyName.charAt(0).toUpperCase()}
                             </span>
                         </div>
                      )}
                      </Link>
                     <div className="min-w-0">
-                        <h2 className="text-lg font-bold text-white leading-tight">{job.jobTitle}</h2>
+                        <h2 className="text-xl md:text-2xl font-bold text-white leading-snug">{job.jobTitle}</h2>
                         <Link
                           href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="text-sm font-semibold text-gray-400 hover:text-blue-400 hover:underline"
+                          className="text-base md:text-lg font-semibold text-gray-400 hover:text-blue-400 hover:underline"
                         >
                           @{job.companyName}
                         </Link>
@@ -714,45 +729,56 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 </div>
                 <button 
                   onClick={() => setShowFullDetails(false)} 
-                  className="p-1 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                  className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0"
                 >
-                    <X size={20} className="text-gray-300" />
+                    <X size={24} className="text-gray-300" />
                 </button>
             </div>
 
             {/* Job Description - Scrollable */}
-            <div className="flex-1 overflow-y-auto px-5 mb-6">
-                <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+            <div className="flex-1 min-h-[42vh] overflow-y-auto px-6 md:px-8 mb-4">
+                <div className="text-base md:text-lg text-gray-200 leading-relaxed whitespace-pre-wrap">
                     {job.description}
                 </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="px-5 pb-6 pt-2 border-t border-white/10 flex flex-col gap-2">
-                {job.applyUrl ? (
-                  <a
-                    href={job.applyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                  >
-                    <ExternalLink size={18} />
-                    <span>{language === 'zh' ? '套用（前往企業申請頁）' : 'Apply on Company Site'}</span>
-                  </a>
-                ) : (
-                  <button 
-                      onClick={() => { setShowFullDetails(false); handleApplyStart(); }}
-                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                  >
-                     <Briefcase size={18} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
-                  </button>
-                )}
-                <button
-                    onClick={handleAnalyzeWithAI}
-                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+            {/* Action Buttons：與影片區一致 — 左紫 AI、右青申請 */}
+            <div className="px-6 md:px-8 pt-3 border-t border-white/10 pb-[max(2rem,env(safe-area-inset-bottom))]">
+              {job.applyUrl ? (
+                <a
+                  href={job.applyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] text-base md:text-lg"
                 >
-                    <Sparkles size={18} /> {language === 'zh' ? '一鍵 AI 匹配度分析' : 'One-click AI Match Analysis'}
-                </button>
+                  <ExternalLink size={22} />
+                  <span>{language === 'zh' ? '套用（前往企業申請頁）' : 'Apply on Company Site'}</span>
+                </a>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={(e) => handleAnalyzeWithAI(e)}
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 px-3 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-2 transition-all active:scale-[0.99] text-sm md:text-base"
+                  >
+                    <Sparkles size={22} className="shrink-0" />
+                    <span className="text-center leading-tight">
+                      {language === 'zh' ? 'AI 匹配度分析' : 'AI Match'}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowFullDetails(false);
+                      handleApplyStart();
+                    }}
+                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 px-3 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-2 transition-all active:scale-[0.99] text-sm md:text-base"
+                  >
+                    <Briefcase size={22} className="shrink-0" />
+                    <span className="text-center leading-tight">{language === 'zh' ? '一鍵申請' : 'Quick Apply'}</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </>
