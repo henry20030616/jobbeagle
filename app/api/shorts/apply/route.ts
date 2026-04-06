@@ -31,10 +31,13 @@ export async function POST(request: NextRequest) {
       applicant_name: applicantName,
       applicant_email: applicantEmail,
       applicant_phone: applicantPhone || null,
+      application_message: applicationMessage || null,
       cover_letter: coverLetter || null,
+      cover_letter_url: coverLetterUrl || null,
+      cover_letter_file_name: coverLetterFileName || null,
       resume_url: resumeUrl || null,
       resume_file_name: resumeFileName || null,
-      status: 'pending',
+      status: 'unread',
     });
     if (insertError) {
       console.error('[apply] DB insert error:', JSON.stringify(insertError));
