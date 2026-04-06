@@ -323,15 +323,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
     setApplyStep(1);
   };
 
-  const buildCoverLetterTemplate = (name: string) => {
-    const n = name || '您';
-    return `您好，我是${n}，看到 ${job.companyName} 正在招募「${job.jobTitle}」一職，非常感興趣，特此應徵。
-
-${job.location ? `職缺地點 ${job.location}，` : ''}對於這份工作，我有高度的學習意願與熱忱，期望能有機會進一步了解貴公司的工作環境，並展現我的專業能力。
-
-感謝您撥冗審閱，期待與您進一步交流！
-
-${n} 敬上`;
+  const buildCoverLetterTemplate = (_name: string) => {
+    return `您好，近日得知貴公司正在招募「${job.jobTitle}」一職，特此應徵，希望能有機會參加面試，謝謝！`;
   };
 
   const handleStep1Next = () => {
@@ -877,18 +870,7 @@ ${n} 敬上`;
                       <input
                         type="text"
                         value={userInfo.name}
-                        onChange={(e) => {
-                          const newName = e.target.value;
-                          setUserInfo(prev => {
-                            // If cover letter is still the auto-generated template, refresh it with new name
-                            const wasTemplate = !prev.coverLetter || prev.coverLetter === buildCoverLetterTemplate(prev.name);
-                            return {
-                              ...prev,
-                              name: newName,
-                              coverLetter: wasTemplate ? buildCoverLetterTemplate(newName) : prev.coverLetter,
-                            };
-                          });
-                        }}
+                        onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="請輸入您的姓名"
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
                         required
