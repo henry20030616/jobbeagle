@@ -235,28 +235,30 @@ export default function JobbeagleShortsPage() {
       </div>
 
       {/* Top Bar (Overlay) */}
-      <div className="absolute top-0 left-0 w-full p-4 z-30 pointer-events-none flex justify-between items-start bg-gradient-to-b from-black/60 to-transparent">
-        <div className="pointer-events-auto">
-          <h1 className="text-white font-black text-2xl tracking-tighter drop-shadow-lg">
-            <span className="text-white">Job</span><span className="text-blue-500">beagle</span>
-            <span className="text-white/80 text-lg font-normal ml-1">Shorts</span>
+      <div className="absolute top-0 left-0 w-full px-4 pt-4 pb-3 md:px-6 md:pt-5 z-30 pointer-events-none flex justify-between items-start gap-4 bg-gradient-to-b from-black/75 via-black/35 to-transparent">
+        <div className="pointer-events-auto min-w-0 flex-1">
+          <h1 className="text-white font-black tracking-tight drop-shadow-lg leading-none">
+            <span className="text-3xl md:text-4xl lg:text-5xl">
+              <span className="text-white">Job</span><span className="text-blue-500">beagle</span>
+            </span>
+            <span className="text-white/90 text-xl md:text-2xl lg:text-3xl font-semibold ml-1.5 md:ml-2">Shorts</span>
           </h1>
-          <div className="flex gap-4 text-white/80 font-semibold text-sm mt-2">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-white/90 font-semibold text-base md:text-lg mt-3 md:mt-4">
             <button
               onClick={() => { setActiveTab('foryou'); setNavTab('home'); }}
-              className={`pb-1 transition-colors ${activeTab === 'foryou' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
+              className={`pb-1.5 transition-colors ${activeTab === 'foryou' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}
             >
               {t('為您推薦', 'For You')}
             </button>
             <button
               onClick={() => { setActiveTab('following'); setNavTab('home'); }}
-              className={`pb-1 transition-colors ${activeTab === 'following' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
+              className={`pb-1.5 transition-colors ${activeTab === 'following' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}
             >
               {t('追蹤中', 'Following')} {followedCompanies.size > 0 && `(${followedCompanies.size})`}
             </button>
             <button
               onClick={() => setActiveTab('saved')}
-              className={`pb-1 transition-colors ${activeTab === 'saved' ? 'border-b-2 border-white opacity-100' : 'opacity-60 hover:opacity-80'}`}
+              className={`pb-1.5 transition-colors ${activeTab === 'saved' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}
             >
               {t('已儲存', 'Saved')} {savedJobIds.size > 0 && `(${savedJobIds.size})`}
             </button>
@@ -264,17 +266,17 @@ export default function JobbeagleShortsPage() {
         </div>
 
         {/* Right: language switcher + auth */}
-        <div className="pointer-events-auto flex items-center gap-3">
-          <div className="flex items-center space-x-1 bg-black/40 backdrop-blur-sm border border-white/20 rounded-lg p-1">
+        <div className="pointer-events-auto flex items-center gap-2 md:gap-3 flex-shrink-0">
+          <div className="flex items-center bg-black/45 backdrop-blur-md border border-white/25 rounded-xl p-1">
             <button
               onClick={() => setLanguage('zh')}
-              className={`px-3 py-1.5 rounded text-xs font-bold transition-all ${language === 'zh' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/60 hover:text-white/80'}`}
+              className={`px-4 py-2 rounded-lg text-sm md:text-base font-bold transition-all ${language === 'zh' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/65 hover:text-white/90'}`}
             >
               中文
             </button>
             <button
               onClick={() => setLanguage('en')}
-              className={`px-3 py-1.5 rounded text-xs font-bold transition-all ${language === 'en' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/60 hover:text-white/80'}`}
+              className={`px-4 py-2 rounded-lg text-sm md:text-base font-bold transition-all ${language === 'en' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/65 hover:text-white/90'}`}
             >
               EN
             </button>
@@ -283,20 +285,20 @@ export default function JobbeagleShortsPage() {
           {user ? (
             <button
               onClick={async () => { const s = createClient(); await s.auth.signOut(); }}
-              className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs font-medium hover:bg-black/60 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-black/45 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-black/65 transition-colors"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
               {t('登出', 'Logout')}
             </button>
           ) : (
             <div className="relative">
               <button
                 onClick={() => setShowLoginMenu(!showLoginMenu)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-sm border border-white/20 rounded-lg text-white text-xs font-medium hover:bg-black/60 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-black/45 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-black/65 transition-colors"
               >
-                <LogIn className="w-3.5 h-3.5" />
+                <LogIn className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
                 {t('登入', 'Login')}
-                <ChevronDown className="w-3 h-3" />
+                <ChevronDown className="w-4 h-4 shrink-0 opacity-80" />
               </button>
               {showLoginMenu && (
                 <>
@@ -351,24 +353,24 @@ function BottomNav({
   hasCompanyProfile: boolean;
 }) {
   return (
-    <div className="h-16 bg-black border-t border-gray-900 flex flex-row items-center justify-around z-40 text-gray-400 pb-2 flex-shrink-0">
+    <div className="h-[4.25rem] md:h-20 bg-black border-t border-gray-800/80 flex flex-row items-center justify-around z-40 text-gray-400 pb-safe pt-1 flex-shrink-0">
       <button
         onClick={() => onNav('home')}
-        className={`flex flex-col items-center gap-1 p-2 transition-colors ${navTab === 'home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+        className={`flex flex-col items-center gap-1.5 px-4 py-1.5 min-w-[4.5rem] transition-colors ${navTab === 'home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
       >
-        <Home size={24} strokeWidth={navTab === 'home' ? 3 : 2} />
-        <span className="text-[10px] font-medium">{t('首頁', 'Home')}</span>
+        <Home size={28} strokeWidth={navTab === 'home' ? 2.75 : 2} className="md:w-8 md:h-8" />
+        <span className="text-xs md:text-sm font-semibold">{t('首頁', 'Home')}</span>
       </button>
 
       <button
         onClick={() => onNav('profile')}
-        className={`flex flex-col items-center gap-1 p-2 transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+        className={`flex flex-col items-center gap-1.5 px-4 py-1.5 min-w-[4.5rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
       >
         {hasCompanyProfile
-          ? <Building2 size={24} strokeWidth={navTab === 'profile' ? 3 : 2} />
-          : <User size={24} strokeWidth={navTab === 'profile' ? 3 : 2} />
+          ? <Building2 size={28} strokeWidth={navTab === 'profile' ? 2.75 : 2} className="md:w-8 md:h-8" />
+          : <User size={28} strokeWidth={navTab === 'profile' ? 2.75 : 2} className="md:w-8 md:h-8" />
         }
-        <span className="text-[10px] font-medium">
+        <span className="text-xs md:text-sm font-semibold">
           {hasCompanyProfile ? t('企業', 'Company') : t('個人', 'Profile')}
         </span>
       </button>

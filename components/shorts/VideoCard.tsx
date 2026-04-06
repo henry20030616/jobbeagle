@@ -491,75 +491,75 @@ const VideoCard: React.FC<VideoCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 pointer-events-none z-10"></div>
       </div>
 
-      {/* --- Right Sidebar Actions（加大觸控與圖示，相對影片更好點） --- */}
-      <div className="absolute right-3 md:right-5 bottom-[7.5rem] md:bottom-36 flex flex-col items-center gap-6 md:gap-7 z-20 pb-2">
+      {/* --- Right Sidebar Actions --- */}
+      <div className="absolute right-2 md:right-4 bottom-[6.25rem] md:bottom-[8.5rem] flex flex-col items-center gap-5 md:gap-6 z-20 pb-2">
         {/* Like Button */}
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-110`} 
+              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} size={32} className={liked ? 'animate-pulse' : ''} />
+              <Heart fill={liked ? "currentColor" : "none"} size={34} className={liked ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">
+            <span className="text-sm md:text-base font-bold drop-shadow-md text-white tabular-nums">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
 
         {/* Follow Button */}
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 transition-all active:scale-90 hover:scale-110 ${followed ? 'text-cyan-400' : 'text-white'}`} 
+              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} size={32} className={followed ? 'animate-pulse' : ''} />
+              <UserPlus fill={followed ? "currentColor" : "none"} size={34} className={followed ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">
+            <span className="text-sm md:text-base font-bold drop-shadow-md text-white max-w-[4.5rem] text-center leading-tight">
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
 
         {/* Bookmark Button */}
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 transition-all active:scale-90 hover:scale-110 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
+              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={32} className={bookmarked ? 'animate-pulse' : ''} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={34} className={bookmarked ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">
+            <span className="text-sm md:text-base font-bold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
 
         {/* Share Button */}
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
           <button
-            className="p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white transition-all active:scale-90 hover:scale-110"
+            className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
             onClick={handleShareClick}
           >
-            <Share2 size={32} />
+            <Share2 size={34} />
           </button>
-          <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">{language === 'zh' ? '分享' : 'Share'}</span>
+          <span className="text-sm md:text-base font-bold drop-shadow-md text-white">{language === 'zh' ? '分享' : 'Share'}</span>
         </div>
         
         {/* Mute Toggle */}
-        <div className="flex flex-col items-center gap-1.5 mt-1">
+        <div className="flex flex-col items-center gap-2 mt-1">
             <button 
                 onClick={toggleMute} 
-                className="p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white transition-all active:scale-90 hover:scale-110"
+                className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
             >
-                {isMuted ? <VolumeX size={28} /> : <Volume2 size={28} />}
+                {isMuted ? <VolumeX size={30} /> : <Volume2 size={30} />}
             </button>
         </div>
       </div>
 
       {/* --- Compact Bottom Info Area --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="absolute bottom-0 left-0 w-full p-4 md:p-5 z-20 text-white pb-[5.5rem] md:pb-8 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent">
-            <div className="flex flex-col items-start w-[85%] md:w-[75%] max-w-xl pointer-events-auto">
+          <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 z-20 text-white pb-[5.75rem] md:pb-10 pointer-events-none bg-gradient-to-t from-black/95 via-black/40 to-transparent">
+            <div className="flex flex-col items-start w-[92%] md:max-w-2xl pointer-events-auto">
               
-              <div className="flex flex-row items-center gap-3 md:gap-4 mb-3">
+              <div className="flex flex-row items-center gap-3 md:gap-4 mb-3 md:mb-4">
                   <Link
                     href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                     onClick={(e) => e.stopPropagation()}
@@ -570,44 +570,44 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         <img 
                             src={job.logoUrl} 
                             alt="" 
-                            className="w-14 h-14 md:w-[4.5rem] md:h-[4.5rem] rounded-full border-2 border-white/50 bg-white object-contain shadow-lg" 
+                            className="w-16 h-16 md:w-[5rem] md:h-[5rem] rounded-full border-2 border-white/50 bg-white object-contain shadow-xl" 
                             onError={() => setLogoError(true)}
                         />
                      ) : (
-                        <div className="w-14 h-14 md:w-[4.5rem] md:h-[4.5rem] rounded-full border-2 border-white/50 bg-gray-700 flex items-center justify-center shadow-lg">
-                            <span className="text-white font-bold text-lg md:text-xl">
+                        <div className="w-16 h-16 md:w-[5rem] md:h-[5rem] rounded-full border-2 border-white/50 bg-gray-700 flex items-center justify-center shadow-xl">
+                            <span className="text-white font-bold text-xl md:text-2xl">
                                 {job.companyName.charAt(0).toUpperCase()}
                             </span>
                         </div>
                      )}
                   </Link>
 
-                  <div className="flex flex-col min-w-0 gap-0.5">
-                      <h3 className="text-base md:text-lg font-bold drop-shadow-md leading-tight truncate">{job.jobTitle}</h3>
+                  <div className="flex flex-col min-w-0 gap-1">
+                      <h3 className="text-lg md:text-xl lg:text-2xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">{job.jobTitle}</h3>
                       <Link
                         href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-base md:text-lg font-bold drop-shadow-md leading-tight truncate text-white/95 hover:underline text-left"
+                        className="text-base md:text-lg lg:text-xl font-bold drop-shadow-md truncate text-white/95 hover:underline text-left"
                       >
                         @{job.companyName}
                       </Link>
                   </div>
               </div>
 
-               <div className="flex flex-wrap gap-2 mb-3 text-sm">
-                 <span className="flex items-center gap-1.5 bg-slate-800/90 px-3 py-1.5 rounded-lg text-gray-200 border border-white/5">
-                    <MapPin size={15} className="shrink-0" /> {job.location}
+               <div className="flex flex-wrap gap-2 md:gap-2.5 mb-3 md:mb-4 text-sm md:text-base">
+                 <span className="flex items-center gap-2 bg-slate-800/95 px-3.5 py-2 rounded-xl text-gray-100 border border-white/10">
+                    <MapPin size={17} className="shrink-0 opacity-90" /> {job.location}
                  </span>
-                 <span className="flex items-center gap-1.5 bg-green-900/60 text-green-300 px-3 py-1.5 rounded-lg border border-green-500/20">
-                    <DollarSign size={15} className="shrink-0" /> {job.salary}
+                 <span className="flex items-center gap-2 bg-emerald-950/70 text-emerald-200 px-3.5 py-2 rounded-xl border border-emerald-500/25">
+                    <DollarSign size={17} className="shrink-0 opacity-90" /> {job.salary}
                  </span>
             </div>
 
-              <div className="w-full mb-3">
-                  <div className="text-xs md:text-sm text-gray-200 flex items-end w-full gap-2">
-                    <p className="line-clamp-2 opacity-90 flex-1 leading-snug">{job.description}</p>
+              <div className="w-full mb-3 md:mb-4">
+                  <div className="text-sm md:text-base text-gray-100/95 flex items-end w-full gap-2 leading-relaxed">
+                    <p className="line-clamp-2 flex-1">{job.description}</p>
                     <span 
-                      className="text-white font-bold whitespace-nowrap shrink-0 text-sm md:text-base hover:underline cursor-pointer active:scale-95 transition-transform"
+                      className="text-white font-bold whitespace-nowrap shrink-0 text-base md:text-lg hover:underline cursor-pointer active:scale-95 transition-transform"
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowFullDetails(true);
@@ -618,31 +618,44 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   </div>
               </div>
               
-              <div className="w-full flex flex-col gap-2.5">
+              {/* 同一列：左 AI 匹配度、右一鍵申請；有 applyUrl 時僅顯示套用全寬 */}
+              <div className="w-full flex flex-row flex-wrap gap-2 md:gap-3">
                   {job.applyUrl ? (
                     <a
                       href={job.applyUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 md:py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.98] text-sm md:text-base min-h-[48px]"
+                      className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2.5 transition-colors active:scale-[0.99] text-base md:text-lg min-h-[52px] border border-white/10"
                     >
-                      <ExternalLink size={18} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
+                      <ExternalLink size={22} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
                     </a>
                   ) : (
-                    <button 
-                      onClick={() => setShowApplyModal(true)}
-                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 md:py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.98] text-sm md:text-base min-h-[48px]"
-                    >
-                       <Briefcase size={20} className="shrink-0" /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAnalyzeWithAI(e);
+                        }}
+                        className="flex-1 min-w-0 basis-0 bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base md:text-lg min-h-[52px] border border-violet-400/20 px-2"
+                      >
+                        <Sparkles size={22} className="shrink-0" />
+                        <span className="truncate">{language === 'zh' ? 'AI 匹配度分析' : 'AI Match'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowApplyModal(true);
+                        }}
+                        className="flex-1 min-w-0 basis-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base md:text-lg min-h-[52px] border border-cyan-400/25 px-2"
+                      >
+                        <Briefcase size={22} className="shrink-0" />
+                        <span className="truncate">{language === 'zh' ? '一鍵申請' : 'Quick Apply'}</span>
+                      </button>
+                    </>
                   )}
-                  <button
-                    onClick={handleAnalyzeWithAI}
-                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 md:py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.98] text-sm md:text-base min-h-[48px]"
-                  >
-                    <Sparkles size={20} className="shrink-0" /> {language === 'zh' ? 'AI 匹配度分析' : 'AI Match Analysis'}
-                  </button>
               </div>
             </div>
           </div>
