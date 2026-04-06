@@ -8,7 +8,7 @@ import {
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
   Play, X, Mail, Upload, CheckCircle, Loader2, UserPlus, 
   Bookmark, Copy, Facebook, Twitter, Linkedin, 
-  FileText, ChevronRight, ChevronLeft, CheckCircle2, Info, Sparkles
+  FileText, ChevronRight, ChevronLeft, CheckCircle2, Info, Sparkles, ExternalLink
 } from 'lucide-react';
 
 interface VideoCardProps {
@@ -581,12 +581,24 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
               </div>
               
               <div className="w-full pl-1 flex flex-col gap-1.5">
-                  <button 
-                    onClick={() => setShowApplyModal(true)}
-                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
-                  >
-                     <Briefcase size={14} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
-                  </button>
+                  {job.applyUrl ? (
+                    <a
+                      href={job.applyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
+                    >
+                      <ExternalLink size={12} /> {language === 'zh' ? '套用' : 'Apply'}
+                    </a>
+                  ) : (
+                    <button 
+                      onClick={() => setShowApplyModal(true)}
+                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
+                    >
+                       <Briefcase size={14} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
+                    </button>
+                  )}
                   <button
                     onClick={handleAnalyzeWithAI}
                     className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
@@ -653,12 +665,24 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
 
             {/* Action Buttons */}
             <div className="px-5 pb-6 pt-2 border-t border-white/10 flex flex-col gap-2">
-                <button 
-                    onClick={() => { setShowFullDetails(false); handleApplyStart(); }}
-                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                >
-                   <Briefcase size={18} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
-                </button>
+                {job.applyUrl ? (
+                  <a
+                    href={job.applyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                    <ExternalLink size={18} />
+                    <span>{language === 'zh' ? '套用（前往企業申請頁）' : 'Apply on Company Site'}</span>
+                  </a>
+                ) : (
+                  <button 
+                      onClick={() => { setShowFullDetails(false); handleApplyStart(); }}
+                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                     <Briefcase size={18} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
+                  </button>
+                )}
                 <button
                     onClick={handleAnalyzeWithAI}
                     className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"

@@ -125,6 +125,7 @@ export interface JobData {
   logoUrl?: string;
   isAiGenerated?: boolean;
   contactEmail?: string;
+  applyUrl?: string;
 }
 
 export interface GeneratedContent {

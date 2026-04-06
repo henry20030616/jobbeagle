@@ -84,6 +84,7 @@ export default function JobbeaglePage() {
           tags: video.tags || [],
           logoUrl: video.logo_url || getLogoUrl(video.company_name),
           contactEmail: video.contact_email || undefined,
+          applyUrl: video.apply_url || undefined,
         }));
         setJobs(convertedJobs);
       } else {
