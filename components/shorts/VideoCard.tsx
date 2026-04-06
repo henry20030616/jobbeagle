@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { JobData } from '@/types';
 import AnalysisModal from './AnalysisModal';
 import { 
-  Heart, MessageCircle, Share2, MapPin, DollarSign, 
+  Heart, Share2, MapPin, DollarSign, 
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
   Play, X, Mail, Upload, CheckCircle, Loader2, UserPlus, 
   Bookmark, Copy, Facebook, Twitter, Linkedin, 
@@ -22,10 +22,8 @@ interface VideoCardProps {
 const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false, onFollowChange, language = 'zh' }) => {
   const [showFullDetails, setShowFullDetails] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
-  const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(8200); // Initial like count
-  const [commentCount, setCommentCount] = useState(240); // Initial comment count
   const [followed, setFollowed] = useState(isFollowed);
   const [bookmarked, setBookmarked] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -42,8 +40,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
     phone: '',
     coverLetter: '',
   });
-  const [comments, setComments] = useState<Array<{ id: string; user: string; text: string; time: string; liked: boolean; likeCount: number }>>([]);
-  const [newComment, setNewComment] = useState('');
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDoubleTapLike, setShowDoubleTapLike] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
@@ -212,37 +208,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
     setShowShareMenu(false);
   };
 
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.trim()) return;
-
-    const comment = {
-      id: `comment-${Date.now()}`,
-      user: 'You',
-      text: newComment.trim(),
-      time: 'Just now',
-      liked: false,
-      likeCount: 0,
-    };
-
-    setComments(prev => [comment, ...prev]);
-    setCommentCount(prev => prev + 1);
-    setNewComment('');
-  };
-
-  const handleCommentLike = (commentId: string) => {
-    setComments(prev => prev.map(comment => {
-      if (comment.id === commentId) {
-        const newLiked = !comment.liked;
-        return {
-          ...comment,
-          liked: newLiked,
-          likeCount: newLiked ? comment.likeCount + 1 : comment.likeCount - 1,
-        };
-      }
-      return comment;
-    }));
-  };
 
   const handleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -250,7 +215,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
   };
 
   const handleVideoClick = () => {
-      if (showFullDetails || showApplyModal || showCommentsModal || showShareMenu) {
+      if (showFullDetails || showApplyModal || showShareMenu) {
           setShowFullDetails(false);
           setShowApplyModal(false);
           setShowCommentsModal(false);
@@ -431,22 +396,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
             </button>
             <span className="text-[10px] font-semibold drop-shadow-md text-white">
               {followed ? 'Followed' : 'Follow'}
-            </span>
-        </div>
-
-        {/* Comment Button */}
-        <div className="flex flex-col items-center gap-1">
-            <button 
-              className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white transition-all active:scale-90 hover:scale-110"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowCommentsModal(true);
-              }}
-            >
-              <MessageCircle size={26} />
-            </button>
-            <span className="text-[10px] font-semibold drop-shadow-md text-white">
-              {commentCount >= 1000 ? `${(commentCount / 1000).toFixed(1)}k` : commentCount}
             </span>
         </div>
 
@@ -1024,76 +973,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
           </>
       )}
 
-      {/* --- Comments Modal --- */}
-      {showCommentsModal && (
-          <div className="absolute inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl p-6 pb-24 border-t border-cyan-500/30 animate-fade-in shadow-2xl max-h-[80vh] flex flex-col">
-              <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-bold flex items-center gap-2">
-                      <MessageCircle className="text-cyan-400" /> Comments ({commentCount})
-                  </h2>
-                  <button 
-                    onClick={() => setShowCommentsModal(false)} 
-                    className="p-2 bg-white/5 rounded-full hover:bg-white/10"
-                  >
-                      <X size={20} />
-                  </button>
-              </div>
-
-              {/* Comments List */}
-              <div className="flex-1 overflow-y-auto mb-4 space-y-4">
-                  {comments.length === 0 ? (
-                      <div className="text-center py-8 text-gray-400">
-                          <MessageCircle size={48} className="mx-auto mb-2 opacity-50" />
-                          <p>No comments yet. Be the first to comment!</p>
-                      </div>
-                  ) : (
-                      comments.map((comment) => (
-                          <div key={comment.id} className="bg-slate-800/50 rounded-xl p-4">
-                              <div className="flex items-start justify-between mb-2">
-                                  <div className="flex items-center gap-2">
-                                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center">
-                                          <span className="text-white font-bold text-xs">
-                                              {comment.user.charAt(0).toUpperCase()}
-                                          </span>
-                                      </div>
-                                      <span className="font-bold text-sm text-white">{comment.user}</span>
-                                  </div>
-                                  <span className="text-xs text-gray-400">{comment.time}</span>
-                              </div>
-                              <p className="text-sm text-gray-300 ml-10 mb-2">{comment.text}</p>
-                              <div className="ml-10 flex items-center gap-4">
-                                  <button
-                                    onClick={() => handleCommentLike(comment.id)}
-                                    className={`flex items-center gap-1 text-xs transition-colors ${comment.liked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
-                                  >
-                                    <Heart fill={comment.liked ? "currentColor" : "none"} size={14} />
-                                    <span>{comment.likeCount > 0 ? comment.likeCount : ''}</span>
-                                  </button>
-                              </div>
-                          </div>
-                      ))
-                  )}
-              </div>
-
-              {/* Comment Input */}
-              <form onSubmit={handleAddComment} className="flex gap-2">
-                  <input
-                      type="text"
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="Write your comment..."
-                      className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500 outline-none text-white placeholder-gray-500"
-                  />
-                  <button
-                      type="submit"
-                      disabled={!newComment.trim()}
-                      className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-gray-500 text-white font-bold rounded-xl transition-all active:scale-95"
-                  >
-                      Send
-                  </button>
-              </form>
-          </div>
-      )}
 
       {/* ── AI Analysis Modal ─────────────────────────────── */}
       <AnalysisModal
