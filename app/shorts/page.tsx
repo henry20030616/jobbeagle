@@ -33,6 +33,7 @@ export default function JobbeagleShortsPage() {
   const [followedCompanies, setFollowedCompanies] = useState<Set<string>>(new Set());
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
   const [savedJobsData, setSavedJobsData] = useState<JobData[]>([]);
+  const [hasCompanyProfile, setHasCompanyProfile] = useState(false);
 
   const t = (zh: string, en: string) => language === 'zh' ? zh : en;
 
@@ -62,9 +63,10 @@ export default function JobbeagleShortsPage() {
 
   const loadUserData = async (userId: string) => {
     const supabase = createClient();
-    const [followsRes, savedRes] = await Promise.all([
+    const [followsRes, savedRes, companyRes] = await Promise.all([
       supabase.from('followed_companies').select('company_name').eq('user_id', userId),
       supabase.from('saved_jobs').select('job_id, job_data').eq('user_id', userId),
+      supabase.from('company_profiles').select('id').eq('user_id', userId).maybeSingle(),
     ]);
     if (followsRes.data) {
       setFollowedCompanies(new Set(followsRes.data.map((r: any) => r.company_name)));
@@ -73,6 +75,7 @@ export default function JobbeagleShortsPage() {
       setSavedJobIds(new Set(savedRes.data.map((r: any) => r.job_id)));
       setSavedJobsData(savedRes.data.map((r: any) => r.job_data as JobData));
     }
+    setHasCompanyProfile(!!companyRes.data);
   };
 
   const loadVideos = async () => {
@@ -316,20 +319,21 @@ export default function JobbeagleShortsPage() {
         </div>
       </div>
 
-      <BottomNav navTab={navTab} onNav={handleNavTab} t={t} />
+      <BottomNav navTab={navTab} onNav={handleNavTab} t={t} hasCompanyProfile={hasCompanyProfile} />
         </>
       )}
     </div>
   );
 }
 
-// Bottom nav — 首頁 | 個人
+// Bottom nav — 首頁 | 個人 / 企業
 function BottomNav({
-  navTab, onNav, t,
+  navTab, onNav, t, hasCompanyProfile,
 }: {
   navTab: 'home' | 'profile';
   onNav: (tab: 'home' | 'profile') => void;
   t: (zh: string, en: string) => string;
+  hasCompanyProfile: boolean;
 }) {
   return (
     <div className="h-16 bg-black border-t border-gray-900 flex flex-row items-center justify-around z-40 text-gray-400 pb-2 flex-shrink-0">
@@ -345,8 +349,13 @@ function BottomNav({
         onClick={() => onNav('profile')}
         className={`flex flex-col items-center gap-1 p-2 transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
       >
-        <User size={24} strokeWidth={navTab === 'profile' ? 3 : 2} />
-        <span className="text-[10px] font-medium">{t('個人', 'Profile')}</span>
+        {hasCompanyProfile
+          ? <Building2 size={24} strokeWidth={navTab === 'profile' ? 3 : 2} />
+          : <User size={24} strokeWidth={navTab === 'profile' ? 3 : 2} />
+        }
+        <span className="text-[10px] font-medium">
+          {hasCompanyProfile ? t('企業', 'Company') : t('個人', 'Profile')}
+        </span>
       </button>
     </div>
   );

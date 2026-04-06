@@ -5,7 +5,7 @@ import {
   ArrowLeft, FileText, Bookmark, Building2, LogIn, Loader2,
   ExternalLink, Trash2, Play, User, ChevronRight,
   MapPin, Heart, Edit2, Check, X, Globe, Mail,
-  Upload, Users, DollarSign,
+  Upload, Users, DollarSign, Send,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { JobData } from '@/types';
@@ -15,7 +15,7 @@ interface ProfileModalProps {
   language?: 'zh' | 'en';
 }
 
-type PersonalTab = 'resumes' | 'saved' | 'following';
+type PersonalTab = 'resumes' | 'saved' | 'following' | 'applied';
 type ProfileMode = 'personal' | 'company';
 
 interface ResumeRecord { id: string; file_name: string; created_at: string; }
@@ -41,20 +41,24 @@ interface JobApplicationRow {
   applicant_name: string;
   applicant_email: string;
   applicant_phone: string | null;
+  application_message: string | null;
   cover_letter: string | null;
+  cover_letter_url: string | null;
+  cover_letter_file_name: string | null;
   resume_url: string | null;
   resume_file_name: string | null;
   status: string;
   created_at: string;
 }
 
-const APP_STATUS_OPTS: { value: string; zh: string; en: string }[] = [
-  { value: 'pending', zh: '待審查', en: 'Pending' },
-  { value: 'reviewing', zh: '審查中', en: 'Reviewing' },
-  { value: 'interview', zh: '面試', en: 'Interview' },
-  { value: 'accepted', zh: '錄取', en: 'Accepted' },
-  { value: 'rejected', zh: '婉拒', en: 'Rejected' },
-];
+interface AppliedJobRow {
+  id: string;
+  job_id: string | null;
+  job_title: string;
+  company_name: string;
+  status: string;
+  created_at: string;
+}
 
 const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) => {
   const [user, setUser] = useState<any>(null);
@@ -67,6 +71,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   const [resumes, setResumes] = useState<ResumeRecord[]>([]);
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
   const [followedCompanies, setFollowedCompanies] = useState<FollowedCompany[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<AppliedJobRow[]>([]);
 
   // Company
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
@@ -76,7 +81,6 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   const [videoAppCounts, setVideoAppCounts] = useState<Record<string, number>>({});
   const [sheetApplicants, setSheetApplicants] = useState<JobApplicationRow[]>([]);
   const [loadingApplicants, setLoadingApplicants] = useState(false);
-  const [updatingAppId, setUpdatingAppId] = useState<string | null>(null);
 
   // Company edit state
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -113,21 +117,33 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
         .select('*')
         .eq('job_id', selectedVideo.id)
         .order('created_at', { ascending: false });
-      setSheetApplicants((data || []) as JobApplicationRow[]);
+      const apps = (data || []) as JobApplicationRow[];
+      setSheetApplicants(apps);
       setLoadingApplicants(false);
+
+      // Auto-mark unread applications as read when company views them
+      const unreadIds = apps.filter(a => a.status === 'unread').map(a => a.id);
+      if (unreadIds.length > 0) {
+        await supabase.from('job_applications')
+          .update({ status: 'read' })
+          .in('id', unreadIds);
+        setSheetApplicants(prev => prev.map(a => unreadIds.includes(a.id) ? { ...a, status: 'read' } : a));
+      }
     })();
   }, [selectedVideo?.id]);
 
   const loadPersonalData = async (userId: string) => {
     const supabase = createClient();
-    const [rr, sr, fr] = await Promise.all([
+    const [rr, sr, fr, ar] = await Promise.all([
       supabase.from('resume_history').select('id, file_name, created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(3),
       supabase.from('saved_jobs').select('id, job_id, job_data, created_at').eq('user_id', userId).order('created_at', { ascending: false }),
       supabase.from('followed_companies').select('id, company_name, logo_url, created_at').eq('user_id', userId).order('created_at', { ascending: false }),
+      supabase.from('job_applications').select('id, job_id, job_title, company_name, status, created_at').eq('applicant_user_id', userId).order('created_at', { ascending: false }),
     ]);
     if (rr.data) setResumes(rr.data);
     if (sr.data) setSavedJobs(sr.data as SavedJob[]);
     if (fr.data) setFollowedCompanies(fr.data);
+    if (ar.data) setAppliedJobs(ar.data as AppliedJobRow[]);
   };
 
   const loadCompanyData = async (userId: string) => {
@@ -249,13 +265,6 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     });
   };
 
-  const handleApplicationStatus = async (appId: string, status: string) => {
-    setUpdatingAppId(appId);
-    const supabase = createClient();
-    await supabase.from('job_applications').update({ status, updated_at: new Date().toISOString() }).eq('id', appId);
-    setSheetApplicants(prev => prev.map(a => (a.id === appId ? { ...a, status } : a)));
-    setUpdatingAppId(null);
-  };
 
   const handleLogin = async (type: 'personal' | 'employer') => {
     const supabase = createClient();
@@ -325,10 +334,11 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
             </div>
             <h2 className="text-white font-bold text-xl">{user.user_metadata?.full_name || t('使用者', 'User')}</h2>
             <p className="text-slate-400 text-sm mt-0.5">{user.email}</p>
-            <div className="flex gap-10 mt-5">
+            <div className="flex gap-8 mt-5">
               <StatPill count={savedJobs.length} label={t('已儲存', 'Saved')} />
               <StatPill count={followedCompanies.length} label={t('追蹤', 'Following')} />
               <StatPill count={resumes.length} label={t('履歷', 'Resumes')} />
+              <StatPill count={appliedJobs.length} label={t('已投遞', 'Applied')} />
             </div>
             {!hasCompanyProfile && (
               <a href="/shorts/upload" className="mt-5 flex items-center gap-2 px-5 py-2.5 bg-emerald-900/40 border border-emerald-600/50 rounded-full text-emerald-400 text-sm font-medium hover:bg-emerald-900/70 transition-colors">
@@ -340,15 +350,16 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-slate-800">
+          <div className="flex border-b border-slate-800 overflow-x-auto">
             {([
               { key: 'resumes' as PersonalTab, icon: FileText, zh: '我的履歷', en: 'Resumes' },
-              { key: 'saved' as PersonalTab, icon: Bookmark, zh: '已儲存職缺', en: 'Saved Jobs' },
-              { key: 'following' as PersonalTab, icon: Building2, zh: '追蹤企業', en: 'Following' },
+              { key: 'saved' as PersonalTab, icon: Bookmark, zh: '已儲存', en: 'Saved' },
+              { key: 'following' as PersonalTab, icon: Building2, zh: '追蹤', en: 'Following' },
+              { key: 'applied' as PersonalTab, icon: Send, zh: '投遞紀錄', en: 'Applied' },
             ]).map(({ key, icon: Icon, zh, en }) => (
               <button key={key} onClick={() => setPersonalTab(key)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 text-sm font-medium border-b-2 transition-colors ${personalTab === key ? 'text-white border-blue-500' : 'text-slate-500 border-transparent hover:text-slate-300'}`}>
-                <Icon size={15} />{t(zh, en)}
+                className={`flex-1 min-w-fit flex items-center justify-center gap-1.5 py-3.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap px-2 ${personalTab === key ? 'text-white border-blue-500' : 'text-slate-500 border-transparent hover:text-slate-300'}`}>
+                <Icon size={14} />{t(zh, en)}
               </button>
             ))}
           </div>
@@ -427,6 +438,27 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                         <Trash2 size={14} />
                       </button>
                     </div>
+                  </div>
+                ))
+            )}
+
+            {/* Applied Jobs */}
+            {personalTab === 'applied' && (
+              appliedJobs.length === 0
+                ? <EmptyState icon={Send} text={t('尚未投遞任何職缺。', 'No applications submitted yet.')} />
+                : appliedJobs.map(a => (
+                  <div key={a.id} className="flex items-center gap-3 p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                    <div className="w-10 h-10 bg-blue-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Send size={16} className="text-blue-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-semibold truncate">{a.job_title || '—'}</p>
+                      <p className="text-slate-400 text-xs truncate">{a.company_name}</p>
+                      <p className="text-slate-500 text-xs mt-0.5">{fmtDate(a.created_at)}</p>
+                    </div>
+                    <span className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${a.status === 'unread' ? 'bg-amber-900/60 text-amber-300' : 'bg-slate-800 text-slate-400'}`}>
+                      {a.status === 'unread' ? t('未讀取', 'Unread') : t('已讀取', 'Read')}
+                    </span>
                   </div>
                 ))
             )}
@@ -624,21 +656,17 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                               <p className="text-white font-semibold text-sm">{app.applicant_name}</p>
                               <a href={`mailto:${app.applicant_email}`} className="text-cyan-400 text-xs break-all">{app.applicant_email}</a>
                               {app.applicant_phone && <p className="text-slate-500 text-xs mt-0.5">{app.applicant_phone}</p>}
-                              <p className="text-slate-600 text-[10px] mt-1">{fmtDate(app.created_at)}</p>
+                              <p className="text-slate-500 text-xs mt-1">{t('收到時間：', 'Received: ')}{fmtDate(app.created_at)}</p>
                             </div>
-                            <select
-                              value={app.status}
-                              disabled={updatingAppId === app.id}
-                              onChange={e => handleApplicationStatus(app.id, e.target.value)}
-                              className="bg-slate-800 border border-slate-700 rounded-lg text-xs text-white px-2 py-1.5 max-w-[120px]"
-                            >
-                              {APP_STATUS_OPTS.map(o => (
-                                <option key={o.value} value={o.value}>{language === 'zh' ? o.zh : o.en}</option>
-                              ))}
-                            </select>
+                            <span className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${app.status === 'unread' ? 'bg-amber-900/60 text-amber-300' : 'bg-slate-800 text-slate-400'}`}>
+                              {app.status === 'unread' ? t('未讀取', 'Unread') : t('已讀取', 'Read')}
+                            </span>
                           </div>
+                          {app.application_message && (
+                            <p className="text-slate-300 text-xs mt-2 line-clamp-3 whitespace-pre-wrap border-t border-slate-800 pt-2">{app.application_message}</p>
+                          )}
                           {app.cover_letter && (
-                            <p className="text-slate-400 text-xs mt-2 line-clamp-2 whitespace-pre-wrap border-t border-slate-800 pt-2">{app.cover_letter}</p>
+                            <p className="text-slate-400 text-xs mt-1.5 line-clamp-2 whitespace-pre-wrap italic">{app.cover_letter}</p>
                           )}
                           <div className="flex flex-wrap gap-2 mt-3">
                             {app.resume_url && (
@@ -646,11 +674,15 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                                 <FileText size={12} />{t('下載履歷', 'Resume')}{app.resume_file_name ? ` · ${app.resume_file_name}` : ''}
                               </a>
                             )}
+                            {app.cover_letter_url && (
+                              <a href={app.cover_letter_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-purple-400 bg-purple-950/40 px-2.5 py-1.5 rounded-lg">
+                                <FileText size={12} />{t('求職信', 'Cover Letter')}{app.cover_letter_file_name ? ` · ${app.cover_letter_file_name}` : ''}
+                              </a>
+                            )}
                             <a href={`mailto:${app.applicant_email}?subject=${encodeURIComponent(t('Re: ', 'Re: ') + selectedVideo.job_title)}`} className="inline-flex items-center gap-1 text-xs font-medium text-slate-300 bg-slate-800 px-2.5 py-1.5 rounded-lg">
                               <Mail size={12} />{t('回信', 'Reply')}
                             </a>
                           </div>
-                          {updatingAppId === app.id && <Loader2 className="w-4 h-4 text-cyan-500 animate-spin mt-2" />}
                         </div>
                       ))}
                     </div>
