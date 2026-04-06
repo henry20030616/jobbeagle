@@ -6,12 +6,21 @@ import VideoCard from './VideoCard';
 
 interface VideoFeedProps {
   jobs: JobData[];
-  followedJobIds?: Set<string>;
-  onFollowChange?: (jobId: string, followed: boolean) => void;
+  followedCompanies?: Set<string>;
+  savedJobIds?: Set<string>;
+  onFollowChange?: (companyName: string, followed: boolean) => void;
+  onSaveChange?: (jobId: string, saved: boolean) => void;
   language?: 'zh' | 'en';
 }
 
-const VideoFeed: React.FC<VideoFeedProps> = ({ jobs, followedJobIds = new Set(), onFollowChange, language = 'zh' }) => {
+const VideoFeed: React.FC<VideoFeedProps> = ({
+  jobs,
+  followedCompanies = new Set(),
+  savedJobIds = new Set(),
+  onFollowChange,
+  onSaveChange,
+  language = 'zh',
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -64,8 +73,10 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ jobs, followedJobIds = new Set(),
               <VideoCard 
                   job={job} 
                   isActive={index === activeIndex}
-                  isFollowed={followedJobIds.has(job.id)}
+                  isFollowed={followedCompanies.has(job.companyName)}
+                  isBookmarked={savedJobIds.has(job.id)}
                   onFollowChange={onFollowChange}
+                  onSaveChange={onSaveChange}
                   language={language}
               />
           </div>

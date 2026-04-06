@@ -8,24 +8,31 @@ import {
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
   Play, X, Mail, Upload, CheckCircle, Loader2, UserPlus, 
   Bookmark, Copy, Facebook, Twitter, Linkedin, 
-  FileText, ChevronRight, ChevronLeft, CheckCircle2, Info, Sparkles, ExternalLink
+  FileText, ChevronRight, ChevronLeft, CheckCircle2, Info, Sparkles, ExternalLink,
+  MessageCircle, Link as LinkIcon
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/browser';
 
 interface VideoCardProps {
   job: JobData;
   isActive: boolean;
   isFollowed?: boolean;
-  onFollowChange?: (jobId: string, followed: boolean) => void;
+  isBookmarked?: boolean;
+  onFollowChange?: (companyName: string, followed: boolean) => void;
+  onSaveChange?: (jobId: string, saved: boolean) => void;
   language?: 'zh' | 'en';
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false, onFollowChange, language = 'zh' }) => {
+const VideoCard: React.FC<VideoCardProps> = ({
+  job, isActive, isFollowed = false, isBookmarked = false,
+  onFollowChange, onSaveChange, language = 'zh',
+}) => {
   const [showFullDetails, setShowFullDetails] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(8200); // Initial like count
+  const [likeCount, setLikeCount] = useState(8200);
   const [followed, setFollowed] = useState(isFollowed);
-  const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarked, setBookmarked] = useState(isBookmarked);
   const [isMuted, setIsMuted] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [applyState, setApplyState] = useState<'idle' | 'step1' | 'step2' | 'submitting' | 'success'>('idle');
@@ -46,9 +53,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
   const lastTapRef = useRef<number>(0);
 
   // Sync with parent state
-  useEffect(() => {
-    setFollowed(isFollowed);
-  }, [isFollowed]);
+  useEffect(() => { setFollowed(isFollowed); }, [isFollowed]);
+  useEffect(() => { setBookmarked(isBookmarked); }, [isBookmarked]);
 
   // Load saved user info from localStorage
   useEffect(() => {
@@ -128,14 +134,25 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
     }
   };
 
-  const handleFollow = (e: React.MouseEvent) => {
+  const handleFollow = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const newFollowed = !followed;
     setFollowed(newFollowed);
-    if (onFollowChange) {
-      onFollowChange(job.id, newFollowed);
-    }
-    console.log(`${newFollowed ? '✅' : '❌'} [VideoCard] ${newFollowed ? 'Followed' : 'Unfollowed'}:`, job.jobTitle);
+    if (onFollowChange) onFollowChange(job.companyName, newFollowed);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        if (newFollowed) {
+          await supabase.from('followed_companies').upsert({
+            user_id: user.id, company_name: job.companyName, logo_url: job.logoUrl || null,
+          }, { onConflict: 'user_id,company_name' });
+        } else {
+          await supabase.from('followed_companies').delete()
+            .eq('user_id', user.id).eq('company_name', job.companyName);
+        }
+      }
+    } catch { /* silent fallback */ }
   };
 
   const handleShareClick = (e: React.MouseEvent) => {
@@ -187,8 +204,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
     setShowAnalysisModal(true);
   };
 
-  const handleShareSocial = (platform: 'facebook' | 'twitter' | 'linkedin') => {
-    const url = encodeURIComponent(window.location.href);
+  const handleShareSocial = (platform: 'facebook' | 'twitter' | 'linkedin' | 'line' | 'whatsapp') => {
+    const jobUrl = `${window.location.origin}/shorts/company/${encodeURIComponent(job.companyName)}`;
+    const url = encodeURIComponent(jobUrl);
     const text = encodeURIComponent(`${job.jobTitle} @ ${job.companyName}`);
     let shareUrl = '';
 
@@ -202,16 +220,51 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
       case 'linkedin':
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
         break;
+      case 'line':
+        shareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(`${job.jobTitle} @ ${job.companyName}\n${jobUrl}`)}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${job.jobTitle} @ ${job.companyName}\n${jobUrl}`)}`;
+        break;
     }
 
     window.open(shareUrl, '_blank', 'width=600,height=400');
     setShowShareMenu(false);
   };
 
+  const handleCopyCompanyLink = async () => {
+    const jobUrl = `${window.location.origin}/shorts/company/${encodeURIComponent(job.companyName)}`;
+    try {
+      await navigator.clipboard.writeText(jobUrl);
+      setShowShareMenu(false);
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg z-50';
+      toast.textContent = language === 'zh' ? '企業頁面連結已複製！' : 'Company page link copied!';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    } catch { /* silent */ }
+  };
 
-  const handleBookmark = (e: React.MouseEvent) => {
+
+  const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setBookmarked(!bookmarked);
+    const newSaved = !bookmarked;
+    setBookmarked(newSaved);
+    if (onSaveChange) onSaveChange(job.id, newSaved);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        if (newSaved) {
+          await supabase.from('saved_jobs').upsert({
+            user_id: user.id, job_id: job.id, job_data: job,
+          }, { onConflict: 'user_id,job_id' });
+        } else {
+          await supabase.from('saved_jobs').delete()
+            .eq('user_id', user.id).eq('job_id', job.id);
+        }
+      }
+    } catch { /* silent fallback */ }
   };
 
   const handleVideoClick = () => {
@@ -429,14 +482,36 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
                 >
                   <Share2 size={18} />
-                  <span>Native Share</span>
+                  <span>{language === 'zh' ? '系統分享' : 'Native Share'}</span>
                 </button>
                 <button
                   onClick={handleCopyLink}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
                 >
                   <Copy size={18} />
-                  <span>Copy Link</span>
+                  <span>{language === 'zh' ? '複製連結' : 'Copy Link'}</span>
+                </button>
+                <button
+                  onClick={handleCopyCompanyLink}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
+                >
+                  <LinkIcon size={18} className="text-emerald-400" />
+                  <span>{language === 'zh' ? '複製企業頁面' : 'Copy Company Page'}</span>
+                </button>
+                <div className="border-t border-slate-700 my-2"></div>
+                <button
+                  onClick={() => handleShareSocial('line')}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
+                >
+                  <MessageCircle size={18} className="text-green-400" />
+                  <span>LINE</span>
+                </button>
+                <button
+                  onClick={() => handleShareSocial('whatsapp')}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
+                >
+                  <MessageCircle size={18} className="text-green-500" />
+                  <span>WhatsApp</span>
                 </button>
                 <div className="border-t border-slate-700 my-2"></div>
                 <button
@@ -451,7 +526,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors text-white text-sm"
                 >
                   <Twitter size={18} className="text-blue-400" />
-                  <span>Twitter</span>
+                  <span>Twitter / X</span>
                 </button>
                 <button
                   onClick={() => handleShareSocial('linkedin')}
