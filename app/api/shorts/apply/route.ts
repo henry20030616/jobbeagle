@@ -36,7 +36,11 @@ export async function POST(request: NextRequest) {
       resume_file_name: resumeFileName || null,
       status: 'pending',
     });
-    if (insertError) console.error('[apply] DB insert error:', insertError);
+    if (insertError) {
+      console.error('[apply] DB insert error:', JSON.stringify(insertError));
+      // Return error details for debugging (will be removed later)
+      return NextResponse.json({ success: false, dbError: insertError.message, dbDetails: insertError }, { status: 500 });
+    }
 
     if (!process.env.RESEND_API_KEY || !contactEmail) {
       return NextResponse.json({ success: true, emailSent: false, reason: !contactEmail ? 'no_contact_email' : 'no_api_key' });
