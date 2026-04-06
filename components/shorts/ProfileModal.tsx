@@ -63,7 +63,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   const loadPersonalData = async (userId: string) => {
     const supabase = createClient();
     const [resumesRes, savedRes, followsRes] = await Promise.all([
-      supabase.from('resume_history').select('id, file_name, created_at').eq('user_id', userId).order('created_at', { ascending: false }),
+      supabase.from('resume_history').select('id, file_name, created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(3),
       supabase.from('saved_jobs').select('id, job_id, job_data, created_at').eq('user_id', userId).order('created_at', { ascending: false }),
       supabase.from('followed_companies').select('id, company_name, logo_url, created_at').eq('user_id', userId).order('created_at', { ascending: false }),
     ]);
