@@ -323,7 +323,22 @@ const VideoCard: React.FC<VideoCardProps> = ({
     setApplyStep(1);
   };
 
+  const buildCoverLetterTemplate = (name: string) => {
+    const n = name || '您';
+    return `您好，我是${n}，看到 ${job.companyName} 正在招募「${job.jobTitle}」一職，非常感興趣，特此應徵。
+
+${job.location ? `職缺地點 ${job.location}，` : ''}對於這份工作，我有高度的學習意願與熱忱，期望能有機會進一步了解貴公司的工作環境，並展現我的專業能力。
+
+感謝您撥冗審閱，期待與您進一步交流！
+
+${n} 敬上`;
+  };
+
   const handleStep1Next = () => {
+    // Auto-fill cover letter template if still empty
+    if (!userInfo.coverLetter) {
+      setUserInfo(prev => ({ ...prev, coverLetter: buildCoverLetterTemplate(prev.name) }));
+    }
     setApplyStep(2);
   };
 
@@ -862,8 +877,19 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       <input
                         type="text"
                         value={userInfo.name}
-                        onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Enter your full name"
+                        onChange={(e) => {
+                          const newName = e.target.value;
+                          setUserInfo(prev => {
+                            // If cover letter is still the auto-generated template, refresh it with new name
+                            const wasTemplate = !prev.coverLetter || prev.coverLetter === buildCoverLetterTemplate(prev.name);
+                            return {
+                              ...prev,
+                              name: newName,
+                              coverLetter: wasTemplate ? buildCoverLetterTemplate(newName) : prev.coverLetter,
+                            };
+                          });
+                        }}
+                        placeholder="請輸入您的姓名"
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
                         required
                       />
@@ -877,7 +903,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         type="email"
                         value={userInfo.email}
                         onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
-                        placeholder="your.email@example.com"
+                        placeholder="your.email@example.com（企業將用此信箱聯絡您）"
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
                         required
                       />
@@ -891,7 +917,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         type="tel"
                         value={userInfo.phone}
                         onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="09xx-xxx-xxx（選填）"
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
                       />
                     </div>
@@ -965,13 +991,30 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         </div>
                       </div>
                       {coverLetterMode === 'text' ? (
-                        <textarea
-                          value={userInfo.coverLetter}
-                          onChange={(e) => setUserInfo(prev => ({ ...prev, coverLetter: e.target.value }))}
-                          placeholder="你好，我對貴公司的這個職位很感興趣，以下是我的自我介紹..."
-                          rows={5}
-                          className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500 resize-none"
-                        />
+                        <div className="relative">
+                          <textarea
+                            value={userInfo.coverLetter}
+                            onChange={(e) => {
+                              if (e.target.value.length <= 2000)
+                                setUserInfo(prev => ({ ...prev, coverLetter: e.target.value }));
+                            }}
+                            placeholder="系統將自動帶入預設推薦信，您可自行修改..."
+                            rows={7}
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 pb-7 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500 resize-none"
+                          />
+                          <div className="absolute bottom-2.5 right-3 flex items-center gap-2">
+                            {userInfo.coverLetter && (
+                              <button type="button"
+                                onClick={() => setUserInfo(prev => ({ ...prev, coverLetter: buildCoverLetterTemplate(prev.name) }))}
+                                className="text-xs text-cyan-400 hover:text-cyan-300 underline">
+                                重置預設
+                              </button>
+                            )}
+                            <span className={`text-xs ${userInfo.coverLetter.length >= 1800 ? 'text-amber-400' : 'text-gray-500'}`}>
+                              {userInfo.coverLetter.length}/2000
+                            </span>
+                          </div>
+                        </div>
                       ) : (
                         coverLetterFile ? (
                           <div className="w-full border-2 border-cyan-500/50 rounded-lg p-4 flex items-center justify-between bg-slate-800/50">
