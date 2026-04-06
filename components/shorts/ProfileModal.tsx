@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   ArrowLeft, FileText, Bookmark, Building2, LogIn, Loader2,
   ExternalLink, Trash2, Play, User, ChevronRight,
@@ -8,6 +9,7 @@ import {
   Upload, Users, DollarSign, Send,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
+import { resolveShortsViewMode, setStoredShortsViewRole } from '@/lib/shorts-view-role';
 import { JobData } from '@/types';
 
 interface ProfileModalProps {
@@ -65,6 +67,8 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<ProfileMode>('personal');
   const [hasCompanyProfile, setHasCompanyProfile] = useState(false);
+  /** 確認切換個人 / 企業後台視角（與公開企業主頁無關） */
+  const [switchConfirm, setSwitchConfirm] = useState<ProfileMode | null>(null);
 
   // Personal
   const [personalTab, setPersonalTab] = useState<PersonalTab>('resumes');
@@ -104,6 +108,11 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     };
     init();
   }, []);
+
+  useEffect(() => {
+    if (loading || !user) return;
+    setMode(resolveShortsViewMode(hasCompanyProfile));
+  }, [loading, user, hasCompanyProfile]);
 
   useEffect(() => {
     if (!selectedVideo) {
@@ -271,6 +280,19 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     window.open(app.resume_url, '_blank', 'noopener,noreferrer');
   };
 
+  const requestModeSwitch = (target: ProfileMode) => {
+    if (target === mode) return;
+    if (!hasCompanyProfile && target === 'company') return;
+    setSwitchConfirm(target);
+  };
+
+  const confirmModeSwitch = () => {
+    if (!switchConfirm) return;
+    setStoredShortsViewRole(switchConfirm);
+    setMode(switchConfirm);
+    setSwitchConfirm(null);
+  };
+
   const handleLogin = async (type: 'personal' | 'employer') => {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
@@ -319,10 +341,15 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
       <TopBar
         onBack={onClose}
         title={mode === 'company' ? t('企業儀表板', 'Company Dashboard') : t('個人頁面', 'Profile')}
+        subtitle={
+          <p className="text-[10px] text-slate-500 text-center leading-relaxed px-2">
+            {t('私人後台，僅本人可見。對外請使用「公開企業主頁」。', 'Private — only you. Public profile is separate.')}
+          </p>
+        }
         right={hasCompanyProfile ? (
           <div className="flex bg-slate-800 rounded-lg p-0.5 gap-0.5">
-            <ModePill active={mode === 'personal'} onClick={() => setMode('personal')} icon={User} label={t('個人', 'Me')} />
-            <ModePill active={mode === 'company'} onClick={() => setMode('company')} icon={Building2} label={t('企業', 'Company')} />
+            <ModePill active={mode === 'personal'} onClick={() => requestModeSwitch('personal')} icon={User} label={t('個人', 'Me')} />
+            <ModePill active={mode === 'company'} onClick={() => requestModeSwitch('company')} icon={Building2} label={t('企業', 'Company')} />
           </div>
         ) : undefined}
       />
@@ -557,6 +584,17 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                   <Upload size={16} />
                   {t('+ 上傳新職缺影片', '+ Upload New Job Video')}
                 </a>
+                {companyProfile?.company_name && (
+                  <Link
+                    href={`/shorts/company/${encodeURIComponent(companyProfile.company_name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-slate-600 text-slate-200 text-sm font-medium hover:bg-slate-800/80 transition-colors"
+                  >
+                    <ExternalLink size={14} />
+                    {t('開啟公開企業主頁（求職者看到的頁面）', 'Open public company page (for job seekers)')}
+                  </Link>
+                )}
               </div>
             )}
           </div>
@@ -704,19 +742,67 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
           )}
         </div>
       )}
+
+      {/* 切換私人後台視角：需確認 */}
+      {switchConfirm && (
+        <div className="fixed inset-0 z-[85] flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full sm:max-w-sm bg-slate-900 border border-slate-700 rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-fade-in"
+          >
+            <p className="text-white font-bold text-base mb-2">
+              {switchConfirm === 'company'
+                ? t('切換到企業後台？', 'Switch to company dashboard?')
+                : t('切換到個人後台？', 'Switch to personal dashboard?')}
+            </p>
+            <p className="text-slate-400 text-sm leading-relaxed mb-5">
+              {switchConfirm === 'company'
+                ? t('將顯示職缺影片、申請與數據。之後可再切回個人履歷與投遞紀錄。', 'You will see job videos and applicants. You can switch back anytime.')
+                : t('將顯示履歷、儲存職缺與投遞紀錄。公開給求職者看的企業頁不變。', 'You will see resumes and applications you sent. Your public company page is unchanged.')}
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setSwitchConfirm(null)}
+                className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-300 text-sm font-semibold hover:bg-slate-700"
+              >
+                {t('取消', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={confirmModeSwitch}
+                className="flex-1 py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500"
+              >
+                {t('確認切換', 'Confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-const TopBar = ({ onBack, title, right }: { onBack: () => void; title: string; right?: React.ReactNode }) => (
-  <div className="flex-shrink-0 flex items-center gap-3 px-4 pt-safe py-3 border-b border-slate-800">
-    <button onClick={onBack} className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
-      <ArrowLeft size={22} />
-    </button>
-    <h1 className="text-white font-bold text-base flex-1">{title}</h1>
-    {right && <div className="flex-shrink-0">{right}</div>}
+const TopBar = ({
+  onBack, title, right, subtitle,
+}: {
+  onBack: () => void;
+  title: string;
+  right?: React.ReactNode;
+  subtitle?: React.ReactNode;
+}) => (
+  <div className="flex-shrink-0 border-b border-slate-800">
+    <div className="flex items-center gap-3 px-4 pt-safe py-3">
+      <button onClick={onBack} className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+        <ArrowLeft size={22} />
+      </button>
+      <h1 className="text-white font-bold text-base flex-1">{title}</h1>
+      {right && <div className="flex-shrink-0">{right}</div>}
+    </div>
+    {subtitle && <div className="px-4 pb-2.5">{subtitle}</div>}
   </div>
 );
 

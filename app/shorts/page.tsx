@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { FALLBACK_VIDEOS } from './fallback-videos';
+import { setStoredShortsViewRole } from '@/lib/shorts-view-role';
 
 const getLogoUrl = (companyName: string): string =>
   `https://www.google.com/s2/favicons?domain=${companyName.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
@@ -40,6 +41,20 @@ export default function JobbeagleShortsPage() {
   useEffect(() => {
     loadVideos();
     checkAuth();
+  }, []);
+
+  /** OAuth 回來時網址可能帶 ?shorts_view=，寫入偏好後清掉 query */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get('shorts_view');
+    if (v === 'company' || v === 'personal') {
+      setStoredShortsViewRole(v);
+      params.delete('shorts_view');
+      const q = params.toString();
+      const path = `${window.location.pathname}${q ? `?${q}` : ''}`;
+      window.history.replaceState({}, '', path);
+    }
   }, []);
 
   const checkAuth = async () => {
