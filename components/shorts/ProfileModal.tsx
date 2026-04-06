@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft, FileText, Bookmark, Building2, LogIn, Loader2,
-  ExternalLink, Trash2, Plus, Play, User, ChevronRight,
-  MapPin, Heart, Edit2, Check, X, Globe, Mail, Eye, EyeOff,
-  BarChart2, Upload,
+  ExternalLink, Trash2, Play, User, ChevronRight,
+  MapPin, Heart, Edit2, Check, X, Globe, Mail,
+  Upload, Users, DollarSign,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { JobData } from '@/types';
@@ -31,7 +31,30 @@ interface CompanyVideo {
   salary: string; description: string; video_url: string; created_at: string;
   logo_url: string | null; tags: string[]; is_published: boolean;
 }
-interface CompanyStats { videoCount: number; followerCount: number; totalLikes: number; }
+interface CompanyStats { videoCount: number; followerCount: number; totalLikes: number; totalApplications: number; }
+
+interface JobApplicationRow {
+  id: string;
+  job_id: string | null;
+  job_title: string;
+  company_name: string;
+  applicant_name: string;
+  applicant_email: string;
+  applicant_phone: string | null;
+  cover_letter: string | null;
+  resume_url: string | null;
+  resume_file_name: string | null;
+  status: string;
+  created_at: string;
+}
+
+const APP_STATUS_OPTS: { value: string; zh: string; en: string }[] = [
+  { value: 'pending', zh: '待審查', en: 'Pending' },
+  { value: 'reviewing', zh: '審查中', en: 'Reviewing' },
+  { value: 'interview', zh: '面試', en: 'Interview' },
+  { value: 'accepted', zh: '錄取', en: 'Accepted' },
+  { value: 'rejected', zh: '婉拒', en: 'Rejected' },
+];
 
 const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) => {
   const [user, setUser] = useState<any>(null);
@@ -48,8 +71,12 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   // Company
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [companyVideos, setCompanyVideos] = useState<CompanyVideo[]>([]);
-  const [companyStats, setCompanyStats] = useState<CompanyStats>({ videoCount: 0, followerCount: 0, totalLikes: 0 });
+  const [companyStats, setCompanyStats] = useState<CompanyStats>({ videoCount: 0, followerCount: 0, totalLikes: 0, totalApplications: 0 });
   const [selectedVideo, setSelectedVideo] = useState<CompanyVideo | null>(null);
+  const [videoAppCounts, setVideoAppCounts] = useState<Record<string, number>>({});
+  const [sheetApplicants, setSheetApplicants] = useState<JobApplicationRow[]>([]);
+  const [loadingApplicants, setLoadingApplicants] = useState(false);
+  const [updatingAppId, setUpdatingAppId] = useState<string | null>(null);
 
   // Company edit state
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -73,6 +100,23 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     };
     init();
   }, []);
+
+  useEffect(() => {
+    if (!selectedVideo) {
+      setSheetApplicants([]);
+      return;
+    }
+    (async () => {
+      setLoadingApplicants(true);
+      const supabase = createClient();
+      const { data } = await supabase.from('job_applications')
+        .select('*')
+        .eq('job_id', selectedVideo.id)
+        .order('created_at', { ascending: false });
+      setSheetApplicants((data || []) as JobApplicationRow[]);
+      setLoadingApplicants(false);
+    })();
+  }, [selectedVideo?.id]);
 
   const loadPersonalData = async (userId: string) => {
     const supabase = createClient();
@@ -112,7 +156,6 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
       const videos = (videosRes.data || []) as CompanyVideo[];
       setCompanyVideos(videos);
 
-      // Load likes per video
       if (videos.length > 0) {
         const ids = videos.map(v => v.id);
         const likesMap: Record<string, number> = {};
@@ -122,9 +165,19 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
         }));
         setVideoLikes(likesMap);
         const totalLikes = Object.values(likesMap).reduce((a, b) => a + b, 0);
-        setCompanyStats({ videoCount: videos.length, followerCount, totalLikes });
+
+        const appCounts: Record<string, number> = {};
+        const { data: appRows } = await supabase.from('job_applications').select('job_id').in('job_id', ids);
+        (appRows || []).forEach((row: { job_id: string | null }) => {
+          if (!row.job_id) return;
+          appCounts[row.job_id] = (appCounts[row.job_id] || 0) + 1;
+        });
+        setVideoAppCounts(appCounts);
+        const totalApplications = Object.values(appCounts).reduce((a, b) => a + b, 0);
+        setCompanyStats({ videoCount: videos.length, followerCount, totalLikes, totalApplications });
       } else {
-        setCompanyStats({ videoCount: 0, followerCount, totalLikes: 0 });
+        setVideoAppCounts({});
+        setCompanyStats({ videoCount: 0, followerCount, totalLikes: 0, totalApplications: 0 });
       }
     } else {
       if (videosRes.data) setCompanyVideos(videosRes.data as CompanyVideo[]);
@@ -181,9 +234,27 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     if (!confirm(t('確定要刪除這個職缺影片嗎？此操作無法復原。', 'Delete this job video? This cannot be undone.'))) return;
     const supabase = createClient();
     await supabase.from('shorts_videos').delete().eq('id', videoId);
+    const lostApps = videoAppCounts[videoId] || 0;
     setCompanyVideos(prev => prev.filter(v => v.id !== videoId));
     setSelectedVideo(null);
-    setCompanyStats(prev => ({ ...prev, videoCount: prev.videoCount - 1 }));
+    setCompanyStats(prev => ({
+      ...prev,
+      videoCount: prev.videoCount - 1,
+      totalApplications: Math.max(0, prev.totalApplications - lostApps),
+    }));
+    setVideoAppCounts(prev => {
+      const n = { ...prev };
+      delete n[videoId];
+      return n;
+    });
+  };
+
+  const handleApplicationStatus = async (appId: string, status: string) => {
+    setUpdatingAppId(appId);
+    const supabase = createClient();
+    await supabase.from('job_applications').update({ status, updated_at: new Date().toISOString() }).eq('id', appId);
+    setSheetApplicants(prev => prev.map(a => (a.id === appId ? { ...a, status } : a)));
+    setUpdatingAppId(null);
   };
 
   const handleLogin = async (type: 'personal' | 'employer') => {
@@ -436,10 +507,11 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                 </div>
 
                 {/* Stats row */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                   <StatCard count={companyStats.videoCount} label={t('職缺影片', 'Videos')} icon={Play} color="blue" />
                   <StatCard count={companyStats.followerCount} label={t('追蹤者', 'Followers')} icon={User} color="purple" />
-                  <StatCard count={companyStats.totalLikes} label={t('總愛心', 'Total Likes')} icon={Heart} color="red" />
+                  <StatCard count={companyStats.totalLikes} label={t('總愛心', 'Likes')} icon={Heart} color="red" />
+                  <StatCard count={companyStats.totalApplications} label={t('收到申請', 'Applications')} icon={Users} color="emerald" />
                 </div>
 
                 {/* Upload CTA */}
@@ -452,10 +524,10 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
             )}
           </div>
 
-          {/* Videos section */}
+          {/* Videos — Instagram-style grid */}
           <div className="px-4 pt-4 pb-2 flex items-center justify-between">
             <span className="text-slate-400 text-sm font-medium">
-              {t('已發布', 'Published')} <span className="text-white font-bold">{publishedCount}</span>
+              {t('我的職缺影片', 'My job videos')} · {t('已發布', 'Published')} <span className="text-white font-bold">{publishedCount}</span>
               {draftCount > 0 && <span className="text-slate-500 ml-2">{t('草稿', 'Drafts')} {draftCount}</span>}
             </span>
           </div>
@@ -465,21 +537,126 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
               <EmptyState icon={Play} text={t('尚未上傳任何職缺影片。點擊上方按鈕開始發布。', 'No videos yet. Click the button above to get started.')} />
             </div>
           ) : (
-            <div className="px-4 pb-8 space-y-3">
-              {companyVideos.map(v => (
-                <VideoManageCard
-                  key={v.id}
-                  video={v}
-                  likeCount={videoLikes[v.id] || 0}
-                  isSelected={selectedVideo?.id === v.id}
-                  toggling={togglingVideo === v.id}
-                  onSelect={() => setSelectedVideo(selectedVideo?.id === v.id ? null : v)}
-                  onTogglePublish={() => handleTogglePublish(v)}
-                  onDelete={() => handleDeleteVideo(v.id)}
-                  t={t}
-                  fmtDate={fmtDate}
-                />
-              ))}
+            <div className="px-3 pb-4 grid grid-cols-3 gap-1">
+              {companyVideos.map(v => {
+                const likes = videoLikes[v.id] || 0;
+                const apps = videoAppCounts[v.id] || 0;
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => setSelectedVideo(v)}
+                    className="relative aspect-[3/4] rounded-lg overflow-hidden bg-slate-800 border border-slate-700/80 active:scale-[0.98] transition-transform"
+                  >
+                    <video src={v.video_url} className="absolute inset-0 w-full h-full object-cover" muted playsInline preload="metadata" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                    {!v.is_published && (
+                      <span className="absolute top-1 right-1 text-[9px] font-bold bg-amber-600 text-white px-1.5 py-0.5 rounded">{t('草稿', 'Draft')}</span>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-1.5 flex items-end justify-between gap-1">
+                      <span className="text-[10px] text-white font-medium truncate flex-1 text-left">{v.job_title}</span>
+                    </div>
+                    <div className="absolute top-1 left-1 flex flex-col gap-0.5">
+                      <span className="text-[10px] text-white/95 bg-black/50 rounded px-1 py-0.5 flex items-center gap-0.5">
+                        <Heart size={9} className="text-red-400" fill="currentColor" />{likes}
+                      </span>
+                      <span className="text-[10px] text-white/95 bg-black/50 rounded px-1 py-0.5 flex items-center gap-0.5">
+                        <Users size={9} className="text-emerald-400" />{apps}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Full-screen sheet: video + applicants */}
+          {selectedVideo && (
+            <div className="fixed inset-0 z-[70] bg-slate-950 flex flex-col animate-fade-in">
+              <div className="flex-shrink-0 flex items-center gap-2 px-3 py-3 border-b border-slate-800 pt-safe">
+                <button type="button" onClick={() => setSelectedVideo(null)} className="p-2 rounded-full hover:bg-slate-800 text-slate-300">
+                  <ArrowLeft size={22} />
+                </button>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-sm truncate">{selectedVideo.job_title}</p>
+                  <p className="text-slate-500 text-xs truncate">{selectedVideo.company_name}{selectedVideo.location ? ` · ${selectedVideo.location}` : ''}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleTogglePublish(selectedVideo)}
+                  disabled={togglingVideo === selectedVideo.id}
+                  className="text-xs px-2 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700"
+                >
+                  {selectedVideo.is_published ? t('下架', 'Unpublish') : t('發布', 'Publish')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteVideo(selectedVideo.id)}
+                  className="p-2 rounded-lg bg-slate-800 text-red-400 hover:bg-red-950/50"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto overscroll-contain pb-safe">
+                <video src={selectedVideo.video_url} controls className="w-full max-h-48 bg-black object-contain" />
+                <div className="px-4 py-3 border-b border-slate-800">
+                  {selectedVideo.salary && (
+                    <p className="text-slate-300 text-sm flex items-center gap-1.5"><DollarSign size={14} className="text-emerald-400 shrink-0" />{selectedVideo.salary}</p>
+                  )}
+                  {selectedVideo.description && <p className="text-slate-400 text-sm mt-2 leading-relaxed">{selectedVideo.description}</p>}
+                </div>
+                <div className="px-4 py-3">
+                  <h3 className="text-white font-bold text-sm mb-3 flex items-center gap-2">
+                    <Users size={16} className="text-emerald-400" />
+                    {t('申請者', 'Applicants')}
+                    <span className="text-slate-500 font-normal">({sheetApplicants.length})</span>
+                  </h3>
+                  {loadingApplicants ? (
+                    <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 text-cyan-500 animate-spin" /></div>
+                  ) : sheetApplicants.length === 0 ? (
+                    <p className="text-slate-500 text-sm text-center py-6">{t('尚無申請紀錄', 'No applications yet')}</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {sheetApplicants.map(app => (
+                        <div key={app.id} className="bg-slate-900 rounded-xl border border-slate-800 p-3">
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-white font-semibold text-sm">{app.applicant_name}</p>
+                              <a href={`mailto:${app.applicant_email}`} className="text-cyan-400 text-xs break-all">{app.applicant_email}</a>
+                              {app.applicant_phone && <p className="text-slate-500 text-xs mt-0.5">{app.applicant_phone}</p>}
+                              <p className="text-slate-600 text-[10px] mt-1">{fmtDate(app.created_at)}</p>
+                            </div>
+                            <select
+                              value={app.status}
+                              disabled={updatingAppId === app.id}
+                              onChange={e => handleApplicationStatus(app.id, e.target.value)}
+                              className="bg-slate-800 border border-slate-700 rounded-lg text-xs text-white px-2 py-1.5 max-w-[120px]"
+                            >
+                              {APP_STATUS_OPTS.map(o => (
+                                <option key={o.value} value={o.value}>{language === 'zh' ? o.zh : o.en}</option>
+                              ))}
+                            </select>
+                          </div>
+                          {app.cover_letter && (
+                            <p className="text-slate-400 text-xs mt-2 line-clamp-2 whitespace-pre-wrap border-t border-slate-800 pt-2">{app.cover_letter}</p>
+                          )}
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {app.resume_url && (
+                              <a href={app.resume_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 bg-cyan-950/40 px-2.5 py-1.5 rounded-lg">
+                                <FileText size={12} />{t('下載履歷', 'Resume')}{app.resume_file_name ? ` · ${app.resume_file_name}` : ''}
+                              </a>
+                            )}
+                            <a href={`mailto:${app.applicant_email}?subject=${encodeURIComponent(t('Re: ', 'Re: ') + selectedVideo.job_title)}`} className="inline-flex items-center gap-1 text-xs font-medium text-slate-300 bg-slate-800 px-2.5 py-1.5 rounded-lg">
+                              <Mail size={12} />{t('回信', 'Reply')}
+                            </a>
+                          </div>
+                          {updatingAppId === app.id && <Loader2 className="w-4 h-4 text-cyan-500 animate-spin mt-2" />}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -515,7 +692,12 @@ const StatPill = ({ count, label }: { count: number; label: string }) => (
 );
 
 const StatCard = ({ count, label, icon: Icon, color }: { count: number; label: string; icon: React.ElementType; color: string }) => {
-  const colors: Record<string, string> = { blue: 'bg-blue-900/30 text-blue-400', purple: 'bg-purple-900/30 text-purple-400', red: 'bg-red-900/30 text-red-400' };
+  const colors: Record<string, string> = {
+    blue: 'bg-blue-900/30 text-blue-400',
+    purple: 'bg-purple-900/30 text-purple-400',
+    red: 'bg-red-900/30 text-red-400',
+    emerald: 'bg-emerald-900/30 text-emerald-400',
+  };
   return (
     <div className={`rounded-2xl p-3 flex flex-col gap-1 ${colors[color] || colors.blue}`}>
       <Icon size={16} />
@@ -539,67 +721,6 @@ const LoginBtn = ({ onClick, icon: Icon, title, sub, color }: { onClick: () => v
     </button>
   );
 };
-
-interface VideoManageCardProps {
-  video: CompanyVideo; likeCount: number; isSelected: boolean; toggling: boolean;
-  onSelect: () => void; onTogglePublish: () => void; onDelete: () => void;
-  t: (zh: string, en: string) => string; fmtDate: (d: string) => string;
-}
-const VideoManageCard: React.FC<VideoManageCardProps> = ({ video, likeCount, isSelected, toggling, onSelect, onTogglePublish, onDelete, t, fmtDate }) => (
-  <div className={`bg-slate-900 rounded-2xl border transition-colors ${video.is_published ? 'border-slate-800' : 'border-amber-800/50'}`}>
-    {/* Top: status badge + title + actions */}
-    <div className="flex items-start gap-3 p-4 pb-3">
-      <button onClick={onSelect}
-        className="w-16 h-16 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0 group hover:bg-slate-700 transition-colors overflow-hidden">
-        <div className="w-8 h-8 rounded-full bg-black/50 flex items-center justify-center group-hover:bg-blue-600/60 transition-colors">
-          <Play size={16} fill="white" className="text-white ml-0.5" />
-        </div>
-      </button>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start gap-2">
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-semibold text-sm leading-snug">{video.job_title}</p>
-            {video.location && <p className="text-slate-400 text-xs flex items-center gap-1 mt-0.5"><MapPin size={10} />{video.location}</p>}
-          </div>
-          {!video.is_published && (
-            <span className="flex-shrink-0 text-[10px] bg-amber-900/50 text-amber-400 border border-amber-700/50 rounded px-1.5 py-0.5">
-              {t('草稿', 'Draft')}
-            </span>
-          )}
-        </div>
-        {/* Stats + actions */}
-        <div className="flex items-center gap-3 mt-2">
-          <span className="flex items-center gap-1 text-slate-400 text-xs"><Heart size={11} />{likeCount}</span>
-          <span className="text-slate-600 text-xs">{fmtDate(video.created_at)}</span>
-          <div className="flex gap-1.5 ml-auto">
-            <button onClick={onTogglePublish} disabled={toggling}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${video.is_published ? 'bg-slate-700 hover:bg-amber-900/50 text-slate-300 hover:text-amber-300' : 'bg-emerald-900/50 hover:bg-emerald-900 text-emerald-400'}`}>
-              {toggling ? <Loader2 size={11} className="animate-spin" /> : video.is_published ? <EyeOff size={11} /> : <Eye size={11} />}
-              {video.is_published ? t('下架', 'Unpublish') : t('發布', 'Publish')}
-            </button>
-            <button onClick={onDelete}
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-900/50 text-slate-400 hover:text-red-400 transition-colors">
-              <Trash2 size={11} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Expanded video player */}
-    {isSelected && (
-      <div className="px-4 pb-4 space-y-3 border-t border-slate-800 pt-3">
-        <video src={video.video_url} controls className="w-full rounded-xl bg-black max-h-52 object-contain" />
-        {video.description && <p className="text-slate-300 text-sm leading-relaxed">{video.description}</p>}
-        {video.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {video.tags.map((tag, i) => <span key={i} className="px-2.5 py-1 bg-slate-800 text-slate-300 text-xs rounded-full">{tag}</span>)}
-          </div>
-        )}
-      </div>
-    )}
-  </div>
-);
 
 const EmptyState = ({ icon: Icon, text }: { icon: React.ElementType; text: string }) => (
   <div className="flex flex-col items-center justify-center py-14 gap-4 text-center">
