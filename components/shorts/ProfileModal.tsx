@@ -69,6 +69,10 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   const [hasCompanyProfile, setHasCompanyProfile] = useState(false);
   /** 確認切換個人 / 企業後台視角（與公開企業主頁無關） */
   const [switchConfirm, setSwitchConfirm] = useState<ProfileMode | null>(null);
+  /** 刪除 / 下架職缺影片前確認 */
+  const [videoManageConfirm, setVideoManageConfirm] = useState<
+    null | { action: 'delete' | 'unpublish'; video: CompanyVideo }
+  >(null);
 
   // Personal
   const [personalTab, setPersonalTab] = useState<PersonalTab>('resumes');
@@ -236,7 +240,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     setSavingProfile(false);
   };
 
-  const handleTogglePublish = async (video: CompanyVideo) => {
+  const performTogglePublish = async (video: CompanyVideo) => {
     setTogglingVideo(video.id);
     const supabase = createClient();
     const newState = !video.is_published;
@@ -246,8 +250,19 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     setTogglingVideo(null);
   };
 
-  const handleDeleteVideo = async (videoId: string) => {
-    if (!confirm(t('確定要刪除這個職缺影片嗎？此操作無法復原。', 'Delete this job video? This cannot be undone.'))) return;
+  /** 發布草稿：不跳確認 */
+  const handlePublishVideo = (video: CompanyVideo) => {
+    if (video.is_published) return;
+    void performTogglePublish(video);
+  };
+
+  /** 下架：先開確認視窗 */
+  const requestUnpublishVideo = (video: CompanyVideo) => {
+    if (!video.is_published) return;
+    setVideoManageConfirm({ action: 'unpublish', video });
+  };
+
+  const performDeleteVideo = async (videoId: string) => {
     const supabase = createClient();
     await supabase.from('shorts_videos').delete().eq('id', videoId);
     const lostApps = videoAppCounts[videoId] || 0;
@@ -263,6 +278,24 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
       delete n[videoId];
       return n;
     });
+  };
+
+  /** 刪除：先開確認視窗 */
+  const requestDeleteVideo = (video: CompanyVideo) => {
+    setVideoManageConfirm({ action: 'delete', video });
+  };
+
+  const confirmVideoManageAction = async () => {
+    if (!videoManageConfirm) return;
+    const { action, video } = videoManageConfirm;
+    setVideoManageConfirm(null);
+    if (action === 'delete') {
+      await performDeleteVideo(video.id);
+      return;
+    }
+    if (action === 'unpublish') {
+      await performTogglePublish(video);
+    }
   };
 
   /** 已讀取：僅在企業點「下載履歷」時標記（開啟申請列表不算） */
@@ -651,7 +684,8 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          void handleTogglePublish(v);
+                          if (v.is_published) requestUnpublishVideo(v);
+                          else handlePublishVideo(v);
                         }}
                         className="p-1 rounded bg-black/65 hover:bg-black/90 text-white border border-white/15 disabled:opacity-50"
                         title={v.is_published ? t('下架（隱藏）', 'Unpublish') : t('發布', 'Publish')}
@@ -664,7 +698,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          handleDeleteVideo(v.id);
+                          requestDeleteVideo(v);
                         }}
                         className="p-1 rounded bg-black/65 hover:bg-red-900/90 text-red-300 border border-white/15 disabled:opacity-50"
                         title={t('刪除', 'Delete')}
@@ -691,7 +725,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleTogglePublish(selectedVideo)}
+                  onClick={() => (selectedVideo.is_published ? requestUnpublishVideo(selectedVideo) : handlePublishVideo(selectedVideo))}
                   disabled={togglingVideo === selectedVideo.id}
                   className="text-xs px-2 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700"
                 >
@@ -699,7 +733,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDeleteVideo(selectedVideo.id)}
+                  onClick={() => requestDeleteVideo(selectedVideo)}
                   className="p-2 rounded-lg bg-slate-800 text-red-400 hover:bg-red-950/50"
                 >
                   <Trash2 size={16} />
@@ -808,6 +842,53 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                 className="flex-1 py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500"
               >
                 {t('確認切換', 'Confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 刪除 / 下架職缺影片：確認視窗 */}
+      {videoManageConfirm && (
+        <div className="fixed inset-0 z-[95] flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full sm:max-w-sm bg-slate-900 border border-slate-700 rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-fade-in"
+          >
+            <p className="text-white font-bold text-base mb-2">
+              {videoManageConfirm.action === 'delete'
+                ? t('確定刪除此職缺影片？', 'Delete this job video?')
+                : t('確定下架（隱藏）此影片？', 'Unpublish and hide this video?')}
+            </p>
+            <p className="text-slate-400 text-sm leading-relaxed mb-3">
+              {videoManageConfirm.action === 'delete'
+                ? t('刪除後無法復原，相關申請紀錄也將一併移除。', 'This cannot be undone. Related application records will also be removed.')
+                : t('下架後將不會出現在 Shorts 動態與公開企業主頁，可隨時再發布。', 'It will no longer appear in Shorts or your public company page. You can publish again anytime.')}
+            </p>
+            <p className="text-slate-300 text-sm font-medium mb-5 truncate" title={videoManageConfirm.video.job_title}>
+              「{videoManageConfirm.video.job_title}」
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setVideoManageConfirm(null)}
+                className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-300 text-sm font-semibold hover:bg-slate-700"
+              >
+                {t('取消', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={() => void confirmVideoManageAction()}
+                className={
+                  videoManageConfirm.action === 'delete'
+                    ? 'flex-1 py-3 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-500'
+                    : 'flex-1 py-3 rounded-xl bg-amber-600 text-white text-sm font-semibold hover:bg-amber-500'
+                }
+              >
+                {videoManageConfirm.action === 'delete'
+                  ? t('確認刪除', 'Delete')
+                  : t('確認下架', 'Unpublish')}
               </button>
             </div>
           </div>
