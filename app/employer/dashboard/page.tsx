@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { 
   Upload, Video, Edit, Trash2, Eye, EyeOff, 
   Plus, Building2, LogOut, AlertCircle, Loader2,
-  X, CheckCircle
+  X, CheckCircle, Users, ChevronRight,
 } from 'lucide-react';
 
 interface VideoData {
@@ -237,6 +237,29 @@ export default function EmployerDashboard() {
             <p className="text-green-200 text-sm">{success}</p>
           </div>
         )}
+
+        {/* 應徵管理：與 Shorts 企業後台同一處（最小改動：由此進入） */}
+        <div className="mb-8 p-4 sm:p-5 rounded-xl border border-cyan-500/35 bg-slate-800/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex gap-3 min-w-0">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 text-cyan-300">
+              <Users className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-white font-semibold text-sm sm:text-base">應徵者與履歷</p>
+              <p className="text-slate-400 text-xs sm:text-sm mt-1 leading-relaxed">
+                在此中心管理影片；查看誰投遞、下載履歷請前往 Shorts 的企業後台（與求職者使用同一支帳號登入）。
+                若已設定聯絡信箱，新應徵也會寄信通知。
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/shorts?shorts_view=company&open_profile=1"
+            className="inline-flex items-center justify-center gap-2 shrink-0 px-4 py-2.5 rounded-lg bg-cyan-600/90 hover:bg-cyan-500 text-white text-sm font-medium transition-colors"
+          >
+            前往查看應徵
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
 
         {/* Upload Button */}
         <div className="mb-8">

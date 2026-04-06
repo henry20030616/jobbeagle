@@ -43,17 +43,26 @@ export default function JobbeagleShortsPage() {
     checkAuth();
   }, []);
 
-  /** OAuth 回來時網址可能帶 ?shorts_view=，寫入偏好後清掉 query */
+  /** OAuth 或企業中心連結：?shorts_view= 寫入偏好；?open_profile=1 直接開啟個人／企業後台（Profile） */
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
+    let changed = false;
     const v = params.get('shorts_view');
     if (v === 'company' || v === 'personal') {
       setStoredShortsViewRole(v);
       params.delete('shorts_view');
+      changed = true;
+    }
+    const openProfile = params.get('open_profile');
+    if (openProfile === '1' || openProfile === 'true') {
+      setNavTab('profile');
+      params.delete('open_profile');
+      changed = true;
+    }
+    if (changed) {
       const q = params.toString();
-      const path = `${window.location.pathname}${q ? `?${q}` : ''}`;
-      window.history.replaceState({}, '', path);
+      window.history.replaceState({}, '', `${window.location.pathname}${q ? `?${q}` : ''}`);
     }
   }, []);
 
