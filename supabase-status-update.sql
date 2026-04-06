@@ -1,5 +1,7 @@
 -- =====================================================
--- Update job_applications status to unread / read only
+-- job_applications：狀態改為僅 unread / read（在 Supabase SQL Editor 貼上整份執行一次即可）
+-- 執行前：建議先備份；執行後：等 Vercel 部署完成再測一鍵申請
+-- 若曾執行過失敗，請把錯誤訊息貼給開發者，勿重複亂刪表
 -- =====================================================
 
 -- 1. Add new column with default 'unread'
