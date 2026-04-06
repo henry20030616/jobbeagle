@@ -611,6 +611,20 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                   <StatCard count={companyStats.totalApplications} label={t('收到申請', 'Applications')} icon={Users} color="emerald" />
                 </div>
 
+                {/* 應徵者與履歷：入口為下方職缺縮圖（非獨立分頁） */}
+                <div className="mb-4 p-3.5 rounded-xl border border-cyan-500/40 bg-gradient-to-br from-cyan-950/40 to-slate-900/40">
+                  <p className="text-cyan-100 font-semibold text-sm flex items-center gap-2">
+                    <Users className="w-4 h-4 shrink-0 text-cyan-300" />
+                    {t('應徵者與履歷', 'Applicants & resumes')}
+                  </p>
+                  <p className="text-slate-400 text-xs mt-2 leading-relaxed">
+                    {t(
+                      '請點選下方「我的職缺影片」網格中的任一支縮圖，即可開啟該職缺的管理畫面：瀏覽應徵者、下載履歷、以信箱聯絡。新應徵通知會寄到上方企業「聯絡信箱」（若已填寫）。',
+                      'Tap any thumbnail in “My job videos” below to open that job: view applicants, download resumes, and email them. New applications are also emailed to your Contact Email when set.',
+                    )}
+                  </p>
+                </div>
+
                 {/* Upload CTA */}
                 <a href="/shorts/upload"
                   className="flex items-center justify-center gap-2.5 w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-white font-semibold text-sm transition-colors shadow-lg shadow-emerald-900/30">
@@ -633,16 +647,19 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
           </div>
 
           {/* Videos — Instagram-style grid */}
-          <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+          <div className="px-4 pt-4 pb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-slate-400 text-sm font-medium">
               {t('我的職缺影片', 'My job videos')} · {t('已發布', 'Published')} <span className="text-white font-bold">{publishedCount}</span>
               {draftCount > 0 && <span className="text-slate-500 ml-2">{t('草稿', 'Drafts')} {draftCount}</span>}
+            </span>
+            <span className="text-slate-500 text-xs">
+              {t('點縮圖 → 應徵與履歷', 'Tap thumbnail → applicants')}
             </span>
           </div>
 
           {companyVideos.length === 0 ? (
             <div className="px-4 py-4">
-              <EmptyState icon={Play} text={t('尚未上傳任何職缺影片。點擊上方按鈕開始發布。', 'No videos yet. Click the button above to get started.')} />
+              <EmptyState icon={Play} text={t('尚未上傳任何職缺影片。點擊上方按鈕開始發布；發布後點縮圖即可查看應徵者與履歷。', 'No videos yet. Upload above, then tap a thumbnail to see applicants and resumes.')} />
             </div>
           ) : (
             <div className="px-2 pb-4 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1">
