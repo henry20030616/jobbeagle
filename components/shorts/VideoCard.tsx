@@ -491,123 +491,123 @@ const VideoCard: React.FC<VideoCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 pointer-events-none z-10"></div>
       </div>
 
-      {/* --- Right Sidebar Actions --- */}
-      <div className="absolute right-2 bottom-24 flex flex-col items-center gap-5 z-20 pb-4">
+      {/* --- Right Sidebar Actions（加大觸控與圖示，相對影片更好點） --- */}
+      <div className="absolute right-3 md:right-5 bottom-[7.5rem] md:bottom-36 flex flex-col items-center gap-6 md:gap-7 z-20 pb-2">
         {/* Like Button */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`p-2.5 rounded-full bg-black/40 backdrop-blur-sm transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-110`} 
+              className={`p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-110`} 
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} size={26} className={liked ? 'animate-pulse' : ''} />
+              <Heart fill={liked ? "currentColor" : "none"} size={32} className={liked ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-[10px] font-semibold drop-shadow-md text-white">
+            <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
 
         {/* Follow Button */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`p-2.5 rounded-full bg-black/40 backdrop-blur-sm transition-all active:scale-90 hover:scale-110 ${followed ? 'text-cyan-400' : 'text-white'}`} 
+              className={`p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 transition-all active:scale-90 hover:scale-110 ${followed ? 'text-cyan-400' : 'text-white'}`} 
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} size={26} className={followed ? 'animate-pulse' : ''} />
+              <UserPlus fill={followed ? "currentColor" : "none"} size={32} className={followed ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-[10px] font-semibold drop-shadow-md text-white">
+            <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
 
         {/* Bookmark Button */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`p-2.5 rounded-full bg-black/40 backdrop-blur-sm transition-all active:scale-90 hover:scale-110 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
+              className={`p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 transition-all active:scale-90 hover:scale-110 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={26} className={bookmarked ? 'animate-pulse' : ''} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={32} className={bookmarked ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-[10px] font-semibold drop-shadow-md text-white">
+            <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
 
         {/* Share Button */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1.5">
           <button
-            className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white transition-all active:scale-90 hover:scale-110"
+            className="p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white transition-all active:scale-90 hover:scale-110"
             onClick={handleShareClick}
           >
-            <Share2 size={26} />
+            <Share2 size={32} />
           </button>
-          <span className="text-[10px] font-semibold drop-shadow-md text-white">{language === 'zh' ? '分享' : 'Share'}</span>
+          <span className="text-xs md:text-sm font-semibold drop-shadow-md text-white">{language === 'zh' ? '分享' : 'Share'}</span>
         </div>
         
         {/* Mute Toggle */}
-        <div className="flex flex-col items-center gap-1 mt-2">
+        <div className="flex flex-col items-center gap-1.5 mt-1">
             <button 
                 onClick={toggleMute} 
-                className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white transition-all active:scale-90 hover:scale-110"
+                className="p-3.5 md:p-4 min-w-[52px] min-h-[52px] md:min-w-[60px] md:min-h-[60px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white transition-all active:scale-90 hover:scale-110"
             >
-                {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+                {isMuted ? <VolumeX size={28} /> : <Volume2 size={28} />}
             </button>
         </div>
       </div>
 
       {/* --- Compact Bottom Info Area --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="absolute bottom-0 left-0 w-full p-4 z-20 text-white pb-20 md:pb-6 pointer-events-none bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-            <div className="flex flex-col items-start w-[70%] pointer-events-auto">
+          <div className="absolute bottom-0 left-0 w-full p-4 md:p-5 z-20 text-white pb-[5.5rem] md:pb-8 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent">
+            <div className="flex flex-col items-start w-[85%] md:w-[75%] max-w-xl pointer-events-auto">
               
-              <div className="flex flex-row items-center gap-3 mb-2">
+              <div className="flex flex-row items-center gap-3 md:gap-4 mb-3">
                   <Link
                     href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/40 transition-shadow"
+                    className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/50 transition-shadow"
                     aria-label={language === 'zh' ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
                   >
                      {job.logoUrl && !logoError ? (
                         <img 
                             src={job.logoUrl} 
                             alt="" 
-                            className="w-11 h-11 rounded-full border border-white/50 bg-white object-contain shadow-md" 
+                            className="w-14 h-14 md:w-[4.5rem] md:h-[4.5rem] rounded-full border-2 border-white/50 bg-white object-contain shadow-lg" 
                             onError={() => setLogoError(true)}
                         />
                      ) : (
-                        <div className="w-11 h-11 rounded-full border border-white/50 bg-gray-700 flex items-center justify-center shadow-md">
-                            <span className="text-white font-bold text-xs">
+                        <div className="w-14 h-14 md:w-[4.5rem] md:h-[4.5rem] rounded-full border-2 border-white/50 bg-gray-700 flex items-center justify-center shadow-lg">
+                            <span className="text-white font-bold text-lg md:text-xl">
                                 {job.companyName.charAt(0).toUpperCase()}
                             </span>
                         </div>
                      )}
                   </Link>
 
-                  <div className="flex flex-col min-w-0">
-                      <h3 className="text-sm font-bold drop-shadow-md leading-tight truncate">{job.jobTitle}</h3>
+                  <div className="flex flex-col min-w-0 gap-0.5">
+                      <h3 className="text-base md:text-lg font-bold drop-shadow-md leading-tight truncate">{job.jobTitle}</h3>
                       <Link
                         href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-sm font-bold drop-shadow-md leading-tight truncate text-white hover:underline text-left"
+                        className="text-base md:text-lg font-bold drop-shadow-md leading-tight truncate text-white/95 hover:underline text-left"
                       >
                         @{job.companyName}
                       </Link>
                   </div>
               </div>
 
-               <div className="flex flex-wrap gap-2 mb-4 text-xs">
-                 <span className="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded text-gray-300">
-                    <MapPin size={12} /> {job.location}
+               <div className="flex flex-wrap gap-2 mb-3 text-sm">
+                 <span className="flex items-center gap-1.5 bg-slate-800/90 px-3 py-1.5 rounded-lg text-gray-200 border border-white/5">
+                    <MapPin size={15} className="shrink-0" /> {job.location}
                  </span>
-                 <span className="flex items-center gap-1 bg-green-900/50 text-green-400 px-2 py-1 rounded">
-                    <DollarSign size={12} /> {job.salary}
+                 <span className="flex items-center gap-1.5 bg-green-900/60 text-green-300 px-3 py-1.5 rounded-lg border border-green-500/20">
+                    <DollarSign size={15} className="shrink-0" /> {job.salary}
                  </span>
             </div>
 
-              <div className="w-full pl-1 mb-2">
-                  <div className="text-[10px] text-gray-200 flex items-end w-full">
-                    <p className="line-clamp-1 opacity-90 mr-1 flex-1">{job.description}</p>
+              <div className="w-full mb-3">
+                  <div className="text-xs md:text-sm text-gray-200 flex items-end w-full gap-2">
+                    <p className="line-clamp-2 opacity-90 flex-1 leading-snug">{job.description}</p>
                     <span 
-                      className="text-white font-bold whitespace-nowrap opacity-100 hover:underline cursor-pointer active:scale-95 transition-transform"
+                      className="text-white font-bold whitespace-nowrap shrink-0 text-sm md:text-base hover:underline cursor-pointer active:scale-95 transition-transform"
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowFullDetails(true);
@@ -618,30 +618,30 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   </div>
               </div>
               
-              <div className="w-full pl-1 flex flex-col gap-1.5">
+              <div className="w-full flex flex-col gap-2.5">
                   {job.applyUrl ? (
                     <a
                       href={job.applyUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
+                      className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 md:py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.98] text-sm md:text-base min-h-[48px]"
                     >
-                      <ExternalLink size={12} /> {language === 'zh' ? '套用' : 'Apply'}
+                      <ExternalLink size={18} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
                     </a>
                   ) : (
                     <button 
                       onClick={() => setShowApplyModal(true)}
-                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
+                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 md:py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.98] text-sm md:text-base min-h-[48px]"
                     >
-                       <Briefcase size={14} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
+                       <Briefcase size={20} className="shrink-0" /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
                     </button>
                   )}
                   <button
                     onClick={handleAnalyzeWithAI}
-                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 md:py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.98] text-sm md:text-base min-h-[48px]"
                   >
-                    <Sparkles size={14} /> {language === 'zh' ? 'AI 匹配度分析' : 'AI Match Analysis'}
+                    <Sparkles size={20} className="shrink-0" /> {language === 'zh' ? 'AI 匹配度分析' : 'AI Match Analysis'}
                   </button>
               </div>
             </div>
