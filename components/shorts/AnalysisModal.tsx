@@ -25,6 +25,7 @@ interface AnalysisModalProps {
   location: string;
   salary: string;
   jobDescription: string;
+  language?: 'zh' | 'en';
 }
 
 // ─── Progress helpers (mirrors P1 logic) ──────────────────────────────────────
@@ -52,21 +53,33 @@ function getProgressAtTime(elapsedSec: number): number {
   return 99;
 }
 
-const STAGES = [
-  { minProgress: 0,  label: '🔍 讀取職缺資訊...' },
-  { minProgress: 15, label: '📋 分析職缺要求...' },
-  { minProgress: 35, label: '🌐 蒐集市場情報...' },
-  { minProgress: 55, label: '💰 比對薪資數據...' },
-  { minProgress: 72, label: '🔎 評估履歷匹配...' },
-  { minProgress: 85, label: '🎯 挖掘面試情報...' },
-  { minProgress: 93, label: '📊 整合報告中...' },
-];
+const STAGES: Record<'zh' | 'en', Array<{ minProgress: number; label: string }>> = {
+  zh: [
+    { minProgress: 0,  label: '🔍 讀取職缺資訊...' },
+    { minProgress: 15, label: '📋 分析職缺要求...' },
+    { minProgress: 35, label: '🌐 蒐集市場情報...' },
+    { minProgress: 55, label: '💰 比對薪資數據...' },
+    { minProgress: 72, label: '🔎 評估履歷匹配...' },
+    { minProgress: 85, label: '🎯 挖掘面試情報...' },
+    { minProgress: 93, label: '📊 整合報告中...' },
+  ],
+  en: [
+    { minProgress: 0,  label: '🔍 Reading job description...' },
+    { minProgress: 15, label: '📋 Analyzing requirements...' },
+    { minProgress: 35, label: '🌐 Gathering market data...' },
+    { minProgress: 55, label: '💰 Benchmarking salary...' },
+    { minProgress: 72, label: '🔎 Evaluating resume match...' },
+    { minProgress: 85, label: '🎯 Researching interview insights...' },
+    { minProgress: 93, label: '📊 Compiling report...' },
+  ],
+};
 
-function getStageLabel(progress: number): string {
-  for (let i = STAGES.length - 1; i >= 0; i--) {
-    if (progress >= STAGES[i].minProgress) return STAGES[i].label;
+function getStageLabel(progress: number, lang: 'zh' | 'en' = 'zh'): string {
+  const stages = STAGES[lang];
+  for (let i = stages.length - 1; i >= 0; i--) {
+    if (progress >= stages[i].minProgress) return stages[i].label;
   }
-  return STAGES[0].label;
+  return stages[0].label;
 }
 
 // ─── Shared section wrapper ───────────────────────────────────────────────────
@@ -363,7 +376,7 @@ const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
 // ─── Main Modal ───────────────────────────────────────────────────────────────
 
 const AnalysisModal: React.FC<AnalysisModalProps> = ({
-  isOpen, onClose, jobTitle, companyName, location, salary, jobDescription,
+  isOpen, onClose, jobTitle, companyName, location, salary, jobDescription, language = 'zh',
 }) => {
   const [step, setStep] = useState<'resume' | 'analyzing' | 'result' | 'error'>('resume');
   const [resume, setResume] = useState<ResumeInput | null>(null);
@@ -434,11 +447,11 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
 
   const startProgress = () => {
     const startTime = Date.now();
-    setProgress(0); setElapsed(0); setStageLabel(getStageLabel(0));
+    setProgress(0); setElapsed(0); setStageLabel(getStageLabel(0, language));
     progressTimerRef.current = setInterval(() => {
       const s = Math.floor((Date.now() - startTime) / 1000);
       const p = getProgressAtTime(s);
-      setProgress(p); setElapsed(s); setStageLabel(getStageLabel(p));
+      setProgress(p); setElapsed(s); setStageLabel(getStageLabel(p, language));
     }, 400);
   };
 
@@ -513,7 +526,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         {/* Header */}
         <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/10 shrink-0">
           <Sparkles size={17} className="text-violet-400 shrink-0" />
-          <span className="font-bold text-white text-sm shrink-0">AI 匹配度分析</span>
+          <span className="font-bold text-white text-sm shrink-0">{language === 'zh' ? 'AI 匹配度分析' : 'AI Match Analysis'}</span>
           <span className="text-xs text-gray-400 flex-1 truncate mx-1">{jobTitle} @ {companyName}</span>
           <button onClick={onClose} className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0">
             <X size={15} className="text-gray-300" />
@@ -526,16 +539,20 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           {/* ── STEP: resume ─────────────────────────────── */}
           {step === 'resume' && (
             <div className="space-y-4">
-              <p className="text-sm text-gray-400">上傳履歷後，AI 將針對「{jobTitle}」生成匹配度分析報告</p>
+              <p className="text-sm text-gray-400">
+                {language === 'zh'
+                  ? `上傳履歷後，AI 將針對「${jobTitle}」生成匹配度分析報告`
+                  : `Upload your resume and AI will generate a match analysis for "${jobTitle}"`}
+              </p>
 
               {isLoadingResumes ? (
                 <div className="flex items-center gap-2 text-gray-500 text-sm py-2">
-                  <Loader2 size={15} className="animate-spin" /> 載入儲存的履歷…
+                  <Loader2 size={15} className="animate-spin" /> {language === 'zh' ? '載入儲存的履歷…' : 'Loading saved resumes…'}
                 </div>
               ) : savedResumes.length > 0 ? (
                 <div>
                   <div className="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1">
-                    <Clock size={11} /> 使用儲存的履歷（一鍵分析）
+                    <Clock size={11} /> {language === 'zh' ? '使用儲存的履歷（一鍵分析）' : 'Use saved resume (one-click)'}
                   </div>
                   {savedResumes.map((saved) => (
                     <button
@@ -545,21 +562,21 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                     >
                       <FileText size={19} className="text-violet-400 shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-white truncate">{saved.fileName || '文字履歷'}</div>
-                        <div className="text-xs text-gray-500">{new Date(saved.timestamp).toLocaleDateString('zh-TW')}</div>
+                        <div className="text-sm font-semibold text-white truncate">{saved.fileName || (language === 'zh' ? '文字履歷' : 'Text Resume')}</div>
+                        <div className="text-xs text-gray-500">{new Date(saved.timestamp).toLocaleDateString(language === 'zh' ? 'zh-TW' : 'en-US')}</div>
                       </div>
-                      <span className="text-xs text-violet-400 font-bold shrink-0">使用 →</span>
+                      <span className="text-xs text-violet-400 font-bold shrink-0">{language === 'zh' ? '使用 →' : 'Use →'}</span>
                     </button>
                   ))}
                   <div className="relative flex items-center my-3">
                     <div className="flex-1 border-t border-slate-700" />
-                    <span className="px-3 text-xs text-gray-600">或上傳新履歷</span>
+                    <span className="px-3 text-xs text-gray-600">{language === 'zh' ? '或上傳新履歷' : 'or upload new'}</span>
                     <div className="flex-1 border-t border-slate-700" />
                   </div>
                 </div>
               ) : !isLoggedIn ? (
                 <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 text-xs text-blue-300 mb-1">
-                  💡 登入後可儲存履歷，下次免上傳直接分析
+                  💡 {language === 'zh' ? '登入後可儲存履歷，下次免上傳直接分析' : 'Sign in to save your resume for one-click analysis next time'}
                 </div>
               ) : null}
 
@@ -569,11 +586,11 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                 className="w-full border-2 border-dashed border-slate-600 hover:border-violet-500 rounded-xl p-6 flex flex-col items-center gap-2 cursor-pointer transition-colors"
               >
                 <Upload size={22} className="text-gray-400" />
-                <div className="text-sm text-gray-300 font-semibold">點擊上傳履歷</div>
-                <div className="text-xs text-gray-500">支援 PDF / DOCX / TXT</div>
+                <div className="text-sm text-gray-300 font-semibold">{language === 'zh' ? '點擊上傳履歷' : 'Click to upload resume'}</div>
+                <div className="text-xs text-gray-500">{language === 'zh' ? '支援 PDF / DOCX / TXT' : 'Supports PDF / DOCX / TXT'}</div>
                 {resume && (
                   <div className="flex items-center gap-1 mt-1 text-xs text-violet-400">
-                    <CheckCircle size={12} /> {resume.fileName} 已選取
+                    <CheckCircle size={12} /> {resume.fileName} {language === 'zh' ? '已選取' : 'selected'}
                   </div>
                 )}
               </div>
@@ -584,7 +601,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                   onClick={() => handleAnalyze(resume)}
                   className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
                 >
-                  <Sparkles size={17} /> 開始 AI 匹配度分析
+                  <Sparkles size={17} /> {language === 'zh' ? '開始 AI 匹配度分析' : 'Start AI Match Analysis'}
                 </button>
               )}
             </div>
@@ -610,7 +627,9 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
               </div>
               <div className="text-center">
                 <div className="text-sm font-semibold text-white mb-1">{stageLabel}</div>
-                <div className="text-xs text-gray-500">已用時 {elapsed} 秒｜通常 30–60 秒</div>
+                <div className="text-xs text-gray-500">
+                  {language === 'zh' ? `已用時 ${elapsed} 秒｜通常 30–60 秒` : `${elapsed}s elapsed · usually 30–60s`}
+                </div>
               </div>
               <div className="w-full bg-slate-800 rounded-full h-2">
                 <div
@@ -628,11 +647,11 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
               <div className="mt-4 mb-2 space-y-2">
                 {saveState === 'need_login' ? (
                   <div className="w-full bg-blue-900/30 border border-blue-500/40 text-blue-300 text-xs font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
-                    💡 請先登入才能儲存報告
+                    💡 {language === 'zh' ? '請先登入才能儲存報告' : 'Please sign in to save this report'}
                   </div>
                 ) : saveState === 'saved' ? (
                   <div className="w-full bg-green-900/30 border border-green-500/40 text-green-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
-                    <CheckCircle2 size={15} /> 報告已儲存
+                    <CheckCircle2 size={15} /> {language === 'zh' ? '報告已儲存' : 'Report saved'}
                   </div>
                 ) : (
                   <button
@@ -641,8 +660,8 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                     className="w-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-gray-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
                   >
                     {saveState === 'saving'
-                      ? <><Loader2 size={15} className="animate-spin" /> 儲存中…</>
-                      : <><BookmarkPlus size={15} /> 儲存報告</>
+                      ? <><Loader2 size={15} className="animate-spin" /> {language === 'zh' ? '儲存中…' : 'Saving…'}</>
+                      : <><BookmarkPlus size={15} /> {language === 'zh' ? '儲存報告' : 'Save Report'}</>
                     }
                   </button>
                 )}
@@ -659,7 +678,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                 onClick={() => setStep('resume')}
                 className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all active:scale-95"
               >
-                重新嘗試
+                {language === 'zh' ? '重新嘗試' : 'Try Again'}
               </button>
             </div>
           )}

@@ -171,6 +171,7 @@ export default function JobbeaglePage() {
           jobs={displayedJobs} 
           followedJobIds={followedJobIds}
           onFollowChange={handleFollowChange}
+          language={language}
         />
       </div>
 

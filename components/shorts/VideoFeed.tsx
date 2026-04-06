@@ -8,9 +8,10 @@ interface VideoFeedProps {
   jobs: JobData[];
   followedJobIds?: Set<string>;
   onFollowChange?: (jobId: string, followed: boolean) => void;
+  language?: 'zh' | 'en';
 }
 
-const VideoFeed: React.FC<VideoFeedProps> = ({ jobs, followedJobIds = new Set(), onFollowChange }) => {
+const VideoFeed: React.FC<VideoFeedProps> = ({ jobs, followedJobIds = new Set(), onFollowChange, language = 'zh' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -65,6 +66,7 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ jobs, followedJobIds = new Set(),
                   isActive={index === activeIndex}
                   isFollowed={followedJobIds.has(job.id)}
                   onFollowChange={onFollowChange}
+                  language={language}
               />
           </div>
         ))

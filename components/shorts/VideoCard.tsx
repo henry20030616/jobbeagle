@@ -16,9 +16,10 @@ interface VideoCardProps {
   isActive: boolean;
   isFollowed?: boolean;
   onFollowChange?: (jobId: string, followed: boolean) => void;
+  language?: 'zh' | 'en';
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false, onFollowChange }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false, onFollowChange, language = 'zh' }) => {
   const [showFullDetails, setShowFullDetails] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [showCommentsModal, setShowCommentsModal] = useState(false);
@@ -584,13 +585,13 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                     onClick={() => setShowApplyModal(true)}
                     className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
                   >
-                     <Briefcase size={14} /> Quick Apply
+                     <Briefcase size={14} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
                   </button>
                   <button
                     onClick={handleAnalyzeWithAI}
                     className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-1.5 rounded-md shadow-lg flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-[10px]"
                   >
-                    <Sparkles size={14} /> AI 匹配度分析
+                    <Sparkles size={14} /> {language === 'zh' ? 'AI 匹配度分析' : 'AI Match Analysis'}
                   </button>
               </div>
             </div>
@@ -656,13 +657,13 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                     onClick={() => { setShowFullDetails(false); handleApplyStart(); }}
                     className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
                 >
-                   <Briefcase size={18} /> Quick Apply
+                   <Briefcase size={18} /> {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
                 </button>
                 <button
                     onClick={handleAnalyzeWithAI}
                     className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
                 >
-                    <Sparkles size={18} /> 一鍵 AI 匹配度分析
+                    <Sparkles size={18} /> {language === 'zh' ? '一鍵 AI 匹配度分析' : 'One-click AI Match Analysis'}
                 </button>
             </div>
           </div>
@@ -693,7 +694,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
                     <Briefcase className="text-cyan-400" size={24} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white">Quick Apply</h2>
+                    <h2 className="text-xl font-bold text-white">{language === 'zh' ? '一鍵申請' : 'Quick Apply'}</h2>
                     <p className="text-sm text-gray-400">{job.companyName}</p>
                   </div>
                 </div>
@@ -1079,6 +1080,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ job, isActive, isFollowed = false
         location={job.location}
         salary={job.salary}
         jobDescription={job.description}
+        language={language}
       />
     </div>
   );
