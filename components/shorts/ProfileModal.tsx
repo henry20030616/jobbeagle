@@ -6,7 +6,7 @@ import {
   ArrowLeft, FileText, Bookmark, Building2, LogIn, Loader2,
   ExternalLink, Trash2, Play, User, ChevronRight,
   MapPin, Heart, Edit2, Check, X, Globe, Mail,
-  Upload, Users, DollarSign, Send,
+  Upload, Users, DollarSign, Send, Eye, EyeOff,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { resolveShortsViewMode, setStoredShortsViewRole } from '@/lib/shorts-view-role';
@@ -612,34 +612,67 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
               <EmptyState icon={Play} text={t('尚未上傳任何職缺影片。點擊上方按鈕開始發布。', 'No videos yet. Click the button above to get started.')} />
             </div>
           ) : (
-            <div className="px-3 pb-4 grid grid-cols-3 gap-1">
+            <div className="px-2 pb-4 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1">
               {companyVideos.map(v => {
                 const likes = videoLikes[v.id] || 0;
                 const apps = videoAppCounts[v.id] || 0;
+                const busy = togglingVideo === v.id;
                 return (
-                  <button
+                  <div
                     key={v.id}
-                    type="button"
-                    onClick={() => setSelectedVideo(v)}
-                    className="relative aspect-[3/4] rounded-lg overflow-hidden bg-slate-800 border border-slate-700/80 active:scale-[0.98] transition-transform"
+                    className="relative aspect-square rounded-md overflow-hidden bg-slate-800 border border-slate-700/70"
                   >
-                    <video src={v.video_url} className="absolute inset-0 w-full h-full object-cover" muted playsInline preload="metadata" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                    <video src={v.video_url} className="absolute inset-0 w-full h-full object-cover pointer-events-none" muted playsInline preload="metadata" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
+                    <button
+                      type="button"
+                      onClick={() => setSelectedVideo(v)}
+                      className="absolute inset-0 z-[1] cursor-pointer"
+                      aria-label={t('開啟管理', 'Open')}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 z-[2] px-1 pb-1 pt-4 pointer-events-none bg-gradient-to-t from-black/90 to-transparent">
+                      <span className="text-[8px] sm:text-[9px] text-white font-medium line-clamp-2 text-left leading-tight">{v.job_title}</span>
+                    </div>
+                    <div className="absolute top-0.5 left-0.5 z-[10] flex flex-col gap-0.5 pointer-events-none">
+                      <span className="text-[8px] text-white/95 bg-black/55 rounded px-1 py-0.5 flex items-center gap-0.5 w-fit">
+                        <Heart size={8} className="text-red-400 shrink-0" fill="currentColor" />{likes}
+                      </span>
+                      <span className="text-[8px] text-white/95 bg-black/55 rounded px-1 py-0.5 flex items-center gap-0.5 w-fit">
+                        <Users size={8} className="text-emerald-400 shrink-0" />{apps}
+                      </span>
+                    </div>
                     {!v.is_published && (
-                      <span className="absolute top-1 right-1 text-[9px] font-bold bg-amber-600 text-white px-1.5 py-0.5 rounded">{t('草稿', 'Draft')}</span>
+                      <span className="absolute left-0.5 top-5 z-[10] text-[8px] font-bold bg-amber-600 text-white px-1 py-0.5 rounded pointer-events-none">{t('草稿', 'Draft')}</span>
                     )}
-                    <div className="absolute bottom-0 left-0 right-0 p-1.5 flex items-end justify-between gap-1">
-                      <span className="text-[10px] text-white font-medium truncate flex-1 text-left">{v.job_title}</span>
+                    <div className="absolute top-0.5 right-0.5 z-[10] flex flex-col gap-0.5">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          void handleTogglePublish(v);
+                        }}
+                        className="p-1 rounded bg-black/65 hover:bg-black/90 text-white border border-white/15 disabled:opacity-50"
+                        title={v.is_published ? t('下架（隱藏）', 'Unpublish') : t('發布', 'Publish')}
+                      >
+                        {busy ? <Loader2 size={11} className="animate-spin" /> : v.is_published ? <EyeOff size={11} /> : <Eye size={11} />}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeleteVideo(v.id);
+                        }}
+                        className="p-1 rounded bg-black/65 hover:bg-red-900/90 text-red-300 border border-white/15 disabled:opacity-50"
+                        title={t('刪除', 'Delete')}
+                      >
+                        <Trash2 size={11} />
+                      </button>
                     </div>
-                    <div className="absolute top-1 left-1 flex flex-col gap-0.5">
-                      <span className="text-[10px] text-white/95 bg-black/50 rounded px-1 py-0.5 flex items-center gap-0.5">
-                        <Heart size={9} className="text-red-400" fill="currentColor" />{likes}
-                      </span>
-                      <span className="text-[10px] text-white/95 bg-black/50 rounded px-1 py-0.5 flex items-center gap-0.5">
-                        <Users size={9} className="text-emerald-400" />{apps}
-                      </span>
-                    </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

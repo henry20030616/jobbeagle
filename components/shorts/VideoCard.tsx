@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { JobData } from '@/types';
 import AnalysisModal from './AnalysisModal';
 import { 
@@ -559,11 +560,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
             <div className="flex flex-col items-start w-[70%] pointer-events-auto">
               
               <div className="flex flex-row items-center gap-3 mb-2">
-                  <div className="flex-shrink-0">
+                  <Link
+                    href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/40 transition-shadow"
+                    aria-label={language === 'zh' ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
+                  >
                      {job.logoUrl && !logoError ? (
                         <img 
                             src={job.logoUrl} 
-                            alt="Logo" 
+                            alt="" 
                             className="w-11 h-11 rounded-full border border-white/50 bg-white object-contain shadow-md" 
                             onError={() => setLogoError(true)}
                         />
@@ -574,11 +580,17 @@ const VideoCard: React.FC<VideoCardProps> = ({
                             </span>
                         </div>
                      )}
-                  </div>
+                  </Link>
 
                   <div className="flex flex-col min-w-0">
                       <h3 className="text-sm font-bold drop-shadow-md leading-tight truncate">{job.jobTitle}</h3>
-                      <h4 className="text-sm font-bold drop-shadow-md leading-tight truncate">@{job.companyName}</h4>
+                      <Link
+                        href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sm font-bold drop-shadow-md leading-tight truncate text-white hover:underline text-left"
+                      >
+                        @{job.companyName}
+                      </Link>
                   </div>
               </div>
 
@@ -654,12 +666,18 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
             {/* Header */}
             <div className="flex justify-between items-start mb-4 px-5">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                     <Link
+                       href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                       onClick={(e) => e.stopPropagation()}
+                       className="flex-shrink-0 rounded-full hover:opacity-90 transition-opacity"
+                       aria-hidden
+                     >
                      {job.logoUrl && !logoError ? (
                         <img 
                             src={job.logoUrl} 
                             className="w-10 h-10 rounded-full border border-white/20 bg-white object-contain" 
-                            alt="logo"
+                            alt=""
                             onError={() => setLogoError(true)}
                         />
                      ) : (
@@ -669,9 +687,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
                             </span>
                         </div>
                      )}
-                    <div>
+                     </Link>
+                    <div className="min-w-0">
                         <h2 className="text-lg font-bold text-white leading-tight">{job.jobTitle}</h2>
-                        <div className="text-sm font-semibold text-gray-400">@{job.companyName}</div>
+                        <Link
+                          href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-sm font-semibold text-gray-400 hover:text-blue-400 hover:underline"
+                        >
+                          @{job.companyName}
+                        </Link>
                     </div>
                 </div>
                 <button 
