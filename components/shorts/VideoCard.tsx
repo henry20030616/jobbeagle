@@ -40,6 +40,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [videoUrl, setVideoUrl] = useState(job.videoUrl);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeFileName, setResumeFileName] = useState<string>('');
+  const [coverLetterMode, setCoverLetterMode] = useState<'text' | 'file'>('text');
+  const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
+  const [coverLetterFileName, setCoverLetterFileName] = useState<string>('');
   const [logoError, setLogoError] = useState(false);
   const [userInfo, setUserInfo] = useState({
     name: '',
@@ -77,6 +80,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverLetterFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -339,19 +343,19 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const handleApplySubmit = async () => {
     setApplyState('submitting');
     try {
-      // Upload resume to Supabase Storage if provided
-      let resumeUrl: string | null = null;
-      if (resumeFile) {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        const ext = resumeFile.name.split('.').pop();
-        const path = `applications/${user?.id || 'anon'}/${Date.now()}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from('shorts-videos').upload(path, resumeFile, { upsert: true });
-        if (!uploadError) {
-          const { data: urlData } = supabase.storage.from('shorts-videos').getPublicUrl(path);
-          resumeUrl = urlData.publicUrl;
-        }
-      }
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const uploadToStorage = async (file: File, prefix: string) => {
+        const ext = file.name.split('.').pop();
+        const path = `applications/${user?.id || 'anon'}/${prefix}-${Date.now()}.${ext}`;
+        const { error } = await supabase.storage.from('shorts-videos').upload(path, file, { upsert: true });
+        if (error) return null;
+        return supabase.storage.from('shorts-videos').getPublicUrl(path).data.publicUrl;
+      };
+
+      const resumeUrl = resumeFile ? await uploadToStorage(resumeFile, 'resume') : null;
+      const coverLetterUrl = (coverLetterMode === 'file' && coverLetterFile)
+        ? await uploadToStorage(coverLetterFile, 'coverletter') : null;
 
       const res = await fetch('/api/shorts/apply', {
         method: 'POST',
@@ -361,10 +365,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
           jobTitle: job.jobTitle,
           companyName: job.companyName,
           contactEmail: job.contactEmail,
+          location: job.location,
+          salary: job.salary,
           applicantName: userInfo.name,
           applicantEmail: userInfo.email,
           applicantPhone: userInfo.phone,
-          coverLetter: userInfo.coverLetter,
+          coverLetter: coverLetterMode === 'text' ? userInfo.coverLetter : null,
+          coverLetterUrl,
+          coverLetterFileName: coverLetterMode === 'file' ? coverLetterFileName : null,
           resumeUrl,
           resumeFileName,
         }),
@@ -382,7 +390,11 @@ const VideoCard: React.FC<VideoCardProps> = ({
         setApplyStep(1);
         setResumeFile(null);
         setResumeFileName('');
+        setCoverLetterFile(null);
+        setCoverLetterFileName('');
+        setCoverLetterMode('text');
         if (fileInputRef.current) fileInputRef.current.value = '';
+        if (coverLetterFileRef.current) coverLetterFileRef.current.value = '';
       }, 3000);
     } catch (e: any) {
       console.error('Apply error:', e);
@@ -939,17 +951,55 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">
-                        Cover Letter (Optional)
-                      </label>
-                      <textarea
-                        value={userInfo.coverLetter}
-                        onChange={(e) => setUserInfo(prev => ({ ...prev, coverLetter: e.target.value }))}
-                        placeholder="Add a note to your application..."
-                        rows={4}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500 resize-none"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">This will be included with your application</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-semibold text-gray-300">求職信 / Cover Letter <span className="text-gray-500 font-normal">(選填)</span></label>
+                        <div className="flex bg-slate-800 rounded-lg p-0.5">
+                          <button onClick={() => setCoverLetterMode('text')}
+                            className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${coverLetterMode === 'text' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}>
+                            手打文字
+                          </button>
+                          <button onClick={() => setCoverLetterMode('file')}
+                            className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${coverLetterMode === 'file' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}>
+                            上傳檔案
+                          </button>
+                        </div>
+                      </div>
+                      {coverLetterMode === 'text' ? (
+                        <textarea
+                          value={userInfo.coverLetter}
+                          onChange={(e) => setUserInfo(prev => ({ ...prev, coverLetter: e.target.value }))}
+                          placeholder="你好，我對貴公司的這個職位很感興趣，以下是我的自我介紹..."
+                          rows={5}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500 resize-none"
+                        />
+                      ) : (
+                        coverLetterFile ? (
+                          <div className="w-full border-2 border-cyan-500/50 rounded-lg p-4 flex items-center justify-between bg-slate-800/50">
+                            <div className="flex items-center gap-3">
+                              <FileText size={20} className="text-cyan-400" />
+                              <span className="text-sm text-white font-medium">{coverLetterFileName}</span>
+                            </div>
+                            <button type="button" onClick={() => { setCoverLetterFile(null); setCoverLetterFileName(''); if (coverLetterFileRef.current) coverLetterFileRef.current.value = ''; }}
+                              className="p-1 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all">
+                              <X size={16} />
+                            </button>
+                          </div>
+                        ) : (
+                          <label htmlFor="cover-letter-file-input" className="w-full border-2 border-dashed border-slate-700 hover:border-cyan-500/50 rounded-lg p-5 flex flex-col items-center justify-center gap-2 bg-slate-800/50 cursor-pointer transition-all block">
+                            <Upload size={22} className="text-gray-400" />
+                            <span className="text-sm text-gray-400">上傳求職信 PDF / Word（Max 5MB）</span>
+                          </label>
+                        )
+                      )}
+                      <input id="cover-letter-file-input" ref={coverLetterFileRef} type="file" className="hidden" accept=".pdf,.doc,.docx"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 5 * 1024 * 1024) { alert('檔案不能超過 5MB'); return; }
+                            setCoverLetterFile(file);
+                            setCoverLetterFileName(file.name);
+                          }
+                        }} />
                     </div>
 
                     <div className="flex gap-3 pt-2">
@@ -998,10 +1048,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
                           <p className="text-xs text-gray-500 uppercase mb-1">Resume</p>
                           <p className="text-sm text-white">{resumeFile ? resumeFileName : 'No resume selected'}</p>
                         </div>
-                        {userInfo.coverLetter && (
+                        {(coverLetterMode === 'text' && userInfo.coverLetter) && (
                           <div>
-                            <p className="text-xs text-gray-500 uppercase mb-1">Cover Letter</p>
-                            <p className="text-sm text-gray-300 whitespace-pre-wrap">{userInfo.coverLetter}</p>
+                            <p className="text-xs text-gray-500 uppercase mb-1">求職信</p>
+                            <p className="text-sm text-gray-300 whitespace-pre-wrap line-clamp-3">{userInfo.coverLetter}</p>
+                          </div>
+                        )}
+                        {(coverLetterMode === 'file' && coverLetterFile) && (
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase mb-1">求職信檔案</p>
+                            <p className="text-sm text-white">{coverLetterFileName}</p>
                           </div>
                         )}
                       </div>
