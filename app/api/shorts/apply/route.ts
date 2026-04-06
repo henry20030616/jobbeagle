@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
       jobId, jobTitle, companyName, contactEmail,
       location, salary,
       applicantName, applicantEmail, applicantPhone,
+      applicationMessage,
       coverLetter, coverLetterUrl, coverLetterFileName,
       resumeUrl, resumeFileName,
     } = body;
@@ -114,11 +115,10 @@ export async function POST(request: NextRequest) {
         <!-- Canned intro -->
         <tr>
           <td style="background:white;padding:24px 32px;border-bottom:1px solid #f1f5f9;">
-            <p style="margin:0;font-size:14px;color:#475569;line-height:1.7;">
-              您好，<br><br>
-              以下是一位透過 <strong>Jobbeagle Shorts</strong> 應徵 <strong>${jobTitle}</strong> 職位的求職者資料，請查閱並與對方聯絡。
-              如有任何問題，歡迎直接回覆此郵件聯繫求職者。
+            <p style="margin:0 0 12px 0;font-size:14px;color:#475569;line-height:1.7;font-style:italic;background:#f8fafc;border-left:3px solid #0ea5e9;padding:12px 16px;border-radius:0 8px 8px 0;">
+              「${applicationMessage || ''}」
             </p>
+            <p style="margin:0;font-size:13px;color:#94a3b8;">— 以上為應徵者留言，詳細資料如下：</p>
           </td>
         </tr>
 

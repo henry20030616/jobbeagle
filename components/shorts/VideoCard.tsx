@@ -40,6 +40,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [videoUrl, setVideoUrl] = useState(job.videoUrl);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeFileName, setResumeFileName] = useState<string>('');
+  const [applicationMessage, setApplicationMessage] = useState<string>('');
   const [coverLetterMode, setCoverLetterMode] = useState<'text' | 'file'>('text');
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
   const [coverLetterFileName, setCoverLetterFileName] = useState<string>('');
@@ -323,25 +324,24 @@ const VideoCard: React.FC<VideoCardProps> = ({
     setApplyStep(1);
   };
 
-  const buildCoverLetterTemplate = (_name: string) => {
-    return `您好，近日得知貴公司正在招募「${job.jobTitle}」一職，特此應徵，希望能有機會參加面試，謝謝！`;
-  };
+  const t = (zh: string, en: string) => language === 'zh' ? zh : en;
+
+  const defaultAppMessage = () => language === 'zh'
+    ? `您好，近日得知貴公司正在招募「${job.jobTitle}」一職，特此應徵，希望能有機會參加面試，謝謝！`
+    : `Hello, I recently learned about the "${job.jobTitle}" opening at ${job.companyName} and would love to apply. I hope to have the opportunity to interview. Thank you!`;
 
   const handleStep1Next = () => {
-    // Auto-fill cover letter template if still empty
-    if (!userInfo.coverLetter) {
-      setUserInfo(prev => ({ ...prev, coverLetter: buildCoverLetterTemplate(prev.name) }));
-    }
+    if (!applicationMessage) setApplicationMessage(defaultAppMessage());
     setApplyStep(2);
   };
 
   const handleStep2Next = () => {
     if (!userInfo.name || !userInfo.email) {
-      alert('Please fill in your name and email');
+      alert(t('請填寫姓名與 Email', 'Please fill in your name and email'));
       return;
     }
     if (!resumeFile) {
-      alert('Please upload a resume');
+      alert(t('請上傳履歷', 'Please upload a resume'));
       return;
     }
     saveUserInfo();
@@ -378,6 +378,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           applicantName: userInfo.name,
           applicantEmail: userInfo.email,
           applicantPhone: userInfo.phone,
+          applicationMessage: applicationMessage || defaultAppMessage(),
           coverLetter: coverLetterMode === 'text' ? userInfo.coverLetter : null,
           coverLetterUrl,
           coverLetterFileName: coverLetterMode === 'file' ? coverLetterFileName : null,
@@ -398,6 +399,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
         setApplyStep(1);
         setResumeFile(null);
         setResumeFileName('');
+        setApplicationMessage('');
         setCoverLetterFile(null);
         setCoverLetterFileName('');
         setCoverLetterMode('text');
@@ -761,26 +763,21 @@ const VideoCard: React.FC<VideoCardProps> = ({
               {/* Progress Steps */}
               <div className="px-6 py-4 border-b border-slate-700">
                 <div className="flex items-center justify-between">
-                  <div className={`flex items-center gap-2 ${applyStep >= 1 ? 'text-cyan-400' : 'text-gray-500'}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${applyStep >= 1 ? 'bg-cyan-600' : 'bg-slate-700'}`}>
-                      {applyStep > 1 ? <CheckCircle2 size={16} className="text-white" /> : <span className="text-xs font-bold">1</span>}
-                    </div>
-                    <span className="text-xs font-semibold hidden sm:block">Review</span>
-                  </div>
-                  <div className={`flex-1 h-0.5 mx-2 ${applyStep >= 2 ? 'bg-cyan-600' : 'bg-slate-700'}`} />
-                  <div className={`flex items-center gap-2 ${applyStep >= 2 ? 'text-cyan-400' : 'text-gray-500'}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${applyStep >= 2 ? 'bg-cyan-600' : 'bg-slate-700'}`}>
-                      {applyStep > 2 ? <CheckCircle2 size={16} className="text-white" /> : <span className="text-xs font-bold">2</span>}
-                    </div>
-                    <span className="text-xs font-semibold hidden sm:block">Details</span>
-                  </div>
-                  <div className={`flex-1 h-0.5 mx-2 ${applyStep >= 3 ? 'bg-cyan-600' : 'bg-slate-700'}`} />
-                  <div className={`flex items-center gap-2 ${applyStep >= 3 ? 'text-cyan-400' : 'text-gray-500'}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${applyStep >= 3 ? 'bg-cyan-600' : 'bg-slate-700'}`}>
-                      <span className="text-xs font-bold">3</span>
-                    </div>
-                    <span className="text-xs font-semibold hidden sm:block">Submit</span>
-                  </div>
+                  {[
+                    { n: 1, label: t('確認職缺', 'Review') },
+                    { n: 2, label: t('填寫資料', 'Details') },
+                    { n: 3, label: t('送出', 'Submit') },
+                  ].map(({ n, label }, i, arr) => (
+                    <React.Fragment key={n}>
+                      <div className={`flex items-center gap-2 ${applyStep >= n ? 'text-cyan-400' : 'text-gray-500'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${applyStep >= n ? 'bg-cyan-600' : 'bg-slate-700'}`}>
+                          {applyStep > n ? <CheckCircle2 size={16} className="text-white" /> : <span className="text-xs font-bold">{n}</span>}
+                        </div>
+                        <span className="text-xs font-semibold hidden sm:block">{label}</span>
+                      </div>
+                      {i < arr.length - 1 && <div className={`flex-1 h-0.5 mx-2 ${applyStep > n ? 'bg-cyan-600' : 'bg-slate-700'}`} />}
+                    </React.Fragment>
+                  ))}
                 </div>
               </div>
 
@@ -790,36 +787,33 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 {applyState === 'submitting' && (
                   <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
                     <Loader2 size={48} className="text-cyan-400 animate-spin mb-4" />
-                    <p className="text-lg font-semibold text-white mb-2">Submitting your application...</p>
-                    <p className="text-sm text-gray-400">Please wait a moment</p>
+                    <p className="text-lg font-semibold text-white mb-2">{t('正在送出應徵...', 'Submitting your application...')}</p>
+                    <p className="text-sm text-gray-400">{t('請稍候', 'Please wait a moment')}</p>
                   </div>
                 )}
 
-                {/* Success State */}
                 {applyState === 'success' && (
                   <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
                     <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
                       <CheckCircle2 size={48} className="text-green-400" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Application Submitted!</h3>
+                    <h3 className="text-2xl font-bold text-white mb-2">{t('應徵成功！', 'Application Submitted!')}</h3>
                     <p className="text-sm text-gray-400 text-center mb-6 max-w-md">
-                      Your application for <span className="text-white font-semibold">{job.jobTitle}</span> at <span className="text-white font-semibold">{job.companyName}</span> has been successfully submitted.
+                      {t('您已成功應徵', 'You have successfully applied for')} <span className="text-white font-semibold">{job.jobTitle}</span> {t('於', 'at')} <span className="text-white font-semibold">{job.companyName}</span>
                     </p>
                     <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 w-full max-w-md">
-                      <p className="text-xs text-gray-500 mb-2">What's next?</p>
+                      <p className="text-xs text-gray-500 mb-2">{t('接下來？', "What's next?")}</p>
                       <ul className="text-sm text-gray-300 space-y-2">
-                        <li className="flex items-start gap-2">
-                          <CheckCircle2 size={16} className="text-green-400 mt-0.5 flex-shrink-0" />
-                          <span>The company will review your application</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <CheckCircle2 size={16} className="text-green-400 mt-0.5 flex-shrink-0" />
-                          <span>You'll receive an email confirmation shortly</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <CheckCircle2 size={16} className="text-green-400 mt-0.5 flex-shrink-0" />
-                          <span>Check your email for updates</span>
-                        </li>
+                        {[
+                          t('企業將審閱您的應徵資料', 'The company will review your application'),
+                          t('企業可能透過您填寫的 Email 與您聯繫', 'The company may contact you via the email you provided'),
+                          t('請留意信箱，隨時保持聯絡方式暢通', 'Keep an eye on your inbox'),
+                        ].map((msg, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <CheckCircle2 size={16} className="text-green-400 mt-0.5 flex-shrink-0" />
+                            <span>{msg}</span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>
@@ -846,8 +840,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     <div className="bg-blue-900/10 border border-blue-900/30 rounded-lg p-4 flex items-start gap-3">
                       <Info size={20} className="text-blue-400 flex-shrink-0 mt-0.5" />
                       <div className="text-sm text-blue-300">
-                        <p className="font-semibold mb-1">What happens next?</p>
-                        <p className="text-blue-400/80">Your application will be sent directly to {job.companyName}. They may contact you via email.</p>
+                        <p className="font-semibold mb-1">{t('接下來會發生什麼？', 'What happens next?')}</p>
+                        <p className="text-blue-400/80">{t(`您的應徵資料將直接傳送給 ${job.companyName}，企業可能透過 Email 與您聯繫。`, `Your application will be sent directly to ${job.companyName}. They may contact you via email.`)}</p>
                       </div>
                     </div>
 
@@ -855,7 +849,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       onClick={handleStep1Next}
                       className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
                     >
-                      Continue <ChevronRight size={18} />
+                      {t('繼續', 'Continue')} <ChevronRight size={18} />
                     </button>
                   </div>
                 )}
@@ -865,13 +859,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   <div className="space-y-5 animate-fade-in">
                     <div>
                       <label className="block text-sm font-semibold text-gray-300 mb-2">
-                        Full Name <span className="text-red-400">*</span>
+                        {t('姓名', 'Full Name')} <span className="text-red-400">*</span>
                       </label>
                       <input
                         type="text"
                         value={userInfo.name}
                         onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="請輸入您的姓名"
+                        placeholder={t('請輸入您的姓名', 'Enter your full name')}
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
                         required
                       />
@@ -885,7 +879,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         type="email"
                         value={userInfo.email}
                         onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
-                        placeholder="your.email@example.com（企業將用此信箱聯絡您）"
+                        placeholder={t('your@email.com（企業將用此信箱聯絡您）', 'your@email.com (company will contact you here)')}
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
                         required
                       />
@@ -893,20 +887,45 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-300 mb-2">
-                        Phone (Optional)
+                        {t('電話', 'Phone')} <span className="text-gray-500 font-normal text-xs">({t('選填', 'Optional')})</span>
                       </label>
                       <input
                         type="tel"
                         value={userInfo.phone}
                         onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
-                        placeholder="09xx-xxx-xxx（選填）"
+                        placeholder={t('09xx-xxx-xxx', '+1 (555) 000-0000')}
                         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500"
                       />
                     </div>
 
+                    {/* Application message — shown above resume, separate from cover letter */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-1">
+                        {t('應徵信件', 'Application Message')}
+                        <span className="ml-1.5 text-xs text-gray-500 font-normal">({t('系統預設，可自行修改', 'pre-filled, feel free to edit')})</span>
+                      </label>
+                      <div className="relative">
+                        <textarea
+                          value={applicationMessage || defaultAppMessage()}
+                          onChange={(e) => {
+                            if (e.target.value.length <= 500) setApplicationMessage(e.target.value);
+                          }}
+                          rows={3}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 pb-7 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white resize-none"
+                        />
+                        <div className="absolute bottom-2.5 right-3 flex items-center gap-2">
+                          {applicationMessage && applicationMessage !== defaultAppMessage() && (
+                            <button type="button" onClick={() => setApplicationMessage(defaultAppMessage())}
+                              className="text-xs text-cyan-400 hover:text-cyan-300 underline">{t('重置', 'Reset')}</button>
+                          )}
+                          <span className="text-xs text-gray-500">{(applicationMessage || defaultAppMessage()).length}/500</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div>
                       <label className="block text-sm font-semibold text-gray-300 mb-2">
-                        Resume <span className="text-red-400">*</span>
+                        {t('履歷', 'Resume')} <span className="text-red-400">*</span>
                       </label>
                       {resumeFile ? (
                         <div className="w-full border-2 border-cyan-500/50 rounded-lg p-4 flex items-center justify-between bg-slate-800/50">
@@ -934,8 +953,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
                           className="w-full border-2 border-dashed border-slate-700 hover:border-cyan-500/50 rounded-lg p-6 flex flex-col items-center justify-center gap-2 bg-slate-800/50 cursor-pointer transition-all block"
                         >
                           <Upload size={24} className="text-gray-400" />
-                          <span className="text-sm text-gray-400">Upload PDF resume (Max 5MB)</span>
-                          <span className="text-xs text-gray-500">or select from saved resumes</span>
+                          <span className="text-sm text-gray-400">{t('上傳 PDF 履歷（最大 5MB）', 'Upload PDF resume (Max 5MB)')}</span>
+                          <span className="text-xs text-gray-500">{t('支援 .pdf 格式', 'Supports .pdf format')}</span>
                         </label>
                       )}
                       <input
@@ -960,15 +979,17 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="text-sm font-semibold text-gray-300">求職信 / Cover Letter <span className="text-gray-500 font-normal">(選填)</span></label>
+                        <label className="text-sm font-semibold text-gray-300">
+                          {t('求職信', 'Cover Letter')} <span className="text-gray-500 font-normal text-xs">({t('選填', 'Optional')})</span>
+                        </label>
                         <div className="flex bg-slate-800 rounded-lg p-0.5">
                           <button onClick={() => setCoverLetterMode('text')}
                             className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${coverLetterMode === 'text' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}>
-                            手打文字
+                            {t('輸入文字', 'Type')}
                           </button>
                           <button onClick={() => setCoverLetterMode('file')}
                             className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${coverLetterMode === 'file' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}>
-                            上傳檔案
+                            {t('上傳檔案', 'Upload File')}
                           </button>
                         </div>
                       </div>
@@ -980,16 +1001,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
                               if (e.target.value.length <= 2000)
                                 setUserInfo(prev => ({ ...prev, coverLetter: e.target.value }));
                             }}
-                            placeholder="系統將自動帶入預設推薦信，您可自行修改..."
+                            placeholder={t('輸入您的求職信內容...', 'Write your cover letter...')}
                             rows={7}
                             className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 pb-7 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-white placeholder-gray-500 resize-none"
                           />
                           <div className="absolute bottom-2.5 right-3 flex items-center gap-2">
                             {userInfo.coverLetter && (
                               <button type="button"
-                                onClick={() => setUserInfo(prev => ({ ...prev, coverLetter: buildCoverLetterTemplate(prev.name) }))}
+                                onClick={() => setUserInfo(prev => ({ ...prev, coverLetter: '' }))}
                                 className="text-xs text-cyan-400 hover:text-cyan-300 underline">
-                                重置預設
+                                {t('清除', 'Clear')}
                               </button>
                             )}
                             <span className={`text-xs ${userInfo.coverLetter.length >= 1800 ? 'text-amber-400' : 'text-gray-500'}`}>
@@ -1012,7 +1033,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         ) : (
                           <label htmlFor="cover-letter-file-input" className="w-full border-2 border-dashed border-slate-700 hover:border-cyan-500/50 rounded-lg p-5 flex flex-col items-center justify-center gap-2 bg-slate-800/50 cursor-pointer transition-all block">
                             <Upload size={22} className="text-gray-400" />
-                            <span className="text-sm text-gray-400">上傳求職信 PDF / Word（Max 5MB）</span>
+                            <span className="text-sm text-gray-400">{t('上傳求職信 PDF / Word（最大 5MB）', 'Upload Cover Letter PDF / Word (Max 5MB)')}</span>
                           </label>
                         )
                       )}
@@ -1028,17 +1049,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                      <button
-                        onClick={() => setApplyStep(1)}
-                        className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all"
-                      >
-                        <ChevronLeft size={18} /> Back
+                      <button onClick={() => setApplyStep(1)}
+                        className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                        <ChevronLeft size={18} /> {t('上一步', 'Back')}
                       </button>
-                      <button
-                        onClick={handleStep2Next}
-                        className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                      >
-                        Continue <ChevronRight size={18} />
+                      <button onClick={handleStep2Next}
+                        className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+                        {t('繼續', 'Continue')} <ChevronRight size={18} />
                       </button>
                     </div>
                   </div>
@@ -1048,58 +1065,46 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 {applyState !== 'submitting' && applyState !== 'success' && applyStep === 3 && (
                   <div className="space-y-5 animate-fade-in">
                     <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700">
-                      <h3 className="text-lg font-bold text-white mb-4">Review your application</h3>
-                      
+                      <h3 className="text-lg font-bold text-white mb-4">{t('確認應徵內容', 'Review your application')}</h3>
                       <div className="space-y-4">
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase mb-1">Position</p>
-                          <p className="text-sm text-white font-semibold">{job.jobTitle}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase mb-1">Name</p>
-                          <p className="text-sm text-white">{userInfo.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase mb-1">Email</p>
-                          <p className="text-sm text-white">{userInfo.email}</p>
-                        </div>
-                        {userInfo.phone && (
-                          <div>
-                            <p className="text-xs text-gray-500 uppercase mb-1">Phone</p>
-                            <p className="text-sm text-white">{userInfo.phone}</p>
+                        {[
+                          { label: t('應徵職位', 'Position'), value: job.jobTitle },
+                          { label: t('姓名', 'Name'), value: userInfo.name },
+                          { label: 'Email', value: userInfo.email },
+                          ...(userInfo.phone ? [{ label: t('電話', 'Phone'), value: userInfo.phone }] : []),
+                          { label: t('履歷', 'Resume'), value: resumeFile ? resumeFileName : t('未上傳', 'Not uploaded') },
+                        ].map(({ label, value }) => (
+                          <div key={label}>
+                            <p className="text-xs text-gray-500 uppercase mb-1">{label}</p>
+                            <p className="text-sm text-white">{value}</p>
                           </div>
-                        )}
+                        ))}
                         <div>
-                          <p className="text-xs text-gray-500 uppercase mb-1">Resume</p>
-                          <p className="text-sm text-white">{resumeFile ? resumeFileName : 'No resume selected'}</p>
+                          <p className="text-xs text-gray-500 uppercase mb-1">{t('應徵信件', 'Application Message')}</p>
+                          <p className="text-sm text-gray-300 line-clamp-2">{applicationMessage || defaultAppMessage()}</p>
                         </div>
                         {(coverLetterMode === 'text' && userInfo.coverLetter) && (
                           <div>
-                            <p className="text-xs text-gray-500 uppercase mb-1">求職信</p>
-                            <p className="text-sm text-gray-300 whitespace-pre-wrap line-clamp-3">{userInfo.coverLetter}</p>
+                            <p className="text-xs text-gray-500 uppercase mb-1">{t('求職信', 'Cover Letter')}</p>
+                            <p className="text-sm text-gray-300 whitespace-pre-wrap line-clamp-2">{userInfo.coverLetter}</p>
                           </div>
                         )}
                         {(coverLetterMode === 'file' && coverLetterFile) && (
                           <div>
-                            <p className="text-xs text-gray-500 uppercase mb-1">求職信檔案</p>
+                            <p className="text-xs text-gray-500 uppercase mb-1">{t('求職信檔案', 'Cover Letter File')}</p>
                             <p className="text-sm text-white">{coverLetterFileName}</p>
                           </div>
                         )}
                       </div>
                     </div>
-
                     <div className="flex gap-3 pt-2">
-                      <button
-                        onClick={() => setApplyStep(2)}
-                        className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all"
-                      >
-                        <ChevronLeft size={18} /> Back
+                      <button onClick={() => setApplyStep(2)}
+                        className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                        <ChevronLeft size={18} /> {t('上一步', 'Back')}
                       </button>
-                      <button
-                        onClick={handleApplySubmit}
-                        className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                      >
-                        Submit Application
+                      <button onClick={handleApplySubmit}
+                        className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+                        {t('確認送出', 'Submit Application')}
                       </button>
                     </div>
                   </div>
