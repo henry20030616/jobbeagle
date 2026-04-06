@@ -60,7 +60,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
         .select('id, type, content, mime_type, file_name, created_at')
         .eq('user_id', user.id) // 明確過濾當前用戶的資料
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(3);
 
       if (error) {
         // 檢查是否為資料表不存在的錯誤
@@ -155,7 +155,19 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
         created_at: new Date().toISOString(),
       };
 
-      // 優化：不等待 select 返回，加快保存速度
+      // 強制最多 3 份：超過時刪除最舊的
+      const { data: existing } = await supabase
+        .from('resume_history')
+        .select('id, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+      if (existing && existing.length >= 3) {
+        const toDelete = existing.slice(0, existing.length - 2); // keep 2, will add 1 → total 3
+        for (const r of toDelete) {
+          await supabase.from('resume_history').delete().eq('id', r.id);
+        }
+      }
+
       const { error } = await supabase
         .from('resume_history')
         .insert(insertPayload);

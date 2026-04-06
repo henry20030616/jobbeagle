@@ -63,19 +63,34 @@ export default function ShortsUploadPage() {
   };
 
   const uploadFile = async (file: File, type: 'video' | 'logo'): Promise<string | null> => {
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('index', String(Date.now()));
-    fd.append('type', type);
-    const res = await fetch('/api/shorts/upload', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || '上傳失敗');
-    return data.url;
+    const supabase = createClient();
+    const ext = file.name.split('.').pop()?.toLowerCase() || (type === 'logo' ? 'png' : 'mp4');
+    const path = type === 'logo'
+      ? `logos/logo-${Date.now()}.${ext}`
+      : `video-${Date.now()}.${ext}`;
+
+    const { data, error } = await supabase.storage
+      .from('shorts-videos')
+      .upload(path, file, { cacheControl: '3600', upsert: true });
+
+    if (error) {
+      if (error.message?.includes('Bucket not found') || error.message?.includes('not found')) {
+        throw new Error('尚未建立 Storage 空間。請到 Supabase → Storage → 新增 bucket「shorts-videos」並設為公開，再執行 supabase-shorts-storage.sql 的權限設定。');
+      }
+      throw new Error(error.message || '上傳失敗');
+    }
+
+    const { data: urlData } = supabase.storage.from('shorts-videos').getPublicUrl(data.path);
+    return urlData.publicUrl;
   };
 
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 500 * 1024 * 1024) {
+      setError('影片請勿超過 500MB');
+      return;
+    }
     setUploadingVideo(true);
     setError(null);
     try {
