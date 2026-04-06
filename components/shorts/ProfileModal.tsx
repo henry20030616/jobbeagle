@@ -120,15 +120,6 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
       const apps = (data || []) as JobApplicationRow[];
       setSheetApplicants(apps);
       setLoadingApplicants(false);
-
-      // Auto-mark unread applications as read when company views them
-      const unreadIds = apps.filter(a => a.status === 'unread').map(a => a.id);
-      if (unreadIds.length > 0) {
-        await supabase.from('job_applications')
-          .update({ status: 'read' })
-          .in('id', unreadIds);
-        setSheetApplicants(prev => prev.map(a => unreadIds.includes(a.id) ? { ...a, status: 'read' } : a));
-      }
     })();
   }, [selectedVideo?.id]);
 
@@ -265,6 +256,20 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
     });
   };
 
+  /** 已讀取：僅在企業點「下載履歷」時標記（開啟申請列表不算） */
+  const handleResumeDownloadClick = async (e: React.MouseEvent<HTMLAnchorElement>, app: JobApplicationRow) => {
+    if (!app.resume_url || app.status !== 'unread') return;
+    e.preventDefault();
+    const supabase = createClient();
+    const { error } = await supabase.from('job_applications').update({
+      status: 'read',
+      updated_at: new Date().toISOString(),
+    }).eq('id', app.id);
+    if (!error) {
+      setSheetApplicants(prev => prev.map(a => (a.id === app.id ? { ...a, status: 'read' } : a)));
+    }
+    window.open(app.resume_url, '_blank', 'noopener,noreferrer');
+  };
 
   const handleLogin = async (type: 'personal' | 'employer') => {
     const supabase = createClient();
@@ -670,7 +675,13 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                           )}
                           <div className="flex flex-wrap gap-2 mt-3">
                             {app.resume_url && (
-                              <a href={app.resume_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 bg-cyan-950/40 px-2.5 py-1.5 rounded-lg">
+                              <a
+                                href={app.resume_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => void handleResumeDownloadClick(e, app)}
+                                className="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 bg-cyan-950/40 px-2.5 py-1.5 rounded-lg"
+                              >
                                 <FileText size={12} />{t('下載履歷', 'Resume')}{app.resume_file_name ? ` · ${app.resume_file_name}` : ''}
                               </a>
                             )}
