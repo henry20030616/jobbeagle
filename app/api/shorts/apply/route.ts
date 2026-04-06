@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
     // Save application to Supabase
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    await supabase.from('job_applications').insert({
+    const { error: insertError } = await supabase.from('job_applications').insert({
       job_id: jobId || null,
       job_title: jobTitle,
       company_name: companyName,
-      applicant_user_id: user?.id || null,
+      applicant_user_id: user?.id?.toString() || null,
       applicant_name: applicantName,
       applicant_email: applicantEmail,
       applicant_phone: applicantPhone || null,
@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
       resume_file_name: resumeFileName || null,
       status: 'pending',
     });
+    if (insertError) console.error('[apply] DB insert error:', insertError);
 
     if (!process.env.RESEND_API_KEY || !contactEmail) {
       return NextResponse.json({ success: true, emailSent: false, reason: !contactEmail ? 'no_contact_email' : 'no_api_key' });
