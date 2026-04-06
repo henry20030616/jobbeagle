@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@/lib/supabase/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/** Lazy init so `next build` does not require RESEND_API_KEY at module load. */
+let resendSingleton: Resend | null = null;
+function getResend(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  if (!resendSingleton) resendSingleton = new Resend(key);
+  return resendSingleton;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -199,6 +206,11 @@ export async function POST(request: NextRequest) {
   </table>
 </body>
 </html>`;
+
+    const resend = getResend();
+    if (!resend) {
+      return NextResponse.json({ success: true, emailSent: false, reason: 'no_api_key' });
+    }
 
     const { error: emailError } = await resend.emails.send({
       from: 'Jobbeagle <noreply@jobbeagle.com>',

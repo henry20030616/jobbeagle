@@ -164,7 +164,7 @@ export default function JobbeagleShortsPage() {
               language={language}
             />
           </div>
-          <BottomNav navTab={navTab} onNav={handleNavTab} t={t} />
+          <BottomNav navTab={navTab} onNav={handleNavTab} t={t} hasCompanyProfile={hasCompanyProfile} />
         </>
       )}
 
