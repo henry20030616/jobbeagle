@@ -338,22 +338,43 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
   const handleApplySubmit = async () => {
     setApplyState('submitting');
-    
-    const applicationData = {
-      jobId: job.id,
-      jobTitle: job.jobTitle,
-      companyName: job.companyName,
-      userInfo,
-      resumeFileName: resumeFileName,
-      coverLetter: userInfo.coverLetter,
-    };
-    
-    console.log('📤 [VideoCard] Submitting application', applicationData);
-    
-    // TODO: Add actual API call to submit application
-    // Example: await fetch('/api/apply', { method: 'POST', body: JSON.stringify(applicationData) });
-    
-    setTimeout(() => {
+    try {
+      // Upload resume to Supabase Storage if provided
+      let resumeUrl: string | null = null;
+      if (resumeFile) {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        const ext = resumeFile.name.split('.').pop();
+        const path = `applications/${user?.id || 'anon'}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('shorts-videos').upload(path, resumeFile, { upsert: true });
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('shorts-videos').getPublicUrl(path);
+          resumeUrl = urlData.publicUrl;
+        }
+      }
+
+      const res = await fetch('/api/shorts/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: job.id,
+          jobTitle: job.jobTitle,
+          companyName: job.companyName,
+          contactEmail: job.contactEmail,
+          applicantName: userInfo.name,
+          applicantEmail: userInfo.email,
+          applicantPhone: userInfo.phone,
+          coverLetter: userInfo.coverLetter,
+          resumeUrl,
+          resumeFileName,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || '申請失敗');
+      }
+
       setApplyState('success');
       setTimeout(() => {
         setShowApplyModal(false);
@@ -361,11 +382,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
         setApplyStep(1);
         setResumeFile(null);
         setResumeFileName('');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
+        if (fileInputRef.current) fileInputRef.current.value = '';
       }, 3000);
-    }, 1500);
+    } catch (e: any) {
+      console.error('Apply error:', e);
+      alert(e.message || '申請時發生錯誤，請稍後再試');
+      setApplyState('step2');
+    }
   };
 
   return (
