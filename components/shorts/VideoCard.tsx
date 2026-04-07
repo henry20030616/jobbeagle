@@ -10,7 +10,7 @@ import {
   Play, X, Mail, Upload, CheckCircle, Loader2, UserPlus, 
   Bookmark, Copy, Facebook, Twitter, Linkedin, 
   FileText, ChevronRight, ChevronLeft, CheckCircle2, Info, Sparkles, ExternalLink,
-  MessageCircle, Link as LinkIcon, Building2
+  MessageCircle, Link as LinkIcon, Building2, Clock
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 
@@ -41,6 +41,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [videoUrl, setVideoUrl] = useState(job.videoUrl);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeFileName, setResumeFileName] = useState<string>('');
+  /** 與首頁／AI 分析共用：Supabase resume_history */
+  const [savedResumeRows, setSavedResumeRows] = useState<
+    { id: string; type: 'text' | 'file'; content: string; mimeType: string | null; fileName: string }[]
+  >([]);
+  const [loadingSavedResumes, setLoadingSavedResumes] = useState(false);
+  const [selectedSavedResumeId, setSelectedSavedResumeId] = useState<string | null>(null);
+  const [applyResumeLoggedIn, setApplyResumeLoggedIn] = useState(false);
   const [applicationMessage, setApplicationMessage] = useState<string>('');
   const [coverLetterMode, setCoverLetterMode] = useState<'text' | 'file'>('text');
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
@@ -122,6 +129,58 @@ const VideoCard: React.FC<VideoCardProps> = ({
     };
     load().catch(() => {});
   }, [isActive]);
+
+  /** 關閉一鍵申請時清空履歷選擇（與 AnalysisModal 同源 resume_history） */
+  useEffect(() => {
+    if (showApplyModal) return;
+    setResumeFile(null);
+    setResumeFileName('');
+    setSelectedSavedResumeId(null);
+    setSavedResumeRows([]);
+    setApplyResumeLoggedIn(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [showApplyModal]);
+
+  /** 進入步驟 2 時載入已儲存履歷（最多 3 筆） */
+  useEffect(() => {
+    if (!showApplyModal || applyStep !== 2) return;
+    let cancelled = false;
+    const loadSavedResumes = async () => {
+      setLoadingSavedResumes(true);
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (cancelled) return;
+        setApplyResumeLoggedIn(!!user);
+        if (!user) {
+          setSavedResumeRows([]);
+          return;
+        }
+        const { data } = await supabase
+          .from('resume_history')
+          .select('id, type, content, mime_type, file_name, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(3);
+        if (cancelled || !data) return;
+        setSavedResumeRows(
+          data.map((item: { id: string; type: string; content: string; mime_type: string | null; file_name: string | null }) => ({
+            id: item.id,
+            type: item.type === 'file' ? 'file' as const : 'text' as const,
+            content: item.content,
+            mimeType: item.mime_type,
+            fileName: item.file_name || 'resume',
+          })),
+        );
+      } catch {
+        if (!cancelled) setSavedResumeRows([]);
+      } finally {
+        if (!cancelled) setLoadingSavedResumes(false);
+      }
+    };
+    loadSavedResumes();
+    return () => { cancelled = true; };
+  }, [showApplyModal, applyStep]);
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -327,6 +386,22 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
   const t = (zh: string, en: string) => language === 'zh' ? zh : en;
 
+  const base64ToFile = (base64: string, fileName: string, mime: string) => {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new File([bytes], fileName, { type: mime || 'application/pdf' });
+  };
+
+  const fileFromSavedResumeRow = (row: { type: 'text' | 'file'; content: string; mimeType: string | null; fileName: string }) => {
+    if (row.type === 'file') {
+      const mime = row.mimeType || 'application/pdf';
+      return base64ToFile(row.content, row.fileName || 'resume.pdf', mime);
+    }
+    const name = row.fileName?.toLowerCase().endsWith('.txt') ? row.fileName : `${row.fileName || 'resume'}.txt`;
+    return new File([row.content], name, { type: 'text/plain;charset=utf-8' });
+  };
+
   const defaultAppMessage = () => language === 'zh'
     ? `您好，近日得知貴公司正在招募「${job.jobTitle}」一職，特此應徵，希望能有機會參加面試，謝謝！`
     : `Hello, I recently learned about the "${job.jobTitle}" opening at ${job.companyName} and would love to apply. I hope to have the opportunity to interview. Thank you!`;
@@ -341,8 +416,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
       alert(t('請填寫姓名與 Email', 'Please fill in your name and email'));
       return;
     }
-    if (!resumeFile) {
-      alert(t('請上傳履歷', 'Please upload a resume'));
+    if (!resumeFile && !selectedSavedResumeId) {
+      alert(t('請選擇已儲存履歷或上傳 PDF', 'Please choose a saved resume or upload a PDF'));
       return;
     }
     saveUserInfo();
@@ -362,7 +437,22 @@ const VideoCard: React.FC<VideoCardProps> = ({
         return supabase.storage.from('shorts-videos').getPublicUrl(path).data.publicUrl;
       };
 
-      const resumeUrl = resumeFile ? await uploadToStorage(resumeFile, 'resume') : null;
+      let resumeFileForUpload: File | null = resumeFile;
+      let finalResumeFileName = resumeFileName;
+      if (!resumeFileForUpload && selectedSavedResumeId) {
+        const row = savedResumeRows.find((r) => r.id === selectedSavedResumeId);
+        if (!row) {
+          throw new Error(t('找不到已選履歷，請回到上一步重選', 'Selected resume not found. Go back and choose again.'));
+        }
+        try {
+          resumeFileForUpload = fileFromSavedResumeRow(row);
+          finalResumeFileName = row.fileName || resumeFileForUpload.name;
+        } catch {
+          throw new Error(t('履歷檔案無法讀取，請改上傳新檔', 'Could not read saved resume. Please upload a new file.'));
+        }
+      }
+
+      const resumeUrl = resumeFileForUpload ? await uploadToStorage(resumeFileForUpload, 'resume') : null;
       const coverLetterUrl = (coverLetterMode === 'file' && coverLetterFile)
         ? await uploadToStorage(coverLetterFile, 'coverletter') : null;
 
@@ -384,7 +474,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           coverLetterUrl,
           coverLetterFileName: coverLetterMode === 'file' ? coverLetterFileName : null,
           resumeUrl,
-          resumeFileName,
+          resumeFileName: finalResumeFileName,
         }),
       });
 
@@ -400,6 +490,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
         setApplyStep(1);
         setResumeFile(null);
         setResumeFileName('');
+        setSelectedSavedResumeId(null);
         setApplicationMessage('');
         setCoverLetterFile(null);
         setCoverLetterFileName('');
@@ -410,7 +501,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
     } catch (e: any) {
       console.error('Apply error:', e);
       alert(e.message || '申請時發生錯誤，請稍後再試');
-      setApplyState('step2');
+      setApplyState('idle');
     }
   };
 
@@ -993,11 +1084,75 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       <label className="block text-sm font-semibold text-gray-300 mb-2">
                         {t('履歷', 'Resume')} <span className="text-red-400">*</span>
                       </label>
+
+                      {loadingSavedResumes && (
+                        <div className="flex items-center gap-2 text-gray-500 text-sm py-2 mb-2">
+                          <Loader2 size={15} className="animate-spin" />
+                          {t('載入儲存的履歷…', 'Loading saved resumes…')}
+                        </div>
+                      )}
+
+                      {!loadingSavedResumes && savedResumeRows.length > 0 && !resumeFile && !selectedSavedResumeId && (
+                        <div className="mb-3">
+                          <div className="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1">
+                            <Clock size={11} className="shrink-0" />
+                            {t('使用已儲存履歷（與首頁相同）', 'Use saved resume (same as homepage)')}
+                          </div>
+                          {savedResumeRows.map((row) => (
+                            <button
+                              key={row.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedSavedResumeId(row.id);
+                                setResumeFile(null);
+                                setResumeFileName('');
+                                if (fileInputRef.current) fileInputRef.current.value = '';
+                              }}
+                              className={`w-full flex items-center gap-3 rounded-xl p-3 mb-2 transition-all text-left border ${
+                                selectedSavedResumeId === row.id
+                                  ? 'bg-cyan-900/40 border-cyan-500'
+                                  : 'bg-slate-800 hover:bg-slate-800/80 border-slate-700'
+                              }`}
+                            >
+                              <FileText size={19} className="text-cyan-400 shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-semibold text-white truncate">
+                                  {row.fileName || (row.type === 'text' ? t('文字履歷', 'Text resume') : t('履歷檔', 'Resume file'))}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {row.type === 'text' ? t('將以 .txt 上傳', 'Will upload as .txt') : (row.mimeType?.includes('pdf') ? 'PDF' : t('檔案', 'File'))}
+                                </div>
+                              </div>
+                              <span className="text-xs text-cyan-400 font-bold shrink-0">
+                                {selectedSavedResumeId === row.id ? t('已選', 'Selected') : t('選擇', 'Select')}
+                              </span>
+                            </button>
+                          ))}
+                          <div className="relative flex items-center my-3">
+                            <div className="flex-1 border-t border-slate-700" />
+                            <span className="px-3 text-xs text-gray-600">{t('或上傳新 PDF', 'or upload new PDF')}</span>
+                            <div className="flex-1 border-t border-slate-700" />
+                          </div>
+                        </div>
+                      )}
+
+                      {!loadingSavedResumes && applyResumeLoggedIn && savedResumeRows.length === 0 && !resumeFile && !selectedSavedResumeId && (
+                        <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 text-xs text-blue-300 mb-3">
+                          {t('尚無儲存履歷：於首頁分析或上傳後可在此一鍵使用。', 'No saved resume yet. Save one from the homepage to use here next time.')}
+                        </div>
+                      )}
+
+                      {!loadingSavedResumes && !applyResumeLoggedIn && !resumeFile && !selectedSavedResumeId && (
+                        <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 text-xs text-blue-300 mb-3">
+                          {t('登入後可同步首頁已儲存履歷，免重複上傳。', 'Sign in to use resumes saved on the homepage without re-uploading.')}
+                        </div>
+                      )}
+
                       {resumeFile ? (
                         <div className="w-full border-2 border-cyan-500/50 rounded-lg p-4 flex items-center justify-between bg-slate-800/50">
-                          <div className="flex items-center gap-3">
-                            <FileText size={20} className="text-cyan-400" />
-                            <span className="text-sm text-white font-medium">{resumeFileName}</span>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <FileText size={20} className="text-cyan-400 shrink-0" />
+                            <span className="text-sm text-white font-medium truncate">{resumeFileName}</span>
                           </div>
                           <button
                             type="button"
@@ -1008,7 +1163,23 @@ const VideoCard: React.FC<VideoCardProps> = ({
                                 fileInputRef.current.value = '';
                               }
                             }}
-                            className="p-1 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all"
+                            className="p-1 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all shrink-0"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ) : selectedSavedResumeId ? (
+                        <div className="w-full border-2 border-cyan-500/50 rounded-lg p-4 flex items-center justify-between bg-slate-800/50">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <FileText size={20} className="text-cyan-400 shrink-0" />
+                            <span className="text-sm text-white font-medium truncate">
+                              {savedResumeRows.find((r) => r.id === selectedSavedResumeId)?.fileName || t('已儲存履歷', 'Saved resume')}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedSavedResumeId(null)}
+                            className="p-1 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all shrink-0"
                           >
                             <X size={16} />
                           </button>
@@ -1038,6 +1209,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                             }
                             setResumeFile(file);
                             setResumeFileName(file.name);
+                            setSelectedSavedResumeId(null);
                           }
                         }}
                       />
@@ -1138,7 +1310,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
                           { label: t('姓名', 'Name'), value: userInfo.name },
                           { label: 'Email', value: userInfo.email },
                           ...(userInfo.phone ? [{ label: t('電話', 'Phone'), value: userInfo.phone }] : []),
-                          { label: t('履歷', 'Resume'), value: resumeFile ? resumeFileName : t('未上傳', 'Not uploaded') },
+                          {
+                            label: t('履歷', 'Resume'),
+                            value: resumeFile
+                              ? resumeFileName
+                              : (selectedSavedResumeId
+                                ? (savedResumeRows.find((r) => r.id === selectedSavedResumeId)?.fileName || t('已儲存履歷', 'Saved resume'))
+                                : t('未上傳', 'Not uploaded')),
+                          },
                         ].map(({ label, value }) => (
                           <div key={label}>
                             <p className="text-xs text-gray-500 uppercase mb-1">{label}</p>
