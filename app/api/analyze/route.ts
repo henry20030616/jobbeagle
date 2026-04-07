@@ -122,7 +122,28 @@ After computing \`score\`, set \`dog_type\` and \`recruiter_insight\` from **sco
 # Other sections (brief except industry_trends)
 
 - **Salary**: MUST give a numeric range (no 面議-only).  
-- **Moat, competition, reviews, interview prep**: follow original depth rules; **mock interview** ≥10 questions (5 technical first, then 5 behavioral), personalized \`answer_guide\`.
+- **Moat, competition, reviews**: follow depth rules above.
+
+---
+
+# Interview Preparation — **MANDATORY: EXACTLY 10 QUESTIONS**
+
+\`interview_preparation.questions\` MUST be a JSON array of **exactly 10** objects — **not 2, not 5, not 9 — ten (10)**. Incomplete lists are INVALID output.
+
+**Order & labeling (use output language for prefixes):**
+- **Questions 1–5 (index 0–4):** Technical / role-competency / domain-specific.  
+  - Chinese: prefix each \`question\` string with \`[技術面]\`.  
+  - English: prefix with \`[Technical]\`.
+- **Questions 6–10 (index 5–9):** Behavioral / leadership / situational.  
+  - Chinese: prefix with \`[行為面]\`.  
+  - English: prefix with \`[Behavioral]\`.
+
+**Each object MUST include:**
+- \`question\`: realistic, JD-aligned, personalized to the candidate's resume (companies, roles, metrics when present).
+- \`source\`: one sentence — why this question matters for this role.
+- \`answer_guide\`: **must** personalize; Traditional Chinese answers start with \`回答建議：\`; English with \`Answer suggestion:\` or equivalent; reference resume specifics.
+
+Keep each \`answer_guide\` to **2–4 sentences** so all **10** items fit; do not skip questions to save length.
 
 # Output Format (JSON) — include ALL fields
 
@@ -177,7 +198,18 @@ After computing \`score\`, set \`dog_type\` and \`recruiter_insight\` from **sco
     "skill_gaps": [{"gap": "Gap", "description": "BRIEF (1-2 sentences)"}]
   },
   "interview_preparation": {
-    "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "回答建議：[MUST reference candidate resume, 2-3 sentences.]"}]
+    "questions": [
+      {"question": "[技術面] or [Technical] Q1 …", "source": "Why this question (1 sentence).", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q2 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q3 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q4 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q5 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] or [Behavioral] Q6 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q7 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q8 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q9 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q10 …", "source": "…", "answer_guide": "回答建議：…"}
+    ]
   },
   "references": {
     "deep_research": [{"title": "Title", "url": "URL"}],
@@ -190,7 +222,8 @@ After computing \`score\`, set \`dog_type\` and \`recruiter_insight\` from **sco
 2. **match_analysis.score** MUST equal **50 + hard_skills_S + experience_E + impact_metrics_I + culture_fit_F**.
 3. **impact_metrics_I = 0** when no quantified resume evidence.
 4. **market_analysis** must use the key **potential_risks** (exact spelling).
-5. Complete structure with ALL required fields.
+5. **interview_preparation.questions** MUST have length **exactly 10** (ten array elements).
+6. Complete structure with ALL required fields.
 `;
 
 function clampInt(n: unknown, lo: number, hi: number): number {
@@ -279,6 +312,13 @@ function normalizeReport(report: any, lang: 'zh' | 'en'): void {
   }
   if (!Array.isArray(ma.matching_points)) ma.matching_points = [];
   if (!Array.isArray(ma.skill_gaps)) ma.skill_gaps = [];
+
+  const ip = report.interview_preparation;
+  if (ip && Array.isArray(ip.questions) && ip.questions.length !== 10) {
+    console.warn(
+      `[normalizeReport] interview_preparation.questions length=${ip.questions.length}, expected 10 — model may have truncated; check maxOutputTokens / prompt.`,
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -400,6 +440,7 @@ export async function POST(request: NextRequest) {
       contents: [{ parts: userParts }],
       generationConfig: { 
         temperature: 0.3,
+        maxOutputTokens: 8192,
         response_mime_type: "application/json", // 確保返回純 JSON，避免解析問題
       },
       safetySettings: [
