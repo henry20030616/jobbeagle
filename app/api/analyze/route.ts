@@ -67,52 +67,65 @@ async function checkAndIncrementUsage(ipHash: string): Promise<{ allowed: boolea
 export const maxDuration = 60; 
 
 const SYSTEM_INSTRUCTION = `
-# Role (角色設定)
-You are a dual-expert persona with 30 years of top-tier experience:
-1. **Global Headhunter & Senior HR Director**: Specialist in decoding organizational logic, identifying "hidden" job requirements, and assessing cultural alignment at the executive level.
-2. **Career Expert (求職專家)**: Specialist in industrial lifecycles, competitive moats, business models, financial health, and strategic market positioning.
+# Role: Global VP of HR & JobBeagle Tier Integration
+You combine: (1) Global Headhunter / Senior HR Director rigor, (2) Career & industry expertise. You do NOT inflate scores. Most real candidates land **55–72**; **85+** is rare.
 
-# Task (任務)
-Analyze the provided Job Description (JD) and Resume to generate a "Winning Strategy Report". Your output must be:
-- **Concise & Focused**: Keep all sections BRIEF and to the point. Only provide essential information.
-- **Exception - Industry Analysis**: The "industry_trends" section is the ONLY exception where detailed, comprehensive analysis is allowed and expected.
-- **High-Density**: Use professional, data-driven terminology. Avoid verbose explanations.
-- **Objective & Neutral**: Provide a hard-hitting, realistic assessment.
+# Task
+Analyze the Job Description (JD) and Resume. Produce a **Winning Strategy Report** JSON. Be concise except **market_analysis.industry_trends** (may be detailed).
 
-**CRITICAL SEARCH INSTRUCTIONS (真實數據調查)**:
-You MUST use Google Search to retrieve high-fidelity, recent data. 
-- **Interview Intelligence**: Search for actual interview questions and process stages from the last 24 months (e.g., Glassdoor, PTT, Dcard, LinkedIn). Gather 5+ real questions from the same company (or highly similar roles if strictly unavailable).
-- **Salary Benchmarking**: Cross-reference actual market pay scales for this specific company or its direct tier-1 competitors.
-- **Strategic Context**: Analyze the company's latest news, strategic pivots, or earnings reports.
+**CRITICAL SEARCH**: Use Google Search for interview intel, salary benchmarks, company news (last ~24 months where relevant).
 
-# Detailed Requirements (具體產出要求)
-**CRITICAL: Keep all sections CONCISE except industry_trends**
+---
 
-1. **Match Analysis**: Provide 3-5 BRIEF points for "Matching Points" and "Skill Gaps". Each point should be 1-2 sentences maximum.
-2. **Salary**: 
-   - **MANDATORY**: You MUST provide a specific salary range. NEVER use vague terms like "面議" (negotiable), "依公司規定", or "未提供".
-   - Base your estimate on: job level, candidate's experience/skills, company size/stage, industry standards, and market data.
-   - Format: "Amount + (年薪)" or "Amount + (月薪)". E.g., "1.8M - 2.5M TWD (年薪)", "80K - 120K TWD (月薪)".
-   - Even if the JD doesn't specify salary, you MUST estimate based on the role and market knowledge.
-   - Keep rationale and negotiation_tip to 2-3 bullet points maximum.
-3. **Moat (護城河)**: Focus strictly on the company's inherent strategic advantages. Keep each advantage description to 1-2 sentences. Avoid lengthy explanations.
-4. **Competitive Landscape (競爭格局)**: The table MUST include the target company itself alongside its competitors (at least 4-5 major rivals). Keep strengths/weaknesses to 1 sentence each.
-5. **Industry Analysis (唯一可詳細的部分)**: The "industry_trends" is the ONLY section where detailed, comprehensive analysis is allowed. Format: "簡介: [Deep Intro] \n 現況與趨勢: [Current Market Status & Forward Trends]". This can be longer and more detailed.
-6. **Corporate Analysis**: Keep culture, interview process, and risks summaries to 3-4 bullet points maximum. Be concise.
-7. **Real Interview Questions**:
-    - Return 5+ questions.
-    - "job_title" field: Format as "Company Name Position" (e.g., "群聯電子 產品經理").
-    - "year" field: Format as "[Source Website Name] YYYY.MM" (e.g., "[glassdoor 2023.08").
-8. **Mock Interview Prep**: Generate at least 10 questions total.
-    - **ORDER**: List 5 Technical questions FIRST, then 5 Behavioral questions.
-    - **Labeling**: Prefix with "[技術面]" or "[行為面]".
-    - **Answer Advice (CRITICAL)**: 
-      * The "answer_guide" MUST be personalized based on the candidate's resume.
-      * Reference specific experiences, skills, or projects from their background.
-      * Format: Start with "回答建議：", followed by 2-3 sentences that show HOW the candidate should leverage their specific experience.
-      * Example: "回答建議：可以結合你在 [具體公司/專案] 的 [具體技能/經驗]，說明如何應用在 [情境]。強調你曾經 [具體成就]，展現實戰能力。"
+# JobBeagle Match Score — MANDATORY FORMULA (50–100 only)
 
-# Output Format (JSON)
+**Total score = base + S + E + I + F** (integer). **Must equal** the sum exactly.
+
+| Component | Max pts | Definition |
+|-----------|---------|------------|
+| **base** | **50** (fixed) | Starting point — everyone starts at 50. |
+| **S** (hard_skills_S) | **0–15** | ATS / keyword & hard-skill overlap between JD and resume (tools, stack, certifications). |
+| **E** (experience_E) | **0–15** | Depth of relevant roles, progression, scope vs JD seniority. |
+| **I** (impact_metrics_I) | **0–10** | **MUST be 0** if the resume has **no verifiable quantified outcomes** (%, revenue, users, headcount, timeline metrics, etc.). Only award points when numbers/metrics are explicit. |
+| **F** (culture_fit_F) | **0–10** | Industry + culture/values alignment signals from resume vs JD. |
+
+**Calibration (strict HR)**  
+- Default conservative: do not cluster scores at 80–95.  
+- Weak overlap → total often **50–62**. Solid but not exceptional → **63–78**. Strong → **79–88**. Exceptional, evidence-heavy → **89–100**.
+
+---
+
+# dog_type & recruiter_insight (MANDATORY)
+
+After computing \`score\`, set \`dog_type\` and \`recruiter_insight\` from **score** (use output language for tier names and insight text):
+
+**If output is Traditional Chinese:**  
+- **90–100** → \`dog_type\`: **鑽石米格魯** — HR: Immediate Fit, ready now / leadership signal. Insight: **極度肯定**；點出「萬中選一」級別的依據（具體對應 JD 與履歷證據）。  
+- **75–89** → \`dog_type\`: **黃金米格魯** — Strong candidate, interview shortlist. Insight: **專業認可** + 綠旗 + **一條**可畫龍點睛的優化建議。  
+- **60–74** → \`dog_type\`: **白銀米格魯** — Potential match; ATS 看來平庸、亮點不足。Insight: **中肯**指出「技術/經歷有基礎但缺數據或差異化」。  
+- **<60** (50–59) → \`dog_type\`: **青銅米格魯** — Significant gap. Insight: **痛點分析**；明說在 HR **約 6 秒**掃描下會被刷掉的原因（具體、不客套）。
+
+**If output is English:** use tier names: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle** — same HR logic, same tone rules.
+
+\`recruiter_insight\`: **2–4 sentences**, senior-recruiter voice — **not** generic cheerleading. Must reference concrete JD vs resume evidence.
+
+---
+
+# Match narrative (concise)
+
+1. **matching_points**: 3–5 brief items (strengths tied to S/E/F).  
+2. **skill_gaps**: 3–5 brief gaps (what blocks a higher score).  
+3. Align narrative **strictly** with \`score_components\` (no contradiction).
+
+---
+
+# Other sections (brief except industry_trends)
+
+- **Salary**: MUST give a numeric range (no 面議-only).  
+- **Moat, competition, reviews, interview prep**: follow original depth rules; **mock interview** ≥10 questions (5 technical first, then 5 behavioral), personalized \`answer_guide\`.
+
+# Output Format (JSON) — include ALL fields
+
 {
   "basic_analysis": {
     "job_title": "Full Professional Job Title",
@@ -129,7 +142,7 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     "rationale": "BRIEF data-driven logic explaining how you calculated the salary range. 2-3 bullet points maximum."
   },
   "market_analysis": {
-    "industry_trends": "簡介: [DETAILED - This is the ONLY section allowed to be comprehensive] \n 現況與趨勢: [DETAILED - Can be longer and more detailed]",
+    "industry_trends": "簡介: [DETAILED allowed] \\n 現況與趨勢: [DETAILED allowed]",
     "positioning": "BRIEF strategic assessment (1 sentence).",
     "competition_table": [
        {"name": "Competitor (Include Target Co)", "strengths": "BRIEF (1 sentence)", "weaknesses": "BRIEF (1 sentence)"}
@@ -150,12 +163,21 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
     ]
   },
   "match_analysis": {
-    "score": 85,
-    "matching_points": [{"point": "Fit", "description": "BRIEF professional alignment (1-2 sentences)"}],
-    "skill_gaps": [{"gap": "Gap", "description": "BRIEF interview strategy (1-2 sentences)"}]
+    "score": 72,
+    "score_components": {
+      "base": 50,
+      "hard_skills_S": 8,
+      "experience_E": 7,
+      "impact_metrics_I": 4,
+      "culture_fit_F": 3
+    },
+    "dog_type": "白銀米格魯",
+    "recruiter_insight": "2-4 sentences, senior HR tone, evidence-based.",
+    "matching_points": [{"point": "Fit", "description": "BRIEF (1-2 sentences)"}],
+    "skill_gaps": [{"gap": "Gap", "description": "BRIEF (1-2 sentences)"}]
   },
   "interview_preparation": {
-    "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "回答建議：[MUST reference candidate's specific experience/skills from resume, 2-3 sentences maximum. Show HOW to use their background.]"}]
+    "questions": [{"question": "Simulated Q", "source": "BRIEF analytical logic (1 sentence)", "answer_guide": "回答建議：[MUST reference candidate resume, 2-3 sentences.]"}]
   },
   "references": {
     "deep_research": [{"title": "Title", "url": "URL"}],
@@ -163,32 +185,101 @@ You MUST use Google Search to retrieve high-fidelity, recent data.
   }
 }
 
-# Rules
-1. **Language**: (See OUTPUT LANGUAGE instruction below - report must match user-selected language.)
-2. **Professional Tone**: Board-level strategic consultant tone.
-3. **Length Control**: 
-   - Keep ALL sections BRIEF and concise (1-3 sentences or 2-4 bullet points maximum per item).
-   - ONLY exception: "industry_trends" can be detailed and comprehensive.
-   - Avoid verbose explanations, redundant information, or unnecessary elaboration.
-   - Focus on actionable insights, not lengthy descriptions.
-
 # CRITICAL JSON FORMAT REQUIREMENTS
-1. **Output MUST be valid JSON only** - Do NOT include any text before or after the JSON object.
-2. **No Markdown code blocks** - Do NOT wrap the JSON in markdown code block markers (three backticks).
-3. **No explanatory text** - Do NOT add comments, explanations, or any text outside the JSON structure.
-4. **Valid JSON syntax** - Ensure all strings are properly quoted, all brackets are matched, and there are no trailing commas.
-5. **Complete structure** - The JSON must include ALL required fields as specified in the Output Format section above.
+1. Valid JSON only. No markdown fences. No trailing commas.
+2. **match_analysis.score** MUST equal **50 + hard_skills_S + experience_E + impact_metrics_I + culture_fit_F**.
+3. **impact_metrics_I = 0** when no quantified resume evidence.
+4. **market_analysis** must use the key **potential_risks** (exact spelling).
+5. Complete structure with ALL required fields.
+`;
 
-**Example of CORRECT output:**
-{
-  "basic_analysis": { ... },
-  "salary_analysis": { ... },
-  ...
+function clampInt(n: unknown, lo: number, hi: number): number {
+  const x = Math.round(Number(n));
+  if (Number.isNaN(x)) return lo;
+  return Math.max(lo, Math.min(hi, x));
 }
 
-**Example of INCORRECT output:**
-Do NOT wrap in markdown code blocks or add any text before/after the JSON object.
-`;
+/** Allocate bonus (0–50) into S/E/I/F caps: 15+15+10+10 */
+function allocateBonusToComponents(bonus: number): { S: number; E: number; I: number; F: number } {
+  let rem = clampInt(bonus, 0, 50);
+  const S = Math.min(15, rem);
+  rem -= S;
+  const E = Math.min(15, rem);
+  rem -= E;
+  const I = Math.min(10, rem);
+  rem -= I;
+  const F = Math.min(10, rem);
+  return { S, E, I, F };
+}
+
+function dogTypeFromScore(score: number, lang: 'zh' | 'en'): string {
+  if (lang === 'en') {
+    if (score >= 90) return 'Diamond Beagle';
+    if (score >= 75) return 'Gold Beagle';
+    if (score >= 60) return 'Silver Beagle';
+    return 'Bronze Beagle';
+  }
+  if (score >= 90) return '鑽石米格魯';
+  if (score >= 75) return '黃金米格魯';
+  if (score >= 60) return '白銀米格魯';
+  return '青銅米格魯';
+}
+
+/** Enforce 50–100 formula, score_components, dog_type, recruiter_insight; fix common JSON key typos */
+function normalizeReport(report: any, lang: 'zh' | 'en'): void {
+  if (report?.market_analysis?.potential_risis && !report.market_analysis.potential_risks) {
+    report.market_analysis.potential_risks = report.market_analysis.potential_risis;
+    delete report.market_analysis.potential_risis;
+  }
+
+  const ma = report?.match_analysis;
+  if (!ma) return;
+
+  const base = 50;
+  let S = clampInt(ma.score_components?.hard_skills_S, 0, 15);
+  let E = clampInt(ma.score_components?.experience_E, 0, 15);
+  let I = clampInt(ma.score_components?.impact_metrics_I, 0, 10);
+  let F = clampInt(ma.score_components?.culture_fit_F, 0, 10);
+
+  const hasNumericComponents =
+    ma.score_components &&
+    typeof ma.score_components.hard_skills_S === 'number' &&
+    typeof ma.score_components.experience_E === 'number' &&
+    typeof ma.score_components.impact_metrics_I === 'number' &&
+    typeof ma.score_components.culture_fit_F === 'number';
+
+  if (!hasNumericComponents) {
+    const rawScore = clampInt(ma.score, 50, 100);
+    const bonus = rawScore - base;
+    const a = allocateBonusToComponents(bonus);
+    S = a.S;
+    E = a.E;
+    I = a.I;
+    F = a.F;
+  }
+
+  ma.score_components = {
+    base,
+    hard_skills_S: S,
+    experience_E: E,
+    impact_metrics_I: I,
+    culture_fit_F: F,
+  };
+  ma.score = clampInt(base + S + E + I + F, 50, 100);
+
+  const s = ma.score as number;
+  if (!ma.dog_type || typeof ma.dog_type !== 'string' || !String(ma.dog_type).trim()) {
+    ma.dog_type = dogTypeFromScore(s, lang);
+  }
+  if (!ma.recruiter_insight || String(ma.recruiter_insight).trim().length < 8) {
+    ma.recruiter_insight =
+      lang === 'en'
+        ? `Tier ${ma.dog_type} (${s}/100): Alignment follows the JobBeagle formula (base 50 + skills + experience + quantified impact + fit). See matching_points and skill_gaps for evidence.`
+        : `等級 ${ma.dog_type}（${s}/100 分）：依 JobBeagle 公式（底分 50 + 硬技能 S + 經驗 E + 量化 I + 契合 F）評定，細節見優勢與缺口。`;
+  }
+  if (!Array.isArray(ma.matching_points)) ma.matching_points = [];
+  if (!Array.isArray(ma.skill_gaps)) ma.skill_gaps = [];
+}
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -202,8 +293,8 @@ export async function POST(request: NextRequest) {
 
     // 依介面選擇的語言強制報告產出語言（與輸入的 JD/履歷語言無關）
     const OUTPUT_LANGUAGE_INSTRUCTION = reportLanguage === 'en'
-      ? `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in English. Ignore whether the input JD or resume is in Chinese or English; your output language is English.\n`
-      : `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in Traditional Chinese. Ignore whether the input JD or resume is in English or Chinese; your output language is 繁體中文.\n`;
+      ? `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in English. Ignore whether the input JD or resume is in Chinese or English; your output language is English.\nFor match_analysis.dog_type use English tier names: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle** (same score bands as Chinese tiers).\n`
+      : `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in Traditional Chinese. Ignore whether the input JD or resume is in English or Chinese; your output language is 繁體中文.\nFor match_analysis.dog_type use: **鑽石米格魯** / **黃金米格魯** / **白銀米格魯** / **青銅米格魯** only.\n`;
 
     if (!jobDescription || !resume) {
       return NextResponse.json(
@@ -308,7 +399,7 @@ export async function POST(request: NextRequest) {
       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION + OUTPUT_LANGUAGE_INSTRUCTION }] },
       contents: [{ parts: userParts }],
       generationConfig: { 
-        temperature: 0.7,
+        temperature: 0.3,
         response_mime_type: "application/json", // 確保返回純 JSON，避免解析問題
       },
       safetySettings: [
@@ -568,6 +659,8 @@ export async function POST(request: NextRequest) {
         );
       }
     }
+
+    normalizeReport(report, reportLanguage === 'en' ? 'en' : 'zh');
 
     // 先返回報告給用戶，提升響應速度
     const totalDuration = (Date.now() - startTime) / 1000;

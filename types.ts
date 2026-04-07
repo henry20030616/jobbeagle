@@ -36,8 +36,27 @@ export interface SkillGap {
   description: string;
 }
 
+/** JobBeagle 評分拆解：總分 = base(50) + S + E + I + F，範圍 50–100 */
+export interface MatchScoreComponents {
+  base: number;
+  /** 硬技能／ATS 關鍵字，0–15 */
+  hard_skills_S: number;
+  /** 經驗深度／職涯路徑，0–15 */
+  experience_E: number;
+  /** 量化成果，0–10；履歷無可驗證數據時必為 0 */
+  impact_metrics_I: number;
+  /** 文化／產業契合，0–10 */
+  culture_fit_F: number;
+}
+
 export interface MatchAnalysis {
   score: number;
+  /** 與 score 一致：50 + S + E + I + F（API 正規化後必有） */
+  score_components?: MatchScoreComponents;
+  /** 鑽石/黃金/白銀/青銅米格魯（或英文對應） */
+  dog_type?: string;
+  /** 資深人資視角短評 */
+  recruiter_insight?: string;
   matching_points: MatchPoint[];
   skill_gaps: SkillGap[];
 }

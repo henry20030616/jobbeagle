@@ -121,9 +121,10 @@ const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
     score >= 75 ? '#fbbf24' :
     score >= 60 ? '#cbd5e1' : '#fb923c';
   const scoreLabel =
-    score >= 90 ? '頂級契合' :
+    match_analysis.dog_type ||
+    (score >= 90 ? '頂級契合' :
     score >= 75 ? '高度契合' :
-    score >= 60 ? '中度契合' : '低度契合';
+    score >= 60 ? '中度契合' : '低度契合');
 
   const circumference = 2 * Math.PI * 32;
   const toggle = (s: string) => setExpanded(prev => prev === s ? null : s);
@@ -150,6 +151,11 @@ const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
         <div className="flex-1 min-w-0">
           <div className="text-base font-bold" style={{ color: scoreColor }}>{scoreLabel}</div>
           <div className="text-xs text-gray-400 mt-0.5 truncate">{basic_analysis.job_title}</div>
+          {match_analysis.recruiter_insight && (
+            <div className="text-xs text-gray-300 mt-2 leading-relaxed line-clamp-4 border border-slate-600/60 rounded-lg p-2 bg-slate-800/50">
+              {match_analysis.recruiter_insight}
+            </div>
+          )}
           {basic_analysis.job_summary && (
             <div className="text-xs text-gray-500 mt-1 line-clamp-2">{basic_analysis.job_summary}</div>
           )}

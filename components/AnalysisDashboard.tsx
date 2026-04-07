@@ -121,6 +121,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
 
   const { basic_analysis, salary_analysis, reviews_analysis, market_analysis, match_analysis, interview_preparation } = data;
   const scoreInfo = getScoreInfo(match_analysis.score, language);
+  const tierName = match_analysis.dog_type || scoreInfo.level;
   const scoreData = [{ name: 'Score', value: match_analysis.score, fill: scoreInfo.fill }];
 
   // 翻譯對象
@@ -227,7 +228,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
                <div className="flex flex-col items-center shrink-0">
                   {scoreInfo.icon}
                   <div className="flex flex-col items-center mt-3">
-                    <span className={`text-base font-bold ${scoreInfo.color}`}>{scoreInfo.level}</span>
+                    <span className={`text-base font-bold ${scoreInfo.color}`}>{tierName}</span>
                   </div>
                </div>
                  <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">
@@ -246,6 +247,12 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
             <div className="w-full text-center mb-6">
                 <p className={`text-xl font-bold ${scoreInfo.color} mb-1`}>{scoreInfo.label}</p>
                   <p className="text-sm text-slate-400 px-4 leading-relaxed mb-3">{scoreInfo.description}</p>
+                  {match_analysis.recruiter_insight && (
+                    <p className="text-sm text-slate-300 px-4 leading-relaxed mb-3 text-left border border-slate-600/50 rounded-lg py-2 bg-slate-900/40">
+                      <span className="text-xs font-bold text-amber-500/90 uppercase tracking-wide block mb-1">{language === 'zh' ? '人資洞察' : 'Recruiter insight'}</span>
+                      {match_analysis.recruiter_insight}
+                    </p>
+                  )}
                   {/* 分数评等等级说明 */}
                   <div className="mt-4 pt-4 border-t border-slate-700/50">
                     <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">{t.scoreStandard}</p>
