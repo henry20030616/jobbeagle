@@ -5,6 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
  * 用於確認 Vercel 部署時的環境變數是否正確設定
  */
 export async function GET(request: NextRequest) {
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json({ error: 'Not available' }, { status: 404 });
+  }
+
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
   
   const envCheck = {

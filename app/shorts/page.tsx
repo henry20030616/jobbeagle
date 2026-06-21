@@ -40,7 +40,22 @@ export default function JobbeagleShortsPage() {
 
   useEffect(() => {
     loadVideos();
-    checkAuth();
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      if (user) loadUserData(user.id);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) loadUserData(u.id);
+      else {
+        setFollowedCompanies(new Set());
+        setSavedJobIds(new Set());
+        setSavedJobsData([]);
+      }
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   /** OAuth 或企業中心連結：?shorts_view= 寫入偏好；?open_profile=1 直接開啟個人／企業後台（Profile） */
@@ -65,25 +80,6 @@ export default function JobbeagleShortsPage() {
       window.history.replaceState({}, '', `${window.location.pathname}${q ? `?${q}` : ''}`);
     }
   }, []);
-
-  const checkAuth = async () => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-    if (user) loadUserData(user.id);
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) loadUserData(u.id);
-      else {
-        setFollowedCompanies(new Set());
-        setSavedJobIds(new Set());
-        setSavedJobsData([]);
-      }
-    });
-    return () => subscription.unsubscribe();
-  };
 
   const loadUserData = async (userId: string) => {
     const supabase = createClient();
@@ -146,14 +142,18 @@ export default function JobbeagleShortsPage() {
     });
   };
 
-  const handleSaveChange = (jobId: string, saved: boolean) => {
+  const handleSaveChange = (jobId: string, saved: boolean, jobData?: JobData) => {
     setSavedJobIds(prev => {
       const next = new Set(prev);
       if (saved) next.add(jobId);
       else next.delete(jobId);
       return next;
     });
-    if (!saved) {
+    if (saved && jobData) {
+      setSavedJobsData(prev =>
+        prev.some(j => j.id === jobId) ? prev : [...prev, jobData]
+      );
+    } else if (!saved) {
       setSavedJobsData(prev => prev.filter(j => j.id !== jobId));
     }
   };
@@ -328,7 +328,7 @@ export default function JobbeagleShortsPage() {
                       <button
                         onClick={async () => {
                           const s = createClient();
-                          await s.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts` } });
+                          await s.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts&type=talent` } });
                           setShowLoginMenu(false);
                         }}
                         className="w-full flex items-center gap-2 px-4 py-3 hover:bg-slate-700 transition-colors text-white text-sm"

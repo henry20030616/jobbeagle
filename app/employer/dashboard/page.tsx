@@ -112,21 +112,15 @@ export default function EmployerDashboard() {
         setCompany(companyData);
       }
 
-      // 載入影片列表
-      if (companyData || !companyError) {
-        const companyId = companyData?.id || (await supabase.from('companies').select('id').eq('user_id', userId).single()).data?.id;
-        
-        if (companyId) {
-          const { data: videosData, error: videosError } = await supabase
-            .from('shorts_videos')
-            .select('*')
-            .eq('company_id', companyId)
-            .order('created_at', { ascending: false });
+      // 載入影片列表（用 company_user_id 確保與 Shorts 後台資料一致）
+      const { data: videosData, error: videosError } = await supabase
+        .from('shorts_videos')
+        .select('*')
+        .eq('company_user_id', userId)
+        .order('created_at', { ascending: false });
 
-          if (videosError) throw videosError;
-          setVideos(videosData || []);
-        }
-      }
+      if (videosError) throw videosError;
+      setVideos(videosData || []);
     } catch (err: any) {
       setError(err.message || '載入失敗');
     } finally {
@@ -372,7 +366,8 @@ export default function EmployerDashboard() {
       {/* Upload Modal */}
       {showUploadModal && !editingVideo && (
         <UploadVideoModal
-          companyId={company?.id!}
+          companyId={company?.id || ''}
+          userId={user?.id || ''}
           companyName={company?.company_name || ''}
           onClose={() => setShowUploadModal(false)}
           onSuccess={() => {
@@ -404,11 +399,13 @@ export default function EmployerDashboard() {
 // Upload Video Modal Component
 function UploadVideoModal({ 
   companyId, 
+  userId,
   companyName, 
   onClose, 
   onSuccess 
 }: { 
-  companyId: string; 
+  companyId: string;
+  userId: string;
   companyName: string; 
   onClose: () => void; 
   onSuccess: () => void;
@@ -528,7 +525,8 @@ function UploadVideoModal({
       const { error } = await supabase
         .from('shorts_videos')
         .insert({
-          company_id: companyId,
+          company_id: companyId || undefined,
+          company_user_id: userId,
           job_title: formData.job_title,
           company_name: formData.company_name || companyName,
           location: formData.location || null,

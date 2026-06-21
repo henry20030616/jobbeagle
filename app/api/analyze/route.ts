@@ -18,17 +18,17 @@ function getClientIP(request: NextRequest): string {
   return request.headers.get('x-real-ip') ?? 'unknown';
 }
 
-async function checkAndIncrementUsage(ipHash: string): Promise<{ allowed: boolean; remaining: number }> {
+/** 只檢查額度，不扣計數（避免 AI 失敗也消耗免費次數） */
+async function checkUsage(ipHash: string): Promise<{ allowed: boolean; remaining: number; currentCount: number }> {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!serviceKey || !supabaseUrl) {
-    // If not configured, allow the request (fail open so existing users aren't blocked)
     console.warn('⚠️ [RateLimit] SUPABASE_SERVICE_ROLE_KEY not set — skipping rate limit check');
-    return { allowed: true, remaining: FREE_DAILY_LIMIT };
+    return { allowed: true, remaining: FREE_DAILY_LIMIT, currentCount: 0 };
   }
 
   const admin = createAdminClient(supabaseUrl, serviceKey);
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
 
   const { data, error } = await admin
     .from('usage_limits')
@@ -39,16 +39,25 @@ async function checkAndIncrementUsage(ipHash: string): Promise<{ allowed: boolea
 
   if (error) {
     console.error('⚠️ [RateLimit] DB read error:', error.message);
-    return { allowed: true, remaining: FREE_DAILY_LIMIT }; // fail open
+    return { allowed: true, remaining: FREE_DAILY_LIMIT, currentCount: 0 };
   }
 
   const currentCount = data?.count ?? 0;
-
   if (currentCount >= FREE_DAILY_LIMIT) {
-    return { allowed: false, remaining: 0 };
+    return { allowed: false, remaining: 0, currentCount };
   }
+  return { allowed: true, remaining: FREE_DAILY_LIMIT - currentCount, currentCount };
+}
 
-  // Upsert incremented count
+/** AI 成功回應後才呼叫，真正扣計數 */
+async function incrementUsage(ipHash: string, currentCount: number): Promise<void> {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!serviceKey || !supabaseUrl) return;
+
+  const admin = createAdminClient(supabaseUrl, serviceKey);
+  const today = new Date().toISOString().split('T')[0];
+
   const { error: upsertError } = await admin
     .from('usage_limits')
     .upsert(
@@ -59,8 +68,6 @@ async function checkAndIncrementUsage(ipHash: string): Promise<{ allowed: boolea
   if (upsertError) {
     console.error('⚠️ [RateLimit] DB write error:', upsertError.message);
   }
-
-  return { allowed: true, remaining: FREE_DAILY_LIMIT - (currentCount + 1) };
 }
 
 // 設定最大執行時間（雖然 Vercel 免費版由平台控制，但這行可以提醒 Next.js 不要太早斷開）
@@ -348,15 +355,19 @@ export async function POST(request: NextRequest) {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
 
     // Logged-in users bypass the daily free limit (for future membership tiers)
+    let rateLimitIpHash: string | null = null;
+    let rateLimitCurrentCount = 0;
+
     if (!currentUser) {
       const ip = getClientIP(request);
-      const ipHash = hashIP(ip);
-      console.log(`🔒 [RateLimit] Checking IP hash: ${ipHash.substring(0, 8)}...`);
+      rateLimitIpHash = hashIP(ip);
+      console.log(`🔒 [RateLimit] Checking IP hash: ${rateLimitIpHash.substring(0, 8)}...`);
 
-      const { allowed, remaining } = await checkAndIncrementUsage(ipHash);
+      const { allowed, remaining, currentCount } = await checkUsage(rateLimitIpHash);
+      rateLimitCurrentCount = currentCount;
 
       if (!allowed) {
-        console.warn(`🚫 [RateLimit] Blocked: ${ipHash.substring(0, 8)}...`);
+        console.warn(`🚫 [RateLimit] Blocked: ${rateLimitIpHash.substring(0, 8)}...`);
         return NextResponse.json(
           {
             error: reportLanguage === 'en'
@@ -587,6 +598,12 @@ export async function POST(request: NextRequest) {
 
     if (!text) {
       throw new Error('Gemini API 未返回有效回應');
+    }
+
+    // AI 成功回應才扣免費額度（避免 API 故障消耗使用者次數）
+    if (rateLimitIpHash) {
+      await incrementUsage(rateLimitIpHash, rateLimitCurrentCount);
+      console.log(`✅ [RateLimit] Usage incremented for ${rateLimitIpHash.substring(0, 8)}...`);
     }
 
     console.log(`🎉 [Gemini] 使用模型: ${model}`);

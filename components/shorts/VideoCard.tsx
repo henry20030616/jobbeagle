@@ -20,7 +20,7 @@ interface VideoCardProps {
   isFollowed?: boolean;
   isBookmarked?: boolean;
   onFollowChange?: (companyName: string, followed: boolean) => void;
-  onSaveChange?: (jobId: string, saved: boolean) => void;
+  onSaveChange?: (jobId: string, saved: boolean, jobData?: JobData) => void;
   language?: 'zh' | 'en';
 }
 
@@ -31,7 +31,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [showFullDetails, setShowFullDetails] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(8200);
+  const [likeCount, setLikeCount] = useState(0);
   const [followed, setFollowed] = useState(isFollowed);
   const [bookmarked, setBookmarked] = useState(isBookmarked);
   const [isMuted, setIsMuted] = useState(false);
@@ -347,7 +347,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
     e.stopPropagation();
     const newSaved = !bookmarked;
     setBookmarked(newSaved);
-    if (onSaveChange) onSaveChange(job.id, newSaved);
+    if (onSaveChange) onSaveChange(job.id, newSaved, newSaved ? job : undefined);
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();

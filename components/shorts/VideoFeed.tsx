@@ -9,7 +9,7 @@ interface VideoFeedProps {
   followedCompanies?: Set<string>;
   savedJobIds?: Set<string>;
   onFollowChange?: (companyName: string, followed: boolean) => void;
-  onSaveChange?: (jobId: string, saved: boolean) => void;
+  onSaveChange?: (jobId: string, saved: boolean, jobData?: JobData) => void;
   language?: 'zh' | 'en';
 }
 

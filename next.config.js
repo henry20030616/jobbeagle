@@ -1,5 +1,9 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 消除 Next.js 偵測到多個 lockfile 時的 workspace root 誤判警告
+  outputFileTracingRoot: path.join(__dirname),
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',

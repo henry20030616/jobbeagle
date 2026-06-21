@@ -8,8 +8,6 @@ import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import { InterviewReport, UserInputs } from '@/types';
 import { ChevronLeft } from 'lucide-react';
-import { createClient } from '@/lib/supabase/browser';
-
 // Maps elapsed seconds → simulated progress percentage (capped at 99 until API returns)
 const PROGRESS_SCHEDULE = [
   { time: 0,   progress: 0  },
@@ -65,7 +63,6 @@ function getStageLabel(progress: number, lang: 'zh' | 'en'): string {
 
 export default function Home() {
   const [report, setReport] = useState<InterviewReport | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -80,11 +77,6 @@ export default function Home() {
 
   useEffect(() => {
     const init = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
-      
-      // 檢查是否來自插件
       const urlParams = new URLSearchParams(window.location.search);
       const fromExtension = urlParams.get('from') === 'extension';
       const encodedJob = urlParams.get('job');
@@ -95,7 +87,6 @@ export default function Home() {
         console.log('🔌 [Extension] 檢測到來自插件，來源:', source);
         
         if (encodedJob) {
-          // 從 URL 參數解碼職缺數據
           try {
             const decodedData = decodeURIComponent(atob(encodedJob));
             setExtensionJobData(decodedData);
@@ -104,7 +95,6 @@ export default function Home() {
             console.error('❌ [Extension] 解碼失敗:', e);
           }
         } else if (jobId) {
-          // 從 localStorage 讀取（處理大數據情況）
           const storedData = localStorage.getItem(`jobbeagle_job_${jobId}`);
           if (storedData) {
             setExtensionJobData(storedData);
@@ -113,15 +103,21 @@ export default function Home() {
           }
         }
         
-        // 清理 URL（移除參數，保持乾淨）
         window.history.replaceState({}, '', '/');
+      }
+
+      // OAuth 登入失敗時顯示錯誤（auth/callback 會將錯誤帶回首頁）
+      const authError = urlParams.get('auth_error');
+      if (authError) {
+        const errorDesc = urlParams.get('error_description');
+        const msg = errorDesc
+          ? decodeURIComponent(errorDesc)
+          : language === 'zh' ? '登入發生錯誤，請重試' : 'Login error, please retry';
+        setError(msg);
+        if (!fromExtension) window.history.replaceState({}, '', '/');
       }
     };
     init();
-    const { data: { subscription } } = createClient().auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session?.user);
-    });
-    return () => subscription.unsubscribe();
   }, []);
 
   const startProgressSimulation = (lang: 'zh' | 'en') => {
