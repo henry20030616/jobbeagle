@@ -6,6 +6,9 @@
 
 -- 補上缺失的欄位（IF NOT EXISTS 保證重複執行無副作用）
 ALTER TABLE analysis_reports
+  ADD COLUMN IF NOT EXISTS report JSONB;
+
+ALTER TABLE analysis_reports
   ADD COLUMN IF NOT EXISTS job_description_preview TEXT;
 
 ALTER TABLE analysis_reports
