@@ -1,5 +1,6 @@
 'use client';
 
+import { AppLanguage } from '@/lib/language-context';
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { JobData } from '@/types';
@@ -22,7 +23,7 @@ interface VideoCardProps {
   isBookmarked?: boolean;
   onFollowChange?: (companyName: string, followed: boolean) => void;
   onSaveChange?: (jobId: string, saved: boolean, jobData?: JobData) => void;
-  language?: 'zh' | 'en';
+  language?: AppLanguage;
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({

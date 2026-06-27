@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { MessageCircle, Send, CheckCircle } from 'lucide-react';
 
+import { AppLanguage } from '@/lib/language-context';
+
 interface FooterSectionProps {
-  language: 'zh' | 'en';
+  language: AppLanguage;
 }
 
-const translations = {
+const translations: Record<AppLanguage, { contactTitle: string; contactDesc: string; namePlaceholder: string; emailPlaceholder: string; messagePlaceholder: string; send: string; sending: string; successTitle: string; successDesc: string; errorMsg: string }> = {
   zh: {
     contactTitle: '留言給作者',
     contactDesc: '有任何建議或問題，歡迎直接留言，我會看到！',
@@ -31,6 +33,54 @@ const translations = {
     successTitle: 'Message sent!',
     successDesc: 'Thanks for your feedback. I will check it soon.',
     errorMsg: 'Failed to send. Please try again later.',
+  },
+  ja: {
+    contactTitle: '作者へメッセージ',
+    contactDesc: 'ご意見・ご要望はお気軽にどうぞ！すべて確認します。',
+    namePlaceholder: 'お名前（任意）',
+    emailPlaceholder: 'メールアドレス（返信希望の場合、任意）',
+    messagePlaceholder: 'メッセージを入力…',
+    send: '送信する',
+    sending: '送信中…',
+    successTitle: '送信完了！',
+    successDesc: 'フィードバックありがとうございます。すぐに確認します。',
+    errorMsg: '送信に失敗しました。後でもう一度お試しください。',
+  },
+  ko: {
+    contactTitle: '작성자에게 메시지',
+    contactDesc: '제안이나 피드백이 있으시면 메시지를 남겨주세요!',
+    namePlaceholder: '이름 (선택)',
+    emailPlaceholder: '이메일 (답장 원하시면, 선택)',
+    messagePlaceholder: '메시지를 입력하세요…',
+    send: '메시지 보내기',
+    sending: '전송 중…',
+    successTitle: '전송 완료!',
+    successDesc: '피드백 감사합니다. 곧 확인하겠습니다.',
+    errorMsg: '전송 실패. 나중에 다시 시도해 주세요.',
+  },
+  id: {
+    contactTitle: 'Pesan untuk Penulis',
+    contactDesc: 'Ada saran atau masukan? Tinggalkan pesan—saya baca semuanya!',
+    namePlaceholder: 'Nama Anda (opsional)',
+    emailPlaceholder: 'Email Anda untuk balasan (opsional)',
+    messagePlaceholder: 'Tulis pesan Anda…',
+    send: 'Kirim Pesan',
+    sending: 'Mengirim…',
+    successTitle: 'Pesan terkirim!',
+    successDesc: 'Terima kasih atas masukan Anda. Akan segera saya cek.',
+    errorMsg: 'Gagal mengirim. Silakan coba lagi nanti.',
+  },
+  vi: {
+    contactTitle: 'Nhắn tin cho tác giả',
+    contactDesc: 'Có góp ý hoặc phản hồi? Hãy để lại tin nhắn—tôi đọc tất cả!',
+    namePlaceholder: 'Tên của bạn (tùy chọn)',
+    emailPlaceholder: 'Email để tôi phản hồi (tùy chọn)',
+    messagePlaceholder: 'Viết tin nhắn của bạn…',
+    send: 'Gửi tin nhắn',
+    sending: 'Đang gửi…',
+    successTitle: 'Đã gửi tin nhắn!',
+    successDesc: 'Cảm ơn phản hồi của bạn. Tôi sẽ kiểm tra sớm.',
+    errorMsg: 'Gửi thất bại. Vui lòng thử lại sau.',
   },
 };
 

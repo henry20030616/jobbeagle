@@ -7,10 +7,11 @@ import {
   Activity, Globe, Building2, Users, FileQuestion
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+import { AppLanguage } from '@/lib/language-context';
 
 interface DashboardProps {
   data: InterviewReport;
-  language?: 'zh' | 'en';
+  language?: AppLanguage;
 }
 
 // ----------------------------------------------------------------------
@@ -99,8 +100,8 @@ const getBeagleIconSvg = (color: string, spotColor: string, bellyColor: string =
   </svg>`;
 };
 
-const getScoreInfo = (score: number, language: 'zh' | 'en' = 'zh') => {
-  if (language === 'en') {
+const getScoreInfo = (score: number, language: AppLanguage = 'en') => {
+  if (language !== 'zh') {
     if (score >= 90) return { level: "Diamond Beagle", label: "Top Match: Ready to Execute", description: "Your skills and experience almost perfectly match the job requirements.", color: "text-cyan-400", fill: "#22d3ee", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" color="#22d3ee" spotColor="#0e7490" /> };
     if (score >= 75) return { level: "Gold Beagle", label: "High Match: Core Potential", description: "You have most of the core skills and only need slight preparation.", color: "text-amber-400", fill: "#fbbf24", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" color="#fbbf24" spotColor="#b45309" /> };
     if (score >= 60) return { level: "Silver Beagle", label: "Moderate Match: Partial Skill Overlap", description: "You have relevant foundations but need to emphasize potential.", color: "text-slate-300", fill: "#cbd5e1", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(203,213,225,0.4)]" color="#cbd5e1" spotColor="#475569" /> };
@@ -117,7 +118,7 @@ const getScoreInfo = (score: number, language: 'zh' | 'en' = 'zh') => {
 // 3. 主儀表板元件
 // ----------------------------------------------------------------------
 
-const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) => {
+const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'en' }) => {
 
   const { basic_analysis, salary_analysis, reviews_analysis, market_analysis, match_analysis, interview_preparation } = data;
   const scoreInfo = getScoreInfo(match_analysis.score, language);
@@ -206,7 +207,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
     }
   };
 
-  const t = translations[language];
+  const t = translations[language as 'zh' | 'en'] ?? translations['en'];
 
   return (
     <div className="relative">
@@ -249,7 +250,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'zh' }) 
                   <p className="text-sm text-slate-400 px-4 leading-relaxed mb-3">{scoreInfo.description}</p>
                   {match_analysis.recruiter_insight && (
                     <p className="text-sm text-slate-300 px-4 leading-relaxed mb-3 text-left border border-slate-600/50 rounded-lg py-2 bg-slate-900/40">
-                      <span className="text-xs font-bold text-amber-500/90 uppercase tracking-wide block mb-1">{language === 'zh' ? '人資洞察' : 'Recruiter insight'}</span>
+                      <span className="text-xs font-bold text-amber-500/90 uppercase tracking-wide block mb-1">{language === 'zh' ? '人資洞察' : 'Recruiter Insight'}</span>
                       {match_analysis.recruiter_insight}
                     </p>
                   )}

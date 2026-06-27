@@ -1,5 +1,6 @@
 'use client';
 
+import { AppLanguage } from '@/lib/language-context';
 import React, { useRef, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { JobData } from '@/types';
@@ -11,7 +12,7 @@ interface VideoFeedProps {
   savedJobIds?: Set<string>;
   onFollowChange?: (companyName: string, followed: boolean) => void;
   onSaveChange?: (jobId: string, saved: boolean, jobData?: JobData) => void;
-  language?: 'zh' | 'en';
+  language?: AppLanguage;
   onLoadMore?: () => void;
   hasMore?: boolean;
   loadingMore?: boolean;
@@ -23,7 +24,7 @@ const VideoFeed: React.FC<VideoFeedProps> = ({
   savedJobIds = new Set(),
   onFollowChange,
   onSaveChange,
-  language = 'zh',
+  language = 'en',
   onLoadMore,
   hasMore = false,
   loadingMore = false,

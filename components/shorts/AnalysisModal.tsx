@@ -1,5 +1,6 @@
 'use client';
 
+import { AppLanguage } from '@/lib/language-context';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   X, Upload, FileText, Sparkles, CheckCircle,
@@ -25,7 +26,7 @@ interface AnalysisModalProps {
   location: string;
   salary: string;
   jobDescription: string;
-  language?: 'zh' | 'en';
+  language?: AppLanguage;
 }
 
 // ─── Progress helpers (mirrors P1 logic) ──────────────────────────────────────
@@ -53,7 +54,7 @@ function getProgressAtTime(elapsedSec: number): number {
   return 99;
 }
 
-const STAGES: Record<'zh' | 'en', Array<{ minProgress: number; label: string }>> = {
+const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
   zh: [
     { minProgress: 0,  label: '🔍 讀取職缺資訊...' },
     { minProgress: 15, label: '📋 分析職缺要求...' },
@@ -74,8 +75,8 @@ const STAGES: Record<'zh' | 'en', Array<{ minProgress: number; label: string }>>
   ],
 };
 
-function getStageLabel(progress: number, lang: 'zh' | 'en' = 'zh'): string {
-  const stages = STAGES[lang];
+function getStageLabel(progress: number, lang: AppLanguage = 'en'): string {
+  const stages = STAGES[lang] ?? STAGES['en'];
   for (let i = stages.length - 1; i >= 0; i--) {
     if (progress >= stages[i].minProgress) return stages[i].label;
   }

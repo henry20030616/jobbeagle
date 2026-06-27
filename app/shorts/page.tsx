@@ -35,7 +35,25 @@ export default function JobbeagleShortsPage() {
   const [showLoginMenu, setShowLoginMenu] = useState(false);
 
   // Language from global context
-  const { uiLanguage: language } = useLanguage();
+  const { language: appLang } = useLanguage();
+  const SI = {
+    forYou:      { zh: '為您推薦', en: 'For You',    ja: 'おすすめ',        ko: '추천',       id: 'Untuk Anda',  vi: 'Đề xuất' },
+    following:   { zh: '追蹤中',   en: 'Following',  ja: 'フォロー中',      ko: '팔로잉',     id: 'Mengikuti',   vi: 'Đang theo dõi' },
+    saved:       { zh: '已儲存',   en: 'Saved',      ja: '保存済み',        ko: '저장됨',     id: 'Tersimpan',   vi: 'Đã lưu' },
+    logout:      { zh: '登出',     en: 'Logout',     ja: 'ログアウト',      ko: '로그아웃',   id: 'Keluar',      vi: 'Đăng xuất' },
+    login:       { zh: '登入',     en: 'Login',      ja: 'ログイン',        ko: '로그인',     id: 'Masuk',       vi: 'Đăng nhập' },
+    empLogin:    { zh: '企業登入', en: 'Employer Login', ja: '企業ログイン', ko: '기업 로그인', id: 'Login Perusahaan', vi: 'Đăng nhập Doanh nghiệp' },
+    talLogin:    { zh: '人才登入', en: 'Talent Login',   ja: '求職者ログイン', ko: '인재 로그인', id: 'Login Pencari Kerja', vi: 'Đăng nhập Ứng viên' },
+    home:        { zh: '首頁',     en: 'Home',       ja: 'ホーム',          ko: '홈',         id: 'Beranda',     vi: 'Trang chủ' },
+    company:     { zh: '企業',     en: 'Company',    ja: '企業',            ko: '기업',       id: 'Perusahaan',  vi: 'Doanh nghiệp' },
+    profile:     { zh: '個人',     en: 'Profile',    ja: 'プロフィール',    ko: '프로필',     id: 'Profil',      vi: 'Hồ sơ' },
+    noSaved:     { zh: '尚無儲存職缺', en: 'No saved jobs', ja: '保存された求人はありません', ko: '저장된 채용공고 없음', id: 'Belum ada lowongan tersimpan', vi: 'Chưa có việc làm đã lưu' },
+    tapBookmark: { zh: '點擊影片右側書籤圖示即可儲存', en: 'Tap the bookmark icon on any video to save', ja: '動画右のブックマークアイコンをタップして保存', ko: '영상 오른쪽 북마크 아이콘을 탭하여 저장', id: 'Ketuk ikon bookmark di video untuk menyimpan', vi: 'Nhấn biểu tượng đánh dấu trên video để lưu' },
+    noFollowing: { zh: '尚未追蹤企業', en: 'Not following any companies', ja: 'フォロー中の企業はありません', ko: '팔로우 중인 기업 없음', id: 'Belum mengikuti perusahaan', vi: 'Chưa theo dõi công ty nào' },
+    tapFollow:   { zh: '點擊影片右側追蹤按鈕開始追蹤', en: 'Tap follow on any video to start', ja: '動画右のフォローボタンをタップして開始', ko: '영상의 팔로우 버튼을 탭하여 시작', id: 'Ketuk tombol follow di video untuk mulai', vi: 'Nhấn theo dõi trên video để bắt đầu' },
+  } as const;
+  type SIKey = keyof typeof SI;
+  const t = (key: SIKey): string => (SI[key] as Record<string, string>)[appLang] ?? SI[key].en;
 
   // UI state
   const [activeTab, setActiveTab] = useState<'foryou' | 'following' | 'saved'>('foryou');
@@ -46,8 +64,6 @@ export default function JobbeagleShortsPage() {
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
   const [savedJobsData, setSavedJobsData] = useState<JobData[]>([]);
   const [hasCompanyProfile, setHasCompanyProfile] = useState(false);
-
-  const t = (zh: string, en: string) => language === 'zh' ? zh : en;
 
   useEffect(() => {
     loadVideos(null);
@@ -231,10 +247,10 @@ export default function JobbeagleShortsPage() {
           <div className="flex-1 overflow-hidden">
             <ProfileModal
               onClose={() => handleNavTab('home')}
-              language={language}
+              language={appLang}
             />
           </div>
-          <BottomNav navTab={navTab} onNav={handleNavTab} t={t} hasCompanyProfile={hasCompanyProfile} />
+          <BottomNav navTab={navTab} onNav={handleNavTab} home={t('home')} company={t('company')} profile={t('profile')} hasCompanyProfile={hasCompanyProfile} />
         </>
       )}
 
@@ -268,14 +284,14 @@ export default function JobbeagleShortsPage() {
         {activeTab === 'saved' && savedJobsData.length === 0 ? (
           <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
             <Bookmark className="w-12 h-12 opacity-40" />
-            <p className="text-lg font-semibold">{t('尚無儲存職缺', 'No saved jobs')}</p>
-            <p className="text-sm">{t('點擊影片右側書籤圖示即可儲存', 'Tap the bookmark icon on any video to save')}</p>
+            <p className="text-lg font-semibold">{t('noSaved')}</p>
+            <p className="text-sm">{t('tapBookmark')}</p>
           </div>
         ) : activeTab === 'following' && displayedJobs.length === 0 ? (
           <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
             <Building2 className="w-12 h-12 opacity-40" />
-            <p className="text-lg font-semibold">{t('尚未追蹤企業', 'Not following any companies')}</p>
-            <p className="text-sm">{t('點擊影片右側追蹤按鈕開始追蹤', 'Tap follow on any video to start')}</p>
+            <p className="text-lg font-semibold">{t('noFollowing')}</p>
+            <p className="text-sm">{t('tapFollow')}</p>
           </div>
         ) : (
           <VideoFeed
@@ -284,7 +300,7 @@ export default function JobbeagleShortsPage() {
             savedJobIds={savedJobIds}
             onFollowChange={handleFollowChange}
             onSaveChange={handleSaveChange}
-            language={language}
+            language={appLang}
             onLoadMore={activeTab === 'foryou' ? handleLoadMore : undefined}
             hasMore={activeTab === 'foryou' ? hasMore : false}
             loadingMore={loadingMore}
@@ -306,19 +322,19 @@ export default function JobbeagleShortsPage() {
               onClick={() => { setActiveTab('foryou'); setNavTab('home'); }}
               className={`pb-1.5 transition-colors ${activeTab === 'foryou' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}
             >
-              {t('為您推薦', 'For You')}
+              {t('forYou')}
             </button>
             <button
               onClick={() => { setActiveTab('following'); setNavTab('home'); }}
               className={`pb-1.5 transition-colors ${activeTab === 'following' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}
             >
-              {t('追蹤中', 'Following')} {followedCompanies.size > 0 && `(${followedCompanies.size})`}
+              {t('following')} {followedCompanies.size > 0 && `(${followedCompanies.size})`}
             </button>
             <button
               onClick={() => setActiveTab('saved')}
               className={`pb-1.5 transition-colors ${activeTab === 'saved' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}
             >
-              {t('已儲存', 'Saved')} {savedJobIds.size > 0 && `(${savedJobIds.size})`}
+              {t('saved')} {savedJobIds.size > 0 && `(${savedJobIds.size})`}
             </button>
           </div>
         </div>
@@ -333,7 +349,7 @@ export default function JobbeagleShortsPage() {
               className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-black/45 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-black/65 transition-colors"
             >
               <LogOut className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
-              {t('登出', 'Logout')}
+              {t('logout')}
             </button>
           ) : (
             <div className="relative">
@@ -342,7 +358,7 @@ export default function JobbeagleShortsPage() {
                 className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-black/45 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-black/65 transition-colors"
               >
                 <LogIn className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
-                {t('登入', 'Login')}
+                {t('login')}
                 <ChevronDown className="w-4 h-4 shrink-0 opacity-80" />
               </button>
               {showLoginMenu && (
@@ -358,7 +374,7 @@ export default function JobbeagleShortsPage() {
                       className="w-full flex items-center gap-2 px-4 py-3 hover:bg-slate-700 transition-colors text-white text-sm text-left"
                     >
                       <Building2 className="w-4 h-4" />
-                      {t('企業登入', 'Employer Login')}
+                      {t('empLogin')}
                     </button>
                     <div className="border-t border-slate-700">
                       <button
@@ -370,7 +386,7 @@ export default function JobbeagleShortsPage() {
                         className="w-full flex items-center gap-2 px-4 py-3 hover:bg-slate-700 transition-colors text-white text-sm"
                       >
                         <User className="w-4 h-4" />
-                        {t('人才登入', 'Talent Login')}
+                        {t('talLogin')}
                       </button>
                     </div>
                   </div>
@@ -381,20 +397,22 @@ export default function JobbeagleShortsPage() {
         </div>
       </div>
 
-      <BottomNav navTab={navTab} onNav={handleNavTab} t={t} hasCompanyProfile={hasCompanyProfile} />
+      <BottomNav navTab={navTab} onNav={handleNavTab} home={t('home')} company={t('company')} profile={t('profile')} hasCompanyProfile={hasCompanyProfile} />
         </>
       )}
     </div>
   );
 }
 
-// Bottom nav — 首頁 | 個人 / 企業
+// Bottom nav — Home | Profile / Company
 function BottomNav({
-  navTab, onNav, t, hasCompanyProfile,
+  navTab, onNav, home, company, profile, hasCompanyProfile,
 }: {
   navTab: 'home' | 'profile';
   onNav: (tab: 'home' | 'profile') => void;
-  t: (zh: string, en: string) => string;
+  home: string;
+  company: string;
+  profile: string;
   hasCompanyProfile: boolean;
 }) {
   return (
@@ -404,7 +422,7 @@ function BottomNav({
         className={`flex flex-col items-center gap-1.5 px-4 py-1.5 min-w-[4.5rem] transition-colors ${navTab === 'home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
       >
         <Home size={28} strokeWidth={navTab === 'home' ? 2.75 : 2} className="md:w-8 md:h-8" />
-        <span className="text-xs md:text-sm font-semibold">{t('首頁', 'Home')}</span>
+        <span className="text-xs md:text-sm font-semibold">{home}</span>
       </button>
 
       <button
@@ -416,7 +434,7 @@ function BottomNav({
           : <User size={28} strokeWidth={navTab === 'profile' ? 2.75 : 2} className="md:w-8 md:h-8" />
         }
         <span className="text-xs md:text-sm font-semibold">
-          {hasCompanyProfile ? t('企業', 'Company') : t('個人', 'Profile')}
+          {hasCompanyProfile ? company : profile}
         </span>
       </button>
     </div>

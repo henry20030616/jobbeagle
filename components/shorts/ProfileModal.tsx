@@ -1,5 +1,6 @@
 'use client';
 
+import { AppLanguage } from '@/lib/language-context';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
@@ -15,7 +16,7 @@ import { toYouTubeEmbedUrl, toFacebookEmbedUrl, normalizeInstagramUrl } from '@/
 
 interface ProfileModalProps {
   onClose: () => void;
-  language?: 'zh' | 'en';
+  language?: AppLanguage;
 }
 
 type PersonalTab = 'resumes' | 'saved' | 'following' | 'applied';

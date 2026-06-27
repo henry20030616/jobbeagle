@@ -9,7 +9,7 @@ import LoginButton from '@/components/LoginButton';
 import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, UserInputs } from '@/types';
 import { ChevronLeft, History, X, ChevronRight, Loader2 } from 'lucide-react';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface ReportSummary {
@@ -44,7 +44,7 @@ function getProgressAtTime(elapsedSec: number): number {
   return 99;
 }
 
-const STAGES: Record<'zh' | 'en', Array<{ minProgress: number; label: string }>> = {
+const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
   zh: [
     { minProgress: 0,  label: '🔍 讀取職缺資訊...' },
     { minProgress: 15, label: '📋 分析職缺要求與條件...' },
@@ -63,10 +63,46 @@ const STAGES: Record<'zh' | 'en', Array<{ minProgress: number; label: string }>>
     { minProgress: 85, label: '🎯 Researching interview insights...' },
     { minProgress: 93, label: '📊 Compiling strategic report...' },
   ],
+  ja: [
+    { minProgress: 0,  label: '🔍 求人情報を読み込み中...' },
+    { minProgress: 15, label: '📋 求人要件を分析中...' },
+    { minProgress: 35, label: '🌐 市場情報を収集中...' },
+    { minProgress: 55, label: '💰 給与データを比較中...' },
+    { minProgress: 72, label: '🔎 履歴書のマッチングを評価中...' },
+    { minProgress: 85, label: '🎯 面接情報を調査中...' },
+    { minProgress: 93, label: '📊 戦略レポートを作成中...' },
+  ],
+  ko: [
+    { minProgress: 0,  label: '🔍 채용 정보 읽는 중...' },
+    { minProgress: 15, label: '📋 채용 요건 분석 중...' },
+    { minProgress: 35, label: '🌐 시장 정보 수집 중...' },
+    { minProgress: 55, label: '💰 급여 데이터 비교 중...' },
+    { minProgress: 72, label: '🔎 이력서 매칭 평가 중...' },
+    { minProgress: 85, label: '🎯 면접 정보 조사 중...' },
+    { minProgress: 93, label: '📊 전략 보고서 작성 중...' },
+  ],
+  id: [
+    { minProgress: 0,  label: '🔍 Membaca deskripsi pekerjaan...' },
+    { minProgress: 15, label: '📋 Menganalisis persyaratan pekerjaan...' },
+    { minProgress: 35, label: '🌐 Mengumpulkan intelijen pasar...' },
+    { minProgress: 55, label: '💰 Membandingkan data gaji...' },
+    { minProgress: 72, label: '🔎 Mengevaluasi kecocokan resume...' },
+    { minProgress: 85, label: '🎯 Meneliti wawancara...' },
+    { minProgress: 93, label: '📊 Menyusun laporan strategis...' },
+  ],
+  vi: [
+    { minProgress: 0,  label: '🔍 Đọc mô tả công việc...' },
+    { minProgress: 15, label: '📋 Phân tích yêu cầu tuyển dụng...' },
+    { minProgress: 35, label: '🌐 Thu thập thông tin thị trường...' },
+    { minProgress: 55, label: '💰 So sánh dữ liệu lương...' },
+    { minProgress: 72, label: '🔎 Đánh giá mức độ phù hợp CV...' },
+    { minProgress: 85, label: '🎯 Nghiên cứu thông tin phỏng vấn...' },
+    { minProgress: 93, label: '📊 Biên soạn báo cáo chiến lược...' },
+  ],
 };
 
-function getStageLabel(progress: number, lang: 'zh' | 'en'): string {
-  const stages = STAGES[lang];
+function getStageLabel(progress: number, lang: AppLanguage): string {
+  const stages = STAGES[lang] ?? STAGES['en'];
   for (let i = stages.length - 1; i >= 0; i--) {
     if (progress >= stages[i].minProgress) return stages[i].label;
   }
@@ -74,9 +110,8 @@ function getStageLabel(progress: number, lang: 'zh' | 'en'): string {
 }
 
 export default function Home() {
-  const { language: appLanguage, uiLanguage } = useLanguage();
-  // uiLanguage: 'zh' | 'en' for UI components; appLanguage sent to API for report output
-  const language = uiLanguage; // alias kept for compatibility with existing translations logic
+  const { language: appLanguage } = useLanguage();
+  const language = appLanguage;
 
   const [report, setReport] = useState<InterviewReport | null>(null);
   const [loading, setLoading] = useState(false);
@@ -150,7 +185,7 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const startProgressSimulation = (lang: 'zh' | 'en') => {
+  const startProgressSimulation = (lang: AppLanguage) => {
     const startTime = Date.now();
     setAnalysisProgress(0);
     setAnalysisElapsed(0);
@@ -228,26 +263,16 @@ export default function Home() {
     }
   };
 
-  const translations = {
-    zh: {
-      backToHome: '返回首頁列表',
-      analysisFailed: '分析失敗',
-      suggestions: '建議',
-      checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息',
-      retryLater: '稍後重試，可能是 Gemini API 暫時性問題',
-      checkApiKey: '如果持續發生，請檢查 API Key 是否正確',
-    },
-    en: {
-      backToHome: 'Back to Home',
-      analysisFailed: 'Analysis Failed',
-      suggestions: 'Suggestions',
-      checkConsole: 'Check browser console (F12) for detailed error information',
-      retryLater: 'Retry later, may be a temporary Gemini API issue',
-      checkApiKey: 'If it persists, please check if the API Key is correct',
-    }
+  const translations: Record<string, { backToHome: string; analysisFailed: string; suggestions: string; checkConsole: string; retryLater: string; checkApiKey: string; history: string; historyTitle: string; noHistory: string }> = {
+    zh: { backToHome: '返回首頁列表', analysisFailed: '分析失敗', suggestions: '建議', checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息', retryLater: '稍後重試，可能是 Gemini API 暫時性問題', checkApiKey: '如果持續發生，請檢查 API Key 是否正確', history: '歷史紀錄', historyTitle: '分析歷史紀錄', noHistory: '尚無歷史記錄' },
+    en: { backToHome: 'Back to Home', analysisFailed: 'Analysis Failed', suggestions: 'Suggestions', checkConsole: 'Check browser console (F12) for detailed error information', retryLater: 'Retry later, may be a temporary Gemini API issue', checkApiKey: 'If it persists, check if the API Key is correct', history: 'History', historyTitle: 'Analysis History', noHistory: 'No history yet' },
+    ja: { backToHome: 'ホームに戻る', analysisFailed: '分析に失敗しました', suggestions: '提案', checkConsole: 'ブラウザコンソール (F12) で詳細なエラーを確認してください', retryLater: '後で再試行してください。Gemini APIの一時的な問題かもしれません', checkApiKey: 'APIキーが正しいか確認してください', history: '履歴', historyTitle: '分析履歴', noHistory: '履歴はまだありません' },
+    ko: { backToHome: '홈으로 돌아가기', analysisFailed: '분석 실패', suggestions: '제안', checkConsole: '브라우저 콘솔 (F12)에서 자세한 오류를 확인하세요', retryLater: '나중에 다시 시도하세요. Gemini API의 일시적인 문제일 수 있습니다', checkApiKey: 'API 키가 올바른지 확인하세요', history: '기록', historyTitle: '분석 기록', noHistory: '기록이 없습니다' },
+    id: { backToHome: 'Kembali ke Beranda', analysisFailed: 'Analisis Gagal', suggestions: 'Saran', checkConsole: 'Periksa konsol browser (F12) untuk informasi error detail', retryLater: 'Coba lagi nanti, mungkin masalah sementara Gemini API', checkApiKey: 'Jika terus terjadi, periksa apakah API Key sudah benar', history: 'Riwayat', historyTitle: 'Riwayat Analisis', noHistory: 'Belum ada riwayat' },
+    vi: { backToHome: 'Quay về Trang chủ', analysisFailed: 'Phân tích thất bại', suggestions: 'Gợi ý', checkConsole: 'Kiểm tra console trình duyệt (F12) để xem lỗi chi tiết', retryLater: 'Thử lại sau, có thể là sự cố tạm thời của Gemini API', checkApiKey: 'Nếu vẫn tiếp tục, kiểm tra API Key có đúng không', history: 'Lịch sử', historyTitle: 'Lịch sử Phân tích', noHistory: 'Chưa có lịch sử' },
   };
 
-  const t = translations[language];
+  const t = translations[language] ?? translations['en'];
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
@@ -259,10 +284,10 @@ export default function Home() {
             <button
               onClick={() => { setShowHistory(true); loadHistory(); }}
               className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
-              title={language === 'zh' ? '我的分析歷史' : 'Analysis History'}
+              title={t.historyTitle}
             >
               <History className="w-4 h-4" />
-              <span className="hidden sm:inline">{language === 'zh' ? '歷史紀錄' : 'History'}</span>
+              <span className="hidden sm:inline">{t.history}</span>
             </button>
           )}
           <LoginButton />
@@ -280,7 +305,7 @@ export default function Home() {
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
                 <h2 className="text-white font-bold text-lg flex items-center gap-2">
                   <History className="w-5 h-5 text-indigo-400" />
-                  {language === 'zh' ? '分析歷史記錄' : 'Analysis History'}
+                  {t.historyTitle}
                 </h2>
                 <button onClick={() => setShowHistory(false)} className="text-slate-400 hover:text-white">
                   <X className="w-5 h-5" />
@@ -296,7 +321,7 @@ export default function Home() {
                 ) : historyReports.length === 0 ? (
                   <div className="text-center py-16 text-slate-400">
                     <History className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p className="text-sm">{language === 'zh' ? '尚無歷史記錄' : 'No history yet'}</p>
+                    <p className="text-sm">{t.noHistory}</p>
                     <p className="text-xs mt-1 opacity-60">{language === 'zh' ? '完成一次分析後會自動儲存' : 'Records are saved after each analysis'}</p>
                   </div>
                 ) : (

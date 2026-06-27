@@ -2,35 +2,42 @@
 
 import React from 'react';
 import { BeagleIcon } from './AnalysisDashboard';
+import { AppLanguage } from '@/lib/language-context';
 
 interface DogLoadingProps {
   progress?: number;
   stage?: string;
   elapsed?: number;
-  language?: 'zh' | 'en';
+  language?: AppLanguage;
 }
 
 const DogLoading: React.FC<DogLoadingProps> = ({
   progress = 0,
   stage,
   elapsed = 0,
-  language = 'zh',
+  language = 'en',
 }) => {
   const displayProgress = Math.min(Math.max(Math.round(progress), 0), 99);
 
-  const defaultStage = language === 'zh'
-    ? '小獵犬正在努力嗅探資料中...'
-    : 'Beagle is sniffing for data...';
+  const defaultStageMap: Record<AppLanguage, string> = {
+    zh: '小獵犬正在努力嗅探資料中...', en: 'Beagle is sniffing for data...',
+    ja: 'ビーグルがデータを嗅ぎ回っています...', ko: '비글이 데이터를 열심히 찾고 있습니다...',
+    id: 'Beagle sedang mencari data...', vi: 'Beagle đang tìm kiếm dữ liệu...',
+  };
+  const estimatedMap: Record<AppLanguage, string> = {
+    zh: '通常需要 30–60 秒', en: 'Usually takes 30–60 seconds',
+    ja: '通常30〜60秒かかります', ko: '보통 30~60초 소요됩니다',
+    id: 'Biasanya 30–60 detik', vi: 'Thường mất 30–60 giây',
+  };
+  const elapsedMap: Record<AppLanguage, string> = {
+    zh: `已分析 ${elapsed} 秒`, en: `${elapsed}s elapsed`,
+    ja: `${elapsed}秒経過`, ko: `${elapsed}초 경과`,
+    id: `${elapsed}d berlalu`, vi: `${elapsed}s đã trôi qua`,
+  };
 
-  const currentStage = stage || defaultStage;
-
-  const estimatedLabel = language === 'zh'
-    ? '通常需要 30–60 秒'
-    : 'Usually takes 30–60 seconds';
-
-  const elapsedLabel = language === 'zh'
-    ? `已分析 ${elapsed} 秒`
-    : `${elapsed}s elapsed`;
+  const currentStage = stage || defaultStageMap[language];
+  const estimatedLabel = estimatedMap[language];
+  const elapsedLabel = elapsedMap[language];
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-950 z-50 px-6">

@@ -24,8 +24,6 @@ export const LANGUAGE_OPTIONS: LanguageOption[] = [
 
 interface LanguageContextValue {
   language: AppLanguage;
-  /** 'zh' or 'en' — used as prop for UI components that only have zh/en translations */
-  uiLanguage: 'zh' | 'en';
   setLanguage: (lang: AppLanguage) => void;
   currentOption: LanguageOption;
 }
@@ -56,10 +54,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const currentOption = LANGUAGE_OPTIONS.find(o => o.code === language)!;
-  const uiLanguage = currentOption.uiLang;
 
   return (
-    <LanguageContext.Provider value={{ language, uiLanguage, setLanguage, currentOption }}>
+    <LanguageContext.Provider value={{ language, setLanguage, currentOption }}>
       {children}
     </LanguageContext.Provider>
   );
