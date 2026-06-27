@@ -358,6 +358,11 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user: currentUser } } = await supabase.auth.getUser();
 
+    // #region agent log
+    fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'A',location:'analyze/route.ts:getUser',message:'server auth getUser result',data:{currentUserId:currentUser?.id ?? null,isLoggedIn:!!currentUser},timestamp:Date.now()})}).catch(()=>{});
+    console.log(`🔑 [AUTH] Server-side getUser → ${currentUser ? `UID=${currentUser.id.substring(0,8)}...` : 'NULL (not authenticated on server)'}`);
+    // #endregion
+
     // 未登入：IP 2次/天；登入：user_id 5次/天
     const isLoggedIn = !!currentUser;
     const dailyLimit = isLoggedIn ? USER_DAILY_LIMIT : GUEST_DAILY_LIMIT;
@@ -725,32 +730,54 @@ export async function POST(request: NextRequest) {
     console.log(`🏁 [API End] AI 分析完成，耗時: ${totalDuration}秒`);
 
     // 儲存分析報告（登入用戶才保存）
+    let saveStatus: 'skipped_not_logged_in' | 'success' | 'failed' = 'skipped_not_logged_in';
+    let saveErrorMsg: string | null = null;
+
     if (currentUser) {
       try {
+        const insertPayload = {
+          user_id: currentUser.id,
+          job_title: report.basic_analysis?.job_title || '未知職缺',
+          job_description_preview: jobDescription.substring(0, 300),
+          score: typeof report.match_analysis?.score === 'number' ? report.match_analysis.score : null,
+          report: report as any,
+          language: reportLanguage || 'zh',
+        };
+        // #region agent log
+        fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'B',location:'analyze/route.ts:insert',message:'attempting DB insert',data:{userId:currentUser.id.substring(0,8),jobTitle:insertPayload.job_title,score:insertPayload.score},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         const { error: dbError } = await supabase
           .from('analysis_reports')
-          .insert({
-            user_id: currentUser.id,
-            job_title: report.basic_analysis?.job_title || '未知職缺',
-            job_description_preview: jobDescription.substring(0, 300),
-            score: report.match_analysis?.score ?? null,
-            report: report as any,
-            language: reportLanguage || 'zh',
-          });
+          .insert(insertPayload);
         if (dbError) {
-          console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message);
+          saveStatus = 'failed';
+          saveErrorMsg = dbError.message;
+          // #region agent log
+          fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'B',location:'analyze/route.ts:insert_error',message:'DB insert FAILED',data:{error:dbError.message,code:dbError.code},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message, 'code:', dbError.code);
         } else {
+          saveStatus = 'success';
+          // #region agent log
+          fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'B',location:'analyze/route.ts:insert_ok',message:'DB insert SUCCESS',data:{userId:currentUser.id.substring(0,8)},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
           console.log('✅ [DB] 分析報告已儲存');
         }
       } catch (e: any) {
+        saveStatus = 'failed';
+        saveErrorMsg = e?.message;
         console.warn('⚠️ [DB] 報告儲存異常（不影響回傳）:', e?.message);
       }
+    } else {
+      console.warn('⚠️ [DB] 跳過儲存：server 端 currentUser 為 null（未認證）');
     }
 
     return NextResponse.json({
       report,
       modelUsed: model,
-      saved: !!currentUser,
+      saved: saveStatus === 'success',
+      saveStatus,
+      saveError: saveErrorMsg,
     });
 
   } catch (error: any) {

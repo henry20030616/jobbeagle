@@ -171,14 +171,20 @@ export default function Home() {
     setHistoryLoading(true);
     try {
       const supabase = createClient();
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('analysis_reports')
         .select('id, job_title, score, language, created_at, report')
         .order('created_at', { ascending: false })
         .limit(20);
+      // #region agent log
+      fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'C',location:'page.tsx:loadHistory',message:'SELECT result',data:{count:data?.length??0,error:error?.message??null},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      if (error) {
+        console.error('❌ [History] SELECT error:', error.message, error.code);
+      }
       setHistoryReports((data || []) as ReportSummary[]);
-    } catch {
-      // silently fail
+    } catch (e: any) {
+      console.error('❌ [History] Exception:', e?.message);
     } finally {
       setHistoryLoading(false);
     }
@@ -207,6 +213,11 @@ export default function Home() {
       }
 
       setReport(result.report);
+
+      // #region agent log
+      fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'A',location:'page.tsx:handleGenerate',message:'API response saveStatus',data:{saved:result.saved,saveStatus:result.saveStatus,saveError:result.saveError??null,serverAuthUser:result.saved},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      console.log(`💾 [Save Status] saved=${result.saved}, status=${result.saveStatus}, error=${result.saveError ?? 'none'}`);
 
     } catch (err: any) {
       console.error('❌ [Frontend Error]', err);
