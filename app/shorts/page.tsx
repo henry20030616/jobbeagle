@@ -164,7 +164,7 @@ export default function JobbeagleShortsPage() {
 
   const handleLoadMore = useCallback(() => {
     // #region agent log
-    fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'shorts/page.tsx:handleLoadMore',message:'handleLoadMore called',data:{hasMore,loadingMore,hasCursor:!!lastCursorRef.current,cursor:lastCursorRef.current?.substring(0,20)},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
+    console.log(`[DBG-B] handleLoadMore | hasMore=${hasMore} loadingMore=${loadingMore} hasCursor=${!!lastCursorRef.current}`);
     // #endregion
     if (!hasMore || loadingMore || !lastCursorRef.current) return;
     setLoadingMore(true);

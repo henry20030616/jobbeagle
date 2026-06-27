@@ -372,7 +372,7 @@ export async function POST(request: NextRequest) {
     rateLimitCurrentCount = currentCount;
 
     // #region agent log
-    fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'analyze/route.ts:rate-limit-check',message:'rate limit check result',data:{isLoggedIn,dailyLimit,allowed,remaining,currentCount,limitKeyPrefix:limitKey.substring(0,8)},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
+    console.log('[DBG-A] rate-limit-check', JSON.stringify({isLoggedIn,dailyLimit,allowed,remaining,currentCount,limitKeyPrefix:limitKey.substring(0,8)}));
     // #endregion
 
     if (!allowed) {
@@ -730,7 +730,7 @@ export async function POST(request: NextRequest) {
 
     // 儲存分析報告（登入用戶才保存）
     // #region agent log
-    fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'analyze/route.ts:pre-db-save',message:'about to save report',data:{hasUser:!!currentUser,hasReport:!!report,hasJobTitle:!!report?.basic_analysis?.job_title,score:report?.match_analysis?.score,reportLang:reportLanguage},timestamp:Date.now(),hypothesisId:'C'})}).catch(()=>{});
+    console.log('[DBG-C] pre-db-save', JSON.stringify({hasUser:!!currentUser,hasReport:!!report,jobTitle:report?.basic_analysis?.job_title,score:report?.match_analysis?.score}));
     // #endregion
     if (currentUser) {
       try {
@@ -745,7 +745,7 @@ export async function POST(request: NextRequest) {
             language: reportLanguage || 'zh',
           });
         // #region agent log
-        fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'analyze/route.ts:db-save-result',message:'db save done',data:{success:!dbError,error:dbError?.message,code:dbError?.code},timestamp:Date.now(),hypothesisId:'C'})}).catch(()=>{});
+        console.log('[DBG-C] db-save-result', JSON.stringify({success:!dbError,error:dbError?.message,code:dbError?.code}));
         // #endregion
         if (dbError) {
           console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message);

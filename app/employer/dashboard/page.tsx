@@ -84,7 +84,7 @@ export default function EmployerDashboard() {
       }
 
       // #region agent log
-      fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'employer/dashboard:company-profiles-load',message:'company_profiles query result',data:{found:!!profileData,errorCode:profileError?.code,errorMsg:profileError?.message},timestamp:Date.now(),hypothesisId:'D'})}).catch(()=>{});
+      console.log(`[DBG-D] company_profiles query | found=${!!profileData} err=${profileError?.code} msg=${profileError?.message}`);
       // #endregion
       if (!profileData) {
         // 首次登入自動建立 company_profile
@@ -100,7 +100,7 @@ export default function EmployerDashboard() {
           .single();
 
         // #region agent log
-        fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'employer/dashboard:upsert-result',message:'company_profiles upsert result',data:{success:!createError,errorCode:createError?.code,errorMsg:createError?.message,hasNewProfile:!!newProfile},timestamp:Date.now(),hypothesisId:'D'})}).catch(()=>{});
+        console.log(`[DBG-D] company_profiles upsert | success=${!createError} err=${createError?.code} msg=${createError?.message}`);
         // #endregion
         if (createError) throw createError;
 
