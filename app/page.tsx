@@ -171,18 +171,11 @@ export default function Home() {
     setHistoryLoading(true);
     try {
       const supabase = createClient();
-      // #region agent log
-      const { data: { user: sessionUser } } = await supabase.auth.getUser();
-      console.log(`[DBG-E] loadHistory | sessionUser=${!!sessionUser} currentUserState=${!!currentUser}`);
-      // #endregion
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('analysis_reports')
         .select('id, job_title, score, language, created_at, report')
         .order('created_at', { ascending: false })
         .limit(20);
-      // #region agent log
-      console.log(`[DBG-E] history query result | count=${data?.length??0} err=${(error as any)?.code} msg=${(error as any)?.message}`);
-      // #endregion
       setHistoryReports((data || []) as ReportSummary[]);
     } catch {
       // silently fail

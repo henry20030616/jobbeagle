@@ -165,9 +165,6 @@ export default function JobbeagleShortsPage() {
   };
 
   const handleLoadMore = useCallback(() => {
-    // #region agent log
-    console.log(`[DBG-B] handleLoadMore | hasMore=${hasMore} loadingMoreRef=${loadingMoreRef.current} hasCursor=${!!lastCursorRef.current}`);
-    // #endregion
     // Use ref (synchronous) instead of state (async) to prevent race condition
     if (!hasMore || loadingMoreRef.current || !lastCursorRef.current) return;
     loadingMoreRef.current = true;

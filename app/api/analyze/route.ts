@@ -371,10 +371,6 @@ export async function POST(request: NextRequest) {
     const { allowed, remaining, currentCount } = await checkUsage(limitKey, dailyLimit);
     rateLimitCurrentCount = currentCount;
 
-    // #region agent log
-    console.log('[DBG-A] rate-limit-check', JSON.stringify({isLoggedIn,dailyLimit,allowed,remaining,currentCount,limitKeyPrefix:limitKey.substring(0,8)}));
-    // #endregion
-
     if (!allowed) {
       console.warn(`🚫 [RateLimit] Blocked: ${limitKey.substring(0, 8)}...`);
       return NextResponse.json(
@@ -729,9 +725,6 @@ export async function POST(request: NextRequest) {
     console.log(`🏁 [API End] AI 分析完成，耗時: ${totalDuration}秒`);
 
     // 儲存分析報告（登入用戶才保存）
-    // #region agent log
-    console.log('[DBG-C] pre-db-save', JSON.stringify({hasUser:!!currentUser,hasReport:!!report,jobTitle:report?.basic_analysis?.job_title,score:report?.match_analysis?.score}));
-    // #endregion
     if (currentUser) {
       try {
         const { error: dbError } = await supabase
@@ -744,9 +737,6 @@ export async function POST(request: NextRequest) {
             report: report as any,
             language: reportLanguage || 'zh',
           });
-        // #region agent log
-        console.log('[DBG-C] db-save-result', JSON.stringify({success:!dbError,error:dbError?.message,code:dbError?.code}));
-        // #endregion
         if (dbError) {
           console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message);
         } else {

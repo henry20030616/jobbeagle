@@ -119,26 +119,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
   // 觀看計數：active 超過 3 秒才算一次（debounce，避免快速滑過被計算）
   useEffect(() => {
     if (!isActive) return;
-    // #region agent log
-    console.log(`[DBG-A] view-count timer start | jobId=${job.id} sourceType=${job.videoSourceType??'upload'}`);
-    // #endregion
     const timer = setTimeout(() => {
-      // #region agent log
-      console.log(`[DBG-A] view-count firing API | jobId=${job.id}`);
-      // #endregion
       fetch(`/api/shorts/view`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ videoId: job.id }),
-      }).then(r => {
-        // #region agent log
-        console.log(`[DBG-A] view-count response | status=${r.status} ok=${r.ok}`);
-        // #endregion
-      }).catch(err => {
-        // #region agent log
-        console.error(`[DBG-A] view-count error | ${err}`);
-        // #endregion
-      });
+      }).catch(() => {});
     }, 3000);
     return () => clearTimeout(timer);
   }, [isActive, job.id]);

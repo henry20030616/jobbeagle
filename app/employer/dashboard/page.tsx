@@ -83,9 +83,6 @@ export default function EmployerDashboard() {
         throw profileError;
       }
 
-      // #region agent log
-      console.log(`[DBG-D] company_profiles query | found=${!!profileData} err=${profileError?.code} msg=${profileError?.message}`);
-      // #endregion
       if (!profileData) {
         // 首次登入自動建立 company_profile
         const { data: newProfile, error: createError } = await supabase
@@ -99,9 +96,6 @@ export default function EmployerDashboard() {
           .select()
           .single();
 
-        // #region agent log
-        console.log(`[DBG-D] company_profiles upsert | success=${!createError} err=${createError?.code} msg=${createError?.message}`);
-        // #endregion
         if (createError) throw createError;
 
         setCompany({
