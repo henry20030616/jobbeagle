@@ -72,46 +72,49 @@ export default function EmployerDashboard() {
       setLoading(true);
       const supabase = createClient();
 
-      // 載入企業資訊
-      const { data: companyData, error: companyError } = await supabase
-        .from('companies')
+      // 從 company_profiles 載入企業資訊（統一數據來源，不再用 companies 表）
+      const { data: profileData, error: profileError } = await supabase
+        .from('company_profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      // 如果表不存在，顯示友好錯誤訊息
-      if (companyError && companyError.message?.includes('relation') && companyError.message?.includes('does not exist')) {
-        setError('數據庫表尚未創建。請在 Supabase SQL Editor 中執行 supabase-employer-schema.sql 腳本。');
-        return;
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw profileError;
       }
 
-      if (companyError && companyError.code !== 'PGRST116') {
-        throw companyError;
-      }
-
-      // 如果企業不存在，建立新企業
-      if (!companyData) {
-        const { data: newCompany, error: createError } = await supabase
-          .from('companies')
-          .insert({
+      if (!profileData) {
+        // 首次登入自動建立 company_profile
+        const { data: newProfile, error: createError } = await supabase
+          .from('company_profiles')
+          .upsert({
             user_id: userId,
             company_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || '新企業',
-            company_email: user?.email || '',
-          })
+            contact_email: user?.email || '',
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id' })
           .select()
           .single();
 
-        if (createError) {
-          // 如果插入失敗且是因為表不存在
-          if (createError.message?.includes('relation') && createError.message?.includes('does not exist')) {
-            setError('數據庫表尚未創建。請在 Supabase SQL Editor 中執行 supabase-employer-schema.sql 腳本。');
-            return;
-          }
-          throw createError;
-        }
-        setCompany(newCompany);
+        if (createError) throw createError;
+
+        setCompany({
+          id: newProfile.id,
+          company_name: newProfile.company_name,
+          company_email: newProfile.contact_email ?? null,
+          company_website: newProfile.website ?? null,
+          company_logo_url: newProfile.logo_url ?? null,
+          description: newProfile.description ?? null,
+        });
       } else {
-        setCompany(companyData);
+        setCompany({
+          id: profileData.id,
+          company_name: profileData.company_name,
+          company_email: profileData.contact_email ?? null,
+          company_website: profileData.website ?? null,
+          company_logo_url: profileData.logo_url ?? null,
+          description: profileData.description ?? null,
+        });
       }
 
       // 載入影片列表（用 company_user_id 確保與 Shorts 後台資料一致）

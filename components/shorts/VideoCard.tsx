@@ -93,8 +93,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const coverLetterFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // 無論任何影片類型，inactive 時都關閉 overlay
+    if (!isActive) {
+      setShowFullDetails(false);
+      setShowApplyModal(false);
+    }
+
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) return; // embed 類型沒有 <video> 元素，跳出
 
     if (isActive) {
         setHasError(false);
@@ -107,10 +113,21 @@ const VideoCard: React.FC<VideoCardProps> = ({
         }
     } else {
         video.pause();
-        setShowFullDetails(false);
-        setShowApplyModal(false);
     }
   }, [isActive, job.id, videoUrl]);
+
+  // 觀看計數：active 超過 3 秒才算一次（debounce，避免快速滑過被計算）
+  useEffect(() => {
+    if (!isActive) return;
+    const timer = setTimeout(() => {
+      fetch(`/api/shorts/view`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoId: job.id }),
+      }).catch(() => {});
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [isActive, job.id]);
 
   // Load real like count + user's like status once when video becomes active
   useEffect(() => {
@@ -554,11 +571,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   allow="autoplay; encrypted-media; fullscreen"
                   allowFullScreen
                   title="YouTube 短影音"
-                  style={{ pointerEvents: 'none' }}
                 />
               );
             }
-            // 未啟動時顯示 YouTube 縮圖 placeholder
             return (
               <div className="z-10 flex flex-col items-center justify-center gap-3 text-white/70">
                 <span className="text-5xl">▶</span>
@@ -578,7 +593,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   allow="autoplay; encrypted-media"
                   allowFullScreen
                   title="Facebook 影片"
-                  style={{ pointerEvents: 'none' }}
                   scrolling="no"
                 />
               );
@@ -743,15 +757,17 @@ const VideoCard: React.FC<VideoCardProps> = ({
           <span className="text-sm md:text-base font-bold drop-shadow-md text-white">{language === 'zh' ? '分享' : 'Share'}</span>
         </div>
         
-        {/* Mute Toggle */}
-        <div className="flex flex-col items-center gap-2 mt-1">
-            <button 
-                onClick={toggleMute} 
-                className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
+        {/* Mute Toggle：embed 類型由 iframe 本身控制音量，不顯示此按鈕 */}
+        {(job.videoSourceType === 'upload' || !job.videoSourceType) && (
+          <div className="flex flex-col items-center gap-2 mt-1">
+            <button
+              onClick={toggleMute}
+              className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
             >
-                {isMuted ? <VolumeX size={30} /> : <Volume2 size={30} />}
+              {isMuted ? <VolumeX size={30} /> : <Volume2 size={30} />}
             </button>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* --- Bottom: 三等份 — 左文字 / 中 AI / 右申請，減少直向堆疊遮擋影片 --- */}

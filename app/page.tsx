@@ -6,8 +6,18 @@ import AnalysisDashboard from '@/components/AnalysisDashboard';
 import DogLoading from '@/components/DogLoading';
 import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
+import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, UserInputs } from '@/types';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, History, X, ChevronRight, Loader2 } from 'lucide-react';
+
+interface ReportSummary {
+  id: string;
+  job_title: string;
+  score: number | null;
+  language: string;
+  created_at: string;
+  report: InterviewReport;
+}
 // Maps elapsed seconds → simulated progress percentage (capped at 99 until API returns)
 const PROGRESS_SCHEDULE = [
   { time: 0,   progress: 0  },
@@ -69,6 +79,12 @@ export default function Home() {
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
 
+  // Auth + History
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyReports, setHistoryReports] = useState<ReportSummary[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
   // Progress simulation state
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisStage, setAnalysisStage] = useState('');
@@ -118,6 +134,15 @@ export default function Home() {
       }
     };
     init();
+
+    // Track login state for history feature
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setCurrentUser(session?.user ?? null);
+      if (!session?.user) setShowHistory(false);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const startProgressSimulation = (lang: 'zh' | 'en') => {
@@ -139,6 +164,23 @@ export default function Home() {
     if (progressTimerRef.current) {
       clearInterval(progressTimerRef.current);
       progressTimerRef.current = null;
+    }
+  };
+
+  const loadHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('analysis_reports')
+        .select('id, job_title, score, language, created_at, report')
+        .order('created_at', { ascending: false })
+        .limit(20);
+      setHistoryReports((data || []) as ReportSummary[]);
+    } catch {
+      // silently fail
+    } finally {
+      setHistoryLoading(false);
     }
   };
 
@@ -227,8 +269,90 @@ export default function Home() {
               English
             </button>
           </div>
+          {/* History button — only shown when logged in */}
+          {currentUser && (
+            <button
+              onClick={() => { setShowHistory(true); loadHistory(); }}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
+              title={language === 'zh' ? '我的分析歷史' : 'Analysis History'}
+            >
+              <History className="w-4 h-4" />
+              <span className="hidden sm:inline">{language === 'zh' ? '歷史紀錄' : 'History'}</span>
+            </button>
+          )}
           <LoginButton />
         </div>
+
+        {/* ── History Slide-in Panel ── */}
+        {showHistory && (
+          <div className="fixed inset-0 z-50 flex" onClick={() => setShowHistory(false)}>
+            <div className="flex-1" />
+            <div
+              className="w-full max-w-md h-full bg-slate-900 border-l border-slate-700 shadow-2xl flex flex-col overflow-hidden animate-slide-in-right"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Panel header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
+                <h2 className="text-white font-bold text-lg flex items-center gap-2">
+                  <History className="w-5 h-5 text-indigo-400" />
+                  {language === 'zh' ? '分析歷史記錄' : 'Analysis History'}
+                </h2>
+                <button onClick={() => setShowHistory(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Panel body */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                {historyLoading ? (
+                  <div className="flex items-center justify-center h-32">
+                    <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+                  </div>
+                ) : historyReports.length === 0 ? (
+                  <div className="text-center py-16 text-slate-400">
+                    <History className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p className="text-sm">{language === 'zh' ? '尚無歷史記錄' : 'No history yet'}</p>
+                    <p className="text-xs mt-1 opacity-60">{language === 'zh' ? '完成一次分析後會自動儲存' : 'Records are saved after each analysis'}</p>
+                  </div>
+                ) : (
+                  historyReports.map(item => {
+                    const scoreColor = !item.score ? 'text-slate-400'
+                      : item.score >= 80 ? 'text-green-400'
+                      : item.score >= 65 ? 'text-yellow-400'
+                      : item.score >= 50 ? 'text-orange-400'
+                      : 'text-red-400';
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => { setReport(item.report); setShowHistory(false); }}
+                        className="w-full text-left p-4 rounded-xl bg-slate-800/60 border border-slate-700 hover:border-indigo-500 hover:bg-slate-800 transition-all group"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold text-sm line-clamp-1 group-hover:text-indigo-200 transition-colors">
+                              {item.job_title || (language === 'zh' ? '未知職缺' : 'Unknown Job')}
+                            </p>
+                            <p className="text-slate-500 text-xs mt-1">
+                              {new Date(item.created_at).toLocaleDateString(language === 'zh' ? 'zh-TW' : 'en-US', {
+                                month: 'short', day: 'numeric', year: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {item.score != null && (
+                              <span className={`text-xl font-black ${scoreColor}`}>{item.score}</span>
+                            )}
+                            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-colors" />
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         
         {loading && (
           <DogLoading

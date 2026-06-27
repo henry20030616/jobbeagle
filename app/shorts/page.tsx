@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import VideoFeed from '@/components/shorts/VideoFeed';
 import ProfileModal from '@/components/shorts/ProfileModal';
 import { JobData } from '@/types';
@@ -15,9 +15,14 @@ import { setStoredShortsViewRole } from '@/lib/shorts-view-role';
 const getLogoUrl = (companyName: string): string =>
   `https://www.google.com/s2/favicons?domain=${companyName.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
 
+const PAGE_SIZE = 10;
+
 export default function JobbeagleShortsPage() {
   const [jobs, setJobs] = useState<JobData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const lastCursorRef = useRef<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -39,7 +44,7 @@ export default function JobbeagleShortsPage() {
   const t = (zh: string, en: string) => language === 'zh' ? zh : en;
 
   useEffect(() => {
-    loadVideos();
+    loadVideos(null);
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
@@ -98,41 +103,70 @@ export default function JobbeagleShortsPage() {
     setHasCompanyProfile(!!companyRes.data);
   };
 
-  const loadVideos = async () => {
+  const mapVideo = (v: any): JobData => ({
+    id: v.id,
+    companyName: v.company_name,
+    jobTitle: v.job_title,
+    location: v.location || '',
+    salary: v.salary || '',
+    description: v.description,
+    videoUrl: v.video_url,
+    videoSourceType: v.video_source_type || 'upload',
+    tags: v.tags || [],
+    logoUrl: v.logo_url || getLogoUrl(v.company_name),
+    contactEmail: v.contact_email || undefined,
+    applyUrl: v.apply_url || undefined,
+  });
+
+  const loadVideos = async (cursor: string | null) => {
     try {
-      setLoading(true);
+      if (!cursor) setLoading(true);
       const supabase = createClient();
-      const { data, error: err } = await supabase
+      let query = supabase
         .from('shorts_videos')
         .select('*')
         .eq('is_published', true)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(PAGE_SIZE);
 
-      if (err || !data || data.length === 0) {
+      if (cursor) {
+        query = query.lt('created_at', cursor);
+      }
+
+      const { data, error: err } = await query;
+
+      if (!cursor && (err || !data || data.length === 0)) {
         setJobs(FALLBACK_VIDEOS);
+        setHasMore(false);
         return;
       }
 
-      setJobs(data.map((v) => ({
-        id: v.id,
-        companyName: v.company_name,
-        jobTitle: v.job_title,
-        location: v.location || '',
-        salary: v.salary || '',
-        description: v.description,
-        videoUrl: v.video_url,
-        videoSourceType: v.video_source_type || 'upload',
-        tags: v.tags || [],
-        logoUrl: v.logo_url || getLogoUrl(v.company_name),
-        contactEmail: v.contact_email || undefined,
-        applyUrl: v.apply_url || undefined,
-      })));
+      if (!data || data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      const mapped = data.map(mapVideo);
+      if (!cursor) {
+        setJobs(mapped);
+      } else {
+        setJobs(prev => [...prev, ...mapped]);
+      }
+
+      setHasMore(data.length === PAGE_SIZE);
+      lastCursorRef.current = data[data.length - 1].created_at;
     } catch {
-      setJobs(FALLBACK_VIDEOS);
+      if (!cursor) setJobs(FALLBACK_VIDEOS);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleLoadMore = useCallback(() => {
+    if (!hasMore || loadingMore || !lastCursorRef.current) return;
+    setLoadingMore(true);
+    loadVideos(lastCursorRef.current).finally(() => setLoadingMore(false));
+  }, [hasMore, loadingMore]);
 
   const handleFollowChange = (companyName: string, followed: boolean) => {
     setFollowedCompanies(prev => {
@@ -240,6 +274,9 @@ export default function JobbeagleShortsPage() {
             onFollowChange={handleFollowChange}
             onSaveChange={handleSaveChange}
             language={language}
+            onLoadMore={activeTab === 'foryou' ? handleLoadMore : undefined}
+            hasMore={activeTab === 'foryou' ? hasMore : false}
+            loadingMore={loadingMore}
           />
         )}
       </div>

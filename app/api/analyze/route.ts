@@ -6,7 +6,8 @@ import mammoth from 'mammoth';
 import { createHash } from 'crypto';
 import { GEMINI_ANALYSIS_MODEL } from '@/constants/models';
 
-const FREE_DAILY_LIMIT = 2;
+const GUEST_DAILY_LIMIT = 2;
+const USER_DAILY_LIMIT = 5;
 
 function hashIP(ip: string): string {
   return createHash('sha256').update(ip + 'jb_rl_salt').digest('hex').substring(0, 24);
@@ -19,12 +20,15 @@ function getClientIP(request: NextRequest): string {
 }
 
 /** 只檢查額度，不扣計數（避免 AI 失敗也消耗免費次數） */
-async function checkUsage(ipHash: string): Promise<{ allowed: boolean; remaining: number; currentCount: number }> {
+async function checkUsage(
+  limitKey: string,
+  dailyLimit: number,
+): Promise<{ allowed: boolean; remaining: number; currentCount: number }> {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!serviceKey || !supabaseUrl) {
     console.warn('⚠️ [RateLimit] SUPABASE_SERVICE_ROLE_KEY not set — skipping rate limit check');
-    return { allowed: true, remaining: FREE_DAILY_LIMIT, currentCount: 0 };
+    return { allowed: true, remaining: dailyLimit, currentCount: 0 };
   }
 
   const admin = createAdminClient(supabaseUrl, serviceKey);
@@ -33,24 +37,24 @@ async function checkUsage(ipHash: string): Promise<{ allowed: boolean; remaining
   const { data, error } = await admin
     .from('usage_limits')
     .select('count')
-    .eq('ip_hash', ipHash)
+    .eq('ip_hash', limitKey)
     .eq('date', today)
     .maybeSingle();
 
   if (error) {
     console.error('⚠️ [RateLimit] DB read error:', error.message);
-    return { allowed: true, remaining: FREE_DAILY_LIMIT, currentCount: 0 };
+    return { allowed: true, remaining: dailyLimit, currentCount: 0 };
   }
 
   const currentCount = data?.count ?? 0;
-  if (currentCount >= FREE_DAILY_LIMIT) {
+  if (currentCount >= dailyLimit) {
     return { allowed: false, remaining: 0, currentCount };
   }
-  return { allowed: true, remaining: FREE_DAILY_LIMIT - currentCount, currentCount };
+  return { allowed: true, remaining: dailyLimit - currentCount, currentCount };
 }
 
 /** AI 成功回應後才呼叫，真正扣計數 */
-async function incrementUsage(ipHash: string, currentCount: number): Promise<void> {
+async function incrementUsage(limitKey: string, currentCount: number): Promise<void> {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!serviceKey || !supabaseUrl) return;
@@ -61,7 +65,7 @@ async function incrementUsage(ipHash: string, currentCount: number): Promise<voi
   const { error: upsertError } = await admin
     .from('usage_limits')
     .upsert(
-      { ip_hash: ipHash, date: today, count: currentCount + 1, updated_at: new Date().toISOString() },
+      { ip_hash: limitKey, date: today, count: currentCount + 1, updated_at: new Date().toISOString() },
       { onConflict: 'ip_hash,date' }
     );
 
@@ -354,35 +358,33 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user: currentUser } } = await supabase.auth.getUser();
 
-    // Logged-in users bypass the daily free limit (for future membership tiers)
-    let rateLimitIpHash: string | null = null;
+    // 未登入：IP 2次/天；登入：user_id 5次/天
+    const isLoggedIn = !!currentUser;
+    const dailyLimit = isLoggedIn ? USER_DAILY_LIMIT : GUEST_DAILY_LIMIT;
+    const limitKey = isLoggedIn
+      ? hashIP(`user_${currentUser!.id}`) // 用 user_id hash 避免與 IP hash 衝突
+      : hashIP(getClientIP(request));
+
     let rateLimitCurrentCount = 0;
+    console.log(`🔒 [RateLimit] ${isLoggedIn ? '已登入用戶' : 'Guest'} limit=${dailyLimit}, key=${limitKey.substring(0, 8)}...`);
 
-    if (!currentUser) {
-      const ip = getClientIP(request);
-      rateLimitIpHash = hashIP(ip);
-      console.log(`🔒 [RateLimit] Checking IP hash: ${rateLimitIpHash.substring(0, 8)}...`);
+    const { allowed, remaining, currentCount } = await checkUsage(limitKey, dailyLimit);
+    rateLimitCurrentCount = currentCount;
 
-      const { allowed, remaining, currentCount } = await checkUsage(rateLimitIpHash);
-      rateLimitCurrentCount = currentCount;
-
-      if (!allowed) {
-        console.warn(`🚫 [RateLimit] Blocked: ${rateLimitIpHash.substring(0, 8)}...`);
-        return NextResponse.json(
-          {
-            error: reportLanguage === 'en'
-              ? `You have used all ${FREE_DAILY_LIMIT} free analyses for today. Please try again tomorrow or log in to continue.`
-              : `今日 ${FREE_DAILY_LIMIT} 次免費分析已用完，請明天再試，或登入帳號繼續使用。`,
-            errorCode: 'RATE_LIMIT_EXCEEDED',
-            resetTime: 'tomorrow',
-          },
-          { status: 429 }
-        );
-      }
-      console.log(`✅ [RateLimit] Allowed. Remaining today: ${remaining}`);
-    } else {
-      console.log(`✅ [RateLimit] Logged-in user — no limit applied`);
+    if (!allowed) {
+      console.warn(`🚫 [RateLimit] Blocked: ${limitKey.substring(0, 8)}...`);
+      return NextResponse.json(
+        {
+          error: reportLanguage === 'en'
+            ? `You have used all ${dailyLimit} free analyses for today. ${isLoggedIn ? '' : 'Log in for more daily analyses. '}Please try again tomorrow.`
+            : `今日 ${dailyLimit} 次免費分析已用完。${isLoggedIn ? '' : '登入帳號可享每日 5 次。'}請明天再試。`,
+          errorCode: 'RATE_LIMIT_EXCEEDED',
+          resetTime: 'tomorrow',
+        },
+        { status: 429 }
+      );
     }
+    console.log(`✅ [RateLimit] Allowed. Remaining today: ${remaining}`);
     // ── End Rate Limiting ─────────────────────────────────────────────────────
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
@@ -601,10 +603,8 @@ export async function POST(request: NextRequest) {
     }
 
     // AI 成功回應才扣免費額度（避免 API 故障消耗使用者次數）
-    if (rateLimitIpHash) {
-      await incrementUsage(rateLimitIpHash, rateLimitCurrentCount);
-      console.log(`✅ [RateLimit] Usage incremented for ${rateLimitIpHash.substring(0, 8)}...`);
-    }
+    await incrementUsage(limitKey, rateLimitCurrentCount);
+    console.log(`✅ [RateLimit] Usage incremented for ${limitKey.substring(0, 8)}...`);
 
     console.log(`🎉 [Gemini] 使用模型: ${model}`);
     
@@ -724,60 +724,33 @@ export async function POST(request: NextRequest) {
     const totalDuration = (Date.now() - startTime) / 1000;
     console.log(`🏁 [API End] AI 分析完成，耗時: ${totalDuration}秒`);
 
-    // 🔥 重要：保存到數據庫（改為同步，確保保存成功）
-    // supabase client reused from rate-limit check above
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    console.log('💾 [DB] 準備保存報告到數據庫...');
-    console.log('💾 [DB] 用戶狀態:', user ? `已登入 (ID: ${user.id})` : '未登入');
-    
-    if (!user) {
-      console.warn('⚠️  [DB] 用戶未登入，報告將不會保存到數據庫');
-    } else {
-      const insertData: any = {
-        user_id: user.id,
-        job_title: report.basic_analysis?.job_title || 'Unknown',
-        job_description: jobDescription,
-        resume_file_name: resume.fileName || 'unknown',
-        resume_type: resume.type,
-        analysis_data: report,
-        content: fullResponseText,
-        created_at: new Date().toISOString(),
-      };
-
-      console.log('💾 [DB] 插入數據:', {
-        user_id: insertData.user_id,
-        job_title: insertData.job_title,
-        resume_file_name: insertData.resume_file_name
-      });
-
+    // 儲存分析報告（登入用戶才保存）
+    if (currentUser) {
       try {
-        const { data: savedData, error: dbError } = await supabase
+        const { error: dbError } = await supabase
           .from('analysis_reports')
-          .insert(insertData)
-          .select('id, job_title, created_at')
-          .single();
-
+          .insert({
+            user_id: currentUser.id,
+            job_title: report.basic_analysis?.job_title || '未知職缺',
+            job_description_preview: jobDescription.substring(0, 300),
+            score: report.match_analysis?.score ?? null,
+            report: report as any,
+            language: reportLanguage || 'zh',
+          });
         if (dbError) {
-          console.error('❌ [DB Error] 儲存失敗:', dbError.message);
-          console.error('❌ [DB Error] 錯誤代碼:', dbError.code);
-          console.error('❌ [DB Error] 錯誤詳情:', JSON.stringify(dbError, null, 2));
-        } else if (savedData) {
-          console.log('✅ [DB Success] 報告已成功保存！');
-          console.log('✅ [DB Success] 報告 ID:', savedData.id);
-          console.log('✅ [DB Success] 職位標題:', savedData.job_title);
-          console.log('✅ [DB Success] 保存時間:', savedData.created_at);
+          console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message);
+        } else {
+          console.log('✅ [DB] 分析報告已儲存');
         }
       } catch (e: any) {
-        console.error('❌ [DB Exception] 保存時發生異常:', e);
-        console.error('❌ [DB Exception] 異常訊息:', e?.message);
+        console.warn('⚠️ [DB] 報告儲存異常（不影響回傳）:', e?.message);
       }
     }
 
     return NextResponse.json({
       report,
       modelUsed: model,
-      saved: !!user, // 告訴前端是否已保存
+      saved: !!currentUser,
     });
 
   } catch (error: any) {
