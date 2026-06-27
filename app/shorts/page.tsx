@@ -11,6 +11,8 @@ import {
 import { createClient } from '@/lib/supabase/browser';
 import { FALLBACK_VIDEOS } from './fallback-videos';
 import { setStoredShortsViewRole } from '@/lib/shorts-view-role';
+import { useLanguage } from '@/lib/language-context';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const getLogoUrl = (companyName: string): string =>
   `https://www.google.com/s2/favicons?domain=${companyName.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
@@ -32,8 +34,10 @@ export default function JobbeagleShortsPage() {
   const [user, setUser] = useState<any>(null);
   const [showLoginMenu, setShowLoginMenu] = useState(false);
 
+  // Language from global context
+  const { uiLanguage: language } = useLanguage();
+
   // UI state
-  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const [activeTab, setActiveTab] = useState<'foryou' | 'following' | 'saved'>('foryou');
   const [navTab, setNavTab] = useState<'home' | 'profile'>('home');
 
@@ -321,20 +325,7 @@ export default function JobbeagleShortsPage() {
 
         {/* Right: language switcher + auth */}
         <div className="pointer-events-auto flex items-center gap-2 md:gap-3 flex-shrink-0">
-          <div className="flex items-center bg-black/45 backdrop-blur-md border border-white/25 rounded-xl p-1">
-            <button
-              onClick={() => setLanguage('zh')}
-              className={`px-4 py-2 rounded-lg text-sm md:text-base font-bold transition-all ${language === 'zh' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/65 hover:text-white/90'}`}
-            >
-              中文
-            </button>
-            <button
-              onClick={() => setLanguage('en')}
-              className={`px-4 py-2 rounded-lg text-sm md:text-base font-bold transition-all ${language === 'en' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/65 hover:text-white/90'}`}
-            >
-              EN
-            </button>
-          </div>
+          <LanguageSwitcher variant="light" />
 
           {user ? (
             <button

@@ -343,9 +343,15 @@ export async function POST(request: NextRequest) {
     console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length}, Resume 類型: ${resume?.type}, 報告語言: ${reportLanguage}`);
 
     // 依介面選擇的語言強制報告產出語言（與輸入的 JD/履歷語言無關）
-    const OUTPUT_LANGUAGE_INSTRUCTION = reportLanguage === 'en'
-      ? `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in English. Ignore whether the input JD or resume is in Chinese or English; your output language is English.\nFor match_analysis.dog_type use English tier names: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle** (same score bands as Chinese tiers).\n`
-      : `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values (job_title, company_overview, descriptions, bullet points, labels, questions, answer_guide, etc.) must be in Traditional Chinese. Ignore whether the input JD or resume is in English or Chinese; your output language is 繁體中文.\nFor match_analysis.dog_type use: **鑽石米格魯** / **黃金米格魯** / **白銀米格魯** / **青銅米格魯** only.\n`;
+    const LANG_INSTRUCTIONS: Record<string, string> = {
+      en: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values must be in English. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
+      zh: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values must be in 繁體中文. Ignore input language.\nFor match_analysis.dog_type use: **鑽石米格魯** / **黃金米格魯** / **白銀米格魯** / **青銅米格魯**.\n`,
+      ja: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Japanese (日本語) only. All JSON field values must be in Japanese. Ignore input language.\nFor match_analysis.dog_type use Japanese equivalents: **ダイヤモンド・ビーグル**, **ゴールド・ビーグル**, **シルバー・ビーグル**, **ブロンズ・ビーグル**.\n`,
+      ko: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Korean (한국어) only. All JSON field values must be in Korean. Ignore input language.\nFor match_analysis.dog_type use Korean equivalents: **다이아몬드 비글**, **골드 비글**, **실버 비글**, **브론즈 비글**.\n`,
+      id: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Indonesian (Bahasa Indonesia) only. All JSON field values must be in Indonesian. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
+      vi: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Vietnamese (Tiếng Việt) only. All JSON field values must be in Vietnamese. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
+    };
+    const OUTPUT_LANGUAGE_INSTRUCTION = LANG_INSTRUCTIONS[reportLanguage] ?? LANG_INSTRUCTIONS['en'];
 
     if (!jobDescription || !resume) {
       return NextResponse.json(
@@ -718,7 +724,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    normalizeReport(report, reportLanguage === 'en' ? 'en' : 'zh');
+    normalizeReport(report, reportLanguage === 'zh' ? 'zh' : 'en');
 
     // 先返回報告給用戶，提升響應速度
     const totalDuration = (Date.now() - startTime) / 1000;

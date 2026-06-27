@@ -473,7 +473,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobDescription: jdText, resume: selectedResume, language: 'zh' }),
+        body: JSON.stringify({ jobDescription: jdText, resume: selectedResume, language }),
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || '分析失敗，請稍後再試');

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
+import { LanguageProvider } from "@/lib/language-context";
 
 // 優先使用環境變數；若 Vercel build 時未帶入則使用預設 ID，確保 GA 一定會載入
 const GA_MEASUREMENT_ID =
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-TW" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
         {GA_MEASUREMENT_ID ? (
           <>
             <Script

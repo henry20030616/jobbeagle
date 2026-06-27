@@ -9,6 +9,8 @@ import LoginButton from '@/components/LoginButton';
 import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, UserInputs } from '@/types';
 import { ChevronLeft, History, X, ChevronRight, Loader2 } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface ReportSummary {
   id: string;
@@ -72,11 +74,14 @@ function getStageLabel(progress: number, lang: 'zh' | 'en'): string {
 }
 
 export default function Home() {
+  const { language: appLanguage, uiLanguage } = useLanguage();
+  // uiLanguage: 'zh' | 'en' for UI components; appLanguage sent to API for report output
+  const language = uiLanguage; // alias kept for compatibility with existing translations logic
+
   const [report, setReport] = useState<InterviewReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
-  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
 
   // Auth + History
@@ -196,7 +201,7 @@ export default function Home() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(inputs),
+        body: JSON.stringify({ ...inputs, language: appLanguage }),
       });
 
       const result = await response.json();
@@ -248,31 +253,7 @@ export default function Home() {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-end items-center gap-3 mb-6">
-          {/* Language Switcher */}
-          <div className="flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-lg p-1">
-            <button
-              type="button"
-              onClick={() => setLanguage('zh')}
-              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                language === 'zh'
-                  ? 'bg-indigo-500 text-white shadow-lg'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              中文
-            </button>
-            <button
-              type="button"
-              onClick={() => setLanguage('en')}
-              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                language === 'en'
-                  ? 'bg-indigo-500 text-white shadow-lg'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              English
-            </button>
-          </div>
+          <LanguageSwitcher variant="dark" />
           {/* History button — only shown when logged in */}
           {currentUser && (
             <button
@@ -417,7 +398,7 @@ export default function Home() {
               onSubmit={handleGenerate} 
               isLoading={loading}
               language={language}
-              onLanguageChange={setLanguage}
+              onLanguageChange={undefined}
               initialJobDescription={extensionJobData || undefined}
             />
             <FooterSection language={language} />
