@@ -171,11 +171,18 @@ export default function Home() {
     setHistoryLoading(true);
     try {
       const supabase = createClient();
-      const { data } = await supabase
+      // #region agent log
+      const { data: { user: sessionUser } } = await supabase.auth.getUser();
+      fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'page.tsx:loadHistory',message:'loadHistory called',data:{hasSessionUser:!!sessionUser,currentUserState:!!currentUser},timestamp:Date.now(),hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
+      const { data, error } = await supabase
         .from('analysis_reports')
         .select('id, job_title, score, language, created_at, report')
         .order('created_at', { ascending: false })
         .limit(20);
+      // #region agent log
+      fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'page.tsx:loadHistory-result',message:'history query result',data:{count:data?.length??0,errorCode:(error as any)?.code,errorMsg:(error as any)?.message},timestamp:Date.now(),hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
       setHistoryReports((data || []) as ReportSummary[]);
     } catch {
       // silently fail

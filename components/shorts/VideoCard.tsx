@@ -119,12 +119,26 @@ const VideoCard: React.FC<VideoCardProps> = ({
   // 觀看計數：active 超過 3 秒才算一次（debounce，避免快速滑過被計算）
   useEffect(() => {
     if (!isActive) return;
+    // #region agent log
+    fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'VideoCard.tsx:view-count-timer-start',message:'view count timer started',data:{jobId:job.id,sourceType:job.videoSourceType??'upload'},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     const timer = setTimeout(() => {
+      // #region agent log
+      fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'VideoCard.tsx:view-count-fire',message:'view count API called (3s elapsed)',data:{jobId:job.id},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
+      // #endregion
       fetch(`/api/shorts/view`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ videoId: job.id }),
-      }).catch(() => {});
+      }).then(r => {
+        // #region agent log
+        fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'VideoCard.tsx:view-count-response',message:'view count API response',data:{jobId:job.id,status:r.status,ok:r.ok},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+      }).catch(err => {
+        // #region agent log
+        fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',location:'VideoCard.tsx:view-count-error',message:'view count API error',data:{jobId:job.id,err:String(err)},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+      });
     }, 3000);
     return () => clearTimeout(timer);
   }, [isActive, job.id]);
