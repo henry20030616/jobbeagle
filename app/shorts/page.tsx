@@ -23,6 +23,8 @@ export default function JobbeagleShortsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const lastCursorRef = useRef<string | null>(null);
+  // Ref guard prevents race condition: state updates are async, ref is synchronous
+  const loadingMoreRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -164,12 +166,17 @@ export default function JobbeagleShortsPage() {
 
   const handleLoadMore = useCallback(() => {
     // #region agent log
-    console.log(`[DBG-B] handleLoadMore | hasMore=${hasMore} loadingMore=${loadingMore} hasCursor=${!!lastCursorRef.current}`);
+    console.log(`[DBG-B] handleLoadMore | hasMore=${hasMore} loadingMoreRef=${loadingMoreRef.current} hasCursor=${!!lastCursorRef.current}`);
     // #endregion
-    if (!hasMore || loadingMore || !lastCursorRef.current) return;
+    // Use ref (synchronous) instead of state (async) to prevent race condition
+    if (!hasMore || loadingMoreRef.current || !lastCursorRef.current) return;
+    loadingMoreRef.current = true;
     setLoadingMore(true);
-    loadVideos(lastCursorRef.current).finally(() => setLoadingMore(false));
-  }, [hasMore, loadingMore]);
+    loadVideos(lastCursorRef.current).finally(() => {
+      loadingMoreRef.current = false;
+      setLoadingMore(false);
+    });
+  }, [hasMore]);
 
   const handleFollowChange = (companyName: string, followed: boolean) => {
     setFollowedCompanies(prev => {

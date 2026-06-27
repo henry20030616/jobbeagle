@@ -42,8 +42,8 @@ const VideoFeed: React.FC<VideoFeedProps> = ({
             const index = Number(entry.target.getAttribute('data-index'));
             if (!isNaN(index)) {
               setActiveIndex(index);
-              // 滑到倒數第 2 張時預先觸發 load more
-              if (onLoadMore && index >= jobs.length - 2) {
+              // 滑到倒數第 3 張時預先觸發 load more（jobs.length >= 4 時才觸發，避免短列表誤觸）
+              if (onLoadMore && jobs.length >= 4 && index >= jobs.length - 3) {
                 onLoadMore();
               }
             }
