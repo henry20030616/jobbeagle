@@ -738,10 +738,10 @@ export async function POST(request: NextRequest) {
         const insertPayload = {
           user_id: currentUser.id,
           job_title: report.basic_analysis?.job_title || '未知職缺',
+          job_description_preview: jobDescription.substring(0, 300),
           score: typeof report.match_analysis?.score === 'number' ? report.match_analysis.score : null,
           report: report as any,
           language: reportLanguage || 'zh',
-          // job_description_preview will be added back after running migration 002
         };
         // #region agent log
         fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'B',location:'analyze/route.ts:insert',message:'attempting DB insert',data:{userId:currentUser.id.substring(0,8),jobTitle:insertPayload.job_title,score:insertPayload.score},timestamp:Date.now()})}).catch(()=>{});
