@@ -20,19 +20,28 @@ const DogLoading: React.FC<DogLoadingProps> = ({
   const displayProgress = Math.min(Math.max(Math.round(progress), 0), 99);
 
   const defaultStageMap: Record<AppLanguage, string> = {
-    zh: '小獵犬正在努力嗅探資料中...', en: 'Beagle is sniffing for data...',
-    ja: 'ビーグルがデータを嗅ぎ回っています...', ko: '비글이 데이터를 열심히 찾고 있습니다...',
-    id: 'Beagle sedang mencari data...', vi: 'Beagle đang tìm kiếm dữ liệu...',
+    'zh-TW': '小獵犬正在努力嗅探資料中...',
+    'zh-CN': '小猎犬正在努力嗅探数据中...',
+    en: 'Beagle is sniffing for data...',
+    es: 'El Beagle está olfateando datos...',
+    hi: 'बीगल डेटा खोज रहा है...',
+    fr: 'Le Beagle cherche des données...',
   };
   const estimatedMap: Record<AppLanguage, string> = {
-    zh: '通常需要 30–60 秒', en: 'Usually takes 30–60 seconds',
-    ja: '通常30〜60秒かかります', ko: '보통 30~60초 소요됩니다',
-    id: 'Biasanya 30–60 detik', vi: 'Thường mất 30–60 giây',
+    'zh-TW': '通常需要 30–60 秒',
+    'zh-CN': '通常需要 30–60 秒',
+    en: 'Usually takes 30–60 seconds',
+    es: 'Normalmente tarda 30–60 segundos',
+    hi: 'आमतौर पर 30–60 सेकंड लगते हैं',
+    fr: 'Prend généralement 30–60 secondes',
   };
   const elapsedMap: Record<AppLanguage, string> = {
-    zh: `已分析 ${elapsed} 秒`, en: `${elapsed}s elapsed`,
-    ja: `${elapsed}秒経過`, ko: `${elapsed}초 경과`,
-    id: `${elapsed}d berlalu`, vi: `${elapsed}s đã trôi qua`,
+    'zh-TW': `已分析 ${elapsed} 秒`,
+    'zh-CN': `已分析 ${elapsed} 秒`,
+    en: `${elapsed}s elapsed`,
+    es: `${elapsed}s transcurridos`,
+    hi: `${elapsed} सेकंड बीते`,
+    fr: `${elapsed}s écoulées`,
   };
 
   const currentStage = stage || defaultStageMap[language];

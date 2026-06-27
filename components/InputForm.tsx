@@ -241,7 +241,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
     // 1. Minimum length
     if (trimmed.length < 40) {
-      return lang === 'zh'
+      return lang === 'zh-TW' || lang === 'zh-CN'
         ? '⚠️ 職缺描述太短，請貼上完整的職缺內容（至少 40 字元）。'
         : '⚠️ Job description is too short. Please paste the complete job posting (at least 40 characters).';
     }
@@ -250,7 +250,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
     // 2. Same character repeating 10+ times in a row (e.g. "aaaaaaaaaa")
     if (/(.)\1{9,}/.test(noSpace)) {
-      return lang === 'zh'
+      return lang === 'zh-TW' || lang === 'zh-CN'
         ? '⚠️ 偵測到無效內容（重複字元），請貼上真實的職缺描述。'
         : '⚠️ Invalid content detected (repeating characters). Please paste a real job description.';
     }
@@ -259,7 +259,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     //    (lowered from 20% to accommodate LinkedIn/104 formatting with bullets, symbols, whitespace)
     const meaningful = (trimmed.match(/[a-zA-Z\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
     if (meaningful / trimmed.length < 0.15) {
-      return lang === 'zh'
+      return lang === 'zh-TW' || lang === 'zh-CN'
         ? '⚠️ 職缺描述中幾乎沒有有效文字（主要為符號或數字），請確認是否已貼上正確內容。'
         : '⚠️ Job description contains very little readable text (mostly symbols or numbers). Please check the content.';
     }
@@ -429,140 +429,14 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
   type TKeys = { title: string; subtitle: string; description: string; jobDescription: string; upload: string; save: string; saving: string; saved: string; saveFailed: string; generate: string; resumeLibrary: string; recentReports: string; noResume: string; recentlyUploaded: string; engineIntro: string; engineDescription: string; reportOutput: string; matchAnalysis: string; matchAnalysisDesc: string; salaryResearch: string; salaryResearchDesc: string; industryAnalysis: string; industryAnalysisDesc: string; interviewPrep: string; interviewPrepDesc: string; jobData: string; jdFullTextHint: string; inputJobUrl: string; jobUrlPlaceholder: string; urlTip: string; resume: string; uploadSupport: string; waitingSave: string; generating: string; fileTooLarge: string };
   const translations: Record<AppLanguage, TKeys> = {
-    zh: {
-      title: 'Jobbeagle',
-      subtitle: '職位分析米格魯',
-      description: '專家級 AI 職缺戰略分析中心：結合求職專家分析與獵頭視角，助您掌握應對策略。',
-      jobDescription: '職缺描述 (JD)',
-      upload: '點擊上傳 PDF 或文字檔',
-      save: '儲存', saving: '儲存中...', saved: '✓ 已儲存!', saveFailed: '儲存失敗，請重試',
-      generate: '啟動AI戰略分析',
-      resumeLibrary: '履歷庫', recentReports: '近期分析報告', noResume: '尚未儲存任何履歷', recentlyUploaded: '最近上傳的履歷',
-      engineIntro: '戰略引擎簡介',
-      engineDescription: 'Jobbeagle 搭載頂級人資與求職專家分析邏輯，深度解析 JD 背後的組織需求與市場格局。不只評估匹配度，更為您提供具備商業深度的薪資情報與攻防建議。',
-      reportOutput: '深度報告產出項',
-      matchAnalysis: '人才職位匹配分析', matchAnalysisDesc: '揭示職位隱藏門檻，精準評估您的核心優勢與缺口。',
-      salaryResearch: '真實面試題與薪酬範圍', salaryResearchDesc: '提供真實面試考古題、市場薪酬範圍及談判策略。',
-      industryAnalysis: '產業格局與競爭者分析', industryAnalysisDesc: '從求職專家視角解析公司的市場護城河與未來風險。',
-      interviewPrep: '高階面試模擬與對策', interviewPrepDesc: '網羅真實考題並提供具備深度邏輯的 STAR 回答引導。',
-      jobData: '1. 職缺資訊 (Job Data)',
-      jdFullTextHint: '請在職缺頁手動複製「完整」職缺內容後貼上；勿只貼網址或片段。',
-      inputJobUrl: '職缺內容', jobUrlPlaceholder: '手動複製該頁完整職缺內容並貼上（勿只貼連結）…',
-      urlTip: '偵測到網址：請改為到職缺頁手動複製完整內容後貼上。',
-      resume: '2. 您的履歷 (Resume)', uploadSupport: '支援 .pdf, .doc, .docx, .txt, .md (Max 4MB)',
-      waitingSave: '請等待儲存完成...', generating: '生成深度戰略報告...', fileTooLarge: '檔案大小超過 4MB，請上傳較小的檔案。',
-    },
-    en: {
-      title: 'Jobbeagle', subtitle: '(Job Analysis Beagle)',
-      description: 'Expert-level AI Job Strategy Analysis Center: Combining career expert analysis with headhunter perspective to help you master response strategies.',
-      jobDescription: 'Job Description (JD)',
-      upload: 'Click to upload PDF or text file',
-      save: 'Save', saving: 'Saving...', saved: '✓ Saved!', saveFailed: 'Save failed, please try again',
-      generate: 'Launch AI Strategy Analysis',
-      resumeLibrary: 'Resume Library', recentReports: 'Recent Analysis Reports', noResume: 'No resumes saved yet', recentlyUploaded: 'Recently uploaded resumes',
-      engineIntro: 'Strategic Engine Introduction',
-      engineDescription: 'Jobbeagle is equipped with top-tier HR and career expert analysis logic, deeply analyzing organizational needs and market dynamics behind JDs. Not only evaluating match, but also providing business-depth salary intelligence and strategic advice.',
-      reportOutput: 'In-Depth Report Outputs',
-      matchAnalysis: 'Talent-Position Match Analysis', matchAnalysisDesc: 'Reveal hidden job thresholds and accurately assess your core strengths and gaps.',
-      salaryResearch: 'Real Interview Questions & Salary Range', salaryResearchDesc: 'Provide real interview questions, market salary ranges, and negotiation strategies.',
-      industryAnalysis: 'Industry Landscape & Competitor Analysis', industryAnalysisDesc: 'Analyze company market moats and future risks from a career expert perspective.',
-      interviewPrep: 'Advanced Interview Simulation & Strategy', interviewPrepDesc: 'Gather real interview questions and provide in-depth STAR answer guidance.',
-      jobData: '1. Job Information (Job Data)',
-      jdFullTextHint: 'Manually copy the full job posting from the page, then paste here. Do not paste only a URL or a short excerpt.',
-      inputJobUrl: 'Job posting', jobUrlPlaceholder: 'Copy the full job description from the page and paste here (not the link alone)…',
-      urlTip: 'URL detected: open the posting and paste the full copied text instead.',
-      resume: '2. Your Resume', uploadSupport: 'Supports .pdf, .doc, .docx, .txt, .md (Max 4MB)',
-      waitingSave: 'Please wait for save to complete...', generating: 'Generating in-depth strategic report...', fileTooLarge: 'File size exceeds 4MB, please upload a smaller file.',
-    },
-    ja: {
-      title: 'Jobbeagle', subtitle: '(求人分析ビーグル)',
-      description: 'AIによる求人戦略分析センター：キャリア専門家とヘッドハンターの視点を組み合わせ、最適な対応戦略をサポートします。',
-      jobDescription: '求人票 (JD)',
-      upload: 'PDFまたはテキストファイルをアップロード',
-      save: '保存', saving: '保存中...', saved: '✓ 保存済み!', saveFailed: '保存に失敗しました。再試行してください',
-      generate: 'AI戦略分析を開始',
-      resumeLibrary: '履歴書ライブラリ', recentReports: '最近の分析レポート', noResume: '保存された履歴書はありません', recentlyUploaded: '最近アップロードした履歴書',
-      engineIntro: '戦略エンジンのご紹介',
-      engineDescription: 'Jobbeagleは一流の人事・求職専門家の分析ロジックを搭載し、JDの背後にある組織ニーズと市場動向を深く分析します。マッチングの評価だけでなく、ビジネス視点の給与情報と戦略的アドバイスを提供します。',
-      reportOutput: '詳細レポートの内容',
-      matchAnalysis: '人材・職位マッチング分析', matchAnalysisDesc: '職位の隠れた要件を明らかにし、あなたの強みと課題を正確に評価します。',
-      salaryResearch: '実際の面接質問・給与範囲', salaryResearchDesc: '実際の面接質問、市場の給与範囲、交渉戦略を提供します。',
-      industryAnalysis: '業界動向・競合分析', industryAnalysisDesc: 'キャリア専門家の視点から企業の市場優位性と将来のリスクを分析します。',
-      interviewPrep: '高度な面接シミュレーション', interviewPrepDesc: '実際の面接問題を収集し、深みのあるSTAR回答ガイダンスを提供します。',
-      jobData: '1. 求人情報 (Job Data)',
-      jdFullTextHint: '求人ページから「完全な」求人内容を手動でコピーして貼り付けてください。URLや一部だけの貼り付けはお避けください。',
-      inputJobUrl: '求人内容', jobUrlPlaceholder: 'ページから求人の全文をコピーして貼り付けてください（リンクのみは不可）…',
-      urlTip: 'URLを検出：求人ページを開いて全文をコピーして貼り付けてください。',
-      resume: '2. あなたの履歴書', uploadSupport: '.pdf, .doc, .docx, .txt, .md に対応（最大4MB）',
-      waitingSave: '保存が完了するまでお待ちください...', generating: '詳細な戦略レポートを生成中...', fileTooLarge: 'ファイルサイズが4MBを超えています。小さいファイルをアップロードしてください。',
-    },
-    ko: {
-      title: 'Jobbeagle', subtitle: '(채용 분석 비글)',
-      description: 'AI 채용 전략 분석 센터: 커리어 전문가와 헤드헌터 관점을 결합하여 최적의 대응 전략을 지원합니다.',
-      jobDescription: '채용 공고 (JD)',
-      upload: 'PDF 또는 텍스트 파일 업로드',
-      save: '저장', saving: '저장 중...', saved: '✓ 저장됨!', saveFailed: '저장 실패, 다시 시도해주세요',
-      generate: 'AI 전략 분석 시작',
-      resumeLibrary: '이력서 라이브러리', recentReports: '최근 분석 보고서', noResume: '저장된 이력서가 없습니다', recentlyUploaded: '최근 업로드한 이력서',
-      engineIntro: '전략 엔진 소개',
-      engineDescription: 'Jobbeagle은 최고 수준의 HR·커리어 전문가 분석 로직을 탑재하여 JD 뒤에 숨겨진 조직 요구와 시장 동향을 깊이 분석합니다. 매칭 평가뿐 아니라 비즈니스 깊이의 연봉 정보와 전략적 조언을 제공합니다.',
-      reportOutput: '심층 보고서 항목',
-      matchAnalysis: '인재-직위 매칭 분석', matchAnalysisDesc: '직위의 숨겨진 요건을 밝히고 핵심 강점과 격차를 정확히 평가합니다.',
-      salaryResearch: '실제 면접 질문 및 연봉 범위', salaryResearchDesc: '실제 면접 질문, 시장 연봉 범위 및 협상 전략을 제공합니다.',
-      industryAnalysis: '산업 동향 및 경쟁사 분석', industryAnalysisDesc: '커리어 전문가 관점에서 기업의 시장 해자와 미래 위험을 분석합니다.',
-      interviewPrep: '고급 면접 시뮬레이션 및 전략', interviewPrepDesc: '실제 면접 문제를 수집하고 심층 STAR 답변 가이드를 제공합니다.',
-      jobData: '1. 채용 정보 (Job Data)',
-      jdFullTextHint: '채용 페이지에서 「전체」채용 내용을 수동으로 복사하여 붙여넣으세요. URL이나 일부만 붙여넣지 마세요.',
-      inputJobUrl: '채용 내용', jobUrlPlaceholder: '채용 페이지의 전체 내용을 복사하여 붙여넣으세요 (링크만 불가)…',
-      urlTip: 'URL 감지됨: 채용 페이지를 열어 전체 내용을 복사하여 붙여넣으세요.',
-      resume: '2. 귀하의 이력서', uploadSupport: '.pdf, .doc, .docx, .txt, .md 지원 (최대 4MB)',
-      waitingSave: '저장이 완료될 때까지 기다려주세요...', generating: '심층 전략 보고서 생성 중...', fileTooLarge: '파일 크기가 4MB를 초과합니다. 더 작은 파일을 업로드해주세요.',
-    },
-    id: {
-      title: 'Jobbeagle', subtitle: '(Beagle Analisis Pekerjaan)',
-      description: 'Pusat Analisis Strategi Pekerjaan AI: Menggabungkan analisis ahli karier dan perspektif headhunter untuk membantu Anda menguasai strategi respons.',
-      jobDescription: 'Deskripsi Pekerjaan (JD)',
-      upload: 'Klik untuk unggah PDF atau file teks',
-      save: 'Simpan', saving: 'Menyimpan...', saved: '✓ Tersimpan!', saveFailed: 'Gagal menyimpan, coba lagi',
-      generate: 'Mulai Analisis Strategi AI',
-      resumeLibrary: 'Perpustakaan Resume', recentReports: 'Laporan Analisis Terbaru', noResume: 'Belum ada resume tersimpan', recentlyUploaded: 'Resume yang baru diunggah',
-      engineIntro: 'Pengenalan Mesin Strategis',
-      engineDescription: 'Jobbeagle dilengkapi dengan logika analisis HR dan ahli karier kelas atas, menganalisis kebutuhan organisasi dan dinamika pasar di balik JD secara mendalam.',
-      reportOutput: 'Output Laporan Mendalam',
-      matchAnalysis: 'Analisis Kecocokan Kandidat-Posisi', matchAnalysisDesc: 'Mengungkap ambang tersembunyi posisi dan menilai kekuatan serta kesenjangan Anda secara akurat.',
-      salaryResearch: 'Pertanyaan Wawancara & Rentang Gaji', salaryResearchDesc: 'Menyediakan pertanyaan wawancara nyata, rentang gaji pasar, dan strategi negosiasi.',
-      industryAnalysis: 'Lanskap Industri & Analisis Pesaing', industryAnalysisDesc: 'Menganalisis keunggulan pasar dan risiko masa depan perusahaan dari perspektif ahli karier.',
-      interviewPrep: 'Simulasi Wawancara Tingkat Lanjut', interviewPrepDesc: 'Mengumpulkan pertanyaan wawancara nyata dan memberikan panduan jawaban STAR yang mendalam.',
-      jobData: '1. Informasi Lowongan (Job Data)',
-      jdFullTextHint: 'Salin secara manual seluruh konten lowongan dari halaman, lalu tempel di sini. Jangan hanya menempel URL atau kutipan singkat.',
-      inputJobUrl: 'Konten lowongan', jobUrlPlaceholder: 'Salin deskripsi pekerjaan lengkap dari halaman dan tempel di sini (bukan hanya tautan)…',
-      urlTip: 'URL terdeteksi: buka halaman lowongan dan tempel teks lengkap yang disalin.',
-      resume: '2. Resume Anda', uploadSupport: 'Mendukung .pdf, .doc, .docx, .txt, .md (Maks 4MB)',
-      waitingSave: 'Harap tunggu hingga penyimpanan selesai...', generating: 'Membuat laporan strategi mendalam...', fileTooLarge: 'Ukuran file melebihi 4MB, unggah file yang lebih kecil.',
-    },
-    vi: {
-      title: 'Jobbeagle', subtitle: '(Beagle Phân tích Việc làm)',
-      description: 'Trung tâm Phân tích Chiến lược Việc làm AI: Kết hợp phân tích chuyên gia nghề nghiệp và góc nhìn headhunter để giúp bạn nắm vững chiến lược phản hồi.',
-      jobDescription: 'Mô tả Công việc (JD)',
-      upload: 'Nhấp để tải lên PDF hoặc tệp văn bản',
-      save: 'Lưu', saving: 'Đang lưu...', saved: '✓ Đã lưu!', saveFailed: 'Lưu thất bại, vui lòng thử lại',
-      generate: 'Bắt đầu Phân tích Chiến lược AI',
-      resumeLibrary: 'Thư viện CV', recentReports: 'Báo cáo Phân tích Gần đây', noResume: 'Chưa có CV nào được lưu', recentlyUploaded: 'CV vừa tải lên',
-      engineIntro: 'Giới thiệu Công cụ Chiến lược',
-      engineDescription: 'Jobbeagle được trang bị logic phân tích HR và chuyên gia nghề nghiệp hàng đầu, phân tích sâu nhu cầu tổ chức và động lực thị trường đằng sau JD.',
-      reportOutput: 'Nội dung Báo cáo Chuyên sâu',
-      matchAnalysis: 'Phân tích Phù hợp Nhân tài-Vị trí', matchAnalysisDesc: 'Tiết lộ ngưỡng ẩn của vị trí và đánh giá chính xác điểm mạnh và điểm thiếu của bạn.',
-      salaryResearch: 'Câu hỏi Phỏng vấn Thực tế & Mức lương', salaryResearchDesc: 'Cung cấp câu hỏi phỏng vấn thực tế, mức lương thị trường và chiến lược đàm phán.',
-      industryAnalysis: 'Bức tranh Ngành & Phân tích Đối thủ', industryAnalysisDesc: 'Phân tích lợi thế thị trường và rủi ro tương lai của công ty từ góc độ chuyên gia nghề nghiệp.',
-      interviewPrep: 'Mô phỏng Phỏng vấn Nâng cao', interviewPrepDesc: 'Thu thập câu hỏi phỏng vấn thực và cung cấp hướng dẫn trả lời STAR chuyên sâu.',
-      jobData: '1. Thông tin Tuyển dụng (Job Data)',
-      jdFullTextHint: 'Sao chép thủ công toàn bộ nội dung tuyển dụng từ trang, sau đó dán vào đây. Không chỉ dán URL hoặc đoạn trích ngắn.',
-      inputJobUrl: 'Nội dung tuyển dụng', jobUrlPlaceholder: 'Sao chép mô tả công việc đầy đủ từ trang và dán vào đây (không chỉ liên kết)…',
-      urlTip: 'Phát hiện URL: mở trang tuyển dụng và dán toàn bộ văn bản đã sao chép.',
-      resume: '2. CV của bạn', uploadSupport: 'Hỗ trợ .pdf, .doc, .docx, .txt, .md (Tối đa 4MB)',
-      waitingSave: 'Vui lòng chờ lưu hoàn tất...', generating: 'Đang tạo báo cáo chiến lược chuyên sâu...', fileTooLarge: 'Kích thước tệp vượt quá 4MB, vui lòng tải lên tệp nhỏ hơn.',
-    },
+    'zh-TW': { title: 'Jobbeagle', subtitle: '職位分析米格魯', description: '專家級 AI 職缺戰略分析中心：結合求職專家分析與獵頭視角，助您掌握應對策略。', jobDescription: '職缺描述 (JD)', upload: '點擊上傳 PDF 或文字檔', save: '儲存', saving: '儲存中...', saved: '✓ 已儲存!', saveFailed: '儲存失敗，請重試', generate: '啟動AI戰略分析', resumeLibrary: '履歷庫', recentReports: '近期分析報告', noResume: '尚未儲存任何履歷', recentlyUploaded: '最近上傳的履歷', engineIntro: '戰略引擎簡介', engineDescription: 'Jobbeagle 搭載頂級人資與求職專家分析邏輯，深度解析 JD 背後的組織需求與市場格局。', reportOutput: '深度報告產出項', matchAnalysis: '人才職位匹配分析', matchAnalysisDesc: '揭示職位隱藏門檻，精準評估您的核心優勢與缺口。', salaryResearch: '真實面試題與薪酬範圍', salaryResearchDesc: '提供真實面試考古題、市場薪酬範圍及談判策略。', industryAnalysis: '產業格局與競爭者分析', industryAnalysisDesc: '從求職專家視角解析公司的市場護城河與未來風險。', interviewPrep: '高階面試模擬與對策', interviewPrepDesc: '網羅真實考題並提供具備深度邏輯的 STAR 回答引導。', jobData: '1. 職缺資訊 (Job Data)', jdFullTextHint: '請在職缺頁手動複製「完整」職缺內容後貼上；勿只貼網址或片段。', inputJobUrl: '職缺內容', jobUrlPlaceholder: '手動複製該頁完整職缺內容並貼上（勿只貼連結）…', urlTip: '偵測到網址：請改為到職缺頁手動複製完整內容後貼上。', resume: '2. 您的履歷 (Resume)', uploadSupport: '支援 .pdf, .doc, .docx, .txt, .md (Max 4MB)', waitingSave: '請等待儲存完成...', generating: '生成深度戰略報告...', fileTooLarge: '檔案大小超過 4MB，請上傳較小的檔案。' },
+    'zh-CN': { title: 'Jobbeagle', subtitle: '职位分析猎犬', description: '专家级 AI 职位战略分析中心：结合求职专家分析与猎头视角，助您掌握应对策略。', jobDescription: '职位描述 (JD)', upload: '点击上传 PDF 或文本文件', save: '保存', saving: '保存中...', saved: '✓ 已保存!', saveFailed: '保存失败，请重试', generate: '启动AI战略分析', resumeLibrary: '简历库', recentReports: '近期分析报告', noResume: '尚未保存任何简历', recentlyUploaded: '最近上传的简历', engineIntro: '战略引擎简介', engineDescription: 'Jobbeagle 搭载顶级人资与求职专家分析逻辑，深度解析 JD 背后的组织需求与市场格局。', reportOutput: '深度报告产出项', matchAnalysis: '人才职位匹配分析', matchAnalysisDesc: '揭示职位隐藏门槛，精准评估您的核心优势与缺口。', salaryResearch: '真实面试题与薪酬范围', salaryResearchDesc: '提供真实面试考古题、市场薪酬范围及谈判策略。', industryAnalysis: '产业格局与竞争者分析', industryAnalysisDesc: '从求职专家视角解析公司的市场护城河与未来风险。', interviewPrep: '高阶面试模拟与对策', interviewPrepDesc: '网罗真实考题并提供具备深度逻辑的 STAR 回答引导。', jobData: '1. 职位信息 (Job Data)', jdFullTextHint: '请在职位页手动复制「完整」职位内容后粘贴；勿只贴网址或片段。', inputJobUrl: '职位内容', jobUrlPlaceholder: '手动复制该页完整职位内容并粘贴（勿只贴链接）…', urlTip: '检测到网址：请改为到职位页手动复制完整内容后粘贴。', resume: '2. 您的简历 (Resume)', uploadSupport: '支持 .pdf, .doc, .docx, .txt, .md (最大 4MB)', waitingSave: '请等待保存完成...', generating: '生成深度战略报告...', fileTooLarge: '文件大小超过 4MB，请上传较小的文件。' },
+    en: { title: 'Jobbeagle', subtitle: '(Job Analysis Beagle)', description: 'Expert-level AI Job Strategy Analysis Center: Combining career expert analysis with headhunter perspective to help you master response strategies.', jobDescription: 'Job Description (JD)', upload: 'Click to upload PDF or text file', save: 'Save', saving: 'Saving...', saved: '✓ Saved!', saveFailed: 'Save failed, please try again', generate: 'Launch AI Strategy Analysis', resumeLibrary: 'Resume Library', recentReports: 'Recent Analysis Reports', noResume: 'No resumes saved yet', recentlyUploaded: 'Recently uploaded resumes', engineIntro: 'Strategic Engine Introduction', engineDescription: 'Jobbeagle is equipped with top-tier HR and career expert analysis logic, deeply analyzing organizational needs and market dynamics behind JDs.', reportOutput: 'In-Depth Report Outputs', matchAnalysis: 'Talent-Position Match Analysis', matchAnalysisDesc: 'Reveal hidden job thresholds and accurately assess your core strengths and gaps.', salaryResearch: 'Real Interview Questions & Salary Range', salaryResearchDesc: 'Provide real interview questions, market salary ranges, and negotiation strategies.', industryAnalysis: 'Industry Landscape & Competitor Analysis', industryAnalysisDesc: 'Analyze company market moats and future risks from a career expert perspective.', interviewPrep: 'Advanced Interview Simulation & Strategy', interviewPrepDesc: 'Gather real interview questions and provide in-depth STAR answer guidance.', jobData: '1. Job Information (Job Data)', jdFullTextHint: 'Manually copy the full job posting from the page, then paste here. Do not paste only a URL or a short excerpt.', inputJobUrl: 'Job posting', jobUrlPlaceholder: 'Copy the full job description from the page and paste here (not the link alone)…', urlTip: 'URL detected: open the posting and paste the full copied text instead.', resume: '2. Your Resume', uploadSupport: 'Supports .pdf, .doc, .docx, .txt, .md (Max 4MB)', waitingSave: 'Please wait for save to complete...', generating: 'Generating in-depth strategic report...', fileTooLarge: 'File size exceeds 4MB, please upload a smaller file.' },
+    es: { title: 'Jobbeagle', subtitle: '(Beagle de Análisis de Empleo)', description: 'Centro de Análisis de Estrategia Laboral con IA: Combinando análisis de expertos en carreras y perspectiva de headhunter para dominar las estrategias.', jobDescription: 'Descripción del Puesto (JD)', upload: 'Haz clic para subir PDF o archivo de texto', save: 'Guardar', saving: 'Guardando...', saved: '✓ Guardado!', saveFailed: 'Error al guardar, inténtalo de nuevo', generate: 'Iniciar Análisis de Estrategia IA', resumeLibrary: 'Biblioteca de CV', recentReports: 'Informes de Análisis Recientes', noResume: 'No hay CV guardados aún', recentlyUploaded: 'CV subidos recientemente', engineIntro: 'Introducción al Motor Estratégico', engineDescription: 'Jobbeagle está equipado con lógica de análisis de RR.HH. y expertos en carrera de primer nivel, analizando en profundidad las necesidades organizacionales detrás de los JD.', reportOutput: 'Resultados del Informe en Profundidad', matchAnalysis: 'Análisis de Coincidencia Candidato-Posición', matchAnalysisDesc: 'Revela los umbrales ocultos del puesto y evalúa con precisión tus fortalezas y brechas.', salaryResearch: 'Preguntas de Entrevista Reales y Rango Salarial', salaryResearchDesc: 'Proporciona preguntas de entrevista reales, rangos salariales del mercado y estrategias de negociación.', industryAnalysis: 'Panorama Industrial y Análisis de Competidores', industryAnalysisDesc: 'Analiza las ventajas competitivas y los riesgos futuros de la empresa desde la perspectiva de un experto.', interviewPrep: 'Simulación de Entrevista Avanzada y Estrategia', interviewPrepDesc: 'Recopila preguntas reales de entrevista y proporciona guías de respuesta STAR detalladas.', jobData: '1. Información del Puesto (Job Data)', jdFullTextHint: 'Copia manualmente el contenido completo de la oferta de trabajo de la página y pégalo aquí.', inputJobUrl: 'Oferta de trabajo', jobUrlPlaceholder: 'Copia la descripción completa del trabajo de la página y pégala aquí (no solo el enlace)…', urlTip: 'URL detectada: abre la oferta y pega el texto completo copiado.', resume: '2. Tu CV', uploadSupport: 'Compatible con .pdf, .doc, .docx, .txt, .md (Máx 4MB)', waitingSave: 'Espera a que se complete el guardado...', generating: 'Generando informe estratégico en profundidad...', fileTooLarge: 'El tamaño del archivo supera los 4MB, por favor sube un archivo más pequeño.' },
+    hi: { title: 'Jobbeagle', subtitle: '(जॉब विश्लेषण बीगल)', description: 'विशेषज्ञ-स्तरीय AI नौकरी रणनीति विश्लेषण केंद्र: करियर विशेषज्ञ विश्लेषण और हेडहंटर दृष्टिकोण को मिलाकर आपकी प्रतिक्रिया रणनीतियों में मदद करता है।', jobDescription: 'नौकरी विवरण (JD)', upload: 'PDF या टेक्स्ट फ़ाइल अपलोड करने के लिए क्लिक करें', save: 'सहेजें', saving: 'सहेजा जा रहा है...', saved: '✓ सहेजा गया!', saveFailed: 'सहेजने में विफल, पुनः प्रयास करें', generate: 'AI रणनीति विश्लेषण शुरू करें', resumeLibrary: 'CV लाइब्रेरी', recentReports: 'हाल के विश्लेषण रिपोर्ट', noResume: 'अभी तक कोई CV नहीं सहेजा गया', recentlyUploaded: 'हाल ही में अपलोड किए गए CV', engineIntro: 'रणनीतिक इंजन परिचय', engineDescription: 'Jobbeagle शीर्ष-स्तरीय HR और करियर विशेषज्ञ विश्लेषण तर्क से लैस है, JD के पीछे संगठनात्मक जरूरतों का गहन विश्लेषण करता है।', reportOutput: 'गहन रिपोर्ट आउटपुट', matchAnalysis: 'प्रतिभा-पद मिलान विश्लेषण', matchAnalysisDesc: 'नौकरी की छिपी आवश्यकताओं को उजागर करें और अपनी मुख्य शक्तियों का सटीक मूल्यांकन करें।', salaryResearch: 'वास्तविक साक्षात्कार प्रश्न और वेतन सीमा', salaryResearchDesc: 'वास्तविक साक्षात्कार प्रश्न, बाजार वेतन सीमाएं और बातचीत रणनीतियां प्रदान करता है।', industryAnalysis: 'उद्योग परिदृश्य और प्रतिस्पर्धी विश्लेषण', industryAnalysisDesc: 'करियर विशेषज्ञ के दृष्टिकोण से कंपनी के बाजार फायदे और भविष्य के जोखिमों का विश्लेषण करें।', interviewPrep: 'उन्नत साक्षात्कार सिमुलेशन और रणनीति', interviewPrepDesc: 'वास्तविक साक्षात्कार प्रश्न एकत्र करें और गहन STAR उत्तर मार्गदर्शन प्रदान करें।', jobData: '1. नौकरी की जानकारी (Job Data)', jdFullTextHint: 'पेज से पूरी नौकरी की जानकारी मैन्युअल रूप से कॉपी करें और यहाँ पेस्ट करें।', inputJobUrl: 'नौकरी पोस्टिंग', jobUrlPlaceholder: 'पेज से पूरा जॉब विवरण कॉपी करें और यहाँ पेस्ट करें (केवल लिंक नहीं)…', urlTip: 'URL पाया गया: पोस्टिंग खोलें और पूरा कॉपी किया हुआ टेक्स्ट पेस्ट करें।', resume: '2. आपका CV', uploadSupport: '.pdf, .doc, .docx, .txt, .md सपोर्ट करता है (अधिकतम 4MB)', waitingSave: 'कृपया सेव पूरा होने तक प्रतीक्षा करें...', generating: 'गहन रणनीतिक रिपोर्ट तैयार की जा रही है...', fileTooLarge: 'फ़ाइल का आकार 4MB से अधिक है, कृपया छोटी फ़ाइल अपलोड करें।' },
+    fr: { title: 'Jobbeagle', subtitle: "(Beagle d\'Analyse d\'Emploi)", description: "Centre d\'Analyse de Stratégie d\'Emploi IA : Combinant l\'analyse d\'experts en carrière et la perspective de chasseur de têtes pour maîtriser les stratégies de réponse.", jobDescription: 'Description du Poste (JD)', upload: 'Cliquez pour télécharger un PDF ou fichier texte', save: 'Enregistrer', saving: 'Enregistrement...', saved: '✓ Enregistré!', saveFailed: "Échec de l\'enregistrement, réessayez", generate: "Lancer l\'Analyse de Stratégie IA", resumeLibrary: 'Bibliothèque de CV', recentReports: "Rapports d\'Analyse Récents", noResume: 'Aucun CV enregistré', recentlyUploaded: 'CV récemment téléchargés', engineIntro: 'Introduction au Moteur Stratégique', engineDescription: "Jobbeagle est équipé d\'une logique d\'analyse RH et d\'experts en carrière de premier plan, analysant en profondeur les besoins organisationnels derrière les JD.", reportOutput: 'Résultats du Rapport Approfondi', matchAnalysis: 'Analyse de Correspondance Candidat-Poste', matchAnalysisDesc: 'Révèle les seuils cachés du poste et évalue avec précision vos forces et lacunes.', salaryResearch: "Questions d\'Entretien Réelles et Fourchette Salariale", salaryResearchDesc: "Fournit des questions d\'entretien réelles, des fourchettes salariales du marché et des stratégies de négociation.", industryAnalysis: 'Paysage Industriel et Analyse des Concurrents', industryAnalysisDesc: "Analyse les avantages concurrentiels et les risques futurs de l\'entreprise du point de vue d\'un expert.", interviewPrep: "Simulation d\'Entretien Avancée et Stratégie", interviewPrepDesc: "Collecte des questions d\'entretien réelles et fournit des guides de réponse STAR approfondis.", jobData: '1. Informations sur le Poste (Job Data)', jdFullTextHint: "Copiez manuellement le contenu complet de l\'offre d\'emploi depuis la page, puis collez-le ici.", inputJobUrl: "Offre d\'emploi", jobUrlPlaceholder: "Copiez la description complète du poste depuis la page et collez-la ici (pas seulement le lien)…", urlTip: "URL détectée : ouvrez l\'offre et collez le texte complet copié.", resume: '2. Votre CV', uploadSupport: 'Supporte .pdf, .doc, .docx, .txt, .md (Max 4MB)', waitingSave: "Veuillez attendre la fin de l\'enregistrement...", generating: 'Génération du rapport stratégique approfondi...', fileTooLarge: 'La taille du fichier dépasse 4MB, veuillez télécharger un fichier plus petit.' },
   };
+
 
   const t = translations[currentLanguage];
 

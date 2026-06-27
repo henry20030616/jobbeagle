@@ -28,7 +28,7 @@ interface VideoCardProps {
 
 const VideoCard: React.FC<VideoCardProps> = ({
   job, isActive, isFollowed = false, isBookmarked = false,
-  onFollowChange, onSaveChange, language = 'zh',
+  onFollowChange, onSaveChange, language = 'en',
 }) => {
   const [showFullDetails, setShowFullDetails] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
@@ -355,7 +355,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
       setShowShareMenu(false);
       const toast = document.createElement('div');
       toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg z-50';
-      toast.textContent = language === 'zh' ? '企業頁面連結已複製！' : 'Company page link copied!';
+      toast.textContent = (language === 'zh-TW' || language === 'zh-CN') ? '企業頁面連結已複製！' : 'Company page link copied!';
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2000);
     } catch { /* silent */ }
@@ -403,7 +403,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
     setApplyStep(1);
   };
 
-  const t = (zh: string, en: string) => language === 'zh' ? zh : en;
+  const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
 
   const base64ToFile = (base64: string, fileName: string, mime: string) => {
     const binary = atob(base64);
@@ -421,7 +421,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
     return new File([row.content], name, { type: 'text/plain;charset=utf-8' });
   };
 
-  const defaultAppMessage = () => language === 'zh'
+  const defaultAppMessage = () => (language === 'zh-TW' || language === 'zh-CN')
     ? `您好，近日得知貴公司正在招募「${job.jobTitle}」一職，特此應徵，希望能有機會參加面試，謝謝！`
     : `Hello, I recently learned about the "${job.jobTitle}" opening at ${job.companyName} and would love to apply. I hope to have the opportunity to interview. Thank you!`;
 
@@ -755,7 +755,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           >
             <Share2 size={34} />
           </button>
-          <span className="text-sm md:text-base font-bold drop-shadow-md text-white">{language === 'zh' ? '分享' : 'Share'}</span>
+          <span className="text-sm md:text-base font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
         
         {/* Mute Toggle：embed 類型由 iframe 本身控制音量，不顯示此按鈕 */}
@@ -788,7 +788,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                       onClick={(e) => e.stopPropagation()}
                       className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/50 transition-shadow"
-                      aria-label={language === 'zh' ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
+                      aria-label={(language === 'zh-TW' || language === 'zh-CN') ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
                     >
                       {job.logoUrl && !logoError ? (
                         <img
@@ -856,7 +856,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     >
                       <Sparkles size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
                       <span className="text-center leading-tight line-clamp-2">
-                        {language === 'zh' ? 'AI 匹配度分析' : 'AI Match'}
+                        {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
                       </span>
                     </button>
                   </div>
@@ -872,7 +872,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       onClick={(e) => e.stopPropagation()}
                       className="w-full h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-xs sm:text-sm md:text-base border border-white/10 px-2"
                     >
-                      <ExternalLink size={18} className="shrink-0" /> {language === 'zh' ? '套用' : 'Apply'}
+                      <ExternalLink size={18} className="shrink-0" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
                     </a>
                   ) : (
                     <button
@@ -885,7 +885,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     >
                       <Briefcase size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
                       <span className="text-center leading-tight line-clamp-2">
-                        {language === 'zh' ? '一鍵申請' : 'Quick Apply'}
+                        {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}
                       </span>
                     </button>
                   )}
@@ -971,7 +971,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] text-base md:text-lg"
                 >
                   <ExternalLink size={22} />
-                  <span>{language === 'zh' ? '套用（前往企業申請頁）' : 'Apply on Company Site'}</span>
+                  <span>{(language === 'zh-TW' || language === 'zh-CN') ? '套用（前往企業申請頁）' : 'Apply on Company Site'}</span>
                 </a>
               ) : (
                 <div className="grid grid-cols-2 gap-3">
@@ -982,7 +982,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   >
                     <Sparkles size={22} className="shrink-0" />
                     <span className="text-center leading-tight">
-                      {language === 'zh' ? 'AI 匹配度分析' : 'AI Match'}
+                      {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
                     </span>
                   </button>
                   <button
@@ -994,7 +994,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 px-3 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-2 transition-all active:scale-[0.99] text-sm md:text-base"
                   >
                     <Briefcase size={22} className="shrink-0" />
-                    <span className="text-center leading-tight">{language === 'zh' ? '一鍵申請' : 'Quick Apply'}</span>
+                    <span className="text-center leading-tight">{(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}</span>
                   </button>
                 </div>
               )}
@@ -1027,7 +1027,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     <Briefcase className="text-cyan-400" size={24} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white">{language === 'zh' ? '一鍵申請' : 'Quick Apply'}</h2>
+                    <h2 className="text-xl font-bold text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}</h2>
                     <p className="text-sm text-gray-400">{job.companyName}</p>
                   </div>
                 </div>
@@ -1560,7 +1560,7 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
 
         {/* Title */}
         <p className="text-white font-bold text-center text-base mb-1">
-          {language === 'zh' ? '分享' : 'Share'}
+          {(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}
         </p>
         <p className="text-slate-400 text-xs text-center mb-6 px-8 truncate">
           {job.jobTitle} @ {job.companyName}
@@ -1577,7 +1577,7 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
               <Share2 size={24} className="text-white" />
             </div>
             <span className="text-white/70 text-[11px] w-14 text-center leading-tight">
-              {language === 'zh' ? '系統分享' : 'More'}
+              {(language === 'zh-TW' || language === 'zh-CN') ? '系統分享' : 'More'}
             </span>
           </button>
 
@@ -1610,8 +1610,8 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
             }
             <span className="text-white text-sm font-medium">
               {copiedLink === 'link'
-                ? (language === 'zh' ? '已複製！' : 'Copied!')
-                : (language === 'zh' ? '複製連結' : 'Copy Link')}
+                ? ((language === 'zh-TW' || language === 'zh-CN') ? '已複製！' : 'Copied!')
+                : ((language === 'zh-TW' || language === 'zh-CN') ? '複製連結' : 'Copy Link')}
             </span>
           </button>
 
@@ -1625,8 +1625,8 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
             }
             <span className="text-white text-sm font-medium">
               {copiedLink === 'company'
-                ? (language === 'zh' ? '已複製！' : 'Copied!')
-                : (language === 'zh' ? '複製企業頁面連結' : 'Copy Company Page')}
+                ? ((language === 'zh-TW' || language === 'zh-CN') ? '已複製！' : 'Copied!')
+                : ((language === 'zh-TW' || language === 'zh-CN') ? '複製企業頁面連結' : 'Copy Company Page')}
             </span>
           </button>
         </div>
@@ -1637,7 +1637,7 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
             onClick={onClose}
             className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 rounded-2xl text-white/60 text-sm font-medium transition-colors"
           >
-            {language === 'zh' ? '取消' : 'Cancel'}
+            {(language === 'zh-TW' || language === 'zh-CN') ? '取消' : 'Cancel'}
           </button>
         </div>
       </div>

@@ -45,7 +45,7 @@ function getProgressAtTime(elapsedSec: number): number {
 }
 
 const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
-  zh: [
+  'zh-TW': [
     { minProgress: 0,  label: '🔍 讀取職缺資訊...' },
     { minProgress: 15, label: '📋 分析職缺要求與條件...' },
     { minProgress: 35, label: '🌐 蒐集市場情報與產業資訊...' },
@@ -53,6 +53,15 @@ const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
     { minProgress: 72, label: '🔎 評估履歷匹配程度...' },
     { minProgress: 85, label: '🎯 挖掘真實面試情報...' },
     { minProgress: 93, label: '📊 整合戰略報告中...' },
+  ],
+  'zh-CN': [
+    { minProgress: 0,  label: '🔍 读取职位信息...' },
+    { minProgress: 15, label: '📋 分析职位要求与条件...' },
+    { minProgress: 35, label: '🌐 收集市场情报与行业信息...' },
+    { minProgress: 55, label: '💰 对比薪资市场数据...' },
+    { minProgress: 72, label: '🔎 评估简历匹配程度...' },
+    { minProgress: 85, label: '🎯 挖掘真实面试情报...' },
+    { minProgress: 93, label: '📊 整合战略报告中...' },
   ],
   en: [
     { minProgress: 0,  label: '🔍 Reading job description...' },
@@ -63,41 +72,32 @@ const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
     { minProgress: 85, label: '🎯 Researching interview insights...' },
     { minProgress: 93, label: '📊 Compiling strategic report...' },
   ],
-  ja: [
-    { minProgress: 0,  label: '🔍 求人情報を読み込み中...' },
-    { minProgress: 15, label: '📋 求人要件を分析中...' },
-    { minProgress: 35, label: '🌐 市場情報を収集中...' },
-    { minProgress: 55, label: '💰 給与データを比較中...' },
-    { minProgress: 72, label: '🔎 履歴書のマッチングを評価中...' },
-    { minProgress: 85, label: '🎯 面接情報を調査中...' },
-    { minProgress: 93, label: '📊 戦略レポートを作成中...' },
+  es: [
+    { minProgress: 0,  label: '🔍 Leyendo descripción del puesto...' },
+    { minProgress: 15, label: '📋 Analizando requisitos del trabajo...' },
+    { minProgress: 35, label: '🌐 Recopilando inteligencia de mercado...' },
+    { minProgress: 55, label: '💰 Comparando datos salariales...' },
+    { minProgress: 72, label: '🔎 Evaluando coincidencia del CV...' },
+    { minProgress: 85, label: '🎯 Investigando perspectivas de entrevista...' },
+    { minProgress: 93, label: '📊 Compilando informe estratégico...' },
   ],
-  ko: [
-    { minProgress: 0,  label: '🔍 채용 정보 읽는 중...' },
-    { minProgress: 15, label: '📋 채용 요건 분석 중...' },
-    { minProgress: 35, label: '🌐 시장 정보 수집 중...' },
-    { minProgress: 55, label: '💰 급여 데이터 비교 중...' },
-    { minProgress: 72, label: '🔎 이력서 매칭 평가 중...' },
-    { minProgress: 85, label: '🎯 면접 정보 조사 중...' },
-    { minProgress: 93, label: '📊 전략 보고서 작성 중...' },
+  hi: [
+    { minProgress: 0,  label: '🔍 नौकरी विवरण पढ़ा जा रहा है...' },
+    { minProgress: 15, label: '📋 नौकरी की आवश्यकताओं का विश्लेषण...' },
+    { minProgress: 35, label: '🌐 बाजार की जानकारी एकत्र की जा रही है...' },
+    { minProgress: 55, label: '💰 वेतन डेटा की तुलना की जा रही है...' },
+    { minProgress: 72, label: '🔎 CV मिलान का मूल्यांकन...' },
+    { minProgress: 85, label: '🎯 साक्षात्कार जानकारी शोध किया जा रहा है...' },
+    { minProgress: 93, label: '📊 रणनीतिक रिपोर्ट संकलित की जा रही है...' },
   ],
-  id: [
-    { minProgress: 0,  label: '🔍 Membaca deskripsi pekerjaan...' },
-    { minProgress: 15, label: '📋 Menganalisis persyaratan pekerjaan...' },
-    { minProgress: 35, label: '🌐 Mengumpulkan intelijen pasar...' },
-    { minProgress: 55, label: '💰 Membandingkan data gaji...' },
-    { minProgress: 72, label: '🔎 Mengevaluasi kecocokan resume...' },
-    { minProgress: 85, label: '🎯 Meneliti wawancara...' },
-    { minProgress: 93, label: '📊 Menyusun laporan strategis...' },
-  ],
-  vi: [
-    { minProgress: 0,  label: '🔍 Đọc mô tả công việc...' },
-    { minProgress: 15, label: '📋 Phân tích yêu cầu tuyển dụng...' },
-    { minProgress: 35, label: '🌐 Thu thập thông tin thị trường...' },
-    { minProgress: 55, label: '💰 So sánh dữ liệu lương...' },
-    { minProgress: 72, label: '🔎 Đánh giá mức độ phù hợp CV...' },
-    { minProgress: 85, label: '🎯 Nghiên cứu thông tin phỏng vấn...' },
-    { minProgress: 93, label: '📊 Biên soạn báo cáo chiến lược...' },
+  fr: [
+    { minProgress: 0,  label: '🔍 Lecture de la description du poste...' },
+    { minProgress: 15, label: '📋 Analyse des exigences du poste...' },
+    { minProgress: 35, label: '🌐 Collecte des données de marché...' },
+    { minProgress: 55, label: '💰 Comparaison des données salariales...' },
+    { minProgress: 72, label: '🔎 Évaluation de la correspondance CV...' },
+    { minProgress: 85, label: '🎯 Recherche des perspectives d\'entretien...' },
+    { minProgress: 93, label: '📊 Compilation du rapport stratégique...' },
   ],
 };
 
@@ -168,7 +168,7 @@ export default function Home() {
         const errorDesc = urlParams.get('error_description');
         const msg = errorDesc
           ? decodeURIComponent(errorDesc)
-          : language === 'zh' ? '登入發生錯誤，請重試' : 'Login error, please retry';
+          : (language === 'zh-TW' || language === 'zh-CN') ? '登入發生錯誤，請重試' : 'Login error, please retry';
         setError(msg);
         if (!fromExtension) window.history.replaceState({}, '', '/');
       }
@@ -244,9 +244,9 @@ export default function Home() {
       if (!response.ok) {
         if (result.errorCode) setErrorCode(result.errorCode);
         if (result.error === 'AI Generated Invalid JSON') {
-          throw new Error(language === 'zh' ? 'AI 生成格式異常,請重試' : 'AI generated invalid format, please retry');
+          throw new Error((language === 'zh-TW' || language === 'zh-CN') ? 'AI 生成格式異常,請重試' : 'AI generated invalid format, please retry');
         }
-        throw new Error(result.error || (language === 'zh' ? '分析失敗' : 'Analysis failed'));
+        throw new Error(result.error || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗' : 'Analysis failed'));
       }
 
       setReport(result.report);
@@ -263,13 +263,13 @@ export default function Home() {
     }
   };
 
-  const translations: Record<string, { backToHome: string; analysisFailed: string; suggestions: string; checkConsole: string; retryLater: string; checkApiKey: string; history: string; historyTitle: string; noHistory: string }> = {
-    zh: { backToHome: '返回首頁列表', analysisFailed: '分析失敗', suggestions: '建議', checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息', retryLater: '稍後重試，可能是 Gemini API 暫時性問題', checkApiKey: '如果持續發生，請檢查 API Key 是否正確', history: '歷史紀錄', historyTitle: '分析歷史紀錄', noHistory: '尚無歷史記錄' },
-    en: { backToHome: 'Back to Home', analysisFailed: 'Analysis Failed', suggestions: 'Suggestions', checkConsole: 'Check browser console (F12) for detailed error information', retryLater: 'Retry later, may be a temporary Gemini API issue', checkApiKey: 'If it persists, check if the API Key is correct', history: 'History', historyTitle: 'Analysis History', noHistory: 'No history yet' },
-    ja: { backToHome: 'ホームに戻る', analysisFailed: '分析に失敗しました', suggestions: '提案', checkConsole: 'ブラウザコンソール (F12) で詳細なエラーを確認してください', retryLater: '後で再試行してください。Gemini APIの一時的な問題かもしれません', checkApiKey: 'APIキーが正しいか確認してください', history: '履歴', historyTitle: '分析履歴', noHistory: '履歴はまだありません' },
-    ko: { backToHome: '홈으로 돌아가기', analysisFailed: '분석 실패', suggestions: '제안', checkConsole: '브라우저 콘솔 (F12)에서 자세한 오류를 확인하세요', retryLater: '나중에 다시 시도하세요. Gemini API의 일시적인 문제일 수 있습니다', checkApiKey: 'API 키가 올바른지 확인하세요', history: '기록', historyTitle: '분석 기록', noHistory: '기록이 없습니다' },
-    id: { backToHome: 'Kembali ke Beranda', analysisFailed: 'Analisis Gagal', suggestions: 'Saran', checkConsole: 'Periksa konsol browser (F12) untuk informasi error detail', retryLater: 'Coba lagi nanti, mungkin masalah sementara Gemini API', checkApiKey: 'Jika terus terjadi, periksa apakah API Key sudah benar', history: 'Riwayat', historyTitle: 'Riwayat Analisis', noHistory: 'Belum ada riwayat' },
-    vi: { backToHome: 'Quay về Trang chủ', analysisFailed: 'Phân tích thất bại', suggestions: 'Gợi ý', checkConsole: 'Kiểm tra console trình duyệt (F12) để xem lỗi chi tiết', retryLater: 'Thử lại sau, có thể là sự cố tạm thời của Gemini API', checkApiKey: 'Nếu vẫn tiếp tục, kiểm tra API Key có đúng không', history: 'Lịch sử', historyTitle: 'Lịch sử Phân tích', noHistory: 'Chưa có lịch sử' },
+  const translations: Record<AppLanguage, { backToHome: string; analysisFailed: string; suggestions: string; checkConsole: string; retryLater: string; checkApiKey: string; history: string; historyTitle: string; noHistory: string; unknownJob: string; autoSaved: string; rateTitle: string }> = {
+    'zh-TW': { backToHome: '返回首頁列表', analysisFailed: '分析失敗', suggestions: '建議', checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息', retryLater: '稍後重試，可能是 Gemini API 暫時性問題', checkApiKey: '如果持續發生，請檢查 API Key 是否正確', history: '歷史紀錄', historyTitle: '分析歷史紀錄', noHistory: '尚無歷史記錄', unknownJob: '未知職缺', autoSaved: '完成一次分析後會自動儲存', rateTitle: '⏳ 今日免費次數已用完' },
+    'zh-CN': { backToHome: '返回首页列表', analysisFailed: '分析失败', suggestions: '建议', checkConsole: '检查浏览器控制台 (F12) 查看详细错误信息', retryLater: '稍后重试，可能是 Gemini API 暂时性问题', checkApiKey: '如果持续发生，请检查 API Key 是否正确', history: '历史记录', historyTitle: '分析历史记录', noHistory: '暂无历史记录', unknownJob: '未知职位', autoSaved: '完成一次分析后会自动保存', rateTitle: '⏳ 今日免费次数已用完' },
+    en: { backToHome: 'Back to Home', analysisFailed: 'Analysis Failed', suggestions: 'Suggestions', checkConsole: 'Check browser console (F12) for detailed error information', retryLater: 'Retry later, may be a temporary Gemini API issue', checkApiKey: 'If it persists, check if the API Key is correct', history: 'History', historyTitle: 'Analysis History', noHistory: 'No history yet', unknownJob: 'Unknown Job', autoSaved: 'Records are saved after each analysis', rateTitle: '⏳ Daily Free Limit Reached' },
+    es: { backToHome: 'Volver al Inicio', analysisFailed: 'Análisis Fallido', suggestions: 'Sugerencias', checkConsole: 'Revisa la consola del navegador (F12) para ver el error detallado', retryLater: 'Reintenta más tarde, puede ser un problema temporal de la API de Gemini', checkApiKey: 'Si persiste, verifica si la clave API es correcta', history: 'Historial', historyTitle: 'Historial de Análisis', noHistory: 'Sin historial aún', unknownJob: 'Trabajo Desconocido', autoSaved: 'Los registros se guardan después de cada análisis', rateTitle: '⏳ Límite Diario Alcanzado' },
+    hi: { backToHome: 'होम पर वापस जाएं', analysisFailed: 'विश्लेषण विफल', suggestions: 'सुझाव', checkConsole: 'विस्तृत त्रुटि के लिए ब्राउज़र कंसोल (F12) जांचें', retryLater: 'बाद में पुनः प्रयास करें, Gemini API की अस्थायी समस्या हो सकती है', checkApiKey: 'यदि जारी रहे, तो API Key सही है या नहीं जांचें', history: 'इतिहास', historyTitle: 'विश्लेषण इतिहास', noHistory: 'अभी तक कोई इतिहास नहीं', unknownJob: 'अज्ञात नौकरी', autoSaved: 'प्रत्येक विश्लेषण के बाद रिकॉर्ड सहेजे जाते हैं', rateTitle: '⏳ दैनिक मुफ़्त सीमा समाप्त' },
+    fr: { backToHome: "Retour à l'Accueil", analysisFailed: 'Analyse Échouée', suggestions: 'Suggestions', checkConsole: 'Vérifiez la console du navigateur (F12) pour les détails', retryLater: "Réessayez plus tard, peut-être un problème temporaire de l'API Gemini", checkApiKey: "Si cela persiste, vérifiez si la clé API est correcte", history: 'Historique', historyTitle: "Historique d'Analyse", noHistory: 'Aucun historique pour l\'instant', unknownJob: 'Poste Inconnu', autoSaved: 'Les enregistrements sont sauvegardés après chaque analyse', rateTitle: '⏳ Limite Quotidienne Atteinte' },
   };
 
   const t = translations[language] ?? translations['en'];
@@ -322,7 +322,7 @@ export default function Home() {
                   <div className="text-center py-16 text-slate-400">
                     <History className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p className="text-sm">{t.noHistory}</p>
-                    <p className="text-xs mt-1 opacity-60">{language === 'zh' ? '完成一次分析後會自動儲存' : 'Records are saved after each analysis'}</p>
+                    <p className="text-xs mt-1 opacity-60">{t.autoSaved}</p>
                   </div>
                 ) : (
                   historyReports.map(item => {
@@ -340,10 +340,10 @@ export default function Home() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
                             <p className="text-white font-semibold text-sm line-clamp-1 group-hover:text-indigo-200 transition-colors">
-                              {item.job_title || (language === 'zh' ? '未知職缺' : 'Unknown Job')}
+                              {item.job_title || t.unknownJob}
                             </p>
                             <p className="text-slate-500 text-xs mt-1">
-                              {new Date(item.created_at).toLocaleDateString(language === 'zh' ? 'zh-TW' : 'en-US', {
+                              {new Date(item.created_at).toLocaleDateString(language === 'zh-TW' || language === 'zh-CN' ? 'zh-TW' : language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
                                 month: 'short', day: 'numeric', year: 'numeric',
                               })}
                             </p>
@@ -377,11 +377,11 @@ export default function Home() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h3 className="text-amber-300 font-bold text-lg mb-1">
-                  {language === 'zh' ? '⏳ 今日免費次數已用完' : '⏳ Daily Free Limit Reached'}
+                  {t.rateTitle}
                 </h3>
                 <p className="text-amber-200/80 text-sm mb-3">{error}</p>
                 <p className="text-xs text-amber-400/60">
-                  {language === 'zh'
+                  {(language === 'zh-TW' || language === 'zh-CN')
                     ? '💡 登入帳號可繼續使用，未來將推出無限制的進階方案。'
                     : '💡 Log in to continue. An unlimited premium plan is coming soon.'}
                 </p>

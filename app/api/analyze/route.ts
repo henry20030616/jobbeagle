@@ -338,18 +338,18 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: UserInputs = await request.json();
-    const { jobDescription, resume, language: reportLanguage = 'zh' } = body;
+    const { jobDescription, resume, language: reportLanguage = 'en' } = body;
 
     console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length}, Resume 類型: ${resume?.type}, 報告語言: ${reportLanguage}`);
 
     // 依介面選擇的語言強制報告產出語言（與輸入的 JD/履歷語言無關）
     const LANG_INSTRUCTIONS: Record<string, string> = {
-      en: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values must be in English. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
-      zh: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values must be in 繁體中文. Ignore input language.\nFor match_analysis.dog_type use: **鑽石米格魯** / **黃金米格魯** / **白銀米格魯** / **青銅米格魯**.\n`,
-      ja: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Japanese (日本語) only. All JSON field values must be in Japanese. Ignore input language.\nFor match_analysis.dog_type use Japanese equivalents: **ダイヤモンド・ビーグル**, **ゴールド・ビーグル**, **シルバー・ビーグル**, **ブロンズ・ビーグル**.\n`,
-      ko: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Korean (한국어) only. All JSON field values must be in Korean. Ignore input language.\nFor match_analysis.dog_type use Korean equivalents: **다이아몬드 비글**, **골드 비글**, **실버 비글**, **브론즈 비글**.\n`,
-      id: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Indonesian (Bahasa Indonesia) only. All JSON field values must be in Indonesian. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
-      vi: `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Vietnamese (Tiếng Việt) only. All JSON field values must be in Vietnamese. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
+      en:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values must be in English. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
+      'zh-TW': `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values must be in 繁體中文. Ignore input language.\nFor match_analysis.dog_type use: **鑽石米格魯** / **黃金米格魯** / **白銀米格魯** / **青銅米格魯**.\n`,
+      'zh-CN': `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Simplified Chinese (简体中文) only. All JSON field values must be in 简体中文. Ignore input language.\nFor match_analysis.dog_type use: **钻石猎犬** / **黄金猎犬** / **白银猎犬** / **青铜猎犬**.\n`,
+      es:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Spanish (Español) only. All JSON field values must be in Spanish. Ignore input language.\nFor match_analysis.dog_type use: **Beagle Diamante**, **Beagle Dorado**, **Beagle Plateado**, **Beagle Bronce**.\n`,
+      hi:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Hindi (हिन्दी) only. All JSON field values must be in Hindi. Ignore input language.\nFor match_analysis.dog_type use: **डायमंड बीगल**, **गोल्ड बीगल**, **सिल्वर बीगल**, **ब्रॉन्ज़ बीगल**.\n`,
+      fr:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in French (Français) only. All JSON field values must be in French. Ignore input language.\nFor match_analysis.dog_type use: **Beagle Diamant**, **Beagle Or**, **Beagle Argent**, **Beagle Bronze**.\n`,
     };
     const OUTPUT_LANGUAGE_INSTRUCTION = LANG_INSTRUCTIONS[reportLanguage] ?? LANG_INSTRUCTIONS['en'];
 
@@ -381,9 +381,17 @@ export async function POST(request: NextRequest) {
       console.warn(`🚫 [RateLimit] Blocked: ${limitKey.substring(0, 8)}...`);
       return NextResponse.json(
         {
-          error: reportLanguage === 'en'
-            ? `You have used all ${dailyLimit} free analyses for today. ${isLoggedIn ? '' : 'Log in for more daily analyses. '}Please try again tomorrow.`
-            : `今日 ${dailyLimit} 次免費分析已用完。${isLoggedIn ? '' : '登入帳號可享每日 5 次。'}請明天再試。`,
+          error: reportLanguage === 'zh-TW'
+            ? `今日 ${dailyLimit} 次免費分析已用完。${isLoggedIn ? '' : '登入帳號可享每日 5 次。'}請明天再試。`
+            : reportLanguage === 'zh-CN'
+            ? `今日 ${dailyLimit} 次免费分析已用完。${isLoggedIn ? '' : '登录账号可享每日 5 次。'}请明天再试。`
+            : reportLanguage === 'es'
+            ? `Has usado los ${dailyLimit} análisis gratuitos de hoy. ${isLoggedIn ? '' : 'Inicia sesión para más. '}Por favor, inténtalo mañana.`
+            : reportLanguage === 'hi'
+            ? `आज के ${dailyLimit} मुफ़्त विश्लेषण समाप्त हो गए। ${isLoggedIn ? '' : 'अधिक के लिए लॉग इन करें। '}कृपया कल पुनः प्रयास करें।`
+            : reportLanguage === 'fr'
+            ? `Vous avez utilisé les ${dailyLimit} analyses gratuites d'aujourd'hui. ${isLoggedIn ? '' : 'Connectez-vous pour plus. '}Veuillez réessayer demain.`
+            : `You have used all ${dailyLimit} free analyses for today. ${isLoggedIn ? '' : 'Log in for more daily analyses. '}Please try again tomorrow.`,
           errorCode: 'RATE_LIMIT_EXCEEDED',
           resetTime: 'tomorrow',
         },
@@ -724,7 +732,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    normalizeReport(report, reportLanguage === 'zh' ? 'zh' : 'en');
+    normalizeReport(report, reportLanguage === 'zh-TW' ? 'zh' : 'en');
 
     // 先返回報告給用戶，提升響應速度
     const totalDuration = (Date.now() - startTime) / 1000;
@@ -742,7 +750,7 @@ export async function POST(request: NextRequest) {
           job_description_preview: jobDescription.substring(0, 300),
           score: typeof report.match_analysis?.score === 'number' ? report.match_analysis.score : null,
           report: report as any,
-          language: reportLanguage || 'zh',
+          language: reportLanguage || 'en',
         };
         const { error: dbError } = await supabase
           .from('analysis_reports')

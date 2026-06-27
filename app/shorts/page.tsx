@@ -11,7 +11,7 @@ import {
 import { createClient } from '@/lib/supabase/browser';
 import { FALLBACK_VIDEOS } from './fallback-videos';
 import { setStoredShortsViewRole } from '@/lib/shorts-view-role';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const getLogoUrl = (companyName: string): string =>
@@ -36,24 +36,23 @@ export default function JobbeagleShortsPage() {
 
   // Language from global context
   const { language: appLang } = useLanguage();
-  const SI = {
-    forYou:      { zh: '為您推薦', en: 'For You',    ja: 'おすすめ',        ko: '추천',       id: 'Untuk Anda',  vi: 'Đề xuất' },
-    following:   { zh: '追蹤中',   en: 'Following',  ja: 'フォロー中',      ko: '팔로잉',     id: 'Mengikuti',   vi: 'Đang theo dõi' },
-    saved:       { zh: '已儲存',   en: 'Saved',      ja: '保存済み',        ko: '저장됨',     id: 'Tersimpan',   vi: 'Đã lưu' },
-    logout:      { zh: '登出',     en: 'Logout',     ja: 'ログアウト',      ko: '로그아웃',   id: 'Keluar',      vi: 'Đăng xuất' },
-    login:       { zh: '登入',     en: 'Login',      ja: 'ログイン',        ko: '로그인',     id: 'Masuk',       vi: 'Đăng nhập' },
-    empLogin:    { zh: '企業登入', en: 'Employer Login', ja: '企業ログイン', ko: '기업 로그인', id: 'Login Perusahaan', vi: 'Đăng nhập Doanh nghiệp' },
-    talLogin:    { zh: '人才登入', en: 'Talent Login',   ja: '求職者ログイン', ko: '인재 로그인', id: 'Login Pencari Kerja', vi: 'Đăng nhập Ứng viên' },
-    home:        { zh: '首頁',     en: 'Home',       ja: 'ホーム',          ko: '홈',         id: 'Beranda',     vi: 'Trang chủ' },
-    company:     { zh: '企業',     en: 'Company',    ja: '企業',            ko: '기업',       id: 'Perusahaan',  vi: 'Doanh nghiệp' },
-    profile:     { zh: '個人',     en: 'Profile',    ja: 'プロフィール',    ko: '프로필',     id: 'Profil',      vi: 'Hồ sơ' },
-    noSaved:     { zh: '尚無儲存職缺', en: 'No saved jobs', ja: '保存された求人はありません', ko: '저장된 채용공고 없음', id: 'Belum ada lowongan tersimpan', vi: 'Chưa có việc làm đã lưu' },
-    tapBookmark: { zh: '點擊影片右側書籤圖示即可儲存', en: 'Tap the bookmark icon on any video to save', ja: '動画右のブックマークアイコンをタップして保存', ko: '영상 오른쪽 북마크 아이콘을 탭하여 저장', id: 'Ketuk ikon bookmark di video untuk menyimpan', vi: 'Nhấn biểu tượng đánh dấu trên video để lưu' },
-    noFollowing: { zh: '尚未追蹤企業', en: 'Not following any companies', ja: 'フォロー中の企業はありません', ko: '팔로우 중인 기업 없음', id: 'Belum mengikuti perusahaan', vi: 'Chưa theo dõi công ty nào' },
-    tapFollow:   { zh: '點擊影片右側追蹤按鈕開始追蹤', en: 'Tap follow on any video to start', ja: '動画右のフォローボタンをタップして開始', ko: '영상의 팔로우 버튼을 탭하여 시작', id: 'Ketuk tombol follow di video untuk mulai', vi: 'Nhấn theo dõi trên video để bắt đầu' },
-  } as const;
-  type SIKey = keyof typeof SI;
-  const t = (key: SIKey): string => (SI[key] as Record<string, string>)[appLang] ?? SI[key].en;
+  const SI: Record<string, Record<AppLanguage, string>> = {
+    forYou:      { en: 'For You',    'zh-TW': '為您推薦', 'zh-CN': '为你推荐', es: 'Para Ti',           hi: 'आपके लिए',     fr: 'Pour Vous' },
+    following:   { en: 'Following',  'zh-TW': '追蹤中',   'zh-CN': '关注中',   es: 'Siguiendo',         hi: 'अनुसरण',       fr: 'Abonnements' },
+    saved:       { en: 'Saved',      'zh-TW': '已儲存',   'zh-CN': '已收藏',   es: 'Guardado',          hi: 'सहेजा गया',    fr: 'Enregistrés' },
+    logout:      { en: 'Logout',     'zh-TW': '登出',     'zh-CN': '退出登录', es: 'Cerrar Sesión',     hi: 'लॉग आउट',      fr: 'Déconnexion' },
+    login:       { en: 'Login',      'zh-TW': '登入',     'zh-CN': '登录',     es: 'Iniciar Sesión',    hi: 'लॉग इन',       fr: 'Connexion' },
+    empLogin:    { en: 'Employer Login', 'zh-TW': '企業登入', 'zh-CN': '企业登录', es: 'Acceso Empresa',  hi: 'नियोक्ता लॉगिन', fr: 'Connexion Entreprise' },
+    talLogin:    { en: 'Job Seeker Login', 'zh-TW': '人才登入', 'zh-CN': '人才登录', es: 'Acceso Candidato', hi: 'नौकरी खोजने वाले', fr: 'Connexion Candidat' },
+    home:        { en: 'Home',       'zh-TW': '首頁',     'zh-CN': '首页',     es: 'Inicio',            hi: 'होम',           fr: 'Accueil' },
+    company:     { en: 'Company',    'zh-TW': '企業',     'zh-CN': '企业',     es: 'Empresa',           hi: 'कंपनी',         fr: 'Entreprise' },
+    profile:     { en: 'Profile',    'zh-TW': '個人',     'zh-CN': '个人',     es: 'Perfil',            hi: 'प्रोफ़ाइल',    fr: 'Profil' },
+    noSaved:     { en: 'No saved jobs', 'zh-TW': '尚無儲存職缺', 'zh-CN': '暂无收藏职位', es: 'Sin trabajos guardados', hi: 'कोई सहेजी गई नौकरी नहीं', fr: 'Aucun emploi sauvegardé' },
+    tapBookmark: { en: 'Tap the bookmark icon on any video to save', 'zh-TW': '點擊影片右側書籤圖示即可儲存', 'zh-CN': '点击视频右侧书签图标即可收藏', es: 'Toca el ícono de marcador en cualquier video para guardar', hi: 'सहेजने के लिए किसी भी वीडियो पर बुकमार्क आइकन टैप करें', fr: "Appuyez sur l'icône de signet sur n'importe quelle vidéo pour sauvegarder" },
+    noFollowing: { en: 'Not following any companies', 'zh-TW': '尚未追蹤企業', 'zh-CN': '暂未关注企业', es: 'Sin empresas seguidas', hi: 'किसी भी कंपनी का अनुसरण नहीं', fr: "Aucune entreprise suivie" },
+    tapFollow:   { en: 'Tap follow on any video to start', 'zh-TW': '點擊影片右側追蹤按鈕開始追蹤', 'zh-CN': '点击视频右侧关注按钮开始关注', es: 'Toca seguir en cualquier video para comenzar', hi: 'शुरू करने के लिए किसी भी वीडियो पर फॉलो टैप करें', fr: "Appuyez sur suivre sur n'importe quelle vidéo pour commencer" },
+  };
+  const t = (key: string): string => (SI[key]?.[appLang] ?? SI[key]?.['en'] ?? key);
 
   // UI state
   const [activeTab, setActiveTab] = useState<'foryou' | 'following' | 'saved'>('foryou');

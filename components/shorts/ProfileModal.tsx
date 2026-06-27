@@ -102,8 +102,8 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   const [videoLikes, setVideoLikes] = useState<Record<string, number>>({});
   const [togglingVideo, setTogglingVideo] = useState<string | null>(null);
 
-  const t = (zh: string, en: string) => language === 'zh' ? zh : en;
-  const fmtDate = (d: string) => new Date(d).toLocaleDateString(language === 'zh' ? 'zh-TW' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
+  const fmtDate = (d: string) => new Date(d).toLocaleDateString((language === 'zh-TW' || language === 'zh-CN') ? 'zh-TW' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   useEffect(() => {
     const init = async () => {

@@ -100,18 +100,23 @@ const getBeagleIconSvg = (color: string, spotColor: string, bellyColor: string =
   </svg>`;
 };
 
+const SCORE_TIERS: Record<AppLanguage, [string, string, string][]> = {
+  'zh-TW': [['鑽石米格魯','頂級契合：具備即戰力','您的技能與經驗幾乎完美契合職位需求。'],['黃金米格魯','高度契合：具備核心潛力','您具備大部分核心技能，只需稍作準備。'],['白銀米格魯','中度契合：部分技能重疊','您具備相關基礎，但需強調潛力。'],['青銅米格魯','低度契合：建議重新評估','目前履歷與職位需求差異較大。']],
+  'zh-CN': [['钻石猎犬','顶级契合：具备即战力','您的技能与经验几乎完美契合职位需求。'],['黄金猎犬','高度契合：具备核心潜力','您具备大部分核心技能，只需稍作准备。'],['白银猎犬','中度契合：部分技能重叠','您具备相关基础，但需强调潜力。'],['青铜猎犬','低度契合：建议重新评估','目前简历与职位需求差异较大。']],
+  en: [['Diamond Beagle','Top Match: Ready to Execute','Your skills and experience almost perfectly match the job requirements.'],['Gold Beagle','High Match: Core Potential','You have most of the core skills and only need slight preparation.'],['Silver Beagle','Moderate Match: Partial Skill Overlap','You have relevant foundations but need to emphasize potential.'],['Bronze Beagle','Low Match: Re-evaluation Recommended','There is a significant gap between your resume and job requirements.']],
+  es: [['Beagle Diamante','Coincidencia Máxima: Listo para Actuar','Tus habilidades y experiencia casi perfectamente coinciden con los requisitos.'],['Beagle Dorado','Alta Coincidencia: Potencial Sólido','Tienes la mayoría de las habilidades clave y solo necesitas pequeña preparación.'],['Beagle Plateado','Coincidencia Moderada: Habilidades Parciales','Tienes bases relevantes pero debes enfatizar tu potencial.'],['Beagle Bronce','Baja Coincidencia: Se Recomienda Re-evaluación','Hay una brecha significativa entre tu CV y los requisitos.']],
+  hi: [['डायमंड बीगल','शीर्ष मिलान: तैयार','आपके कौशल और अनुभव लगभग पूरी तरह से नौकरी की आवश्यकताओं से मेल खाते हैं।'],['गोल्ड बीगल','उच्च मिलान: मूल क्षमता','आपके पास अधिकांश मुख्य कौशल हैं और थोड़ी तैयारी की जरूरत है।'],['सिल्वर बीगल','मध्यम मिलान: आंशिक कौशल','आपके पास प्रासंगिक आधार है लेकिन क्षमता पर जोर देना होगा।'],['ब्रॉन्ज़ बीगल','कम मिलान: पुनः मूल्यांकन की सलाह','आपके CV और नौकरी की आवश्यकताओं के बीच महत्वपूर्ण अंतर है।']],
+  fr: [['Beagle Diamant','Correspondance Parfaite: Prêt à Agir','Vos compétences correspondent presque parfaitement aux exigences du poste.'],['Beagle Or','Forte Correspondance: Potentiel Solide','Vous avez la plupart des compétences clés et avez besoin de peu de préparation.'],['Beagle Argent','Correspondance Modérée: Chevauchement Partiel','Vous avez des bases pertinentes mais devez mettre en valeur votre potentiel.'],['Beagle Bronze','Faible Correspondance: Réévaluation Recommandée','Il y a un écart significatif entre votre CV et les exigences du poste.']],
+};
+
 const getScoreInfo = (score: number, language: AppLanguage = 'en') => {
-  if (language !== 'zh') {
-    if (score >= 90) return { level: "Diamond Beagle", label: "Top Match: Ready to Execute", description: "Your skills and experience almost perfectly match the job requirements.", color: "text-cyan-400", fill: "#22d3ee", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" color="#22d3ee" spotColor="#0e7490" /> };
-    if (score >= 75) return { level: "Gold Beagle", label: "High Match: Core Potential", description: "You have most of the core skills and only need slight preparation.", color: "text-amber-400", fill: "#fbbf24", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" color="#fbbf24" spotColor="#b45309" /> };
-    if (score >= 60) return { level: "Silver Beagle", label: "Moderate Match: Partial Skill Overlap", description: "You have relevant foundations but need to emphasize potential.", color: "text-slate-300", fill: "#cbd5e1", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(203,213,225,0.4)]" color="#cbd5e1" spotColor="#475569" /> };
-    return { level: "Bronze Beagle", label: "Low Match: Re-evaluation Recommended", description: "There is a significant gap between your resume and job requirements.", color: "text-orange-400", fill: "#fb923c", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(251,146,60,0.4)]" color="#fb923c" spotColor="#9a3412" /> };
-  } else {
-    if (score >= 90) return { level: "鑽石米格魯", label: "頂級契合：具備即戰力", description: "您的技能與經驗幾乎完美契合職位需求。", color: "text-cyan-400", fill: "#22d3ee", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" color="#22d3ee" spotColor="#0e7490" /> };
-    if (score >= 75) return { level: "黃金米格魯", label: "高度契合：具備核心潛力", description: "您具備大部分核心技能，只需稍作準備。", color: "text-amber-400", fill: "#fbbf24", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" color="#fbbf24" spotColor="#b45309" /> };
-    if (score >= 60) return { level: "白銀米格魯", label: "中度契合：部分技能重疊", description: "您具備相關基礎，但需強調潛力。", color: "text-slate-300", fill: "#cbd5e1", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(203,213,225,0.4)]" color="#cbd5e1" spotColor="#475569" /> };
-    return { level: "青銅米格魯", label: "低度契合：建議重新評估", description: "目前履歷與職位需求差異較大。", color: "text-orange-400", fill: "#fb923c", icon: <BeagleIcon className="w-32 h-32 drop-shadow-[0_0_15px_rgba(251,146,60,0.4)]" color="#fb923c" spotColor="#9a3412" /> };
-  }
+  const tiers = SCORE_TIERS[language] ?? SCORE_TIERS['en'];
+  const [level, label, description] = score >= 90 ? tiers[0] : score >= 75 ? tiers[1] : score >= 60 ? tiers[2] : tiers[3];
+  const colorMap = { 0: { color: 'text-cyan-400', fill: '#22d3ee', spotColor: '#0e7490', glow: 'rgba(34,211,238,0.6)' }, 1: { color: 'text-amber-400', fill: '#fbbf24', spotColor: '#b45309', glow: 'rgba(251,191,36,0.6)' }, 2: { color: 'text-slate-300', fill: '#cbd5e1', spotColor: '#475569', glow: 'rgba(203,213,225,0.4)' }, 3: { color: 'text-orange-400', fill: '#fb923c', spotColor: '#9a3412', glow: 'rgba(251,146,60,0.4)' } } as const;
+  const ci = score >= 90 ? 0 : score >= 75 ? 1 : score >= 60 ? 2 : 3;
+  const { color, fill, spotColor, glow } = colorMap[ci];
+  const icon = <BeagleIcon className={`w-32 h-32 drop-shadow-[0_0_${ci < 2 ? '20' : '15'}px_${glow}]`} color={fill} spotColor={spotColor} />;
+  return { level, label, description, color, fill, icon };
 };
 
 // ----------------------------------------------------------------------
@@ -126,88 +131,17 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'en' }) 
   const scoreData = [{ name: 'Score', value: match_analysis.score, fill: scoreInfo.fill }];
 
   // 翻譯對象
-  const translations = {
-    zh: {
-      matchAnalysis: '1. 職位分析與匹配評分',
-      coreAdvantages: '核心優勢',
-      skillGaps: '待補強項目',
-      salaryInfo: '2. 薪資情報與公司評價',
-      estimatedSalary: '預估薪酬 (ESTIMATED VALUE)',
-      analysisLogic: '分析推估邏輯',
-      negotiationStrategy: '薪資談判策略',
-      workplaceEcology: '職場生態與面試實戰情報',
-      companyCulture: '組織文化與氛圍',
-      pros: '優點',
-      cons: '缺點',
-      interviewProcess: '面試環節與難度',
-      realInterviewQuestions: '真實面試題目',
-      sourceLink: '來源連結',
-      companyAnalysis: '3. 公司介紹與前景分析',
-      industryOverview: '產業概況',
-      industryTrends: '產業趨勢',
-      coreMoats: '企業核心護城河',
-      strategicRisks: '長期戰略風險',
-      competitors: '競爭對手',
-      strengths: '優勢',
-      weaknesses: '弱點',
-      interviewPrep: '4. 面試考題與策略',
-      scoreStandard: '評分標準',
-      topMatch: '頂級契合',
-      highMatch: '高度契合',
-      moderateMatch: '中度契合',
-      lowMatch: '低度契合',
-      jobTitle: '職位',
-      generatedDate: '生成日期',
-      coreAdvantagesAndGaps: '1. 核心優勢與缺口',
-      yourAdvantages: '你的優勢',
-      suggestedImprovements: '建議補強',
-      marketEstimatedSalary: '市場預估年薪',
-      negotiationTips: '談判策略建議：',
-      industryCompetition: '3. 產業競爭分析',
-      mockInterview: '4. 模擬面試題庫',
-    },
-    en: {
-      matchAnalysis: '1. Job Analysis & Match Score',
-      coreAdvantages: 'Core Advantages',
-      skillGaps: 'Skill Gaps',
-      salaryInfo: '2. Salary Intelligence & Company Reviews',
-      estimatedSalary: 'Estimated Salary (ESTIMATED VALUE)',
-      analysisLogic: 'Analysis & Estimation Logic',
-      negotiationStrategy: 'Negotiation Strategy',
-      workplaceEcology: 'Workplace Ecology & Interview Intelligence',
-      companyCulture: 'Organizational Culture & Atmosphere',
-      pros: 'Pros',
-      cons: 'Cons',
-      interviewProcess: 'Interview Process & Difficulty',
-      realInterviewQuestions: 'Real Interview Questions',
-      sourceLink: 'Source Link',
-      companyAnalysis: '3. Company Overview & Prospect Analysis',
-      industryOverview: 'Industry Overview',
-      industryTrends: 'Industry Trends',
-      coreMoats: 'Core Competitive Moats',
-      strategicRisks: 'Long-term Strategic Risks',
-      competitors: 'Competitors',
-      strengths: 'Strengths',
-      weaknesses: 'Weaknesses',
-      interviewPrep: '4. Interview Questions & Strategy',
-      scoreStandard: 'Scoring Standard',
-      topMatch: 'Top Match',
-      highMatch: 'High Match',
-      moderateMatch: 'Moderate Match',
-      lowMatch: 'Low Match',
-      jobTitle: 'Job Title',
-      generatedDate: 'Generated Date',
-      coreAdvantagesAndGaps: '1. Core Advantages & Gaps',
-      yourAdvantages: 'Your Advantages',
-      suggestedImprovements: 'Suggested Improvements',
-      marketEstimatedSalary: 'Market Estimated Annual Salary',
-      negotiationTips: 'Negotiation Strategy Tips:',
-      industryCompetition: '3. Industry Competition Analysis',
-      mockInterview: '4. Mock Interview Question Bank',
-    }
+  type DT = typeof _dashEn;
+  const _dashEn = { matchAnalysis: '1. Job Analysis & Match Score', coreAdvantages: 'Core Advantages', skillGaps: 'Skill Gaps', salaryInfo: '2. Salary Intelligence & Company Reviews', estimatedSalary: 'Estimated Salary (ESTIMATED VALUE)', analysisLogic: 'Analysis & Estimation Logic', negotiationStrategy: 'Negotiation Strategy', workplaceEcology: 'Workplace Ecology & Interview Intelligence', companyCulture: 'Organizational Culture & Atmosphere', pros: 'Pros', cons: 'Cons', interviewProcess: 'Interview Process & Difficulty', realInterviewQuestions: 'Real Interview Questions', sourceLink: 'Source Link', companyAnalysis: '3. Company Overview & Prospect Analysis', industryOverview: 'Industry Overview', industryTrends: 'Industry Trends', coreMoats: 'Core Competitive Moats', strategicRisks: 'Long-term Strategic Risks', competitors: 'Competitors', strengths: 'Strengths', weaknesses: 'Weaknesses', interviewPrep: '4. Interview Questions & Strategy', scoreStandard: 'Scoring Standard', topMatch: 'Top Match', highMatch: 'High Match', moderateMatch: 'Moderate Match', lowMatch: 'Low Match', jobTitle: 'Job Title', generatedDate: 'Generated Date', coreAdvantagesAndGaps: '1. Core Advantages & Gaps', yourAdvantages: 'Your Advantages', suggestedImprovements: 'Suggested Improvements', marketEstimatedSalary: 'Market Estimated Annual Salary', negotiationTips: 'Negotiation Strategy Tips:', industryCompetition: '3. Industry Competition Analysis', mockInterview: '4. Mock Interview Question Bank' };
+  const dashTranslations: Record<AppLanguage, DT> = {
+    'zh-TW': { matchAnalysis: '1. 職位分析與匹配評分', coreAdvantages: '核心優勢', skillGaps: '待補強項目', salaryInfo: '2. 薪資情報與公司評價', estimatedSalary: '預估薪酬 (ESTIMATED VALUE)', analysisLogic: '分析推估邏輯', negotiationStrategy: '薪資談判策略', workplaceEcology: '職場生態與面試實戰情報', companyCulture: '組織文化與氛圍', pros: '優點', cons: '缺點', interviewProcess: '面試環節與難度', realInterviewQuestions: '真實面試題目', sourceLink: '來源連結', companyAnalysis: '3. 公司介紹與前景分析', industryOverview: '產業概況', industryTrends: '產業趨勢', coreMoats: '企業核心護城河', strategicRisks: '長期戰略風險', competitors: '競爭對手', strengths: '優勢', weaknesses: '弱點', interviewPrep: '4. 面試考題與策略', scoreStandard: '評分標準', topMatch: '頂級契合', highMatch: '高度契合', moderateMatch: '中度契合', lowMatch: '低度契合', jobTitle: '職位', generatedDate: '生成日期', coreAdvantagesAndGaps: '1. 核心優勢與缺口', yourAdvantages: '你的優勢', suggestedImprovements: '建議補強', marketEstimatedSalary: '市場預估年薪', negotiationTips: '談判策略建議：', industryCompetition: '3. 產業競爭分析', mockInterview: '4. 模擬面試題庫' },
+    'zh-CN': { matchAnalysis: '1. 职位分析与匹配评分', coreAdvantages: '核心优势', skillGaps: '待补强项目', salaryInfo: '2. 薪资情报与公司评价', estimatedSalary: '预估薪酬 (ESTIMATED VALUE)', analysisLogic: '分析推估逻辑', negotiationStrategy: '薪资谈判策略', workplaceEcology: '职场生态与面试实战情报', companyCulture: '组织文化与氛围', pros: '优点', cons: '缺点', interviewProcess: '面试环节与难度', realInterviewQuestions: '真实面试题目', sourceLink: '来源链接', companyAnalysis: '3. 公司介绍与前景分析', industryOverview: '产业概况', industryTrends: '产业趋势', coreMoats: '企业核心护城河', strategicRisks: '长期战略风险', competitors: '竞争对手', strengths: '优势', weaknesses: '弱点', interviewPrep: '4. 面试考题与策略', scoreStandard: '评分标准', topMatch: '顶级契合', highMatch: '高度契合', moderateMatch: '中度契合', lowMatch: '低度契合', jobTitle: '职位', generatedDate: '生成日期', coreAdvantagesAndGaps: '1. 核心优势与缺口', yourAdvantages: '你的优势', suggestedImprovements: '建议补强', marketEstimatedSalary: '市场预估年薪', negotiationTips: '谈判策略建议：', industryCompetition: '3. 产业竞争分析', mockInterview: '4. 模拟面试题库' },
+    en: _dashEn,
+    es: { matchAnalysis: '1. Análisis del Puesto y Puntuación', coreAdvantages: 'Ventajas Principales', skillGaps: 'Brechas de Habilidades', salaryInfo: '2. Información Salarial y Reseñas', estimatedSalary: 'Salario Estimado (VALOR ESTIMADO)', analysisLogic: 'Lógica de Análisis y Estimación', negotiationStrategy: 'Estrategia de Negociación', workplaceEcology: 'Ecología Laboral e Inteligencia de Entrevistas', companyCulture: 'Cultura Organizacional y Ambiente', pros: 'Pros', cons: 'Contras', interviewProcess: 'Proceso y Dificultad de Entrevista', realInterviewQuestions: 'Preguntas Reales de Entrevista', sourceLink: 'Enlace de Fuente', companyAnalysis: '3. Visión General de la Empresa y Perspectivas', industryOverview: 'Visión General de la Industria', industryTrends: 'Tendencias de la Industria', coreMoats: 'Ventajas Competitivas Principales', strategicRisks: 'Riesgos Estratégicos a Largo Plazo', competitors: 'Competidores', strengths: 'Fortalezas', weaknesses: 'Debilidades', interviewPrep: '4. Preguntas de Entrevista y Estrategia', scoreStandard: 'Estándar de Puntuación', topMatch: 'Coincidencia Máxima', highMatch: 'Alta Coincidencia', moderateMatch: 'Coincidencia Moderada', lowMatch: 'Baja Coincidencia', jobTitle: 'Puesto', generatedDate: 'Fecha de Generación', coreAdvantagesAndGaps: '1. Ventajas y Brechas Principales', yourAdvantages: 'Tus Ventajas', suggestedImprovements: 'Mejoras Sugeridas', marketEstimatedSalary: 'Salario Anual Estimado del Mercado', negotiationTips: 'Consejos de Negociación Salarial:', industryCompetition: '3. Análisis de Competencia en la Industria', mockInterview: '4. Banco de Preguntas de Entrevista Simulada' },
+    hi: { matchAnalysis: '1. नौकरी विश्लेषण और मिलान स्कोर', coreAdvantages: 'मुख्य लाभ', skillGaps: 'कौशल अंतराल', salaryInfo: '2. वेतन जानकारी और कंपनी समीक्षाएं', estimatedSalary: 'अनुमानित वेतन (अनुमानित मूल्य)', analysisLogic: 'विश्लेषण और अनुमान तर्क', negotiationStrategy: 'वेतन वार्ता रणनीति', workplaceEcology: 'कार्यस्थल पारिस्थितिकी और साक्षात्कार जानकारी', companyCulture: 'संगठनात्मक संस्कृति और माहौल', pros: 'लाभ', cons: 'हानि', interviewProcess: 'साक्षात्कार प्रक्रिया और कठिनाई', realInterviewQuestions: 'वास्तविक साक्षात्कार प्रश्न', sourceLink: 'स्रोत लिंक', companyAnalysis: '3. कंपनी अवलोकन और संभावनाएं', industryOverview: 'उद्योग अवलोकन', industryTrends: 'उद्योग के रुझान', coreMoats: 'मुख्य प्रतिस्पर्धात्मक लाभ', strategicRisks: 'दीर्घकालिक रणनीतिक जोखिम', competitors: 'प्रतिस्पर्धी', strengths: 'ताकत', weaknesses: 'कमजोरियां', interviewPrep: '4. साक्षात्कार प्रश्न और रणनीति', scoreStandard: 'स्कोरिंग मानक', topMatch: 'शीर्ष मिलान', highMatch: 'उच्च मिलान', moderateMatch: 'मध्यम मिलान', lowMatch: 'कम मिलान', jobTitle: 'पद', generatedDate: 'उत्पन्न तिथि', coreAdvantagesAndGaps: '1. मुख्य लाभ और अंतराल', yourAdvantages: 'आपके लाभ', suggestedImprovements: 'सुझाए गए सुधार', marketEstimatedSalary: 'बाजार अनुमानित वार्षिक वेतन', negotiationTips: 'वार्ता रणनीति सुझाव:', industryCompetition: '3. उद्योग प्रतिस्पर्धा विश्लेषण', mockInterview: '4. मॉक साक्षात्कार प्रश्न बैंक' },
+    fr: { matchAnalysis: '1. Analyse du Poste et Score de Correspondance', coreAdvantages: 'Avantages Principaux', skillGaps: 'Lacunes en Compétences', salaryInfo: '2. Informations Salariales et Avis', estimatedSalary: 'Salaire Estimé (VALEUR ESTIMÉE)', analysisLogic: "Logique d'Analyse et d'Estimation", negotiationStrategy: 'Stratégie de Négociation', workplaceEcology: "Écologie du Travail et Intelligence d'Entretien", companyCulture: 'Culture Organisationnelle et Ambiance', pros: 'Avantages', cons: 'Inconvénients', interviewProcess: "Processus et Difficulté d'Entretien", realInterviewQuestions: "Questions d'Entretien Réelles", sourceLink: 'Lien Source', companyAnalysis: "3. Aperçu de l'Entreprise et Perspectives", industryOverview: "Vue d'Ensemble de l'Industrie", industryTrends: "Tendances de l'Industrie", coreMoats: 'Avantages Concurrentiels Clés', strategicRisks: 'Risques Stratégiques à Long Terme', competitors: 'Concurrents', strengths: 'Points Forts', weaknesses: 'Points Faibles', interviewPrep: "4. Questions d'Entretien et Stratégie", scoreStandard: 'Standard de Notation', topMatch: 'Correspondance Parfaite', highMatch: 'Forte Correspondance', moderateMatch: 'Correspondance Modérée', lowMatch: 'Faible Correspondance', jobTitle: 'Intitulé du Poste', generatedDate: 'Date de Génération', coreAdvantagesAndGaps: '1. Avantages et Lacunes Principales', yourAdvantages: 'Vos Avantages', suggestedImprovements: 'Améliorations Suggérées', marketEstimatedSalary: 'Salaire Annuel Estimé du Marché', negotiationTips: 'Conseils de Négociation Salariale:', industryCompetition: "3. Analyse de la Concurrence dans l'Industrie", mockInterview: "4. Banque de Questions d'Entretien Simulé" },
   };
-
-  const t = translations[language as 'zh' | 'en'] ?? translations['en'];
+  const t = dashTranslations[language] ?? dashTranslations['en'];
 
   return (
     <div className="relative">
@@ -250,7 +184,7 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'en' }) 
                   <p className="text-sm text-slate-400 px-4 leading-relaxed mb-3">{scoreInfo.description}</p>
                   {match_analysis.recruiter_insight && (
                     <p className="text-sm text-slate-300 px-4 leading-relaxed mb-3 text-left border border-slate-600/50 rounded-lg py-2 bg-slate-900/40">
-                      <span className="text-xs font-bold text-amber-500/90 uppercase tracking-wide block mb-1">{language === 'zh' ? '人資洞察' : 'Recruiter Insight'}</span>
+                      <span className="text-xs font-bold text-amber-500/90 uppercase tracking-wide block mb-1">{language === 'zh-TW' ? '人資洞察' : language === 'zh-CN' ? '人资洞察' : 'Recruiter Insight'}</span>
                       {match_analysis.recruiter_insight}
                     </p>
                   )}
@@ -259,19 +193,19 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'en' }) 
                     <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">{t.scoreStandard}</p>
                     <div className="text-xs text-slate-400 space-y-1 text-left px-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-cyan-400">90+ {language === 'zh' ? '鑽石米格魯' : 'Diamond Beagle'}</span>
+                        <span className="text-cyan-400">90+ {SCORE_TIERS[language]?.[0]?.[0] ?? 'Diamond Beagle'}</span>
                         <span className="text-slate-600">{t.topMatch}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-amber-400">75+ {language === 'zh' ? '黃金米格魯' : 'Gold Beagle'}</span>
+                        <span className="text-amber-400">75+ {SCORE_TIERS[language]?.[1]?.[0] ?? 'Gold Beagle'}</span>
                         <span className="text-slate-600">{t.highMatch}</span>
             </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-300">60+ {language === 'zh' ? '白銀米格魯' : 'Silver Beagle'}</span>
+                        <span className="text-slate-300">60+ {SCORE_TIERS[language]?.[2]?.[0] ?? 'Silver Beagle'}</span>
                         <span className="text-slate-600">{t.moderateMatch}</span>
                   </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-orange-400">&lt;60 {language === 'zh' ? '青銅米格魯' : 'Bronze Beagle'}</span>
+                        <span className="text-orange-400">&lt;60 {SCORE_TIERS[language]?.[3]?.[0] ?? 'Bronze Beagle'}</span>
                         <span className="text-slate-600">{t.lowMatch}</span>
                   </div>
                   </div>
