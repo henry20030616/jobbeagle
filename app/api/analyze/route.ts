@@ -358,11 +358,6 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user: currentUser } } = await supabase.auth.getUser();
 
-    // #region agent log
-    fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'A',location:'analyze/route.ts:getUser',message:'server auth getUser result',data:{currentUserId:currentUser?.id ?? null,isLoggedIn:!!currentUser},timestamp:Date.now()})}).catch(()=>{});
-    console.log(`🔑 [AUTH] Server-side getUser → ${currentUser ? `UID=${currentUser.id.substring(0,8)}...` : 'NULL (not authenticated on server)'}`);
-    // #endregion
-
     // 未登入：IP 2次/天；登入：user_id 5次/天
     const isLoggedIn = !!currentUser;
     const dailyLimit = isLoggedIn ? USER_DAILY_LIMIT : GUEST_DAILY_LIMIT;
@@ -743,24 +738,15 @@ export async function POST(request: NextRequest) {
           report: report as any,
           language: reportLanguage || 'zh',
         };
-        // #region agent log
-        fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'B',location:'analyze/route.ts:insert',message:'attempting DB insert',data:{userId:currentUser.id.substring(0,8),jobTitle:insertPayload.job_title,score:insertPayload.score},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         const { error: dbError } = await supabase
           .from('analysis_reports')
           .insert(insertPayload);
         if (dbError) {
           saveStatus = 'failed';
           saveErrorMsg = dbError.message;
-          // #region agent log
-          fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'B',location:'analyze/route.ts:insert_error',message:'DB insert FAILED',data:{error:dbError.message,code:dbError.code},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
-          console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message, 'code:', dbError.code);
+          console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message);
         } else {
           saveStatus = 'success';
-          // #region agent log
-          fetch('http://127.0.0.1:7301/ingest/f9a3e341-5cab-45ba-867e-abac8649a848',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'75420b'},body:JSON.stringify({sessionId:'75420b',hypothesisId:'B',location:'analyze/route.ts:insert_ok',message:'DB insert SUCCESS',data:{userId:currentUser.id.substring(0,8)},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
           console.log('✅ [DB] 分析報告已儲存');
         }
       } catch (e: any) {
