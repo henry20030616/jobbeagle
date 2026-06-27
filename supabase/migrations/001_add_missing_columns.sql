@@ -46,6 +46,6 @@ CREATE POLICY "Users can insert own analysis reports"
 CREATE INDEX IF NOT EXISTS idx_analysis_reports_user_created
   ON analysis_reports (user_id, created_at DESC);
 
--- 7. usage_limits：確保 logged-in 用戶可用自己的 identifier（欄位已存在，只補 index）
-CREATE INDEX IF NOT EXISTS idx_usage_limits_ip_date
-  ON usage_limits (ip_hash, date);
+-- 7. usage_limits index（可選，僅效能優化；若 usage_limits 欄位名不同可跳過）
+-- CREATE INDEX IF NOT EXISTS idx_usage_limits_ip_date
+--   ON usage_limits (ip_hash, date);
