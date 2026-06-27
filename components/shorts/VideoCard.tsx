@@ -13,6 +13,7 @@ import {
   MessageCircle, Link as LinkIcon, Building2, Clock
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
+import { toYouTubeEmbedUrl, toFacebookEmbedUrl, normalizeInstagramUrl } from '@/lib/video-embed';
 
 interface VideoCardProps {
   job: JobData;
@@ -538,9 +539,117 @@ const VideoCard: React.FC<VideoCardProps> = ({
              )}
         </div>
 
-        {/* Video Player：Supabase 影片改走同源 proxy，避免 CORS 導致 Video unavailable */}
-        {isActive && !hasError && videoUrl ? (
-            <video
+        {/* ─────── Video / Embed Player ─────── */}
+        {(() => {
+          const sourceType = job.videoSourceType ?? 'upload';
+
+          // ── YouTube embed ──
+          if (sourceType === 'youtube' && videoUrl) {
+            const embedSrc = toYouTubeEmbedUrl(videoUrl);
+            if (embedSrc && isActive) {
+              return (
+                <iframe
+                  src={embedSrc}
+                  className="w-full h-full object-cover z-10 border-0"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title="YouTube 短影音"
+                  style={{ pointerEvents: 'none' }}
+                />
+              );
+            }
+            // 未啟動時顯示 YouTube 縮圖 placeholder
+            return (
+              <div className="z-10 flex flex-col items-center justify-center gap-3 text-white/70">
+                <span className="text-5xl">▶</span>
+                <p className="text-sm font-medium">YouTube</p>
+              </div>
+            );
+          }
+
+          // ── Facebook embed ──
+          if (sourceType === 'facebook' && videoUrl) {
+            const fbSrc = toFacebookEmbedUrl(videoUrl);
+            if (fbSrc && isActive) {
+              return (
+                <iframe
+                  src={fbSrc}
+                  className="w-full h-full z-10 border-0"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                  title="Facebook 影片"
+                  style={{ pointerEvents: 'none' }}
+                  scrolling="no"
+                />
+              );
+            }
+            return (
+              <div className="z-10 flex flex-col items-center justify-center gap-3 text-white/70">
+                <span className="text-5xl">📘</span>
+                <p className="text-sm font-medium">Facebook</p>
+              </div>
+            );
+          }
+
+          // ── Instagram embed ──
+          if (sourceType === 'instagram' && videoUrl) {
+            if (isActive) {
+              const igUrl = normalizeInstagramUrl(videoUrl);
+              return (
+                <div className="w-full h-full z-10 overflow-hidden flex items-center justify-center bg-black">
+                  {/* Instagram 官方 blockquote embed；embed.js 由 layout 或此元件動態注入 */}
+                  <blockquote
+                    className="instagram-media"
+                    data-instgrm-captioned
+                    data-instgrm-permalink={igUrl}
+                    data-instgrm-version="14"
+                    style={{
+                      background: '#000',
+                      border: 0,
+                      width: '100%',
+                      maxWidth: '100%',
+                    }}
+                  >
+                    <a href={igUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-400 text-xs p-4 block text-center">
+                      前往 Instagram 觀看原貼文
+                    </a>
+                  </blockquote>
+                  <IGEmbedScript />
+                </div>
+              );
+            }
+            return (
+              <div className="z-10 flex flex-col items-center justify-center gap-3 text-white/70">
+                <span className="text-5xl">📸</span>
+                <p className="text-sm font-medium">Instagram</p>
+              </div>
+            );
+          }
+
+          // ── External / unknown link fallback ──
+          if (sourceType === 'external' && videoUrl) {
+            return (
+              <div className="z-10 flex flex-col items-center justify-center gap-4 p-8 text-center">
+                <span className="text-5xl">🔗</span>
+                <p className="text-white/80 text-sm font-medium">此影片在外部平台</p>
+                <a
+                  href={videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20 transition-colors"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <ExternalLink size={14} />
+                  前往觀看影片
+                </a>
+              </div>
+            );
+          }
+
+          // ── Default: native video (upload 或 mp4 直連) ──
+          if (isActive && !hasError && videoUrl) {
+            return (
+              <video
                 ref={videoRef}
                 src={videoUrl.includes('supabase.co/storage/') ? `/api/shorts/proxy?url=${encodeURIComponent(videoUrl)}` : videoUrl}
                 className="w-full h-full object-cover z-10"
@@ -551,33 +660,33 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 preload="auto"
                 crossOrigin="anonymous"
                 onError={() => setHasError(true)}
-            />
-        ) : (
+              />
+            );
+          }
+
+          // ── Inactive / error / no video ──
+          return (
             <div className="z-10 flex flex-col items-center justify-center text-center p-8">
-                 {!isActive && <Play size={48} className="text-white/50 mb-4" />}
-                 {hasError && (
-                    <div className="flex flex-col items-center animate-fade-in gap-3">
-                        <AlertCircle size={48} className="text-red-500 mb-2" />
-                        <p className="text-white font-bold text-lg drop-shadow-md">Video unavailable</p>
-                        <p className="text-white/80 text-sm drop-shadow max-w-[300px] text-center">
-                          {videoUrl?.includes('drive.google.com')
-                            ? '此為 Google 雲端硬碟連結，無法直接當影片播放。請在「上傳新影片」時選擇「選擇檔案」上傳影片，或使用 Supabase / 其他直接影片網址。'
-                            : '影片無法載入。請確認影片連結為「直接影片網址」（.mp4），勿使用 Google 雲端硬碟分享連結。'}
-                        </p>
-                        {videoUrl && (
-                          <a
-                            href={videoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-cyan-400 hover:underline"
-                          >
-                            在新分頁開啟連結檢查
-                          </a>
-                        )}
-                    </div>
-                 )}
+              {!isActive && !hasError && <Play size={48} className="text-white/50 mb-4" />}
+              {hasError && (
+                <div className="flex flex-col items-center animate-fade-in gap-3">
+                  <AlertCircle size={48} className="text-red-500 mb-2" />
+                  <p className="text-white font-bold text-lg drop-shadow-md">Video unavailable</p>
+                  <p className="text-white/80 text-sm drop-shadow max-w-[300px] text-center">
+                    {videoUrl?.includes('drive.google.com')
+                      ? '此為 Google 雲端硬碟連結，無法直接當影片播放。請使用 Supabase 上傳或貼社群平台連結。'
+                      : '影片無法載入。請確認影片連結為直接影片網址（.mp4），或改用社群平台連結。'}
+                  </p>
+                  {videoUrl && (
+                    <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:underline" onClick={e => e.stopPropagation()}>
+                      在新分頁開啟連結檢查
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
-        )}
+          );
+        })()}
         
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 pointer-events-none z-10"></div>
       </div>
@@ -1520,3 +1629,25 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
 };
 
 export default VideoCard;
+
+/**
+ * 一次性注入 Instagram embed.js 腳本（重複呼叫不會重複注入）
+ */
+function IGEmbedScript() {
+  useEffect(() => {
+    if (document.getElementById('ig-embed-script')) {
+      // 若 instgrm 已存在，重新處理 blockquote
+      if ((window as any).instgrm?.Embeds) {
+        (window as any).instgrm.Embeds.process();
+      }
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'ig-embed-script';
+    script.src = 'https://www.instagram.com/embed.js';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  }, []);
+  return null;
+}

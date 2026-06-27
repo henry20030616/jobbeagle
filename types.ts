@@ -132,6 +132,10 @@ export interface UserInputs {
 }
 
 // Jobbeagle Shorts types
+
+/** 影片來源類型：upload = 上傳原檔；youtube / instagram / facebook = 社群連結；external = 其他外部連結 */
+export type VideoSourceType = 'upload' | 'youtube' | 'instagram' | 'facebook' | 'external';
+
 export interface JobData {
   id: string;
   companyName: string;
@@ -140,6 +144,8 @@ export interface JobData {
   salary: string;
   description: string;
   videoUrl?: string;
+  /** 影片來源類型，未設定時預設為 upload（向下相容舊資料） */
+  videoSourceType?: VideoSourceType;
   tags: string[];
   logoUrl?: string;
   isAiGenerated?: boolean;

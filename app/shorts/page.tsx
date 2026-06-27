@@ -121,6 +121,7 @@ export default function JobbeagleShortsPage() {
         salary: v.salary || '',
         description: v.description,
         videoUrl: v.video_url,
+        videoSourceType: v.video_source_type || 'upload',
         tags: v.tags || [],
         logoUrl: v.logo_url || getLogoUrl(v.company_name),
         contactEmail: v.contact_email || undefined,

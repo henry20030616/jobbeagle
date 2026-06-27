@@ -12,12 +12,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       company_name, job_title, location, salary, description,
-      tags, video_url, logo_url, contact_email, apply_url,
+      tags, video_url, video_source_type, logo_url, contact_email, apply_url,
     } = body;
 
     if (!company_name || !job_title || !video_url) {
       return NextResponse.json({ error: '公司名稱、職缺名稱及影片為必填' }, { status: 400 });
     }
+
+    const allowedSourceTypes = ['upload', 'youtube', 'instagram', 'facebook', 'external'];
+    const resolvedSourceType = allowedSourceTypes.includes(video_source_type) ? video_source_type : 'upload';
 
     // Upsert company_profiles
     await supabase.from('company_profiles').upsert({
@@ -36,6 +39,7 @@ export async function POST(request: NextRequest) {
       description: description || '',
       tags: tags || [],
       video_url,
+      video_source_type: resolvedSourceType,
       logo_url: logo_url || null,
       contact_email: contact_email || null,
       apply_url: apply_url || null,

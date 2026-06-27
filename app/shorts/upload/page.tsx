@@ -5,12 +5,19 @@ import Link from 'next/link';
 import {
   Upload, ArrowLeft, Loader2, CheckCircle, AlertCircle,
   Video, Building2, MapPin, DollarSign, FileText, Tag,
-  Mail, ExternalLink, Image, LogIn, ChevronRight,
+  Mail, ExternalLink, Image, LogIn, ChevronRight, Link as LinkIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
+import {
+  detectVideoSourceType,
+  toYouTubeEmbedUrl,
+  sourceTypeLabel,
+} from '@/lib/video-embed';
+import type { VideoSourceType } from '@/types';
 
 type Step = 'auth' | 'video' | 'info' | 'apply' | 'preview' | 'done';
 type ApplyMethod = 'email' | 'url' | 'none';
+type VideoInputMode = 'upload' | 'link';
 
 interface FormData {
   companyName: string;
@@ -23,19 +30,47 @@ interface FormData {
   applyUrl: string;
   applyMethod: ApplyMethod;
   videoUrl: string;
+  videoSourceType: VideoSourceType;
   logoUrl: string;
 }
 
 const INITIAL_FORM: FormData = {
   companyName: '', jobTitle: '', location: '', salary: '',
   description: '', tags: '', contactEmail: '', applyUrl: '',
-  applyMethod: 'email', videoUrl: '', logoUrl: '',
+  applyMethod: 'email', videoUrl: '', videoSourceType: 'upload', logoUrl: '',
+};
+
+// 平台連結提示
+const PLATFORM_HINTS: Record<string, { label: string; placeholder: string; example: string }> = {
+  youtube: {
+    label: 'YouTube / YouTube Shorts 連結',
+    placeholder: 'https://www.youtube.com/shorts/...',
+    example: '支援 youtube.com/watch?v=...、youtu.be/...、youtube.com/shorts/...',
+  },
+  instagram: {
+    label: 'Instagram Reel / Post 連結',
+    placeholder: 'https://www.instagram.com/reel/...',
+    example: '必須是公開貼文，支援 /reel/ 與 /p/ 格式',
+  },
+  facebook: {
+    label: 'Facebook 影片 / Post 連結',
+    placeholder: 'https://www.facebook.com/...',
+    example: '必須是公開貼文或公開影片',
+  },
+  external: {
+    label: '外部影片連結',
+    placeholder: 'https://...',
+    example: '直接影片網址（.mp4）或其他平台連結',
+  },
 };
 
 export default function ShortsUploadPage() {
   const [step, setStep] = useState<Step>('auth');
   const [user, setUser] = useState<any>(null);
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
+  const [videoInputMode, setVideoInputMode] = useState<VideoInputMode>('link');
+  const [socialLinkInput, setSocialLinkInput] = useState('');
+  const [socialLinkError, setSocialLinkError] = useState('');
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -62,6 +97,34 @@ export default function ShortsUploadPage() {
     });
   };
 
+  // ── 社群連結確認 ────────────────────────────────────────────────────────────
+
+  const handleConfirmSocialLink = () => {
+    setSocialLinkError('');
+    const trimmed = socialLinkInput.trim();
+    if (!trimmed) {
+      setSocialLinkError('請輸入影片連結');
+      return;
+    }
+    try {
+      new URL(trimmed);
+    } catch {
+      setSocialLinkError('請輸入有效的完整網址（需包含 https://）');
+      return;
+    }
+    const sourceType = detectVideoSourceType(trimmed);
+    setForm(f => ({ ...f, videoUrl: trimmed, videoSourceType: sourceType }));
+    setSocialLinkError('');
+  };
+
+  const handleClearSocialLink = () => {
+    setSocialLinkInput('');
+    setSocialLinkError('');
+    setForm(f => ({ ...f, videoUrl: '', videoSourceType: 'upload' }));
+  };
+
+  // ── 影片檔上傳 ──────────────────────────────────────────────────────────────
+
   const uploadFile = async (file: File, type: 'video' | 'logo'): Promise<string | null> => {
     const supabase = createClient();
     const ext = file.name.split('.').pop()?.toLowerCase() || (type === 'logo' ? 'png' : 'mp4');
@@ -75,7 +138,7 @@ export default function ShortsUploadPage() {
 
     if (error) {
       if (error.message?.includes('Bucket not found') || error.message?.includes('not found')) {
-        throw new Error('尚未建立 Storage 空間。請到 Supabase → Storage → 新增 bucket「shorts-videos」並設為公開，再執行 supabase-shorts-storage.sql 的權限設定。');
+        throw new Error('尚未建立 Storage 空間。請到 Supabase → Storage → 新增 bucket「shorts-videos」並設為公開。');
       }
       throw new Error(error.message || '上傳失敗');
     }
@@ -95,7 +158,7 @@ export default function ShortsUploadPage() {
     setError(null);
     try {
       const url = await uploadFile(file, 'video');
-      if (url) set('videoUrl', url);
+      if (url) setForm(f => ({ ...f, videoUrl: url, videoSourceType: 'upload' }));
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -118,6 +181,8 @@ export default function ShortsUploadPage() {
     }
   };
 
+  // ── 發佈 ────────────────────────────────────────────────────────────────────
+
   const handlePublish = async () => {
     setSubmitting(true);
     setError(null);
@@ -130,6 +195,7 @@ export default function ShortsUploadPage() {
         description: form.description,
         tags: form.tags.split(/[,，\s]+/).map(t => t.trim()).filter(Boolean),
         video_url: form.videoUrl,
+        video_source_type: form.videoSourceType,
         logo_url: form.logoUrl || undefined,
         contact_email: form.applyMethod === 'email' ? form.contactEmail : undefined,
         apply_url: form.applyMethod === 'url' ? form.applyUrl : undefined,
@@ -149,6 +215,18 @@ export default function ShortsUploadPage() {
       setSubmitting(false);
     }
   };
+
+  // ── 目前偵測到的平台 ─────────────────────────────────────────────────────────
+
+  const detectedType = socialLinkInput.trim()
+    ? detectVideoSourceType(socialLinkInput.trim())
+    : null;
+
+  const platformHint = detectedType && detectedType !== 'upload'
+    ? PLATFORM_HINTS[detectedType] ?? PLATFORM_HINTS.external
+    : null;
+
+  // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -182,36 +260,183 @@ export default function ShortsUploadPage() {
           </div>
         )}
 
-        {/* Step: Video upload */}
+        {/* Step: Video */}
         {step === 'video' && (
-          <div className="space-y-6">
-            <StepHeader step={1} total={4} title="上傳招募影片" />
-            <div
-              onClick={() => videoInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center gap-4 cursor-pointer transition-colors ${
-                form.videoUrl ? 'border-green-500/50 bg-green-900/10' : 'border-slate-600 hover:border-blue-500/60 hover:bg-slate-800/30'
-              }`}
-            >
-              {uploadingVideo ? (
-                <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
-              ) : form.videoUrl ? (
-                <>
-                  <CheckCircle className="w-10 h-10 text-green-400" />
-                  <p className="text-green-300 font-medium">影片已上傳</p>
-                  <video src={form.videoUrl} className="w-full rounded-xl max-h-48 object-cover" muted />
-                  <p className="text-slate-400 text-sm">點擊重新上傳</p>
-                </>
-              ) : (
-                <>
-                  <Video className="w-12 h-12 text-slate-400" />
-                  <p className="text-white font-semibold">點擊上傳影片</p>
-                  <p className="text-slate-400 text-sm text-center">支援 MP4 / WebM，最大 100MB<br />建議 9:16 直式短影音</p>
-                </>
-              )}
+          <div className="space-y-5">
+            <StepHeader step={1} total={4} title="新增招募影片" />
+
+            {/* 模式切換 */}
+            <div className="flex gap-2 p-1 bg-slate-800/60 rounded-xl border border-slate-700">
+              {([
+                { mode: 'link' as const, icon: LinkIcon, label: '貼社群連結（推薦）' },
+                { mode: 'upload' as const, icon: Upload, label: '上傳影片檔' },
+              ]).map(({ mode, icon: Icon, label }) => (
+                <button
+                  key={mode}
+                  onClick={() => {
+                    setVideoInputMode(mode);
+                    handleClearSocialLink();
+                    setForm(f => ({ ...f, videoUrl: '', videoSourceType: 'upload' }));
+                    setError(null);
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                    videoInputMode === mode
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Icon size={15} />
+                  {label}
+                </button>
+              ))}
             </div>
-            <input ref={videoInputRef} type="file" accept="video/mp4,video/webm" className="hidden" onChange={handleVideoUpload} />
+
+            {/* 貼連結 */}
+            {videoInputMode === 'link' && (
+              <div className="space-y-4">
+                {/* 平台說明 */}
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  {[
+                    { icon: '▶', name: 'YouTube Shorts' },
+                    { icon: '📸', name: 'Instagram Reel' },
+                    { icon: '📘', name: 'Facebook Video' },
+                  ].map(({ icon, name }) => (
+                    <div key={name} className="flex flex-col items-center gap-1 py-3 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-400">
+                      <span className="text-xl">{icon}</span>
+                      <span>{name}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-slate-300 text-sm font-medium flex items-center gap-2">
+                    <LinkIcon size={15} />
+                    {platformHint ? platformHint.label : '貼上招募影片連結'}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={socialLinkInput}
+                      onChange={e => {
+                        setSocialLinkInput(e.target.value);
+                        setSocialLinkError('');
+                        // 若已確認的連結與輸入不同，清空已確認
+                        if (form.videoUrl && e.target.value.trim() !== form.videoUrl) {
+                          setForm(f => ({ ...f, videoUrl: '', videoSourceType: 'upload' }));
+                        }
+                      }}
+                      placeholder="https://www.youtube.com/shorts/..."
+                      className="flex-1 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500"
+                    />
+                    <button
+                      onClick={handleConfirmSocialLink}
+                      disabled={!socialLinkInput.trim()}
+                      className="px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-xl text-white text-sm font-semibold transition-colors whitespace-nowrap"
+                    >
+                      確認
+                    </button>
+                  </div>
+                  {platformHint && (
+                    <p className="text-slate-500 text-xs">{platformHint.example}</p>
+                  )}
+                  {socialLinkError && (
+                    <p className="text-red-400 text-xs flex items-center gap-1">
+                      <AlertCircle size={12} /> {socialLinkError}
+                    </p>
+                  )}
+                </div>
+
+                {/* 確認成功狀態 */}
+                {form.videoUrl && (
+                  <div className="flex items-start gap-3 p-4 rounded-xl bg-emerald-900/20 border border-emerald-500/40">
+                    <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-emerald-300 text-sm font-semibold">
+                        已確認 — {sourceTypeLabel(form.videoSourceType)}
+                      </p>
+                      <p className="text-slate-400 text-xs mt-0.5 truncate">{form.videoUrl}</p>
+                      <p className="text-slate-500 text-xs mt-1.5">
+                        影片將以嵌入方式顯示，原貼文必須為「公開」可見。
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleClearSocialLink}
+                      className="text-slate-500 hover:text-white text-xs shrink-0"
+                    >
+                      更換
+                    </button>
+                  </div>
+                )}
+
+                {/* YouTube 即時預覽 */}
+                {form.videoUrl && form.videoSourceType === 'youtube' && (
+                  (() => {
+                    const embedSrc = toYouTubeEmbedUrl(form.videoUrl);
+                    return embedSrc ? (
+                      <div className="rounded-xl overflow-hidden border border-slate-700">
+                        <p className="px-3 py-2 text-xs text-slate-500 bg-slate-900">預覽</p>
+                        <iframe
+                          src={embedSrc}
+                          className="w-full aspect-video"
+                          allow="autoplay; encrypted-media"
+                          allowFullScreen
+                          title="YouTube 預覽"
+                        />
+                      </div>
+                    ) : null;
+                  })()
+                )}
+
+                {/* IG / FB 無法直接嵌入預覽，顯示提示 */}
+                {form.videoUrl && (form.videoSourceType === 'instagram' || form.videoSourceType === 'facebook') && (
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-400 text-xs">
+                    <span>{form.videoSourceType === 'instagram' ? '📸' : '📘'}</span>
+                    <span>{sourceTypeLabel(form.videoSourceType)} 連結已確認，發布後會在 Shorts 以嵌入方式展示。</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 上傳影片檔 */}
+            {videoInputMode === 'upload' && (
+              <div className="space-y-3">
+                <div
+                  onClick={() => videoInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center gap-4 cursor-pointer transition-colors ${
+                    form.videoUrl && form.videoSourceType === 'upload'
+                      ? 'border-green-500/50 bg-green-900/10'
+                      : 'border-slate-600 hover:border-blue-500/60 hover:bg-slate-800/30'
+                  }`}
+                >
+                  {uploadingVideo ? (
+                    <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
+                  ) : form.videoUrl && form.videoSourceType === 'upload' ? (
+                    <>
+                      <CheckCircle className="w-10 h-10 text-green-400" />
+                      <p className="text-green-300 font-medium">影片已上傳</p>
+                      <video src={form.videoUrl} className="w-full rounded-xl max-h-48 object-cover" muted />
+                      <p className="text-slate-400 text-sm">點擊重新上傳</p>
+                    </>
+                  ) : (
+                    <>
+                      <Video className="w-12 h-12 text-slate-400" />
+                      <p className="text-white font-semibold">點擊選擇影片</p>
+                      <p className="text-slate-400 text-sm text-center">
+                        支援 MP4 / WebM，最大 500MB<br />建議 9:16 直式短影音
+                      </p>
+                    </>
+                  )}
+                </div>
+                <input ref={videoInputRef} type="file" accept="video/mp4,video/webm" className="hidden" onChange={handleVideoUpload} />
+              </div>
+            )}
+
             {error && <ErrorMsg text={error} />}
-            <NextBtn disabled={!form.videoUrl || uploadingVideo} onClick={() => setStep('info')} />
+
+            <NextBtn
+              disabled={!form.videoUrl || uploadingVideo}
+              onClick={() => setStep('info')}
+            />
           </div>
         )}
 
@@ -323,8 +548,28 @@ export default function ShortsUploadPage() {
           <div className="space-y-5">
             <StepHeader step={4} total={4} title="確認並發佈" />
             <div className="bg-slate-900 rounded-2xl overflow-hidden border border-slate-700">
-              {form.videoUrl && (
+              {/* 影片預覽 */}
+              {form.videoUrl && form.videoSourceType === 'upload' && (
                 <video src={form.videoUrl} controls className="w-full aspect-video object-cover bg-black" />
+              )}
+              {form.videoUrl && form.videoSourceType === 'youtube' && (
+                (() => {
+                  const src = toYouTubeEmbedUrl(form.videoUrl);
+                  return src ? (
+                    <iframe src={src} className="w-full aspect-video" allow="autoplay; encrypted-media" allowFullScreen title="YouTube" />
+                  ) : null;
+                })()
+              )}
+              {form.videoUrl && (form.videoSourceType === 'instagram' || form.videoSourceType === 'facebook' || form.videoSourceType === 'external') && (
+                <div className="w-full aspect-video flex flex-col items-center justify-center bg-slate-800 gap-3 text-slate-400">
+                  <span className="text-4xl">
+                    {form.videoSourceType === 'instagram' ? '📸' : form.videoSourceType === 'facebook' ? '📘' : '🔗'}
+                  </span>
+                  <p className="text-sm font-medium">{sourceTypeLabel(form.videoSourceType)} 連結</p>
+                  <a href={form.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-400 hover:underline max-w-xs truncate text-center px-4">
+                    {form.videoUrl}
+                  </a>
+                </div>
               )}
               <div className="p-5 space-y-3">
                 <div className="flex items-center gap-3">
@@ -346,13 +591,22 @@ export default function ShortsUploadPage() {
                     ))}
                   </div>
                 )}
-                <div className="pt-2 border-t border-slate-700">
+                <div className="pt-2 border-t border-slate-700 space-y-1">
                   <p className="text-slate-400 text-xs">
                     申請方式：{form.applyMethod === 'email' ? `一鍵申請 (${form.contactEmail})` : form.applyMethod === 'url' ? `企業申請頁 (${form.applyUrl})` : '暫不開放'}
+                  </p>
+                  <p className="text-slate-500 text-xs">
+                    影片來源：{sourceTypeLabel(form.videoSourceType)}
                   </p>
                 </div>
               </div>
             </div>
+
+            {/* 授權聲明 */}
+            <div className="p-4 bg-slate-800/60 rounded-xl border border-slate-700 text-xs text-slate-400 leading-relaxed">
+              點擊「立即發佈」即代表您確認此影片與職缺內容由貴公司擁有或已取得合法授權，並同意 Jobbeagle 以嵌入或展示方式用於招募目的。
+            </div>
+
             {error && <ErrorMsg text={error} />}
             <div className="flex gap-3">
               <BackBtn onClick={() => setStep('apply')} />
@@ -393,7 +647,12 @@ export default function ShortsUploadPage() {
                 返回 Shorts
               </Link>
               <button
-                onClick={() => { setForm(INITIAL_FORM); setStep('video'); }}
+                onClick={() => {
+                  setForm(INITIAL_FORM);
+                  setSocialLinkInput('');
+                  setVideoInputMode('link');
+                  setStep('video');
+                }}
                 className="flex items-center justify-center gap-2 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 text-sm transition-colors"
               >
                 再上傳一個職缺
@@ -406,7 +665,8 @@ export default function ShortsUploadPage() {
   );
 }
 
-// Reusable sub-components
+// ── Reusable sub-components ──────────────────────────────────────────────────
+
 function StepHeader({ step, total, title }: { step: number; total: number; title: string }) {
   return (
     <div className="space-y-2">

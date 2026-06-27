@@ -72,6 +72,7 @@ export default function CompanyPublicPage({ params }: PageProps) {
           salary: v.salary || '',
           description: v.description || '',
           videoUrl: v.video_url,
+          videoSourceType: v.video_source_type || 'upload',
           tags: v.tags || [],
           logoUrl: v.logo_url || `https://www.google.com/s2/favicons?domain=${v.company_name.toLowerCase().replace(/\s+/g, '')}.com&sz=128`,
           contactEmail: v.contact_email || undefined,

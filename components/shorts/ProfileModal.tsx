@@ -11,6 +11,7 @@ import {
 import { createClient } from '@/lib/supabase/browser';
 import { resolveShortsViewMode, setStoredShortsViewRole } from '@/lib/shorts-view-role';
 import { JobData } from '@/types';
+import { toYouTubeEmbedUrl, toFacebookEmbedUrl, normalizeInstagramUrl } from '@/lib/video-embed';
 
 interface ProfileModalProps {
   onClose: () => void;
@@ -32,6 +33,7 @@ interface CompanyVideo {
   id: string; job_title: string; company_name: string; location: string;
   salary: string; description: string; video_url: string; created_at: string;
   logo_url: string | null; tags: string[]; is_published: boolean;
+  video_source_type?: string;
 }
 interface CompanyStats { videoCount: number; followerCount: number; totalLikes: number; totalApplications: number; }
 
@@ -672,7 +674,13 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                     key={v.id}
                     className="relative aspect-square rounded-md overflow-hidden bg-slate-800 border border-slate-700/70"
                   >
-                    <video src={v.video_url} className="absolute inset-0 w-full h-full object-cover pointer-events-none" muted playsInline preload="metadata" />
+                    {(!v.video_source_type || v.video_source_type === 'upload') ? (
+                      <video src={v.video_url} className="absolute inset-0 w-full h-full object-cover pointer-events-none" muted playsInline preload="metadata" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-900 text-3xl">
+                        {v.video_source_type === 'youtube' ? '▶' : v.video_source_type === 'instagram' ? '📸' : v.video_source_type === 'facebook' ? '📘' : '🔗'}
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
                     <button
                       type="button"
@@ -757,7 +765,38 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto overscroll-contain pb-safe">
-                <video src={selectedVideo.video_url} controls className="w-full max-h-48 bg-black object-contain" />
+                {(() => {
+                  const st = selectedVideo.video_source_type;
+                  if (st === 'youtube') {
+                    const src = toYouTubeEmbedUrl(selectedVideo.video_url);
+                    return src ? <iframe src={src} className="w-full aspect-video" allow="autoplay; encrypted-media" allowFullScreen title="YouTube" /> : null;
+                  }
+                  if (st === 'facebook') {
+                    const src = toFacebookEmbedUrl(selectedVideo.video_url);
+                    return src ? <iframe src={src} className="w-full aspect-video border-0" allow="autoplay; encrypted-media" allowFullScreen title="Facebook" scrolling="no" /> : null;
+                  }
+                  if (st === 'instagram') {
+                    return (
+                      <div className="w-full py-4 flex flex-col items-center gap-2 bg-black">
+                        <span className="text-3xl">📸</span>
+                        <a href={normalizeInstagramUrl(selectedVideo.video_url)} target="_blank" rel="noopener noreferrer" className="text-cyan-400 text-sm hover:underline">
+                          前往 Instagram 觀看
+                        </a>
+                      </div>
+                    );
+                  }
+                  if (st === 'external') {
+                    return (
+                      <div className="w-full py-4 flex flex-col items-center gap-2 bg-black">
+                        <span className="text-3xl">🔗</span>
+                        <a href={selectedVideo.video_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 text-sm hover:underline">
+                          前往觀看影片
+                        </a>
+                      </div>
+                    );
+                  }
+                  return <video src={selectedVideo.video_url} controls className="w-full max-h-48 bg-black object-contain" />;
+                })()}
                 <div className="px-4 py-3 border-b border-slate-800">
                   {selectedVideo.salary && (
                     <p className="text-slate-300 text-sm flex items-center gap-1.5"><DollarSign size={14} className="text-emerald-400 shrink-0" />{selectedVideo.salary}</p>

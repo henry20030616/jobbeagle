@@ -7,8 +7,10 @@ import Link from 'next/link';
 import { 
   Upload, Video, Edit, Trash2, Eye, EyeOff, 
   Plus, Building2, LogOut, AlertCircle, Loader2,
-  X, CheckCircle, Users, ChevronRight,
+  X, CheckCircle, Users, ChevronRight, Link as LinkIcon,
 } from 'lucide-react';
+import { detectVideoSourceType, sourceTypeLabel, toYouTubeEmbedUrl } from '@/lib/video-embed';
+import type { VideoSourceType } from '@/types';
 
 interface VideoData {
   id: string;
@@ -417,17 +419,31 @@ function UploadVideoModal({
     salary: '',
     description: '',
     video_url: '',
+    video_source_type: 'upload' as VideoSourceType,
     thumbnail_url: '',
     logo_url: '',
     tags: '',
     contact_email: '',
   });
+  const [videoInputMode, setVideoInputMode] = useState<'upload' | 'link'>('link');
+  const [socialLinkInput, setSocialLinkInput] = useState('');
+  const [socialLinkError, setSocialLinkError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [videoUploadSuccess, setVideoUploadSuccess] = useState(false);
   const [logoUploadSuccess, setLogoUploadSuccess] = useState(false);
+
+  const handleConfirmSocialLink = () => {
+    setSocialLinkError('');
+    const trimmed = socialLinkInput.trim();
+    if (!trimmed) { setSocialLinkError('請輸入影片連結'); return; }
+    try { new URL(trimmed); } catch { setSocialLinkError('請輸入有效的完整網址（需包含 https://）'); return; }
+    const st = detectVideoSourceType(trimmed);
+    setFormData(prev => ({ ...prev, video_url: trimmed, video_source_type: st }));
+    setSocialLinkError('');
+  };
 
   const BUCKET = 'shorts-videos';
   const MAX_VIDEO_MB = 50;
@@ -533,6 +549,7 @@ function UploadVideoModal({
           salary: formData.salary || null,
           description: formData.description,
           video_url: formData.video_url,
+          video_source_type: formData.video_source_type || 'upload',
           thumbnail_url: formData.thumbnail_url || null,
           logo_url: formData.logo_url || null,
           tags: tagsArray,
@@ -636,31 +653,108 @@ function UploadVideoModal({
               />
             </div>
 
+            {/* ── 影片 ── */}
             <div>
               <label className="block text-slate-300 text-sm font-medium mb-2">
                 影片 <span className="text-red-400">*</span>
               </label>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <input
-                    type="file"
-                    accept="video/mp4,video/webm"
-                    onChange={handleFileChange}
-                    disabled={uploadingFile}
-                    className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white file:disabled:opacity-50"
-                  />
-                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400 shrink-0" />}
-                  {videoUploadSuccess && <span className="text-green-400 text-sm font-medium shrink-0">✓ 影片已上傳</span>}
-                </div>
-                <p className="text-slate-500 text-xs">或輸入已有影片連結：</p>
-                <input
-                  type="url"
-                  value={formData.video_url}
-                  onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-                  placeholder="https://example.com/video.mp4"
-                />
+              {/* 模式切換 */}
+              <div className="flex gap-1.5 p-1 bg-slate-700/60 rounded-lg border border-slate-600 mb-3">
+                {([
+                  { mode: 'link' as const, icon: LinkIcon, label: '貼社群連結' },
+                  { mode: 'upload' as const, icon: Upload, label: '上傳影片檔' },
+                ]).map(({ mode, icon: Icon, label }) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => {
+                      setVideoInputMode(mode);
+                      setSocialLinkInput('');
+                      setSocialLinkError('');
+                      setFormData(prev => ({ ...prev, video_url: '', video_source_type: 'upload' }));
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                      videoInputMode === mode ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <Icon size={13} />{label}
+                  </button>
+                ))}
               </div>
+
+              {/* 貼連結模式 */}
+              {videoInputMode === 'link' && (
+                <div className="space-y-2">
+                  <p className="text-slate-500 text-xs">支援 YouTube Shorts、Instagram Reel、Facebook 影片連結</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={socialLinkInput}
+                      onChange={e => {
+                        setSocialLinkInput(e.target.value);
+                        setSocialLinkError('');
+                        if (formData.video_url && e.target.value.trim() !== formData.video_url) {
+                          setFormData(prev => ({ ...prev, video_url: '', video_source_type: 'upload' }));
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500"
+                      placeholder="https://www.youtube.com/shorts/..."
+                    />
+                    <button
+                      type="button"
+                      onClick={handleConfirmSocialLink}
+                      disabled={!socialLinkInput.trim()}
+                      className="px-3 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-lg text-white text-sm font-semibold transition-colors whitespace-nowrap"
+                    >
+                      確認
+                    </button>
+                  </div>
+                  {socialLinkError && <p className="text-red-400 text-xs">{socialLinkError}</p>}
+                  {formData.video_url && (
+                    <div className="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-900/20 border border-emerald-500/40 text-xs">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="text-emerald-300 font-medium">{sourceTypeLabel(formData.video_source_type)}</span>
+                      <span className="text-slate-400 truncate">{formData.video_url}</span>
+                    </div>
+                  )}
+                  {/* YouTube 預覽 */}
+                  {formData.video_url && formData.video_source_type === 'youtube' && (
+                    (() => {
+                      const src = toYouTubeEmbedUrl(formData.video_url);
+                      return src ? (
+                        <div className="rounded-lg overflow-hidden border border-slate-600">
+                          <iframe src={src} className="w-full aspect-video" allow="autoplay; encrypted-media" allowFullScreen title="預覽" />
+                        </div>
+                      ) : null;
+                    })()
+                  )}
+                </div>
+              )}
+
+              {/* 上傳檔案模式 */}
+              {videoInputMode === 'upload' && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm"
+                      onChange={handleFileChange}
+                      disabled={uploadingFile}
+                      className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white file:disabled:opacity-50"
+                    />
+                    {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400 shrink-0" />}
+                    {videoUploadSuccess && <span className="text-green-400 text-sm font-medium shrink-0">✓ 影片已上傳</span>}
+                  </div>
+                  <p className="text-slate-500 text-xs">或直接輸入影片直連 URL（.mp4）：</p>
+                  <input
+                    type="url"
+                    value={formData.video_url}
+                    onChange={(e) => setFormData({ ...formData, video_url: e.target.value, video_source_type: 'upload' })}
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                    placeholder="https://example.com/video.mp4"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
