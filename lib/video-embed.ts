@@ -64,7 +64,8 @@ export function toYouTubeEmbedUrl(url: string): string | null {
 
     if (!videoId) return null;
     // autoplay=1 mute=1：在 iframe 裡實現類似原生短影音的自動靜音播放
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1`;
+    // enablejsapi=1：允許透過 postMessage 控制靜音 / 取消靜音
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`;
   } catch {
     return null;
   }

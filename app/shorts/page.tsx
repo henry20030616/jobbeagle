@@ -238,7 +238,7 @@ export default function JobbeagleShortsPage() {
   }
 
   return (
-    <div className="h-[100dvh] w-full bg-black flex flex-col relative overflow-hidden font-sans">
+    <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden font-sans">
 
       {/* ── PROFILE PAGE (full-screen, hides everything else) ─────────────── */}
       {navTab === 'profile' && (
@@ -256,65 +256,16 @@ export default function JobbeagleShortsPage() {
       {/* ── FEED + SAVED views ────────────────────────────────────────────── */}
       {navTab !== 'profile' && (
         <>
-      {/* Error Toast */}
-      {error && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-          <div className="bg-red-900/90 backdrop-blur-md border border-red-500/50 rounded-lg p-4 shadow-xl flex items-center gap-3 min-w-[300px] max-w-[90vw]">
-            <AlertCircle className="text-red-400 flex-shrink-0" size={20} />
-            <p className="text-red-100 text-sm flex-1">{error}</p>
-            <button onClick={() => setError(null)} className="text-red-400 hover:text-red-300"><X size={18} /></button>
-          </div>
-        </div>
-      )}
-
-      {/* Success Toast */}
-      {success && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-          <div className="bg-green-900/90 backdrop-blur-md border border-green-500/50 rounded-lg p-4 shadow-xl flex items-center gap-3 min-w-[300px] max-w-[90vw]">
-            <CheckCircle className="text-green-400 flex-shrink-0" size={20} />
-            <p className="text-green-100 text-sm flex-1">{success}</p>
-            <button onClick={() => setSuccess(null)} className="text-green-400 hover:text-green-300"><X size={18} /></button>
-          </div>
-        </div>
-      )}
-
-      {/* Main video feed */}
-      <div className="flex-1 h-full w-full relative">
-        {activeTab === 'saved' && savedJobsData.length === 0 ? (
-          <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
-            <Bookmark className="w-12 h-12 opacity-40" />
-            <p className="text-lg font-semibold">{t('noSaved')}</p>
-            <p className="text-sm">{t('tapBookmark')}</p>
-          </div>
-        ) : activeTab === 'following' && displayedJobs.length === 0 ? (
-          <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
-            <Building2 className="w-12 h-12 opacity-40" />
-            <p className="text-lg font-semibold">{t('noFollowing')}</p>
-            <p className="text-sm">{t('tapFollow')}</p>
-          </div>
-        ) : (
-          <VideoFeed
-            jobs={displayedJobs}
-            followedCompanies={followedCompanies}
-            savedJobIds={savedJobIds}
-            onFollowChange={handleFollowChange}
-            onSaveChange={handleSaveChange}
-            language={appLang}
-            onLoadMore={activeTab === 'foryou' ? handleLoadMore : undefined}
-            hasMore={activeTab === 'foryou' ? hasMore : false}
-            loadingMore={loadingMore}
-          />
-        )}
-      </div>
-
-      {/* Top Bar (Overlay) — compact so it covers minimal video area */}
-      <div className="absolute top-0 left-0 w-full px-4 pt-3 pb-2 md:px-6 md:pt-4 z-30 pointer-events-none flex justify-between items-start gap-4 bg-gradient-to-b from-black/70 via-black/20 to-transparent">
-        <div className="pointer-events-auto min-w-0 flex-1">
-          <h1 className="text-white font-black tracking-tight drop-shadow-lg leading-none text-xl md:text-2xl">
-            <span className="text-white">Job</span><span className="text-blue-400">beagle</span>
-            <span className="text-white/80 text-base md:text-lg font-semibold ml-1.5">Shorts</span>
+      {/* Top Bar — fixed-height flex item, no longer absolute so video starts below it */}
+      <div className="w-full flex-shrink-0 px-4 pt-3 pb-2.5 md:px-6 md:pt-4 md:pb-3 z-30 flex justify-between items-start gap-4 bg-black/90 backdrop-blur-md border-b border-white/8">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-white font-black tracking-tight drop-shadow-lg leading-none">
+            <span className="text-3xl md:text-4xl lg:text-5xl">
+              <span className="text-white">Job</span><span className="text-blue-500">beagle</span>
+            </span>
+            <span className="text-white/90 text-xl md:text-2xl lg:text-3xl font-semibold ml-1.5 md:ml-2">Shorts</span>
           </h1>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-white/85 font-semibold text-sm md:text-base mt-2 md:mt-2.5">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-white/90 font-semibold text-base md:text-lg mt-3 md:mt-4">
             <button
               onClick={() => { setActiveTab('foryou'); setNavTab('home'); }}
               className={`pb-1.5 transition-colors ${activeTab === 'foryou' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}
@@ -337,13 +288,13 @@ export default function JobbeagleShortsPage() {
         </div>
 
         {/* Right: language switcher + auth */}
-        <div className="pointer-events-auto flex items-center gap-2 md:gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
           <LanguageSwitcher variant="light" />
 
           {user ? (
             <button
               onClick={async () => { const s = createClient(); await s.auth.signOut(); }}
-              className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-black/45 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-black/65 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-white/20 transition-colors"
             >
               <LogOut className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
               {t('logout')}
@@ -352,7 +303,7 @@ export default function JobbeagleShortsPage() {
             <div className="relative">
               <button
                 onClick={() => setShowLoginMenu(!showLoginMenu)}
-                className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-black/45 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-black/65 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm md:text-base font-semibold hover:bg-white/20 transition-colors"
               >
                 <LogIn className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
                 {t('login')}
@@ -393,6 +344,58 @@ export default function JobbeagleShortsPage() {
           )}
         </div>
       </div>
+
+      {/* Error Toast */}
+      {error && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+          <div className="bg-red-900/90 backdrop-blur-md border border-red-500/50 rounded-lg p-4 shadow-xl flex items-center gap-3 min-w-[300px] max-w-[90vw]">
+            <AlertCircle className="text-red-400 flex-shrink-0" size={20} />
+            <p className="text-red-100 text-sm flex-1">{error}</p>
+            <button onClick={() => setError(null)} className="text-red-400 hover:text-red-300"><X size={18} /></button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {success && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+          <div className="bg-green-900/90 backdrop-blur-md border border-green-500/50 rounded-lg p-4 shadow-xl flex items-center gap-3 min-w-[300px] max-w-[90vw]">
+            <CheckCircle className="text-green-400 flex-shrink-0" size={20} />
+            <p className="text-green-100 text-sm flex-1">{success}</p>
+            <button onClick={() => setSuccess(null)} className="text-green-400 hover:text-green-300"><X size={18} /></button>
+          </div>
+        </div>
+      )}
+
+      {/* Main video feed */}
+      <div className="flex-1 min-h-0 w-full relative">
+        {activeTab === 'saved' && savedJobsData.length === 0 ? (
+          <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
+            <Bookmark className="w-12 h-12 opacity-40" />
+            <p className="text-lg font-semibold">{t('noSaved')}</p>
+            <p className="text-sm">{t('tapBookmark')}</p>
+          </div>
+        ) : activeTab === 'following' && displayedJobs.length === 0 ? (
+          <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
+            <Building2 className="w-12 h-12 opacity-40" />
+            <p className="text-lg font-semibold">{t('noFollowing')}</p>
+            <p className="text-sm">{t('tapFollow')}</p>
+          </div>
+        ) : (
+          <VideoFeed
+            jobs={displayedJobs}
+            followedCompanies={followedCompanies}
+            savedJobIds={savedJobIds}
+            onFollowChange={handleFollowChange}
+            onSaveChange={handleSaveChange}
+            language={appLang}
+            onLoadMore={activeTab === 'foryou' ? handleLoadMore : undefined}
+            hasMore={activeTab === 'foryou' ? hasMore : false}
+            loadingMore={loadingMore}
+          />
+        )}
+      </div>
+
 
       <BottomNav navTab={navTab} onNav={handleNavTab} home={t('home')} company={t('company')} profile={t('profile')} hasCompanyProfile={hasCompanyProfile} />
         </>

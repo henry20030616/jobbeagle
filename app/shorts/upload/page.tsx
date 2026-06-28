@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Upload, ArrowLeft, Loader2, CheckCircle, AlertCircle,
   Video, Building2, MapPin, DollarSign, FileText, Tag,
-  Mail, ExternalLink, Image, LogIn, ChevronRight, Link as LinkIcon,
+  Mail, ExternalLink, Image, LogIn, ChevronRight, Link as LinkIcon, Sparkles,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import {
@@ -57,7 +57,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: 'Published!', doneDesc: 'Your job video is now live on Shorts.',
     viewPage: 'View company page', backToShorts: 'Back to Shorts', uploadAnother: 'Upload another job',
     confirm: 'Confirm', change: 'Change',
-    selectVideo: 'Click to select a video', videoHint: 'MP4 / WebM · max 200 MB · max 60 sec · 9:16 recommended',
+    selectVideo: 'Click to select a video', videoHint: 'MP4 / WebM, max 100 MB · max 90s · 9:16 recommended',
     linkRecommended: 'Paste a social link (recommended)', uploadFile: 'Upload a video file',
   },
   'zh-TW': {
@@ -82,7 +82,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: '發佈成功！', doneDesc: '你的職缺影片已上線，求職者現在可以在 Shorts 看到',
     viewPage: '查看企業頁面', backToShorts: '返回 Shorts', uploadAnother: '再上傳一個職缺',
     confirm: '確認', change: '更換',
-    selectVideo: '點擊選擇影片', videoHint: '支援 MP4 / WebM · 最大 200 MB · 最長 60 秒\n建議 9:16 直式短影音',
+    selectVideo: '點擊選擇影片', videoHint: '支援 MP4 / WebM，最大 100MB・最長 90 秒\n建議 9:16 直式短影音',
     linkRecommended: '貼社群連結（推薦）', uploadFile: '上傳影片檔',
   },
   'zh-CN': {
@@ -107,7 +107,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: '发布成功！', doneDesc: '你的职位视频已上线，求职者现在可以在 Shorts 看到',
     viewPage: '查看企业页面', backToShorts: '返回 Shorts', uploadAnother: '再上传一个职位',
     confirm: '确认', change: '更换',
-    selectVideo: '点击选择视频', videoHint: '支持 MP4 / WebM · 最大 200 MB · 最长 60 秒\n建议 9:16 竖式短视频',
+    selectVideo: '点击选择视频', videoHint: '支持 MP4 / WebM，最大 100MB・最长 90 秒\n建议 9:16 竖式短视频',
     linkRecommended: '粘贴社交链接（推荐）', uploadFile: '上传视频文件',
   },
   es: {
@@ -132,7 +132,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: '¡Publicado!', doneDesc: 'Tu video de empleo ya está disponible en Shorts.',
     viewPage: 'Ver página de empresa', backToShorts: 'Volver a Shorts', uploadAnother: 'Subir otro empleo',
     confirm: 'Confirmar', change: 'Cambiar',
-    selectVideo: 'Clic para seleccionar video', videoHint: 'MP4 / WebM · máx 200 MB · máx 60 seg · Se recomienda 9:16',
+    selectVideo: 'Clic para seleccionar video', videoHint: 'MP4 / WebM, máx 100 MB · máx 90s · Se recomienda 9:16',
     linkRecommended: 'Pegar enlace social (recomendado)', uploadFile: 'Subir archivo de video',
   },
   hi: {
@@ -157,7 +157,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: 'प्रकाशित!', doneDesc: 'आपका जॉब वीडियो Shorts पर लाइव है।',
     viewPage: 'कंपनी पेज देखें', backToShorts: 'Shorts पर वापस', uploadAnother: 'और नौकरी अपलोड करें',
     confirm: 'पुष्टि करें', change: 'बदलें',
-    selectVideo: 'वीडियो चुनने के लिए क्लिक करें', videoHint: 'MP4 / WebM · अधिकतम 200 MB · अधिकतम 60 सेकंड',
+    selectVideo: 'वीडियो चुनने के लिए क्लिक करें', videoHint: 'MP4 / WebM, अधिकतम 100 MB · अधिकतम 90 सेकंड',
     linkRecommended: 'सोशल लिंक पेस्ट करें (अनुशंसित)', uploadFile: 'वीडियो फ़ाइल अपलोड करें',
   },
   ar: {
@@ -182,7 +182,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: 'تم النشر!', doneDesc: 'فيديو وظيفتك متاح الآن على Shorts.',
     viewPage: 'عرض صفحة الشركة', backToShorts: 'العودة إلى Shorts', uploadAnother: 'رفع وظيفة أخرى',
     confirm: 'تأكيد', change: 'تغيير',
-    selectVideo: 'انقر لاختيار فيديو', videoHint: 'MP4 / WebM · الحد الأقصى 200 ميجابايت · 60 ثانية',
+    selectVideo: 'انقر لاختيار فيديو', videoHint: 'MP4 / WebM، الحد الأقصى 100 ميجابايت · 90 ثانية',
     linkRecommended: 'لصق رابط اجتماعي (مُوصى به)', uploadFile: 'رفع ملف فيديو',
   },
 };
@@ -322,43 +322,40 @@ export default function ShortsUploadPage() {
     return urlData.publicUrl;
   };
 
-  const getVideoDuration = (file: File): Promise<number> =>
-    new Promise((resolve, reject) => {
-      const video = document.createElement('video');
-      video.preload = 'metadata';
-      const url = URL.createObjectURL(file);
-      video.onloadedmetadata = () => { URL.revokeObjectURL(url); resolve(video.duration); };
-      video.onerror = () => { URL.revokeObjectURL(url); reject(new Error('cannot read metadata')); };
-      video.src = url;
-    });
-
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Size limit: 200 MB
-    if (file.size > 200 * 1024 * 1024) {
+    // ── Size limit: 100 MB ──────────────────────────────────────────────
+    if (file.size > 100 * 1024 * 1024) {
       setError(
         appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
-          ? '影片不可超過 200 MB。建議改用社群平台連結（YouTube / IG / FB），完全免費。'
-          : 'Video exceeds 200 MB. Consider pasting a social link (YouTube / IG / FB) instead — it\'s free.'
+          ? `影片檔案超過 100 MB（目前 ${(file.size / 1024 / 1024).toFixed(0)} MB）。請壓縮影片或改用 YouTube / Instagram 社群連結，節省儲存費用。`
+          : `Video exceeds the 100 MB limit (${(file.size / 1024 / 1024).toFixed(0)} MB). Please compress or use a YouTube / Instagram link instead.`
       );
+      e.target.value = '';
       return;
     }
 
-    // Duration limit: 60 seconds
-    try {
-      const duration = await getVideoDuration(file);
-      if (duration > 60) {
-        setError(
-          appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
-            ? `影片長度 ${Math.round(duration)} 秒，超過 60 秒上限。請裁剪後再上傳，或改用社群連結。`
-            : `Video is ${Math.round(duration)}s, which exceeds the 60-second limit. Please trim it or use a social link.`
-        );
-        return;
-      }
-    } catch {
-      // Cannot read duration; allow upload and let server handle it
+    // ── Duration limit: 90 seconds (like Instagram Reels max) ──────────
+    const checkDuration = (): Promise<number> =>
+      new Promise((resolve) => {
+        const vid = document.createElement('video');
+        vid.preload = 'metadata';
+        vid.onloadedmetadata = () => { resolve(vid.duration); URL.revokeObjectURL(vid.src); };
+        vid.onerror = () => resolve(0); // skip if unreadable
+        vid.src = URL.createObjectURL(file);
+      });
+
+    const dur = await checkDuration();
+    if (dur > 90) {
+      setError(
+        appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+          ? `影片時長 ${Math.round(dur)} 秒，超過 90 秒上限（類 Instagram Reels 標準）。請裁剪影片後重新上傳，或貼入社群平台連結。`
+          : `Video is ${Math.round(dur)}s long — the limit is 90 seconds (Instagram Reels standard). Please trim it or paste a social media link instead.`
+      );
+      e.target.value = '';
+      return;
     }
 
     setUploadingVideo(true);
@@ -666,14 +663,48 @@ export default function ShortsUploadPage() {
             <Field icon={MapPin} label={t('location')} placeholder="New York / Remote" value={form.location} onChange={v => set('location', v)} />
             <Field icon={DollarSign} label={t('salary')} placeholder="$80,000–$120,000" value={form.salary} onChange={v => set('salary', v)} />
             <div className="space-y-1.5">
-              <label className="text-slate-300 text-sm font-medium flex items-center gap-2"><FileText size={15} /> {t('description')}</label>
+              <label className="text-slate-300 text-sm font-medium flex items-center gap-2">
+                <FileText size={15} />
+                {t('description')}
+                <span className="text-red-400 ml-0.5">*</span>
+                <span className="text-slate-500 font-normal text-xs ml-auto">
+                  {form.description.trim().length}/50+
+                  {form.description.trim().length >= 50 && (
+                    <span className="text-green-400 ml-1">✓</span>
+                  )}
+                </span>
+              </label>
               <textarea
-                rows={4}
-                placeholder="描述工作內容、需求技能、公司文化…"
+                rows={5}
+                placeholder={
+                  appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+                    ? '請詳細說明工作內容、需求技能、學歷要求、公司文化等（最少 50 字）\nAI 將根據此描述分析求職者與職缺的匹配度'
+                    : 'Describe the role, required skills, qualifications, and company culture (min 50 chars). AI uses this to analyze candidate match scores.'
+                }
                 value={form.description}
                 onChange={e => set('description', e.target.value)}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm resize-none focus:outline-none focus:border-blue-500"
+                className={`w-full px-4 py-3 bg-slate-800 border rounded-xl text-white placeholder-slate-500 text-sm resize-none focus:outline-none focus:border-blue-500 ${
+                  form.description.trim().length > 0 && form.description.trim().length < 50
+                    ? 'border-amber-500/60'
+                    : 'border-slate-700'
+                }`}
               />
+              {form.description.trim().length > 0 && form.description.trim().length < 50 && (
+                <p className="text-amber-400 text-xs flex items-center gap-1">
+                  <span>⚠</span>
+                  {appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+                    ? `還需 ${50 - form.description.trim().length} 個字以上，才能讓 AI 正確分析匹配度`
+                    : `${50 - form.description.trim().length} more characters needed for AI match analysis`}
+                </p>
+              )}
+              {form.description.trim().length === 0 && (
+                <p className="text-slate-500 text-xs flex items-center gap-1">
+                  <Sparkles size={11} className="text-violet-400" />
+                  {appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+                    ? 'AI 匹配分析依賴職缺描述，完整說明讓求職者更精準配對'
+                    : 'AI match analysis relies on this description — the more detail, the better the match'}
+                </p>
+              )}
             </div>
             <Field icon={Tag} label={t('tags')} placeholder="React, TypeScript, Remote" value={form.tags} onChange={v => set('tags', v)} />
 
@@ -708,7 +739,11 @@ export default function ShortsUploadPage() {
             {error && <ErrorMsg text={error} />}
             <div className="flex gap-3">
               <BackBtn label={t('back')} onClick={() => { setError(null); setStep('video'); }} />
-              <NextBtn disabled={!form.companyName || !form.jobTitle} onClick={() => { setError(null); setStep('apply'); }} label={t('next')} />
+              <NextBtn
+                disabled={!form.companyName || !form.jobTitle || form.description.trim().length < 50}
+                onClick={() => { setError(null); setStep('apply'); }}
+                label={t('next')}
+              />
             </div>
           </div>
         )}
