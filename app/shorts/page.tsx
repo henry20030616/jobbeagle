@@ -307,16 +307,14 @@ export default function JobbeagleShortsPage() {
         )}
       </div>
 
-      {/* Top Bar (Overlay) */}
-      <div className="absolute top-0 left-0 w-full px-4 pt-4 pb-3 md:px-6 md:pt-5 z-30 pointer-events-none flex justify-between items-start gap-4 bg-gradient-to-b from-black/75 via-black/35 to-transparent">
+      {/* Top Bar (Overlay) — compact so it covers minimal video area */}
+      <div className="absolute top-0 left-0 w-full px-4 pt-3 pb-2 md:px-6 md:pt-4 z-30 pointer-events-none flex justify-between items-start gap-4 bg-gradient-to-b from-black/70 via-black/20 to-transparent">
         <div className="pointer-events-auto min-w-0 flex-1">
-          <h1 className="text-white font-black tracking-tight drop-shadow-lg leading-none">
-            <span className="text-3xl md:text-4xl lg:text-5xl">
-              <span className="text-white">Job</span><span className="text-blue-500">beagle</span>
-            </span>
-            <span className="text-white/90 text-xl md:text-2xl lg:text-3xl font-semibold ml-1.5 md:ml-2">Shorts</span>
+          <h1 className="text-white font-black tracking-tight drop-shadow-lg leading-none text-xl md:text-2xl">
+            <span className="text-white">Job</span><span className="text-blue-400">beagle</span>
+            <span className="text-white/80 text-base md:text-lg font-semibold ml-1.5">Shorts</span>
           </h1>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-white/90 font-semibold text-base md:text-lg mt-3 md:mt-4">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-white/85 font-semibold text-sm md:text-base mt-2 md:mt-2.5">
             <button
               onClick={() => { setActiveTab('foryou'); setNavTab('home'); }}
               className={`pb-1.5 transition-colors ${activeTab === 'foryou' ? 'border-b-[3px] border-white opacity-100' : 'opacity-65 hover:opacity-90'}`}

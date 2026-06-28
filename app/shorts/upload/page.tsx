@@ -57,7 +57,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: 'Published!', doneDesc: 'Your job video is now live on Shorts.',
     viewPage: 'View company page', backToShorts: 'Back to Shorts', uploadAnother: 'Upload another job',
     confirm: 'Confirm', change: 'Change',
-    selectVideo: 'Click to select a video', videoHint: 'MP4 / WebM, max 500 MB · 9:16 recommended',
+    selectVideo: 'Click to select a video', videoHint: 'MP4 / WebM · max 200 MB · max 60 sec · 9:16 recommended',
     linkRecommended: 'Paste a social link (recommended)', uploadFile: 'Upload a video file',
   },
   'zh-TW': {
@@ -82,7 +82,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: '發佈成功！', doneDesc: '你的職缺影片已上線，求職者現在可以在 Shorts 看到',
     viewPage: '查看企業頁面', backToShorts: '返回 Shorts', uploadAnother: '再上傳一個職缺',
     confirm: '確認', change: '更換',
-    selectVideo: '點擊選擇影片', videoHint: '支援 MP4 / WebM，最大 500MB\n建議 9:16 直式短影音',
+    selectVideo: '點擊選擇影片', videoHint: '支援 MP4 / WebM · 最大 200 MB · 最長 60 秒\n建議 9:16 直式短影音',
     linkRecommended: '貼社群連結（推薦）', uploadFile: '上傳影片檔',
   },
   'zh-CN': {
@@ -107,7 +107,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: '发布成功！', doneDesc: '你的职位视频已上线，求职者现在可以在 Shorts 看到',
     viewPage: '查看企业页面', backToShorts: '返回 Shorts', uploadAnother: '再上传一个职位',
     confirm: '确认', change: '更换',
-    selectVideo: '点击选择视频', videoHint: '支持 MP4 / WebM，最大 500MB\n建议 9:16 竖式短视频',
+    selectVideo: '点击选择视频', videoHint: '支持 MP4 / WebM · 最大 200 MB · 最长 60 秒\n建议 9:16 竖式短视频',
     linkRecommended: '粘贴社交链接（推荐）', uploadFile: '上传视频文件',
   },
   es: {
@@ -132,7 +132,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: '¡Publicado!', doneDesc: 'Tu video de empleo ya está disponible en Shorts.',
     viewPage: 'Ver página de empresa', backToShorts: 'Volver a Shorts', uploadAnother: 'Subir otro empleo',
     confirm: 'Confirmar', change: 'Cambiar',
-    selectVideo: 'Clic para seleccionar video', videoHint: 'MP4 / WebM, máx 500 MB · Se recomienda 9:16',
+    selectVideo: 'Clic para seleccionar video', videoHint: 'MP4 / WebM · máx 200 MB · máx 60 seg · Se recomienda 9:16',
     linkRecommended: 'Pegar enlace social (recomendado)', uploadFile: 'Subir archivo de video',
   },
   hi: {
@@ -157,7 +157,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: 'प्रकाशित!', doneDesc: 'आपका जॉब वीडियो Shorts पर लाइव है।',
     viewPage: 'कंपनी पेज देखें', backToShorts: 'Shorts पर वापस', uploadAnother: 'और नौकरी अपलोड करें',
     confirm: 'पुष्टि करें', change: 'बदलें',
-    selectVideo: 'वीडियो चुनने के लिए क्लिक करें', videoHint: 'MP4 / WebM, अधिकतम 500 MB',
+    selectVideo: 'वीडियो चुनने के लिए क्लिक करें', videoHint: 'MP4 / WebM · अधिकतम 200 MB · अधिकतम 60 सेकंड',
     linkRecommended: 'सोशल लिंक पेस्ट करें (अनुशंसित)', uploadFile: 'वीडियो फ़ाइल अपलोड करें',
   },
   ar: {
@@ -182,7 +182,7 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     doneTitle: 'تم النشر!', doneDesc: 'فيديو وظيفتك متاح الآن على Shorts.',
     viewPage: 'عرض صفحة الشركة', backToShorts: 'العودة إلى Shorts', uploadAnother: 'رفع وظيفة أخرى',
     confirm: 'تأكيد', change: 'تغيير',
-    selectVideo: 'انقر لاختيار فيديو', videoHint: 'MP4 / WebM، الحد الأقصى 500 ميجابايت',
+    selectVideo: 'انقر لاختيار فيديو', videoHint: 'MP4 / WebM · الحد الأقصى 200 ميجابايت · 60 ثانية',
     linkRecommended: 'لصق رابط اجتماعي (مُوصى به)', uploadFile: 'رفع ملف فيديو',
   },
 };
@@ -322,13 +322,45 @@ export default function ShortsUploadPage() {
     return urlData.publicUrl;
   };
 
+  const getVideoDuration = (file: File): Promise<number> =>
+    new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      const url = URL.createObjectURL(file);
+      video.onloadedmetadata = () => { URL.revokeObjectURL(url); resolve(video.duration); };
+      video.onerror = () => { URL.revokeObjectURL(url); reject(new Error('cannot read metadata')); };
+      video.src = url;
+    });
+
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 500 * 1024 * 1024) {
-      setError('影片請勿超過 500MB');
+
+    // Size limit: 200 MB
+    if (file.size > 200 * 1024 * 1024) {
+      setError(
+        appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+          ? '影片不可超過 200 MB。建議改用社群平台連結（YouTube / IG / FB），完全免費。'
+          : 'Video exceeds 200 MB. Consider pasting a social link (YouTube / IG / FB) instead — it\'s free.'
+      );
       return;
     }
+
+    // Duration limit: 60 seconds
+    try {
+      const duration = await getVideoDuration(file);
+      if (duration > 60) {
+        setError(
+          appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+            ? `影片長度 ${Math.round(duration)} 秒，超過 60 秒上限。請裁剪後再上傳，或改用社群連結。`
+            : `Video is ${Math.round(duration)}s, which exceeds the 60-second limit. Please trim it or use a social link.`
+        );
+        return;
+      }
+    } catch {
+      // Cannot read duration; allow upload and let server handle it
+    }
+
     setUploadingVideo(true);
     setError(null);
     try {
