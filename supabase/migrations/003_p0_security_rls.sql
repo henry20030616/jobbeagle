@@ -58,7 +58,7 @@ CREATE POLICY "View job applications"
     auth.uid()::text = applicant_user_id
     OR auth.uid() IN (
       SELECT company_user_id FROM shorts_videos
-      WHERE id = job_applications.job_id
+      WHERE id::text = job_applications.job_id
     )
   );
 
@@ -73,7 +73,7 @@ CREATE POLICY "Employers can update application status"
   USING (
     auth.uid() IN (
       SELECT company_user_id FROM shorts_videos
-      WHERE id = job_applications.job_id
+      WHERE id::text = job_applications.job_id
     )
   );
 
