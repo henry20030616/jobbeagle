@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_VIDEOS_PER_COMPANY = 20;
 
 function isValidHttpUrl(s: string): boolean {
   try {
@@ -39,21 +40,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Video URL is required.' }, { status: 400 });
     }
 
-    // ── P0: company profile — contact_email required ────────────
-    if (!contact_email?.trim()) {
+    // ── Contact method: email OR apply_url — at least one recommended,
+    //    but both are allowed to be absent (applyMethod = 'none').
+    //    When contact_email IS provided, validate its format.
+    //    When apply_url IS provided, it must be a valid URL.
+    const hasEmail    = !!contact_email?.trim();
+    const hasApplyUrl = !!apply_url?.trim();
+
+    if (hasEmail && !EMAIL_RE.test(contact_email.trim())) {
+      return NextResponse.json({ error: 'Contact email format is invalid.' }, { status: 400 });
+    }
+    if (hasApplyUrl && !isValidHttpUrl(apply_url.trim())) {
       return NextResponse.json(
-        { error: 'Contact email is required so applicants can reach you.' },
+        { error: 'Apply URL must be a valid http/https URL.' },
         { status: 400 }
       );
     }
-    if (!EMAIL_RE.test(contact_email.trim())) {
-      return NextResponse.json({ error: 'Contact email format is invalid.' }, { status: 400 });
-    }
 
-    // ── Optional URL validation ─────────────────────────────────
-    if (apply_url?.trim() && !isValidHttpUrl(apply_url.trim())) {
+    // ── Per-company video limit (abuse prevention) ──────────────
+    const { count: videoCount } = await supabase
+      .from('shorts_videos')
+      .select('*', { count: 'exact', head: true })
+      .eq('company_user_id', user.id);
+
+    if ((videoCount ?? 0) >= MAX_VIDEOS_PER_COMPANY) {
       return NextResponse.json(
-        { error: 'Apply URL must be a valid http/https URL.' },
+        {
+          error: `You have reached the limit of ${MAX_VIDEOS_PER_COMPANY} job videos. Please delete some existing videos before posting new ones.`,
+        },
         { status: 400 }
       );
     }
@@ -69,34 +83,34 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         company_name: company_name.trim(),
         logo_url: logo_url ?? null,
-        contact_email: contact_email.trim(),
+        // Only update contact_email when it's actually provided
+        ...(hasEmail ? { contact_email: contact_email.trim() } : {}),
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'user_id' }
     );
     if (profileError) {
       console.error('Profile upsert error:', profileError);
-      // Non-fatal — continue publishing
     }
 
     // ── Insert video ────────────────────────────────────────────
     const { data, error } = await supabase
       .from('shorts_videos')
       .insert({
-        company_name: company_name.trim(),
-        job_title:    job_title.trim(),
-        location:     location   ?? '',
-        salary:       salary     ?? '',
-        description:  description ?? '',
-        tags:         tags        ?? [],
-        video_url:    video_url.trim(),
+        company_name:      company_name.trim(),
+        job_title:         job_title.trim(),
+        location:          location    ?? '',
+        salary:            salary      ?? '',
+        description:       description ?? '',
+        tags:              tags        ?? [],
+        video_url:         video_url.trim(),
         video_source_type: resolvedSourceType,
-        logo_url:     logo_url   ?? null,
-        contact_email: contact_email.trim(),
-        apply_url:    apply_url?.trim() ?? null,
-        is_published: true,
+        logo_url:          logo_url    ?? null,
+        contact_email:     hasEmail    ? contact_email.trim() : null,
+        apply_url:         hasApplyUrl ? apply_url.trim()     : null,
+        is_published:      true,
         moderation_status: 'approved',
-        company_user_id: user.id,
+        company_user_id:   user.id,
       })
       .select()
       .single();

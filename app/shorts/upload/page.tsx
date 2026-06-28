@@ -575,6 +575,15 @@ export default function ShortsUploadPage() {
             {/* 上傳影片檔 */}
             {videoInputMode === 'upload' && (
               <div className="space-y-3">
+                {/* Storage cost notice */}
+                <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-xl bg-amber-900/20 border border-amber-500/30 text-xs text-amber-300">
+                  <span className="shrink-0 mt-0.5">💡</span>
+                  <span>
+                    {appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+                      ? '直接上傳會佔用儲存空間與流量，建議優先使用「貼社群連結」（YouTube / IG / FB），完全免費。'
+                      : 'Direct uploads use storage & bandwidth. We recommend pasting a social link (YouTube / IG / FB) instead — it\'s free.'}
+                  </span>
+                </div>
                 <div
                   onClick={() => videoInputRef.current?.click()}
                   className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center gap-4 cursor-pointer transition-colors ${
@@ -588,9 +597,9 @@ export default function ShortsUploadPage() {
                   ) : form.videoUrl && form.videoSourceType === 'upload' ? (
                     <>
                       <CheckCircle className="w-10 h-10 text-green-400" />
-                      <p className="text-green-300 font-medium">影片已上傳</p>
+                      <p className="text-green-300 font-medium">{appLanguage === 'zh-TW' || appLanguage === 'zh-CN' ? '影片已上傳' : 'Video uploaded'}</p>
                       <video src={form.videoUrl} className="w-full rounded-xl max-h-48 object-cover" muted />
-                      <p className="text-slate-400 text-sm">點擊重新上傳</p>
+                      <p className="text-slate-400 text-sm">{t('change')}</p>
                     </>
                   ) : (
                     <>
@@ -610,7 +619,7 @@ export default function ShortsUploadPage() {
 
             <NextBtn
               disabled={!form.videoUrl || uploadingVideo}
-              onClick={() => setStep('info')}
+              onClick={() => { setError(null); setStep('info'); }}
               label={t('next')}
             />
           </div>
@@ -666,8 +675,8 @@ export default function ShortsUploadPage() {
             </div>
             {error && <ErrorMsg text={error} />}
             <div className="flex gap-3">
-              <BackBtn label={t('back')} onClick={() => setStep('video')} />
-              <NextBtn disabled={!form.companyName || !form.jobTitle} onClick={() => setStep('apply')} label={t('next')} />
+              <BackBtn label={t('back')} onClick={() => { setError(null); setStep('video'); }} />
+              <NextBtn disabled={!form.companyName || !form.jobTitle} onClick={() => { setError(null); setStep('apply'); }} label={t('next')} />
             </div>
           </div>
         )}
@@ -707,13 +716,13 @@ export default function ShortsUploadPage() {
               <Field icon={ExternalLink} label={t('applyUrl')} placeholder="https://yourcompany.com/jobs/..." value={form.applyUrl} onChange={v => set('applyUrl', v)} type="url" />
             )}
             <div className="flex gap-3">
-              <BackBtn label={t('back')} onClick={() => setStep('info')} />
+              <BackBtn label={t('back')} onClick={() => { setError(null); setStep('info'); }} />
               <NextBtn
                 disabled={
                   (form.applyMethod === 'email' && !form.contactEmail) ||
                   (form.applyMethod === 'url' && !form.applyUrl)
                 }
-                onClick={() => setStep('preview')}
+                onClick={() => { setError(null); setStep('preview'); }}
                 label={t('next')}
               />
             </div>
@@ -786,7 +795,7 @@ export default function ShortsUploadPage() {
 
             {error && <ErrorMsg text={error} />}
             <div className="flex gap-3">
-              <BackBtn label={t('back')} onClick={() => setStep('apply')} />
+              <BackBtn label={t('back')} onClick={() => { setError(null); setStep('apply'); }} />
               <button
                 onClick={handlePublish}
                 disabled={submitting}
