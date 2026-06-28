@@ -13,7 +13,179 @@ import {
   toYouTubeEmbedUrl,
   sourceTypeLabel,
 } from '@/lib/video-embed';
+import { useLanguage } from '@/lib/language-context';
+import type { AppLanguage } from '@/lib/language-context';
 import type { VideoSourceType } from '@/types';
+
+// ── Translations ─────────────────────────────────────────────────────────────
+type UpKey =
+  | 'pageTitle' | 'signInTitle' | 'signInDesc' | 'signInBtn'
+  | 'step' | 'of' | 'next' | 'back' | 'publish' | 'publishing'
+  | 'stepVideo' | 'stepInfo' | 'stepApply' | 'stepPreview'
+  | 'companyName' | 'jobTitle' | 'location' | 'salary' | 'description'
+  | 'tags' | 'logo' | 'contactEmail' | 'applyUrl'
+  | 'applyMethodTitle' | 'applyMethodDesc'
+  | 'applyEmail' | 'applyEmailDesc' | 'applyRedirect' | 'applyRedirectDesc' | 'applyNone' | 'applyNoneDesc'
+  | 'previewTitle' | 'applyMethod' | 'videoSource' | 'licenseNote'
+  | 'doneTitle' | 'doneDesc' | 'viewPage' | 'backToShorts' | 'uploadAnother'
+  | 'confirm' | 'change' | 'selectVideo' | 'videoHint' | 'linkRecommended' | 'uploadFile';
+
+const UP: Record<AppLanguage, Record<UpKey, string>> = {
+  en: {
+    pageTitle: 'Post a Job Video', signInTitle: 'Sign in to post a job video',
+    signInDesc: 'Upload a recruitment video and let job seekers discover your company.',
+    signInBtn: 'Sign in with Google',
+    step: 'Step', of: 'of', next: 'Continue', back: 'Back',
+    publish: 'Publish Now', publishing: 'Publishing…',
+    stepVideo: 'Add Recruitment Video', stepInfo: 'Job Details',
+    stepApply: 'Application Method', stepPreview: 'Preview & Publish',
+    companyName: 'Company Name *', jobTitle: 'Job Title *',
+    location: 'Location', salary: 'Salary Range',
+    description: 'Job Description', tags: 'Tags (comma separated)',
+    logo: 'Company Logo (optional)', contactEmail: 'Contact Email *', applyUrl: 'Application Page URL *',
+    applyMethodTitle: 'Choose how applicants apply',
+    applyMethodDesc: 'Select how job seekers can apply for this position',
+    applyEmail: 'Quick Apply (receive résumés by email)',
+    applyEmailDesc: 'Applicants send their résumé directly to your inbox via the platform',
+    applyRedirect: 'Redirect to careers page',
+    applyRedirectDesc: 'Applicants are sent to your external application page',
+    applyNone: 'Not accepting applications yet',
+    applyNoneDesc: 'Show the job info only, no applications',
+    previewTitle: 'Confirm & Publish',
+    applyMethod: 'Application method', videoSource: 'Video source',
+    licenseNote: 'By clicking "Publish Now" you confirm that this video and job listing is owned by your company or properly licensed, and you agree to Jobbeagle displaying it for recruitment purposes.',
+    doneTitle: 'Published!', doneDesc: 'Your job video is now live on Shorts.',
+    viewPage: 'View company page', backToShorts: 'Back to Shorts', uploadAnother: 'Upload another job',
+    confirm: 'Confirm', change: 'Change',
+    selectVideo: 'Click to select a video', videoHint: 'MP4 / WebM, max 500 MB · 9:16 recommended',
+    linkRecommended: 'Paste a social link (recommended)', uploadFile: 'Upload a video file',
+  },
+  'zh-TW': {
+    pageTitle: '上傳職缺影片', signInTitle: '企業登入後即可上傳',
+    signInDesc: '上傳職缺影片、填寫公司資訊，讓更多求職者看到你們',
+    signInBtn: '以 Google 帳號登入',
+    step: '步驟', of: '/', next: '繼續', back: '返回',
+    publish: '立即發佈', publishing: '發佈中…',
+    stepVideo: '新增招募影片', stepInfo: '填寫職缺資訊',
+    stepApply: '申請方式', stepPreview: '確認並發佈',
+    companyName: '公司名稱 *', jobTitle: '職缺名稱 *',
+    location: '工作地點', salary: '薪資範圍',
+    description: '職缺描述', tags: '標籤（逗號分隔）',
+    logo: '公司 Logo（選填）', contactEmail: '接收履歷的信箱 *', applyUrl: '企業申請頁網址 *',
+    applyMethodTitle: '申請方式', applyMethodDesc: '選擇求職者如何申請這個職缺',
+    applyEmail: '一鍵申請（接收履歷信件）', applyEmailDesc: '求職者直接透過平台發送履歷到你的信箱',
+    applyRedirect: '導引到企業申請頁', applyRedirectDesc: '求職者點擊「套用」後跳轉到你們的招募頁面',
+    applyNone: '暫不開放申請', applyNoneDesc: '僅展示職缺資訊，不接受申請',
+    previewTitle: '確認並發佈',
+    applyMethod: '申請方式', videoSource: '影片來源',
+    licenseNote: '點擊「立即發佈」即代表您確認此影片與職缺內容由貴公司擁有或已取得合法授權，並同意 Jobbeagle 以嵌入或展示方式用於招募目的。',
+    doneTitle: '發佈成功！', doneDesc: '你的職缺影片已上線，求職者現在可以在 Shorts 看到',
+    viewPage: '查看企業頁面', backToShorts: '返回 Shorts', uploadAnother: '再上傳一個職缺',
+    confirm: '確認', change: '更換',
+    selectVideo: '點擊選擇影片', videoHint: '支援 MP4 / WebM，最大 500MB\n建議 9:16 直式短影音',
+    linkRecommended: '貼社群連結（推薦）', uploadFile: '上傳影片檔',
+  },
+  'zh-CN': {
+    pageTitle: '上传职位视频', signInTitle: '企业登录后即可上传',
+    signInDesc: '上传招聘视频、填写公司信息，让更多求职者看到你们',
+    signInBtn: '使用 Google 账号登录',
+    step: '步骤', of: '/', next: '继续', back: '返回',
+    publish: '立即发布', publishing: '发布中…',
+    stepVideo: '添加招募视频', stepInfo: '填写职位信息',
+    stepApply: '申请方式', stepPreview: '确认并发布',
+    companyName: '公司名称 *', jobTitle: '职位名称 *',
+    location: '工作地点', salary: '薪资范围',
+    description: '职位描述', tags: '标签（逗号分隔）',
+    logo: '公司 Logo（选填）', contactEmail: '接收简历的邮箱 *', applyUrl: '企业申请页网址 *',
+    applyMethodTitle: '申请方式', applyMethodDesc: '选择求职者如何申请这个职位',
+    applyEmail: '一键申请（接收简历邮件）', applyEmailDesc: '求职者直接通过平台发送简历到你的邮箱',
+    applyRedirect: '引导到企业申请页', applyRedirectDesc: '求职者点击"套用"后跳转到你们的招募页面',
+    applyNone: '暂不开放申请', applyNoneDesc: '仅展示职位信息，不接受申请',
+    previewTitle: '确认并发布',
+    applyMethod: '申请方式', videoSource: '视频来源',
+    licenseNote: '点击"立即发布"即代表您确认此视频与职位内容由贵公司拥有或已取得合法授权，并同意 Jobbeagle 以嵌入或展示方式用于招募目的。',
+    doneTitle: '发布成功！', doneDesc: '你的职位视频已上线，求职者现在可以在 Shorts 看到',
+    viewPage: '查看企业页面', backToShorts: '返回 Shorts', uploadAnother: '再上传一个职位',
+    confirm: '确认', change: '更换',
+    selectVideo: '点击选择视频', videoHint: '支持 MP4 / WebM，最大 500MB\n建议 9:16 竖式短视频',
+    linkRecommended: '粘贴社交链接（推荐）', uploadFile: '上传视频文件',
+  },
+  es: {
+    pageTitle: 'Publicar video de empleo', signInTitle: 'Inicia sesión para publicar',
+    signInDesc: 'Sube un video de reclutamiento y deja que los candidatos descubran tu empresa.',
+    signInBtn: 'Iniciar sesión con Google',
+    step: 'Paso', of: 'de', next: 'Continuar', back: 'Atrás',
+    publish: 'Publicar ahora', publishing: 'Publicando…',
+    stepVideo: 'Agregar video', stepInfo: 'Detalles del puesto',
+    stepApply: 'Método de aplicación', stepPreview: 'Vista previa y publicar',
+    companyName: 'Nombre de la empresa *', jobTitle: 'Título del puesto *',
+    location: 'Ubicación', salary: 'Rango salarial',
+    description: 'Descripción del puesto', tags: 'Etiquetas (separadas por coma)',
+    logo: 'Logo de la empresa (opcional)', contactEmail: 'Email de contacto *', applyUrl: 'URL de la página de aplicación *',
+    applyMethodTitle: 'Método de aplicación', applyMethodDesc: 'Elige cómo los candidatos pueden aplicar',
+    applyEmail: 'Aplicación rápida (recibir currículos por email)', applyEmailDesc: 'Los candidatos envían su currículo directamente a tu bandeja de entrada',
+    applyRedirect: 'Redirigir a página de empleo', applyRedirectDesc: 'Los candidatos son enviados a tu página de aplicación externa',
+    applyNone: 'Sin aplicaciones por ahora', applyNoneDesc: 'Solo muestra la información del puesto',
+    previewTitle: 'Confirmar y publicar',
+    applyMethod: 'Método de aplicación', videoSource: 'Fuente del video',
+    licenseNote: 'Al hacer clic en "Publicar ahora" confirmas que este video y oferta de empleo son de tu empresa o tienen licencia adecuada, y aceptas que Jobbeagle lo muestre para fines de reclutamiento.',
+    doneTitle: '¡Publicado!', doneDesc: 'Tu video de empleo ya está disponible en Shorts.',
+    viewPage: 'Ver página de empresa', backToShorts: 'Volver a Shorts', uploadAnother: 'Subir otro empleo',
+    confirm: 'Confirmar', change: 'Cambiar',
+    selectVideo: 'Clic para seleccionar video', videoHint: 'MP4 / WebM, máx 500 MB · Se recomienda 9:16',
+    linkRecommended: 'Pegar enlace social (recomendado)', uploadFile: 'Subir archivo de video',
+  },
+  hi: {
+    pageTitle: 'जॉब वीडियो पोस्ट करें', signInTitle: 'पोस्ट करने के लिए साइन इन करें',
+    signInDesc: 'भर्ती वीडियो अपलोड करें और नौकरी चाहने वालों को अपनी कंपनी खोजने दें।',
+    signInBtn: 'Google से साइन इन करें',
+    step: 'चरण', of: 'का', next: 'जारी रखें', back: 'वापस',
+    publish: 'अभी प्रकाशित करें', publishing: 'प्रकाशित हो रहा है…',
+    stepVideo: 'भर्ती वीडियो जोड़ें', stepInfo: 'नौकरी विवरण',
+    stepApply: 'आवेदन विधि', stepPreview: 'पूर्वावलोकन और प्रकाशित करें',
+    companyName: 'कंपनी का नाम *', jobTitle: 'पद का नाम *',
+    location: 'स्थान', salary: 'वेतन सीमा',
+    description: 'नौकरी विवरण', tags: 'टैग (अल्पविराम से अलग)',
+    logo: 'कंपनी लोगो (वैकल्पिक)', contactEmail: 'संपर्क ईमेल *', applyUrl: 'आवेदन पृष्ठ URL *',
+    applyMethodTitle: 'आवेदन विधि', applyMethodDesc: 'चुनें कि आवेदक कैसे आवेदन करें',
+    applyEmail: 'त्वरित आवेदन (ईमेल द्वारा)', applyEmailDesc: 'आवेदक सीधे आपके इनबॉक्स में रेज़्यूमे भेजते हैं',
+    applyRedirect: 'करियर पेज पर रीडायरेक्ट', applyRedirectDesc: 'आवेदकों को आपके बाहरी आवेदन पृष्ठ पर भेजा जाता है',
+    applyNone: 'अभी आवेदन स्वीकार नहीं', applyNoneDesc: 'केवल नौकरी की जानकारी दिखाएं',
+    previewTitle: 'पुष्टि करें और प्रकाशित करें',
+    applyMethod: 'आवेदन विधि', videoSource: 'वीडियो स्रोत',
+    licenseNote: '"अभी प्रकाशित करें" पर क्लिक करके आप पुष्टि करते हैं कि यह वीडियो और नौकरी सूची आपकी कंपनी की है।',
+    doneTitle: 'प्रकाशित!', doneDesc: 'आपका जॉब वीडियो Shorts पर लाइव है।',
+    viewPage: 'कंपनी पेज देखें', backToShorts: 'Shorts पर वापस', uploadAnother: 'और नौकरी अपलोड करें',
+    confirm: 'पुष्टि करें', change: 'बदलें',
+    selectVideo: 'वीडियो चुनने के लिए क्लिक करें', videoHint: 'MP4 / WebM, अधिकतम 500 MB',
+    linkRecommended: 'सोशल लिंक पेस्ट करें (अनुशंसित)', uploadFile: 'वीडियो फ़ाइल अपलोड करें',
+  },
+  ar: {
+    pageTitle: 'نشر فيديو وظيفة', signInTitle: 'سجّل الدخول للنشر',
+    signInDesc: 'ارفع فيديو توظيف ودع الباحثين عن عمل يكتشفون شركتك.',
+    signInBtn: 'تسجيل الدخول بـ Google',
+    step: 'خطوة', of: 'من', next: 'متابعة', back: 'رجوع',
+    publish: 'نشر الآن', publishing: 'جارٍ النشر…',
+    stepVideo: 'إضافة فيديو التوظيف', stepInfo: 'تفاصيل الوظيفة',
+    stepApply: 'طريقة التقديم', stepPreview: 'معاينة ونشر',
+    companyName: 'اسم الشركة *', jobTitle: 'المسمى الوظيفي *',
+    location: 'الموقع', salary: 'نطاق الراتب',
+    description: 'وصف الوظيفة', tags: 'الوسوم (مفصولة بفواصل)',
+    logo: 'شعار الشركة (اختياري)', contactEmail: 'البريد الإلكتروني للتواصل *', applyUrl: 'رابط صفحة التقديم *',
+    applyMethodTitle: 'طريقة التقديم', applyMethodDesc: 'اختر كيف يتقدم المرشحون',
+    applyEmail: 'تقديم سريع (استقبال السيرة بالبريد)', applyEmailDesc: 'يرسل المتقدمون سيرتهم مباشرة إلى بريدك',
+    applyRedirect: 'توجيه إلى صفحة التوظيف', applyRedirectDesc: 'يُحوَّل المتقدمون إلى صفحة التقديم الخارجية',
+    applyNone: 'لا قبول الآن', applyNoneDesc: 'اعرض معلومات الوظيفة فقط',
+    previewTitle: 'تأكيد ونشر',
+    applyMethod: 'طريقة التقديم', videoSource: 'مصدر الفيديو',
+    licenseNote: 'بالنقر على "نشر الآن" تؤكد أن هذا الفيديو والوظيفة مملوكان لشركتك أو مرخصان بشكل قانوني.',
+    doneTitle: 'تم النشر!', doneDesc: 'فيديو وظيفتك متاح الآن على Shorts.',
+    viewPage: 'عرض صفحة الشركة', backToShorts: 'العودة إلى Shorts', uploadAnother: 'رفع وظيفة أخرى',
+    confirm: 'تأكيد', change: 'تغيير',
+    selectVideo: 'انقر لاختيار فيديو', videoHint: 'MP4 / WebM، الحد الأقصى 500 ميجابايت',
+    linkRecommended: 'لصق رابط اجتماعي (مُوصى به)', uploadFile: 'رفع ملف فيديو',
+  },
+};
 
 type Step = 'auth' | 'video' | 'info' | 'apply' | 'preview' | 'done';
 type ApplyMethod = 'email' | 'url' | 'none';
@@ -65,6 +237,9 @@ const PLATFORM_HINTS: Record<string, { label: string; placeholder: string; examp
 };
 
 export default function ShortsUploadPage() {
+  const { language: appLanguage } = useLanguage();
+  const t = (key: UpKey) => UP[appLanguage]?.[key] ?? UP.en[key];
+
   const [step, setStep] = useState<Step>('auth');
   const [user, setUser] = useState<any>(null);
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
@@ -235,7 +410,7 @@ export default function ShortsUploadPage() {
         <Link href="/shorts" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-white font-bold text-lg">上傳職缺影片</h1>
+        <h1 className="text-white font-bold text-lg">{t('pageTitle')}</h1>
       </div>
 
       <div className="max-w-xl mx-auto px-4 py-8">
@@ -247,15 +422,15 @@ export default function ShortsUploadPage() {
               <Building2 className="w-10 h-10 text-slate-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white mb-2">企業登入後即可上傳</h2>
-              <p className="text-slate-400 text-sm">上傳職缺影片、填寫公司資訊，讓更多求職者看到你們</p>
+              <h2 className="text-xl font-bold text-white mb-2">{t('signInTitle')}</h2>
+              <p className="text-slate-400 text-sm">{t('signInDesc')}</p>
             </div>
             <button
               onClick={handleLogin}
               className="flex items-center gap-3 px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-semibold text-base transition-colors"
             >
               <LogIn size={20} />
-              以 Google 帳號登入
+              {t('signInBtn')}
             </button>
           </div>
         )}
@@ -263,13 +438,13 @@ export default function ShortsUploadPage() {
         {/* Step: Video */}
         {step === 'video' && (
           <div className="space-y-5">
-            <StepHeader step={1} total={4} title="新增招募影片" />
+            <StepHeader step={1} total={4} title={t('stepVideo')} stepLabel={t('step')} ofLabel={t('of')} />
 
             {/* 模式切換 */}
             <div className="flex gap-2 p-1 bg-slate-800/60 rounded-xl border border-slate-700">
               {([
-                { mode: 'link' as const, icon: LinkIcon, label: '貼社群連結（推薦）' },
-                { mode: 'upload' as const, icon: Upload, label: '上傳影片檔' },
+                { mode: 'link' as const, icon: LinkIcon, label: t('linkRecommended') },
+                { mode: 'upload' as const, icon: Upload, label: t('uploadFile') },
               ]).map(({ mode, icon: Icon, label }) => (
                 <button
                   key={mode}
@@ -333,7 +508,7 @@ export default function ShortsUploadPage() {
                       disabled={!socialLinkInput.trim()}
                       className="px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-xl text-white text-sm font-semibold transition-colors whitespace-nowrap"
                     >
-                      確認
+                      {t('confirm')}
                     </button>
                   </div>
                   {platformHint && (
@@ -352,18 +527,18 @@ export default function ShortsUploadPage() {
                     <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <p className="text-emerald-300 text-sm font-semibold">
-                        已確認 — {sourceTypeLabel(form.videoSourceType)}
+                        {t('confirm')} — {sourceTypeLabel(form.videoSourceType)}
                       </p>
                       <p className="text-slate-400 text-xs mt-0.5 truncate">{form.videoUrl}</p>
                       <p className="text-slate-500 text-xs mt-1.5">
                         影片將以嵌入方式顯示，原貼文必須為「公開」可見。
                       </p>
                     </div>
-                    <button
+                      <button
                       onClick={handleClearSocialLink}
                       className="text-slate-500 hover:text-white text-xs shrink-0"
                     >
-                      更換
+                      {t('change')}
                     </button>
                   </div>
                 )}
@@ -420,9 +595,9 @@ export default function ShortsUploadPage() {
                   ) : (
                     <>
                       <Video className="w-12 h-12 text-slate-400" />
-                      <p className="text-white font-semibold">點擊選擇影片</p>
-                      <p className="text-slate-400 text-sm text-center">
-                        支援 MP4 / WebM，最大 500MB<br />建議 9:16 直式短影音
+                      <p className="text-white font-semibold">{t('selectVideo')}</p>
+                      <p className="text-slate-400 text-sm text-center whitespace-pre-line">
+                        {t('videoHint')}
                       </p>
                     </>
                   )}
@@ -436,6 +611,7 @@ export default function ShortsUploadPage() {
             <NextBtn
               disabled={!form.videoUrl || uploadingVideo}
               onClick={() => setStep('info')}
+              label={t('next')}
             />
           </div>
         )}
@@ -443,13 +619,13 @@ export default function ShortsUploadPage() {
         {/* Step: Job info */}
         {step === 'info' && (
           <div className="space-y-5">
-            <StepHeader step={2} total={4} title="填寫職缺資訊" />
-            <Field icon={Building2} label="公司名稱 *" placeholder="例：Jobbeagle Inc." value={form.companyName} onChange={v => set('companyName', v)} />
-            <Field icon={FileText} label="職缺名稱 *" placeholder="例：前端工程師" value={form.jobTitle} onChange={v => set('jobTitle', v)} />
-            <Field icon={MapPin} label="工作地點" placeholder="例：台北市信義區 / 遠端" value={form.location} onChange={v => set('location', v)} />
-            <Field icon={DollarSign} label="薪資範圍" placeholder="例：月薪 60,000–90,000" value={form.salary} onChange={v => set('salary', v)} />
+            <StepHeader step={2} total={4} title={t('stepInfo')} stepLabel={t('step')} ofLabel={t('of')} />
+            <Field icon={Building2} label={t('companyName')} placeholder="Jobbeagle Inc." value={form.companyName} onChange={v => set('companyName', v)} />
+            <Field icon={FileText} label={t('jobTitle')} placeholder="Frontend Engineer" value={form.jobTitle} onChange={v => set('jobTitle', v)} />
+            <Field icon={MapPin} label={t('location')} placeholder="New York / Remote" value={form.location} onChange={v => set('location', v)} />
+            <Field icon={DollarSign} label={t('salary')} placeholder="$80,000–$120,000" value={form.salary} onChange={v => set('salary', v)} />
             <div className="space-y-1.5">
-              <label className="text-slate-300 text-sm font-medium flex items-center gap-2"><FileText size={15} /> 職缺描述</label>
+              <label className="text-slate-300 text-sm font-medium flex items-center gap-2"><FileText size={15} /> {t('description')}</label>
               <textarea
                 rows={4}
                 placeholder="描述工作內容、需求技能、公司文化…"
@@ -458,11 +634,11 @@ export default function ShortsUploadPage() {
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm resize-none focus:outline-none focus:border-blue-500"
               />
             </div>
-            <Field icon={Tag} label="標籤（逗號分隔）" placeholder="例：React, TypeScript, 遠端" value={form.tags} onChange={v => set('tags', v)} />
+            <Field icon={Tag} label={t('tags')} placeholder="React, TypeScript, Remote" value={form.tags} onChange={v => set('tags', v)} />
 
             {/* Logo upload */}
             <div className="space-y-1.5">
-              <label className="text-slate-300 text-sm font-medium flex items-center gap-2"><Image size={15} /> 公司 Logo（選填）</label>
+              <label className="text-slate-300 text-sm font-medium flex items-center gap-2"><Image size={15} /> {t('logo')}</label>
               <div
                 onClick={() => logoInputRef.current?.click()}
                 className={`border border-dashed rounded-xl p-5 flex items-center gap-4 cursor-pointer transition-colors ${
@@ -475,14 +651,14 @@ export default function ShortsUploadPage() {
                   <>
                     <img src={form.logoUrl} alt="logo" className="w-12 h-12 rounded-lg object-contain bg-white p-1" />
                     <div>
-                      <p className="text-green-300 text-sm font-medium">Logo 已上傳</p>
-                      <p className="text-slate-400 text-xs">點擊重新上傳</p>
+                      <p className="text-green-300 text-sm font-medium">Logo uploaded</p>
+                      <p className="text-slate-400 text-xs">{t('change')}</p>
                     </div>
                   </>
                 ) : (
                   <>
                     <Image className="w-7 h-7 text-slate-400" />
-                    <p className="text-slate-400 text-sm">點擊上傳 Logo（PNG/JPG，最大 5MB）</p>
+                    <p className="text-slate-400 text-sm">{t('logo')} (PNG/JPG, max 5 MB)</p>
                   </>
                 )}
               </div>
@@ -490,8 +666,8 @@ export default function ShortsUploadPage() {
             </div>
             {error && <ErrorMsg text={error} />}
             <div className="flex gap-3">
-              <BackBtn onClick={() => setStep('video')} />
-              <NextBtn disabled={!form.companyName || !form.jobTitle} onClick={() => setStep('apply')} />
+              <BackBtn label={t('back')} onClick={() => setStep('video')} />
+              <NextBtn disabled={!form.companyName || !form.jobTitle} onClick={() => setStep('apply')} label={t('next')} />
             </div>
           </div>
         )}
@@ -499,13 +675,13 @@ export default function ShortsUploadPage() {
         {/* Step: Apply method */}
         {step === 'apply' && (
           <div className="space-y-5">
-            <StepHeader step={3} total={4} title="申請方式" />
-            <p className="text-slate-400 text-sm">選擇求職者如何申請這個職缺</p>
+            <StepHeader step={3} total={4} title={t('stepApply')} stepLabel={t('step')} ofLabel={t('of')} />
+            <p className="text-slate-400 text-sm">{t('applyMethodDesc')}</p>
             <div className="space-y-3">
               {([
-                { val: 'email', icon: Mail, title: '一鍵申請（接收履歷信件）', desc: '求職者直接透過平台發送履歷到你的信箱' },
-                { val: 'url', icon: ExternalLink, title: '導引到企業申請頁', desc: '求職者點擊「套用」後跳轉到你們的招募頁面' },
-                { val: 'none', icon: Building2, title: '暫不開放申請', desc: '僅展示職缺資訊，不接受申請' },
+                { val: 'email', icon: Mail, title: t('applyEmail'), desc: t('applyEmailDesc') },
+                { val: 'url', icon: ExternalLink, title: t('applyRedirect'), desc: t('applyRedirectDesc') },
+                { val: 'none', icon: Building2, title: t('applyNone'), desc: t('applyNoneDesc') },
               ] as const).map(({ val, icon: Icon, title, desc }) => (
                 <button
                   key={val}
@@ -525,19 +701,20 @@ export default function ShortsUploadPage() {
               ))}
             </div>
             {form.applyMethod === 'email' && (
-              <Field icon={Mail} label="接收履歷的信箱 *" placeholder="hr@yourcompany.com" value={form.contactEmail} onChange={v => set('contactEmail', v)} type="email" />
+              <Field icon={Mail} label={t('contactEmail')} placeholder="hr@yourcompany.com" value={form.contactEmail} onChange={v => set('contactEmail', v)} type="email" />
             )}
             {form.applyMethod === 'url' && (
-              <Field icon={ExternalLink} label="企業申請頁網址 *" placeholder="https://yourcompany.com/jobs/..." value={form.applyUrl} onChange={v => set('applyUrl', v)} type="url" />
+              <Field icon={ExternalLink} label={t('applyUrl')} placeholder="https://yourcompany.com/jobs/..." value={form.applyUrl} onChange={v => set('applyUrl', v)} type="url" />
             )}
             <div className="flex gap-3">
-              <BackBtn onClick={() => setStep('info')} />
+              <BackBtn label={t('back')} onClick={() => setStep('info')} />
               <NextBtn
                 disabled={
                   (form.applyMethod === 'email' && !form.contactEmail) ||
                   (form.applyMethod === 'url' && !form.applyUrl)
                 }
                 onClick={() => setStep('preview')}
+                label={t('next')}
               />
             </div>
           </div>
@@ -546,7 +723,7 @@ export default function ShortsUploadPage() {
         {/* Step: Preview */}
         {step === 'preview' && (
           <div className="space-y-5">
-            <StepHeader step={4} total={4} title="確認並發佈" />
+            <StepHeader step={4} total={4} title={t('previewTitle')} stepLabel={t('step')} ofLabel={t('of')} />
             <div className="bg-slate-900 rounded-2xl overflow-hidden border border-slate-700">
               {/* 影片預覽 */}
               {form.videoUrl && form.videoSourceType === 'upload' && (
@@ -593,30 +770,30 @@ export default function ShortsUploadPage() {
                 )}
                 <div className="pt-2 border-t border-slate-700 space-y-1">
                   <p className="text-slate-400 text-xs">
-                    申請方式：{form.applyMethod === 'email' ? `一鍵申請 (${form.contactEmail})` : form.applyMethod === 'url' ? `企業申請頁 (${form.applyUrl})` : '暫不開放'}
+                    {t('applyMethod')}：{form.applyMethod === 'email' ? `${t('applyEmail')} (${form.contactEmail})` : form.applyMethod === 'url' ? `${t('applyRedirect')} (${form.applyUrl})` : t('applyNone')}
                   </p>
                   <p className="text-slate-500 text-xs">
-                    影片來源：{sourceTypeLabel(form.videoSourceType)}
+                    {t('videoSource')}：{sourceTypeLabel(form.videoSourceType)}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* 授權聲明 */}
+            {/* License note */}
             <div className="p-4 bg-slate-800/60 rounded-xl border border-slate-700 text-xs text-slate-400 leading-relaxed">
-              點擊「立即發佈」即代表您確認此影片與職缺內容由貴公司擁有或已取得合法授權，並同意 Jobbeagle 以嵌入或展示方式用於招募目的。
+              {t('licenseNote')}
             </div>
 
             {error && <ErrorMsg text={error} />}
             <div className="flex gap-3">
-              <BackBtn onClick={() => setStep('apply')} />
+              <BackBtn label={t('back')} onClick={() => setStep('apply')} />
               <button
                 onClick={handlePublish}
                 disabled={submitting}
                 className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-xl text-white font-bold transition-colors"
               >
                 {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload size={18} />}
-                {submitting ? '發佈中…' : '立即發佈'}
+                {submitting ? t('publishing') : t('publish')}
               </button>
             </div>
           </div>
@@ -629,8 +806,8 @@ export default function ShortsUploadPage() {
               <CheckCircle className="w-10 h-10 text-green-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">發佈成功！</h2>
-              <p className="text-slate-400 text-sm">你的職缺影片已上線，求職者現在可以在 Shorts 看到</p>
+              <h2 className="text-2xl font-bold text-white mb-2">{t('doneTitle')}</h2>
+              <p className="text-slate-400 text-sm">{t('doneDesc')}</p>
             </div>
             <div className="flex flex-col gap-3 w-full max-w-xs">
               <a
@@ -638,13 +815,13 @@ export default function ShortsUploadPage() {
                 className="flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-semibold transition-colors"
               >
                 <ExternalLink size={16} />
-                查看企業頁面
+                {t('viewPage')}
               </a>
               <Link
                 href="/shorts"
                 className="flex items-center justify-center gap-2 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-semibold transition-colors"
               >
-                返回 Shorts
+                {t('backToShorts')}
               </Link>
               <button
                 onClick={() => {
@@ -655,7 +832,7 @@ export default function ShortsUploadPage() {
                 }}
                 className="flex items-center justify-center gap-2 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 text-sm transition-colors"
               >
-                再上傳一個職缺
+                {t('uploadAnother')}
               </button>
             </div>
           </div>
@@ -667,10 +844,12 @@ export default function ShortsUploadPage() {
 
 // ── Reusable sub-components ──────────────────────────────────────────────────
 
-function StepHeader({ step, total, title }: { step: number; total: number; title: string }) {
+function StepHeader({ step, total, title, stepLabel = 'Step', ofLabel = '/' }: {
+  step: number; total: number; title: string; stepLabel?: string; ofLabel?: string;
+}) {
   return (
     <div className="space-y-2">
-      <p className="text-slate-500 text-xs font-medium uppercase tracking-widest">步驟 {step} / {total}</p>
+      <p className="text-slate-500 text-xs font-medium uppercase tracking-widest">{stepLabel} {step} {ofLabel} {total}</p>
       <h2 className="text-xl font-bold text-white">{title}</h2>
       <div className="flex gap-1">
         {Array.from({ length: total }).map((_, i) => (
@@ -702,25 +881,25 @@ function Field({
   );
 }
 
-function NextBtn({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+function NextBtn({ disabled, onClick, label = 'Continue' }: { disabled: boolean; onClick: () => void; label?: string }) {
   return (
     <button
       disabled={disabled}
       onClick={onClick}
       className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-colors"
     >
-      繼續 <ChevronRight size={18} />
+      {label} <ChevronRight size={18} />
     </button>
   );
 }
 
-function BackBtn({ onClick }: { onClick: () => void }) {
+function BackBtn({ onClick, label = 'Back' }: { onClick: () => void; label?: string }) {
   return (
     <button
       onClick={onClick}
       className="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 font-medium transition-colors"
     >
-      返回
+      {label}
     </button>
   );
 }

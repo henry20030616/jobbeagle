@@ -4,8 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 import { useRouter } from 'next/navigation';
 import { Mail, Building2, AlertCircle } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
+
+const EL = {
+  en: { title: 'Employer Login', sub: 'Unified account with the main site', desc: 'First login automatically creates your employer account.\nAfter login you can upload and manage recruitment videos.', btn: 'Sign in with Google', back: '← Back to Home', loading: 'Loading…' },
+  'zh-TW': { title: '企業會員登入', sub: '與主網站帳號互通', desc: '首次登入將自動建立企業帳號\n登入後即可上傳和管理招聘影片', btn: '使用 Google 登入', back: '← 返回首頁', loading: '載入中…' },
+  'zh-CN': { title: '企业会员登录', sub: '与主网站账号互通', desc: '首次登录将自动建立企业账号\n登录后即可上传和管理招聘视频', btn: '使用 Google 登录', back: '← 返回首页', loading: '加载中…' },
+  es: { title: 'Acceso para empleadores', sub: 'Cuenta unificada con el sitio principal', desc: 'El primer inicio de sesión crea automáticamente tu cuenta.\nDespués podrás subir y gestionar videos de empleo.', btn: 'Iniciar sesión con Google', back: '← Volver al inicio', loading: 'Cargando…' },
+  hi: { title: 'नियोक्ता लॉगिन', sub: 'मुख्य साइट के साथ एकीकृत खाता', desc: 'पहली बार लॉगिन करने पर स्वचालित रूप से खाता बनाया जाता है।\nलॉगिन के बाद भर्ती वीडियो अपलोड और प्रबंधित करें।', btn: 'Google से साइन इन करें', back: '← होम पर वापस', loading: 'लोड हो रहा है…' },
+  ar: { title: 'تسجيل دخول صاحب العمل', sub: 'حساب موحد مع الموقع الرئيسي', desc: 'تسجيل الدخول لأول مرة ينشئ حسابك تلقائياً.\nبعد الدخول يمكنك رفع وإدارة فيديوهات التوظيف.', btn: 'تسجيل الدخول بـ Google', back: '← العودة للرئيسية', loading: 'جارٍ التحميل…' },
+} as const;
 
 export default function EmployerLoginPage() {
+  const { language: appLanguage } = useLanguage();
+  const tl = EL[appLanguage] ?? EL.en;
+
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +91,7 @@ export default function EmployerLoginPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white">載入中...</div>
+        <div className="text-white">{tl.loading}</div>
       </div>
     );
   }
@@ -95,8 +108,8 @@ export default function EmployerLoginPage() {
             <h1 className="text-3xl font-bold text-white mb-2">
               <span className="text-white">Job</span><span className="text-blue-400">beagle</span>
             </h1>
-            <p className="text-slate-400 text-sm">企業會員登入</p>
-            <p className="text-slate-500 text-xs mt-2">與主網站帳號互通</p>
+            <p className="text-slate-400 text-sm">{tl.title}</p>
+            <p className="text-slate-500 text-xs mt-2">{tl.sub}</p>
           </div>
 
           {/* Error Message */}
@@ -114,16 +127,14 @@ export default function EmployerLoginPage() {
               className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white hover:bg-gray-100 text-gray-900 rounded-lg font-medium transition-colors shadow-lg"
             >
               <Mail className="w-5 h-5" />
-              <span>使用 Google 登入</span>
+              <span>{tl.btn}</span>
             </button>
           </div>
 
           {/* Info */}
           <div className="mt-6 pt-6 border-t border-slate-700">
-            <p className="text-slate-400 text-xs text-center">
-              首次登入將自動建立企業帳號
-              <br />
-              登入後即可上傳和管理招聘影片
+            <p className="text-slate-400 text-xs text-center whitespace-pre-line">
+              {tl.desc}
             </p>
           </div>
 
@@ -133,7 +144,7 @@ export default function EmployerLoginPage() {
               href="/"
               className="text-slate-400 hover:text-slate-300 text-sm transition-colors"
             >
-              ← 返回首頁
+              {tl.back}
             </a>
           </div>
         </div>

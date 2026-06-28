@@ -39,6 +39,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [applyState, setApplyState] = useState<'idle' | 'step1' | 'step2' | 'submitting' | 'success'>('idle');
+  const [applyEmailSent, setApplyEmailSent] = useState(true);
   const [applyStep, setApplyStep] = useState<1 | 2 | 3>(1);
   const [videoUrl, setVideoUrl] = useState(job.videoUrl);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -497,11 +498,29 @@ const VideoCard: React.FC<VideoCardProps> = ({
         }),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || '申請失敗');
+      const resData = await res.json();
+
+      // 409 — already applied
+      if (res.status === 409) {
+        setApplyState('idle');
+        setShowApplyModal(false);
+        alert(t('您已申請過此職缺，無法重複申請。', 'You have already applied for this position.'));
+        return;
       }
 
+      // 429 — rate limited
+      if (res.status === 429) {
+        setApplyState('idle');
+        alert(t('申請次數過多，請稍後再試。', 'Too many applications submitted. Please wait before trying again.'));
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(resData.error || t('申請失敗', 'Application failed'));
+      }
+
+      // Track whether the employer notification email was actually sent
+      setApplyEmailSent(resData.emailSent !== false);
       setApplyState('success');
       setTimeout(() => {
         setShowApplyModal(false);
@@ -514,12 +533,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
         setCoverLetterFile(null);
         setCoverLetterFileName('');
         setCoverLetterMode('text');
+        setApplyEmailSent(true);
         if (fileInputRef.current) fileInputRef.current.value = '';
         if (coverLetterFileRef.current) coverLetterFileRef.current.value = '';
-      }, 3000);
-    } catch (e: any) {
-      console.error('Apply error:', e);
-      alert(e.message || '申請時發生錯誤，請稍後再試');
+      }, 4000);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : t('申請時發生錯誤，請稍後再試', 'An error occurred. Please try again.');
+      console.error('Apply error:', msg);
+      alert(msg);
       setApplyState('idle');
     }
   };
@@ -1084,6 +1105,18 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     <p className="text-sm text-gray-400 text-center mb-6 max-w-md">
                       {t('您已成功應徵', 'You have successfully applied for')} <span className="text-white font-semibold">{job.jobTitle}</span> {t('於', 'at')} <span className="text-white font-semibold">{job.companyName}</span>
                     </p>
+                    {/* Email-not-sent notice */}
+                    {!applyEmailSent && (
+                      <div className="w-full max-w-md mb-4 flex items-start gap-3 bg-amber-900/20 border border-amber-500/40 rounded-lg p-4">
+                        <Info size={18} className="text-amber-400 shrink-0 mt-0.5" />
+                        <p className="text-sm text-amber-200">
+                          {t(
+                            '您的資料已儲存，但企業通知信目前無法寄送。您的應徵紀錄已儲存於企業後台，企業仍可查看。',
+                            'Your application was saved, but the email notification to the employer could not be sent. Your application is still visible in the employer dashboard.'
+                          )}
+                        </p>
+                      </div>
+                    )}
                     <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 w-full max-w-md">
                       <p className="text-xs text-gray-500 mb-2">{t('接下來？', "What's next?")}</p>
                       <ul className="text-sm text-gray-300 space-y-2">

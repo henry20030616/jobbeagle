@@ -10,7 +10,17 @@ import {
   X, CheckCircle, Users, ChevronRight, Link as LinkIcon,
 } from 'lucide-react';
 import { detectVideoSourceType, sourceTypeLabel, toYouTubeEmbedUrl } from '@/lib/video-embed';
+import { useLanguage } from '@/lib/language-context';
 import type { VideoSourceType } from '@/types';
+
+const ED = {
+  en:     { hub: 'Employer Hub', logout: 'Logout', myVideos: 'My Job Videos', postNew: 'Post New Job', applicants: 'Applicants', published: 'Published', draft: 'Draft', views: 'views', likes: 'likes', publish: 'Publish', unpublish: 'Unpublish', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete this video?', noVideos: 'No job videos yet', noVideosHint: 'Post your first recruitment video to get started.', deleteSuccess: 'Video deleted', publishSuccess: 'Video published', unpublishSuccess: 'Video unpublished' },
+  'zh-TW':{ hub: '企業中心', logout: '登出', myVideos: '我的職缺影片', postNew: '發布新職缺', applicants: '應徵者', published: '已發布', draft: '草稿', views: '觀看', likes: '讚', publish: '發布', unpublish: '下架', edit: '編輯', delete: '刪除', confirmDelete: '確定要刪除這個影片嗎？', noVideos: '尚未發布任何影片', noVideosHint: '立即發布第一支招募影片吧。', deleteSuccess: '影片已刪除', publishSuccess: '影片已發布', unpublishSuccess: '影片已下架' },
+  'zh-CN':{ hub: '企业中心', logout: '登出', myVideos: '我的职位视频', postNew: '发布新职位', applicants: '应聘者', published: '已发布', draft: '草稿', views: '观看', likes: '赞', publish: '发布', unpublish: '下架', edit: '编辑', delete: '删除', confirmDelete: '确定要删除这个视频吗？', noVideos: '尚未发布任何视频', noVideosHint: '立即发布第一支招募视频。', deleteSuccess: '视频已删除', publishSuccess: '视频已发布', unpublishSuccess: '视频已下架' },
+  es:     { hub: 'Centro de empleadores', logout: 'Cerrar sesión', myVideos: 'Mis videos de empleo', postNew: 'Publicar nuevo empleo', applicants: 'Candidatos', published: 'Publicado', draft: 'Borrador', views: 'vistas', likes: 'me gusta', publish: 'Publicar', unpublish: 'Despublicar', edit: 'Editar', delete: 'Eliminar', confirmDelete: '¿Eliminar este video?', noVideos: 'Sin videos todavía', noVideosHint: 'Publica tu primer video de empleo para comenzar.', deleteSuccess: 'Video eliminado', publishSuccess: 'Video publicado', unpublishSuccess: 'Video despublicado' },
+  hi:     { hub: 'नियोक्ता केंद्र', logout: 'लॉगआउट', myVideos: 'मेरे जॉब वीडियो', postNew: 'नई नौकरी पोस्ट करें', applicants: 'आवेदक', published: 'प्रकाशित', draft: 'ड्राफ्ट', views: 'व्यूज', likes: 'लाइक', publish: 'प्रकाशित करें', unpublish: 'हटाएं', edit: 'संपादित करें', delete: 'हटाएं', confirmDelete: 'यह वीडियो हटाएं?', noVideos: 'अभी कोई जॉब वीडियो नहीं', noVideosHint: 'शुरू करने के लिए पहला भर्ती वीडियो पोस्ट करें।', deleteSuccess: 'वीडियो हटाया गया', publishSuccess: 'वीडियो प्रकाशित', unpublishSuccess: 'वीडियो हटाया गया' },
+  ar:     { hub: 'مركز أصحاب العمل', logout: 'تسجيل الخروج', myVideos: 'فيديوهات الوظائف', postNew: 'نشر وظيفة جديدة', applicants: 'المتقدمون', published: 'منشور', draft: 'مسودة', views: 'مشاهدة', likes: 'إعجاب', publish: 'نشر', unpublish: 'إلغاء النشر', edit: 'تعديل', delete: 'حذف', confirmDelete: 'حذف هذا الفيديو؟', noVideos: 'لا توجد فيديوهات بعد', noVideosHint: 'انشر أول فيديو توظيف للبدء.', deleteSuccess: 'تم حذف الفيديو', publishSuccess: 'تم نشر الفيديو', unpublishSuccess: 'تم إلغاء نشر الفيديو' },
+} as const;
 
 interface VideoData {
   id: string;
@@ -40,6 +50,9 @@ interface CompanyData {
 }
 
 export default function EmployerDashboard() {
+  const { language: appLanguage } = useLanguage();
+  const td = ED[appLanguage] ?? ED.en;
+
   const [user, setUser] = useState<any>(null);
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [videos, setVideos] = useState<VideoData[]>([]);
@@ -140,7 +153,7 @@ export default function EmployerDashboard() {
   };
 
   const handleDeleteVideo = async (videoId: string) => {
-    if (!confirm('確定要刪除這個影片嗎？')) return;
+    if (!confirm(td.confirmDelete)) return;
 
     try {
       const supabase = createClient();
@@ -152,7 +165,7 @@ export default function EmployerDashboard() {
       if (error) throw error;
 
       setVideos(videos.filter(v => v.id !== videoId));
-      setSuccess('影片已刪除');
+      setSuccess(td.deleteSuccess);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message || '刪除失敗');
@@ -172,7 +185,7 @@ export default function EmployerDashboard() {
       setVideos(videos.map(v => 
         v.id === videoId ? { ...v, is_published: !currentStatus } : v
       ));
-      setSuccess(currentStatus ? '影片已下架' : '影片已發布');
+      setSuccess(currentStatus ? td.unpublishSuccess : td.publishSuccess);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message || '操作失敗');
@@ -198,7 +211,7 @@ export default function EmployerDashboard() {
               <div>
                 <Link href="/" className="block">
                   <h1 className="text-xl font-bold text-white hover:text-blue-400 transition-colors cursor-pointer">
-                    <span className="text-white">Job</span><span className="text-blue-400">beagle</span> 企業中心
+                    <span className="text-white">Job</span><span className="text-blue-400">beagle</span> {td.hub}
                   </h1>
                 </Link>
                 <p className="text-slate-400 text-sm">{company?.company_name}</p>
@@ -209,7 +222,7 @@ export default function EmployerDashboard() {
               className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-white transition-colors"
             >
               <LogOut className="w-4 h-4" />
-              <span>登出</span>
+              <span>{td.logout}</span>
             </button>
           </div>
         </div>
@@ -304,7 +317,7 @@ export default function EmployerDashboard() {
                         ? 'bg-green-500/20 text-green-300 border border-green-500/50' 
                         : 'bg-slate-500/20 text-slate-300 border border-slate-500/50'
                     }`}>
-                      {video.is_published ? '已發布' : '草稿'}
+                      {video.is_published ? td.published : td.draft}
                     </span>
                   </div>
                 </div>

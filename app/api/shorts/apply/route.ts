@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@/lib/supabase/server';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const RATE_LIMIT_PER_HOUR = 5; // max 5 applications from the same email per hour
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -32,55 +35,121 @@ export async function POST(request: NextRequest) {
       resumeUrl, resumeFileName,
     } = body;
 
-    if (!applicantName || !applicantEmail || !jobTitle) {
-      return NextResponse.json({ error: '缺少必要欄位' }, { status: 400 });
+    // ── Required field checks ───────────────────────────────────
+    if (!applicantName?.trim() || !applicantEmail?.trim() || !jobTitle?.trim()) {
+      return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
     }
 
-    // Save application to Supabase
+    // ── Email format validation ─────────────────────────────────
+    if (!EMAIL_RE.test(applicantEmail.trim())) {
+      return NextResponse.json(
+        { error: 'Invalid email address format.' },
+        { status: 400 }
+      );
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const { error: insertError } = await supabase.from('job_applications').insert({
-      job_id: jobId || null,
-      job_title: jobTitle,
-      company_name: companyName,
-      applicant_user_id: user?.id?.toString() || null,
-      applicant_name: applicantName,
-      applicant_email: applicantEmail,
-      applicant_phone: applicantPhone || null,
-      application_message: applicationMessage || null,
-      cover_letter: coverLetter || null,
-      cover_letter_url: coverLetterUrl || null,
-      cover_letter_file_name: coverLetterFileName || null,
-      resume_url: resumeUrl || null,
-      resume_file_name: resumeFileName || null,
-      status: 'unread',
-    });
-    if (insertError) {
-      console.error('[apply] DB insert error:', JSON.stringify(insertError));
-      return NextResponse.json({ success: false, error: '應徵失敗，請稍後再試' }, { status: 500 });
+
+    // ── P0: Duplicate application guard ────────────────────────
+    if (jobId) {
+      const { data: existing } = await supabase
+        .from('job_applications')
+        .select('id')
+        .eq('applicant_email', applicantEmail.trim().toLowerCase())
+        .eq('job_id', jobId)
+        .maybeSingle();
+
+      if (existing) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'You have already applied for this position.',
+            errorCode: 'DUPLICATE_APPLICATION',
+          },
+          { status: 409 }
+        );
+      }
     }
 
+    // ── P0: Rate limiting — max 5 applications per email per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: recentCount } = await supabase
+      .from('job_applications')
+      .select('*', { count: 'exact', head: true })
+      .eq('applicant_email', applicantEmail.trim().toLowerCase())
+      .gte('created_at', oneHourAgo);
+
+    if ((recentCount ?? 0) >= RATE_LIMIT_PER_HOUR) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `You have submitted too many applications. Please wait before trying again.`,
+          errorCode: 'RATE_LIMITED',
+        },
+        { status: 429 }
+      );
+    }
+
+    // ── Save application to Supabase ────────────────────────────
+    const { error: insertError } = await supabase.from('job_applications').insert({
+      job_id:                  jobId   || null,
+      job_title:               jobTitle,
+      company_name:            companyName,
+      applicant_user_id:       user?.id?.toString() ?? null,
+      applicant_name:          applicantName.trim(),
+      applicant_email:         applicantEmail.trim().toLowerCase(),
+      applicant_phone:         applicantPhone || null,
+      application_message:     applicationMessage || null,
+      cover_letter:            coverLetter     || null,
+      cover_letter_url:        coverLetterUrl  || null,
+      cover_letter_file_name:  coverLetterFileName || null,
+      resume_url:              resumeUrl       || null,
+      resume_file_name:        resumeFileName  || null,
+      status: 'unread',
+    });
+
+    if (insertError) {
+      console.error('[apply] DB insert error:', JSON.stringify(insertError));
+      // Handle unique-constraint violation (race condition)
+      if (insertError.code === '23505') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'You have already applied for this position.',
+            errorCode: 'DUPLICATE_APPLICATION',
+          },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json({ success: false, error: 'Application failed. Please try again.' }, { status: 500 });
+    }
+
+    // ── Email notification ──────────────────────────────────────
     if (!process.env.RESEND_API_KEY || !contactEmail) {
-      return NextResponse.json({ success: true, emailSent: false, reason: !contactEmail ? 'no_contact_email' : 'no_api_key' });
+      return NextResponse.json({
+        success: true,
+        emailSent: false,
+        reason: !contactEmail ? 'no_contact_email' : 'no_api_key',
+      });
     }
 
     const todayStr = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    // 所有使用者輸入先做 HTML 跳脫，防止郵件客戶端 XSS
     const safe = {
-      applicantName:        escapeHtml(applicantName || ''),
-      applicantEmail:       escapeHtml(applicantEmail || ''),
-      applicantPhone:       applicantPhone ? escapeHtml(applicantPhone) : null,
-      jobTitle:             escapeHtml(jobTitle || ''),
-      companyName:          escapeHtml(companyName || ''),
-      location:             location ? escapeHtml(location) : null,
-      salary:               salary ? escapeHtml(salary) : null,
-      applicationMessage:   escapeHtml(applicationMessage || ''),
-      coverLetter:          coverLetter ? escapeHtml(coverLetter) : null,
-      coverLetterUrl:       coverLetterUrl ? escapeHtml(coverLetterUrl) : null,
-      coverLetterFileName:  coverLetterFileName ? escapeHtml(coverLetterFileName) : null,
-      resumeUrl:            resumeUrl ? escapeHtml(resumeUrl) : null,
-      resumeFileName:       resumeFileName ? escapeHtml(resumeFileName) : null,
+      applicantName:       escapeHtml(applicantName || ''),
+      applicantEmail:      escapeHtml(applicantEmail || ''),
+      applicantPhone:      applicantPhone ? escapeHtml(applicantPhone) : null,
+      jobTitle:            escapeHtml(jobTitle || ''),
+      companyName:         escapeHtml(companyName || ''),
+      location:            location ? escapeHtml(location) : null,
+      salary:              salary   ? escapeHtml(salary)   : null,
+      applicationMessage:  escapeHtml(applicationMessage || ''),
+      coverLetter:         coverLetter        ? escapeHtml(coverLetter)        : null,
+      coverLetterUrl:      coverLetterUrl     ? escapeHtml(coverLetterUrl)     : null,
+      coverLetterFileName: coverLetterFileName ? escapeHtml(coverLetterFileName) : null,
+      resumeUrl:           resumeUrl          ? escapeHtml(resumeUrl)          : null,
+      resumeFileName:      resumeFileName     ? escapeHtml(resumeFileName)     : null,
     };
 
     const coverLetterBlock = (() => {
@@ -251,8 +320,9 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, emailSent: true });
-  } catch (e: any) {
-    console.error('Apply API error:', e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Unknown error';
+    console.error('Apply API error:', msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

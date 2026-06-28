@@ -12,7 +12,17 @@ import {
   Globe,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
+import { useLanguage } from '@/lib/language-context';
 import { JobData } from '@/types';
+
+const CP = {
+  en:     { posts: 'posts', share: 'Share link', copied: 'Link copied!', jobs: 'Job Openings', noJobs: 'No job openings at this time.' },
+  'zh-TW':{ posts: '則貼文', share: '分享檔案', copied: '已複製連結', jobs: '職缺', noJobs: '目前沒有公開職缺。' },
+  'zh-CN':{ posts: '帖子', share: '分享链接', copied: '已复制链接', jobs: '职位', noJobs: '目前没有公开职位。' },
+  es:     { posts: 'publicaciones', share: 'Compartir', copied: '¡Enlace copiado!', jobs: 'Empleos', noJobs: 'No hay empleos disponibles.' },
+  hi:     { posts: 'पोस्ट', share: 'शेयर करें', copied: 'लिंक कॉपी!', jobs: 'नौकरियां', noJobs: 'अभी कोई नौकरी उपलब्ध नहीं।' },
+  ar:     { posts: 'منشور', share: 'مشاركة', copied: 'تم النسخ!', jobs: 'الوظائف', noJobs: 'لا توجد وظائف متاحة حالياً.' },
+} as const;
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -28,6 +38,8 @@ interface CompanyProfilePublic {
 export default function CompanyPublicPage({ params }: PageProps) {
   const { id } = use(params);
   const companyName = decodeURIComponent(id);
+  const { language: appLanguage } = useLanguage();
+  const tc = CP[appLanguage] ?? CP.en;
 
   const [jobs, setJobs] = useState<JobData[]>([]);
   const [profile, setProfile] = useState<CompanyProfilePublic | null>(null);
@@ -145,7 +157,7 @@ export default function CompanyPublicPage({ params }: PageProps) {
                       onClick={handleCopyLink}
                       className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-zinc-900 border border-zinc-700 hover:bg-zinc-800"
                     >
-                      {copied ? '已複製連結' : '分享檔案'}
+                      {copied ? tc.copied : tc.share}
                     </button>
                   </div>
                   <h1 className="md:hidden text-lg font-semibold truncate mb-3">{displayName}</h1>
@@ -154,7 +166,7 @@ export default function CompanyPublicPage({ params }: PageProps) {
                   <div className="flex gap-6 md:gap-8 mb-4 text-center md:text-left">
                     <div>
                       <span className="font-semibold text-base">{postCount}</span>
-                      <span className="text-zinc-500 text-sm ml-1">則貼文</span>
+                      <span className="text-zinc-500 text-sm ml-1">{tc.posts}</span>
                     </div>
                   </div>
 
@@ -201,7 +213,7 @@ export default function CompanyPublicPage({ params }: PageProps) {
                 onClick={handleCopyLink}
                 className="md:hidden w-full mt-4 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-sm font-semibold"
               >
-                分享此企業主頁
+                {tc.share}
               </button>
             </section>
 
@@ -220,7 +232,7 @@ export default function CompanyPublicPage({ params }: PageProps) {
                 <div className="w-16 h-16 rounded-full border border-zinc-800 flex items-center justify-center mb-4">
                   <Building2 className="w-8 h-8 text-zinc-600" />
                 </div>
-                <p className="text-zinc-500 text-sm">尚無公開職缺影片</p>
+                <p className="text-zinc-500 text-sm">{tc.noJobs}</p>
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-[2px] bg-zinc-900">
@@ -291,20 +303,20 @@ export default function CompanyPublicPage({ params }: PageProps) {
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-sm font-semibold"
                   >
                     <ExternalLink size={16} />
-                    前往企業申請頁
+                    {appLanguage === 'zh-TW' || appLanguage === 'zh-CN' ? '前往企業申請頁' : 'Apply Now'}
                   </a>
                 ) : selectedVideo.contactEmail ? (
                   <a
-                    href={`mailto:${selectedVideo.contactEmail}?subject=應徵 ${selectedVideo.jobTitle}`}
+                    href={`mailto:${selectedVideo.contactEmail}?subject=${encodeURIComponent(`${appLanguage === 'zh-TW' || appLanguage === 'zh-CN' ? '應徵' : 'Applying for'} ${selectedVideo.jobTitle}`)}`}
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-sm font-semibold"
                   >
                     <Mail size={16} />
-                    一鍵申請
+                    {appLanguage === 'zh-TW' || appLanguage === 'zh-CN' ? '一鍵申請' : 'Quick Apply'}
                   </a>
                 ) : (
                   <div className="flex-1 flex items-center justify-center gap-2 py-3 bg-zinc-800 rounded-xl text-zinc-500 text-sm">
                     <Briefcase size={16} />
-                    洽詢中
+                    {appLanguage === 'zh-TW' || appLanguage === 'zh-CN' ? '洽詢中' : 'Inquire'}
                   </div>
                 )}
               </div>
@@ -312,7 +324,7 @@ export default function CompanyPublicPage({ params }: PageProps) {
                 href="/shorts"
                 className="block text-center text-sm text-blue-400 py-2"
               >
-                在 Jobbeagle Shorts 看更多
+                {appLanguage === 'zh-TW' || appLanguage === 'zh-CN' ? '在 Jobbeagle Shorts 看更多' : 'Explore more on Jobbeagle Shorts'}
               </Link>
             </div>
           </div>
