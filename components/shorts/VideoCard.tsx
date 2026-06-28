@@ -36,7 +36,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [likeCount, setLikeCount] = useState(0);
   const [followed, setFollowed] = useState(isFollowed);
   const [bookmarked, setBookmarked] = useState(isBookmarked);
-  const [isMuted, setIsMuted] = useState(true); // start muted — required for browser autoplay policy
+  // Read localStorage sound preference; default muted (required for browser autoplay policy)
+  const [isMuted, setIsMuted] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    return localStorage.getItem('jobbeagle_sound_pref') !== 'on';
+  });
+  const [showSoundHint, setShowSoundHint] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [applyState, setApplyState] = useState<'idle' | 'step1' | 'step2' | 'submitting' | 'success'>('idle');
   const [applyEmailSent, setApplyEmailSent] = useState(true);
@@ -118,6 +123,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
         video.pause();
     }
   }, [isActive, job.id, videoUrl]);
+
+  // Show sound hint on first-ever active video (only if no preference set yet)
+  useEffect(() => {
+    if (!isActive) { setShowSoundHint(false); return; }
+    if (isMuted && !localStorage.getItem('jobbeagle_sound_pref')) {
+      setShowSoundHint(true);
+      const t = setTimeout(() => setShowSoundHint(false), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [isActive]);
 
   // 觀看計數：active 超過 3 秒才算一次（debounce，避免快速滑過被計算）
   useEffect(() => {
@@ -207,6 +222,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
     e.stopPropagation();
     const newMuted = !isMuted;
     setIsMuted(newMuted);
+    setShowSoundHint(false);
+    // Persist preference so subsequent videos start at user's chosen state
+    localStorage.setItem('jobbeagle_sound_pref', newMuted ? 'off' : 'on');
 
     const sourceType = job.videoSourceType ?? 'upload';
 
@@ -748,6 +766,19 @@ const VideoCard: React.FC<VideoCardProps> = ({
         })()}
         
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 pointer-events-none z-10"></div>
+
+        {/* Sound hint — appears briefly when first video plays muted and user has never set a preference */}
+        {showSoundHint && (
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none animate-fade-in"
+            aria-hidden
+          >
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-black/70 backdrop-blur-md border border-white/20 text-white text-sm font-semibold shadow-xl">
+              <VolumeX size={18} className="text-white/80" />
+              <span>Tap 🔊 to enable sound</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* --- Right Sidebar Actions --- */}

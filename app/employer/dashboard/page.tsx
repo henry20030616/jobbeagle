@@ -865,7 +865,7 @@ function UploadVideoModal({
   );
 }
 
-// Edit Video Modal
+// Edit Video Modal — full fields including apply_url / apply_method
 function EditVideoModal({
   video,
   onClose,
@@ -875,6 +875,14 @@ function EditVideoModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
+  // Determine initial apply method
+  const getInitialApplyMethod = (): 'email' | 'url' | 'none' => {
+    if ((video as any).apply_url) return 'url';
+    if (video.contact_email) return 'email';
+    return 'none';
+  };
+
+  const [applyMethod, setApplyMethod] = useState<'email' | 'url' | 'none'>(getInitialApplyMethod());
   const [formData, setFormData] = useState({
     company_name: video.company_name,
     job_title: video.job_title,
@@ -886,6 +894,7 @@ function EditVideoModal({
     logo_url: video.logo_url || '',
     tags: (video.tags || []).join(', '),
     contact_email: video.contact_email || '',
+    apply_url: (video as any).apply_url || '',
   });
   const [uploading, setUploading] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -895,7 +904,7 @@ function EditVideoModal({
   const [logoUploadSuccess, setLogoUploadSuccess] = useState(false);
 
   const BUCKET = 'shorts-videos';
-  const MAX_VIDEO_MB = 50;
+  const MAX_VIDEO_MB = 100;
   const MAX_LOGO_MB = 5;
 
   const getUploadError = (err: unknown): string => {
@@ -921,51 +930,31 @@ function EditVideoModal({
   };
 
   const handleLogoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setError(null);
-    setLogoUploadSuccess(false);
-    if (file.size > MAX_LOGO_MB * 1024 * 1024) {
-      setError(`Logo 請勿超過 ${MAX_LOGO_MB}MB`);
-      return;
-    }
+    const file = e.target.files?.[0]; if (!file) return;
+    setError(null); setLogoUploadSuccess(false);
+    if (file.size > MAX_LOGO_MB * 1024 * 1024) { setError(`Logo 請勿超過 ${MAX_LOGO_MB}MB`); return; }
     setUploadingLogo(true);
     try {
       const url = await uploadToSupabase(file, 'logos');
       setFormData(prev => ({ ...prev, logo_url: url }));
       setLogoUploadSuccess(true);
       setTimeout(() => setLogoUploadSuccess(false), 3000);
-    } catch (err) {
-      console.error('[Edit] Logo upload error:', err);
-      setError('Logo 上傳失敗：' + getUploadError(err));
-    } finally {
-      setUploadingLogo(false);
-      e.target.value = '';
-    }
+    } catch (err) { setError('Logo 上傳失敗：' + getUploadError(err)); }
+    finally { setUploadingLogo(false); e.target.value = ''; }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setError(null);
-    setVideoUploadSuccess(false);
-    if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
-      setError(`影片請勿超過 ${MAX_VIDEO_MB}MB`);
-      return;
-    }
+    const file = e.target.files?.[0]; if (!file) return;
+    setError(null); setVideoUploadSuccess(false);
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) { setError(`影片請勿超過 ${MAX_VIDEO_MB}MB`); return; }
     setUploadingFile(true);
     try {
       const url = await uploadToSupabase(file, 'video');
       setFormData(prev => ({ ...prev, video_url: url }));
       setVideoUploadSuccess(true);
       setTimeout(() => setVideoUploadSuccess(false), 3000);
-    } catch (err) {
-      console.error('[Edit] Video upload error:', err);
-      setError('影片上傳失敗：' + getUploadError(err));
-    } finally {
-      setUploadingFile(false);
-      e.target.value = '';
-    }
+    } catch (err) { setError('影片上傳失敗：' + getUploadError(err)); }
+    finally { setUploadingFile(false); e.target.value = ''; }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -975,190 +964,178 @@ function EditVideoModal({
       setError('請填寫職位名稱、描述與影片連結');
       return;
     }
+    if (formData.description.trim().length < 50) {
+      setError('職位描述至少需要 50 個字元（AI 匹配分析需要足夠的職位資訊）');
+      return;
+    }
+    if (applyMethod === 'email' && formData.contact_email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact_email.trim())) {
+      setError('請輸入有效的電子信箱格式');
+      return;
+    }
+    if (applyMethod === 'url' && formData.apply_url?.trim()) {
+      try { new URL(formData.apply_url.trim()); } catch { setError('請輸入有效的申請網址（需包含 https://）'); return; }
+    }
     try {
       setUploading(true);
       const supabase = createClient();
       const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(Boolean);
-      const { data, error } = await supabase
-        .from('shorts_videos')
-        .update({
-          job_title: formData.job_title.trim(),
-          company_name: formData.company_name.trim(),
-          location: formData.location?.trim() || null,
-          salary: formData.salary?.trim() || null,
-          description: formData.description.trim(),
-          video_url: formData.video_url.trim(),
-          thumbnail_url: formData.thumbnail_url?.trim() || null,
-          logo_url: formData.logo_url?.trim() || null,
-          tags: tagsArray,
-          contact_email: formData.contact_email?.trim() || null,
-        })
-        .eq('id', video.id)
-        .select('id')
-        .single();
-      if (error) {
-        console.error('[Edit] Save error:', error);
-        setError('儲存失敗：' + (error.message || '請稍後再試'));
-        return;
-      }
-      if (!data) {
-        setError('儲存失敗：無法更新（請確認已登入且此影片屬於您的公司）');
-        return;
-      }
+      const updatePayload: Record<string, any> = {
+        job_title: formData.job_title.trim(),
+        company_name: formData.company_name.trim(),
+        location: formData.location?.trim() || null,
+        salary: formData.salary?.trim() || null,
+        description: formData.description.trim(),
+        video_url: formData.video_url.trim(),
+        thumbnail_url: formData.thumbnail_url?.trim() || null,
+        logo_url: formData.logo_url?.trim() || null,
+        tags: tagsArray,
+        contact_email: applyMethod === 'email' ? (formData.contact_email?.trim() || null) : null,
+        apply_url: applyMethod === 'url' ? (formData.apply_url?.trim() || null) : null,
+      };
+      const { data, error } = await supabase.from('shorts_videos').update(updatePayload).eq('id', video.id).select('id').single();
+      if (error) { setError('儲存失敗：' + (error.message || '請稍後再試')); return; }
+      if (!data) { setError('儲存失敗：無法更新（請確認已登入且此影片屬於您的公司）'); return; }
       onSuccess();
       onClose();
     } catch (err) {
-      const msg = getUploadError(err);
-      console.error('[Edit] Save exception:', err);
-      setError('儲存失敗：' + msg);
+      setError('儲存失敗：' + getUploadError(err));
     } finally {
       setUploading(false);
     }
   };
 
+  const descLen = formData.description.trim().length;
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl">
         <div className="p-6">
+          {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">編輯影片</h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
-              <X className="w-6 h-6" />
+            <div>
+              <h2 className="text-xl font-bold text-white">編輯影片資訊</h2>
+              <p className="text-slate-400 text-xs mt-0.5">{video.job_title}</p>
+            </div>
+            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-slate-700">
+              <X className="w-5 h-5" />
             </button>
           </div>
+
           {error && (
-            <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-red-400" />
+            <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-xl flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
               <p className="text-red-200 text-sm">{error}</p>
             </div>
           )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">公司名稱 <span className="text-red-400">*</span></label>
-              <input
-                type="text"
-                value={formData.company_name}
-                onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">職位名稱 <span className="text-red-400">*</span></label>
-              <input
-                type="text"
-                value={formData.job_title}
-                onChange={(e) => setFormData({ ...formData, job_title: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+            {/* Section: Basic Info */}
+            <div className="rounded-xl bg-slate-700/40 border border-slate-600/50 p-4 space-y-4">
+              <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider">基本資訊</p>
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">地點</label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                />
+                <label className="block text-slate-300 text-sm font-medium mb-1.5">公司名稱 <span className="text-red-400">*</span></label>
+                <input type="text" value={formData.company_name} onChange={(e) => setFormData({ ...formData, company_name: e.target.value })} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" required />
               </div>
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">薪資</label>
-                <input
-                  type="text"
-                  value={formData.salary}
-                  onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                />
+                <label className="block text-slate-300 text-sm font-medium mb-1.5">職位名稱 <span className="text-red-400">*</span></label>
+                <input type="text" value={formData.job_title} onChange={(e) => setFormData({ ...formData, job_title: e.target.value })} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" required />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 text-sm font-medium mb-1.5">地點</label>
+                  <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" placeholder="Remote / Taipei" />
+                </div>
+                <div>
+                  <label className="block text-slate-300 text-sm font-medium mb-1.5">薪資</label>
+                  <input type="text" value={formData.salary} onChange={(e) => setFormData({ ...formData, salary: e.target.value })} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" placeholder="USD 150k–220k / yr" />
+                </div>
               </div>
             </div>
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">職位描述 <span className="text-red-400">*</span></label>
+
+            {/* Section: Job Description */}
+            <div className="rounded-xl bg-slate-700/40 border border-slate-600/50 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider">職位描述 <span className="text-red-400">*</span></p>
+                <span className={`text-xs font-medium ${descLen >= 50 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {descLen < 50 ? `還需 ${50 - descLen} 字` : `${descLen} 字 ✓`}
+                </span>
+              </div>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={4}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                required
+                rows={5}
+                className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white text-sm focus:outline-none resize-none leading-relaxed ${descLen < 50 && descLen > 0 ? 'border-amber-500/60 focus:border-amber-400' : 'border-slate-600 focus:border-blue-500'}`}
+                placeholder="詳細描述職位要求、職責與技能要求... （至少 50 字，AI 匹配分析需要足夠的職位資訊）"
               />
+              <p className="text-slate-500 text-xs flex items-center gap-1">✨ 描述越詳細，AI 匹配分析越準確</p>
             </div>
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">影片 <span className="text-red-400">*</span></label>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <input type="file" accept="video/mp4,video/webm" onChange={handleFileChange} disabled={uploadingFile} className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-600 file:text-white" />
-                  {uploadingFile && <Loader2 className="w-5 h-5 animate-spin text-blue-400 shrink-0" />}
-                  {videoUploadSuccess && <span className="text-emerald-400 text-sm shrink-0">✓ 影片已上傳</span>}
-                </div>
-                <input
-                  type="url"
-                  value={formData.video_url}
-                  onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                />
+
+            {/* Section: Apply Method */}
+            <div className="rounded-xl bg-slate-700/40 border border-slate-600/50 p-4 space-y-3">
+              <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider">申請方式</p>
+              <div className="flex gap-2">
+                {(['email', 'url', 'none'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setApplyMethod(m)}
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${applyMethod === m ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
+                  >
+                    {m === 'email' ? '📧 Email' : m === 'url' ? '🔗 外部連結' : '🚫 暫不開放'}
+                  </button>
+                ))}
               </div>
+              {applyMethod === 'email' && (
+                <input type="email" value={formData.contact_email} onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })} placeholder="careers@company.com" className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" />
+              )}
+              {applyMethod === 'url' && (
+                <input type="url" value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://company.com/careers/apply" className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" />
+              )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
+
+            {/* Section: Video + Media */}
+            <div className="rounded-xl bg-slate-700/40 border border-slate-600/50 p-4 space-y-3">
+              <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider">影片與媒體</p>
               <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">縮圖連結</label>
-                <input
-                  type="url"
-                  value={formData.thumbnail_url}
-                  onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-300 text-sm font-medium mb-2">Logo</label>
+                <label className="block text-slate-300 text-sm font-medium mb-1.5">影片 <span className="text-red-400">*</span></label>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" onChange={handleLogoFileChange} disabled={uploadingLogo} className="flex-1 min-w-0 text-sm text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-emerald-600 file:text-white" />
-                    {uploadingLogo && <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />}
-                    {logoUploadSuccess && <span className="text-emerald-400 text-sm shrink-0">✓ Logo 已上傳</span>}
+                    <input type="file" accept="video/mp4,video/webm" onChange={handleFileChange} disabled={uploadingFile} className="flex-1 min-w-0 text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white file:text-xs" />
+                    {uploadingFile && <Loader2 className="w-4 h-4 animate-spin text-blue-400 shrink-0" />}
+                    {videoUploadSuccess && <span className="text-emerald-400 text-xs shrink-0">✓ 已上傳</span>}
                   </div>
-                  <input
-                    type="url"
-                    value={formData.logo_url}
-                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                  />
+                  <input type="url" value={formData.video_url} onChange={(e) => setFormData({ ...formData, video_url: e.target.value })} placeholder="或直接輸入影片 URL" className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 text-sm font-medium mb-1.5">標籤（逗號分隔）</label>
+                  <input type="text" value={formData.tags} onChange={(e) => setFormData({ ...formData, tags: e.target.value })} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500" placeholder="AI, React, Remote" />
+                </div>
+                <div>
+                  <label className="block text-slate-300 text-sm font-medium mb-1.5">Logo</label>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <input type="file" accept="image/*" onChange={handleLogoFileChange} disabled={uploadingLogo} className="flex-1 min-w-0 text-[11px] text-slate-400 file:mr-1.5 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-600 file:text-white file:text-xs" />
+                      {uploadingLogo && <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400 shrink-0" />}
+                      {logoUploadSuccess && <span className="text-emerald-400 text-xs shrink-0">✓</span>}
+                    </div>
+                    <input type="url" value={formData.logo_url} onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })} placeholder="或貼上 Logo URL" className="w-full px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded-lg text-white text-xs focus:outline-none focus:border-blue-500" />
+                  </div>
                 </div>
               </div>
             </div>
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">標籤（逗號分隔）</label>
-              <input
-                type="text"
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">聯絡信箱</label>
-              <input
-                type="email"
-                value={formData.contact_email}
-                onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-              />
-            </div>
-            {error && (
-              <div className="p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-center gap-2" role="alert">
-                <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-                <p className="text-red-200 text-sm">{error}</p>
-              </div>
-            )}
-            <div className="flex items-center gap-4 pt-4">
+
+            {/* Actions */}
+            <div className="flex items-center gap-3 pt-2">
               <button
                 type="submit"
-                disabled={uploading}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium disabled:opacity-50"
+                disabled={uploading || descLen < 50}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                {uploading ? <><Loader2 className="w-5 h-5 animate-spin" />儲存中...</> : <>儲存修改</>}
+                {uploading ? <><Loader2 className="w-4 h-4 animate-spin" />儲存中...</> : '儲存修改'}
               </button>
-              <button type="button" onClick={onClose} className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">
+              <button type="button" onClick={onClose} className="px-5 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold transition-colors">
                 取消
               </button>
             </div>

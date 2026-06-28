@@ -39,6 +39,12 @@ export async function POST(request: NextRequest) {
     if (!video_url?.trim()) {
       return NextResponse.json({ error: 'Video URL is required.' }, { status: 400 });
     }
+    if (!description?.trim() || description.trim().length < 50) {
+      return NextResponse.json(
+        { error: 'Job description is required (minimum 50 characters). This helps AI analyze candidate match scores.' },
+        { status: 400 }
+      );
+    }
 
     // ── Contact method: email OR apply_url — at least one recommended,
     //    but both are allowed to be absent (applyMethod = 'none').
