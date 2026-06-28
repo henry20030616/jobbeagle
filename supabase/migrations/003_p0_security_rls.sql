@@ -78,9 +78,18 @@ CREATE POLICY "Employers can update application status"
   );
 
 -- ────────────────────────────────────────────────────────────
--- 4. job_applications: unique index to prevent duplicates
---    (one email per job; NULL job_id is excluded)
+-- 4. job_applications: deduplicate then add unique index
 -- ────────────────────────────────────────────────────────────
+
+-- Remove duplicate rows keeping only the earliest application
+-- per (applicant_email, job_id) pair.
+DELETE FROM job_applications a
+USING job_applications b
+WHERE a.job_id IS NOT NULL
+  AND a.applicant_email = b.applicant_email
+  AND a.job_id = b.job_id
+  AND a.created_at > b.created_at;
+
 DROP INDEX IF EXISTS unique_application_per_email_job;
 CREATE UNIQUE INDEX unique_application_per_email_job
   ON job_applications (applicant_email, job_id)
