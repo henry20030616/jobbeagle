@@ -65,7 +65,7 @@ interface AppliedJobRow {
   created_at: string;
 }
 
-const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) => {
+const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<ProfileMode>('personal');
@@ -102,7 +102,50 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'zh' }) 
   const [videoLikes, setVideoLikes] = useState<Record<string, number>>({});
   const [togglingVideo, setTogglingVideo] = useState<string | null>(null);
 
-  const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
+  const profileTranslations: Record<string, Partial<Record<AppLanguage, string>>> = {
+    Profile: { 'zh-TW': '個人頁面', 'zh-CN': '个人页面', es: 'Perfil', hi: 'प्रोफ़ाइल', ar: 'الملف الشخصي' },
+    'Login to continue': { 'zh-TW': '登入以使用個人功能', 'zh-CN': '登录以使用个人功能', es: 'Inicia sesión para continuar', hi: 'जारी रखने के लिए लॉग इन करें', ar: 'سجّل الدخول للمتابعة' },
+    'Save jobs, follow companies,\nupload job videos': { 'zh-TW': '儲存職缺、追蹤企業、管理履歷\n企業可上傳職缺影片', 'zh-CN': '收藏职位、关注企业、管理简历\n企业可上传职位视频', es: 'Guarda empleos, sigue empresas\ny sube videos de empleo', hi: 'नौकरियां सहेजें, कंपनियों को फॉलो करें\nऔर जॉब वीडियो अपलोड करें', ar: 'احفظ الوظائف وتابع الشركات\nوارفع فيديوهات التوظيف' },
+    'Talent Login': { 'zh-TW': '人才登入', 'zh-CN': '人才登录', es: 'Acceso candidato', hi: 'उम्मीदवार लॉगिन', ar: 'دخول الباحث عن عمل' },
+    'Employer Login': { 'zh-TW': '企業登入', 'zh-CN': '企业登录', es: 'Acceso empresa', hi: 'नियोक्ता लॉगिन', ar: 'دخول صاحب العمل' },
+    'Save jobs & follow companies': { 'zh-TW': '儲存職缺・追蹤企業・管理履歷', 'zh-CN': '收藏职位・关注企业・管理简历', es: 'Guarda empleos y sigue empresas', hi: 'नौकरियां सहेजें और कंपनियों को फॉलो करें', ar: 'احفظ الوظائف وتابع الشركات' },
+    'Post jobs & manage applicants': { 'zh-TW': '發布職缺影片・管理申請', 'zh-CN': '发布职位视频・管理申请', es: 'Publica empleos y gestiona candidatos', hi: 'जॉब पोस्ट करें और आवेदकों को प्रबंधित करें', ar: 'انشر الوظائف وأدر المتقدمين' },
+    'Company Dashboard': { 'zh-TW': '企業儀表板', 'zh-CN': '企业仪表板', es: 'Panel de empresa', hi: 'कंपनी डैशबोर्ड', ar: 'لوحة الشركة' },
+    'Private — only you. Public profile is separate.': { 'zh-TW': '私人後台，僅本人可見。對外請使用「公開企業主頁」。', 'zh-CN': '私人后台，仅本人可见。对外请使用“公开企业主页”。', es: 'Privado: solo tú. El perfil público está separado.', hi: 'निजी: केवल आप। सार्वजनिक प्रोफ़ाइल अलग है।', ar: 'خاص بك فقط. الملف العام منفصل.' },
+    Me: { 'zh-TW': '個人', 'zh-CN': '个人', es: 'Yo', hi: 'मैं', ar: 'أنا' },
+    Company: { 'zh-TW': '企業', 'zh-CN': '企业', es: 'Empresa', hi: 'कंपनी', ar: 'الشركة' },
+    User: { 'zh-TW': '使用者', 'zh-CN': '用户', es: 'Usuario', hi: 'उपयोगकर्ता', ar: 'المستخدم' },
+    Saved: { 'zh-TW': '已儲存', 'zh-CN': '已收藏', es: 'Guardado', hi: 'सहेजा गया', ar: 'محفوظ' },
+    Following: { 'zh-TW': '追蹤', 'zh-CN': '关注', es: 'Siguiendo', hi: 'अनुसरण', ar: 'متابعة' },
+    Resumes: { 'zh-TW': '我的履歷', 'zh-CN': '我的简历', es: 'CV', hi: 'CV', ar: 'السير الذاتية' },
+    Applied: { 'zh-TW': '投遞紀錄', 'zh-CN': '投递记录', es: 'Postulaciones', hi: 'आवेदन', ar: 'الطلبات' },
+    'Create company page & post jobs': { 'zh-TW': '建立企業頁面，開始發布職缺', 'zh-CN': '建立企业页面，开始发布职位', es: 'Crea una página de empresa y publica empleos', hi: 'कंपनी पेज बनाएं और नौकरियां पोस्ट करें', ar: 'أنشئ صفحة شركة وانشر وظائف' },
+    'No resumes yet. Upload in AI Match Analysis (max 3).': { 'zh-TW': '尚無履歷。在 Jobbeagle 分析時上傳即可自動儲存（最多 3 份）。', 'zh-CN': '暂无简历。在 Jobbeagle 分析时上传即可自动保存（最多 3 份）。', es: 'Aún no hay CV. Súbelo en el análisis IA (máx. 3).', hi: 'अभी कोई CV नहीं। AI विश्लेषण में अपलोड करें (अधिकतम 3)।', ar: 'لا توجد سير ذاتية بعد. ارفعها في تحليل الذكاء الاصطناعي (حتى 3).' },
+    'No saved jobs. Tap the bookmark icon on videos.': { 'zh-TW': '尚無儲存職缺。點擊影片右側書籤儲存。', 'zh-CN': '暂无收藏职位。点击视频右侧书签收藏。', es: 'No hay empleos guardados. Toca el marcador en los videos.', hi: 'कोई सहेजी गई नौकरी नहीं। वीडियो पर बुकमार्क टैप करें।', ar: 'لا توجد وظائف محفوظة. اضغط علامة الحفظ على الفيديوهات.' },
+    'Not following any companies yet.': { 'zh-TW': '尚未追蹤企業。點擊影片右側追蹤按鈕。', 'zh-CN': '暂未关注企业。点击视频右侧关注按钮。', es: 'Aún no sigues ninguna empresa.', hi: 'आप अभी किसी कंपनी को फॉलो नहीं कर रहे हैं।', ar: 'لا تتابع أي شركات بعد.' },
+    'No applications submitted yet.': { 'zh-TW': '尚未投遞任何職缺。', 'zh-CN': '尚未投递任何职位。', es: 'Aún no has enviado postulaciones.', hi: 'अभी कोई आवेदन जमा नहीं किया गया।', ar: 'لم ترسل أي طلبات بعد.' },
+    Unread: { 'zh-TW': '未讀取', 'zh-CN': '未读取', es: 'Sin leer', hi: 'अपठित', ar: 'غير مقروء' },
+    Read: { 'zh-TW': '已讀取', 'zh-CN': '已读取', es: 'Leído', hi: 'पढ़ा गया', ar: 'مقروء' },
+    'Edit Company Profile': { 'zh-TW': '編輯企業資料', 'zh-CN': '编辑企业资料', es: 'Editar perfil de empresa', hi: 'कंपनी प्रोफ़ाइल संपादित करें', ar: 'تعديل ملف الشركة' },
+    Cancel: { 'zh-TW': '取消', 'zh-CN': '取消', es: 'Cancelar', hi: 'रद्द करें', ar: 'إلغاء' },
+    Save: { 'zh-TW': '儲存', 'zh-CN': '保存', es: 'Guardar', hi: 'सहेजें', ar: 'حفظ' },
+    Videos: { 'zh-TW': '職缺影片', 'zh-CN': '职位视频', es: 'Videos', hi: 'वीडियो', ar: 'الفيديوهات' },
+    Followers: { 'zh-TW': '追蹤者', 'zh-CN': '关注者', es: 'Seguidores', hi: 'फॉलोअर', ar: 'المتابعون' },
+    Likes: { 'zh-TW': '總愛心', 'zh-CN': '总点赞', es: 'Me gusta', hi: 'लाइक', ar: 'الإعجابات' },
+    Applications: { 'zh-TW': '收到申請', 'zh-CN': '收到申请', es: 'Postulaciones', hi: 'आवेदन', ar: 'الطلبات' },
+    'Applicants & resumes': { 'zh-TW': '應徵者與履歷', 'zh-CN': '应聘者与简历', es: 'Candidatos y CV', hi: 'आवेदक और CV', ar: 'المتقدمون والسير الذاتية' },
+    '+ Upload New Job Video': { 'zh-TW': '+ 上傳新職缺影片', 'zh-CN': '+ 上传新职位视频', es: '+ Subir nuevo video de empleo', hi: '+ नया जॉब वीडियो अपलोड करें', ar: '+ رفع فيديو وظيفة جديد' },
+    'My job videos': { 'zh-TW': '我的職缺影片', 'zh-CN': '我的职位视频', es: 'Mis videos de empleo', hi: 'मेरे जॉब वीडियो', ar: 'فيديوهات الوظائف الخاصة بي' },
+    Published: { 'zh-TW': '已發布', 'zh-CN': '已发布', es: 'Publicado', hi: 'प्रकाशित', ar: 'منشور' },
+    Drafts: { 'zh-TW': '草稿', 'zh-CN': '草稿', es: 'Borradores', hi: 'ड्राफ्ट', ar: 'مسودات' },
+  };
+  const t = (zh: string, en: string) => {
+    const entry = profileTranslations[en];
+    if (entry?.[language]) return entry[language]!;
+    if (language === 'zh-TW') return zh;
+    if (language === 'zh-CN') return zh;
+    return en;
+  };
   const fmtDate = (d: string) => new Date(d).toLocaleDateString((language === 'zh-TW' || language === 'zh-CN') ? 'zh-TW' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   useEffect(() => {

@@ -128,7 +128,7 @@ export interface ResumeInput {
 export interface UserInputs {
   jobDescription: string;
   resume: ResumeInput;
-  language?: 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'fr';
+  language?: 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
 }
 
 // Jobbeagle Shorts types

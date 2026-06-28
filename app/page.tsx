@@ -90,14 +90,14 @@ const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
     { minProgress: 85, label: '🎯 साक्षात्कार जानकारी शोध किया जा रहा है...' },
     { minProgress: 93, label: '📊 रणनीतिक रिपोर्ट संकलित की जा रही है...' },
   ],
-  fr: [
-    { minProgress: 0,  label: '🔍 Lecture de la description du poste...' },
-    { minProgress: 15, label: '📋 Analyse des exigences du poste...' },
-    { minProgress: 35, label: '🌐 Collecte des données de marché...' },
-    { minProgress: 55, label: '💰 Comparaison des données salariales...' },
-    { minProgress: 72, label: '🔎 Évaluation de la correspondance CV...' },
-    { minProgress: 85, label: '🎯 Recherche des perspectives d\'entretien...' },
-    { minProgress: 93, label: '📊 Compilation du rapport stratégique...' },
+  ar: [
+    { minProgress: 0,  label: '🔍 قراءة وصف الوظيفة...' },
+    { minProgress: 15, label: '📋 تحليل متطلبات الوظيفة...' },
+    { minProgress: 35, label: '🌐 جمع معلومات السوق...' },
+    { minProgress: 55, label: '💰 مقارنة بيانات الرواتب...' },
+    { minProgress: 72, label: '🔎 تقييم توافق السيرة الذاتية...' },
+    { minProgress: 85, label: '🎯 البحث عن معلومات المقابلات...' },
+    { minProgress: 93, label: '📊 إعداد التقرير الاستراتيجي...' },
   ],
 };
 
@@ -269,7 +269,7 @@ export default function Home() {
     en: { backToHome: 'Back to Home', analysisFailed: 'Analysis Failed', suggestions: 'Suggestions', checkConsole: 'Check browser console (F12) for detailed error information', retryLater: 'Retry later, may be a temporary Gemini API issue', checkApiKey: 'If it persists, check if the API Key is correct', history: 'History', historyTitle: 'Analysis History', noHistory: 'No history yet', unknownJob: 'Unknown Job', autoSaved: 'Records are saved after each analysis', rateTitle: '⏳ Daily Free Limit Reached' },
     es: { backToHome: 'Volver al Inicio', analysisFailed: 'Análisis Fallido', suggestions: 'Sugerencias', checkConsole: 'Revisa la consola del navegador (F12) para ver el error detallado', retryLater: 'Reintenta más tarde, puede ser un problema temporal de la API de Gemini', checkApiKey: 'Si persiste, verifica si la clave API es correcta', history: 'Historial', historyTitle: 'Historial de Análisis', noHistory: 'Sin historial aún', unknownJob: 'Trabajo Desconocido', autoSaved: 'Los registros se guardan después de cada análisis', rateTitle: '⏳ Límite Diario Alcanzado' },
     hi: { backToHome: 'होम पर वापस जाएं', analysisFailed: 'विश्लेषण विफल', suggestions: 'सुझाव', checkConsole: 'विस्तृत त्रुटि के लिए ब्राउज़र कंसोल (F12) जांचें', retryLater: 'बाद में पुनः प्रयास करें, Gemini API की अस्थायी समस्या हो सकती है', checkApiKey: 'यदि जारी रहे, तो API Key सही है या नहीं जांचें', history: 'इतिहास', historyTitle: 'विश्लेषण इतिहास', noHistory: 'अभी तक कोई इतिहास नहीं', unknownJob: 'अज्ञात नौकरी', autoSaved: 'प्रत्येक विश्लेषण के बाद रिकॉर्ड सहेजे जाते हैं', rateTitle: '⏳ दैनिक मुफ़्त सीमा समाप्त' },
-    fr: { backToHome: "Retour à l'Accueil", analysisFailed: 'Analyse Échouée', suggestions: 'Suggestions', checkConsole: 'Vérifiez la console du navigateur (F12) pour les détails', retryLater: "Réessayez plus tard, peut-être un problème temporaire de l'API Gemini", checkApiKey: "Si cela persiste, vérifiez si la clé API est correcte", history: 'Historique', historyTitle: "Historique d'Analyse", noHistory: 'Aucun historique pour l\'instant', unknownJob: 'Poste Inconnu', autoSaved: 'Les enregistrements sont sauvegardés après chaque analyse', rateTitle: '⏳ Limite Quotidienne Atteinte' },
+    ar: { backToHome: 'العودة إلى الرئيسية', analysisFailed: 'فشل التحليل', suggestions: 'اقتراحات', checkConsole: 'تحقق من وحدة تحكم المتصفح (F12) لمعرفة تفاصيل الخطأ', retryLater: 'حاول لاحقًا، قد تكون المشكلة مؤقتة في Gemini API', checkApiKey: 'إذا استمرت المشكلة، تحقق من صحة مفتاح API', history: 'السجل', historyTitle: 'سجل التحليلات', noHistory: 'لا يوجد سجل بعد', unknownJob: 'وظيفة غير معروفة', autoSaved: 'يتم حفظ السجلات بعد كل تحليل', rateTitle: '⏳ تم بلوغ الحد المجاني اليومي' },
   };
 
   const t = translations[language] ?? translations['en'];
@@ -343,7 +343,7 @@ export default function Home() {
                               {item.job_title || t.unknownJob}
                             </p>
                             <p className="text-slate-500 text-xs mt-1">
-                              {new Date(item.created_at).toLocaleDateString(language === 'zh-TW' || language === 'zh-CN' ? 'zh-TW' : language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
+                              {new Date(item.created_at).toLocaleDateString(language === 'zh-TW' || language === 'zh-CN' ? 'zh-TW' : language === 'es' ? 'es-ES' : language === 'hi' ? 'hi-IN' : language === 'ar' ? 'ar-SA' : 'en-US', {
                                 month: 'short', day: 'numeric', year: 'numeric',
                               })}
                             </p>

@@ -349,7 +349,7 @@ export async function POST(request: NextRequest) {
       'zh-CN': `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Simplified Chinese (简体中文) only. All JSON field values must be in 简体中文. Ignore input language.\nFor match_analysis.dog_type use: **钻石猎犬** / **黄金猎犬** / **白银猎犬** / **青铜猎犬**.\n`,
       es:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Spanish (Español) only. All JSON field values must be in Spanish. Ignore input language.\nFor match_analysis.dog_type use: **Beagle Diamante**, **Beagle Dorado**, **Beagle Plateado**, **Beagle Bronce**.\n`,
       hi:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Hindi (हिन्दी) only. All JSON field values must be in Hindi. Ignore input language.\nFor match_analysis.dog_type use: **डायमंड बीगल**, **गोल्ड बीगल**, **सिल्वर बीगल**, **ब्रॉन्ज़ बीगल**.\n`,
-      fr:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in French (Français) only. All JSON field values must be in French. Ignore input language.\nFor match_analysis.dog_type use: **Beagle Diamant**, **Beagle Or**, **Beagle Argent**, **Beagle Bronze**.\n`,
+      ar:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Arabic (العربية) only. All JSON field values must be in Arabic. Ignore input language.\nFor match_analysis.dog_type use: **بيغل ماسي**, **بيغل ذهبي**, **بيغل فضي**, **بيغل برونزي**.\n`,
     };
     const OUTPUT_LANGUAGE_INSTRUCTION = LANG_INSTRUCTIONS[reportLanguage] ?? LANG_INSTRUCTIONS['en'];
 
@@ -389,8 +389,8 @@ export async function POST(request: NextRequest) {
             ? `Has usado los ${dailyLimit} análisis gratuitos de hoy. ${isLoggedIn ? '' : 'Inicia sesión para más. '}Por favor, inténtalo mañana.`
             : reportLanguage === 'hi'
             ? `आज के ${dailyLimit} मुफ़्त विश्लेषण समाप्त हो गए। ${isLoggedIn ? '' : 'अधिक के लिए लॉग इन करें। '}कृपया कल पुनः प्रयास करें।`
-            : reportLanguage === 'fr'
-            ? `Vous avez utilisé les ${dailyLimit} analyses gratuites d'aujourd'hui. ${isLoggedIn ? '' : 'Connectez-vous pour plus. '}Veuillez réessayer demain.`
+            : reportLanguage === 'ar'
+            ? `لقد استخدمت كل ${dailyLimit} تحليلات مجانية لليوم. ${isLoggedIn ? '' : 'سجّل الدخول للحصول على المزيد. '}يرجى المحاولة غدًا.`
             : `You have used all ${dailyLimit} free analyses for today. ${isLoggedIn ? '' : 'Log in for more daily analyses. '}Please try again tomorrow.`,
           errorCode: 'RATE_LIMIT_EXCEEDED',
           resetTime: 'tomorrow',

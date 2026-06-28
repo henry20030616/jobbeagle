@@ -37,20 +37,20 @@ export default function JobbeagleShortsPage() {
   // Language from global context
   const { language: appLang } = useLanguage();
   const SI: Record<string, Record<AppLanguage, string>> = {
-    forYou:      { en: 'For You',    'zh-TW': '為您推薦', 'zh-CN': '为你推荐', es: 'Para Ti',           hi: 'आपके लिए',     fr: 'Pour Vous' },
-    following:   { en: 'Following',  'zh-TW': '追蹤中',   'zh-CN': '关注中',   es: 'Siguiendo',         hi: 'अनुसरण',       fr: 'Abonnements' },
-    saved:       { en: 'Saved',      'zh-TW': '已儲存',   'zh-CN': '已收藏',   es: 'Guardado',          hi: 'सहेजा गया',    fr: 'Enregistrés' },
-    logout:      { en: 'Logout',     'zh-TW': '登出',     'zh-CN': '退出登录', es: 'Cerrar Sesión',     hi: 'लॉग आउट',      fr: 'Déconnexion' },
-    login:       { en: 'Login',      'zh-TW': '登入',     'zh-CN': '登录',     es: 'Iniciar Sesión',    hi: 'लॉग इन',       fr: 'Connexion' },
-    empLogin:    { en: 'Employer Login', 'zh-TW': '企業登入', 'zh-CN': '企业登录', es: 'Acceso Empresa',  hi: 'नियोक्ता लॉगिन', fr: 'Connexion Entreprise' },
-    talLogin:    { en: 'Job Seeker Login', 'zh-TW': '人才登入', 'zh-CN': '人才登录', es: 'Acceso Candidato', hi: 'नौकरी खोजने वाले', fr: 'Connexion Candidat' },
-    home:        { en: 'Home',       'zh-TW': '首頁',     'zh-CN': '首页',     es: 'Inicio',            hi: 'होम',           fr: 'Accueil' },
-    company:     { en: 'Company',    'zh-TW': '企業',     'zh-CN': '企业',     es: 'Empresa',           hi: 'कंपनी',         fr: 'Entreprise' },
-    profile:     { en: 'Profile',    'zh-TW': '個人',     'zh-CN': '个人',     es: 'Perfil',            hi: 'प्रोफ़ाइल',    fr: 'Profil' },
-    noSaved:     { en: 'No saved jobs', 'zh-TW': '尚無儲存職缺', 'zh-CN': '暂无收藏职位', es: 'Sin trabajos guardados', hi: 'कोई सहेजी गई नौकरी नहीं', fr: 'Aucun emploi sauvegardé' },
-    tapBookmark: { en: 'Tap the bookmark icon on any video to save', 'zh-TW': '點擊影片右側書籤圖示即可儲存', 'zh-CN': '点击视频右侧书签图标即可收藏', es: 'Toca el ícono de marcador en cualquier video para guardar', hi: 'सहेजने के लिए किसी भी वीडियो पर बुकमार्क आइकन टैप करें', fr: "Appuyez sur l'icône de signet sur n'importe quelle vidéo pour sauvegarder" },
-    noFollowing: { en: 'Not following any companies', 'zh-TW': '尚未追蹤企業', 'zh-CN': '暂未关注企业', es: 'Sin empresas seguidas', hi: 'किसी भी कंपनी का अनुसरण नहीं', fr: "Aucune entreprise suivie" },
-    tapFollow:   { en: 'Tap follow on any video to start', 'zh-TW': '點擊影片右側追蹤按鈕開始追蹤', 'zh-CN': '点击视频右侧关注按钮开始关注', es: 'Toca seguir en cualquier video para comenzar', hi: 'शुरू करने के लिए किसी भी वीडियो पर फॉलो टैप करें', fr: "Appuyez sur suivre sur n'importe quelle vidéo pour commencer" },
+    forYou:      { en: 'For You',    'zh-TW': '為您推薦', 'zh-CN': '为你推荐', es: 'Para Ti',           hi: 'आपके लिए',     ar: 'لك' },
+    following:   { en: 'Following',  'zh-TW': '追蹤中',   'zh-CN': '关注中',   es: 'Siguiendo',         hi: 'अनुसरण',       ar: 'المتابَعون' },
+    saved:       { en: 'Saved',      'zh-TW': '已儲存',   'zh-CN': '已收藏',   es: 'Guardado',          hi: 'सहेजा गया',    ar: 'محفوظ' },
+    logout:      { en: 'Logout',     'zh-TW': '登出',     'zh-CN': '退出登录', es: 'Cerrar Sesión',     hi: 'लॉग आउट',      ar: 'تسجيل الخروج' },
+    login:       { en: 'Login',      'zh-TW': '登入',     'zh-CN': '登录',     es: 'Iniciar Sesión',    hi: 'लॉग इन',       ar: 'تسجيل الدخول' },
+    empLogin:    { en: 'Employer Login', 'zh-TW': '企業登入', 'zh-CN': '企业登录', es: 'Acceso Empresa',  hi: 'नियोक्ता लॉगिन', ar: 'دخول صاحب العمل' },
+    talLogin:    { en: 'Job Seeker Login', 'zh-TW': '人才登入', 'zh-CN': '人才登录', es: 'Acceso Candidato', hi: 'नौकरी खोजने वाले', ar: 'دخول الباحث عن عمل' },
+    home:        { en: 'Home',       'zh-TW': '首頁',     'zh-CN': '首页',     es: 'Inicio',            hi: 'होम',           ar: 'الرئيسية' },
+    company:     { en: 'Company',    'zh-TW': '企業',     'zh-CN': '企业',     es: 'Empresa',           hi: 'कंपनी',         ar: 'الشركة' },
+    profile:     { en: 'Profile',    'zh-TW': '個人',     'zh-CN': '个人',     es: 'Perfil',            hi: 'प्रोफ़ाइल',    ar: 'الملف' },
+    noSaved:     { en: 'No saved jobs', 'zh-TW': '尚無儲存職缺', 'zh-CN': '暂无收藏职位', es: 'Sin trabajos guardados', hi: 'कोई सहेजी गई नौकरी नहीं', ar: 'لا توجد وظائف محفوظة' },
+    tapBookmark: { en: 'Tap the bookmark icon on any video to save', 'zh-TW': '點擊影片右側書籤圖示即可儲存', 'zh-CN': '点击视频右侧书签图标即可收藏', es: 'Toca el ícono de marcador en cualquier video para guardar', hi: 'सहेजने के लिए किसी भी वीडियो पर बुकमार्क आइकन टैप करें', ar: 'اضغط أيقونة الحفظ على أي فيديو لحفظه' },
+    noFollowing: { en: 'Not following any companies', 'zh-TW': '尚未追蹤企業', 'zh-CN': '暂未关注企业', es: 'Sin empresas seguidas', hi: 'किसी भी कंपनी का अनुसरण नहीं', ar: 'لا تتابع أي شركات' },
+    tapFollow:   { en: 'Tap follow on any video to start', 'zh-TW': '點擊影片右側追蹤按鈕開始追蹤', 'zh-CN': '点击视频右侧关注按钮开始关注', es: 'Toca seguir en cualquier video para comenzar', hi: 'शुरू करने के लिए किसी भी वीडियो पर फॉलो टैप करें', ar: 'اضغط متابعة على أي فيديو للبدء' },
   };
   const t = (key: string): string => (SI[key]?.[appLang] ?? SI[key]?.['en'] ?? key);
 

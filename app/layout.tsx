@@ -8,8 +8,8 @@ const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-5EV9NSSJRW";
 
 export const metadata: Metadata = {
-  title: "Jobbeagle 職位分析米格魯",
-  description: "專家級 AI 職缺戰略分析中心",
+  title: "Jobbeagle | AI Job Match Analysis",
+  description: "AI-powered job match analysis and interview preparation for job seekers.",
   icons: {
     icon: '/icon.svg',
     apple: '/icon.svg',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-TW" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         <LanguageProvider>{children}</LanguageProvider>
         {GA_MEASUREMENT_ID ? (

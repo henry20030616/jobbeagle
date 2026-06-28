@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type AppLanguage = 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'fr';
+export type AppLanguage = 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
 
 export interface LanguageOption {
   code: AppLanguage;
@@ -17,7 +17,7 @@ export const LANGUAGE_OPTIONS: LanguageOption[] = [
   { code: 'zh-CN', name: 'Simplified Chinese',  nativeName: '简体中文',     flag: '🇨🇳' },
   { code: 'es',    name: 'Spanish',             nativeName: 'Español',      flag: '🇪🇸' },
   { code: 'hi',    name: 'Hindi',               nativeName: 'हिन्दी',       flag: '🇮🇳' },
-  { code: 'fr',    name: 'French',              nativeName: 'Français',     flag: '🇫🇷' },
+  { code: 'ar',    name: 'Arabic',              nativeName: 'العربية',      flag: '🇸🇦' },
 ];
 
 interface LanguageContextValue {

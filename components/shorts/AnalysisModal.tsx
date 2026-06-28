@@ -85,11 +85,11 @@ const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
     { minProgress: 72, label: '🔎 मिलान का मूल्यांकन...' }, { minProgress: 85, label: '🎯 साक्षात्कार शोध...' },
     { minProgress: 93, label: '📊 रिपोर्ट संकलन...' },
   ],
-  fr: [
-    { minProgress: 0,  label: '🔍 Lecture de la description...' }, { minProgress: 15, label: '📋 Analyse des exigences...' },
-    { minProgress: 35, label: '🌐 Collecte des données marché...' }, { minProgress: 55, label: '💰 Comparaison salariale...' },
-    { minProgress: 72, label: '🔎 Évaluation de la correspondance...' }, { minProgress: 85, label: "🎯 Recherche d'entretiens..." },
-    { minProgress: 93, label: '📊 Compilation du rapport...' },
+  ar: [
+    { minProgress: 0,  label: '🔍 قراءة الوصف...' }, { minProgress: 15, label: '📋 تحليل المتطلبات...' },
+    { minProgress: 35, label: '🌐 جمع بيانات السوق...' }, { minProgress: 55, label: '💰 مقارنة الرواتب...' },
+    { minProgress: 72, label: '🔎 تقييم التوافق...' }, { minProgress: 85, label: '🎯 البحث عن المقابلات...' },
+    { minProgress: 93, label: '📊 إعداد التقرير...' },
   ],
 };
 

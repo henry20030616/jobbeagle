@@ -25,7 +25,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     en: 'Beagle is sniffing for data...',
     es: 'El Beagle está olfateando datos...',
     hi: 'बीगल डेटा खोज रहा है...',
-    fr: 'Le Beagle cherche des données...',
+    ar: 'يقوم البيغل بالبحث عن البيانات...',
   };
   const estimatedMap: Record<AppLanguage, string> = {
     'zh-TW': '通常需要 30–60 秒',
@@ -33,7 +33,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     en: 'Usually takes 30–60 seconds',
     es: 'Normalmente tarda 30–60 segundos',
     hi: 'आमतौर पर 30–60 सेकंड लगते हैं',
-    fr: 'Prend généralement 30–60 secondes',
+    ar: 'عادةً يستغرق 30–60 ثانية',
   };
   const elapsedMap: Record<AppLanguage, string> = {
     'zh-TW': `已分析 ${elapsed} 秒`,
@@ -41,7 +41,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     en: `${elapsed}s elapsed`,
     es: `${elapsed}s transcurridos`,
     hi: `${elapsed} सेकंड बीते`,
-    fr: `${elapsed}s écoulées`,
+    ar: `مرت ${elapsed} ثانية`,
   };
 
   const currentStage = stage || defaultStageMap[language];
