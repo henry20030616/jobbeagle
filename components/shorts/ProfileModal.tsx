@@ -159,9 +159,11 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
     init();
   }, []);
 
+  // Auto-set mode based on role — employers go to company view, talents to personal view.
+  // No manual switching to prevent confusion between the two roles.
   useEffect(() => {
     if (loading || !user) return;
-    setMode(resolveShortsViewMode(hasCompanyProfile));
+    setMode(hasCompanyProfile ? 'company' : 'personal');
   }, [loading, user, hasCompanyProfile]);
 
   useEffect(() => {
@@ -425,12 +427,14 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
             {t('私人後台，僅本人可見。對外請使用「公開企業主頁」。', 'Private — only you. Public profile is separate.')}
           </p>
         }
-        right={hasCompanyProfile ? (
-          <div className="flex bg-slate-800 rounded-lg p-0.5 gap-0.5">
-            <ModePill active={mode === 'personal'} onClick={() => requestModeSwitch('personal')} icon={User} label={t('個人', 'Me')} />
-            <ModePill active={mode === 'company'} onClick={() => requestModeSwitch('company')} icon={Building2} label={t('企業', 'Company')} />
+        right={
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+            mode === 'company' ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-600/40' : 'bg-blue-900/50 text-blue-400 border border-blue-600/40'
+          }`}>
+            {mode === 'company' ? <Building2 size={11} /> : <User size={11} />}
+            {mode === 'company' ? t('企業帳號', 'Employer') : t('求職者', 'Job Seeker')}
           </div>
-        ) : undefined}
+        }
       />
 
       {/* ── PERSONAL MODE ────────────────────────────────────────────────── */}
@@ -451,13 +455,11 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
               <StatPill count={resumes.length} label={t('履歷', 'Resumes')} />
               <StatPill count={appliedJobs.length} label={t('已投遞', 'Applied')} />
             </div>
-            {!hasCompanyProfile && (
-              <a href="/shorts/upload" className="mt-5 flex items-center gap-2 px-5 py-2.5 bg-emerald-900/40 border border-emerald-600/50 rounded-full text-emerald-400 text-sm font-medium hover:bg-emerald-900/70 transition-colors">
-                <Building2 size={14} />
-                {t('建立企業頁面，開始發布職缺', 'Create company page & post jobs')}
-                <ChevronRight size={14} />
-              </a>
-            )}
+            <a href="/shorts/upload" className="mt-5 flex items-center gap-2 px-5 py-2.5 bg-emerald-900/40 border border-emerald-600/50 rounded-full text-emerald-400 text-sm font-medium hover:bg-emerald-900/70 transition-colors">
+              <Building2 size={14} />
+              {t('以企業身份登入發布職缺', 'Post jobs as Employer')}
+              <ChevronRight size={14} />
+            </a>
           </div>
 
           {/* Tabs */}
@@ -824,7 +826,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
                       <div className="w-full py-4 flex flex-col items-center gap-2 bg-black">
                         <span className="text-3xl">📸</span>
                         <a href={normalizeInstagramUrl(selectedVideo.video_url)} target="_blank" rel="noopener noreferrer" className="text-cyan-400 text-sm hover:underline">
-                          前往 Instagram 觀看
+                          {t('前往 Instagram 觀看', 'View on Instagram')}
                         </a>
                       </div>
                     );
@@ -834,7 +836,7 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
                       <div className="w-full py-4 flex flex-col items-center gap-2 bg-black">
                         <span className="text-3xl">🔗</span>
                         <a href={selectedVideo.video_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 text-sm hover:underline">
-                          前往觀看影片
+                          {t('前往觀看影片', 'Watch Video')}
                         </a>
                       </div>
                     );

@@ -42,7 +42,12 @@ export function isSocialEmbedUrl(url: string): boolean {
  * - https://www.youtube.com/shorts/VIDEO_ID
  * - https://www.youtube.com/embed/VIDEO_ID（本身已是 embed，直接回傳）
  */
-export function toYouTubeEmbedUrl(url: string): string | null {
+/**
+ * @param muted - pass false when user has enabled sound, so the embed plays with audio.
+ *   Changing this param causes the iframe to reload (new src), which is the only reliable
+ *   way to switch YouTube from muted → unmuted without page reload.
+ */
+export function toYouTubeEmbedUrl(url: string, muted = true): string | null {
   try {
     const u = new URL(url);
     const host = u.hostname.replace('www.', '');
@@ -63,9 +68,9 @@ export function toYouTubeEmbedUrl(url: string): string | null {
     }
 
     if (!videoId) return null;
-    // autoplay=1 mute=1：在 iframe 裡實現類似原生短影音的自動靜音播放
-    // enablejsapi=1：允許透過 postMessage 控制靜音 / 取消靜音
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`;
+    // enablejsapi=1：允許透過 postMessage 控制播放器
+    // mute param is dynamic — when muted=false the embed starts with audio
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${muted ? '1' : '0'}&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`;
   } catch {
     return null;
   }
@@ -111,13 +116,14 @@ export function normalizeInstagramUrl(url: string): string {
 
 // ── 型別標籤 helper ──────────────────────────────────────────────────────────
 
-export function sourceTypeLabel(type: VideoSourceType): string {
+export function sourceTypeLabel(type: VideoSourceType, lang?: string): string {
+  const isChinese = lang === 'zh-TW' || lang === 'zh-CN';
   switch (type) {
     case 'youtube':   return 'YouTube';
     case 'instagram': return 'Instagram';
     case 'facebook':  return 'Facebook';
-    case 'upload':    return '上傳影片';
-    case 'external':  return '外部連結';
+    case 'upload':    return isChinese ? '上傳影片' : 'Uploaded Video';
+    case 'external':  return isChinese ? '外部連結' : 'External Link';
   }
 }
 

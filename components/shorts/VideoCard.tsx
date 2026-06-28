@@ -129,10 +129,22 @@ const VideoCard: React.FC<VideoCardProps> = ({
     const handler = () => {
       setIsMuted(false);
       setShowSoundHint(false);
+      // Native <video> — unmute immediately
       if (videoRef.current) {
         videoRef.current.muted = false;
         videoRef.current.play().catch(() => { /* already playing */ });
       }
+      // YouTube iframe — send unMute postMessage immediately (before src update)
+      if (youtubeIframeRef.current?.contentWindow) {
+        youtubeIframeRef.current.contentWindow.postMessage(
+          '{"event":"command","func":"unMute","args":""}', '*'
+        );
+        youtubeIframeRef.current.contentWindow.postMessage(
+          '{"event":"command","func":"setVolume","args":[100]}', '*'
+        );
+      }
+      // setIsMuted(false) causes re-render → toYouTubeEmbedUrl(url, false) → iframe src
+      // changes to mute=0 → YouTube reloads with audio as a fallback if postMessage was too early.
     };
     window.addEventListener('jobbeagle:soundEnabled', handler);
     return () => window.removeEventListener('jobbeagle:soundEnabled', handler);
@@ -638,7 +650,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
           // ── YouTube embed ──
           if (sourceType === 'youtube' && videoUrl) {
-            const embedSrc = toYouTubeEmbedUrl(videoUrl);
+            // Pass isMuted so when user enables sound, src regenerates without mute=1
+            const embedSrc = toYouTubeEmbedUrl(videoUrl, isMuted);
             if (embedSrc && isActive) {
               return (
                 <iframe
@@ -702,7 +715,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     }}
                   >
                     <a href={igUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-400 text-xs p-4 block text-center">
-                      前往 Instagram 觀看原貼文
+                      {t('前往 Instagram 觀看原貼文', 'View original post on Instagram')}
                     </a>
                   </blockquote>
                   <IGEmbedScript />
@@ -722,7 +735,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             return (
               <div className="z-10 flex flex-col items-center justify-center gap-4 p-8 text-center">
                 <span className="text-5xl">🔗</span>
-                <p className="text-white/80 text-sm font-medium">此影片在外部平台</p>
+                <p className="text-white/80 text-sm font-medium">{t('此影片在外部平台', 'Video hosted on external platform')}</p>
                 <a
                   href={videoUrl}
                   target="_blank"
@@ -731,7 +744,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   onClick={e => e.stopPropagation()}
                 >
                   <ExternalLink size={14} />
-                  前往觀看影片
+                  {t('前往觀看影片', 'Watch Video')}
                 </a>
               </div>
             );
@@ -765,12 +778,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   <p className="text-white font-bold text-lg drop-shadow-md">Video unavailable</p>
                   <p className="text-white/80 text-sm drop-shadow max-w-[300px] text-center">
                     {videoUrl?.includes('drive.google.com')
-                      ? '此為 Google 雲端硬碟連結，無法直接當影片播放。請使用 Supabase 上傳或貼社群平台連結。'
-                      : '影片無法載入。請確認影片連結為直接影片網址（.mp4），或改用社群平台連結。'}
+                      ? t('此為 Google 雲端硬碟連結，無法直接當影片播放。請使用 Supabase 上傳或貼社群平台連結。', 'Google Drive links cannot be played directly. Please upload via Supabase or paste a social platform URL.')
+                      : t('影片無法載入。請確認影片連結為直接影片網址（.mp4），或改用社群平台連結。', 'Video could not load. Please check the URL is a direct video link (.mp4) or use a social platform link.')}
                   </p>
                   {videoUrl && (
                     <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:underline" onClick={e => e.stopPropagation()}>
-                      在新分頁開啟連結檢查
+                      {t('在新分頁開啟連結檢查', 'Open link in new tab to check')}
                     </a>
                   )}
                 </div>
