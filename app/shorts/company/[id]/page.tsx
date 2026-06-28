@@ -1,21 +1,19 @@
 'use client';
 
 /**
- * 公開企業主頁 — Instagram 官方粉絲專頁風格
- * 任何人可瀏覽；登入後可追蹤公司、一鍵申請
+ * 企業公開主頁 — Instagram 官方粉絲專頁風格
  */
 import React, { useState, useEffect, use, useCallback } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft, MapPin, DollarSign, Briefcase, Play, ExternalLink,
+  ArrowLeft, MapPin, DollarSign, Play, ExternalLink,
   Mail, Building2, Loader2, Share2, CheckCircle, Grid3x3, X,
-  Globe, UserPlus, UserCheck, Eye, Heart,
+  Globe, UserPlus, UserCheck, Eye, Briefcase,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { useLanguage } from '@/lib/language-context';
 import { JobData } from '@/types';
 
-// ── Extract YouTube video ID → thumbnail URL ────────────────────────────────
 function getYouTubeThumbnail(url: string): string | null {
   try {
     const u = new URL(url);
@@ -30,21 +28,18 @@ function getYouTubeThumbnail(url: string): string | null {
 }
 
 const CP = {
-  en:     { posts: 'posts', followers: 'followers', views: 'views', share: 'Share', copied: 'Copied!', jobs: 'Job Openings', noJobs: 'No job openings at this time.', follow: 'Follow', following: 'Following', applyExternal: 'Apply on Company Site', applyEmail: 'Quick Apply', inquire: 'Inquire', moreOnShorts: 'Explore more on Jobbeagle Shorts' },
-  'zh-TW':{ posts: '則影片', followers: '追蹤者', views: '觀看', share: '分享', copied: '已複製！', jobs: '職缺', noJobs: '目前沒有公開職缺。', follow: '追蹤', following: '已追蹤', applyExternal: '前往企業申請頁', applyEmail: '一鍵申請', inquire: '洽詢中', moreOnShorts: '在 Jobbeagle Shorts 看更多' },
-  'zh-CN':{ posts: '个视频', followers: '关注者', views: '观看', share: '分享', copied: '已复制！', jobs: '职位', noJobs: '目前没有公开职位。', follow: '关注', following: '已关注', applyExternal: '前往企业申请页', applyEmail: '一键申请', inquire: '洽询中', moreOnShorts: '在 Jobbeagle Shorts 看更多' },
-  es:     { posts: 'publicaciones', followers: 'seguidores', views: 'vistas', share: 'Compartir', copied: '¡Copiado!', jobs: 'Empleos', noJobs: 'No hay empleos disponibles.', follow: 'Seguir', following: 'Siguiendo', applyExternal: 'Aplicar en Empresa', applyEmail: 'Aplicar', inquire: 'Consultar', moreOnShorts: 'Ver más en Jobbeagle Shorts' },
-  hi:     { posts: 'पोस्ट', followers: 'फॉलोअर', views: 'व्यूज', share: 'शेयर', copied: 'कॉपी!', jobs: 'नौकरियां', noJobs: 'अभी कोई नौकरी उपलब्ध नहीं।', follow: 'फॉलो', following: 'फॉलोइंग', applyExternal: 'आवेदन करें', applyEmail: 'शीघ्र आवेदन', inquire: 'पूछताछ', moreOnShorts: 'Jobbeagle Shorts पर और देखें' },
-  ar:     { posts: 'منشور', followers: 'متابع', views: 'مشاهدة', share: 'مشاركة', copied: 'تم!', jobs: 'الوظائف', noJobs: 'لا توجد وظائف متاحة حالياً.', follow: 'متابعة', following: 'تتابع', applyExternal: 'تقديم في الشركة', applyEmail: 'تقديم سريع', inquire: 'استفسار', moreOnShorts: 'استكشف المزيد في Jobbeagle Shorts' },
+  en:     { posts: 'posts', followers: 'followers', views: 'views', share: 'Share', copied: 'Copied!', noJobs: 'No openings right now.', follow: 'Follow', unfollow: 'Following', applyExternal: 'Apply Now', applyEmail: 'Quick Apply', inquire: 'Inquire', moreOnShorts: 'More on Jobbeagle Shorts', jobs: 'Jobs' },
+  'zh-TW':{ posts: '部影片', followers: '追蹤者', views: '觀看', share: '分享', copied: '已複製！', noJobs: '目前沒有公開職缺。', follow: '追蹤', unfollow: '已追蹤', applyExternal: '前往申請', applyEmail: '一鍵申請', inquire: '洽詢', moreOnShorts: 'Jobbeagle Shorts 看更多', jobs: '職缺' },
+  'zh-CN':{ posts: '个视频', followers: '关注者', views: '观看', share: '分享', copied: '已复制！', noJobs: '暂无公开职位。', follow: '关注', unfollow: '已关注', applyExternal: '前往申请', applyEmail: '一键申请', inquire: '洽询', moreOnShorts: 'Jobbeagle Shorts 看更多', jobs: '职位' },
+  es:     { posts: 'videos', followers: 'seguidores', views: 'vistas', share: 'Compartir', copied: '¡Copiado!', noJobs: 'Sin vacantes.', follow: 'Seguir', unfollow: 'Siguiendo', applyExternal: 'Solicitar', applyEmail: 'Aplicar', inquire: 'Consultar', moreOnShorts: 'Más en Jobbeagle Shorts', jobs: 'Empleos' },
+  hi:     { posts: 'वीडियो', followers: 'फॉलोअर', views: 'व्यूज', share: 'शेयर', copied: 'कॉपी!', noJobs: 'कोई नौकरी नहीं।', follow: 'फॉलो', unfollow: 'फॉलोइंग', applyExternal: 'आवेदन करें', applyEmail: 'शीघ्र आवेदन', inquire: 'पूछें', moreOnShorts: 'Jobbeagle Shorts पर', jobs: 'नौकरियां' },
+  ar:     { posts: 'فيديو', followers: 'متابع', views: 'مشاهدة', share: 'مشاركة', copied: 'تم!', noJobs: 'لا وظائف حالياً.', follow: 'متابعة', unfollow: 'تتابع', applyExternal: 'تقدم الآن', applyEmail: 'تقديم سريع', inquire: 'استفسار', moreOnShorts: 'المزيد في Jobbeagle Shorts', jobs: 'وظائف' },
 } as const;
 
 interface PageProps { params: Promise<{ id: string }>; }
-interface CompanyProfilePublic {
-  company_name: string;
-  logo_url: string | null;
-  description: string | null;
-  website: string | null;
-}
+interface CompanyProfilePublic { company_name: string; logo_url: string | null; description: string | null; website: string | null; }
+
+type JobItem = JobData & { viewCount?: number };
 
 export default function CompanyPublicPage({ params }: PageProps) {
   const { id } = use(params);
@@ -52,13 +47,12 @@ export default function CompanyPublicPage({ params }: PageProps) {
   const { language: appLanguage } = useLanguage();
   const tc = CP[appLanguage] ?? CP.en;
 
-  const [jobs, setJobs] = useState<JobData[]>([]);
+  const [jobs, setJobs] = useState<JobItem[]>([]);
   const [profile, setProfile] = useState<CompanyProfilePublic | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState<JobData | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<JobItem | null>(null);
 
-  // Auth + Follow state
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
@@ -68,8 +62,6 @@ export default function CompanyPublicPage({ params }: PageProps) {
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
-
-      // Fetch user in parallel with data
       const [profileRes, videosRes, followerRes, userRes] = await Promise.all([
         supabase.from('company_profiles').select('company_name, logo_url, description, website').eq('company_name', companyName).maybeSingle(),
         supabase.from('shorts_videos').select('*').ilike('company_name', companyName).eq('is_published', true).order('created_at', { ascending: false }),
@@ -79,41 +71,32 @@ export default function CompanyPublicPage({ params }: PageProps) {
 
       let prof = profileRes.data as CompanyProfilePublic | null;
       if (!prof) {
-        // loose match
         const { data: loose } = await supabase.from('company_profiles').select('company_name, logo_url, description, website').ilike('company_name', companyName).maybeSingle();
         prof = loose as CompanyProfilePublic | null;
       }
       setProfile(prof);
 
       if (videosRes.data) {
-        const mapped = videosRes.data.map((v) => ({
-          id: v.id,
-          companyName: v.company_name,
-          jobTitle: v.job_title,
-          location: v.location || '',
-          salary: v.salary || '',
-          description: v.description || '',
-          videoUrl: v.video_url,
-          videoSourceType: v.video_source_type || 'upload',
-          tags: v.tags || [],
+        const mapped: JobItem[] = videosRes.data.map((v) => ({
+          id: v.id, companyName: v.company_name, jobTitle: v.job_title,
+          location: v.location || '', salary: v.salary || '',
+          description: v.description || '', videoUrl: v.video_url,
+          videoSourceType: v.video_source_type || 'upload', tags: v.tags || [],
           logoUrl: v.logo_url || `https://www.google.com/s2/favicons?domain=${v.company_name.toLowerCase().replace(/\s+/g, '')}.com&sz=128`,
-          contactEmail: v.contact_email || undefined,
-          applyUrl: v.apply_url || undefined,
+          contactEmail: v.contact_email || undefined, applyUrl: v.apply_url || undefined,
           viewCount: v.view_count || 0,
         }));
-        setJobs(mapped as JobData[]);
+        setJobs(mapped);
         setTotalViews(videosRes.data.reduce((s, v) => s + (v.view_count || 0), 0));
       }
 
       setFollowerCount(followerRes.count ?? 0);
-
       const u = userRes.data.user;
       setCurrentUser(u);
       if (u) {
         const { data: followRow } = await supabase.from('followed_companies').select('id').eq('user_id', u.id).eq('company_name', companyName).maybeSingle();
         setIsFollowing(!!followRow);
       }
-
       setLoading(false);
     };
     load();
@@ -149,194 +132,182 @@ export default function CompanyPublicPage({ params }: PageProps) {
   const displayName = profile?.company_name || jobs[0]?.companyName || companyName;
   const avatarUrl = profile?.logo_url || jobs[0]?.logoUrl
     || `https://www.google.com/s2/favicons?domain=${displayName.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
-  const postCount = jobs.length;
 
-  // Helper: get best thumbnail for a job
-  const getThumb = (job: JobData & { viewCount?: number }): string | null => {
+  const getThumb = (job: JobItem): string | null => {
     if (job.videoSourceType === 'youtube' && job.videoUrl) return getYouTubeThumbnail(job.videoUrl);
     return null;
   };
 
+  // Emoji icon for embed type
+  const embedIcon = (type: string) =>
+    type === 'instagram' ? '📸' : type === 'facebook' ? '📘' : type === 'youtube' ? '▶️' : '🎬';
+
   return (
-    <div className="min-h-[100dvh] bg-black text-white">
-      {/* Sticky header */}
-      <header className="sticky top-0 z-30 bg-black/95 backdrop-blur-md border-b border-zinc-800">
-        <div className="max-w-3xl mx-auto px-3 h-12 flex items-center justify-between">
-          <Link href="/shorts" className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors p-1 -ml-1">
-            <ArrowLeft className="w-5 h-5" />
+    <div className="min-h-[100dvh] text-white" style={{ background: '#000' }}>
+
+      {/* ── Sticky header ── */}
+      <header className="sticky top-0 z-30 border-b" style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(20px)', borderColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="max-w-xl mx-auto px-4 h-[52px] flex items-center justify-between gap-3">
+          <Link href="/shorts" className="p-2 -ml-2 rounded-full hover:bg-white/8 transition-colors text-white/70 hover:text-white">
+            <ArrowLeft size={20} />
           </Link>
-          <span className="font-semibold text-sm truncate max-w-[50%]">{displayName}</span>
-          <button type="button" onClick={handleCopyLink} className="p-2 rounded-lg hover:bg-zinc-900 text-zinc-400" aria-label="Share">
+          <span className="font-semibold text-[15px] truncate flex-1 text-center">{displayName}</span>
+          <button type="button" onClick={handleCopyLink} className="p-2 -mr-2 rounded-full hover:bg-white/8 transition-colors text-white/70 hover:text-white">
             {copied ? <CheckCircle size={20} className="text-emerald-400" /> : <Share2 size={20} />}
           </button>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto pb-24">
+      <main className="max-w-xl mx-auto pb-28">
         {loading ? (
-          <div className="flex justify-center py-24">
-            <Loader2 className="w-9 h-9 text-zinc-500 animate-spin" />
+          <div className="flex justify-center py-32">
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'rgba(255,255,255,0.3)' }} />
           </div>
         ) : (
           <>
-            {/* ── Profile header — Instagram-style ─────────────── */}
-            <section className="px-4 pt-8 pb-6 border-b border-zinc-800">
-              <div className="flex flex-row items-start gap-6 md:gap-10">
-                {/* Avatar */}
-                <div className="flex-shrink-0 w-20 h-20 md:w-[150px] md:h-[150px] rounded-full bg-zinc-900 ring-2 ring-zinc-700 overflow-hidden flex items-center justify-center shadow-xl">
-                  <img
-                    src={avatarUrl}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                  />
+            {/* ── Profile Section ── */}
+            <section className="px-5 pt-7 pb-6">
+              {/* Avatar + stats row */}
+              <div className="flex items-center gap-5 mb-5">
+                {/* Avatar with gradient ring */}
+                <div className="shrink-0 relative">
+                  <div className="w-[86px] h-[86px] rounded-full p-[2px]" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)' }}>
+                    <div className="w-full h-full rounded-full bg-black p-[2px] overflow-hidden">
+                      <img
+                        src={avatarUrl}
+                        alt={displayName}
+                        className="w-full h-full rounded-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Right side info */}
-                <div className="flex-1 min-w-0 pt-1 md:pt-4">
-                  {/* Desktop: name row */}
-                  <div className="hidden md:flex items-center gap-4 mb-5 flex-wrap">
-                    <h1 className="text-xl font-light tracking-tight truncate">{displayName}</h1>
-                    <button
-                      type="button"
-                      onClick={handleFollow}
-                      disabled={followLoading}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isFollowing ? 'bg-zinc-800 border border-zinc-600 text-zinc-200 hover:bg-red-900/20 hover:border-red-500/40 hover:text-red-300' : 'bg-white text-black hover:bg-zinc-200'}`}
-                    >
-                      {followLoading ? <Loader2 size={14} className="animate-spin" /> : isFollowing ? <UserCheck size={15} /> : <UserPlus size={15} />}
-                      {isFollowing ? tc.following : tc.follow}
-                    </button>
-                    <button type="button" onClick={handleCopyLink} className="px-3 py-2 text-sm font-semibold rounded-lg bg-zinc-900 border border-zinc-700 hover:bg-zinc-800">
-                      {copied ? tc.copied : tc.share}
-                    </button>
-                  </div>
-
-                  {/* Mobile: name */}
-                  <h1 className="md:hidden text-lg font-semibold truncate mb-3">{displayName}</h1>
-
-                  {/* Stats */}
-                  <div className="flex gap-6 md:gap-8 mb-4">
-                    <div className="text-center md:text-left">
-                      <p className="font-semibold text-base text-white">{postCount}</p>
-                      <p className="text-zinc-500 text-xs">{tc.posts}</p>
-                    </div>
-                    <div className="text-center md:text-left">
-                      <p className="font-semibold text-base text-white">{followerCount.toLocaleString()}</p>
-                      <p className="text-zinc-500 text-xs">{tc.followers}</p>
-                    </div>
-                    <div className="text-center md:text-left">
-                      <p className="font-semibold text-base text-white">{totalViews.toLocaleString()}</p>
-                      <p className="text-zinc-500 text-xs">{tc.views}</p>
-                    </div>
-                  </div>
-
-                  {/* Desktop bio */}
-                  <div className="hidden md:block space-y-1">
-                    <p className="font-semibold text-sm">{displayName}</p>
-                    {profile?.description && (
-                      <p className="text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed max-w-md">{profile.description}</p>
-                    )}
-                    {profile?.website && (
-                      <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 mt-1">
-                        <Globe size={14} />
-                        {profile.website.replace(/^https?:\/\//, '')}
-                      </a>
-                    )}
-                  </div>
+                {/* Stats */}
+                <div className="flex-1 flex items-center justify-around">
+                  <StatItem value={jobs.length} label={tc.posts} />
+                  <StatItem value={followerCount} label={tc.followers} />
+                  <StatItem value={totalViews} label={tc.views} />
                 </div>
               </div>
 
-              {/* Mobile bio + follow button */}
-              <div className="md:hidden mt-4 space-y-2">
+              {/* Name + bio */}
+              <div className="space-y-1 mb-4">
+                <div className="flex items-center gap-2">
+                  <h1 className="font-bold text-[15px] leading-tight">{displayName}</h1>
+                  {/* Verified / employer badge */}
+                  <span className="inline-flex items-center gap-1 text-[11px] bg-blue-500/15 text-blue-400 border border-blue-500/25 rounded-full px-2 py-0.5 font-medium">
+                    <Building2 size={10} />
+                    Employer
+                  </span>
+                </div>
                 {profile?.description && (
-                  <p className="text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">{profile.description}</p>
+                  <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>{profile.description}</p>
                 )}
                 {profile?.website && (
-                  <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-blue-400">
-                    <Globe size={14} />
-                    {profile.website.replace(/^https?:\/\//, '')}
+                  <a
+                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    <Globe size={13} />
+                    {profile.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                   </a>
                 )}
-                {/* Mobile follow + share row */}
-                <div className="flex gap-2 mt-3">
-                  <button
-                    type="button"
-                    onClick={handleFollow}
-                    disabled={followLoading}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold transition-all ${isFollowing ? 'bg-zinc-800 border border-zinc-600 text-zinc-200' : 'bg-white text-black hover:bg-zinc-100'}`}
-                  >
-                    {followLoading ? <Loader2 size={14} className="animate-spin" /> : isFollowing ? <UserCheck size={15} /> : <UserPlus size={15} />}
-                    {isFollowing ? tc.following : tc.follow}
-                  </button>
-                  <button type="button" onClick={handleCopyLink} className="flex-1 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm font-semibold">
-                    {copied ? tc.copied : tc.share}
-                  </button>
-                </div>
+              </div>
+
+              {/* CTA buttons */}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleFollow}
+                  disabled={followLoading}
+                  className={`flex-1 flex items-center justify-center gap-2 py-[9px] rounded-xl text-[13px] font-bold transition-all ${
+                    isFollowing
+                      ? 'border text-white/80 hover:bg-red-500/10 hover:border-red-500/40 hover:text-red-300'
+                      : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25'
+                  }`}
+                  style={isFollowing ? { borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' } : {}}
+                >
+                  {followLoading
+                    ? <Loader2 size={14} className="animate-spin" />
+                    : isFollowing ? <UserCheck size={15} /> : <UserPlus size={15} />
+                  }
+                  {isFollowing ? tc.unfollow : tc.follow}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="flex items-center justify-center gap-1.5 px-4 py-[9px] rounded-xl text-[13px] font-bold transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.12)' }}
+                >
+                  {copied ? <><CheckCircle size={14} className="text-emerald-400" /> {tc.copied}</> : <><Share2 size={14} /> {tc.share}</>}
+                </button>
               </div>
             </section>
 
-            {/* Tab strip */}
-            <div className="flex border-t border-zinc-800">
-              <div className="flex-1 flex justify-center py-3 border-t-2 border-white -mt-px">
+            {/* ── Divider / Tab ── */}
+            <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+              <div className="flex justify-center py-3 border-t-2 border-white -mt-px">
                 <span className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-white">
-                  <Grid3x3 size={14} /> {tc.jobs}
+                  <Grid3x3 size={13} />
+                  {tc.jobs}
                 </span>
               </div>
             </div>
 
-            {/* Video Grid — 3-column */}
+            {/* ── Video Grid ── */}
             {jobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-                <div className="w-16 h-16 rounded-full border border-zinc-800 flex items-center justify-center mb-4">
-                  <Building2 className="w-8 h-8 text-zinc-600" />
+              <div className="flex flex-col items-center justify-center py-20 gap-4 px-6 text-center">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <Building2 className="w-7 h-7 text-white/20" />
                 </div>
-                <p className="text-zinc-500 text-sm">{tc.noJobs}</p>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>{tc.noJobs}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-[2px] bg-zinc-950">
-                {(jobs as (JobData & { viewCount?: number })[]).map((job) => {
+              <div className="grid grid-cols-3" style={{ gap: '2px', background: 'rgba(255,255,255,0.04)' }}>
+                {jobs.map((job) => {
                   const thumb = getThumb(job);
                   return (
                     <button
                       key={job.id}
                       type="button"
                       onClick={() => setSelectedVideo(job)}
-                      className="relative aspect-[9/16] bg-zinc-900 group overflow-hidden"
+                      className="relative group overflow-hidden bg-zinc-950"
+                      style={{ aspectRatio: '1 / 1' }}
                     >
-                      {/* Thumbnail */}
+                      {/* Media */}
                       {thumb ? (
-                        <img src={thumb} alt="" className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
-                      ) : job.videoSourceType === 'upload' ? (
-                        <video
-                          src={job.videoUrl}
-                          className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                          muted playsInline preload="metadata"
-                        />
+                        <img src={thumb} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      ) : job.videoSourceType === 'upload' && job.videoUrl ? (
+                        <video src={job.videoUrl} className="absolute inset-0 w-full h-full object-cover" muted playsInline preload="metadata" />
                       ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-zinc-900">
-                          {job.logoUrl && <img src={job.logoUrl} className="w-10 h-10 rounded-full object-contain" alt="" />}
-                          <span className="text-2xl">{job.videoSourceType === 'instagram' ? '📸' : job.videoSourceType === 'facebook' ? '📘' : '▶'}</span>
+                        /* Embed placeholder — gradient card with logo + icon */
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+                          {job.logoUrl && (
+                            <img src={job.logoUrl} className="w-8 h-8 rounded-full object-contain bg-black/40" alt="" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          )}
+                          <span className="text-xl">{embedIcon(job.videoSourceType || '')}</span>
                         </div>
                       )}
 
-                      {/* Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="bg-black/50 rounded-full p-3">
-                          <Play className="w-6 h-6 text-white" fill="white" />
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center">
+                          <Play size={16} fill="white" className="text-white ml-0.5" />
                         </div>
                       </div>
 
-                      {/* Job title at bottom */}
-                      <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <p className="text-white text-xs font-semibold line-clamp-2 leading-tight drop-shadow">{job.jobTitle}</p>
+                      {/* Job title overlay at bottom */}
+                      <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.8))' }}>
+                        <p className="text-white text-[11px] font-semibold line-clamp-2 leading-tight">{job.jobTitle}</p>
                       </div>
 
-                      {/* View count badge */}
+                      {/* View count */}
                       {job.viewCount && job.viewCount > 0 ? (
-                        <div className="absolute top-1.5 left-1.5 flex items-center gap-0.5 bg-black/60 rounded-md px-1.5 py-0.5">
-                          <Eye size={10} className="text-white/80" />
-                          <span className="text-white text-[10px] font-medium">{job.viewCount >= 1000 ? `${(job.viewCount / 1000).toFixed(1)}k` : job.viewCount}</span>
+                        <div className="absolute top-1.5 left-1.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(0,0,0,0.65)' }}>
+                          <Eye size={9} className="text-white/60" />
+                          <span className="text-[10px] text-white/80 font-medium">{job.viewCount >= 1000 ? `${(job.viewCount / 1000).toFixed(1)}k` : job.viewCount}</span>
                         </div>
                       ) : null}
                     </button>
@@ -348,75 +319,124 @@ export default function CompanyPublicPage({ params }: PageProps) {
         )}
       </main>
 
-      {/* Full-screen job modal */}
+      {/* ── Full-screen job detail modal ── */}
       {selectedVideo && (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col animate-fade-in">
-          <div className="flex-shrink-0 flex items-center justify-between px-3 py-3 border-b border-zinc-900" style={{ paddingTop: 'max(12px, env(safe-area-inset-top))' }}>
-            <button type="button" onClick={() => setSelectedVideo(null)} className="p-2 rounded-full hover:bg-zinc-900 text-zinc-400">
-              <X size={22} />
+        <div className="fixed inset-0 z-50 flex flex-col" style={{ background: '#000' }}>
+          {/* Modal header */}
+          <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)', paddingTop: 'max(12px, env(safe-area-inset-top))' }}>
+            <button type="button" onClick={() => setSelectedVideo(null)} className="p-2 -ml-2 rounded-full hover:bg-white/8 transition-colors text-white/60 hover:text-white">
+              <X size={20} />
             </button>
-            <span className="text-sm font-semibold truncate flex-1 text-center px-2">{selectedVideo.jobTitle}</span>
-            <span className="w-10" />
+            <span className="text-[14px] font-semibold truncate flex-1 text-center px-3">{selectedVideo.jobTitle}</span>
+            <span className="w-8" />
           </div>
+
           <div className="flex-1 overflow-y-auto">
-            <video src={selectedVideo.videoUrl} controls className="w-full max-h-[55vh] bg-black object-contain" autoPlay playsInline />
-            <div className="p-5 space-y-4 max-w-lg mx-auto">
+            {/* Video */}
+            <div className="relative" style={{ background: '#000' }}>
+              {selectedVideo.videoSourceType === 'upload' && selectedVideo.videoUrl ? (
+                <video src={selectedVideo.videoUrl} controls className="w-full max-h-[55vh] object-contain" autoPlay playsInline style={{ display: 'block' }} />
+              ) : (
+                <div className="w-full h-[55vh] flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e, #0f3460)' }}>
+                  <div className="text-center">
+                    <span className="text-5xl">{embedIcon(selectedVideo.videoSourceType || '')}</span>
+                    <p className="text-white/40 text-sm mt-3">External video</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Details */}
+            <div className="px-5 py-5 space-y-4 max-w-lg mx-auto">
               {/* Company row */}
               <div className="flex items-center gap-3">
-                <img src={avatarUrl} className="w-10 h-10 rounded-full border border-zinc-700 object-cover bg-zinc-900" alt="" />
-                <div>
-                  <h2 className="text-base font-bold leading-tight">{selectedVideo.jobTitle}</h2>
-                  <p className="text-zinc-400 text-sm">{selectedVideo.companyName}</p>
+                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <img src={avatarUrl} className="w-full h-full object-cover" alt="" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-bold text-[16px] leading-tight">{selectedVideo.jobTitle}</h2>
+                  <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{selectedVideo.companyName}</p>
                 </div>
               </div>
 
-              {/* Location + salary */}
-              <div className="flex flex-wrap gap-3 text-sm text-zinc-300">
-                {selectedVideo.location && <span className="flex items-center gap-1.5 bg-zinc-900 px-2.5 py-1 rounded-lg"><MapPin size={13} className="text-zinc-500" />{selectedVideo.location}</span>}
-                {selectedVideo.salary && <span className="flex items-center gap-1.5 bg-zinc-900 px-2.5 py-1 rounded-lg"><span className="text-zinc-500 text-xs font-bold">$</span>{selectedVideo.salary}</span>}
-              </div>
+              {/* Location + salary chips */}
+              {(selectedVideo.location || selectedVideo.salary) && (
+                <div className="flex flex-wrap gap-2">
+                  {selectedVideo.location && (
+                    <span className="inline-flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-xl font-medium" style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.7)' }}>
+                      <MapPin size={12} style={{ color: 'rgba(255,255,255,0.4)' }} />{selectedVideo.location}
+                    </span>
+                  )}
+                  {selectedVideo.salary && (
+                    <span className="inline-flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-xl font-medium" style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.7)' }}>
+                      <DollarSign size={12} style={{ color: 'rgba(255,255,255,0.4)' }} />{selectedVideo.salary}
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Description */}
               {selectedVideo.description && (
-                <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap bg-zinc-900/50 rounded-xl p-3.5">{selectedVideo.description}</p>
+                <div className="rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  <p className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: 'rgba(255,255,255,0.7)' }}>{selectedVideo.description}</p>
+                </div>
               )}
 
               {/* Tags */}
               {selectedVideo.tags && selectedVideo.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {selectedVideo.tags.map((tag: string) => (
-                    <span key={tag} className="text-xs text-blue-400 bg-blue-900/20 border border-blue-500/30 px-2 py-0.5 rounded-full">#{tag}</span>
+                    <span key={tag} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ background: 'rgba(59,130,246,0.12)', color: 'rgb(147,197,253)', border: '1px solid rgba(59,130,246,0.2)' }}>#{tag}</span>
                   ))}
                 </div>
               )}
 
-              {/* CTA */}
-              <div className="flex gap-2.5 pt-1">
+              {/* Apply CTA */}
+              <div className="pt-1">
                 {selectedVideo.applyUrl ? (
-                  <a href={selectedVideo.applyUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-2xl text-white text-sm font-bold transition-colors shadow-lg">
-                    <ExternalLink size={16} />
+                  <a href={selectedVideo.applyUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2.5 w-full py-4 rounded-2xl text-[15px] font-bold text-white transition-all hover:opacity-90 active:scale-[0.98]"
+                    style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', boxShadow: '0 8px 32px rgba(37,99,235,0.3)' }}>
+                    <ExternalLink size={17} />
                     {tc.applyExternal}
                   </a>
                 ) : selectedVideo.contactEmail ? (
-                  <a href={`mailto:${selectedVideo.contactEmail}?subject=${encodeURIComponent(`Applying for ${selectedVideo.jobTitle}`)}`} className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-cyan-600 hover:bg-cyan-500 rounded-2xl text-white text-sm font-bold transition-colors shadow-lg">
-                    <Mail size={16} />
+                  <a href={`mailto:${selectedVideo.contactEmail}?subject=${encodeURIComponent(`Applying for ${selectedVideo.jobTitle}`)}`}
+                    className="flex items-center justify-center gap-2.5 w-full py-4 rounded-2xl text-[15px] font-bold text-white transition-all hover:opacity-90 active:scale-[0.98]"
+                    style={{ background: 'linear-gradient(135deg, #0891b2, #0e7490)', boxShadow: '0 8px 32px rgba(8,145,178,0.3)' }}>
+                    <Mail size={17} />
                     {tc.applyEmail}
                   </a>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-zinc-800 rounded-2xl text-zinc-500 text-sm border border-zinc-700">
-                    <Briefcase size={16} />
+                  <div className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-[14px]" style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <Briefcase size={15} />
                     {tc.inquire}
                   </div>
                 )}
               </div>
 
-              <Link href="/shorts" className="block text-center text-sm text-blue-400 py-2 hover:text-blue-300 transition-colors">
+              <Link href="/shorts" className="block text-center py-3 text-[13px] font-medium" style={{ color: 'rgb(96,165,250)' }}>
                 {tc.moreOnShorts}
               </Link>
             </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Stat item sub-component
+function StatItem({ value, label }: { value: number; label: string }) {
+  const display = value >= 10000
+    ? `${(value / 1000).toFixed(0)}k`
+    : value >= 1000
+    ? `${(value / 1000).toFixed(1)}k`
+    : value;
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <span className="text-[17px] font-bold text-white">{display}</span>
+      <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>{label}</span>
     </div>
   );
 }

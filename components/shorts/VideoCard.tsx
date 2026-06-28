@@ -124,6 +124,20 @@ const VideoCard: React.FC<VideoCardProps> = ({
     }
   }, [isActive, job.id, videoUrl]);
 
+  // Listen for global "sound enabled" event dispatched by the shorts page overlay
+  useEffect(() => {
+    const handler = () => {
+      setIsMuted(false);
+      setShowSoundHint(false);
+      if (videoRef.current) {
+        videoRef.current.muted = false;
+        videoRef.current.play().catch(() => { /* already playing */ });
+      }
+    };
+    window.addEventListener('jobbeagle:soundEnabled', handler);
+    return () => window.removeEventListener('jobbeagle:soundEnabled', handler);
+  }, []);
+
   // Show sound hint on first-ever active video (only if no preference set yet)
   useEffect(() => {
     if (!isActive) { setShowSoundHint(false); return; }

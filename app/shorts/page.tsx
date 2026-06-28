@@ -7,7 +7,7 @@ import { JobData } from '@/types';
 import {
   Home, User, Bookmark, X, AlertCircle, Loader2, CheckCircle,
   LogIn, LogOut, Building2, ChevronDown, UserCircle2,
-  Heart, Video, Upload, Settings, ChevronRight, Users,
+  Video, Upload, Users, Volume2, VolumeX,
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
@@ -16,10 +16,37 @@ import { setStoredShortsViewRole } from '@/lib/shorts-view-role';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
-const getLogoUrl = (companyName: string): string =>
-  `https://www.google.com/s2/favicons?domain=${companyName.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
+const getLogoUrl = (n: string) =>
+  `https://www.google.com/s2/favicons?domain=${n.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
 
 const PAGE_SIZE = 10;
+
+// Translation table
+const SI: Record<string, Partial<Record<AppLanguage, string>>> = {
+  following:   { en: 'Following',  'zh-TW': '追蹤中',   'zh-CN': '关注中',   es: 'Siguiendo',     hi: 'अनुसरण',    ar: 'المتابَعون' },
+  saved:       { en: 'Saved',      'zh-TW': '已儲存',   'zh-CN': '已收藏',   es: 'Guardado',      hi: 'सहेजा',     ar: 'محفوظ' },
+  me:          { en: 'Me',         'zh-TW': '我',       'zh-CN': '我',       es: 'Yo',            hi: 'मैं',        ar: 'أنا' },
+  logout:      { en: 'Logout',     'zh-TW': '登出',     'zh-CN': '退出登录', es: 'Salir',         hi: 'लॉग आउट',   ar: 'خروج' },
+  login:       { en: 'Login',      'zh-TW': '登入',     'zh-CN': '登录',     es: 'Entrar',        hi: 'लॉग इन',    ar: 'دخول' },
+  empLogin:    { en: 'Employer Login', 'zh-TW': '企業登入', 'zh-CN': '企业登录', es: 'Empresa',   hi: 'नियोक्ता',  ar: 'صاحب عمل' },
+  talLogin:    { en: 'Job Seeker Login', 'zh-TW': '求職者登入', 'zh-CN': '求职者登录', es: 'Candidato', hi: 'उम्मीदवार', ar: 'باحث عمل' },
+  home:        { en: 'Home',       'zh-TW': '首頁',     'zh-CN': '首页',     es: 'Inicio',        hi: 'होम',        ar: 'الرئيسية' },
+  profile:     { en: 'Profile',    'zh-TW': '個人',     'zh-CN': '个人',     es: 'Perfil',        hi: 'प्रोफ़ाइल', ar: 'الملف' },
+  noSaved:     { en: 'No saved jobs yet', 'zh-TW': '尚無儲存職缺', 'zh-CN': '暂无收藏职位', es: 'Sin guardados', hi: 'कोई सहेजी नहीं', ar: 'لا محفوظات' },
+  tapBookmark: { en: 'Tap the bookmark on any video to save it', 'zh-TW': '點擊影片書籤即可儲存', 'zh-CN': '点击书签收藏', es: 'Toca el marcador', hi: 'बुकमार्क करें', ar: 'اضغط الحفظ' },
+  noFollowing: { en: 'Not following any companies yet', 'zh-TW': '尚未追蹤任何企業', 'zh-CN': '暂未关注企业', es: 'Sin empresas', hi: 'कोई कंपनी नहीं', ar: 'لا متابعات' },
+  tapFollow:   { en: 'Follow companies from any video to see their latest openings', 'zh-TW': '點追蹤按鈕即可訂閱企業最新職缺', 'zh-CN': '点关注按钮订阅企业职位', es: 'Sigue empresas', hi: 'फॉलो करें', ar: 'تابع الشركات' },
+  dashboard:   { en: 'Company Dashboard', 'zh-TW': '企業後台', 'zh-CN': '企业后台', es: 'Panel', hi: 'डैशबोर्ड', ar: 'لوحة التحكم' },
+  uploadVideo: { en: 'Upload Job Video', 'zh-TW': '上傳職缺影片', 'zh-CN': '上传职位视频', es: 'Subir Video', hi: 'वीडियो अपलोड', ar: 'رفع فيديو' },
+  myCompany:   { en: 'My Company Page', 'zh-TW': '我的企業頁面', 'zh-CN': '我的企业主页', es: 'Mi Empresa', hi: 'मेरी कंपनी', ar: 'صفحة شركتي' },
+  savedJobs:   { en: 'Saved Jobs', 'zh-TW': '已儲存職缺', 'zh-CN': '已收藏职位', es: 'Guardados', hi: 'सहेजी नौकरियां', ar: 'وظائف محفوظة' },
+  myApps:      { en: 'My Applications', 'zh-TW': '我的申請記錄', 'zh-CN': '我的申请记录', es: 'Mis Solicitudes', hi: 'मेरे आवेदन', ar: 'طلباتي' },
+  loginFirst:  { en: 'Sign in to follow companies', 'zh-TW': '登入後即可追蹤企業', 'zh-CN': '登录后关注企业', es: 'Inicia sesión', hi: 'लॉग इन करें', ar: 'سجل الدخول' },
+  // Sound overlay
+  tapSound:    { en: 'Tap anywhere to start with sound', 'zh-TW': '點擊任意處開始（含聲音）', 'zh-CN': '点击任意处开始（含声音）', es: 'Toca para iniciar con sonido', hi: 'ध्वनि के साथ शुरू करने के लिए टैप करें', ar: 'انقر لبدء التشغيل بالصوت' },
+  soundMuted:  { en: 'Sound muted — tap 🔊 to enable', 'zh-TW': '已靜音 — 點 🔊 開啟聲音', 'zh-CN': '已静音 — 点 🔊 开启声音', es: 'Silenciado — toca 🔊', hi: 'मौन — 🔊 दबाएं', ar: 'مكتوم — اضغط 🔊' },
+};
+const t = (key: string, lang: AppLanguage) => SI[key]?.[lang] ?? SI[key]?.en ?? key;
 
 export default function JobbeagleShortsPage() {
   const [jobs, setJobs] = useState<JobData[]>([]);
@@ -36,31 +63,8 @@ export default function JobbeagleShortsPage() {
   const [showLoginMenu, setShowLoginMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  // Language from global context
+  // Language
   const { language: appLang } = useLanguage();
-  const SI: Record<string, Record<AppLanguage, string>> = {
-    forYou:      { en: 'For You',    'zh-TW': '為您推薦', 'zh-CN': '为你推荐', es: 'Para Ti',           hi: 'आपके लिए',     ar: 'لك' },
-    following:   { en: 'Following',  'zh-TW': '追蹤中',   'zh-CN': '关注中',   es: 'Siguiendo',         hi: 'अनुसरण',       ar: 'المتابَعون' },
-    saved:       { en: 'Saved',      'zh-TW': '已儲存',   'zh-CN': '已收藏',   es: 'Guardado',          hi: 'सहेजा गया',    ar: 'محفوظ' },
-    me:          { en: 'Me',         'zh-TW': '我',       'zh-CN': '我',       es: 'Yo',                hi: 'मैं',           ar: 'أنا' },
-    logout:      { en: 'Logout',     'zh-TW': '登出',     'zh-CN': '退出登录', es: 'Cerrar Sesión',     hi: 'लॉग आउट',      ar: 'تسجيل الخروج' },
-    login:       { en: 'Login',      'zh-TW': '登入',     'zh-CN': '登录',     es: 'Iniciar Sesión',    hi: 'लॉग इन',       ar: 'تسجيل الدخول' },
-    empLogin:    { en: 'Employer Login', 'zh-TW': '企業登入', 'zh-CN': '企业登录', es: 'Acceso Empresa',  hi: 'नियोक्ता लॉगिन', ar: 'دخول صاحب العمل' },
-    talLogin:    { en: 'Job Seeker Login', 'zh-TW': '人才登入', 'zh-CN': '人才登录', es: 'Acceso Candidato', hi: 'नौकरी खोजने वाले', ar: 'دخول الباحث عن عمل' },
-    home:        { en: 'Home',       'zh-TW': '首頁',     'zh-CN': '首页',     es: 'Inicio',            hi: 'होम',           ar: 'الرئيسية' },
-    company:     { en: 'Company',    'zh-TW': '企業',     'zh-CN': '企业',     es: 'Empresa',           hi: 'कंपनी',         ar: 'الشركة' },
-    profile:     { en: 'Profile',    'zh-TW': '個人',     'zh-CN': '个人',     es: 'Perfil',            hi: 'प्रोफ़ाइल',    ar: 'الملف' },
-    noSaved:     { en: 'No saved jobs', 'zh-TW': '尚無儲存職缺', 'zh-CN': '暂无收藏职位', es: 'Sin trabajos guardados', hi: 'कोई सहेजी गई नौकरी नहीं', ar: 'لا توجد وظائف محفوظة' },
-    tapBookmark: { en: 'Tap the bookmark icon on any video to save', 'zh-TW': '點擊影片右側書籤圖示即可儲存', 'zh-CN': '点击视频右侧书签图标即可收藏', es: 'Toca el ícono de marcador en cualquier video para guardar', hi: 'सहेजने के लिए किसी भी वीडियो पर बुकमार्क आइकन टैप करें', ar: 'اضغط أيقونة الحفظ على أي فيديو لحفظه' },
-    noFollowing: { en: 'Not following any companies', 'zh-TW': '尚未追蹤企業', 'zh-CN': '暂未关注企业', es: 'Sin empresas seguidas', hi: 'किसी भी कंपनी का अनुसरण नहीं', ar: 'لا تتابع أي شركات' },
-    tapFollow:   { en: 'Tap follow on any video to start', 'zh-TW': '點擊影片右側追蹤按鈕開始追蹤', 'zh-CN': '点击视频右侧关注按钮开始关注', es: 'Toca seguir en cualquier video para comenzar', hi: 'शुरू करने के लिए किसी भी वीडियो पर फॉलो टैप करें', ar: 'اضغط متابعة على أي فيديو للبدء' },
-    dashboard:   { en: 'Company Dashboard', 'zh-TW': '企業後台', 'zh-CN': '企业后台', es: 'Panel Empresa', hi: 'कंपनी डैशबोर्ड', ar: 'لوحة الشركة' },
-    uploadVideo: { en: 'Upload Job Video', 'zh-TW': '上傳職缺影片', 'zh-CN': '上传职位视频', es: 'Subir Video', hi: 'वीडियो अपलोड करें', ar: 'رفع فيديو' },
-    myCompany:   { en: 'My Company Page', 'zh-TW': '我的企業頁面', 'zh-CN': '我的企业页面', es: 'Mi Empresa', hi: 'मेरी कंपनी', ar: 'صفحة شركتي' },
-    savedJobs:   { en: 'Saved Jobs', 'zh-TW': '已儲存職缺', 'zh-CN': '已收藏职位', es: 'Empleos Guardados', hi: 'सहेजी नौकरियां', ar: 'الوظائف المحفوظة' },
-    loginFirst:  { en: 'Sign in to follow companies', 'zh-TW': '登入後即可追蹤企業', 'zh-CN': '登录后可关注企业', es: 'Inicia sesión para seguir empresas', hi: 'कंपनियों को फॉलो करने के लिए लॉग इन करें', ar: 'سجل الدخول لمتابعة الشركات' },
-  };
-  const t = (key: string): string => (SI[key]?.[appLang] ?? SI[key]?.['en'] ?? key);
 
   // UI state
   const [activeTab, setActiveTab] = useState<'foryou' | 'following' | 'saved'>('foryou');
@@ -72,11 +76,39 @@ export default function JobbeagleShortsPage() {
   const [savedJobsData, setSavedJobsData] = useState<JobData[]>([]);
   const [hasCompanyProfile, setHasCompanyProfile] = useState(false);
   const [companyName, setCompanyName] = useState<string>('');
+  const [userRole, setUserRole] = useState<'employer' | 'talent' | null>(null);
 
-  // Following feed (loaded directly from DB, not filtered from For You)
+  // Following feed (loaded from DB)
   const [followingVideos, setFollowingVideos] = useState<JobData[]>([]);
   const [loadingFollowing, setLoadingFollowing] = useState(false);
 
+  // ── Sound overlay ────────────────────────────────────────────────────────
+  // Browser policy: video can't autoplay with sound without user gesture.
+  // We show a full-screen overlay to collect that gesture on first visit.
+  const [showSoundOverlay, setShowSoundOverlay] = useState(false);
+
+  useEffect(() => {
+    const pref = localStorage.getItem('jobbeagle_sound_pref');
+    if (pref === 'on') {
+      // Returning user who already enabled sound — no overlay needed
+      setShowSoundOverlay(false);
+    } else if (pref === 'off') {
+      // User deliberately muted — respect that
+      setShowSoundOverlay(false);
+    } else {
+      // First visit — ask for interaction so we can play with sound
+      setShowSoundOverlay(true);
+    }
+  }, []);
+
+  const handleEnableSound = useCallback(() => {
+    localStorage.setItem('jobbeagle_sound_pref', 'on');
+    setShowSoundOverlay(false);
+    // Tell all VideoCards to unmute
+    window.dispatchEvent(new CustomEvent('jobbeagle:soundEnabled'));
+  }, []);
+
+  // ── Auth ────────────────────────────────────────────────────────────────
   useEffect(() => {
     loadVideos(null);
     const supabase = createClient();
@@ -94,12 +126,12 @@ export default function JobbeagleShortsPage() {
         setSavedJobsData([]);
         setHasCompanyProfile(false);
         setCompanyName('');
+        setUserRole(null);
       }
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  /** OAuth redirect params */
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
@@ -107,11 +139,12 @@ export default function JobbeagleShortsPage() {
     const v = params.get('shorts_view');
     if (v === 'company' || v === 'personal') {
       setStoredShortsViewRole(v);
+      if (v === 'company') setUserRole('employer');
+      else setUserRole('talent');
       params.delete('shorts_view');
       changed = true;
     }
-    const openProfile = params.get('open_profile');
-    if (openProfile === '1' || openProfile === 'true') {
+    if (params.get('open_profile') === '1') {
       setNavTab('profile');
       params.delete('open_profile');
       changed = true;
@@ -129,9 +162,7 @@ export default function JobbeagleShortsPage() {
       supabase.from('saved_jobs').select('job_id, job_data').eq('user_id', userId),
       supabase.from('company_profiles').select('id, company_name').eq('user_id', userId).maybeSingle(),
     ]);
-    if (followsRes.data) {
-      setFollowedCompanies(new Set(followsRes.data.map((r: any) => r.company_name)));
-    }
+    if (followsRes.data) setFollowedCompanies(new Set(followsRes.data.map((r: any) => r.company_name)));
     if (savedRes.data) {
       setSavedJobIds(new Set(savedRes.data.map((r: any) => r.job_id)));
       setSavedJobsData(savedRes.data.map((r: any) => r.job_data as JobData));
@@ -139,6 +170,9 @@ export default function JobbeagleShortsPage() {
     if (companyRes.data) {
       setHasCompanyProfile(true);
       setCompanyName(companyRes.data.company_name || '');
+      setUserRole('employer');
+    } else {
+      setUserRole('talent');
     }
   };
 
@@ -161,55 +195,28 @@ export default function JobbeagleShortsPage() {
     try {
       if (!cursor) setLoading(true);
       const supabase = createClient();
-      let query = supabase
-        .from('shorts_videos')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: false })
-        .limit(PAGE_SIZE);
-
+      let query = supabase.from('shorts_videos').select('*').eq('is_published', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
       if (cursor) query = query.lt('created_at', cursor);
-
       const { data, error: err } = await query;
-
-      if (!cursor && (err || !data || data.length === 0)) {
-        setJobs(FALLBACK_VIDEOS);
-        setHasMore(false);
-        return;
-      }
+      if (!cursor && (err || !data || data.length === 0)) { setJobs(FALLBACK_VIDEOS); setHasMore(false); return; }
       if (!data || data.length === 0) { setHasMore(false); return; }
-
       const mapped = data.map(mapVideo);
-      if (!cursor) setJobs(mapped);
-      else setJobs(prev => [...prev, ...mapped]);
-
+      if (!cursor) setJobs(mapped); else setJobs(prev => [...prev, ...mapped]);
       setHasMore(data.length === PAGE_SIZE);
       lastCursorRef.current = data[data.length - 1].created_at;
-    } catch {
-      if (!cursor) setJobs(FALLBACK_VIDEOS);
-    } finally {
-      setLoading(false);
-    }
+    } catch { if (!cursor) setJobs(FALLBACK_VIDEOS); }
+    finally { setLoading(false); }
   };
 
-  // Load Following videos directly from DB (not just filtered from For You)
   const loadFollowingVideos = useCallback(async () => {
     if (!user) return;
     if (followedCompanies.size === 0) { setFollowingVideos([]); return; }
     setLoadingFollowing(true);
     try {
       const supabase = createClient();
-      const names = Array.from(followedCompanies);
-      const { data } = await supabase
-        .from('shorts_videos')
-        .select('*')
-        .in('company_name', names)
-        .eq('is_published', true)
-        .order('created_at', { ascending: false });
+      const { data } = await supabase.from('shorts_videos').select('*').in('company_name', Array.from(followedCompanies)).eq('is_published', true).order('created_at', { ascending: false });
       if (data) setFollowingVideos(data.map(mapVideo));
-    } catch { /* silent */ } finally {
-      setLoadingFollowing(false);
-    }
+    } catch { /* silent */ } finally { setLoadingFollowing(false); }
   }, [user, followedCompanies]);
 
   useEffect(() => {
@@ -220,41 +227,23 @@ export default function JobbeagleShortsPage() {
     if (!hasMore || loadingMoreRef.current || !lastCursorRef.current) return;
     loadingMoreRef.current = true;
     setLoadingMore(true);
-    loadVideos(lastCursorRef.current).finally(() => {
-      loadingMoreRef.current = false;
-      setLoadingMore(false);
-    });
+    loadVideos(lastCursorRef.current).finally(() => { loadingMoreRef.current = false; setLoadingMore(false); });
   }, [hasMore]);
 
   const handleFollowChange = (name: string, followed: boolean) => {
-    setFollowedCompanies(prev => {
-      const next = new Set(prev);
-      if (followed) next.add(name); else next.delete(name);
-      return next;
-    });
-    // Refresh following feed
+    setFollowedCompanies(prev => { const next = new Set(prev); if (followed) next.add(name); else next.delete(name); return next; });
     if (activeTab === 'following') setTimeout(loadFollowingVideos, 300);
   };
 
   const handleSaveChange = (jobId: string, saved: boolean, jobData?: JobData) => {
-    setSavedJobIds(prev => {
-      const next = new Set(prev);
-      if (saved) next.add(jobId); else next.delete(jobId);
-      return next;
-    });
+    setSavedJobIds(prev => { const next = new Set(prev); if (saved) next.add(jobId); else next.delete(jobId); return next; });
     if (saved && jobData) setSavedJobsData(prev => prev.some(j => j.id === jobId) ? prev : [...prev, jobData]);
     else if (!saved) setSavedJobsData(prev => prev.filter(j => j.id !== jobId));
   };
 
   const displayedJobs =
     activeTab === 'following' ? followingVideos :
-    activeTab === 'saved' ? savedJobsData :
-    jobs;
-
-  const handleNavTab = (tab: 'home' | 'profile') => {
-    setNavTab(tab);
-    if (tab === 'home') setActiveTab('foryou');
-  };
+    activeTab === 'saved' ? savedJobsData : jobs;
 
   if (loading) {
     return (
@@ -265,160 +254,167 @@ export default function JobbeagleShortsPage() {
   }
 
   return (
-    <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden font-sans">
+    <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden">
 
-      {/* ── PROFILE PAGE ──────────────────────────────────────────── */}
+      {/* ── Sound overlay: full-screen, requires one tap to bypass browser autoplay policy ── */}
+      {showSoundOverlay && (
+        <div
+          onClick={handleEnableSound}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer"
+          style={{ background: 'linear-gradient(160deg, #0d0d1a 0%, #0a0a14 50%, #050510 100%)' }}
+        >
+          {/* Animated ring */}
+          <div className="relative mb-8">
+            <div className="w-28 h-28 rounded-full border-4 border-blue-500/30 animate-ping absolute inset-0" />
+            <div className="w-28 h-28 rounded-full border-2 border-blue-400/50 flex items-center justify-center relative bg-black/80">
+              <Volume2 className="w-12 h-12 text-blue-400" />
+            </div>
+          </div>
+          <h2 className="text-white text-2xl md:text-3xl font-bold mb-3 text-center px-8">
+            {t('tapSound', appLang)}
+          </h2>
+          <p className="text-white/50 text-sm md:text-base text-center px-12 max-w-xs leading-relaxed">
+            Browsers require a tap before playing audio
+          </p>
+          <div className="mt-10 px-8 py-3 rounded-2xl bg-blue-600 text-white text-base font-bold shadow-2xl shadow-blue-600/40 hover:bg-blue-500 transition-colors">
+            Tap to Start
+          </div>
+        </div>
+      )}
+
+      {/* ── PROFILE PAGE ── */}
       {navTab === 'profile' && (
         <>
           <div className="flex-1 overflow-hidden">
-            <ProfileModal onClose={() => handleNavTab('home')} language={appLang} />
+            <ProfileModal onClose={() => { setNavTab('home'); setActiveTab('foryou'); }} language={appLang} />
           </div>
           <BottomNav
-            activeTab={activeTab} navTab={navTab} onNav={handleNavTab}
-            onTabChange={setActiveTab} t={t}
+            activeTab={activeTab} navTab={navTab}
+            onNav={(tab) => { setNavTab(tab); if (tab === 'home') setActiveTab('foryou'); }}
+            onTabChange={(tab) => { setActiveTab(tab); setNavTab('home'); }}
+            t={(k) => t(k, appLang)}
             followCount={followedCompanies.size} savedCount={savedJobIds.size}
           />
         </>
       )}
 
-      {/* ── FEED + SAVED + FOLLOWING views ────────────────────────── */}
-      {navTab !== 'profile' && (
+      {/* ── MAIN FEED ── */}
+      {navTab === 'home' && (
         <>
-          {/* ── Top Header ───────────────────────────────────────── */}
-          <div className="w-full flex-shrink-0 px-4 pt-3 pb-2.5 md:px-6 md:pt-4 md:pb-3 z-30 flex justify-between items-start gap-4 bg-black/90 backdrop-blur-md border-b border-white/8">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-white font-black tracking-tight drop-shadow-lg leading-none">
-                <span className="text-3xl md:text-4xl lg:text-5xl">
-                  <span className="text-white">Job</span><span className="text-blue-500">beagle</span>
-                </span>
-                <span className="text-white/90 text-xl md:text-2xl lg:text-3xl font-semibold ml-1.5 md:ml-2">Shorts</span>
-              </h1>
-              <div className="flex flex-wrap gap-x-5 gap-y-2 text-white/90 font-semibold text-base md:text-lg mt-2.5 md:mt-3">
-                <button
-                  onClick={() => { setActiveTab('foryou'); setNavTab('home'); }}
-                  className={`pb-1.5 transition-colors ${activeTab === 'foryou' && navTab === 'home' ? 'border-b-[3px] border-white opacity-100' : 'opacity-60 hover:opacity-90'}`}
-                >
-                  {t('forYou')}
-                </button>
-                <button
-                  onClick={() => { setActiveTab('following'); setNavTab('home'); }}
-                  className={`pb-1.5 transition-colors ${activeTab === 'following' ? 'border-b-[3px] border-white opacity-100' : 'opacity-60 hover:opacity-90'}`}
-                >
-                  {t('following')} {followedCompanies.size > 0 && `(${followedCompanies.size})`}
-                </button>
-                <button
-                  onClick={() => { setActiveTab('saved'); setNavTab('home'); }}
-                  className={`pb-1.5 transition-colors ${activeTab === 'saved' ? 'border-b-[3px] border-white opacity-100' : 'opacity-60 hover:opacity-90'}`}
-                >
-                  {t('saved')} {savedJobIds.size > 0 && `(${savedJobIds.size})`}
-                </button>
-              </div>
-            </div>
+          {/* ── Top Header: Logo + Avatar (no tab pills here) ── */}
+          <div className="w-full flex-shrink-0 px-4 pt-3 pb-3 md:px-6 z-30 flex justify-between items-center bg-black/90 backdrop-blur-md border-b border-white/8">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 shrink-0">
+              <span className="text-white font-black text-2xl md:text-3xl leading-none tracking-tight">
+                <span>Job</span><span className="text-blue-500">beagle</span>
+              </span>
+              <span className="text-white/70 text-sm md:text-base font-semibold ml-1">Shorts</span>
+            </Link>
 
-            {/* Right: language + avatar/login */}
-            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 pt-1">
+            {/* Right: language switcher + avatar */}
+            <div className="flex items-center gap-2 md:gap-3 shrink-0">
               <LanguageSwitcher variant="light" />
 
               {user ? (
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full ring-2 ring-white/25 hover:ring-white/60 transition-all overflow-hidden bg-slate-800 shrink-0"
+                    className="relative flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-white/20 hover:ring-white/50 transition-all overflow-hidden bg-slate-800 shrink-0"
                     aria-label="Profile menu"
                   >
-                    {user.user_metadata?.avatar_url ? (
-                      <img src={user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-white font-bold text-sm">
-                        {(user.user_metadata?.full_name || user.email || '?')[0].toUpperCase()}
-                      </span>
-                    )}
-                    {hasCompanyProfile && (
-                      <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-blue-500 rounded-full border-2 border-black flex items-center justify-center">
-                        <Building2 size={7} className="text-white" />
-                      </span>
-                    )}
+                    {user.user_metadata?.avatar_url
+                      ? <img src={user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
+                      : <span className="text-white font-bold text-sm">{(user.user_metadata?.full_name || user.email || '?')[0].toUpperCase()}</span>
+                    }
+                    {/* Role badge */}
+                    <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-black ${userRole === 'employer' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
                   </button>
 
                   {showUserMenu && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
-                      <div className="absolute top-full right-0 mt-2 w-60 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in">
-                        {/* User info */}
-                        <div className="px-4 py-3.5 border-b border-slate-700/60 flex items-center gap-3">
-                          {user.user_metadata?.avatar_url ? (
-                            <img src={user.user_metadata.avatar_url} className="w-10 h-10 rounded-full" alt="" />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
-                              <UserCircle2 size={22} className="text-slate-400" />
-                            </div>
-                          )}
-                          <div className="min-w-0 flex-1">
+                      <div className="absolute top-full right-0 mt-2 w-64 bg-[#111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
+                        {/* User header */}
+                        <div className="px-4 py-3.5 border-b border-white/8 flex items-center gap-3">
+                          {user.user_metadata?.avatar_url
+                            ? <img src={user.user_metadata.avatar_url} className="w-10 h-10 rounded-full border border-white/10 object-cover" alt="" />
+                            : <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center"><UserCircle2 size={20} className="text-slate-400" /></div>
+                          }
+                          <div className="min-w-0">
                             <p className="text-white text-sm font-semibold truncate">{user.user_metadata?.full_name || 'User'}</p>
-                            <p className="text-slate-400 text-xs truncate">{user.email}</p>
+                            <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${userRole === 'employer' ? 'bg-blue-500/20 text-blue-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+                              {userRole === 'employer' ? '🏢 Employer' : '💼 Job Seeker'}
+                            </span>
                           </div>
                         </div>
 
-                        {/* Employer section */}
-                        {hasCompanyProfile && (
-                          <div className="py-1.5 border-b border-slate-700/60">
-                            <p className="px-4 py-1 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Employer</p>
-                            <Link
-                              href="/employer/dashboard"
-                              onClick={() => setShowUserMenu(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800 transition-colors text-slate-200 text-sm"
-                            >
-                              <Building2 size={16} className="text-blue-400 shrink-0" />
-                              {t('dashboard')}
+                        {/* ── EMPLOYER MENU ── */}
+                        {userRole === 'employer' && (
+                          <div className="py-1.5">
+                            <p className="px-4 py-1 text-[10px] font-bold text-white/30 uppercase tracking-widest">Employer Tools</p>
+                            <Link href="/employer/dashboard" onClick={() => setShowUserMenu(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors">
+                              <Building2 size={15} className="text-blue-400 shrink-0" />
+                              {t('dashboard', appLang)}
                             </Link>
-                            <Link
-                              href="/shorts/upload"
-                              onClick={() => setShowUserMenu(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800 transition-colors text-slate-200 text-sm"
-                            >
-                              <Upload size={16} className="text-violet-400 shrink-0" />
-                              {t('uploadVideo')}
+                            <Link href="/shorts/upload" onClick={() => setShowUserMenu(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors">
+                              <Upload size={15} className="text-violet-400 shrink-0" />
+                              {t('uploadVideo', appLang)}
                             </Link>
                             {companyName && (
-                              <Link
-                                href={`/shorts/company/${encodeURIComponent(companyName)}`}
-                                onClick={() => setShowUserMenu(false)}
-                                className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800 transition-colors text-slate-200 text-sm"
-                              >
-                                <Video size={16} className="text-cyan-400 shrink-0" />
-                                {t('myCompany')}
+                              <Link href={`/shorts/company/${encodeURIComponent(companyName)}`} onClick={() => setShowUserMenu(false)}
+                                className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors">
+                                <Video size={15} className="text-cyan-400 shrink-0" />
+                                {t('myCompany', appLang)}
                               </Link>
                             )}
+                            <div className="mx-4 my-1.5 border-t border-white/8" />
+                            <button onClick={() => { setShowUserMenu(false); setNavTab('profile'); }}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
+                              <UserCircle2 size={15} className="text-slate-400 shrink-0" />
+                              Account Settings
+                            </button>
                           </div>
                         )}
 
-                        {/* Talent section */}
-                        <div className="py-1.5 border-b border-slate-700/60">
-                          <p className="px-4 py-1 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">My Activity</p>
-                          <button
-                            onClick={() => { setShowUserMenu(false); setActiveTab('saved'); setNavTab('home'); }}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800 transition-colors text-slate-200 text-sm text-left"
-                          >
-                            <Bookmark size={16} className="text-amber-400 shrink-0" />
-                            {t('savedJobs')} {savedJobIds.size > 0 && <span className="ml-auto text-xs text-slate-500">{savedJobIds.size}</span>}
-                          </button>
-                          <button
-                            onClick={() => { setShowUserMenu(false); setNavTab('profile'); }}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800 transition-colors text-slate-200 text-sm text-left"
-                          >
-                            <User size={16} className="text-emerald-400 shrink-0" />
-                            {t('profile')}
-                          </button>
-                        </div>
+                        {/* ── TALENT MENU ── */}
+                        {userRole === 'talent' && (
+                          <div className="py-1.5">
+                            <p className="px-4 py-1 text-[10px] font-bold text-white/30 uppercase tracking-widest">My Activity</p>
+                            <button onClick={() => { setShowUserMenu(false); setActiveTab('saved'); setNavTab('home'); }}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
+                              <Bookmark size={15} className="text-amber-400 shrink-0" />
+                              {t('savedJobs', appLang)}
+                              {savedJobIds.size > 0 && <span className="ml-auto text-xs text-white/30">{savedJobIds.size}</span>}
+                            </button>
+                            <button onClick={() => { setShowUserMenu(false); setNavTab('profile'); }}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
+                              <UserCircle2 size={15} className="text-emerald-400 shrink-0" />
+                              My Profile & Resume
+                            </button>
+                            <button onClick={() => { setShowUserMenu(false); setNavTab('profile'); }}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
+                              <Video size={15} className="text-blue-400 shrink-0" />
+                              {t('myApps', appLang)}
+                            </button>
+                            <div className="mx-4 my-1.5 border-t border-white/8" />
+                            <Link href="/employer/login" onClick={() => setShowUserMenu(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/40 hover:text-white/70 text-xs transition-colors">
+                              <Building2 size={14} className="shrink-0" />
+                              Post jobs as Employer →
+                            </Link>
+                          </div>
+                        )}
 
                         {/* Logout */}
-                        <div className="py-1.5">
+                        <div className="border-t border-white/8 py-1.5">
                           <button
                             onClick={async () => { setShowUserMenu(false); const s = createClient(); await s.auth.signOut(); }}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-900/30 transition-colors text-red-400 text-sm text-left"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-900/20 text-red-400/80 hover:text-red-300 text-sm transition-colors text-left"
                           >
-                            <LogOut size={16} className="shrink-0" />
-                            {t('logout')}
+                            <LogOut size={15} className="shrink-0" />
+                            {t('logout', appLang)}
                           </button>
                         </div>
                       </div>
@@ -429,38 +425,49 @@ export default function JobbeagleShortsPage() {
                 <div className="relative">
                   <button
                     onClick={() => setShowLoginMenu(!showLoginMenu)}
-                    className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white/10 backdrop-blur-md border border-white/25 rounded-xl text-white text-sm font-semibold hover:bg-white/20 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm font-semibold hover:bg-white/20 transition-colors"
                   >
-                    <LogIn className="w-4 h-4 shrink-0" />
-                    {t('login')}
-                    <ChevronDown className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                    <LogIn className="w-4 h-4" />
+                    {t('login', appLang)}
+                    <ChevronDown className="w-3 h-3 opacity-60" />
                   </button>
                   {showLoginMenu && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShowLoginMenu(false)} />
-                      <div className="absolute top-full right-0 mt-2 w-52 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50">
-                        <button
-                          onClick={async () => {
-                            const s = createClient();
-                            await s.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts&type=employer` } });
-                            setShowLoginMenu(false);
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-800 transition-colors text-white text-sm text-left"
-                        >
-                          <Building2 className="w-4 h-4 text-blue-400" />
-                          {t('empLogin')}
-                        </button>
-                        <div className="border-t border-slate-700">
+                      <div className="absolute top-full right-0 mt-2 w-56 bg-[#111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
+                        <div className="p-3">
+                          <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest px-1 mb-2">I am a...</p>
+                          <button
+                            onClick={async () => {
+                              const s = createClient();
+                              await s.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts&type=employer` } });
+                              setShowLoginMenu(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-blue-600/20 border border-blue-500/30 hover:bg-blue-600/30 transition-colors text-white text-sm text-left mb-2"
+                          >
+                            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
+                              <Building2 size={16} className="text-white" />
+                            </div>
+                            <div>
+                              <p className="font-semibold">{t('empLogin', appLang)}</p>
+                              <p className="text-white/50 text-[11px]">Post jobs & manage videos</p>
+                            </div>
+                          </button>
                           <button
                             onClick={async () => {
                               const s = createClient();
                               await s.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts&type=talent` } });
                               setShowLoginMenu(false);
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-800 transition-colors text-white text-sm text-left"
+                            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-emerald-600/15 border border-emerald-500/30 hover:bg-emerald-600/25 transition-colors text-white text-sm text-left"
                           >
-                            <User className="w-4 h-4 text-emerald-400" />
-                            {t('talLogin')}
+                            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center shrink-0">
+                              <User size={16} className="text-white" />
+                            </div>
+                            <div>
+                              <p className="font-semibold">{t('talLogin', appLang)}</p>
+                              <p className="text-white/50 text-[11px]">Browse & apply to jobs</p>
+                            </div>
                           </button>
                         </div>
                       </div>
@@ -471,57 +478,36 @@ export default function JobbeagleShortsPage() {
             </div>
           </div>
 
-          {/* Error Toast */}
+          {/* Toasts */}
           {error && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-              <div className="bg-red-900/90 backdrop-blur-md border border-red-500/50 rounded-lg p-4 shadow-xl flex items-center gap-3 min-w-[300px] max-w-[90vw]">
-                <AlertCircle className="text-red-400 flex-shrink-0" size={20} />
+            <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50">
+              <div className="bg-red-900/90 backdrop-blur-md border border-red-500/50 rounded-xl p-3.5 shadow-xl flex items-center gap-3 min-w-[280px] max-w-[90vw]">
+                <AlertCircle className="text-red-400 shrink-0" size={18} />
                 <p className="text-red-100 text-sm flex-1">{error}</p>
-                <button onClick={() => setError(null)} className="text-red-400 hover:text-red-300"><X size={18} /></button>
+                <button onClick={() => setError(null)} className="text-red-400"><X size={16} /></button>
               </div>
             </div>
           )}
-
-          {/* Success Toast */}
           {success && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-              <div className="bg-green-900/90 backdrop-blur-md border border-green-500/50 rounded-lg p-4 shadow-xl flex items-center gap-3 min-w-[300px] max-w-[90vw]">
-                <CheckCircle className="text-green-400 flex-shrink-0" size={20} />
+            <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50">
+              <div className="bg-green-900/90 backdrop-blur-md border border-green-500/50 rounded-xl p-3.5 shadow-xl flex items-center gap-3 min-w-[280px] max-w-[90vw]">
+                <CheckCircle className="text-green-400 shrink-0" size={18} />
                 <p className="text-green-100 text-sm flex-1">{success}</p>
-                <button onClick={() => setSuccess(null)} className="text-green-400 hover:text-green-300"><X size={18} /></button>
+                <button onClick={() => setSuccess(null)} className="text-green-400"><X size={16} /></button>
               </div>
             </div>
           )}
 
-          {/* Main video feed */}
+          {/* Feed area */}
           <div className="flex-1 min-h-0 w-full relative">
             {activeTab === 'saved' && savedJobsData.length === 0 ? (
-              <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
-                <Bookmark className="w-12 h-12 opacity-40" />
-                <p className="text-lg font-semibold">{t('noSaved')}</p>
-                <p className="text-sm text-center max-w-xs">{t('tapBookmark')}</p>
-              </div>
+              <EmptyState icon={Bookmark} title={t('noSaved', appLang)} hint={t('tapBookmark', appLang)} />
             ) : activeTab === 'following' && !user ? (
-              <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60 px-6">
-                <Users className="w-14 h-14 opacity-30" />
-                <p className="text-lg font-semibold text-center">{t('loginFirst')}</p>
-                <button
-                  onClick={() => setShowLoginMenu(true)}
-                  className="mt-2 px-6 py-3 bg-white/10 border border-white/25 rounded-xl text-white text-sm font-semibold hover:bg-white/20 transition-colors"
-                >
-                  {t('login')}
-                </button>
-              </div>
+              <EmptyState icon={Users} title={t('loginFirst', appLang)} hint="" action={<button onClick={() => setShowLoginMenu(true)} className="mt-4 px-6 py-3 bg-white/10 border border-white/25 rounded-2xl text-white text-sm font-semibold hover:bg-white/20 transition-colors">{t('login', appLang)}</button>} />
             ) : activeTab === 'following' && followedCompanies.size === 0 ? (
-              <div className="h-full w-full flex items-center justify-center flex-col gap-4 text-white/60">
-                <Building2 className="w-12 h-12 opacity-40" />
-                <p className="text-lg font-semibold">{t('noFollowing')}</p>
-                <p className="text-sm text-center max-w-xs">{t('tapFollow')}</p>
-              </div>
+              <EmptyState icon={Building2} title={t('noFollowing', appLang)} hint={t('tapFollow', appLang)} />
             ) : activeTab === 'following' && loadingFollowing ? (
-              <div className="h-full w-full flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
-              </div>
+              <div className="h-full flex items-center justify-center"><Loader2 className="w-8 h-8 text-blue-400 animate-spin" /></div>
             ) : (
               <VideoFeed
                 jobs={displayedJobs}
@@ -537,13 +523,13 @@ export default function JobbeagleShortsPage() {
             )}
           </div>
 
-          {/* Bottom nav */}
+          {/* Bottom Nav */}
           <BottomNav
-            activeTab={activeTab} navTab={navTab} onNav={handleNavTab}
+            activeTab={activeTab} navTab={navTab}
+            onNav={(tab) => { setNavTab(tab); if (tab === 'home') setActiveTab('foryou'); }}
             onTabChange={(tab) => { setActiveTab(tab); setNavTab('home'); }}
-            t={t}
-            followCount={followedCompanies.size}
-            savedCount={savedJobIds.size}
+            t={(k) => t(k, appLang)}
+            followCount={followedCompanies.size} savedCount={savedJobIds.size}
           />
         </>
       )}
@@ -551,7 +537,21 @@ export default function JobbeagleShortsPage() {
   );
 }
 
-// ── Bottom Nav: Home | Following | Saved | Me ─────────────────────────────────
+// Empty state helper
+function EmptyState({ icon: Icon, title, hint, action }: { icon: any; title: string; hint: string; action?: React.ReactNode }) {
+  return (
+    <div className="h-full flex flex-col items-center justify-center gap-3 text-white/50 px-8">
+      <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+        <Icon className="w-8 h-8 opacity-50" />
+      </div>
+      <p className="text-lg font-semibold text-white/70 text-center">{title}</p>
+      {hint && <p className="text-sm text-center leading-relaxed max-w-xs">{hint}</p>}
+      {action}
+    </div>
+  );
+}
+
+// Bottom Nav: Home | Following | Saved | Me
 function BottomNav({
   activeTab, navTab, onNav, onTabChange, t, followCount, savedCount,
 }: {
@@ -563,37 +563,33 @@ function BottomNav({
   followCount: number;
   savedCount: number;
 }) {
-  const tabs = [
-    { id: 'foryou' as const, icon: Home, label: t('home'), isActive: activeTab === 'foryou' && navTab === 'home' },
-    { id: 'following' as const, icon: Users, label: t('following'), badge: followCount, isActive: activeTab === 'following' && navTab === 'home' },
-    { id: 'saved' as const, icon: Bookmark, label: t('saved'), badge: savedCount, isActive: activeTab === 'saved' && navTab === 'home' },
-  ];
   return (
-    <div className="h-[4.25rem] md:h-20 bg-black/95 border-t border-gray-800/80 flex flex-row items-center justify-around z-40 flex-shrink-0" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-      {tabs.map(({ id, icon: Icon, label, badge, isActive }) => (
-        <button
-          key={id}
-          onClick={() => onTabChange(id)}
-          className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors relative ${isActive ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-        >
+    <div
+      className="h-[4.25rem] md:h-20 bg-black/95 border-t border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      {([
+        { id: 'foryou' as const, icon: Home,     label: t('home'),      badge: 0,          active: activeTab === 'foryou' && navTab === 'home' },
+        { id: 'following' as const, icon: Users, label: t('following'), badge: followCount, active: activeTab === 'following' && navTab === 'home' },
+        { id: 'saved' as const, icon: Bookmark,  label: t('saved'),     badge: savedCount,  active: activeTab === 'saved' && navTab === 'home' },
+      ]).map(({ id, icon: Icon, label, badge, active }) => (
+        <button key={id} onClick={() => onTabChange(id)}
+          className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
           <div className="relative">
-            <Icon size={26} strokeWidth={isActive ? 2.75 : 2} className="md:w-7 md:h-7" />
-            {badge !== undefined && badge > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+            <Icon size={24} strokeWidth={active ? 2.75 : 2} />
+            {badge > 0 && (
+              <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] bg-blue-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
           </div>
-          <span className="text-[11px] md:text-xs font-semibold leading-none">{label}</span>
+          <span className="text-[10px] md:text-xs font-semibold">{label}</span>
         </button>
       ))}
-      {/* Me tab */}
-      <button
-        onClick={() => onNav('profile')}
-        className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-      >
-        <User size={26} strokeWidth={navTab === 'profile' ? 2.75 : 2} className="md:w-7 md:h-7" />
-        <span className="text-[11px] md:text-xs font-semibold leading-none">{t('me')}</span>
+      <button onClick={() => onNav('profile')}
+        className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+        <User size={24} strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        <span className="text-[10px] md:text-xs font-semibold">{t('me')}</span>
       </button>
     </div>
   );
