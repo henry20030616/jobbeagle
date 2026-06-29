@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import VideoFeed from '@/components/shorts/VideoFeed';
 import ProfileModal from '@/components/shorts/ProfileModal';
 import { JobData } from '@/types';
@@ -8,6 +8,7 @@ import {
   Home, User, Bookmark, X, AlertCircle, Loader2, CheckCircle,
   LogIn, LogOut, Building2, ChevronDown, UserCircle2,
   Video, Upload, Users, Volume2, VolumeX,
+  Search, MapPin, XCircle, Edit,
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
@@ -57,6 +58,13 @@ const SI: Record<string, Partial<Record<AppLanguage, string>>> = {
   iAmA:        { en: 'I am a…', 'zh-TW': '我是…', 'zh-CN': '我是…', es: 'Soy un…', hi: 'मैं हूँ…', ar: 'أنا…' },
   empBadge:    { en: '🏢 Employer', 'zh-TW': '🏢 企業方', 'zh-CN': '🏢 企业方', es: '🏢 Empresa', hi: '🏢 नियोक्ता', ar: '🏢 صاحب عمل' },
   talBadge:    { en: '💼 Job Seeker', 'zh-TW': '💼 求職者', 'zh-CN': '💼 求职者', es: '💼 Candidato', hi: '💼 नौकरी खोजने वाला', ar: '💼 باحث عمल' },
+  noResults:   { en: 'No jobs match your filters', 'zh-TW': '沒有符合條件的職缺', 'zh-CN': '没有符合条件的职位', es: 'Ningún empleo coincide', hi: 'कोई नौकरी मेल नहीं खाती', ar: 'لا توجد وظائف مطابقة' },
+  search:      { en: 'Search', 'zh-TW': '搜尋', 'zh-CN': '搜索', es: 'Buscar', hi: 'खोजें', ar: 'بحث' },
+  searchJobs:  { en: 'Search jobs…', 'zh-TW': '搜尋職缺…', 'zh-CN': '搜索职位…', es: 'Buscar empleos…', hi: 'नौकरियां खोजें…', ar: 'ابحث عن وظائف…' },
+  location:    { en: 'Location', 'zh-TW': '地點', 'zh-CN': '地点', es: 'Ubicación', hi: 'स्थान', ar: 'الموقع' },
+  tag:         { en: 'Tag', 'zh-TW': '標籤', 'zh-CN': '标签', es: 'Etiqueta', hi: 'टैग', ar: 'وسم' },
+  clearFilters:{ en: 'Clear', 'zh-TW': '清除', 'zh-CN': '清除', es: 'Limpiar', hi: 'साफ़ करें', ar: 'مسح' },
+  editVideos:  { en: 'Edit video details', 'zh-TW': '編輯影片詳情', 'zh-CN': '编辑视频详情', es: 'Editar videos', hi: 'वीडियो संपादित करें', ar: 'تعديل الفيديوهات' },
 };
 const t = (key: string, lang: AppLanguage) => SI[key]?.[lang] ?? SI[key]?.en ?? key;
 
@@ -102,6 +110,12 @@ export default function JobbeagleShortsPage() {
   // Browser policy: video can't autoplay with sound without user gesture.
   // We show a full-screen overlay to collect that gesture on first visit.
   const [showSoundOverlay, setShowSoundOverlay] = useState(false);
+
+  // Search / filter (For You feed)
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
+  const [searchTag, setSearchTag] = useState('');
 
   useEffect(() => {
     const pref = localStorage.getItem('jobbeagle_sound_pref');
@@ -305,9 +319,30 @@ export default function JobbeagleShortsPage() {
     else if (!saved) setSavedJobsData(prev => prev.filter(j => j.id !== jobId));
   };
 
-  const displayedJobs =
-    activeTab === 'following' ? followingVideos :
-    activeTab === 'saved' ? savedJobsData : jobs;
+  const filterJobList = useCallback((list: JobData[]) => {
+    const kw = searchKeyword.trim().toLowerCase();
+    const loc = searchLocation.trim().toLowerCase();
+    const tag = searchTag.trim().toLowerCase();
+    if (!kw && !loc && !tag) return list;
+    return list.filter((j) => {
+      const haystack = [j.jobTitle, j.companyName, j.description, ...(j.tags || [])]
+        .join(' ')
+        .toLowerCase();
+      const matchKw = !kw || haystack.includes(kw);
+      const matchLoc = !loc || (j.location || '').toLowerCase().includes(loc);
+      const matchTag = !tag || (j.tags || []).some((t) => t.toLowerCase().includes(tag));
+      return matchKw && matchLoc && matchTag;
+    });
+  }, [searchKeyword, searchLocation, searchTag]);
+
+  const displayedJobs = useMemo(() => {
+    const base =
+      activeTab === 'following' ? followingVideos :
+      activeTab === 'saved' ? savedJobsData : jobs;
+    return activeTab === 'foryou' ? filterJobList(base) : base;
+  }, [activeTab, followingVideos, savedJobsData, jobs, filterJobList]);
+
+  const hasActiveFilters = !!(searchKeyword.trim() || searchLocation.trim() || searchTag.trim());
 
   if (loading) {
     return (
@@ -377,6 +412,16 @@ export default function JobbeagleShortsPage() {
 
             {/* Right: language switcher + avatar */}
             <div className="flex items-center gap-2 md:gap-3 shrink-0">
+              {navTab === 'home' && activeTab === 'foryou' && (
+                <button
+                  type="button"
+                  onClick={() => setShowSearch((v) => !v)}
+                  className={`p-2 rounded-xl border transition-colors ${showSearch || hasActiveFilters ? 'bg-blue-600/30 border-blue-500/50 text-blue-300' : 'bg-white/5 border-white/15 text-white/70 hover:text-white'}`}
+                  aria-label={t('search', appLang)}
+                >
+                  <Search size={18} />
+                </button>
+              )}
               <LanguageSwitcher variant="light" />
 
               {user ? (
@@ -416,10 +461,15 @@ export default function JobbeagleShortsPage() {
                         {userRole === 'employer' && (
                           <div className="py-1.5">
                             <p className="px-4 py-1 text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('empTools', appLang)}</p>
-                            <Link href="/employer/dashboard" onClick={() => setShowUserMenu(false)}
+                            <Link href="/shorts?shorts_view=company&open_profile=1" onClick={() => setShowUserMenu(false)}
                               className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors">
                               <Building2 size={15} className="text-blue-400 shrink-0" />
                               {t('dashboard', appLang)}
+                            </Link>
+                            <Link href="/employer/dashboard?legacy=1" onClick={() => setShowUserMenu(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/60 hover:text-white text-xs transition-colors">
+                              <Edit size={14} className="text-slate-400 shrink-0" />
+                              {t('editVideos', appLang)}
                             </Link>
                             <Link href="/shorts/upload" onClick={() => setShowUserMenu(false)}
                               className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors">
@@ -542,6 +592,53 @@ export default function JobbeagleShortsPage() {
             </div>
           </div>
 
+          {/* Search / filter bar */}
+          {navTab === 'home' && activeTab === 'foryou' && showSearch && (
+            <div className="w-full flex-shrink-0 px-4 py-3 bg-black/90 border-b border-white/8 z-20">
+              <div className="flex flex-col sm:flex-row gap-2 max-w-3xl mx-auto">
+                <div className="relative flex-1">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+                  <input
+                    type="search"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    placeholder={t('searchJobs', appLang)}
+                    className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white/8 border border-white/12 text-white text-sm placeholder:text-white/35 focus:outline-none focus:border-blue-500/50"
+                  />
+                </div>
+                <div className="relative flex-1 sm:max-w-[140px]">
+                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+                  <input
+                    type="text"
+                    value={searchLocation}
+                    onChange={(e) => setSearchLocation(e.target.value)}
+                    placeholder={t('location', appLang)}
+                    className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white/8 border border-white/12 text-white text-sm placeholder:text-white/35 focus:outline-none focus:border-blue-500/50"
+                  />
+                </div>
+                <div className="relative flex-1 sm:max-w-[120px]">
+                  <input
+                    type="text"
+                    value={searchTag}
+                    onChange={(e) => setSearchTag(e.target.value)}
+                    placeholder={t('tag', appLang)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-white/8 border border-white/12 text-white text-sm placeholder:text-white/35 focus:outline-none focus:border-blue-500/50"
+                  />
+                </div>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={() => { setSearchKeyword(''); setSearchLocation(''); setSearchTag(''); }}
+                    className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-white/60 hover:text-white text-sm border border-white/12 hover:bg-white/5"
+                  >
+                    <XCircle size={14} />
+                    {t('clearFilters', appLang)}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Toasts */}
           {error && (
             <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50">
@@ -572,6 +669,10 @@ export default function JobbeagleShortsPage() {
               <EmptyState icon={Building2} title={t('noFollowing', appLang)} hint={t('tapFollow', appLang)} />
             ) : activeTab === 'following' && loadingFollowing ? (
               <div className="h-full flex items-center justify-center"><Loader2 className="w-8 h-8 text-blue-400 animate-spin" /></div>
+            ) : activeTab === 'foryou' && hasActiveFilters && displayedJobs.length === 0 ? (
+              <EmptyState icon={Search} title={t('noResults', appLang)} hint="" action={
+                <button type="button" onClick={() => { setSearchKeyword(''); setSearchLocation(''); setSearchTag(''); }} className="mt-4 px-6 py-3 bg-white/10 border border-white/25 rounded-2xl text-white text-sm font-semibold hover:bg-white/20 transition-colors">{t('clearFilters', appLang)}</button>
+              } />
             ) : (
               <VideoFeed
                 jobs={displayedJobs}

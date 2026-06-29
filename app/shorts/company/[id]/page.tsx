@@ -3,7 +3,7 @@
 /**
  * 企業公開主頁 — Instagram 官方粉絲專頁風格
  */
-import React, { useState, useEffect, use, useCallback } from 'react';
+import React, { useState, useEffect, use, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, MapPin, DollarSign, Play, ExternalLink,
@@ -28,12 +28,12 @@ function getYouTubeThumbnail(url: string): string | null {
 }
 
 const CP = {
-  en:     { posts: 'posts', followers: 'followers', views: 'views', share: 'Share', copied: 'Copied!', noJobs: 'No openings right now.', follow: 'Follow', unfollow: 'Following', applyExternal: 'Apply Now', applyEmail: 'Quick Apply', inquire: 'Inquire', moreOnShorts: 'More on Jobbeagle Shorts', jobs: 'Jobs' },
-  'zh-TW':{ posts: '部影片', followers: '追蹤者', views: '觀看', share: '分享', copied: '已複製！', noJobs: '目前沒有公開職缺。', follow: '追蹤', unfollow: '已追蹤', applyExternal: '前往申請', applyEmail: '一鍵申請', inquire: '洽詢', moreOnShorts: 'Jobbeagle Shorts 看更多', jobs: '職缺' },
-  'zh-CN':{ posts: '个视频', followers: '关注者', views: '观看', share: '分享', copied: '已复制！', noJobs: '暂无公开职位。', follow: '关注', unfollow: '已关注', applyExternal: '前往申请', applyEmail: '一键申请', inquire: '洽询', moreOnShorts: 'Jobbeagle Shorts 看更多', jobs: '职位' },
-  es:     { posts: 'videos', followers: 'seguidores', views: 'vistas', share: 'Compartir', copied: '¡Copiado!', noJobs: 'Sin vacantes.', follow: 'Seguir', unfollow: 'Siguiendo', applyExternal: 'Solicitar', applyEmail: 'Aplicar', inquire: 'Consultar', moreOnShorts: 'Más en Jobbeagle Shorts', jobs: 'Empleos' },
-  hi:     { posts: 'वीडियो', followers: 'फॉलोअर', views: 'व्यूज', share: 'शेयर', copied: 'कॉपी!', noJobs: 'कोई नौकरी नहीं।', follow: 'फॉलो', unfollow: 'फॉलोइंग', applyExternal: 'आवेदन करें', applyEmail: 'शीघ्र आवेदन', inquire: 'पूछें', moreOnShorts: 'Jobbeagle Shorts पर', jobs: 'नौकरियां' },
-  ar:     { posts: 'فيديو', followers: 'متابع', views: 'مشاهدة', share: 'مشاركة', copied: 'تم!', noJobs: 'لا وظائف حالياً.', follow: 'متابعة', unfollow: 'تتابع', applyExternal: 'تقدم الآن', applyEmail: 'تقديم سريع', inquire: 'استفسار', moreOnShorts: 'المزيد في Jobbeagle Shorts', jobs: 'وظائف' },
+  en:     { posts: 'posts', followers: 'followers', views: 'views', share: 'Share', copied: 'Copied!', noJobs: 'No openings right now.', follow: 'Follow', unfollow: 'Following', applyExternal: 'Apply Now', applyEmail: 'Quick Apply', inquire: 'Inquire', moreOnShorts: 'More on Jobbeagle Shorts', jobs: 'Jobs', allJobs: 'All', openJobs: 'Open to apply', watchOnShorts: 'Watch on Shorts' },
+  'zh-TW':{ posts: '部影片', followers: '追蹤者', views: '觀看', share: '分享', copied: '已複製！', noJobs: '目前沒有公開職缺。', follow: '追蹤', unfollow: '已追蹤', applyExternal: '前往申請', applyEmail: '一鍵申請', inquire: '洽詢', moreOnShorts: 'Jobbeagle Shorts 看更多', jobs: '職缺', allJobs: '全部', openJobs: '開放申請', watchOnShorts: '在 Shorts 觀看' },
+  'zh-CN':{ posts: '个视频', followers: '关注者', views: '观看', share: '分享', copied: '已复制！', noJobs: '暂无公开职位。', follow: '关注', unfollow: '已关注', applyExternal: '前往申请', applyEmail: '一键申请', inquire: '洽询', moreOnShorts: 'Jobbeagle Shorts 看更多', jobs: '职位', allJobs: '全部', openJobs: '开放申请', watchOnShorts: '在 Shorts 观看' },
+  es:     { posts: 'videos', followers: 'seguidores', views: 'vistas', share: 'Compartir', copied: '¡Copiado!', noJobs: 'Sin vacantes.', follow: 'Seguir', unfollow: 'Siguiendo', applyExternal: 'Solicitar', applyEmail: 'Aplicar', inquire: 'Consultar', moreOnShorts: 'Más en Jobbeagle Shorts', jobs: 'Empleos', allJobs: 'Todos', openJobs: 'Abiertos', watchOnShorts: 'Ver en Shorts' },
+  hi:     { posts: 'वीडियो', followers: 'फॉलोअर', views: 'व्यूज', share: 'शेयर', copied: 'कॉपी!', noJobs: 'कोई नौकरी नहीं।', follow: 'फॉलो', unfollow: 'फॉलोइंग', applyExternal: 'आवेदन करें', applyEmail: 'शीघ्र आवेदन', inquire: 'पूछें', moreOnShorts: 'Jobbeagle Shorts पर', jobs: 'नौकरियां', allJobs: 'सभी', openJobs: 'खुली', watchOnShorts: 'Shorts पर देखें' },
+  ar:     { posts: 'فيديو', followers: 'متابع', views: 'مشاهدة', share: 'مشاركة', copied: 'تم!', noJobs: 'لا وظائف حالياً.', follow: 'متابعة', unfollow: 'تتابع', applyExternal: 'تقدم الآن', applyEmail: 'تقديم سريع', inquire: 'استفسار', moreOnShorts: 'المزيد في Jobbeagle Shorts', jobs: 'وظائف', allJobs: 'الكل', openJobs: 'مفتوحة', watchOnShorts: 'شاهد على Shorts' },
 } as const;
 
 interface PageProps { params: Promise<{ id: string }>; }
@@ -58,6 +58,14 @@ export default function CompanyPublicPage({ params }: PageProps) {
   const [followerCount, setFollowerCount] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
   const [totalViews, setTotalViews] = useState(0);
+  const [jobFilter, setJobFilter] = useState<'all' | 'open'>('all');
+
+  const displayedJobs = useMemo(() => {
+    if (jobFilter === 'open') {
+      return jobs.filter((j) => !!(j.applyUrl || j.contactEmail));
+    }
+    return jobs;
+  }, [jobs, jobFilter]);
 
   useEffect(() => {
     const load = async () => {
@@ -248,16 +256,28 @@ export default function CompanyPublicPage({ params }: PageProps) {
 
             {/* ── Divider / Tab ── */}
             <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-              <div className="flex justify-center py-3 border-t-2 border-white -mt-px">
-                <span className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-white">
+              <div className="flex justify-center gap-6 py-3 border-t-2 border-white -mt-px">
+                <button
+                  type="button"
+                  onClick={() => setJobFilter('all')}
+                  className={`flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase transition-colors ${jobFilter === 'all' ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
+                >
                   <Grid3x3 size={13} />
-                  {tc.jobs}
-                </span>
+                  {tc.allJobs}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setJobFilter('open')}
+                  className={`flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase transition-colors ${jobFilter === 'open' ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
+                >
+                  <Briefcase size={13} />
+                  {tc.openJobs}
+                </button>
               </div>
             </div>
 
             {/* ── Video Grid ── */}
-            {jobs.length === 0 ? (
+            {displayedJobs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4 px-6 text-center">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
                   <Building2 className="w-7 h-7 text-white/20" />
@@ -266,7 +286,7 @@ export default function CompanyPublicPage({ params }: PageProps) {
               </div>
             ) : (
               <div className="grid grid-cols-3" style={{ gap: '2px', background: 'rgba(255,255,255,0.04)' }}>
-                {jobs.map((job) => {
+                {displayedJobs.map((job) => {
                   const thumb = getThumb(job);
                   return (
                     <button
@@ -391,6 +411,15 @@ export default function CompanyPublicPage({ params }: PageProps) {
                 </div>
               )}
 
+              <Link
+                href={`/shorts?job=${encodeURIComponent(selectedVideo.id)}`}
+                className="flex items-center justify-center gap-2.5 w-full py-4 rounded-2xl text-[15px] font-bold text-white transition-all hover:opacity-90 active:scale-[0.98] mb-3"
+                style={{ background: 'linear-gradient(135deg, #7c3aed, #2563eb)', boxShadow: '0 8px 32px rgba(124,58,237,0.25)' }}
+              >
+                <Play size={17} fill="white" />
+                {tc.watchOnShorts}
+              </Link>
+
               {/* Apply CTA */}
               <div className="pt-1">
                 {selectedVideo.applyUrl ? (
@@ -415,8 +444,8 @@ export default function CompanyPublicPage({ params }: PageProps) {
                 )}
               </div>
 
-              <Link href="/shorts" className="block text-center py-3 text-[13px] font-medium" style={{ color: 'rgb(96,165,250)' }}>
-                {tc.moreOnShorts}
+              <Link href={`/shorts?job=${encodeURIComponent(selectedVideo.id)}`} className="block text-center py-3 text-[13px] font-medium" style={{ color: 'rgb(96,165,250)' }}>
+                {tc.watchOnShorts}
               </Link>
             </div>
           </div>

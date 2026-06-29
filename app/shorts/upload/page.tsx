@@ -15,6 +15,7 @@ import {
 } from '@/lib/video-embed';
 import { useLanguage } from '@/lib/language-context';
 import { setStoredAccountRole } from '@/lib/shorts-view-role';
+import { translateApiError } from '@/lib/api-errors';
 import type { AppLanguage } from '@/lib/language-context';
 import type { VideoSourceType } from '@/types';
 
@@ -596,7 +597,7 @@ export default function ShortsUploadPage() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t('errPublish'));
+      if (!res.ok) throw new Error(translateApiError(data.errorCode, data.error, appLanguage));
       setPublishedUrl(`/shorts/company/${encodeURIComponent(form.companyName)}`);
       setPublishedVideoId(data.video?.id || '');
       setStep('done');

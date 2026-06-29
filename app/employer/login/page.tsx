@@ -53,7 +53,7 @@ export default function EmployerLoginPage() {
 
   const checkEmployerStatus = async (_userId: string) => {
     // Dashboard auto-creates company_profile on first visit
-    router.push('/employer/dashboard');
+    router.push('/shorts?shorts_view=company&open_profile=1');
   };
 
   const handleLogin = async () => {
@@ -64,7 +64,7 @@ export default function EmployerLoginPage() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=/employer/dashboard&type=employer`,
+          redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts&type=employer`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

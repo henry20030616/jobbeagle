@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required.', errorCode: 'AUTH_REQUIRED' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -31,17 +31,17 @@ export async function POST(request: NextRequest) {
 
     // ── Required fields ─────────────────────────────────────────
     if (!company_name?.trim()) {
-      return NextResponse.json({ error: 'Company name is required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Company name is required.', errorCode: 'COMPANY_NAME_REQUIRED' }, { status: 400 });
     }
     if (!job_title?.trim()) {
-      return NextResponse.json({ error: 'Job title is required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Job title is required.', errorCode: 'JOB_TITLE_REQUIRED' }, { status: 400 });
     }
     if (!video_url?.trim()) {
-      return NextResponse.json({ error: 'Video URL is required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Video URL is required.', errorCode: 'VIDEO_URL_REQUIRED' }, { status: 400 });
     }
     if (!description?.trim() || description.trim().length < 50) {
       return NextResponse.json(
-        { error: 'Job description is required (minimum 50 characters). This helps AI analyze candidate match scores.' },
+        { error: 'Job description is required (minimum 50 characters). This helps AI analyze candidate match scores.', errorCode: 'DESCRIPTION_TOO_SHORT' },
         { status: 400 }
       );
     }
@@ -54,11 +54,11 @@ export async function POST(request: NextRequest) {
     const hasApplyUrl = !!apply_url?.trim();
 
     if (hasEmail && !EMAIL_RE.test(contact_email.trim())) {
-      return NextResponse.json({ error: 'Contact email format is invalid.' }, { status: 400 });
+      return NextResponse.json({ error: 'Contact email format is invalid.', errorCode: 'INVALID_EMAIL' }, { status: 400 });
     }
     if (hasApplyUrl && !isValidHttpUrl(apply_url.trim())) {
       return NextResponse.json(
-        { error: 'Apply URL must be a valid http/https URL.' },
+        { error: 'Apply URL must be a valid http/https URL.', errorCode: 'INVALID_APPLY_URL' },
         { status: 400 }
       );
     }
@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: `You have reached the limit of ${MAX_VIDEOS_PER_COMPANY} job videos. Please delete some existing videos before posting new ones.`,
+          errorCode: 'VIDEO_LIMIT_REACHED',
         },
         { status: 400 }
       );
@@ -123,12 +124,12 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Publish error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message, errorCode: 'SERVER_ERROR' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, video: data });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: msg, errorCode: 'SERVER_ERROR' }, { status: 500 });
   }
 }

@@ -27,6 +27,9 @@ interface AnalysisModalProps {
   salary: string;
   jobDescription: string;
   language?: AppLanguage;
+  /** When set, shows "Apply with this resume" after analysis (email-apply jobs only). */
+  onApplyWithResume?: (resumeId: string) => void;
+  canApply?: boolean;
 }
 
 // ─── Progress helpers (mirrors P1 logic) ──────────────────────────────────────
@@ -402,9 +405,11 @@ const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
 
 const AnalysisModal: React.FC<AnalysisModalProps> = ({
   isOpen, onClose, jobTitle, companyName, location, salary, jobDescription, language = 'en',
+  onApplyWithResume, canApply = false,
 }) => {
   const [step, setStep] = useState<'resume' | 'analyzing' | 'result' | 'error'>('resume');
   const [resume, setResume] = useState<ResumeInput | null>(null);
+  const [analyzedResumeId, setAnalyzedResumeId] = useState<string | null>(null);
   const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoadingResumes, setIsLoadingResumes] = useState(false);
@@ -423,6 +428,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     setStep('resume');
     setReport(null);
     setResume(null);
+    setAnalyzedResumeId(null);
     setErrorMsg('');
     setProgress(0);
     loadUserAndResumes();
@@ -484,7 +490,8 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     if (progressTimerRef.current) { clearInterval(progressTimerRef.current); progressTimerRef.current = null; }
   };
 
-  const handleAnalyze = async (selectedResume: ResumeInput) => {
+  const handleAnalyze = async (selectedResume: ResumeInput, savedResumeId?: string) => {
+    setAnalyzedResumeId(savedResumeId ?? null);
     setStep('analyzing');
     startProgress();
     try {
@@ -582,7 +589,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                   {savedResumes.map((saved) => (
                     <button
                       key={saved.id}
-                      onClick={() => handleAnalyze(saved)}
+                      onClick={() => handleAnalyze(saved, saved.id)}
                       className="w-full flex items-center gap-3 bg-slate-800 hover:bg-violet-900/40 border border-violet-500/30 rounded-xl p-3 mb-2 transition-all active:scale-95 text-left"
                     >
                       <FileText size={19} className="text-violet-400 shrink-0" />
@@ -670,6 +677,16 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
             <div>
               <CompactReport report={report} />
               <div className="mt-4 mb-2 space-y-2">
+                {canApply && analyzedResumeId && onApplyWithResume && (
+                  <button
+                    type="button"
+                    onClick={() => onApplyWithResume(analyzedResumeId)}
+                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-sm font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                    <Sparkles size={15} />
+                    {(language === 'zh-TW' || language === 'zh-CN') ? '用此履歷一鍵申請' : 'Apply with this resume'}
+                  </button>
+                )}
                 {saveState === 'need_login' ? (
                   <div className="w-full bg-blue-900/30 border border-blue-500/40 text-blue-300 text-xs font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
                     💡 {(language === 'zh-TW' || language === 'zh-CN') ? '請先登入才能儲存報告' : 'Please sign in to save this report'}

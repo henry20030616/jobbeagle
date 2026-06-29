@@ -7,19 +7,19 @@ import Link from 'next/link';
 import { 
   Upload, Video, Edit, Trash2, Eye, EyeOff, 
   Plus, Building2, LogOut, AlertCircle, Loader2,
-  X, CheckCircle, Users, ChevronRight, Link as LinkIcon,
+  X, CheckCircle, Users, ChevronRight, Link as LinkIcon, Heart,
 } from 'lucide-react';
 import { detectVideoSourceType, sourceTypeLabel, toYouTubeEmbedUrl } from '@/lib/video-embed';
 import { useLanguage } from '@/lib/language-context';
 import type { VideoSourceType } from '@/types';
 
 const ED = {
-  en:     { hub: 'Employer Hub', logout: 'Logout', myVideos: 'My Job Videos', postNew: 'Post New Job', applicants: 'Applicants', published: 'Published', draft: 'Draft', views: 'views', likes: 'likes', publish: 'Publish', unpublish: 'Unpublish', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete this video?', noVideos: 'No job videos yet', noVideosHint: 'Click "Post New Job" to upload your first recruitment video.', deleteSuccess: 'Video deleted', publishSuccess: 'Video published', unpublishSuccess: 'Video unpublished', applicantsTitle: 'Applicants & Resumes', applicantsDesc: 'View applicants and download resumes from the Shorts employer panel — the same account you use here.', viewApplicants: 'View Applicants', errLoad: 'Failed to load', errDelete: 'Delete failed', errOp: 'Operation failed', saveSuccess: 'Changes saved' },
-  'zh-TW':{ hub: '企業中心', logout: '登出', myVideos: '我的職缺影片', postNew: '發布新職缺', applicants: '應徵者', published: '已發布', draft: '草稿', views: '觀看', likes: '讚', publish: '發布', unpublish: '下架', edit: '編輯', delete: '刪除', confirmDelete: '確定要刪除這個影片嗎？', noVideos: '尚未發布任何影片', noVideosHint: '點擊「發布新職缺」上傳第一支招募影片。', deleteSuccess: '影片已刪除', publishSuccess: '影片已發布', unpublishSuccess: '影片已下架', applicantsTitle: '應徵者與履歷', applicantsDesc: '查看誰投遞履歷、下載履歷，請前往 Shorts 企業後台（與本站帳號相同）。若已設定聯絡信箱，新應徵也會寄信通知。', viewApplicants: '前往查看應徵', errLoad: '載入失敗', errDelete: '刪除失敗', errOp: '操作失敗', saveSuccess: '已儲存修改' },
-  'zh-CN':{ hub: '企业中心', logout: '登出', myVideos: '我的职位视频', postNew: '发布新职位', applicants: '应聘者', published: '已发布', draft: '草稿', views: '观看', likes: '赞', publish: '发布', unpublish: '下架', edit: '编辑', delete: '删除', confirmDelete: '确定要删除这个视频吗？', noVideos: '尚未发布任何视频', noVideosHint: '点击「发布新职位」上传第一个招聘视频。', deleteSuccess: '视频已删除', publishSuccess: '视频已发布', unpublishSuccess: '视频已下架', applicantsTitle: '应聘者与简历', applicantsDesc: '查看谁投递了简历，请前往 Shorts 企业后台（与本站账号相同）。若已设置联系邮箱，新应聘也会发邮件通知。', viewApplicants: '前往查看应聘', errLoad: '加载失败', errDelete: '删除失败', errOp: '操作失败', saveSuccess: '已保存修改' },
-  es:     { hub: 'Centro de empleadores', logout: 'Cerrar sesión', myVideos: 'Mis videos de empleo', postNew: 'Publicar nuevo empleo', applicants: 'Candidatos', published: 'Publicado', draft: 'Borrador', views: 'vistas', likes: 'me gusta', publish: 'Publicar', unpublish: 'Despublicar', edit: 'Editar', delete: 'Eliminar', confirmDelete: '¿Eliminar este video?', noVideos: 'Sin videos todavía', noVideosHint: 'Haz clic en "Publicar nuevo empleo" para subir tu primer video.', deleteSuccess: 'Video eliminado', publishSuccess: 'Video publicado', unpublishSuccess: 'Video despublicado', applicantsTitle: 'Candidatos y currículos', applicantsDesc: 'Consulta los candidatos y descarga currículos en el panel Shorts (misma cuenta).', viewApplicants: 'Ver candidatos', errLoad: 'Error al cargar', errDelete: 'Error al eliminar', errOp: 'Operación fallida', saveSuccess: 'Cambios guardados' },
-  hi:     { hub: 'नियोक्ता केंद्र', logout: 'लॉगआउट', myVideos: 'मेरे जॉब वीडियो', postNew: 'नई नौकरी पोस्ट करें', applicants: 'आवेदक', published: 'प्रकाशित', draft: 'ड्राफ्ट', views: 'व्यूज', likes: 'लाइक', publish: 'प्रकाशित करें', unpublish: 'हटाएं', edit: 'संपादित करें', delete: 'हटाएं', confirmDelete: 'यह वीडियो हटाएं?', noVideos: 'अभी कोई जॉब वीडियो नहीं', noVideosHint: 'पहला भर्ती वीडियो पोस्ट करने के लिए "नई नौकरी पोस्ट करें" पर क्लिक करें।', deleteSuccess: 'वीडियो हटाया गया', publishSuccess: 'वीडियो प्रकाशित', unpublishSuccess: 'वीडियो हटाया गया', applicantsTitle: 'आवेदक और रेज़्यूमे', applicantsDesc: 'Shorts पैनल में आवेदक देखें और रेज़्यूमे डाउनलोड करें (एक ही खाता)।', viewApplicants: 'आवेदक देखें', errLoad: 'लोड विफल', errDelete: 'हटाना विफल', errOp: 'ऑपरेशन विफल', saveSuccess: 'परिवर्तन सहेजे गए' },
-  ar:     { hub: 'مركز أصحاب العمل', logout: 'تسجيل الخروج', myVideos: 'فيديوهات الوظائف', postNew: 'نشر وظيفة جديدة', applicants: 'المتقدمون', published: 'منشور', draft: 'مسودة', views: 'مشاهدة', likes: 'إعجاب', publish: 'نشر', unpublish: 'إلغاء النشر', edit: 'تعديل', delete: 'حذف', confirmDelete: 'حذف هذا الفيديو؟', noVideos: 'لا توجد فيديوهات بعد', noVideosHint: 'انقر "نشر وظيفة جديدة" لرفع أول فيديو توظيف.', deleteSuccess: 'تم حذف الفيديو', publishSuccess: 'تم نشر الفيديو', unpublishSuccess: 'تم إلغاء نشر الفيديو', applicantsTitle: 'المتقدمون والسير الذاتية', applicantsDesc: 'اعرض المتقدمين وحمّل السير الذاتية من لوحة Shorts (نفس الحساب).', viewApplicants: 'عرض المتقدمين', errLoad: 'فشل التحميل', errDelete: 'فشل الحذف', errOp: 'فشلت العملية', saveSuccess: 'تم حفظ التغييرات' },
+  en:     { hub: 'Employer Hub', logout: 'Logout', myVideos: 'My Job Videos', postNew: 'Post New Job', applicants: 'Applicants', published: 'Published', draft: 'Draft', views: 'views', likes: 'likes', applications: 'applications', publish: 'Publish', unpublish: 'Unpublish', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete this video?', noVideos: 'No job videos yet', noVideosHint: 'Click "Post New Job" to upload your first recruitment video.', deleteSuccess: 'Video deleted', publishSuccess: 'Video published', unpublishSuccess: 'Video unpublished', applicantsTitle: 'Applicants & Resumes', applicantsDesc: 'View applicants and download resumes from the Shorts employer panel — the same account you use here.', viewApplicants: 'View Applicants', manageInShorts: 'Manage in Shorts', legacyHint: 'Video editing only — applicants are managed in Shorts.', errLoad: 'Failed to load', errDelete: 'Delete failed', errOp: 'Operation failed', saveSuccess: 'Changes saved' },
+  'zh-TW':{ hub: '企業中心', logout: '登出', myVideos: '我的職缺影片', postNew: '發布新職缺', applicants: '應徵者', published: '已發布', draft: '草稿', views: '觀看', likes: '讚', applications: '申請', publish: '發布', unpublish: '下架', edit: '編輯', delete: '刪除', confirmDelete: '確定要刪除這個影片嗎？', noVideos: '尚未發布任何影片', noVideosHint: '點擊「發布新職缺」上傳第一支招募影片。', deleteSuccess: '影片已刪除', publishSuccess: '影片已發布', unpublishSuccess: '影片已下架', applicantsTitle: '應徵者與履歷', applicantsDesc: '查看誰投遞履歷、下載履歷，請前往 Shorts 企業後台（與本站帳號相同）。若已設定聯絡信箱，新應徵也會寄信通知。', viewApplicants: '前往查看應徵', manageInShorts: '在 Shorts 管理', legacyHint: '僅供編輯影片 — 應徵者請在 Shorts 後台查看。', errLoad: '載入失敗', errDelete: '刪除失敗', errOp: '操作失敗', saveSuccess: '已儲存修改' },
+  'zh-CN':{ hub: '企业中心', logout: '登出', myVideos: '我的职位视频', postNew: '发布新职位', applicants: '应聘者', published: '已发布', draft: '草稿', views: '观看', likes: '赞', applications: '申请', publish: '发布', unpublish: '下架', edit: '编辑', delete: '删除', confirmDelete: '确定要删除这个视频吗？', noVideos: '尚未发布任何视频', noVideosHint: '点击「发布新职位」上传第一个招聘视频。', deleteSuccess: '视频已删除', publishSuccess: '视频已发布', unpublishSuccess: '视频已下架', applicantsTitle: '应聘者与简历', applicantsDesc: '查看谁投递了简历，请前往 Shorts 企业后台（与本站账号相同）。若已设置联系邮箱，新应聘也会发邮件通知。', viewApplicants: '前往查看应聘', manageInShorts: '在 Shorts 管理', legacyHint: '仅供编辑视频 — 应聘者请在 Shorts 后台查看。', errLoad: '加载失败', errDelete: '删除失败', errOp: '操作失败', saveSuccess: '已保存修改' },
+  es:     { hub: 'Centro de empleadores', logout: 'Cerrar sesión', myVideos: 'Mis videos de empleo', postNew: 'Publicar nuevo empleo', applicants: 'Candidatos', published: 'Publicado', draft: 'Borrador', views: 'vistas', likes: 'me gusta', applications: 'solicitudes', publish: 'Publicar', unpublish: 'Despublicar', edit: 'Editar', delete: 'Eliminar', confirmDelete: '¿Eliminar este video?', noVideos: 'Sin videos todavía', noVideosHint: 'Haz clic en "Publicar nuevo empleo" para subir tu primer video.', deleteSuccess: 'Video eliminado', publishSuccess: 'Video publicado', unpublishSuccess: 'Video despublicado', applicantsTitle: 'Candidatos y currículos', applicantsDesc: 'Consulta los candidatos y descarga currículos en el panel Shorts (misma cuenta).', viewApplicants: 'Ver candidatos', manageInShorts: 'Gestionar en Shorts', legacyHint: 'Solo edición de videos — los candidatos se gestionan en Shorts.', errLoad: 'Error al cargar', errDelete: 'Error al eliminar', errOp: 'Operación fallida', saveSuccess: 'Cambios guardados' },
+  hi:     { hub: 'नियोक्ता केंद्र', logout: 'लॉगआउट', myVideos: 'मेरे जॉब वीडियो', postNew: 'नई नौकरी पोस्ट करें', applicants: 'आवेदक', published: 'प्रकाशित', draft: 'ड्राफ्ट', views: 'व्यूज', likes: 'लाइक', applications: 'आवेदन', publish: 'प्रकाशित करें', unpublish: 'हटाएं', edit: 'संपादित करें', delete: 'हटाएं', confirmDelete: 'यह वीडियो हटाएं?', noVideos: 'अभी कोई जॉब वीडियो नहीं', noVideosHint: 'पहला भर्ती वीडियो पोस्ट करने के लिए "नई नौकरी पोस्ट करें" पर क्लिक करें।', deleteSuccess: 'वीडियो हटाया गया', publishSuccess: 'वीडियो प्रकाशित', unpublishSuccess: 'वीडियो हटाया गया', applicantsTitle: 'आवेदक और रेज़्यूमे', applicantsDesc: 'Shorts पैनल में आवेदक देखें और रेज़्यूमे डाउनलोड करें (एक ही खाता)।', viewApplicants: 'आवेदक देखें', manageInShorts: 'Shorts में प्रबंधित करें', legacyHint: 'केवल वीडियो संपादन — आवेदक Shorts में देखें।', errLoad: 'लोड विफल', errDelete: 'हटाना विफल', errOp: 'ऑपरेशन विफल', saveSuccess: 'परिवर्तन सहेजे गए' },
+  ar:     { hub: 'مركز أصحاب العمل', logout: 'تسجيل الخروج', myVideos: 'فيديوهات الوظائف', postNew: 'نشر وظيفة جديدة', applicants: 'المتقدمون', published: 'منشور', draft: 'مسودة', views: 'مشاهدة', likes: 'إعجاب', applications: 'طلبات', publish: 'نشر', unpublish: 'إلغاء النشر', edit: 'تعديل', delete: 'حذف', confirmDelete: 'حذف هذا الفيديو؟', noVideos: 'لا توجد فيديوهات بعد', noVideosHint: 'انقر "نشر وظيفة جديدة" لرفع أول فيديو توظيف.', deleteSuccess: 'تم حذف الفيديو', publishSuccess: 'تم نشر الفيديو', unpublishSuccess: 'تم إلغاء نشر الفيديو', applicantsTitle: 'المتقدمون والسير الذاتية', applicantsDesc: 'اعرض المتقدمين وحمّل السير الذاتية من لوحة Shorts (نفس الحساب).', viewApplicants: 'عرض المتقدمين', manageInShorts: 'إدارة في Shorts', legacyHint: 'تحرير الفيديو فقط — المتقدمون في Shorts.', errLoad: 'فشل التحميل', errDelete: 'فشل الحذف', errOp: 'فشلت العملية', saveSuccess: 'تم حفظ التغييرات' },
 } as const;
 
 // EditVideoModal translations
@@ -70,11 +70,21 @@ export default function EmployerDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [editingVideo, setEditingVideo] = useState<VideoData | null>(null);
+  const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
   const router = useRouter();
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (loading || !user) return;
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('legacy') !== '1') {
+      router.replace('/shorts?shorts_view=company&open_profile=1');
+    }
+  }, [loading, user, router]);
 
   const checkAuth = async () => {
     const supabase = createClient();
@@ -147,7 +157,23 @@ export default function EmployerDashboard() {
         .order('created_at', { ascending: false });
 
       if (videosError) throw videosError;
-      setVideos(videosData || []);
+      const list = videosData || [];
+      setVideos(list);
+
+      if (list.length > 0) {
+        const ids = list.map((v) => v.id);
+        const { data: appRows } = await supabase
+          .from('job_applications')
+          .select('job_id')
+          .in('job_id', ids);
+        const counts: Record<string, number> = {};
+        (appRows || []).forEach((row: { job_id: string | null }) => {
+          if (row.job_id) counts[row.job_id] = (counts[row.job_id] || 0) + 1;
+        });
+        setApplicationCounts(counts);
+      } else {
+        setApplicationCounts({});
+      }
     } catch (err: any) {
       setError(err.message || td.errLoad);
     } finally {
@@ -259,6 +285,18 @@ export default function EmployerDashboard() {
           </div>
         )}
 
+        {/* Legacy edit mode banner */}
+        <div className="mb-6 p-4 rounded-xl border border-amber-500/35 bg-amber-950/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p className="text-amber-200/90 text-sm">{td.legacyHint}</p>
+          <Link
+            href="/shorts?shorts_view=company&open_profile=1"
+            className="inline-flex items-center justify-center gap-2 shrink-0 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors"
+          >
+            {td.manageInShorts}
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
         {/* Applicants section */}
         <div className="mb-8 p-4 sm:p-5 rounded-xl border border-cyan-500/35 bg-slate-800/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex gap-3 min-w-0">
@@ -334,12 +372,19 @@ export default function EmployerDashboard() {
                   <p className="text-slate-400 text-sm mb-3 line-clamp-2">{video.description}</p>
                   
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-slate-500 text-xs mb-4">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500 text-xs mb-4">
                     <span className="flex items-center gap-1">
                       <Eye className="w-3 h-3" />
-                      {video.view_count}
+                      {video.view_count} {td.views}
                     </span>
-                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="w-3 h-3" />
+                      {video.like_count ?? 0} {td.likes}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      {applicationCounts[video.id] ?? 0} {td.applications}
+                    </span>
                     <span>{new Date(video.created_at).toLocaleDateString()}</span>
                   </div>
 

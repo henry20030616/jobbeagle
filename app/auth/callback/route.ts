@@ -63,6 +63,7 @@ export async function GET(request: Request) {
     if (loginType === 'employer') {
       target.searchParams.set('shorts_view', 'company');
       target.searchParams.set('account_role', 'employer');
+      target.searchParams.set('open_profile', '1');
     } else if (loginType === 'talent') {
       target.searchParams.set('shorts_view', 'personal');
       target.searchParams.set('account_role', 'talent');

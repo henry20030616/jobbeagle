@@ -1,7 +1,7 @@
 'use client';
 
 import { AppLanguage } from '@/lib/language-context';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, FileText, Bookmark, Building2, LogIn, Loader2,
@@ -93,6 +93,9 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en', on
   const [videoAppCounts, setVideoAppCounts] = useState<Record<string, number>>({});
   const [sheetApplicants, setSheetApplicants] = useState<JobApplicationRow[]>([]);
   const [loadingApplicants, setLoadingApplicants] = useState(false);
+  const [applicantFilter, setApplicantFilter] = useState<'all' | 'new' | 'reviewed'>('all');
+  const [applicantSort, setApplicantSort] = useState<'newest' | 'oldest'>('newest');
+  const [applicantSearch, setApplicantSearch] = useState('');
 
   // Company edit state
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -149,6 +152,26 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en', on
   };
   const fmtDate = (d: string) => new Date(d).toLocaleDateString((language === 'zh-TW' || language === 'zh-CN') ? 'zh-TW' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
+  const filteredApplicants = useMemo(() => {
+    let list = [...sheetApplicants];
+    if (applicantFilter === 'new') list = list.filter((a) => a.status === 'unread');
+    if (applicantFilter === 'reviewed') list = list.filter((a) => a.status === 'read');
+    const q = applicantSearch.trim().toLowerCase();
+    if (q) {
+      list = list.filter(
+        (a) =>
+          a.applicant_name.toLowerCase().includes(q) ||
+          a.applicant_email.toLowerCase().includes(q),
+      );
+    }
+    list.sort((a, b) => {
+      const ta = new Date(a.created_at).getTime();
+      const tb = new Date(b.created_at).getTime();
+      return applicantSort === 'newest' ? tb - ta : ta - tb;
+    });
+    return list;
+  }, [sheetApplicants, applicantFilter, applicantSort, applicantSearch]);
+
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
@@ -170,6 +193,8 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en', on
   useEffect(() => {
     if (!selectedVideo) {
       setSheetApplicants([]);
+      setApplicantFilter('all');
+      setApplicantSearch('');
       return;
     }
     (async () => {
@@ -689,6 +714,11 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en', on
                   <Upload size={16} />
                   {t('+ 上傳新職缺影片', '+ Upload New Job Video')}
                 </a>
+                <Link href="/employer/dashboard?legacy=1"
+                  className="mt-2 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-slate-600 text-slate-300 text-xs font-semibold hover:bg-slate-800/80 transition-colors">
+                  <Edit2 size={14} />
+                  {t('編輯影片詳情', 'Edit video details')}
+                </Link>
                 {companyProfile?.company_name && (
                   <Link
                     href={`/shorts/company/${encodeURIComponent(companyProfile.company_name)}`}
@@ -863,15 +893,48 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en', on
                   <h3 className="text-white font-bold text-sm mb-3 flex items-center gap-2">
                     <Users size={16} className="text-emerald-400" />
                     {t('申請者', 'Applicants')}
-                    <span className="text-slate-500 font-normal">({sheetApplicants.length})</span>
+                    <span className="text-slate-500 font-normal">({filteredApplicants.length}{filteredApplicants.length !== sheetApplicants.length ? ` / ${sheetApplicants.length}` : ''})</span>
                   </h3>
+                  {sheetApplicants.length > 0 && (
+                    <div className="flex flex-col gap-2 mb-3">
+                      <input
+                        type="search"
+                        value={applicantSearch}
+                        onChange={(e) => setApplicantSearch(e.target.value)}
+                        placeholder={t('搜尋姓名或 Email…', 'Search name or email…')}
+                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50"
+                      />
+                      <div className="flex flex-wrap gap-1.5">
+                        {(['all', 'new', 'reviewed'] as const).map((f) => (
+                          <button
+                            key={f}
+                            type="button"
+                            onClick={() => setApplicantFilter(f)}
+                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${applicantFilter === f ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+                          >
+                            {f === 'all' ? t('全部', 'All') : f === 'new' ? t('新應徵', 'New') : t('已處理', 'Reviewed')}
+                          </button>
+                        ))}
+                        <select
+                          value={applicantSort}
+                          onChange={(e) => setApplicantSort(e.target.value as 'newest' | 'oldest')}
+                          className="ml-auto px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-[11px] focus:outline-none"
+                        >
+                          <option value="newest">{t('最新優先', 'Newest first')}</option>
+                          <option value="oldest">{t('最舊優先', 'Oldest first')}</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
                   {loadingApplicants ? (
                     <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 text-cyan-500 animate-spin" /></div>
                   ) : sheetApplicants.length === 0 ? (
                     <p className="text-slate-500 text-sm text-center py-6">{t('尚無申請紀錄', 'No applications yet')}</p>
+                  ) : filteredApplicants.length === 0 ? (
+                    <p className="text-slate-500 text-sm text-center py-6">{t('沒有符合條件的應徵者', 'No applicants match your filters')}</p>
                   ) : (
                     <div className="space-y-3">
-                      {sheetApplicants.map(app => (
+                      {filteredApplicants.map(app => (
                         <div key={app.id} className="bg-slate-900 rounded-xl border border-slate-800 p-3">
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <div className="min-w-0 flex-1">

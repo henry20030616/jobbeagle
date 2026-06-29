@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
 
     // ── Required field checks ───────────────────────────────────
     if (!applicantName?.trim() || !applicantEmail?.trim() || !jobTitle?.trim()) {
-      return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields.', errorCode: 'MISSING_FIELDS' }, { status: 400 });
     }
 
     // ── Email format validation ─────────────────────────────────
     if (!EMAIL_RE.test(applicantEmail.trim())) {
       return NextResponse.json(
-        { error: 'Invalid email address format.' },
+        { error: 'Invalid email address format.', errorCode: 'INVALID_EMAIL' },
         { status: 400 }
       );
     }
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
           { status: 409 }
         );
       }
-      return NextResponse.json({ success: false, error: 'Application failed. Please try again.' }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Application failed. Please try again.', errorCode: 'APPLICATION_FAILED' }, { status: 500 });
     }
 
     // ── Email notification ──────────────────────────────────────
@@ -323,6 +323,6 @@ export async function POST(request: NextRequest) {
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
     console.error('Apply API error:', msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: msg, errorCode: 'SERVER_ERROR' }, { status: 500 });
   }
 }

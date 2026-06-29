@@ -14,6 +14,7 @@ import {
   MessageCircle, Link as LinkIcon, Building2, Clock
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
+import { translateApiError } from '@/lib/api-errors';
 import { toYouTubeEmbedUrl, toFacebookEmbedUrl, normalizeInstagramUrl } from '@/lib/video-embed';
 
 interface VideoCardProps {
@@ -489,7 +490,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
   const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
 
-  const handleApplyStart = async (e?: React.MouseEvent) => {
+  const handleApplyStart = async (e?: React.MouseEvent, prefillResumeId?: string) => {
     e?.stopPropagation();
     if (hasApplied) return;
 
@@ -510,7 +511,17 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
     setShowApplyModal(true);
     setApplyState('step1');
-    setApplyStep(1);
+    if (prefillResumeId) {
+      setSelectedSavedResumeId(prefillResumeId);
+      setApplyStep(2);
+    } else {
+      setApplyStep(1);
+    }
+  };
+
+  const handleApplyFromAnalysis = (resumeId: string) => {
+    setShowAnalysisModal(false);
+    void handleApplyStart(undefined, resumeId);
   };
 
   const base64ToFile = (base64: string, fileName: string, mime: string) => {
@@ -611,19 +622,19 @@ const VideoCard: React.FC<VideoCardProps> = ({
       if (res.status === 409) {
         setApplyState('idle');
         setShowApplyModal(false);
-        alert(t('您已申請過此職缺，無法重複申請。', 'You have already applied for this position.'));
+        alert(translateApiError(resData.errorCode, resData.error, language));
         return;
       }
 
       // 429 — rate limited
       if (res.status === 429) {
         setApplyState('idle');
-        alert(t('申請次數過多，請稍後再試。', 'Too many applications submitted. Please wait before trying again.'));
+        alert(translateApiError(resData.errorCode, resData.error, language));
         return;
       }
 
       if (!res.ok) {
-        throw new Error(resData.error || t('申請失敗', 'Application failed'));
+        throw new Error(translateApiError(resData.errorCode, resData.error, language));
       }
 
       // Track whether the employer notification email was actually sent
@@ -1659,6 +1670,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
         salary={job.salary}
         jobDescription={job.description}
         language={language}
+        canApply={!job.applyUrl && !!job.contactEmail && !hasApplied}
+        onApplyWithResume={handleApplyFromAnalysis}
       />
 
       {/* ── TikTok-style Share Bottom Sheet ───────────────── */}
