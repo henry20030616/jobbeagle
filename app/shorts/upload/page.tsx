@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Upload, ArrowLeft, Loader2, CheckCircle, AlertCircle,
   Video, Building2, MapPin, DollarSign, FileText, Tag,
-  Mail, ExternalLink, Image, LogIn, ChevronRight, Link as LinkIcon, Sparkles,
+  Mail, ExternalLink, Image, LogIn, ChevronRight, Link as LinkIcon, Sparkles, Users,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import {
@@ -28,7 +28,10 @@ type UpKey =
   | 'applyEmail' | 'applyEmailDesc' | 'applyRedirect' | 'applyRedirectDesc' | 'applyNone' | 'applyNoneDesc'
   | 'previewTitle' | 'applyMethod' | 'videoSource' | 'licenseNote'
   | 'doneTitle' | 'doneDesc' | 'viewPage' | 'backToShorts' | 'uploadAnother'
-  | 'confirm' | 'change' | 'selectVideo' | 'videoHint' | 'linkRecommended' | 'uploadFile';
+  | 'confirm' | 'change' | 'selectVideo' | 'videoHint' | 'linkRecommended' | 'uploadFile'
+  | 'pasteLink' | 'embedNote' | 'preview' | 'linkConfirmed' | 'videoUploaded'
+  | 'errRequired' | 'errInvalidUrl' | 'errStorage' | 'errUpload' | 'errPublish'
+  | 'copyLink' | 'copied' | 'viewApplicants';
 
 const UP: Record<AppLanguage, Record<UpKey, string>> = {
   en: {
@@ -59,6 +62,19 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     confirm: 'Confirm', change: 'Change',
     selectVideo: 'Click to select a video', videoHint: 'MP4 / WebM, max 100 MB · max 90s · 9:16 recommended',
     linkRecommended: 'Paste a social link (recommended)', uploadFile: 'Upload a video file',
+    pasteLink: 'Paste recruitment video link',
+    embedNote: 'Video will be displayed as an embed. The original post must be set to Public.',
+    preview: 'Preview',
+    linkConfirmed: 'link confirmed — will display as embed on Shorts.',
+    videoUploaded: 'Video uploaded',
+    errRequired: 'Please enter a video link',
+    errInvalidUrl: 'Please enter a valid URL (must start with https://)',
+    errStorage: 'Storage bucket not found. Go to Supabase → Storage → create bucket "shorts-videos" and set it to public.',
+    errUpload: 'Upload failed',
+    errPublish: 'Publish failed',
+    copyLink: 'Copy Share Link',
+    copied: 'Copied!',
+    viewApplicants: 'View Applicants',
   },
   'zh-TW': {
     pageTitle: '上傳職缺影片', signInTitle: '企業登入後即可上傳',
@@ -84,6 +100,19 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     confirm: '確認', change: '更換',
     selectVideo: '點擊選擇影片', videoHint: '支援 MP4 / WebM，最大 100MB・最長 90 秒\n建議 9:16 直式短影音',
     linkRecommended: '貼社群連結（推薦）', uploadFile: '上傳影片檔',
+    pasteLink: '貼上招募影片連結',
+    embedNote: '影片將以嵌入方式顯示，原貼文必須為「公開」可見。',
+    preview: '預覽',
+    linkConfirmed: '連結已確認，發布後會在 Shorts 以嵌入方式展示。',
+    videoUploaded: '影片已上傳',
+    errRequired: '請輸入影片連結',
+    errInvalidUrl: '請輸入有效的完整網址（需包含 https://）',
+    errStorage: '尚未建立 Storage 空間。請到 Supabase → Storage → 新增 bucket「shorts-videos」並設為公開。',
+    errUpload: '上傳失敗',
+    errPublish: '發佈失敗',
+    copyLink: '複製分享連結',
+    copied: '已複製！',
+    viewApplicants: '查看應徵者',
   },
   'zh-CN': {
     pageTitle: '上传职位视频', signInTitle: '企业登录后即可上传',
@@ -109,6 +138,19 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     confirm: '确认', change: '更换',
     selectVideo: '点击选择视频', videoHint: '支持 MP4 / WebM，最大 100MB・最长 90 秒\n建议 9:16 竖式短视频',
     linkRecommended: '粘贴社交链接（推荐）', uploadFile: '上传视频文件',
+    pasteLink: '粘贴招聘视频链接',
+    embedNote: '视频将以嵌入方式显示，原帖必须设置为「公开」。',
+    preview: '预览',
+    linkConfirmed: '链接已确认，发布后将在 Shorts 以嵌入方式展示。',
+    videoUploaded: '视频已上传',
+    errRequired: '请输入视频链接',
+    errInvalidUrl: '请输入有效的完整网址（需包含 https://）',
+    errStorage: '尚未建立 Storage 空间。请到 Supabase → Storage → 新增 bucket「shorts-videos」并设为公开。',
+    errUpload: '上传失败',
+    errPublish: '发布失败',
+    copyLink: '复制分享链接',
+    copied: '已复制！',
+    viewApplicants: '查看应聘者',
   },
   es: {
     pageTitle: 'Publicar video de empleo', signInTitle: 'Inicia sesión para publicar',
@@ -134,6 +176,19 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     confirm: 'Confirmar', change: 'Cambiar',
     selectVideo: 'Clic para seleccionar video', videoHint: 'MP4 / WebM, máx 100 MB · máx 90s · Se recomienda 9:16',
     linkRecommended: 'Pegar enlace social (recomendado)', uploadFile: 'Subir archivo de video',
+    pasteLink: 'Pegar enlace de video de empleo',
+    embedNote: 'El video se mostrará como incrustado. La publicación original debe ser pública.',
+    preview: 'Vista previa',
+    linkConfirmed: 'enlace confirmado — se mostrará como incrustado en Shorts.',
+    videoUploaded: 'Video subido',
+    errRequired: 'Por favor ingresa un enlace de video',
+    errInvalidUrl: 'Por favor ingresa una URL válida (debe comenzar con https://)',
+    errStorage: 'Bucket de almacenamiento no encontrado. Ve a Supabase → Storage → crea el bucket "shorts-videos" y ponlo público.',
+    errUpload: 'Error al subir',
+    errPublish: 'Error al publicar',
+    copyLink: 'Copiar enlace para compartir',
+    copied: '¡Copiado!',
+    viewApplicants: 'Ver candidatos',
   },
   hi: {
     pageTitle: 'जॉब वीडियो पोस्ट करें', signInTitle: 'पोस्ट करने के लिए साइन इन करें',
@@ -159,6 +214,19 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     confirm: 'पुष्टि करें', change: 'बदलें',
     selectVideo: 'वीडियो चुनने के लिए क्लिक करें', videoHint: 'MP4 / WebM, अधिकतम 100 MB · अधिकतम 90 सेकंड',
     linkRecommended: 'सोशल लिंक पेस्ट करें (अनुशंसित)', uploadFile: 'वीडियो फ़ाइल अपलोड करें',
+    pasteLink: 'भर्ती वीडियो लिंक पेस्ट करें',
+    embedNote: 'वीडियो एम्बेड के रूप में दिखाया जाएगा। मूल पोस्ट सार्वजनिक होनी चाहिए।',
+    preview: 'पूर्वावलोकन',
+    linkConfirmed: 'लिंक पुष्टि हुई — Shorts पर एम्बेड के रूप में दिखेगा।',
+    videoUploaded: 'वीडियो अपलोड हुआ',
+    errRequired: 'कृपया एक वीडियो लिंक दर्ज करें',
+    errInvalidUrl: 'कृपया एक मान्य URL दर्ज करें (https:// से शुरू होना चाहिए)',
+    errStorage: 'स्टोरेज बकेट नहीं मिला। Supabase → Storage → "shorts-videos" बकेट बनाएं और सार्वजनिक करें।',
+    errUpload: 'अपलोड विफल',
+    errPublish: 'प्रकाशन विफल',
+    copyLink: 'शेयर लिंक कॉपी करें',
+    copied: 'कॉपी हो गया!',
+    viewApplicants: 'आवेदक देखें',
   },
   ar: {
     pageTitle: 'نشر فيديو وظيفة', signInTitle: 'سجّل الدخول للنشر',
@@ -184,6 +252,19 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     confirm: 'تأكيد', change: 'تغيير',
     selectVideo: 'انقر لاختيار فيديو', videoHint: 'MP4 / WebM، الحد الأقصى 100 ميجابايت · 90 ثانية',
     linkRecommended: 'لصق رابط اجتماعي (مُوصى به)', uploadFile: 'رفع ملف فيديو',
+    pasteLink: 'الصق رابط فيديو التوظيف',
+    embedNote: 'سيُعرض الفيديو كمضمّن. يجب أن يكون المنشور الأصلي عامًا.',
+    preview: 'معاينة',
+    linkConfirmed: 'تم تأكيد الرابط — سيُعرض كمضمّن على Shorts.',
+    videoUploaded: 'تم رفع الفيديو',
+    errRequired: 'يرجى إدخال رابط فيديو',
+    errInvalidUrl: 'يرجى إدخال URL صالح (يجب أن يبدأ بـ https://)',
+    errStorage: 'لم يُعثر على مستودع التخزين. اذهب إلى Supabase → Storage → أنشئ bucket "shorts-videos" واجعله عامًا.',
+    errUpload: 'فشل الرفع',
+    errPublish: 'فشل النشر',
+    copyLink: 'نسخ رابط المشاركة',
+    copied: 'تم النسخ!',
+    viewApplicants: 'عرض المتقدمين',
   },
 };
 
@@ -212,29 +293,40 @@ const INITIAL_FORM: FormData = {
   applyMethod: 'email', videoUrl: '', videoSourceType: 'upload', logoUrl: '',
 };
 
-// 平台連結提示
-const PLATFORM_HINTS: Record<string, { label: string; placeholder: string; example: string }> = {
-  youtube: {
-    label: 'YouTube / YouTube Shorts 連結',
-    placeholder: 'https://www.youtube.com/shorts/...',
-    example: '支援 youtube.com/watch?v=...、youtu.be/...、youtube.com/shorts/...',
-  },
-  instagram: {
-    label: 'Instagram Reel / Post 連結',
-    placeholder: 'https://www.instagram.com/reel/...',
-    example: '必須是公開貼文，支援 /reel/ 與 /p/ 格式',
-  },
-  facebook: {
-    label: 'Facebook 影片 / Post 連結',
-    placeholder: 'https://www.facebook.com/...',
-    example: '必須是公開貼文或公開影片',
-  },
-  external: {
-    label: '外部影片連結',
-    placeholder: 'https://...',
-    example: '直接影片網址（.mp4）或其他平台連結',
-  },
-};
+// 平台連結提示 (language-aware)
+function getPlatformHints(lang: AppLanguage): Record<string, { label: string; placeholder: string; example: string }> {
+  const isChinese = lang === 'zh-TW' || lang === 'zh-CN';
+  return {
+    youtube: {
+      label: 'YouTube / YouTube Shorts',
+      placeholder: 'https://www.youtube.com/shorts/...',
+      example: isChinese
+        ? '支援 youtube.com/watch?v=...、youtu.be/...、youtube.com/shorts/...'
+        : 'Supports youtube.com/watch?v=..., youtu.be/..., youtube.com/shorts/...',
+    },
+    instagram: {
+      label: 'Instagram Reel / Post',
+      placeholder: 'https://www.instagram.com/reel/...',
+      example: isChinese
+        ? '必須是公開貼文，支援 /reel/ 與 /p/ 格式'
+        : 'Must be a public post. Supports /reel/ and /p/ formats.',
+    },
+    facebook: {
+      label: 'Facebook Video / Post',
+      placeholder: 'https://www.facebook.com/...',
+      example: isChinese
+        ? '必須是公開貼文或公開影片'
+        : 'Must be a public post or public video.',
+    },
+    external: {
+      label: isChinese ? '外部影片連結' : 'External Video Link',
+      placeholder: 'https://...',
+      example: isChinese
+        ? '直接影片網址（.mp4）或其他平台連結'
+        : 'Direct video URL (.mp4) or other platform link.',
+    },
+  };
+}
 
 export default function ShortsUploadPage() {
   const { language: appLanguage } = useLanguage();
@@ -251,6 +343,7 @@ export default function ShortsUploadPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [publishedUrl, setPublishedUrl] = useState('');
+  const [copied, setCopied] = useState(false);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -278,13 +371,13 @@ export default function ShortsUploadPage() {
     setSocialLinkError('');
     const trimmed = socialLinkInput.trim();
     if (!trimmed) {
-      setSocialLinkError('請輸入影片連結');
+      setSocialLinkError(t('errRequired'));
       return;
     }
     try {
       new URL(trimmed);
     } catch {
-      setSocialLinkError('請輸入有效的完整網址（需包含 https://）');
+      setSocialLinkError(t('errInvalidUrl'));
       return;
     }
     const sourceType = detectVideoSourceType(trimmed);
@@ -313,9 +406,9 @@ export default function ShortsUploadPage() {
 
     if (error) {
       if (error.message?.includes('Bucket not found') || error.message?.includes('not found')) {
-        throw new Error('尚未建立 Storage 空間。請到 Supabase → Storage → 新增 bucket「shorts-videos」並設為公開。');
+        throw new Error(t('errStorage'));
       }
-      throw new Error(error.message || '上傳失敗');
+      throw new Error(error.message || t('errUpload'));
     }
 
     const { data: urlData } = supabase.storage.from('shorts-videos').getPublicUrl(data.path);
@@ -410,7 +503,7 @@ export default function ShortsUploadPage() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || '發佈失敗');
+      if (!res.ok) throw new Error(data.error || t('errPublish'));
       setPublishedUrl(`/shorts/company/${encodeURIComponent(form.companyName)}`);
       setStep('done');
     } catch (err: any) {
@@ -426,8 +519,9 @@ export default function ShortsUploadPage() {
     ? detectVideoSourceType(socialLinkInput.trim())
     : null;
 
+  const allPlatformHints = getPlatformHints(appLanguage);
   const platformHint = detectedType && detectedType !== 'upload'
-    ? PLATFORM_HINTS[detectedType] ?? PLATFORM_HINTS.external
+    ? allPlatformHints[detectedType] ?? allPlatformHints.external
     : null;
 
   // ── Render ───────────────────────────────────────────────────────────────────
@@ -515,7 +609,7 @@ export default function ShortsUploadPage() {
                 <div className="space-y-2">
                   <label className="text-slate-300 text-sm font-medium flex items-center gap-2">
                     <LinkIcon size={15} />
-                    {platformHint ? platformHint.label : '貼上招募影片連結'}
+                    {platformHint ? platformHint.label : t('pasteLink')}
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -560,7 +654,7 @@ export default function ShortsUploadPage() {
                       </p>
                       <p className="text-slate-400 text-xs mt-0.5 truncate">{form.videoUrl}</p>
                       <p className="text-slate-500 text-xs mt-1.5">
-                        影片將以嵌入方式顯示，原貼文必須為「公開」可見。
+                        {t('embedNote')}
                       </p>
                     </div>
                       <button
@@ -578,13 +672,13 @@ export default function ShortsUploadPage() {
                     const embedSrc = toYouTubeEmbedUrl(form.videoUrl);
                     return embedSrc ? (
                       <div className="rounded-xl overflow-hidden border border-slate-700">
-                        <p className="px-3 py-2 text-xs text-slate-500 bg-slate-900">預覽</p>
+                        <p className="px-3 py-2 text-xs text-slate-500 bg-slate-900">{t('preview')}</p>
                         <iframe
                           src={embedSrc}
                           className="w-full aspect-video"
                           allow="autoplay; encrypted-media"
                           allowFullScreen
-                          title="YouTube 預覽"
+                          title="YouTube preview"
                         />
                       </div>
                     ) : null;
@@ -595,7 +689,7 @@ export default function ShortsUploadPage() {
                 {form.videoUrl && (form.videoSourceType === 'instagram' || form.videoSourceType === 'facebook') && (
                   <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-400 text-xs">
                     <span>{form.videoSourceType === 'instagram' ? '📸' : '📘'}</span>
-                    <span>{sourceTypeLabel(form.videoSourceType)} 連結已確認，發布後會在 Shorts 以嵌入方式展示。</span>
+                    <span>{sourceTypeLabel(form.videoSourceType)} {t('linkConfirmed')}</span>
                   </div>
                 )}
               </div>
@@ -626,7 +720,7 @@ export default function ShortsUploadPage() {
                   ) : form.videoUrl && form.videoSourceType === 'upload' ? (
                     <>
                       <CheckCircle className="w-10 h-10 text-green-400" />
-                      <p className="text-green-300 font-medium">{appLanguage === 'zh-TW' || appLanguage === 'zh-CN' ? '影片已上傳' : 'Video uploaded'}</p>
+                      <p className="text-green-300 font-medium">{t('videoUploaded')}</p>
                       <video src={form.videoUrl} className="w-full rounded-xl max-h-48 object-cover" muted />
                       <p className="text-slate-400 text-sm">{t('change')}</p>
                     </>
@@ -818,7 +912,7 @@ export default function ShortsUploadPage() {
                   <span className="text-4xl">
                     {form.videoSourceType === 'instagram' ? '📸' : form.videoSourceType === 'facebook' ? '📘' : '🔗'}
                   </span>
-                  <p className="text-sm font-medium">{sourceTypeLabel(form.videoSourceType)} 連結</p>
+                  <p className="text-sm font-medium">{sourceTypeLabel(form.videoSourceType)}</p>
                   <a href={form.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-400 hover:underline max-w-xs truncate text-center px-4">
                     {form.videoUrl}
                   </a>
@@ -878,24 +972,50 @@ export default function ShortsUploadPage() {
         {/* Done */}
         {step === 'done' && (
           <div className="flex flex-col items-center justify-center py-16 gap-6 text-center">
-            <div className="w-20 h-20 rounded-full bg-green-900/30 border-2 border-green-500 flex items-center justify-center">
-              <CheckCircle className="w-10 h-10 text-green-400" />
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full bg-green-900/20 border-2 border-green-500/50 flex items-center justify-center">
+                <CheckCircle className="w-12 h-12 text-green-400" />
+              </div>
+              <div className="absolute -inset-2 rounded-full border-2 border-green-500/20 animate-ping" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-white mb-2">{t('doneTitle')}</h2>
-              <p className="text-slate-400 text-sm">{t('doneDesc')}</p>
+              <p className="text-slate-400 text-sm max-w-xs">{t('doneDesc')}</p>
             </div>
             <div className="flex flex-col gap-3 w-full max-w-xs">
-              <a
-                href={publishedUrl}
-                className="flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-semibold transition-colors"
+              {/* Primary: Copy share link */}
+              <button
+                onClick={() => {
+                  const shareUrl = `${window.location.origin}${publishedUrl}`;
+                  navigator.clipboard.writeText(shareUrl).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2500);
+                  });
+                }}
+                className={`flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-base transition-all ${copied ? 'bg-emerald-600' : 'bg-blue-600 hover:bg-blue-500'}`}
               >
-                <ExternalLink size={16} />
-                {t('viewPage')}
-              </a>
+                {copied ? <CheckCircle size={18} /> : <LinkIcon size={18} />}
+                {copied ? t('copied') : t('copyLink')}
+              </button>
+              <div className="flex gap-2">
+                <a
+                  href={publishedUrl}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-semibold transition-colors text-sm"
+                >
+                  <ExternalLink size={15} />
+                  {t('viewPage')}
+                </a>
+                <a
+                  href={`${publishedUrl}?view=applicants`}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-semibold transition-colors text-sm"
+                >
+                  <Users size={15} />
+                  {t('viewApplicants')}
+                </a>
+              </div>
               <Link
                 href="/shorts"
-                className="flex items-center justify-center gap-2 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-semibold transition-colors"
+                className="flex items-center justify-center gap-2 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 text-sm transition-colors"
               >
                 {t('backToShorts')}
               </Link>
@@ -904,9 +1024,10 @@ export default function ShortsUploadPage() {
                   setForm(INITIAL_FORM);
                   setSocialLinkInput('');
                   setVideoInputMode('link');
+                  setCopied(false);
                   setStep('video');
                 }}
-                className="flex items-center justify-center gap-2 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 text-sm transition-colors"
+                className="text-slate-500 hover:text-slate-300 text-xs py-2 transition-colors"
               >
                 {t('uploadAnother')}
               </button>

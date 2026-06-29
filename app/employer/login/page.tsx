@@ -7,12 +7,12 @@ import { Mail, Building2, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
 
 const EL = {
-  en: { title: 'Employer Login', sub: 'Unified account with the main site', desc: 'First login automatically creates your employer account.\nAfter login you can upload and manage recruitment videos.', btn: 'Sign in with Google', back: '← Back to Home', loading: 'Loading…' },
-  'zh-TW': { title: '企業會員登入', sub: '與主網站帳號互通', desc: '首次登入將自動建立企業帳號\n登入後即可上傳和管理招聘影片', btn: '使用 Google 登入', back: '← 返回首頁', loading: '載入中…' },
-  'zh-CN': { title: '企业会员登录', sub: '与主网站账号互通', desc: '首次登录将自动建立企业账号\n登录后即可上传和管理招聘视频', btn: '使用 Google 登录', back: '← 返回首页', loading: '加载中…' },
-  es: { title: 'Acceso para empleadores', sub: 'Cuenta unificada con el sitio principal', desc: 'El primer inicio de sesión crea automáticamente tu cuenta.\nDespués podrás subir y gestionar videos de empleo.', btn: 'Iniciar sesión con Google', back: '← Volver al inicio', loading: 'Cargando…' },
-  hi: { title: 'नियोक्ता लॉगिन', sub: 'मुख्य साइट के साथ एकीकृत खाता', desc: 'पहली बार लॉगिन करने पर स्वचालित रूप से खाता बनाया जाता है।\nलॉगिन के बाद भर्ती वीडियो अपलोड और प्रबंधित करें।', btn: 'Google से साइन इन करें', back: '← होम पर वापस', loading: 'लोड हो रहा है…' },
-  ar: { title: 'تسجيل دخول صاحب العمل', sub: 'حساب موحد مع الموقع الرئيسي', desc: 'تسجيل الدخول لأول مرة ينشئ حسابك تلقائياً.\nبعد الدخول يمكنك رفع وإدارة فيديوهات التوظيف.', btn: 'تسجيل الدخول بـ Google', back: '← العودة للرئيسية', loading: 'جارٍ التحميل…' },
+  en: { title: 'Employer Login', sub: 'Unified account with the main site', desc: 'First login automatically creates your employer account.\nAfter login you can upload and manage recruitment videos.', btn: 'Sign in with Google', back: '← Back to Home', loading: 'Loading…', errLogin: 'Login error: ' },
+  'zh-TW': { title: '企業會員登入', sub: '與主網站帳號互通', desc: '首次登入將自動建立企業帳號\n登入後即可上傳和管理招聘影片', btn: '使用 Google 登入', back: '← 返回首頁', loading: '載入中…', errLogin: '登入失敗：' },
+  'zh-CN': { title: '企业会员登录', sub: '与主网站账号互通', desc: '首次登录将自动建立企业账号\n登录后即可上传和管理招聘视频', btn: '使用 Google 登录', back: '← 返回首页', loading: '加载中…', errLogin: '登录失败：' },
+  es: { title: 'Acceso para empleadores', sub: 'Cuenta unificada con el sitio principal', desc: 'El primer inicio de sesión crea automáticamente tu cuenta.\nDespués podrás subir y gestionar videos de empleo.', btn: 'Iniciar sesión con Google', back: '← Volver al inicio', loading: 'Cargando…', errLogin: 'Error de inicio de sesión: ' },
+  hi: { title: 'नियोक्ता लॉगिन', sub: 'मुख्य साइट के साथ एकीकृत खाता', desc: 'पहली बार लॉगिन करने पर स्वचालित रूप से खाता बनाया जाता है।\nलॉगिन के बाद भर्ती वीडियो अपलोड और प्रबंधित करें।', btn: 'Google से साइन इन करें', back: '← होम पर वापस', loading: 'लोड हो रहा है…', errLogin: 'लॉगिन त्रुटि: ' },
+  ar: { title: 'تسجيل دخول صاحب العمل', sub: 'حساب موحد مع الموقع الرئيسي', desc: 'تسجيل الدخول لأول مرة ينشئ حسابك تلقائياً.\nبعد الدخول يمكنك رفع وإدارة فيديوهات التوظيف.', btn: 'تسجيل الدخول بـ Google', back: '← العودة للرئيسية', loading: 'جارٍ التحميل…', errLogin: 'خطأ في تسجيل الدخول: ' },
 } as const;
 
 export default function EmployerLoginPage() {
@@ -53,13 +53,13 @@ export default function EmployerLoginPage() {
 
   const checkEmployerStatus = async (userId: string) => {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from('companies')
+    const { data } = await supabase
+      .from('company_profiles')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
-    if (data && !error) {
+    if (data) {
       router.push('/employer/dashboard');
     }
   };
@@ -81,10 +81,10 @@ export default function EmployerLoginPage() {
       });
 
       if (error) {
-        setError(`登入失敗: ${error.message}`);
+        setError(tl.errLogin + error.message);
       }
     } catch (err: any) {
-      setError(`登入失敗: ${err.message}`);
+      setError(tl.errLogin + (err.message || ''));
     }
   };
 

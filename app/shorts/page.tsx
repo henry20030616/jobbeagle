@@ -45,6 +45,18 @@ const SI: Record<string, Partial<Record<AppLanguage, string>>> = {
   // Sound overlay
   tapSound:    { en: 'Tap anywhere to start with sound', 'zh-TW': '點擊任意處開始（含聲音）', 'zh-CN': '点击任意处开始（含声音）', es: 'Toca para iniciar con sonido', hi: 'ध्वनि के साथ शुरू करने के लिए टैप करें', ar: 'انقر لبدء التشغيل بالصوت' },
   soundMuted:  { en: 'Sound muted — tap 🔊 to enable', 'zh-TW': '已靜音 — 點 🔊 開啟聲音', 'zh-CN': '已静音 — 点 🔊 开启声音', es: 'Silenciado — toca 🔊', hi: 'मौन — 🔊 दबाएं', ar: 'مكتوم — اضغط 🔊' },
+  tapDesc:     { en: 'Browsers require a tap before playing audio', 'zh-TW': '瀏覽器需要點擊互動才能播放聲音', 'zh-CN': '浏览器需要点击互动才能播放声音', es: 'Los navegadores requieren un toque antes de reproducir audio', hi: 'ऑडियो चलाने से पहले ब्राउज़र को टैप की आवश्यकता है', ar: 'تتطلب المتصفحات النقر قبل تشغيل الصوت' },
+  tapBtn:      { en: 'Tap to Start', 'zh-TW': '點一下開始', 'zh-CN': '点击开始', es: 'Tocar para comenzar', hi: 'शुरू करने के लिए टैप करें', ar: 'انقر للبدء' },
+  empTools:    { en: 'Employer Tools', 'zh-TW': '企業功能', 'zh-CN': '企业功能', es: 'Herramientas', hi: 'नियोक्ता टूल', ar: 'أدوات صاحب العمل' },
+  myActivity:  { en: 'My Activity', 'zh-TW': '我的動態', 'zh-CN': '我的动态', es: 'Mi Actividad', hi: 'मेरी गतिविधि', ar: 'نشاطي' },
+  acctSettings:{ en: 'Account Settings', 'zh-TW': '帳號設定', 'zh-CN': '账号设置', es: 'Configuración', hi: 'खाता सेटिंग', ar: 'إعدادات الحساب' },
+  myResume:    { en: 'My Profile & Resume', 'zh-TW': '個人檔案與履歷', 'zh-CN': '个人档案与简历', es: 'Perfil y CV', hi: 'प्रोफ़ाइल और CV', ar: 'ملفي والسيرة الذاتية' },
+  postAsEmp:   { en: 'Post jobs as Employer →', 'zh-TW': '企業方：發布職缺 →', 'zh-CN': '企业方：发布职位 →', es: 'Publicar como empresa →', hi: 'नियोक्ता के रूप में पोस्ट करें →', ar: 'انشر كصاحب عمل →' },
+  postMgmt:    { en: 'Post jobs & manage videos', 'zh-TW': '發布職缺影片・管理申請', 'zh-CN': '发布职位视频・管理申请', es: 'Publica empleos y gestiona videos', hi: 'जॉब पोस्ट करें और वीडियो प्रबंधित करें', ar: 'انشر وظائف وأدر الفيديوهات' },
+  browseApply: { en: 'Browse & apply to jobs', 'zh-TW': '瀏覽職缺・一鍵申請', 'zh-CN': '浏览职位・一键申请', es: 'Busca y aplica a empleos', hi: 'नौकरियां खोजें और आवेदन करें', ar: 'تصفح وتقدم للوظائف' },
+  iAmA:        { en: 'I am a…', 'zh-TW': '我是…', 'zh-CN': '我是…', es: 'Soy un…', hi: 'मैं हूँ…', ar: 'أنا…' },
+  empBadge:    { en: '🏢 Employer', 'zh-TW': '🏢 企業方', 'zh-CN': '🏢 企业方', es: '🏢 Empresa', hi: '🏢 नियोक्ता', ar: '🏢 صاحب عمل' },
+  talBadge:    { en: '💼 Job Seeker', 'zh-TW': '💼 求職者', 'zh-CN': '💼 求职者', es: '💼 Candidato', hi: '💼 नौकरी खोजने वाला', ar: '💼 باحث عمल' },
 };
 const t = (key: string, lang: AppLanguage) => SI[key]?.[lang] ?? SI[key]?.en ?? key;
 
@@ -274,10 +286,10 @@ export default function JobbeagleShortsPage() {
             {t('tapSound', appLang)}
           </h2>
           <p className="text-white/50 text-sm md:text-base text-center px-12 max-w-xs leading-relaxed">
-            Browsers require a tap before playing audio
+            {t('tapDesc', appLang)}
           </p>
           <div className="mt-10 px-8 py-3 rounded-2xl bg-blue-600 text-white text-base font-bold shadow-2xl shadow-blue-600/40 hover:bg-blue-500 transition-colors">
-            Tap to Start
+            {t('tapBtn', appLang)}
           </div>
         </div>
       )}
@@ -343,7 +355,7 @@ export default function JobbeagleShortsPage() {
                           <div className="min-w-0">
                             <p className="text-white text-sm font-semibold truncate">{user.user_metadata?.full_name || 'User'}</p>
                             <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${userRole === 'employer' ? 'bg-blue-500/20 text-blue-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
-                              {userRole === 'employer' ? '🏢 Employer' : '💼 Job Seeker'}
+                              {userRole === 'employer' ? t('empBadge', appLang) : t('talBadge', appLang)}
                             </span>
                           </div>
                         </div>
@@ -351,7 +363,7 @@ export default function JobbeagleShortsPage() {
                         {/* ── EMPLOYER MENU ── */}
                         {userRole === 'employer' && (
                           <div className="py-1.5">
-                            <p className="px-4 py-1 text-[10px] font-bold text-white/30 uppercase tracking-widest">Employer Tools</p>
+                            <p className="px-4 py-1 text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('empTools', appLang)}</p>
                             <Link href="/employer/dashboard" onClick={() => setShowUserMenu(false)}
                               className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors">
                               <Building2 size={15} className="text-blue-400 shrink-0" />
@@ -373,7 +385,7 @@ export default function JobbeagleShortsPage() {
                             <button onClick={() => { setShowUserMenu(false); setNavTab('profile'); }}
                               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
                               <UserCircle2 size={15} className="text-slate-400 shrink-0" />
-                              Account Settings
+                              {t('acctSettings', appLang)}
                             </button>
                           </div>
                         )}
@@ -381,7 +393,7 @@ export default function JobbeagleShortsPage() {
                         {/* ── TALENT MENU ── */}
                         {userRole === 'talent' && (
                           <div className="py-1.5">
-                            <p className="px-4 py-1 text-[10px] font-bold text-white/30 uppercase tracking-widest">My Activity</p>
+                            <p className="px-4 py-1 text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('myActivity', appLang)}</p>
                             <button onClick={() => { setShowUserMenu(false); setActiveTab('saved'); setNavTab('home'); }}
                               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
                               <Bookmark size={15} className="text-amber-400 shrink-0" />
@@ -391,7 +403,7 @@ export default function JobbeagleShortsPage() {
                             <button onClick={() => { setShowUserMenu(false); setNavTab('profile'); }}
                               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
                               <UserCircle2 size={15} className="text-emerald-400 shrink-0" />
-                              My Profile & Resume
+                              {t('myResume', appLang)}
                             </button>
                             <button onClick={() => { setShowUserMenu(false); setNavTab('profile'); }}
                               className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/80 hover:text-white text-sm transition-colors text-left">
@@ -402,7 +414,7 @@ export default function JobbeagleShortsPage() {
                             <Link href="/employer/login" onClick={() => setShowUserMenu(false)}
                               className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-white/40 hover:text-white/70 text-xs transition-colors">
                               <Building2 size={14} className="shrink-0" />
-                              Post jobs as Employer →
+                              {t('postAsEmp', appLang)}
                             </Link>
                           </div>
                         )}
@@ -436,7 +448,7 @@ export default function JobbeagleShortsPage() {
                       <div className="fixed inset-0 z-40" onClick={() => setShowLoginMenu(false)} />
                       <div className="absolute top-full right-0 mt-2 w-56 bg-[#111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
                         <div className="p-3">
-                          <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest px-1 mb-2">I am a...</p>
+                          <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest px-1 mb-2">{t('iAmA', appLang)}</p>
                           <button
                             onClick={async () => {
                               const s = createClient();
@@ -450,7 +462,7 @@ export default function JobbeagleShortsPage() {
                             </div>
                             <div>
                               <p className="font-semibold">{t('empLogin', appLang)}</p>
-                              <p className="text-white/50 text-[11px]">Post jobs & manage videos</p>
+                              <p className="text-white/50 text-[11px]">{t('postMgmt', appLang)}</p>
                             </div>
                           </button>
                           <button
@@ -466,7 +478,7 @@ export default function JobbeagleShortsPage() {
                             </div>
                             <div>
                               <p className="font-semibold">{t('talLogin', appLang)}</p>
-                              <p className="text-white/50 text-[11px]">Browse & apply to jobs</p>
+                              <p className="text-white/50 text-[11px]">{t('browseApply', appLang)}</p>
                             </div>
                           </button>
                         </div>

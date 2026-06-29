@@ -569,8 +569,8 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
                       <p className="text-slate-400 text-xs truncate">{a.company_name}</p>
                       <p className="text-slate-500 text-xs mt-0.5">{fmtDate(a.created_at)}</p>
                     </div>
-                    <span className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${a.status === 'unread' ? 'bg-amber-900/60 text-amber-300' : 'bg-slate-800 text-slate-400'}`}>
-                      {a.status === 'unread' ? t('未讀取', 'Unread') : t('已讀取', 'Read')}
+                    <span className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${a.status === 'read' ? 'bg-cyan-900/60 text-cyan-300' : 'bg-emerald-900/50 text-emerald-300'}`}>
+                      {a.status === 'read' ? t('企業已查看', 'Viewed') : t('已送出', 'Submitted')}
                     </span>
                   </div>
                 ))
