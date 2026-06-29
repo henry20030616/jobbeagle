@@ -1,10 +1,6 @@
 /**
- * Jobbeagle Shorts - 預設／後備影片（當資料庫沒有影片時顯示）
- *
- * 替換方式：把下面 4 筆的影片網址與職缺資訊改成你的真實影片與內容即可。
- * - videoUrl：必填，影片的實際網址（建議使用直連、可公開存取的 MP4 連結）
- * - companyName、jobTitle、description：建議填真實職缺資訊
- * - 其餘欄位可依需要填寫或留空
+ * Fallback videos shown when the database has no published jobs yet.
+ * Replace videoUrl and job details with real content for production.
  */
 
 import type { JobData } from '@/types';
@@ -16,51 +12,27 @@ function getLogoUrl(companyName: string): string {
 
 export const FALLBACK_VIDEOS: JobData[] = [
   {
-    id: 'video-1',
-    companyName: '公司名稱 A',
-    jobTitle: '職缺標題 A',
-    location: '工作地點',
-    salary: '薪資範圍（可選）',
-    description: '職缺說明：請替換成真實的職位描述。',
-    videoUrl: 'https://你的影片網址-1.mp4',
-    tags: ['標籤1', '標籤2'],
-    logoUrl: getLogoUrl('公司名稱 A'),
-    contactEmail: 'contact@company.com',
+    id: 'demo-1',
+    companyName: 'Demo Corp',
+    jobTitle: 'Software Engineer',
+    location: 'Remote',
+    salary: 'Competitive',
+    description: 'Sample job listing — replace with real published videos from your database.',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    tags: ['Demo', 'Engineering'],
+    logoUrl: getLogoUrl('Demo Corp'),
+    contactEmail: 'careers@demo.com',
   },
   {
-    id: 'video-2',
-    companyName: '公司名稱 B',
-    jobTitle: '職缺標題 B',
-    location: '工作地點',
-    salary: '薪資範圍（可選）',
-    description: '職缺說明：請替換成真實的職位描述。',
-    videoUrl: 'https://你的影片網址-2.mp4',
-    tags: ['標籤1', '標籤2'],
-    logoUrl: getLogoUrl('公司名稱 B'),
-    contactEmail: 'contact@company.com',
-  },
-  {
-    id: 'video-3',
-    companyName: '公司名稱 C',
-    jobTitle: '職缺標題 C',
-    location: '工作地點',
-    salary: '薪資範圍（可選）',
-    description: '職缺說明：請替換成真實的職位描述。',
-    videoUrl: 'https://你的影片網址-3.mp4',
-    tags: ['標籤1', '標籤2'],
-    logoUrl: getLogoUrl('公司名稱 C'),
-    contactEmail: 'contact@company.com',
-  },
-  {
-    id: 'video-4',
-    companyName: '公司名稱 D',
-    jobTitle: '職缺標題 D',
-    location: '工作地點',
-    salary: '薪資範圍（可選）',
-    description: '職缺說明：請替換成真實的職位描述。',
-    videoUrl: 'https://你的影片網址-4.mp4',
-    tags: ['標籤1', '標籤2'],
-    logoUrl: getLogoUrl('公司名稱 D'),
-    contactEmail: 'contact@company.com',
+    id: 'demo-2',
+    companyName: 'Sample Inc',
+    jobTitle: 'Product Designer',
+    location: 'Hybrid · Taipei',
+    salary: 'DOE',
+    description: 'Placeholder feed item. Upload your first job video to replace this demo content.',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    tags: ['Demo', 'Design'],
+    logoUrl: getLogoUrl('Sample Inc'),
+    contactEmail: 'hello@sample.com',
   },
 ];

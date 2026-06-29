@@ -60,8 +60,16 @@ export async function GET(request: Request) {
 
   const target = new URL(redirectTo, origin);
   if (redirectTo.includes('/shorts')) {
-    if (loginType === 'employer') target.searchParams.set('shorts_view', 'company');
-    else if (loginType === 'talent') target.searchParams.set('shorts_view', 'personal');
+    if (loginType === 'employer') {
+      target.searchParams.set('shorts_view', 'company');
+      target.searchParams.set('account_role', 'employer');
+    } else if (loginType === 'talent') {
+      target.searchParams.set('shorts_view', 'personal');
+      target.searchParams.set('account_role', 'talent');
+    }
+  }
+  if (loginType === 'employer' && redirectTo.includes('/employer')) {
+    target.searchParams.set('account_role', 'employer');
   }
 
   return NextResponse.redirect(target.toString());

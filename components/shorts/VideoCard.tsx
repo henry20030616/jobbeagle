@@ -70,8 +70,11 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDoubleTapLike, setShowDoubleTapLike] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
   const lastTapRef = useRef<number>(0);
   const likeLoadedRef = useRef(false);
+
+  const getJobShareUrl = () => `${window.location.origin}/shorts?job=${encodeURIComponent(job.id)}`;
 
   // Sync with parent state
   useEffect(() => { setFollowed(isFollowed); }, [isFollowed]);
@@ -244,6 +247,25 @@ const VideoCard: React.FC<VideoCardProps> = ({
     return () => { cancelled = true; };
   }, [showApplyModal, applyStep]);
 
+  // Check if user already applied for this job
+  useEffect(() => {
+    if (!job.id || job.id.startsWith('video-')) return;
+    const check = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      let email = user?.email || userInfo.email || '';
+      if (!email) return;
+      const { data } = await supabase
+        .from('job_applications')
+        .select('id')
+        .eq('job_id', job.id)
+        .eq('applicant_email', email.trim().toLowerCase())
+        .maybeSingle();
+      setHasApplied(!!data);
+    };
+    void check();
+  }, [job.id, userInfo.email, isActive]);
+
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     const newMuted = !isMuted;
@@ -344,10 +366,11 @@ const VideoCard: React.FC<VideoCardProps> = ({
   };
 
   const handleShareNative = async () => {
+    const shareUrl = getJobShareUrl();
     const shareData = {
       title: `${job.jobTitle} @ ${job.companyName}`,
       text: job.description,
-      url: window.location.href,
+      url: shareUrl,
     };
 
     try {
@@ -366,7 +389,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(getJobShareUrl());
       setShowShareMenu(false);
       // Show toast notification
       const toast = document.createElement('div');
@@ -388,7 +411,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   };
 
   const handleShareSocial = (platform: 'facebook' | 'twitter' | 'linkedin' | 'line' | 'whatsapp') => {
-    const jobUrl = `${window.location.origin}/shorts/company/${encodeURIComponent(job.companyName)}`;
+    const jobUrl = getJobShareUrl();
     const url = encodeURIComponent(jobUrl);
     const text = encodeURIComponent(`${job.jobTitle} @ ${job.companyName}`);
     let shareUrl = '';
@@ -464,13 +487,31 @@ const VideoCard: React.FC<VideoCardProps> = ({
   };
 
 
-  const handleApplyStart = () => {
+  const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
+
+  const handleApplyStart = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (hasApplied) return;
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      const msg = t('請先登入後再申請，以便追蹤申請記錄。', 'Please sign in to apply and track your application history.');
+      if (window.confirm(`${msg}\n\n${t('是否現在登入？', 'Sign in now?')}`)) {
+        await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(`/shorts?job=${job.id}`)}&type=talent`,
+          },
+        });
+      }
+      return;
+    }
+
     setShowApplyModal(true);
     setApplyState('step1');
     setApplyStep(1);
   };
-
-  const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
 
   const base64ToFile = (base64: string, fileName: string, mime: string) => {
     const binary = atob(base64);
@@ -588,6 +629,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
       // Track whether the employer notification email was actually sent
       setApplyEmailSent(resData.emailSent !== false);
       setApplyState('success');
+      setHasApplied(true);
       setTimeout(() => {
         setShowApplyModal(false);
         setApplyState('idle');
@@ -977,13 +1019,19 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     >
                       <ExternalLink size={18} className="shrink-0" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
                     </a>
+                  ) : hasApplied ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-700 text-slate-300 font-bold rounded-xl md:rounded-2xl flex flex-row items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm border border-slate-600 px-1.5 sm:px-2 cursor-not-allowed"
+                    >
+                      <CheckCircle size={16} className="shrink-0 text-emerald-400" />
+                      <span className="text-center leading-tight">{t('已申請', 'Applied')}</span>
+                    </button>
                   ) : (
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowApplyModal(true);
-                      }}
+                      onClick={(e) => { void handleApplyStart(e); }}
                       className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-1.5 sm:gap-2 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-cyan-400/25 px-1.5 sm:px-2"
                     >
                       <Briefcase size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />

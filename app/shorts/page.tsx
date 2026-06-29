@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { FALLBACK_VIDEOS } from './fallback-videos';
-import { setStoredShortsViewRole } from '@/lib/shorts-view-role';
+import { setStoredShortsViewRole, setStoredAccountRole, resolveUserRole } from '@/lib/shorts-view-role';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
@@ -90,6 +90,10 @@ export default function JobbeagleShortsPage() {
   const [companyName, setCompanyName] = useState<string>('');
   const [userRole, setUserRole] = useState<'employer' | 'talent' | null>(null);
 
+  // Deep link: scroll to a specific job video
+  const [initialJobId, setInitialJobId] = useState<string | null>(null);
+  const deepLinkHandledRef = useRef(false);
+
   // Following feed (loaded from DB)
   const [followingVideos, setFollowingVideos] = useState<JobData[]>([]);
   const [loadingFollowing, setLoadingFollowing] = useState(false);
@@ -151,14 +155,35 @@ export default function JobbeagleShortsPage() {
     const v = params.get('shorts_view');
     if (v === 'company' || v === 'personal') {
       setStoredShortsViewRole(v);
-      if (v === 'company') setUserRole('employer');
-      else setUserRole('talent');
+      if (v === 'company') {
+        setStoredAccountRole('employer');
+        setUserRole('employer');
+      } else {
+        setStoredAccountRole('talent');
+        setUserRole('talent');
+      }
       params.delete('shorts_view');
       changed = true;
     }
     if (params.get('open_profile') === '1') {
       setNavTab('profile');
       params.delete('open_profile');
+      changed = true;
+    }
+    const accountRole = params.get('account_role');
+    if (accountRole === 'employer' || accountRole === 'talent') {
+      setStoredAccountRole(accountRole);
+      setUserRole(accountRole);
+      params.delete('account_role');
+      changed = true;
+    }
+    const jobParam = params.get('job');
+    if (jobParam && !deepLinkHandledRef.current) {
+      deepLinkHandledRef.current = true;
+      setInitialJobId(jobParam);
+      setNavTab('home');
+      setActiveTab('foryou');
+      params.delete('job');
       changed = true;
     }
     if (changed) {
@@ -182,10 +207,11 @@ export default function JobbeagleShortsPage() {
     if (companyRes.data) {
       setHasCompanyProfile(true);
       setCompanyName(companyRes.data.company_name || '');
-      setUserRole('employer');
     } else {
-      setUserRole('talent');
+      setHasCompanyProfile(false);
+      setCompanyName('');
     }
+    setUserRole(resolveUserRole(!!companyRes.data));
   };
 
   const mapVideo = (v: any): JobData => ({
@@ -202,6 +228,32 @@ export default function JobbeagleShortsPage() {
     contactEmail: v.contact_email || undefined,
     applyUrl: v.apply_url || undefined,
   });
+
+  const openJobById = useCallback((jobId: string) => {
+    setNavTab('home');
+    setActiveTab('foryou');
+    setInitialJobId(jobId);
+    window.history.replaceState({}, '', `/shorts?job=${jobId}`);
+  }, []);
+
+  // Fetch deep-linked job if not already in feed
+  useEffect(() => {
+    if (!initialJobId) return;
+    if (jobs.some(j => j.id === initialJobId)) return;
+    const supabase = createClient();
+    supabase
+      .from('shorts_videos')
+      .select('*')
+      .eq('id', initialJobId)
+      .eq('is_published', true)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          const mapped = mapVideo(data);
+          setJobs(prev => (prev.some(j => j.id === mapped.id) ? prev : [mapped, ...prev]));
+        }
+      });
+  }, [initialJobId, jobs]);
 
   const loadVideos = async (cursor: string | null) => {
     try {
@@ -298,7 +350,7 @@ export default function JobbeagleShortsPage() {
       {navTab === 'profile' && (
         <>
           <div className="flex-1 overflow-hidden">
-            <ProfileModal onClose={() => { setNavTab('home'); setActiveTab('foryou'); }} language={appLang} />
+            <ProfileModal onClose={() => { setNavTab('home'); setActiveTab('foryou'); }} language={appLang} onPlayJob={openJobById} />
           </div>
           <BottomNav
             activeTab={activeTab} navTab={navTab}
@@ -531,6 +583,7 @@ export default function JobbeagleShortsPage() {
                 onLoadMore={activeTab === 'foryou' ? handleLoadMore : undefined}
                 hasMore={activeTab === 'foryou' ? hasMore : false}
                 loadingMore={loadingMore}
+                initialJobId={activeTab === 'foryou' ? initialJobId : null}
               />
             )}
           </div>

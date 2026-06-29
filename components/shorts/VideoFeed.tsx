@@ -16,6 +16,7 @@ interface VideoFeedProps {
   onLoadMore?: () => void;
   hasMore?: boolean;
   loadingMore?: boolean;
+  initialJobId?: string | null;
 }
 
 const VideoFeed: React.FC<VideoFeedProps> = ({
@@ -28,9 +29,22 @@ const VideoFeed: React.FC<VideoFeedProps> = ({
   onLoadMore,
   hasMore = false,
   loadingMore = false,
+  initialJobId = null,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Scroll to deep-linked job once it appears in the list
+  useEffect(() => {
+    if (!initialJobId || !containerRef.current) return;
+    const index = jobs.findIndex(j => j.id === initialJobId);
+    if (index < 0) return;
+    setActiveIndex(index);
+    requestAnimationFrame(() => {
+      const card = containerRef.current?.querySelector(`[data-index="${index}"]`);
+      card?.scrollIntoView({ behavior: 'instant' as ScrollBehavior });
+    });
+  }, [initialJobId, jobs]);
 
   useEffect(() => {
     const container = containerRef.current;

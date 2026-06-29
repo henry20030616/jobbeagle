@@ -51,17 +51,9 @@ export default function EmployerLoginPage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const checkEmployerStatus = async (userId: string) => {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from('company_profiles')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (data) {
-      router.push('/employer/dashboard');
-    }
+  const checkEmployerStatus = async (_userId: string) => {
+    // Dashboard auto-creates company_profile on first visit
+    router.push('/employer/dashboard');
   };
 
   const handleLogin = async () => {
@@ -72,7 +64,7 @@ export default function EmployerLoginPage() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=/employer/dashboard`,
+          redirectTo: `${window.location.origin}/auth/callback?redirect=/employer/dashboard&type=employer`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

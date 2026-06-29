@@ -17,6 +17,7 @@ import { toYouTubeEmbedUrl, toFacebookEmbedUrl, normalizeInstagramUrl } from '@/
 interface ProfileModalProps {
   onClose: () => void;
   language?: AppLanguage;
+  onPlayJob?: (jobId: string) => void;
 }
 
 type PersonalTab = 'resumes' | 'saved' | 'following' | 'applied';
@@ -65,7 +66,7 @@ interface AppliedJobRow {
   created_at: string;
 }
 
-const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) => {
+const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en', onPlayJob }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<ProfileMode>('personal');
@@ -514,6 +515,15 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
                       {s.job_data?.location && <p className="text-slate-500 text-xs flex items-center gap-1 mt-0.5"><MapPin size={10} />{s.job_data.location}</p>}
                     </div>
                     <div className="flex gap-1.5 flex-shrink-0">
+                      {s.job_id && onPlayJob && (
+                        <button
+                          onClick={() => { onPlayJob(s.job_id); onClose(); }}
+                          className="p-2 rounded-xl bg-blue-900/50 hover:bg-blue-800 text-blue-300 transition-colors"
+                          title={t('播放影片', 'Play video')}
+                        >
+                          <Play size={14} />
+                        </button>
+                      )}
                       <a href={`/shorts/company/${encodeURIComponent(s.job_data?.companyName || '')}`}
                         className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 transition-colors">
                         <ExternalLink size={14} />
@@ -870,8 +880,8 @@ const ProfilePage: React.FC<ProfileModalProps> = ({ onClose, language = 'en' }) 
                               {app.applicant_phone && <p className="text-slate-500 text-xs mt-0.5">{app.applicant_phone}</p>}
                               <p className="text-slate-500 text-xs mt-1">{t('收到時間：', 'Received: ')}{fmtDate(app.created_at)}</p>
                             </div>
-                            <span className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${app.status === 'unread' ? 'bg-amber-900/60 text-amber-300' : 'bg-slate-800 text-slate-400'}`}>
-                              {app.status === 'unread' ? t('未讀取', 'Unread') : t('已讀取', 'Read')}
+                            <span className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${app.status === 'unread' ? 'bg-amber-900/60 text-amber-300' : 'bg-cyan-900/50 text-cyan-300'}`}>
+                              {app.status === 'unread' ? t('新應徵', 'New') : t('已處理', 'Reviewed')}
                             </span>
                           </div>
                           {app.application_message && (

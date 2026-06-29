@@ -14,6 +14,7 @@ import {
   sourceTypeLabel,
 } from '@/lib/video-embed';
 import { useLanguage } from '@/lib/language-context';
+import { setStoredAccountRole } from '@/lib/shorts-view-role';
 import type { AppLanguage } from '@/lib/language-context';
 import type { VideoSourceType } from '@/types';
 
@@ -31,7 +32,8 @@ type UpKey =
   | 'confirm' | 'change' | 'selectVideo' | 'videoHint' | 'linkRecommended' | 'uploadFile'
   | 'pasteLink' | 'embedNote' | 'preview' | 'linkConfirmed' | 'videoUploaded'
   | 'errRequired' | 'errInvalidUrl' | 'errStorage' | 'errUpload' | 'errPublish'
-  | 'copyLink' | 'copied' | 'viewApplicants';
+  | 'copyLink' | 'copied' | 'viewApplicants'
+  | 'onboardTitle' | 'onboardDesc' | 'onboardSave' | 'onboardCompanyDesc';
 
 const UP: Record<AppLanguage, Record<UpKey, string>> = {
   en: {
@@ -75,6 +77,10 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     copyLink: 'Copy Share Link',
     copied: 'Copied!',
     viewApplicants: 'View Applicants',
+    onboardTitle: 'Set up your company profile',
+    onboardDesc: 'Complete your company info before posting your first job video.',
+    onboardSave: 'Save & Continue',
+    onboardCompanyDesc: 'Short description (helps job seekers learn about you)',
   },
   'zh-TW': {
     pageTitle: '上傳職缺影片', signInTitle: '企業登入後即可上傳',
@@ -113,6 +119,10 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     copyLink: '複製分享連結',
     copied: '已複製！',
     viewApplicants: '查看應徵者',
+    onboardTitle: '建立企業資料',
+    onboardDesc: '發布第一支職缺影片前，請先完成企業基本資料。',
+    onboardSave: '儲存並繼續',
+    onboardCompanyDesc: '一句話介紹（讓求職者認識你們）',
   },
   'zh-CN': {
     pageTitle: '上传职位视频', signInTitle: '企业登录后即可上传',
@@ -151,6 +161,10 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     copyLink: '复制分享链接',
     copied: '已复制！',
     viewApplicants: '查看应聘者',
+    onboardTitle: '建立企业资料',
+    onboardDesc: '发布第一支职位视频前，请先完成企业基本资料。',
+    onboardSave: '保存并继续',
+    onboardCompanyDesc: '一句话介绍（让求职者认识你们）',
   },
   es: {
     pageTitle: 'Publicar video de empleo', signInTitle: 'Inicia sesión para publicar',
@@ -189,6 +203,10 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     copyLink: 'Copiar enlace para compartir',
     copied: '¡Copiado!',
     viewApplicants: 'Ver candidatos',
+    onboardTitle: 'Configura tu perfil de empresa',
+    onboardDesc: 'Completa la información de tu empresa antes de publicar tu primer video.',
+    onboardSave: 'Guardar y continuar',
+    onboardCompanyDesc: 'Descripción breve (ayuda a los candidatos a conocerte)',
   },
   hi: {
     pageTitle: 'जॉब वीडियो पोस्ट करें', signInTitle: 'पोस्ट करने के लिए साइन इन करें',
@@ -227,6 +245,10 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     copyLink: 'शेयर लिंक कॉपी करें',
     copied: 'कॉपी हो गया!',
     viewApplicants: 'आवेदक देखें',
+    onboardTitle: 'अपनी कंपनी प्रोफ़ाइल सेट करें',
+    onboardDesc: 'पहला जॉब वीडियो पोस्ट करने से पहले कंपनी की जानकारी पूरी करें।',
+    onboardSave: 'सहेजें और जारी रखें',
+    onboardCompanyDesc: 'संक्षिप्त परिचय (उम्मीदवारों को आपके बारे में बताता है)',
   },
   ar: {
     pageTitle: 'نشر فيديو وظيفة', signInTitle: 'سجّل الدخول للنشر',
@@ -265,10 +287,14 @@ const UP: Record<AppLanguage, Record<UpKey, string>> = {
     copyLink: 'نسخ رابط المشاركة',
     copied: 'تم النسخ!',
     viewApplicants: 'عرض المتقدمين',
+    onboardTitle: 'إعداد ملف شركتك',
+    onboardDesc: 'أكمل معلومات شركتك قبل نشر أول فيديو وظيفة.',
+    onboardSave: 'حفظ ومتابعة',
+    onboardCompanyDesc: 'وصف مختصر (يساعد الباحثين على التعرف عليكم)',
   },
 };
 
-type Step = 'auth' | 'video' | 'info' | 'apply' | 'preview' | 'done';
+type Step = 'auth' | 'onboard' | 'video' | 'info' | 'apply' | 'preview' | 'done';
 type ApplyMethod = 'email' | 'url' | 'none';
 type VideoInputMode = 'upload' | 'link';
 
@@ -343,15 +369,47 @@ export default function ShortsUploadPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [publishedUrl, setPublishedUrl] = useState('');
+  const [publishedVideoId, setPublishedVideoId] = useState('');
   const [copied, setCopied] = useState(false);
+  const [onboardDesc, setOnboardDesc] = useState('');
   const videoInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       setUser(user);
-      if (user) setStep('video');
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('company_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      const defaultName = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+      const needsOnboard = !profile?.company_name?.trim()
+        || profile.company_name === '新企業'
+        || !profile.description?.trim()
+        || !profile.contact_email?.trim();
+
+      if (profile) {
+        setForm(f => ({
+          ...f,
+          companyName: profile.company_name || defaultName,
+          contactEmail: profile.contact_email || user.email || '',
+          logoUrl: profile.logo_url || '',
+        }));
+        setOnboardDesc(profile.description || '');
+      } else {
+        setForm(f => ({
+          ...f,
+          companyName: defaultName,
+          contactEmail: user.email || '',
+        }));
+      }
+
+      setStep(needsOnboard ? 'onboard' : 'video');
     });
   }, []);
 
@@ -361,8 +419,43 @@ export default function ShortsUploadPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts/upload` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/shorts/upload&type=employer` },
     });
+  };
+
+  const handleSaveOnboard = async () => {
+    if (!form.companyName.trim()) {
+      setError(t('companyName').replace(' *', '') + ' — required');
+      return;
+    }
+    if (!onboardDesc.trim() || onboardDesc.trim().length < 10) {
+      setError(appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+        ? '請填寫至少 10 字的公司介紹'
+        : 'Please write at least 10 characters about your company');
+      return;
+    }
+    if (!form.contactEmail.trim()) {
+      setError(t('contactEmail').replace(' *', '') + ' — required');
+      return;
+    }
+    setError(null);
+    const supabase = createClient();
+    const { data: { user: u } } = await supabase.auth.getUser();
+    if (!u) { setStep('auth'); return; }
+    const { error: upsertErr } = await supabase.from('company_profiles').upsert({
+      user_id: u.id,
+      company_name: form.companyName.trim(),
+      description: onboardDesc.trim(),
+      contact_email: form.contactEmail.trim(),
+      logo_url: form.logoUrl || null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+    if (upsertErr) {
+      setError(upsertErr.message);
+      return;
+    }
+    setStoredAccountRole('employer');
+    setStep('video');
   };
 
   // ── 社群連結確認 ────────────────────────────────────────────────────────────
@@ -505,6 +598,7 @@ export default function ShortsUploadPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t('errPublish'));
       setPublishedUrl(`/shorts/company/${encodeURIComponent(form.companyName)}`);
+      setPublishedVideoId(data.video?.id || '');
       setStep('done');
     } catch (err: any) {
       setError(err.message);
@@ -554,6 +648,51 @@ export default function ShortsUploadPage() {
             >
               <LogIn size={20} />
               {t('signInBtn')}
+            </button>
+          </div>
+        )}
+
+        {/* Step: Onboarding */}
+        {step === 'onboard' && (
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">{t('onboardTitle')}</h2>
+              <p className="text-slate-400 text-sm">{t('onboardDesc')}</p>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-slate-300 text-sm font-medium">{t('companyName')}</label>
+                <input
+                  value={form.companyName}
+                  onChange={e => set('companyName', e.target.value)}
+                  className="mt-1.5 w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="text-slate-300 text-sm font-medium">{t('onboardCompanyDesc')}</label>
+                <textarea
+                  value={onboardDesc}
+                  onChange={e => setOnboardDesc(e.target.value)}
+                  rows={3}
+                  className="mt-1.5 w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm resize-none focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="text-slate-300 text-sm font-medium">{t('contactEmail')}</label>
+                <input
+                  type="email"
+                  value={form.contactEmail}
+                  onChange={e => set('contactEmail', e.target.value)}
+                  className="mt-1.5 w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
+                />
+              </div>
+            </div>
+            {error && <ErrorMsg text={error} />}
+            <button
+              onClick={handleSaveOnboard}
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-bold transition-colors"
+            >
+              {t('onboardSave')}
             </button>
           </div>
         )}
@@ -986,7 +1125,9 @@ export default function ShortsUploadPage() {
               {/* Primary: Copy share link */}
               <button
                 onClick={() => {
-                  const shareUrl = `${window.location.origin}${publishedUrl}`;
+                  const shareUrl = publishedVideoId
+                    ? `${window.location.origin}/shorts?job=${publishedVideoId}`
+                    : `${window.location.origin}${publishedUrl}`;
                   navigator.clipboard.writeText(shareUrl).then(() => {
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2500);
@@ -1006,7 +1147,7 @@ export default function ShortsUploadPage() {
                   {t('viewPage')}
                 </a>
                 <a
-                  href={`${publishedUrl}?view=applicants`}
+                  href="/shorts?shorts_view=company&open_profile=1"
                   className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-semibold transition-colors text-sm"
                 >
                   <Users size={15} />
