@@ -754,30 +754,41 @@ const VideoCard: React.FC<VideoCardProps> = ({
             );
           }
 
-          // ── Instagram embed ──
+          // ── Instagram: preview card (no embed — unreliable in mobile browsers) ──
           if (sourceType === 'instagram' && videoUrl) {
+            const igUrl = normalizeInstagramUrl(videoUrl);
             if (isActive) {
-              const igUrl = normalizeInstagramUrl(videoUrl);
               return (
-                <div className="w-full h-full z-10 overflow-hidden flex items-center justify-center bg-black">
-                  {/* Instagram 官方 blockquote embed；embed.js 由 layout 或此元件動態注入 */}
-                  <blockquote
-                    className="instagram-media"
-                    data-instgrm-captioned
-                    data-instgrm-permalink={igUrl}
-                    data-instgrm-version="14"
-                    style={{
-                      background: '#000',
-                      border: 0,
-                      width: '100%',
-                      maxWidth: '100%',
-                    }}
+                <div className="w-full h-full z-10 flex flex-col items-center justify-center gap-5 bg-gradient-to-b from-slate-900 via-black to-slate-950 p-8 text-center">
+                  {job.logoUrl && !logoError ? (
+                    <img
+                      src={job.logoUrl}
+                      alt=""
+                      className="w-20 h-20 rounded-full border-2 border-white/30 bg-white object-contain shadow-xl"
+                      onError={() => setLogoError(true)}
+                    />
+                  ) : (
+                    <span className="text-6xl" aria-hidden>📸</span>
+                  )}
+                  <div className="space-y-2 max-w-xs">
+                    <p className="text-white font-bold text-lg drop-shadow-md">{job.jobTitle}</p>
+                    <p className="text-white/55 text-sm leading-relaxed">
+                      {t(
+                        '此 Reels 因 Instagram 平台限制，請於站外觀看。上傳 mp4 可獲得站內自動播放體驗。',
+                        'This Reel opens on Instagram due to platform limits. Upload an MP4 for in-feed autoplay.',
+                      )}
+                    </p>
+                  </div>
+                  <a
+                    href={igUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold shadow-lg hover:opacity-90 transition-opacity"
+                    onClick={e => e.stopPropagation()}
                   >
-                    <a href={igUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-400 text-xs p-4 block text-center">
-                      {t('前往 Instagram 觀看原貼文', 'View original post on Instagram')}
-                    </a>
-                  </blockquote>
-                  <IGEmbedScript />
+                    <ExternalLink size={16} />
+                    {t('在 Instagram 觀看', 'Watch on Instagram')}
+                  </a>
                 </div>
               );
             }
@@ -1844,25 +1855,3 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
 };
 
 export default VideoCard;
-
-/**
- * 一次性注入 Instagram embed.js 腳本（重複呼叫不會重複注入）
- */
-function IGEmbedScript() {
-  useEffect(() => {
-    if (document.getElementById('ig-embed-script')) {
-      // 若 instgrm 已存在，重新處理 blockquote
-      if ((window as any).instgrm?.Embeds) {
-        (window as any).instgrm.Embeds.process();
-      }
-      return;
-    }
-    const script = document.createElement('script');
-    script.id = 'ig-embed-script';
-    script.src = 'https://www.instagram.com/embed.js';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-  }, []);
-  return null;
-}

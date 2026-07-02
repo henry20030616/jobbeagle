@@ -794,7 +794,15 @@ export default function ShortsUploadPage() {
                       </p>
                       <p className="text-slate-400 text-xs mt-0.5 truncate">{form.videoUrl}</p>
                       <p className="text-slate-500 text-xs mt-1.5">
-                        {t('embedNote')}
+                        {form.videoSourceType === 'instagram'
+                          ? (appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+                            ? '發布後求職者會看到預覽卡，需點擊前往 Instagram 觀看。若需站內自動播放，請改上傳 mp4。'
+                            : 'Applicants see a preview card and open Instagram to watch. Upload MP4 for in-feed autoplay.')
+                          : form.videoSourceType === 'youtube'
+                          ? (appLanguage === 'zh-TW' || appLanguage === 'zh-CN'
+                            ? '影片將在 Shorts 站內嵌入播放，原貼文必須為「公開」可見。'
+                            : 'Video plays embedded in Shorts. The original post must be public.')
+                          : t('embedNote')}
                       </p>
                     </div>
                       <button
