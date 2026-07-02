@@ -3,14 +3,43 @@
 @tailwind utilities;
 
 :root {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
+  --background: #f8f9fa;
+  --foreground: #18181b;
+
+  --jb-bg: #f8f9fa;
+  --jb-bg-elevated: #ffffff;
+  --jb-bg-muted: #f4f4f5;
+  --jb-text: #18181b;
+  --jb-text-muted: #71717a;
+  --jb-text-subtle: #a1a1aa;
+  --jb-accent: #002fa7;
+  --jb-accent-soft: rgba(0, 47, 167, 0.08);
+  --jb-accent-glow: rgba(0, 47, 167, 0.22);
+  --jb-border: rgba(0, 0, 0, 0.06);
+  --jb-border-hover: rgba(0, 47, 167, 0.18);
+  --jb-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.03);
+  --jb-shadow-md: 0 4px 30px rgba(0, 0, 0, 0.03);
+  --jb-shadow-hover: 0 8px 40px rgba(0, 47, 167, 0.06);
+  --jb-space-page: clamp(1.5rem, 5vw, 3rem);
+  --jb-space-section: clamp(1.5rem, 4vw, 2.5rem);
+  --jb-radius: 6px;
+  --jb-radius-lg: 10px;
+  --jb-duration: 500ms;
+  --jb-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   min-height: 100vh;
+}
+
+.jb-interactive {
+  transition: all var(--jb-duration) var(--jb-ease);
+}
+
+.jb-interactive:hover {
+  transform: translateY(-2px);
 }
 
 @keyframes fade-in {
@@ -25,7 +54,7 @@ body {
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out;
+  animation: fade-in 0.5s var(--jb-ease);
 }
 
 @keyframes slide-in-right {
@@ -40,22 +69,7 @@ body {
 }
 
 .animate-slide-in-right {
-  animation: slide-in-right 0.25s ease-out;
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
+  animation: slide-in-right 0.35s var(--jb-ease);
 }
 
 @media print {

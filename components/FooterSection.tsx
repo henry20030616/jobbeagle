@@ -8,6 +8,7 @@ import { AppLanguage } from '@/lib/language-context';
 
 interface FooterSectionProps {
   language: AppLanguage;
+  compact?: boolean;
 }
 
 type FT = {
@@ -24,8 +25,9 @@ const translations: Record<AppLanguage, FT> = {
   ar:      { contactTitle: 'راسل المؤسس', contactDesc: 'هل لديك اقتراحات أو ملاحظات؟ اترك رسالة، سأقرأها كلها.', namePlaceholder: 'اسمك (اختياري)', emailPlaceholder: 'بريدك الإلكتروني للرد (اختياري)', messagePlaceholder: 'اكتب رسالتك…', send: 'إرسال الرسالة', sending: 'جارٍ الإرسال…', successTitle: 'تم إرسال الرسالة!', successDesc: 'شكرًا لملاحظاتك. سأراجعها قريبًا.', errorMsg: 'فشل الإرسال. يرجى المحاولة لاحقًا.', privacy: 'سياسة الخصوصية', terms: 'شروط الخدمة' },
 };
 
-const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
+const FooterSection: React.FC<FooterSectionProps> = ({ language, compact = false }) => {
   const t = translations[language];
+  const [showContact, setShowContact] = useState(false);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -71,71 +73,109 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
   };
 
   return (
-    <div className="mt-12 space-y-6">
-      <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
-
-      <div className="max-w-lg mx-auto">
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col">
-          <h3 className="text-base font-bold text-white flex items-center mb-1">
-            <MessageCircle className="w-5 h-5 mr-2 text-indigo-400 shrink-0" />
+    <div className="mt-16 space-y-4 pb-6">
+      {compact ? (
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-jb-ink-muted">
+          <Link href="/privacy" className="hover:text-jb-accent transition-colors">{t.privacy}</Link>
+          <span className="text-jb-ink-subtle">·</span>
+          <Link href="/terms" className="hover:text-jb-accent transition-colors">{t.terms}</Link>
+          <span className="text-jb-ink-subtle">·</span>
+          <Link href="/shorts" className="hover:text-jb-accent transition-colors">Shorts</Link>
+          <span className="text-jb-ink-subtle">·</span>
+          <button type="button" onClick={() => setShowContact((v) => !v)} className="hover:text-jb-accent transition-colors">
             {t.contactTitle}
-          </h3>
-          <p className="text-sm text-slate-400 mb-4">{t.contactDesc}</p>
-
-          {submitted ? (
-            <div className="flex flex-col items-center gap-2 text-center py-6">
-              <CheckCircle className="w-10 h-10 text-emerald-400" />
-              <p className="font-bold text-emerald-300">{t.successTitle}</p>
-              <p className="text-sm text-slate-400">{t.successDesc}</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t.namePlaceholder}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t.emailPlaceholder}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              />
-              <textarea
-                required
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={t.messagePlaceholder}
-                rows={4}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
-              />
-              {error && <p className="text-sm text-red-400">{error}</p>}
-              <button
-                type="submit"
-                disabled={submitting || !message.trim()}
-                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold rounded-lg text-sm transition-all active:scale-95"
-              >
-                <Send className="w-4 h-4" />
-                {submitting ? t.sending : t.send}
-              </button>
-            </form>
-          )}
+          </button>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="h-px bg-jb-border" />
+          <div className="mx-auto max-w-lg">
+            <div className="flex flex-col rounded-jb-lg border border-jb-border bg-jb-elevated p-6 shadow-jb">
+              <h3 className="mb-1 flex items-center text-base font-semibold text-jb-ink">
+                <MessageCircle className="mr-2 h-5 w-5 shrink-0 text-jb-accent" />
+                {t.contactTitle}
+              </h3>
+              <p className="mb-4 text-sm text-jb-ink-muted">{t.contactDesc}</p>
+              {submitted ? (
+                <div className="flex flex-col items-center gap-2 py-6 text-center">
+                  <CheckCircle className="h-10 w-10 text-emerald-600" />
+                  <p className="font-semibold text-emerald-700">{t.successTitle}</p>
+                  <p className="text-sm text-jb-ink-muted">{t.successDesc}</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t.namePlaceholder}
+                    className="w-full rounded-jb border border-jb-border bg-jb-elevated px-4 py-2.5 text-sm text-jb-ink placeholder-jb-ink-subtle focus:border-jb-accent/40 focus:outline-none focus:ring-2 focus:ring-jb-accent/15"
+                  />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t.emailPlaceholder}
+                    className="w-full rounded-jb border border-jb-border bg-jb-elevated px-4 py-2.5 text-sm text-jb-ink placeholder-jb-ink-subtle focus:border-jb-accent/40 focus:outline-none focus:ring-2 focus:ring-jb-accent/15"
+                  />
+                  <textarea
+                    required
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder={t.messagePlaceholder}
+                    rows={4}
+                    className="w-full resize-none rounded-jb border border-jb-border bg-jb-elevated px-4 py-2.5 text-sm text-jb-ink placeholder-jb-ink-subtle focus:border-jb-accent/40 focus:outline-none focus:ring-2 focus:ring-jb-accent/15"
+                  />
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  <button
+                    type="submit"
+                    disabled={submitting || !message.trim()}
+                    className="flex items-center justify-center gap-2 rounded-jb bg-jb-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:shadow-jb-hover disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Send className="h-4 w-4" />
+                    {submitting ? t.sending : t.send}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 pb-2 text-xs text-jb-ink-muted">
+            <Link href="/privacy" className="transition-colors hover:text-jb-accent">{t.privacy}</Link>
+            <span className="text-jb-ink-subtle">·</span>
+            <Link href="/terms" className="transition-colors hover:text-jb-accent">{t.terms}</Link>
+            <span className="text-jb-ink-subtle">·</span>
+            <Link href="/shorts" className="transition-colors hover:text-jb-accent">Shorts</Link>
+          </div>
+        </>
+      )}
 
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-slate-500 pb-2">
-        <Link href="/privacy" className="hover:text-slate-300 transition-colors">{t.privacy}</Link>
-        <span className="text-slate-700">·</span>
-        <Link href="/terms" className="hover:text-slate-300 transition-colors">{t.terms}</Link>
-        <span className="text-slate-700">·</span>
-        <Link href="/shorts" className="hover:text-slate-300 transition-colors">Shorts</Link>
-      </div>
+      {compact && showContact && (
+        <div className="mx-auto max-w-lg animate-fade-in">
+          <div className="rounded-jb-lg border border-jb-border bg-jb-elevated p-5 shadow-jb">
+            {submitted ? (
+              <p className="text-center text-sm text-emerald-700">{t.successTitle}</p>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+                <textarea
+                  required
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t.messagePlaceholder}
+                  rows={3}
+                  className="w-full resize-none rounded-jb border border-jb-border px-3 py-2 text-sm focus:border-jb-accent/40 focus:outline-none focus:ring-2 focus:ring-jb-accent/15"
+                />
+                {error && <p className="text-xs text-red-600">{error}</p>}
+                <button type="submit" disabled={submitting || !message.trim()} className="rounded-jb bg-jb-accent py-2 text-sm font-semibold text-white disabled:opacity-40">
+                  {submitting ? t.sending : t.send}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
-      <p className="text-center text-xs text-slate-600 pb-4">
-        © {new Date().getFullYear()} Jobbeagle · Made with ❤️ to help job seekers
+      <p className="pb-2 text-center text-xs text-jb-ink-subtle">
+        © {new Date().getFullYear()} Jobbeagle
       </p>
     </div>
   );

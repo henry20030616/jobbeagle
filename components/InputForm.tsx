@@ -3,8 +3,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { UserInputs, ResumeInput, InterviewReport } from '@/types';
-import { FileText, Upload, X, Sparkles, Zap, Globe, AlertTriangle, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp } from 'lucide-react';
-import { BeagleIcon } from './AnalysisDashboard';
+import { FileText, Upload, X, AlertTriangle, History, Clock, ArrowRight, Globe } from 'lucide-react';
+import { BeagleIcon } from './report/report-shared';
+import { Panel, Button, SectionLabel } from '@/components/ui/primitives';
 import { createClient } from '@/lib/supabase/browser';
 import { AppLanguage } from '@/lib/language-context';
 
@@ -427,14 +428,14 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     }
   };
 
-  type TKeys = { title: string; subtitle: string; description: string; jobDescription: string; upload: string; save: string; saving: string; saved: string; saveFailed: string; generate: string; resumeLibrary: string; recentReports: string; noResume: string; recentlyUploaded: string; engineIntro: string; engineDescription: string; reportOutput: string; matchAnalysis: string; matchAnalysisDesc: string; salaryResearch: string; salaryResearchDesc: string; industryAnalysis: string; industryAnalysisDesc: string; interviewPrep: string; interviewPrepDesc: string; jobData: string; jdFullTextHint: string; inputJobUrl: string; jobUrlPlaceholder: string; urlTip: string; resume: string; uploadSupport: string; waitingSave: string; generating: string; fileTooLarge: string };
+  type TKeys = { tagline: string; chips: [string, string, string]; jobDescription: string; upload: string; save: string; saving: string; saved: string; generate: string; resumeLibrary: string; noResume: string; recentlyUploaded: string; jobData: string; jdFullTextHint: string; inputJobUrl: string; jobUrlPlaceholder: string; urlTip: string; resume: string; uploadSupport: string; waitingSave: string; generating: string; fileTooLarge: string };
   const translations: Record<AppLanguage, TKeys> = {
-    'zh-TW': { title: 'Jobbeagle', subtitle: '職位分析米格魯', description: '專家級 AI 職缺戰略分析中心：結合求職專家分析與獵頭視角，助您掌握應對策略。', jobDescription: '職缺描述 (JD)', upload: '點擊上傳 PDF 或文字檔', save: '儲存', saving: '儲存中...', saved: '✓ 已儲存!', saveFailed: '儲存失敗，請重試', generate: '啟動AI戰略分析', resumeLibrary: '履歷庫', recentReports: '近期分析報告', noResume: '尚未儲存任何履歷', recentlyUploaded: '最近上傳的履歷', engineIntro: '戰略引擎簡介', engineDescription: 'Jobbeagle 搭載頂級人資與求職專家分析邏輯，深度解析 JD 背後的組織需求與市場格局。', reportOutput: '深度報告產出項', matchAnalysis: '人才職位匹配分析', matchAnalysisDesc: '揭示職位隱藏門檻，精準評估您的核心優勢與缺口。', salaryResearch: '真實面試題與薪酬範圍', salaryResearchDesc: '提供真實面試考古題、市場薪酬範圍及談判策略。', industryAnalysis: '產業格局與競爭者分析', industryAnalysisDesc: '從求職專家視角解析公司的市場護城河與未來風險。', interviewPrep: '高階面試模擬與對策', interviewPrepDesc: '網羅真實考題並提供具備深度邏輯的 STAR 回答引導。', jobData: '1. 職缺資訊 (Job Data)', jdFullTextHint: '請在職缺頁手動複製「完整」職缺內容後貼上；勿只貼網址或片段。', inputJobUrl: '職缺內容', jobUrlPlaceholder: '手動複製該頁完整職缺內容並貼上（勿只貼連結）…', urlTip: '偵測到網址：請改為到職缺頁手動複製完整內容後貼上。', resume: '2. 您的履歷 (Resume)', uploadSupport: '支援 .pdf, .doc, .docx, .txt, .md (Max 4MB)', waitingSave: '請等待儲存完成...', generating: '生成深度戰略報告...', fileTooLarge: '檔案大小超過 4MB，請上傳較小的檔案。' },
-    'zh-CN': { title: 'Jobbeagle', subtitle: '职位分析猎犬', description: '专家级 AI 职位战略分析中心：结合求职专家分析与猎头视角，助您掌握应对策略。', jobDescription: '职位描述 (JD)', upload: '点击上传 PDF 或文本文件', save: '保存', saving: '保存中...', saved: '✓ 已保存!', saveFailed: '保存失败，请重试', generate: '启动AI战略分析', resumeLibrary: '简历库', recentReports: '近期分析报告', noResume: '尚未保存任何简历', recentlyUploaded: '最近上传的简历', engineIntro: '战略引擎简介', engineDescription: 'Jobbeagle 搭载顶级人资与求职专家分析逻辑，深度解析 JD 背后的组织需求与市场格局。', reportOutput: '深度报告产出项', matchAnalysis: '人才职位匹配分析', matchAnalysisDesc: '揭示职位隐藏门槛，精准评估您的核心优势与缺口。', salaryResearch: '真实面试题与薪酬范围', salaryResearchDesc: '提供真实面试考古题、市场薪酬范围及谈判策略。', industryAnalysis: '产业格局与竞争者分析', industryAnalysisDesc: '从求职专家视角解析公司的市场护城河与未来风险。', interviewPrep: '高阶面试模拟与对策', interviewPrepDesc: '网罗真实考题并提供具备深度逻辑的 STAR 回答引导。', jobData: '1. 职位信息 (Job Data)', jdFullTextHint: '请在职位页手动复制「完整」职位内容后粘贴；勿只贴网址或片段。', inputJobUrl: '职位内容', jobUrlPlaceholder: '手动复制该页完整职位内容并粘贴（勿只贴链接）…', urlTip: '检测到网址：请改为到职位页手动复制完整内容后粘贴。', resume: '2. 您的简历 (Resume)', uploadSupport: '支持 .pdf, .doc, .docx, .txt, .md (最大 4MB)', waitingSave: '请等待保存完成...', generating: '生成深度战略报告...', fileTooLarge: '文件大小超过 4MB，请上传较小的文件。' },
-    en: { title: 'Jobbeagle', subtitle: '(Job Analysis Beagle)', description: 'Expert-level AI Job Strategy Analysis Center: Combining career expert analysis with headhunter perspective to help you master response strategies.', jobDescription: 'Job Description (JD)', upload: 'Click to upload PDF or text file', save: 'Save', saving: 'Saving...', saved: '✓ Saved!', saveFailed: 'Save failed, please try again', generate: 'Launch AI Strategy Analysis', resumeLibrary: 'Resume Library', recentReports: 'Recent Analysis Reports', noResume: 'No resumes saved yet', recentlyUploaded: 'Recently uploaded resumes', engineIntro: 'Strategic Engine Introduction', engineDescription: 'Jobbeagle is equipped with top-tier HR and career expert analysis logic, deeply analyzing organizational needs and market dynamics behind JDs.', reportOutput: 'In-Depth Report Outputs', matchAnalysis: 'Talent-Position Match Analysis', matchAnalysisDesc: 'Reveal hidden job thresholds and accurately assess your core strengths and gaps.', salaryResearch: 'Real Interview Questions & Salary Range', salaryResearchDesc: 'Provide real interview questions, market salary ranges, and negotiation strategies.', industryAnalysis: 'Industry Landscape & Competitor Analysis', industryAnalysisDesc: 'Analyze company market moats and future risks from a career expert perspective.', interviewPrep: 'Advanced Interview Simulation & Strategy', interviewPrepDesc: 'Gather real interview questions and provide in-depth STAR answer guidance.', jobData: '1. Job Information (Job Data)', jdFullTextHint: 'Manually copy the full job posting from the page, then paste here. Do not paste only a URL or a short excerpt.', inputJobUrl: 'Job posting', jobUrlPlaceholder: 'Copy the full job description from the page and paste here (not the link alone)…', urlTip: 'URL detected: open the posting and paste the full copied text instead.', resume: '2. Your Resume', uploadSupport: 'Supports .pdf, .doc, .docx, .txt, .md (Max 4MB)', waitingSave: 'Please wait for save to complete...', generating: 'Generating in-depth strategic report...', fileTooLarge: 'File size exceeds 4MB, please upload a smaller file.' },
-    es: { title: 'Jobbeagle', subtitle: '(Beagle de Análisis de Empleo)', description: 'Centro de Análisis de Estrategia Laboral con IA: Combinando análisis de expertos en carreras y perspectiva de headhunter para dominar las estrategias.', jobDescription: 'Descripción del Puesto (JD)', upload: 'Haz clic para subir PDF o archivo de texto', save: 'Guardar', saving: 'Guardando...', saved: '✓ Guardado!', saveFailed: 'Error al guardar, inténtalo de nuevo', generate: 'Iniciar Análisis de Estrategia IA', resumeLibrary: 'Biblioteca de CV', recentReports: 'Informes de Análisis Recientes', noResume: 'No hay CV guardados aún', recentlyUploaded: 'CV subidos recientemente', engineIntro: 'Introducción al Motor Estratégico', engineDescription: 'Jobbeagle está equipado con lógica de análisis de RR.HH. y expertos en carrera de primer nivel, analizando en profundidad las necesidades organizacionales detrás de los JD.', reportOutput: 'Resultados del Informe en Profundidad', matchAnalysis: 'Análisis de Coincidencia Candidato-Posición', matchAnalysisDesc: 'Revela los umbrales ocultos del puesto y evalúa con precisión tus fortalezas y brechas.', salaryResearch: 'Preguntas de Entrevista Reales y Rango Salarial', salaryResearchDesc: 'Proporciona preguntas de entrevista reales, rangos salariales del mercado y estrategias de negociación.', industryAnalysis: 'Panorama Industrial y Análisis de Competidores', industryAnalysisDesc: 'Analiza las ventajas competitivas y los riesgos futuros de la empresa desde la perspectiva de un experto.', interviewPrep: 'Simulación de Entrevista Avanzada y Estrategia', interviewPrepDesc: 'Recopila preguntas reales de entrevista y proporciona guías de respuesta STAR detalladas.', jobData: '1. Información del Puesto (Job Data)', jdFullTextHint: 'Copia manualmente el contenido completo de la oferta de trabajo de la página y pégalo aquí.', inputJobUrl: 'Oferta de trabajo', jobUrlPlaceholder: 'Copia la descripción completa del trabajo de la página y pégala aquí (no solo el enlace)…', urlTip: 'URL detectada: abre la oferta y pega el texto completo copiado.', resume: '2. Tu CV', uploadSupport: 'Compatible con .pdf, .doc, .docx, .txt, .md (Máx 4MB)', waitingSave: 'Espera a que se complete el guardado...', generating: 'Generando informe estratégico en profundidad...', fileTooLarge: 'El tamaño del archivo supera los 4MB, por favor sube un archivo más pequeño.' },
-    hi: { title: 'Jobbeagle', subtitle: '(जॉब विश्लेषण बीगल)', description: 'विशेषज्ञ-स्तरीय AI नौकरी रणनीति विश्लेषण केंद्र: करियर विशेषज्ञ विश्लेषण और हेडहंटर दृष्टिकोण को मिलाकर आपकी प्रतिक्रिया रणनीतियों में मदद करता है।', jobDescription: 'नौकरी विवरण (JD)', upload: 'PDF या टेक्स्ट फ़ाइल अपलोड करने के लिए क्लिक करें', save: 'सहेजें', saving: 'सहेजा जा रहा है...', saved: '✓ सहेजा गया!', saveFailed: 'सहेजने में विफल, पुनः प्रयास करें', generate: 'AI रणनीति विश्लेषण शुरू करें', resumeLibrary: 'CV लाइब्रेरी', recentReports: 'हाल के विश्लेषण रिपोर्ट', noResume: 'अभी तक कोई CV नहीं सहेजा गया', recentlyUploaded: 'हाल ही में अपलोड किए गए CV', engineIntro: 'रणनीतिक इंजन परिचय', engineDescription: 'Jobbeagle शीर्ष-स्तरीय HR और करियर विशेषज्ञ विश्लेषण तर्क से लैस है, JD के पीछे संगठनात्मक जरूरतों का गहन विश्लेषण करता है।', reportOutput: 'गहन रिपोर्ट आउटपुट', matchAnalysis: 'प्रतिभा-पद मिलान विश्लेषण', matchAnalysisDesc: 'नौकरी की छिपी आवश्यकताओं को उजागर करें और अपनी मुख्य शक्तियों का सटीक मूल्यांकन करें।', salaryResearch: 'वास्तविक साक्षात्कार प्रश्न और वेतन सीमा', salaryResearchDesc: 'वास्तविक साक्षात्कार प्रश्न, बाजार वेतन सीमाएं और बातचीत रणनीतियां प्रदान करता है।', industryAnalysis: 'उद्योग परिदृश्य और प्रतिस्पर्धी विश्लेषण', industryAnalysisDesc: 'करियर विशेषज्ञ के दृष्टिकोण से कंपनी के बाजार फायदे और भविष्य के जोखिमों का विश्लेषण करें।', interviewPrep: 'उन्नत साक्षात्कार सिमुलेशन और रणनीति', interviewPrepDesc: 'वास्तविक साक्षात्कार प्रश्न एकत्र करें और गहन STAR उत्तर मार्गदर्शन प्रदान करें।', jobData: '1. नौकरी की जानकारी (Job Data)', jdFullTextHint: 'पेज से पूरी नौकरी की जानकारी मैन्युअल रूप से कॉपी करें और यहाँ पेस्ट करें।', inputJobUrl: 'नौकरी पोस्टिंग', jobUrlPlaceholder: 'पेज से पूरा जॉब विवरण कॉपी करें और यहाँ पेस्ट करें (केवल लिंक नहीं)…', urlTip: 'URL पाया गया: पोस्टिंग खोलें और पूरा कॉपी किया हुआ टेक्स्ट पेस्ट करें।', resume: '2. आपका CV', uploadSupport: '.pdf, .doc, .docx, .txt, .md सपोर्ट करता है (अधिकतम 4MB)', waitingSave: 'कृपया सेव पूरा होने तक प्रतीक्षा करें...', generating: 'गहन रणनीतिक रिपोर्ट तैयार की जा रही है...', fileTooLarge: 'फ़ाइल का आकार 4MB से अधिक है, कृपया छोटी फ़ाइल अपलोड करें।' },
-    ar: { title: 'Jobbeagle', subtitle: '(بيغل تحليل الوظائف)', description: 'مركز تحليل استراتيجية الوظائف بالذكاء الاصطناعي: يجمع بين تحليل خبراء المسار المهني ومنظور مسؤولي التوظيف لمساعدتك على إتقان استراتيجية التقديم.', jobDescription: 'وصف الوظيفة (JD)', upload: 'انقر لرفع ملف PDF أو ملف نصي', save: 'حفظ', saving: 'جارٍ الحفظ...', saved: '✓ تم الحفظ!', saveFailed: 'فشل الحفظ، يرجى المحاولة مرة أخرى', generate: 'بدء تحليل استراتيجية الذكاء الاصطناعي', resumeLibrary: 'مكتبة السيرة الذاتية', recentReports: 'تقارير التحليل الأخيرة', noResume: 'لا توجد سير ذاتية محفوظة بعد', recentlyUploaded: 'السير الذاتية المرفوعة مؤخرًا', engineIntro: 'مقدمة محرك الاستراتيجية', engineDescription: 'يعتمد Jobbeagle على منطق تحليل متخصص في الموارد البشرية والمسار المهني لفهم احتياجات المنظمة والسوق خلف وصف الوظيفة بعمق.', reportOutput: 'مخرجات التقرير المتعمق', matchAnalysis: 'تحليل توافق المرشح مع الوظيفة', matchAnalysisDesc: 'يكشف المتطلبات الخفية للوظيفة ويقيّم نقاط قوتك والفجوات بدقة.', salaryResearch: 'أسئلة مقابلة حقيقية ونطاق الراتب', salaryResearchDesc: 'يوفر أسئلة مقابلة حقيقية ونطاقات رواتب السوق واستراتيجيات التفاوض.', industryAnalysis: 'تحليل القطاع والمنافسين', industryAnalysisDesc: 'يحلل مزايا الشركة التنافسية ومخاطرها المستقبلية من منظور خبير مهني.', interviewPrep: 'محاكاة مقابلة متقدمة واستراتيجية', interviewPrepDesc: 'يجمع أسئلة مقابلة واقعية ويقدم إرشادات STAR عميقة للإجابة.', jobData: '1. معلومات الوظيفة (Job Data)', jdFullTextHint: 'انسخ وصف الوظيفة الكامل من صفحة الإعلان والصقه هنا. لا تلصق الرابط فقط أو مقتطفًا قصيرًا.', inputJobUrl: 'إعلان الوظيفة', jobUrlPlaceholder: 'انسخ وصف الوظيفة الكامل من الصفحة والصقه هنا (وليس الرابط فقط)…', urlTip: 'تم اكتشاف رابط: افتح الإعلان والصق النص الكامل المنسوخ بدلًا منه.', resume: '2. سيرتك الذاتية', uploadSupport: 'يدعم .pdf و .doc و .docx و .txt و .md (حتى 4MB)', waitingSave: 'يرجى الانتظار حتى يكتمل الحفظ...', generating: 'جارٍ إنشاء التقرير الاستراتيجي المتعمق...', fileTooLarge: 'حجم الملف يتجاوز 4MB، يرجى رفع ملف أصغر.' },
+    'zh-TW': { tagline: 'AI 職缺戰略分析', chips: ['匹配', '薪資', '面試'], jobDescription: '職缺描述', upload: '上傳 PDF 或文字檔', save: '儲存', saving: '儲存中...', saved: '✓ 已儲存', generate: '開始分析', resumeLibrary: '履歷庫', noResume: '尚無儲存履歷', recentlyUploaded: '最近上傳', jobData: '職缺資訊', jdFullTextHint: '請貼上完整職缺內容，勿只貼網址。', inputJobUrl: '職缺內容', jobUrlPlaceholder: '複製完整職缺內容並貼上…', urlTip: '偵測到網址：請改貼完整職缺文字。', resume: '您的履歷', uploadSupport: '.pdf · .doc · .docx · .txt · .md（最大 4MB）', waitingSave: '請等待儲存完成…', generating: '分析中…', fileTooLarge: '檔案超過 4MB，請上傳較小檔案。' },
+    'zh-CN': { tagline: 'AI 职位战略分析', chips: ['匹配', '薪资', '面试'], jobDescription: '职位描述', upload: '上传 PDF 或文本', save: '保存', saving: '保存中...', saved: '✓ 已保存', generate: '开始分析', resumeLibrary: '简历库', noResume: '暂无保存简历', recentlyUploaded: '最近上传', jobData: '职位信息', jdFullTextHint: '请贴上完整职位内容，勿只贴网址。', inputJobUrl: '职位内容', jobUrlPlaceholder: '复制完整职位内容并贴上…', urlTip: '检测到网址：请改贴完整职位文字。', resume: '您的简历', uploadSupport: '.pdf · .doc · .docx · .txt · .md（最大 4MB）', waitingSave: '请等待保存完成…', generating: '分析中…', fileTooLarge: '文件超过 4MB，请上传较小文件。' },
+    en: { tagline: 'AI job strategy analysis', chips: ['Match', 'Salary', 'Interview'], jobDescription: 'Job description', upload: 'Upload PDF or text file', save: 'Save', saving: 'Saving...', saved: '✓ Saved', generate: 'Analyze', resumeLibrary: 'Resume library', noResume: 'No saved resumes', recentlyUploaded: 'Recent uploads', jobData: 'Job posting', jdFullTextHint: 'Paste the full job posting, not just a URL.', inputJobUrl: 'Job content', jobUrlPlaceholder: 'Paste the full job description…', urlTip: 'URL detected: paste the full copied text instead.', resume: 'Your resume', uploadSupport: '.pdf · .doc · .docx · .txt · .md (max 4MB)', waitingSave: 'Waiting for save…', generating: 'Analyzing…', fileTooLarge: 'File exceeds 4MB.' },
+    es: { tagline: 'Análisis estratégico con IA', chips: ['Match', 'Salario', 'Entrevista'], jobDescription: 'Descripción', upload: 'Subir PDF o texto', save: 'Guardar', saving: 'Guardando...', saved: '✓ Guardado', generate: 'Analizar', resumeLibrary: 'Biblioteca', noResume: 'Sin CV guardados', recentlyUploaded: 'Recientes', jobData: 'Oferta', jdFullTextHint: 'Pega el contenido completo, no solo el enlace.', inputJobUrl: 'Contenido', jobUrlPlaceholder: 'Pega la descripción completa…', urlTip: 'URL detectada: pega el texto completo.', resume: 'Tu CV', uploadSupport: '.pdf · .doc · .docx · .txt · .md (máx 4MB)', waitingSave: 'Esperando guardado…', generating: 'Analizando…', fileTooLarge: 'Archivo mayor a 4MB.' },
+    hi: { tagline: 'AI नौकरी रणनीति विश्लेषण', chips: ['मिलान', 'वेतन', 'साक्षात्कार'], jobDescription: 'नौकरी विवरण', upload: 'PDF या टेक्स्ट अपलोड', save: 'सहेजें', saving: 'सहेजा जा रहा…', saved: '✓ सहेजा', generate: 'विश्लेषण', resumeLibrary: 'लाइब्रेरी', noResume: 'कोई CV नहीं', recentlyUploaded: 'हाल के', jobData: 'नौकरी', jdFullTextHint: 'पूरा विवरण पेस्ट करें, केवल URL नहीं।', inputJobUrl: 'सामग्री', jobUrlPlaceholder: 'पूरा विवरण पेस्ट करें…', urlTip: 'URL मिला: पूरा टेक्स्ट पेस्ट करें।', resume: 'आपका CV', uploadSupport: '.pdf · .doc · .docx · .txt · .md (4MB)', waitingSave: 'सहेजने की प्रतीक्षा…', generating: 'विश्लेषण…', fileTooLarge: 'फ़ाइल 4MB से बड़ी है।' },
+    ar: { tagline: 'تحليل استراتيجي بالذكاء الاصطناعي', chips: ['التوافق', 'الراتب', 'المقابلة'], jobDescription: 'وصف الوظيفة', upload: 'رفع PDF أو نص', save: 'حفظ', saving: 'جارٍ الحفظ…', saved: '✓ تم', generate: 'تحليل', resumeLibrary: 'المكتبة', noResume: 'لا سير ذاتية', recentlyUploaded: 'الأخيرة', jobData: 'الإعلان', jdFullTextHint: 'الصق الوصف الكامل، وليس الرابط فقط.', inputJobUrl: 'المحتوى', jobUrlPlaceholder: 'الصق وصف الوظيفة الكامل…', urlTip: 'تم اكتشاف رابط: الصق النص الكامل.', resume: 'سيرتك الذاتية', uploadSupport: '.pdf · .doc · .docx · .txt · .md (4MB)', waitingSave: 'انتظر اكتمال الحفظ…', generating: 'جارٍ التحليل…', fileTooLarge: 'الملف أكبر من 4MB.' },
   };
 
 
@@ -442,292 +443,197 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="text-center space-y-3 py-4">
-        <Link href="/" className="inline-block">
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight flex flex-col md:flex-row items-center justify-center hover:opacity-80 transition-opacity cursor-pointer">
-            <div className="flex items-center">
-              <div className="mr-6">
-                 <BeagleIcon className="w-16 h-16 md:w-28 md:h-28 drop-shadow-xl" color="#cbd5e1" spotColor="#5d4037" bellyColor="#94a3b8" />
-              </div>
-              <span><span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span></span>
-            </div>
-            <span className="text-sm md:text-lg font-medium text-slate-500 mt-2 md:mt-0 md:ml-6 tracking-normal">
-              {t.subtitle}
-            </span>
+      <div className="space-y-5 py-2 text-center">
+        <Link href="/" className="inline-flex flex-col items-center">
+          <BeagleIcon className="mb-4 h-14 w-14 md:h-16 md:w-16" color="#002FA7" spotColor="#5d4037" bellyColor="#94a3b8" />
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-jb-ink md:text-5xl">
+            Job<span className="text-jb-accent">beagle</span>
           </h1>
+          <p className="mt-2 text-sm text-jb-ink-muted md:text-base">{t.tagline}</p>
         </Link>
-        <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto font-medium">
-          {t.description}
-        </p>
-
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {t.chips.map((chip) => (
+            <span
+              key={chip}
+              className="rounded-full border border-jb-border bg-jb-elevated px-4 py-1.5 text-xs font-medium text-jb-ink-muted shadow-jb"
+            >
+              {chip}
+            </span>
+          ))}
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden flex flex-col h-full relative group">
-           <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity duration-500">
-              <Sparkles className="w-64 h-64 text-indigo-500" />
-           </div>
-
-           <div className="p-8 pb-6">
-               <h2 className="text-2xl font-bold text-white flex items-center mb-5">
-                  <span className="w-1.5 h-8 bg-blue-500 rounded-full mr-4"></span>
-                  {t.engineIntro}
-               </h2>
-               <p className="text-slate-300 text-lg leading-8 mb-6 bg-slate-700/30 p-5 rounded-xl border border-slate-600/30 font-medium">
-                  {t.engineDescription}
-               </p>
-           </div>
-
-           <div className="px-8">
-              <div className="h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
-           </div>
-
-           <div className="p-8 pt-6 flex-1 flex flex-col">
-               <h2 className="text-2xl font-bold text-white flex items-center mb-6">
-                  <span className="w-1.5 h-8 bg-emerald-500 rounded-full mr-4"></span>
-                  {t.reportOutput}
-               </h2>
-               
-               <div className="grid grid-cols-1 gap-4">
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-yellow-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <Zap className="w-6 h-6 text-yellow-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.matchAnalysis}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.matchAnalysisDesc}</span>
-                     </div>
-                  </div>
-                  
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-emerald-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <Briefcase className="w-6 h-6 text-emerald-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.salaryResearch}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.salaryResearchDesc}</span>
-                     </div>
-                  </div>
-
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-sky-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <TrendingUp className="w-6 h-6 text-sky-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.industryAnalysis}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.industryAnalysisDesc}</span>
-                     </div>
-                  </div>
-
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-indigo-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <MessageSquare className="w-6 h-6 text-indigo-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.interviewPrep}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.interviewPrepDesc}</span>
-                     </div>
-                  </div>
-               </div>
-           </div>
-        </div>
-
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden flex flex-col h-full relative">
-          <div className="p-6 pb-4">
-              <h2 className="text-2xl font-bold text-white flex items-center mb-5">
-                <span className="w-1.5 h-8 bg-indigo-500 rounded-full mr-4"></span>
-                {t.jobData}
-              </h2>
-              <label className="block text-base font-medium text-slate-300 mb-3 flex items-center justify-between">
-                  <div className="flex items-center">
-                  {inputType === 'url' ? (
-                      <Globe className="w-5 h-5 mr-2 text-blue-400 animate-pulse" />
-                  ) : (
-                      <FileText className="w-5 h-5 mr-2 text-indigo-400" />
-                  )}
-                  {t.inputJobUrl}
-                  </div>
-              </label>
-              <p className="mb-3 text-sm text-amber-200/90 leading-relaxed bg-amber-950/40 border border-amber-600/40 rounded-lg px-3 py-2.5">
-                {t.jdFullTextHint}
-              </p>
-              <div className="relative">
-                  <textarea
-                  required
-                  className={`w-full min-h-[180px] bg-slate-900 border rounded-xl p-5 text-base text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-y ${
-                      inputType === 'url' ? 'border-blue-500/50 text-blue-100' : 'border-slate-700'
-                  }`}
-                  placeholder={t.jobUrlPlaceholder}
-                  value={jobDescription}
-                  onChange={(e) => {
-                    setJobDescription(e.target.value);
-                    if (jdError) setJdError(null);
-                  }}
-                  />
-                  {inputType === 'url' && (
-                  <div className="absolute bottom-3 left-3 right-3 flex items-start p-2 bg-blue-900/40 rounded border border-blue-500/30 text-sm text-blue-200 backdrop-blur-sm">
-                      <AlertTriangle className="w-4 h-4 mr-2 shrink-0 text-blue-400 mt-0.5" />
-                      <span>{t.urlTip}</span>
-                  </div>
-                  )}
+      <form onSubmit={handleSubmit} className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 lg:grid-cols-2">
+        <Panel>
+          <SectionLabel>{t.jobData}</SectionLabel>
+          <label className="mt-3 mb-2 flex items-center text-sm font-medium text-jb-ink">
+            {inputType === 'url' ? (
+              <Globe className="mr-2 h-4 w-4 animate-pulse text-jb-accent" />
+            ) : (
+              <FileText className="mr-2 h-4 w-4 text-jb-accent" />
+            )}
+            {t.inputJobUrl}
+          </label>
+          <p className="mb-3 rounded-jb border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-900">
+            {t.jdFullTextHint}
+          </p>
+          <div className="relative">
+            <textarea
+              required
+              className={`w-full min-h-[200px] resize-y rounded-jb border bg-jb-elevated p-4 text-sm text-jb-ink placeholder-jb-ink-subtle transition-all focus:border-jb-accent/40 focus:outline-none focus:ring-2 focus:ring-jb-accent/15 ${
+                inputType === 'url' ? 'border-jb-accent/40' : 'border-jb-border'
+              }`}
+              placeholder={t.jobUrlPlaceholder}
+              value={jobDescription}
+              onChange={(e) => {
+                setJobDescription(e.target.value);
+                if (jdError) setJdError(null);
+              }}
+            />
+            {inputType === 'url' && (
+              <div className="absolute bottom-3 left-3 right-3 flex items-start rounded-jb border border-jb-accent/20 bg-jb-accent-soft p-2 text-xs text-jb-accent">
+                <AlertTriangle className="mr-2 mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>{t.urlTip}</span>
               </div>
-              {jdError && (
-                <div className="mt-3 flex items-start gap-2 p-3 bg-red-900/30 border border-red-500/50 rounded-xl text-sm text-red-300 animate-fade-in">
-                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
-                  <span>{jdError}</span>
-                </div>
-              )}
+            )}
           </div>
+          {jdError && (
+            <div className="mt-3 flex items-start gap-2 rounded-jb border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{jdError}</span>
+            </div>
+          )}
+        </Panel>
 
-          <div className="px-6">
-             <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent my-2" />
-          </div>
-
-          <div className="p-6 pt-4 flex-1 flex flex-col">
-              <div className="flex justify-between items-center mb-5">
-                <h2 className="text-2xl font-bold text-white flex items-center">
-                  <span className="w-1.5 h-8 bg-violet-500 rounded-full mr-4"></span>
-                  {t.resume}
-                </h2>
-                {/* 履歷庫按鈕 */}
-                <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-                        className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
-                      >
-                        <History className="w-4 h-4" />
-                        <span className="font-bold">{t.resumeLibrary} {resumeHistory.length > 0 && `(${resumeHistory.length})`}</span>
-                      </button>
-                    {showHistoryDropdown && (
-                    <>
-                        <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
-                        <div className="absolute right-0 top-10 w-80 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
-                        <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                            {t.recentlyUploaded}
-                        </div>
-                        {resumeHistory.length === 0 ? (
-                            <div className="p-6 text-center text-slate-500 text-sm">
-                                <p>{t.noResume}</p>
-                            </div>
-                        ) : (
-                            resumeHistory.map((historyItem) => (
-                            <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-4 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all active:bg-slate-600">
-                                <FileText className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5 mr-3 group-hover:scale-110 transition-transform" />
-                                <div className="flex-1 overflow-hidden text-left">
-                                <p className="text-sm text-slate-200 font-bold truncate group-hover:text-indigo-300 transition-colors">{historyItem.fileName}</p>
-                                <p className="text-[10px] text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
-                                </div>
-                                <button onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded transition-all active:scale-90"><X className="w-4 h-4" /></button>
-                            </div>
-                            ))
-                        )}
-                        </div>
-                    </>
-                    )}
-                </div>
-              </div>
-
-              <div className="mb-6 flex-1">
-                  {!resume ? (
-                    <div className="w-full h-full min-h-[180px] border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
-                        <label 
-                          htmlFor="resume-file-input"
-                          className="flex flex-col items-center justify-center cursor-pointer hover:bg-slate-700/30 w-full p-6 flex-1 rounded-t-xl group relative z-10"
-                        >
-                            <div className="p-4 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors mb-3 border border-slate-700 group-hover:border-indigo-500/30">
-                                <Upload className="w-8 h-8 text-slate-400 group-hover:text-indigo-400" />
-                            </div>
-                            <p className="text-base text-slate-300 font-bold">{t.upload}</p>
-                            <p className="text-xs text-slate-500 mt-1 font-medium">{t.uploadSupport}</p>
-                        </label>
-                        <input 
-                          id="resume-file-input"
-                          type="file" 
-                          ref={fileInputRef} 
-                          onChange={handleFileChange} 
-                          accept=".pdf,.doc,.docx,.txt,.md" 
-                          className="hidden" 
-                          aria-label="Upload resume file"
-                        />
+        <Panel className="flex flex-col">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <SectionLabel>{t.resume}</SectionLabel>
+            </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
+                className="jb-interactive flex items-center gap-1.5 rounded-full border border-jb-border bg-jb-surface px-3 py-1.5 text-xs font-semibold text-jb-accent"
+              >
+                <History className="h-3.5 w-3.5" />
+                {t.resumeLibrary}{resumeHistory.length > 0 ? ` (${resumeHistory.length})` : ''}
+              </button>
+              {showHistoryDropdown && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
+                  <div className="absolute right-0 top-9 z-20 w-72 overflow-hidden rounded-jb-lg border border-jb-border bg-jb-elevated shadow-jb-hover animate-fade-in">
+                    <div className="border-b border-jb-border px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-jb-ink-subtle">
+                      {t.recentlyUploaded}
                     </div>
-                  ) : (
-                     <div className="w-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex items-center justify-between p-6 animate-fade-in h-auto">
-                       <div className="flex items-center space-x-4 overflow-hidden">
-                         <div className="bg-indigo-500 p-3 rounded-lg shrink-0 shadow-lg"><FileText className="w-8 h-8 text-white" /></div>
-                         <div className="min-w-0 text-left"><p className="text-base font-bold text-white truncate">{resume.fileName}</p><p className="text-xs text-indigo-300 mt-1">Ready for Analysis</p></div>
-                       </div>
-                       <div className="flex items-center space-x-3">
-                           <button 
-                             type="button" 
-                             onClick={handleManualSave} 
-                             disabled={isSaving}
-                             className={`flex items-center space-x-1 px-4 py-2 rounded-lg border transition-all relative group ${
-                               isSaving 
-                                 ? 'bg-emerald-500/5 text-emerald-400/50 border-emerald-500/10 cursor-wait' 
-                                 : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border-emerald-500/20 active:scale-95'
-                             }`}
-                           >
-                             {isSaving ? (
-                               <>
-                                 <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                 </svg>
-                                 <span className="text-xs font-bold">{t.saving}</span>
-                               </>
-                             ) : (
-                               <>
-                                 <Save className="w-4 h-4" />
-                                 <span className="text-xs font-bold">{t.save}</span>
-                               </>
-                             )}
-                             {showSaveSuccess && (
-                               <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] px-2 py-1 rounded shadow animate-fade-in whitespace-nowrap z-10">
-                                 {t.saved}
-                               </span>
-                             )}
-                           </button>
-                           <button type="button" onClick={clearFile} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all active:scale-95"><X className="w-5 h-5" /></button>
-                       </div>
-                     </div>
-                  )}
-              </div>
-
-
-              <div className="pt-4 border-t border-slate-700/50 mt-auto">
-                 {/* 啟動 AI 戰略分析按鈕 */}
-                 <button 
-                   type="submit" 
-                   disabled={isLoading || !jobDescription || !resume || isSaving} 
-                   className={`w-full py-5 px-6 rounded-xl font-black text-xl text-white shadow-lg transition-all transform flex justify-center items-center ${
-                     isLoading || !jobDescription || !resume || isSaving
-                       ? 'bg-slate-700 cursor-not-allowed text-slate-500'
-                       : jdError
-                         ? 'bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 ring-1 ring-red-500/30 active:scale-[0.98]'
-                         : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/25 ring-1 ring-white/10 shadow-indigo-500/20 active:scale-[0.98] hover:scale-[1.02]'
-                   }`}
-                 >
-                  {isLoading ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      <span className="animate-pulse">{t.generating}</span>
-                    </>
-                  ) : isSaving ? (
-                    <span className="text-slate-500">{t.waitingSave}</span>
-                  ) : (
-                    <>
-                      <span className="mr-2">{t.generate}</span>
-                      <ArrowRight className="w-6 h-6" />
-                    </>
-                  )}
-                </button>
-              </div>
+                    {resumeHistory.length === 0 ? (
+                      <div className="p-5 text-center text-sm text-jb-ink-muted">{t.noResume}</div>
+                    ) : (
+                      resumeHistory.map((historyItem) => (
+                        <div
+                          key={historyItem.id}
+                          onClick={() => handleSelectResume(historyItem)}
+                          className="group relative flex cursor-pointer items-start border-b border-jb-border p-3 last:border-0 hover:bg-jb-surface"
+                        >
+                          <FileText className="mr-2 mt-0.5 h-4 w-4 shrink-0 text-jb-accent" />
+                          <div className="min-w-0 flex-1 text-left">
+                            <p className="truncate text-sm font-medium text-jb-ink">{historyItem.fileName}</p>
+                            <p className="mt-0.5 flex items-center text-[10px] text-jb-ink-subtle">
+                              <Clock className="mr-1 h-3 w-3" />
+                              {formatDateTime(historyItem.timestamp)}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => handleDeleteResume(e, historyItem.id)}
+                            className="rounded p-1 text-jb-ink-subtle hover:bg-red-50 hover:text-red-600"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+
+          <div className="mb-6 flex-1">
+            {!resume ? (
+              <label
+                htmlFor="resume-file-input"
+                className="jb-interactive flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-jb-lg border-2 border-dashed border-jb-border bg-jb-surface/50 p-6 hover:border-jb-accent/30 hover:bg-jb-accent-soft/30"
+              >
+                <div className="mb-3 rounded-full border border-jb-border bg-jb-elevated p-3">
+                  <Upload className="h-7 w-7 text-jb-ink-muted" />
+                </div>
+                <p className="text-sm font-semibold text-jb-ink">{t.upload}</p>
+                <p className="mt-1 text-xs text-jb-ink-subtle">{t.uploadSupport}</p>
+                <input
+                  id="resume-file-input"
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".pdf,.doc,.docx,.txt,.md"
+                  className="hidden"
+                  aria-label="Upload resume file"
+                />
+              </label>
+            ) : (
+              <div className="flex animate-fade-in items-center justify-between rounded-jb-lg border border-jb-accent/25 bg-jb-accent-soft/40 p-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="rounded-jb bg-jb-accent p-2.5">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="min-w-0 text-left">
+                    <p className="truncate text-sm font-semibold text-jb-ink">{resume.fileName}</p>
+                    <p className="text-xs text-jb-accent">Ready</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleManualSave}
+                    disabled={isSaving}
+                    className="jb-interactive rounded-jb border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 disabled:opacity-50"
+                  >
+                    {isSaving ? t.saving : t.save}
+                  </button>
+                  {showSaveSuccess && (
+                    <span className="text-xs font-medium text-emerald-600">{t.saved}</span>
+                  )}
+                  <button type="button" onClick={clearFile} className="rounded-full p-1.5 text-jb-ink-muted hover:bg-jb-surface hover:text-jb-ink">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isLoading || !jobDescription || !resume || isSaving}
+            className="w-full"
+          >
+            {isLoading ? (
+              <>
+                <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                {t.generating}
+              </>
+            ) : isSaving ? (
+              t.waitingSave
+            ) : (
+              <>
+                {t.generate}
+                <ArrowRight className="h-5 w-5" />
+              </>
+            )}
+          </Button>
+        </Panel>
       </form>
     </div>
   );
