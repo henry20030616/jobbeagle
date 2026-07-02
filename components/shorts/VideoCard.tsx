@@ -72,6 +72,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [showDoubleTapLike, setShowDoubleTapLike] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const lastTapRef = useRef<number>(0);
   const likeLoadedRef = useRef(false);
 
@@ -204,6 +205,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
     setSelectedSavedResumeId(null);
     setSavedResumeRows([]);
     setApplyResumeLoggedIn(false);
+    setAgreedToTerms(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }, [showApplyModal]);
 
@@ -563,6 +565,10 @@ const VideoCard: React.FC<VideoCardProps> = ({
   };
 
   const handleApplySubmit = async () => {
+    if (!agreedToTerms) {
+      alert(t('請勾選同意服務條款與隱私權政策', 'Please agree to the Terms of Service and Privacy Policy'));
+      return;
+    }
     setApplyState('submitting');
     try {
       const supabase = createClient();
@@ -1642,13 +1648,29 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         )}
                       </div>
                     </div>
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        className="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-800 text-cyan-600 focus:ring-cyan-500 focus:ring-offset-slate-900"
+                      />
+                      <span className="text-xs text-gray-400 leading-relaxed group-hover:text-gray-300">
+                        {(language === 'zh-TW' || language === 'zh-CN') ? (
+                          <>我同意 <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline" onClick={(e) => e.stopPropagation()}>服務條款</a> 與 <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline" onClick={(e) => e.stopPropagation()}>隱私權政策</a>，並授權將我的申請資料提供給 {job.companyName}。</>
+                        ) : (
+                          <>I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline" onClick={(e) => e.stopPropagation()}>Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline" onClick={(e) => e.stopPropagation()}>Privacy Policy</a>, and consent to sharing my application with {job.companyName}.</>
+                        )}
+                      </span>
+                    </label>
                     <div className="flex gap-3 pt-2">
                       <button onClick={() => setApplyStep(2)}
                         className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
                         <ChevronLeft size={18} /> {t('上一步', 'Back')}
                       </button>
                       <button onClick={handleApplySubmit}
-                        className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+                        disabled={!agreedToTerms}
+                        className="flex-1 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95">
                         {t('確認送出', 'Submit Application')}
                       </button>
                     </div>

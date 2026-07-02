@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import InputForm from '@/components/InputForm';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
 import DogLoading from '@/components/DogLoading';
@@ -8,7 +9,7 @@ import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, UserInputs } from '@/types';
-import { ChevronLeft, History, X, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
@@ -263,13 +264,13 @@ export default function Home() {
     }
   };
 
-  const translations: Record<AppLanguage, { backToHome: string; analysisFailed: string; suggestions: string; checkConsole: string; retryLater: string; checkApiKey: string; history: string; historyTitle: string; noHistory: string; unknownJob: string; autoSaved: string; rateTitle: string }> = {
-    'zh-TW': { backToHome: '返回首頁列表', analysisFailed: '分析失敗', suggestions: '建議', checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息', retryLater: '稍後重試，可能是 Gemini API 暫時性問題', checkApiKey: '如果持續發生，請檢查 API Key 是否正確', history: '歷史紀錄', historyTitle: '分析歷史紀錄', noHistory: '尚無歷史記錄', unknownJob: '未知職缺', autoSaved: '完成一次分析後會自動儲存', rateTitle: '⏳ 今日免費次數已用完' },
-    'zh-CN': { backToHome: '返回首页列表', analysisFailed: '分析失败', suggestions: '建议', checkConsole: '检查浏览器控制台 (F12) 查看详细错误信息', retryLater: '稍后重试，可能是 Gemini API 暂时性问题', checkApiKey: '如果持续发生，请检查 API Key 是否正确', history: '历史记录', historyTitle: '分析历史记录', noHistory: '暂无历史记录', unknownJob: '未知职位', autoSaved: '完成一次分析后会自动保存', rateTitle: '⏳ 今日免费次数已用完' },
-    en: { backToHome: 'Back to Home', analysisFailed: 'Analysis Failed', suggestions: 'Suggestions', checkConsole: 'Check browser console (F12) for detailed error information', retryLater: 'Retry later, may be a temporary Gemini API issue', checkApiKey: 'If it persists, check if the API Key is correct', history: 'History', historyTitle: 'Analysis History', noHistory: 'No history yet', unknownJob: 'Unknown Job', autoSaved: 'Records are saved after each analysis', rateTitle: '⏳ Daily Free Limit Reached' },
-    es: { backToHome: 'Volver al Inicio', analysisFailed: 'Análisis Fallido', suggestions: 'Sugerencias', checkConsole: 'Revisa la consola del navegador (F12) para ver el error detallado', retryLater: 'Reintenta más tarde, puede ser un problema temporal de la API de Gemini', checkApiKey: 'Si persiste, verifica si la clave API es correcta', history: 'Historial', historyTitle: 'Historial de Análisis', noHistory: 'Sin historial aún', unknownJob: 'Trabajo Desconocido', autoSaved: 'Los registros se guardan después de cada análisis', rateTitle: '⏳ Límite Diario Alcanzado' },
-    hi: { backToHome: 'होम पर वापस जाएं', analysisFailed: 'विश्लेषण विफल', suggestions: 'सुझाव', checkConsole: 'विस्तृत त्रुटि के लिए ब्राउज़र कंसोल (F12) जांचें', retryLater: 'बाद में पुनः प्रयास करें, Gemini API की अस्थायी समस्या हो सकती है', checkApiKey: 'यदि जारी रहे, तो API Key सही है या नहीं जांचें', history: 'इतिहास', historyTitle: 'विश्लेषण इतिहास', noHistory: 'अभी तक कोई इतिहास नहीं', unknownJob: 'अज्ञात नौकरी', autoSaved: 'प्रत्येक विश्लेषण के बाद रिकॉर्ड सहेजे जाते हैं', rateTitle: '⏳ दैनिक मुफ़्त सीमा समाप्त' },
-    ar: { backToHome: 'العودة إلى الرئيسية', analysisFailed: 'فشل التحليل', suggestions: 'اقتراحات', checkConsole: 'تحقق من وحدة تحكم المتصفح (F12) لمعرفة تفاصيل الخطأ', retryLater: 'حاول لاحقًا، قد تكون المشكلة مؤقتة في Gemini API', checkApiKey: 'إذا استمرت المشكلة، تحقق من صحة مفتاح API', history: 'السجل', historyTitle: 'سجل التحليلات', noHistory: 'لا يوجد سجل بعد', unknownJob: 'وظيفة غير معروفة', autoSaved: 'يتم حفظ السجلات بعد كل تحليل', rateTitle: '⏳ تم بلوغ الحد المجاني اليومي' },
+  const translations: Record<AppLanguage, { backToHome: string; analysisFailed: string; suggestions: string; checkConsole: string; retryLater: string; checkApiKey: string; history: string; historyTitle: string; noHistory: string; unknownJob: string; autoSaved: string; rateTitle: string; exploreShorts: string; exploreShortsDesc: string }> = {
+    'zh-TW': { backToHome: '返回首頁列表', analysisFailed: '分析失敗', suggestions: '建議', checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息', retryLater: '稍後重試，可能是 Gemini API 暫時性問題', checkApiKey: '如果持續發生，請檢查 API Key 是否正確', history: '歷史紀錄', historyTitle: '分析歷史紀錄', noHistory: '尚無歷史記錄', unknownJob: '未知職缺', autoSaved: '完成一次分析後會自動儲存', rateTitle: '⏳ 今日免費次數已用完', exploreShorts: '探索 Shorts 職缺影片', exploreShortsDesc: '像刷短影片一樣找工作 · AI 匹配 · 一鍵申請' },
+    'zh-CN': { backToHome: '返回首页列表', analysisFailed: '分析失败', suggestions: '建议', checkConsole: '检查浏览器控制台 (F12) 查看详细错误信息', retryLater: '稍后重试，可能是 Gemini API 暂时性问题', checkApiKey: '如果持续发生，请检查 API Key 是否正确', history: '历史记录', historyTitle: '分析历史记录', noHistory: '暂无历史记录', unknownJob: '未知职位', autoSaved: '完成一次分析后会自动保存', rateTitle: '⏳ 今日免费次数已用完', exploreShorts: '探索 Shorts 职位视频', exploreShortsDesc: '像刷短视频一样找工作 · AI 匹配 · 一键申请' },
+    en: { backToHome: 'Back to Home', analysisFailed: 'Analysis Failed', suggestions: 'Suggestions', checkConsole: 'Check browser console (F12) for detailed error information', retryLater: 'Retry later, may be a temporary Gemini API issue', checkApiKey: 'If it persists, check if the API Key is correct', history: 'History', historyTitle: 'Analysis History', noHistory: 'No history yet', unknownJob: 'Unknown Job', autoSaved: 'Records are saved after each analysis', rateTitle: '⏳ Daily Free Limit Reached', exploreShorts: 'Explore Job Shorts', exploreShortsDesc: 'Swipe job videos · AI match · One-tap apply' },
+    es: { backToHome: 'Volver al Inicio', analysisFailed: 'Análisis Fallido', suggestions: 'Sugerencias', checkConsole: 'Revisa la consola del navegador (F12) para ver el error detallado', retryLater: 'Reintenta más tarde, puede ser un problema temporal de la API de Gemini', checkApiKey: 'Si persiste, verifica si la clave API es correcta', history: 'Historial', historyTitle: 'Historial de Análisis', noHistory: 'Sin historial aún', unknownJob: 'Trabajo Desconocido', autoSaved: 'Los registros se guardan después de cada análisis', rateTitle: '⏳ Límite Diario Alcanzado', exploreShorts: 'Explorar Job Shorts', exploreShortsDesc: 'Desliza videos de empleo · Match IA · Aplicar' },
+    hi: { backToHome: 'होम पर वापस जाएं', analysisFailed: 'विश्लेषण विफल', suggestions: 'सुझाव', checkConsole: 'विस्तृत त्रुटि के लिए ब्राउज़र कंसोल (F12) जांचें', retryLater: 'बाद में पुनः प्रयास करें, Gemini API की अस्थायी समस्या हो सकती है', checkApiKey: 'यदि जारी रहे, तो API Key सही है या नहीं जांचें', history: 'इतिहास', historyTitle: 'विश्लेषण इतिहास', noHistory: 'अभी तक कोई इतिहास नहीं', unknownJob: 'अज्ञात नौकरी', autoSaved: 'प्रत्येक विश्लेषण के बाद रिकॉर्ड सहेजे जाते हैं', rateTitle: '⏳ दैनिक मुफ़्त सीमा समाप्त', exploreShorts: 'Job Shorts देखें', exploreShortsDesc: 'नौकरी वीडियो स्वाइप करें · AI मिलान · आवेदन' },
+    ar: { backToHome: 'العودة إلى الرئيسية', analysisFailed: 'فشل التحليل', suggestions: 'اقتراحات', checkConsole: 'تحقق من وحدة تحكم المتصفح (F12) لمعرفة تفاصيل الخطأ', retryLater: 'حاول لاحقًا، قد تكون المشكلة مؤقتة في Gemini API', checkApiKey: 'إذا استمرت المشكلة، تحقق من صحة مفتاح API', history: 'السجل', historyTitle: 'سجل التحليلات', noHistory: 'لا يوجد سجل بعد', unknownJob: 'وظيفة غير معروفة', autoSaved: 'يتم حفظ السجلات بعد كل تحليل', rateTitle: '⏳ تم بلوغ الحد المجاني اليومي', exploreShorts: 'استكشف Job Shorts', exploreShortsDesc: 'تصفح فيديوهات الوظائف · تطابق AI · تقديم' },
   };
 
   const t = translations[language] ?? translations['en'];
@@ -277,23 +278,44 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-end items-center gap-3 mb-6">
-          <LanguageSwitcher variant="dark" />
-          {/* History button — only shown when logged in */}
-          {currentUser && (
-            <button
-              onClick={() => { setShowHistory(true); loadHistory(); }}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
-              title={t.historyTitle}
-            >
-              <History className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.history}</span>
-            </button>
-          )}
-          <LoginButton />
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <Link href="/" className="shrink-0">
+            <span className="text-white font-black text-xl sm:text-2xl tracking-tight">
+              <span>Job</span><span className="text-indigo-400">beagle</span>
+            </span>
+          </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageSwitcher variant="dark" />
+            {currentUser && (
+              <button
+                onClick={() => { setShowHistory(true); loadHistory(); }}
+                className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
+                title={t.historyTitle}
+              >
+                <History className="w-4 h-4" />
+                <span className="hidden sm:inline">{t.history}</span>
+              </button>
+            )}
+            <LoginButton />
+          </div>
         </div>
 
-        {/* ── History Slide-in Panel ── */}
+        {!report && (
+          <Link
+            href="/shorts"
+            className="mb-8 flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
+          >
+            <div className="w-12 h-12 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Play className="w-6 h-6 text-indigo-300 fill-indigo-300/30" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-white font-bold text-sm sm:text-base">{t.exploreShorts}</p>
+              <p className="text-slate-400 text-xs sm:text-sm mt-0.5">{t.exploreShortsDesc}</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        )}
+
         {showHistory && (
           <div className="fixed inset-0 z-50 flex" onClick={() => setShowHistory(false)}>
             <div className="flex-1" />
