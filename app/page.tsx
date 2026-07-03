@@ -237,7 +237,7 @@ export default function Home() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...inputs, language: appLanguage }),
+        body: JSON.stringify({ ...inputs, language: inputs.language || appLanguage }),
       });
 
       const result = await response.json();
@@ -276,23 +276,23 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen bg-jb-bg text-jb-ink">
-      <main className="mx-auto max-w-7xl px-4 py-8 md:px-8">
-        <div className="mb-8 flex items-center justify-between gap-4">
+    <div className="min-h-screen bg-slate-950 text-slate-200">
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-between gap-4 mb-6">
           <Link href="/" className="shrink-0">
-            <span className="font-display text-xl font-semibold tracking-tight text-jb-ink sm:text-2xl">
-              Job<span className="text-jb-accent">beagle</span>
+            <span className="text-white font-black text-xl sm:text-2xl tracking-tight">
+              <span>Job</span><span className="text-indigo-400">beagle</span>
             </span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
-            <LanguageSwitcher variant="luxury" />
+            <LanguageSwitcher variant="dark" />
             {currentUser && (
               <button
                 onClick={() => { setShowHistory(true); loadHistory(); }}
-                className="jb-interactive flex items-center gap-1.5 rounded-jb border border-jb-border bg-jb-elevated px-3 py-2 text-sm text-jb-ink-muted hover:border-jb-accent/30 hover:text-jb-accent"
+                className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
                 title={t.historyTitle}
               >
-                <History className="h-4 w-4" />
+                <History className="w-4 h-4" />
                 <span className="hidden sm:inline">{t.history}</span>
               </button>
             )}
@@ -303,16 +303,16 @@ export default function Home() {
         {!report && (
           <Link
             href="/shorts"
-            className="jb-interactive mb-10 flex items-center gap-4 rounded-jb-lg border border-jb-border bg-jb-elevated p-4 shadow-jb hover:border-jb-accent/25 hover:shadow-jb-hover sm:p-5"
+            className="mb-8 flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-jb bg-jb-accent-soft">
-              <Play className="h-5 w-5 fill-jb-accent/20 text-jb-accent" />
+            <div className="w-12 h-12 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Play className="w-6 h-6 text-indigo-300 fill-indigo-300/30" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-jb-ink sm:text-base">{t.exploreShorts}</p>
-              <p className="mt-0.5 text-xs text-jb-ink-muted sm:text-sm">{t.exploreShortsDesc}</p>
+              <p className="text-white font-bold text-sm sm:text-base">{t.exploreShorts}</p>
+              <p className="text-slate-400 text-xs sm:text-sm mt-0.5">{t.exploreShortsDesc}</p>
             </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-jb-accent" />
+            <ChevronRight className="w-5 h-5 text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         )}
 
@@ -320,59 +320,61 @@ export default function Home() {
           <div className="fixed inset-0 z-50 flex" onClick={() => setShowHistory(false)}>
             <div className="flex-1" />
             <div
-              className="animate-slide-in-right flex h-full w-full max-w-md flex-col overflow-hidden border-l border-jb-border bg-jb-elevated shadow-jb-hover"
+              className="w-full max-w-md h-full bg-slate-900 border-l border-slate-700 shadow-2xl flex flex-col overflow-hidden animate-slide-in-right"
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-jb-border px-5 py-4">
-                <h2 className="flex items-center gap-2 text-lg font-semibold text-jb-ink">
-                  <History className="h-5 w-5 text-jb-accent" />
+              {/* Panel header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
+                <h2 className="text-white font-bold text-lg flex items-center gap-2">
+                  <History className="w-5 h-5 text-indigo-400" />
                   {t.historyTitle}
                 </h2>
-                <button onClick={() => setShowHistory(false)} className="text-jb-ink-muted hover:text-jb-ink">
-                  <X className="h-5 w-5" />
+                <button onClick={() => setShowHistory(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="flex-1 space-y-3 overflow-y-auto p-4">
+              {/* Panel body */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {historyLoading ? (
-                  <div className="flex h-32 items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-jb-accent" />
+                  <div className="flex items-center justify-center h-32">
+                    <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
                   </div>
                 ) : historyReports.length === 0 ? (
-                  <div className="py-16 text-center text-jb-ink-muted">
-                    <History className="mx-auto mb-3 h-12 w-12 opacity-30" />
+                  <div className="text-center py-16 text-slate-400">
+                    <History className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p className="text-sm">{t.noHistory}</p>
-                    <p className="mt-1 text-xs opacity-60">{t.autoSaved}</p>
+                    <p className="text-xs mt-1 opacity-60">{t.autoSaved}</p>
                   </div>
                 ) : (
                   historyReports.map(item => {
-                    const scoreColor = !item.score ? 'text-jb-ink-muted'
-                      : item.score >= 80 ? 'text-emerald-600'
-                      : item.score >= 65 ? 'text-amber-600'
-                      : item.score >= 50 ? 'text-orange-600'
-                      : 'text-red-600';
+                    const scoreColor = !item.score ? 'text-slate-400'
+                      : item.score >= 80 ? 'text-green-400'
+                      : item.score >= 65 ? 'text-yellow-400'
+                      : item.score >= 50 ? 'text-orange-400'
+                      : 'text-red-400';
                     return (
                       <button
                         key={item.id}
                         onClick={() => { setReport(item.report); setShowHistory(false); }}
-                        className="jb-interactive w-full rounded-jb-lg border border-jb-border bg-jb-elevated p-4 text-left hover:border-jb-accent/30"
+                        className="w-full text-left p-4 rounded-xl bg-slate-800/60 border border-slate-700 hover:border-indigo-500 hover:bg-slate-800 transition-all group"
                       >
                         <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0 flex-1">
-                            <p className="line-clamp-1 text-sm font-semibold text-jb-ink">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold text-sm line-clamp-1 group-hover:text-indigo-200 transition-colors">
                               {item.job_title || t.unknownJob}
                             </p>
-                            <p className="mt-1 text-xs text-jb-ink-subtle">
+                            <p className="text-slate-500 text-xs mt-1">
                               {new Date(item.created_at).toLocaleDateString(language === 'zh-TW' || language === 'zh-CN' ? 'zh-TW' : language === 'es' ? 'es-ES' : language === 'hi' ? 'hi-IN' : language === 'ar' ? 'ar-SA' : 'en-US', {
                                 month: 'short', day: 'numeric', year: 'numeric',
                               })}
                             </p>
                           </div>
-                          <div className="flex shrink-0 items-center gap-2">
+                          <div className="flex items-center gap-2 shrink-0">
                             {item.score != null && (
-                              <span className={`text-xl font-bold ${scoreColor}`}>{item.score}</span>
+                              <span className={`text-xl font-black ${scoreColor}`}>{item.score}</span>
                             )}
-                            <ChevronRight className="h-4 w-4 text-jb-ink-subtle" />
+                            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-colors" />
                           </div>
                         </div>
                       </button>
@@ -393,7 +395,7 @@ export default function Home() {
           />
         )}
         {error && errorCode === 'RATE_LIMIT_EXCEEDED' && (
-          <div className="mb-6 rounded-jb-lg border border-amber-200 bg-amber-50 p-5">
+          <div className="mb-6 p-5 bg-amber-900/20 border border-amber-500/50 rounded-xl">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h3 className="text-amber-300 font-bold text-lg mb-1">
@@ -411,7 +413,7 @@ export default function Home() {
           </div>
         )}
         {error && errorCode !== 'RATE_LIMIT_EXCEEDED' && (
-          <div className="mb-6 rounded-jb-lg border border-red-200 bg-red-50 p-4">
+          <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h3 className="text-red-400 font-bold mb-2">❌ {t.analysisFailed}</h3>
@@ -438,7 +440,7 @@ export default function Home() {
         )}
 
         {!report ? (
-          <div>
+          <div className="max-w-4xl mx-auto">
             <InputForm 
               onSubmit={handleGenerate} 
               isLoading={loading}
@@ -446,15 +448,15 @@ export default function Home() {
               onLanguageChange={setLanguage}
               initialJobDescription={extensionJobData || undefined}
             />
-            <FooterSection language={language} compact />
+            <FooterSection language={language} />
           </div>
         ) : (
           <div className="animate-fade-in">
             <button 
               onClick={() => setReport(null)} 
-              className="jb-interactive mb-6 flex items-center text-jb-ink-muted hover:text-jb-accent"
+              className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
             >
-              <ChevronLeft className="mr-1 h-4 w-4" /> 
+              <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" /> 
               {t.backToHome}
             </button>
             <AnalysisDashboard data={report} language={language} />
