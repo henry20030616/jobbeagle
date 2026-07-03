@@ -108,17 +108,15 @@ Analyze the Job Description (JD) and Resume. Produce a **Winning Strategy Report
 
 # dog_type & recruiter_insight (MANDATORY)
 
-After computing \`score\`, set \`dog_type\` and \`recruiter_insight\` from **score** (tier names and insight text MUST match the OUTPUT LANGUAGE block at the top of this prompt — never mix languages):
+After computing \`score\`, set \`dog_type\` and \`recruiter_insight\` from **score** (use output language for tier names and insight text):
 
-**If OUTPUT LANGUAGE is English (or es/hi/ar):**  
-- **90–100** → **Diamond Beagle** — Immediate fit / leadership signal.  
-- **75–89** → **Gold Beagle** — Strong shortlist candidate.  
-- **60–74** → **Silver Beagle** — Potential match; needs differentiation.  
-- **<60** → **Bronze Beagle** — Significant gap; likely filtered in ~6s HR scan.
+**If output is Traditional Chinese:**  
+- **90–100** → \`dog_type\`: **鑽石米格魯** — HR: Immediate Fit, ready now / leadership signal. Insight: **極度肯定**；點出「萬中選一」級別的依據（具體對應 JD 與履歷證據）。  
+- **75–89** → \`dog_type\`: **黃金米格魯** — Strong candidate, interview shortlist. Insight: **專業認可** + 綠旗 + **一條**可畫龍點睛的優化建議。  
+- **60–74** → \`dog_type\`: **白銀米格魯** — Potential match; ATS 看來平庸、亮點不足。Insight: **中肯**指出「技術/經歷有基礎但缺數據或差異化」。  
+- **<60** (50–59) → \`dog_type\`: **青銅米格魯** — Significant gap. Insight: **痛點分析**；明說在 HR **約 6 秒**掃描下會被刷掉的原因（具體、不客套）。
 
-**If OUTPUT LANGUAGE is Traditional Chinese (zh-TW):** 鑽石米格魯 / 黃金米格魯 / 白銀米格魯 / 青銅米格魯 — same HR logic, 繁體中文 insight.
-
-**If OUTPUT LANGUAGE is Simplified Chinese (zh-CN):** 钻石猎犬 / 黄金猎犬 / 白银猎犬 / 青铜猎犬 — same HR logic, 简体中文 insight.
+**If output is English:** use tier names: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle** — same HR logic, same tone rules.
 
 \`recruiter_insight\`: **2–4 sentences**, senior-recruiter voice — **not** generic cheerleading. Must reference concrete JD vs resume evidence.
 
@@ -143,14 +141,18 @@ After computing \`score\`, set \`dog_type\` and \`recruiter_insight\` from **sco
 
 \`interview_preparation.questions\` MUST be a JSON array of **exactly 10** objects — **not 2, not 5, not 9 — ten (10)**. Incomplete lists are INVALID output.
 
-**Order & labeling (MUST match OUTPUT LANGUAGE — not the resume/JD language):**
-- **Questions 1–5 (index 0–4):** Technical — prefix \`[Technical]\` (en) or \`[技術面]\` (zh-TW) or \`[技术面]\` (zh-CN) or equivalent in es/hi/ar.
-- **Questions 6–10 (index 5–9):** Behavioral — prefix \`[Behavioral]\` (en) or \`[行為面]\` (zh-TW) or \`[行为面]\` (zh-CN) or equivalent.
+**Order & labeling (use output language for prefixes):**
+- **Questions 1–5 (index 0–4):** Technical / role-competency / domain-specific.  
+  - Chinese: prefix each \`question\` string with \`[技術面]\`.  
+  - English: prefix with \`[Technical]\`.
+- **Questions 6–10 (index 5–9):** Behavioral / leadership / situational.  
+  - Chinese: prefix with \`[行為面]\`.  
+  - English: prefix with \`[Behavioral]\`.
 
 **Each object MUST include:**
 - \`question\`: realistic, JD-aligned, personalized to the candidate's resume (companies, roles, metrics when present).
 - \`source\`: one sentence — why this question matters for this role.
-- \`answer_guide\`: **must** personalize in OUTPUT LANGUAGE; English starts with \`Answer suggestion:\`; zh-TW with \`回答建議：\`; zh-CN with \`回答建议：\`.
+- \`answer_guide\`: **must** personalize; Traditional Chinese answers start with \`回答建議：\`; English with \`Answer suggestion:\` or equivalent; reference resume specifics.
 
 Keep each \`answer_guide\` to **2–4 sentences** so all **10** items fit; do not skip questions to save length.
 
@@ -172,7 +174,7 @@ Keep each \`answer_guide\` to **2–4 sentences** so all **10** items fit; do no
     "rationale": "BRIEF data-driven logic explaining how you calculated the salary range. 2-3 bullet points maximum."
   },
   "market_analysis": {
-    "industry_trends": "Overview: [DETAILED allowed] \\n Current trends: [DETAILED allowed]",
+    "industry_trends": "簡介: [DETAILED allowed] \\n 現況與趨勢: [DETAILED allowed]",
     "positioning": "BRIEF strategic assessment (1 sentence).",
     "competition_table": [
        {"name": "Competitor (Include Target Co)", "strengths": "BRIEF (1 sentence)", "weaknesses": "BRIEF (1 sentence)"}
@@ -201,23 +203,23 @@ Keep each \`answer_guide\` to **2–4 sentences** so all **10** items fit; do no
       "impact_metrics_I": 4,
       "culture_fit_F": 3
     },
-    "dog_type": "Silver Beagle",
+    "dog_type": "白銀米格魯",
     "recruiter_insight": "2-4 sentences, senior HR tone, evidence-based.",
     "matching_points": [{"point": "Fit", "description": "BRIEF (1-2 sentences)"}],
     "skill_gaps": [{"gap": "Gap", "description": "BRIEF (1-2 sentences)"}]
   },
   "interview_preparation": {
     "questions": [
-      {"question": "[Technical] Q1 …", "source": "Why this question (1 sentence).", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Technical] Q2 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Technical] Q3 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Technical] Q4 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Technical] Q5 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Behavioral] Q6 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Behavioral] Q7 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Behavioral] Q8 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Behavioral] Q9 …", "source": "…", "answer_guide": "Answer suggestion: …"},
-      {"question": "[Behavioral] Q10 …", "source": "…", "answer_guide": "Answer suggestion: …"}
+      {"question": "[技術面] or [Technical] Q1 …", "source": "Why this question (1 sentence).", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q2 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q3 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q4 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[技術面] Q5 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] or [Behavioral] Q6 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q7 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q8 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q9 …", "source": "…", "answer_guide": "回答建議：…"},
+      {"question": "[行為面] Q10 …", "source": "…", "answer_guide": "回答建議：…"}
     ]
   },
   "references": {
@@ -265,42 +267,6 @@ function dogTypeFromScore(score: number, lang: 'zh' | 'en'): string {
   if (score >= 75) return '黃金米格魯';
   if (score >= 60) return '白銀米格魯';
   return '青銅米格魯';
-}
-
-const LANG_INSTRUCTIONS: Record<string, string> = {
-  en:    `\n\n# OUTPUT LANGUAGE (HIGHEST PRIORITY — OVERRIDES RESUME/JD LANGUAGE AND JSON EXAMPLES)\nYou MUST write the ENTIRE report in English only. Every JSON string value must be English. The resume and job description may be Chinese — still output English only. Never use Chinese characters in the output.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
-  'zh-TW': `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values must be in 繁體中文. Ignore input language.\nFor match_analysis.dog_type use: **鑽石米格魯** / **黃金米格魯** / **白銀米格魯** / **青銅米格魯**.\n`,
-  'zh-CN': `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Simplified Chinese (简体中文) only. All JSON field values must be in 简体中文. Ignore input language.\nFor match_analysis.dog_type use: **钻石猎犬** / **黄金猎犬** / **白银猎犬** / **青铜猎犬**.\n`,
-  es:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Spanish (Español) only. All JSON field values must be in Spanish. Ignore input language.\nFor match_analysis.dog_type use: **Beagle Diamante**, **Beagle Dorado**, **Beagle Plateado**, **Beagle Bronce**.\n`,
-  hi:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Hindi (हिन्दी) only. All JSON field values must be in Hindi. Ignore input language.\nFor match_analysis.dog_type use: **डायमंड बीगल**, **गोल्ड बीगल**, **सिल्वर बीगल**, **ब्रॉन्ज़ बीगल**.\n`,
-  ar:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Arabic (العربية) only. All JSON field values must be in Arabic. Ignore input language.\nFor match_analysis.dog_type use: **بيغل ماسي**, **بيغل ذهبي**, **بيغل فضي**, **بيغل برونزي**.\n`,
-};
-
-function resolveNormalizeLang(reportLanguage: string): 'zh' | 'en' {
-  return reportLanguage === 'zh-TW' || reportLanguage === 'zh-CN' ? 'zh' : 'en';
-}
-
-function reportCjkCharRatio(report: unknown): number {
-  const blob = JSON.stringify(report ?? {});
-  const cjk = (blob.match(/[\u4e00-\u9fff]/g) || []).length;
-  const meaningful = (blob.match(/[a-zA-Z\u4e00-\u9fff]/g) || []).length;
-  return meaningful > 0 ? cjk / meaningful : 0;
-}
-
-function isReportWrongLanguage(report: unknown, reportLanguage: string): boolean {
-  const ratio = reportCjkCharRatio(report);
-  if (reportLanguage === 'zh-TW' || reportLanguage === 'zh-CN') {
-    return ratio < 0.12 && JSON.stringify(report).length > 300;
-  }
-  if (reportLanguage === 'en' || reportLanguage === 'es') {
-    return ratio > 0.12;
-  }
-  return false;
-}
-
-function buildSystemPrompt(reportLanguage: string): string {
-  const langBlock = LANG_INSTRUCTIONS[reportLanguage] ?? LANG_INSTRUCTIONS['en'];
-  return langBlock + SYSTEM_INSTRUCTION;
 }
 
 /** Enforce 50–100 formula, score_components, dog_type, recruiter_insight; fix common JSON key typos */
@@ -375,6 +341,17 @@ export async function POST(request: NextRequest) {
     const { jobDescription, resume, language: reportLanguage = 'en' } = body;
 
     console.log(`📦 [Data Received] JD 長度: ${jobDescription?.length}, Resume 類型: ${resume?.type}, 報告語言: ${reportLanguage}`);
+
+    // 依介面選擇的語言強制報告產出語言（與輸入的 JD/履歷語言無關）
+    const LANG_INSTRUCTIONS: Record<string, string> = {
+      en:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in English only. All JSON field values must be in English. Ignore input language.\nFor match_analysis.dog_type use: **Diamond Beagle**, **Gold Beagle**, **Silver Beagle**, **Bronze Beagle**.\n`,
+      'zh-TW': `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Traditional Chinese (繁體中文) only. All JSON field values must be in 繁體中文. Ignore input language.\nFor match_analysis.dog_type use: **鑽石米格魯** / **黃金米格魯** / **白銀米格魯** / **青銅米格魯**.\n`,
+      'zh-CN': `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Simplified Chinese (简体中文) only. All JSON field values must be in 简体中文. Ignore input language.\nFor match_analysis.dog_type use: **钻石猎犬** / **黄金猎犬** / **白银猎犬** / **青铜猎犬**.\n`,
+      es:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Spanish (Español) only. All JSON field values must be in Spanish. Ignore input language.\nFor match_analysis.dog_type use: **Beagle Diamante**, **Beagle Dorado**, **Beagle Plateado**, **Beagle Bronce**.\n`,
+      hi:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Hindi (हिन्दी) only. All JSON field values must be in Hindi. Ignore input language.\nFor match_analysis.dog_type use: **डायमंड बीगल**, **गोल्ड बीगल**, **सिल्वर बीगल**, **ब्रॉन्ज़ बीगल**.\n`,
+      ar:    `\n\n# OUTPUT LANGUAGE (MANDATORY)\nYou MUST write the ENTIRE report in Arabic (العربية) only. All JSON field values must be in Arabic. Ignore input language.\nFor match_analysis.dog_type use: **بيغل ماسي**, **بيغل ذهبي**, **بيغل فضي**, **بيغل برونزي**.\n`,
+    };
+    const OUTPUT_LANGUAGE_INSTRUCTION = LANG_INSTRUCTIONS[reportLanguage] ?? LANG_INSTRUCTIONS['en'];
 
     if (!jobDescription || !resume) {
       return NextResponse.json(
@@ -480,17 +457,13 @@ export async function POST(request: NextRequest) {
       userParts.push({ text: `=== RESUME ===\n${resume.content}` });
     }
 
-    userParts.unshift({
-      text: `[MANDATORY REPORT OUTPUT LANGUAGE: ${reportLanguage}]\nWrite ALL JSON string values in this language only. Input resume/JD may be any language — do not mirror input language in the report.\n`,
-    });
-
     // 使用全域配置的 Gemini 模型
     const model = GEMINI_ANALYSIS_MODEL;
     console.log(`📋 [Gemini] 使用模型: ${model}`);
 
     // 使用 response_mime_type 確保返回純 JSON（付費帳號支援）；依介面語言附加輸出語言指示
     const requestBodyTemplate: any = {
-      system_instruction: { parts: [{ text: buildSystemPrompt(reportLanguage) }] },
+      system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION + OUTPUT_LANGUAGE_INSTRUCTION }] },
       contents: [{ parts: userParts }],
       generationConfig: { 
         temperature: 0.3,
@@ -759,11 +732,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    normalizeReport(report, resolveNormalizeLang(reportLanguage));
-
-    if (isReportWrongLanguage(report, reportLanguage)) {
-      console.warn(`⚠️ [Lang] Report language mismatch for ${reportLanguage} (CJK ratio ${reportCjkCharRatio(report).toFixed(2)})`);
-    }
+    normalizeReport(report, reportLanguage === 'zh-TW' ? 'zh' : 'en');
 
     // 先返回報告給用戶，提升響應速度
     const totalDuration = (Date.now() - startTime) / 1000;

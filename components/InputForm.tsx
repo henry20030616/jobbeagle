@@ -456,7 +456,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
             </span>
           </h1>
         </Link>
-        <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto">
+        <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto font-medium">
           {t.description}
         </p>
 
@@ -468,39 +468,65 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
               <Sparkles className="w-64 h-64 text-indigo-500" />
            </div>
 
-           <div className="p-8 flex-1 flex flex-col">
-               <h2 className="text-xl font-bold text-white flex items-center mb-5">
-                  <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3"></span>
+           <div className="p-8 pb-6">
+               <h2 className="text-2xl font-bold text-white flex items-center mb-5">
+                  <span className="w-1.5 h-8 bg-blue-500 rounded-full mr-4"></span>
+                  {t.engineIntro}
+               </h2>
+               <p className="text-slate-300 text-lg leading-8 mb-6 bg-slate-700/30 p-5 rounded-xl border border-slate-600/30 font-medium">
+                  {t.engineDescription}
+               </p>
+           </div>
+
+           <div className="px-8">
+              <div className="h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+           </div>
+
+           <div className="p-8 pt-6 flex-1 flex flex-col">
+               <h2 className="text-2xl font-bold text-white flex items-center mb-6">
+                  <span className="w-1.5 h-8 bg-emerald-500 rounded-full mr-4"></span>
                   {t.reportOutput}
                </h2>
                
-               <div className="grid grid-cols-1 gap-2">
-                  <div className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-yellow-500/20 p-2 rounded-lg shrink-0">
-                        <Zap className="w-5 h-5 text-yellow-400" />
+               <div className="grid grid-cols-1 gap-4">
+                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
+                     <div className="bg-yellow-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
+                        <Zap className="w-6 h-6 text-yellow-400" />
                      </div>
-                     <span className="text-base font-semibold text-slate-200">{t.matchAnalysis}</span>
+                     <div className="flex flex-col">
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.matchAnalysis}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.matchAnalysisDesc}</span>
+                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-emerald-500/20 p-2 rounded-lg shrink-0">
-                        <Briefcase className="w-5 h-5 text-emerald-400" />
+                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
+                     <div className="bg-emerald-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
+                        <Briefcase className="w-6 h-6 text-emerald-400" />
                      </div>
-                     <span className="text-base font-semibold text-slate-200">{t.salaryResearch}</span>
+                     <div className="flex flex-col">
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.salaryResearch}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.salaryResearchDesc}</span>
+                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-sky-500/20 p-2 rounded-lg shrink-0">
-                        <TrendingUp className="w-5 h-5 text-sky-400" />
+                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
+                     <div className="bg-sky-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
+                        <TrendingUp className="w-6 h-6 text-sky-400" />
                      </div>
-                     <span className="text-base font-semibold text-slate-200">{t.industryAnalysis}</span>
+                     <div className="flex flex-col">
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.industryAnalysis}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.industryAnalysisDesc}</span>
+                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-indigo-500/20 p-2 rounded-lg shrink-0">
-                        <MessageSquare className="w-5 h-5 text-indigo-400" />
+                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
+                     <div className="bg-indigo-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
+                        <MessageSquare className="w-6 h-6 text-indigo-400" />
                      </div>
-                     <span className="text-base font-semibold text-slate-200">{t.interviewPrep}</span>
+                     <div className="flex flex-col">
+                       <span className="text-lg font-bold text-slate-200 mb-1">{t.interviewPrep}</span>
+                       <span className="text-sm text-slate-400 leading-normal">{t.interviewPrepDesc}</span>
+                     </div>
                   </div>
                </div>
            </div>

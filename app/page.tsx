@@ -111,7 +111,7 @@ function getStageLabel(progress: number, lang: AppLanguage): string {
 }
 
 export default function Home() {
-  const { language: appLanguage, setLanguage } = useLanguage();
+  const { language: appLanguage } = useLanguage();
   const language = appLanguage;
 
   const [report, setReport] = useState<InterviewReport | null>(null);
@@ -237,7 +237,7 @@ export default function Home() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...inputs, language: inputs.language || appLanguage }),
+        body: JSON.stringify({ ...inputs, language: appLanguage }),
       });
 
       const result = await response.json();
@@ -445,7 +445,7 @@ export default function Home() {
               onSubmit={handleGenerate} 
               isLoading={loading}
               language={language}
-              onLanguageChange={setLanguage}
+              onLanguageChange={undefined}
               initialJobDescription={extensionJobData || undefined}
             />
             <FooterSection language={language} />

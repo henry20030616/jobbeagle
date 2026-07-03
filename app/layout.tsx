@@ -1,20 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/language-context";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
 
 // 優先使用環境變數；若 Vercel build 時未帶入則使用預設 ID，確保 GA 一定會載入
 const GA_MEASUREMENT_ID =
@@ -32,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`} suppressHydrationWarning>
+      <body className="antialiased" suppressHydrationWarning>
         <LanguageProvider>{children}</LanguageProvider>
         {GA_MEASUREMENT_ID ? (
           <>
