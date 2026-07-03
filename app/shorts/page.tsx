@@ -689,25 +689,6 @@ export default function JobbeagleShortsPage() {
             )}
           </div>
 
-          {/* DMCA / copyright notice */}
-          <div className="flex-shrink-0 px-4 py-2 bg-black/90 border-t border-white/5">
-            <p className="text-[10px] leading-relaxed text-white/40 text-center max-w-lg mx-auto">
-              {appLang === 'zh-TW' || appLang === 'zh-CN' ? (
-                <>
-                  JobBeagle 為職缺影音策展平台。本站影音內容皆為招募用途，且經過企業組織之明示或默示授權同步。若您為版權所有者並要求下架，請來信{' '}
-                  <a href="mailto:legal@jobbeagle.com" className="text-white/55 underline hover:text-white/80">legal@jobbeagle.com</a>
-                  ，我們將於 24 小時內遵循 DMCA 協議完成下架。
-                </>
-              ) : (
-                <>
-                  JobBeagle curates job videos for recruitment. Content is published with employer authorization. Copyright holders may request removal at{' '}
-                  <a href="mailto:legal@jobbeagle.com" className="text-white/55 underline hover:text-white/80">legal@jobbeagle.com</a>
-                  ; we process DMCA notices within 24 hours.
-                </>
-              )}
-            </p>
-          </div>
-
           {/* Bottom Nav */}
           <BottomNav
             activeTab={activeTab} navTab={navTab}
