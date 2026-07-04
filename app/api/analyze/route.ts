@@ -5,9 +5,102 @@ import { createClient as createAdminClient } from '@supabase/supabase-js';
 import mammoth from 'mammoth';
 import { createHash } from 'crypto';
 import { GEMINI_ANALYSIS_MODEL } from '@/constants/models';
+import {
+  isReportPremiumUnlocked,
+  maskPremiumReportFields,
+} from '@/lib/report-masking';
 
 const GUEST_DAILY_LIMIT = 2;
-const USER_DAILY_LIMIT = 5;
+const USER_DAILY_LIMIT = 2;
+
+type QuotaSource = 'daily' | 'bonus';
+
+function getAdminClient() {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!serviceKey || !supabaseUrl) return null;
+  return createAdminClient(supabaseUrl, serviceKey);
+}
+
+function paymentRequiredMessage(
+  reportLanguage: string,
+  isLoggedIn: boolean,
+): string {
+  const loginHint =
+    reportLanguage === 'zh-TW'
+      ? '登入可永久保存報告，或付費解鎖進階分析。'
+      : reportLanguage === 'zh-CN'
+        ? '登录可永久保存报告，或付费解锁进阶分析。'
+        : reportLanguage === 'es'
+          ? 'Inicia sesión para guardar informes o paga para desbloquear análisis avanzado.'
+          : reportLanguage === 'hi'
+            ? 'रिपोर्ट सहेजने या उन्नत विश्लेषण के लिए लॉग इन करें या भुगतान करें।'
+            : reportLanguage === 'ar'
+              ? 'سجّل الدخول لحفظ التقارير أو ادفع لفتح التحليل المتقدم.'
+              : 'Log in to save reports or pay to unlock advanced analysis.';
+
+  if (reportLanguage === 'zh-TW') {
+    return isLoggedIn
+      ? '今日免費額度與獎勵額度皆已用完。請付費解鎖或明天再試。'
+      : `今日 ${GUEST_DAILY_LIMIT} 次免費分析已用完。${loginHint}`;
+  }
+  if (reportLanguage === 'zh-CN') {
+    return isLoggedIn
+      ? '今日免费额度与奖励额度皆已用完。请付费解锁或明天再试。'
+      : `今日 ${GUEST_DAILY_LIMIT} 次免费分析已用完。${loginHint}`;
+  }
+  if (reportLanguage === 'es') {
+    return isLoggedIn
+      ? 'Has agotado el límite diario y los créditos de bonificación. Paga para desbloquear o inténtalo mañana.'
+      : `Has usado los ${GUEST_DAILY_LIMIT} análisis gratuitos de hoy. ${loginHint}`;
+  }
+  if (reportLanguage === 'hi') {
+    return isLoggedIn
+      ? 'दैनिक सीमा और बोनस क्रेडिट समाप्त। अनलॉक के लिए भुगतान करें या कल पुनः प्रयास करें।'
+      : `आज के ${GUEST_DAILY_LIMIT} मुफ़्त विश्लेषण समाप्त। ${loginHint}`;
+  }
+  if (reportLanguage === 'ar') {
+    return isLoggedIn
+      ? 'لقد استنفدت الحد اليومي وائتمانات المكافأة. ادفع للفتح أو حاول غدًا.'
+      : `لقد استخدمت كل ${GUEST_DAILY_LIMIT} تحليلات مجانية لليوم. ${loginHint}`;
+  }
+  return isLoggedIn
+    ? 'Daily free limit and bonus credits exhausted. Pay to unlock or try again tomorrow.'
+    : `You have used all ${GUEST_DAILY_LIMIT} free analyses for today. ${loginHint}`;
+}
+
+async function getBonusCredits(userId: string): Promise<number> {
+  const admin = getAdminClient();
+  if (!admin) return 0;
+
+  const { data, error } = await admin
+    .from('user_rewards')
+    .select('bonus_credits')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('⚠️ [Quota] bonus_credits read error:', error.message);
+    return 0;
+  }
+  return data?.bonus_credits ?? 0;
+}
+
+/** Returns remaining bonus credits, or -1 on failure. */
+async function decrementBonusCredit(userId: string): Promise<number> {
+  const admin = getAdminClient();
+  if (!admin) return -1;
+
+  const { data, error } = await admin.rpc('decrement_bonus_credit', {
+    p_user_id: userId,
+  });
+
+  if (error) {
+    console.error('⚠️ [Quota] bonus_credits decrement error:', error.message);
+    return -1;
+  }
+  return typeof data === 'number' ? data : -1;
+}
 
 function hashIP(ip: string): string {
   return createHash('sha256').update(ip + 'jb_rl_salt').digest('hex').substring(0, 24);
@@ -55,11 +148,8 @@ async function checkUsage(
 
 /** AI 成功回應後才呼叫，真正扣計數 */
 async function incrementUsage(limitKey: string, currentCount: number): Promise<void> {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!serviceKey || !supabaseUrl) return;
-
-  const admin = createAdminClient(supabaseUrl, serviceKey);
+  const admin = getAdminClient();
+  if (!admin) return;
   const today = new Date().toISOString().split('T')[0];
 
   const { error: upsertError } = await admin
@@ -360,45 +450,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── Rate Limiting ─────────────────────────────────────────────────────────
+    // ── Rate Limiting & Quota ─────────────────────────────────────────────────
     const supabase = await createClient();
     const { data: { user: currentUser } } = await supabase.auth.getUser();
 
-    // 未登入：IP 2次/天；登入：user_id 5次/天
     const isLoggedIn = !!currentUser;
     const dailyLimit = isLoggedIn ? USER_DAILY_LIMIT : GUEST_DAILY_LIMIT;
     const limitKey = isLoggedIn
-      ? hashIP(`user_${currentUser!.id}`) // 用 user_id hash 避免與 IP hash 衝突
+      ? hashIP(`user_${currentUser!.id}`)
       : hashIP(getClientIP(request));
 
     let rateLimitCurrentCount = 0;
+    let quotaSource: QuotaSource = 'daily';
+    let bonusCredits = 0;
+
     console.log(`🔒 [RateLimit] ${isLoggedIn ? '已登入用戶' : 'Guest'} limit=${dailyLimit}, key=${limitKey.substring(0, 8)}...`);
 
     const { allowed, remaining, currentCount } = await checkUsage(limitKey, dailyLimit);
     rateLimitCurrentCount = currentCount;
 
     if (!allowed) {
-      console.warn(`🚫 [RateLimit] Blocked: ${limitKey.substring(0, 8)}...`);
-      return NextResponse.json(
-        {
-          error: reportLanguage === 'zh-TW'
-            ? `今日 ${dailyLimit} 次免費分析已用完。${isLoggedIn ? '' : '登入帳號可享每日 5 次。'}請明天再試。`
-            : reportLanguage === 'zh-CN'
-            ? `今日 ${dailyLimit} 次免费分析已用完。${isLoggedIn ? '' : '登录账号可享每日 5 次。'}请明天再试。`
-            : reportLanguage === 'es'
-            ? `Has usado los ${dailyLimit} análisis gratuitos de hoy. ${isLoggedIn ? '' : 'Inicia sesión para más. '}Por favor, inténtalo mañana.`
-            : reportLanguage === 'hi'
-            ? `आज के ${dailyLimit} मुफ़्त विश्लेषण समाप्त हो गए। ${isLoggedIn ? '' : 'अधिक के लिए लॉग इन करें। '}कृपया कल पुनः प्रयास करें।`
-            : reportLanguage === 'ar'
-            ? `لقد استخدمت كل ${dailyLimit} تحليلات مجانية لليوم. ${isLoggedIn ? '' : 'سجّل الدخول للحصول على المزيد. '}يرجى المحاولة غدًا.`
-            : `You have used all ${dailyLimit} free analyses for today. ${isLoggedIn ? '' : 'Log in for more daily analyses. '}Please try again tomorrow.`,
-          errorCode: 'RATE_LIMIT_EXCEEDED',
-          resetTime: 'tomorrow',
-        },
-        { status: 429 }
-      );
+      if (isLoggedIn) {
+        bonusCredits = await getBonusCredits(currentUser!.id);
+        if (bonusCredits > 0) {
+          quotaSource = 'bonus';
+          console.log(`🎁 [Quota] Daily exhausted; using bonus_credits (${bonusCredits} left)`);
+        } else {
+          console.warn(`🚫 [Quota] Payment required: ${limitKey.substring(0, 8)}...`);
+          return NextResponse.json(
+            {
+              error: paymentRequiredMessage(reportLanguage, true),
+              errorCode: 'PAYMENT_REQUIRED',
+              bonusCredits: 0,
+              resetTime: 'tomorrow',
+            },
+            { status: 402 },
+          );
+        }
+      } else {
+        console.warn(`🚫 [Quota] Guest payment required: ${limitKey.substring(0, 8)}...`);
+        return NextResponse.json(
+          {
+            error: paymentRequiredMessage(reportLanguage, false),
+            errorCode: 'PAYMENT_REQUIRED',
+            resetTime: 'tomorrow',
+          },
+          { status: 402 },
+        );
+      }
+    } else {
+      console.log(`✅ [RateLimit] Allowed via daily quota. Remaining today: ${remaining}`);
     }
-    console.log(`✅ [RateLimit] Allowed. Remaining today: ${remaining}`);
     // ── End Rate Limiting ─────────────────────────────────────────────────────
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
@@ -616,9 +718,14 @@ export async function POST(request: NextRequest) {
       throw new Error('Gemini API 未返回有效回應');
     }
 
-    // AI 成功回應才扣免費額度（避免 API 故障消耗使用者次數）
-    await incrementUsage(limitKey, rateLimitCurrentCount);
-    console.log(`✅ [RateLimit] Usage incremented for ${limitKey.substring(0, 8)}...`);
+    // AI 成功回應才扣額度（避免 API 故障消耗使用者次數）
+    if (quotaSource === 'daily') {
+      await incrementUsage(limitKey, rateLimitCurrentCount);
+      console.log(`✅ [RateLimit] Daily usage incremented for ${limitKey.substring(0, 8)}...`);
+    } else if (currentUser) {
+      const remainingBonus = await decrementBonusCredit(currentUser.id);
+      console.log(`✅ [Quota] Bonus credit decremented; remaining=${remainingBonus}`);
+    }
 
     console.log(`🎉 [Gemini] 使用模型: ${model}`);
     
@@ -738,9 +845,11 @@ export async function POST(request: NextRequest) {
     const totalDuration = (Date.now() - startTime) / 1000;
     console.log(`🏁 [API End] AI 分析完成，耗時: ${totalDuration}秒`);
 
-    // 儲存分析報告（登入用戶才保存）
+    // 儲存完整報告（登入用戶強制沉澱資產；訪客不寫入）
     let saveStatus: 'skipped_not_logged_in' | 'success' | 'failed' = 'skipped_not_logged_in';
     let saveErrorMsg: string | null = null;
+    let reportId: string | null = null;
+    const isPremium = false;
 
     if (currentUser) {
       try {
@@ -751,16 +860,20 @@ export async function POST(request: NextRequest) {
           score: typeof report.match_analysis?.score === 'number' ? report.match_analysis.score : null,
           report: report as any,
           language: reportLanguage || 'en',
+          is_premium: isPremium,
         };
-        const { error: dbError } = await supabase
+        const { data: inserted, error: dbError } = await supabase
           .from('analysis_reports')
-          .insert(insertPayload);
+          .insert(insertPayload)
+          .select('id')
+          .single();
         if (dbError) {
           saveStatus = 'failed';
           saveErrorMsg = dbError.message;
           console.warn('⚠️ [DB] 報告儲存失敗（不影響回傳）:', dbError.message);
         } else {
           saveStatus = 'success';
+          reportId = inserted?.id ?? null;
           console.log('✅ [DB] 分析報告已儲存');
         }
       } catch (e: any) {
@@ -772,8 +885,14 @@ export async function POST(request: NextRequest) {
       console.warn('⚠️ [DB] 跳過儲存：server 端 currentUser 為 null（未認證）');
     }
 
+    const clientReport = isReportPremiumUnlocked(isPremium)
+      ? report
+      : maskPremiumReportFields(report);
+
     return NextResponse.json({
-      report,
+      report: clientReport,
+      isPremium,
+      reportId,
       modelUsed: model,
       saved: saveStatus === 'success',
       saveStatus,

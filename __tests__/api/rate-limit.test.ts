@@ -55,27 +55,27 @@ describe('rate-limit key hashing', () => {
 // ──────────────────────────────────────────────
 describe('daily limits', () => {
   const GUEST_DAILY_LIMIT = 2;
-  const USER_DAILY_LIMIT = 5;
+  const USER_DAILY_LIMIT = 2;
 
   it('guest limit is 2', () => {
     expect(GUEST_DAILY_LIMIT).toBe(2);
   });
 
-  it('user limit is 5', () => {
-    expect(USER_DAILY_LIMIT).toBe(5);
+  it('logged-in user limit is 2 (PLG tier)', () => {
+    expect(USER_DAILY_LIMIT).toBe(2);
   });
 
-  it('user limit > guest limit', () => {
-    expect(USER_DAILY_LIMIT).toBeGreaterThan(GUEST_DAILY_LIMIT);
+  it('guest and user share the same daily free quota', () => {
+    expect(USER_DAILY_LIMIT).toBe(GUEST_DAILY_LIMIT);
   });
 
   it('usage is allowed when count < limit', () => {
     const allowed = (count: number, limit: number) => count < limit;
     expect(allowed(0, GUEST_DAILY_LIMIT)).toBe(true);
     expect(allowed(1, GUEST_DAILY_LIMIT)).toBe(true);
-    expect(allowed(2, GUEST_DAILY_LIMIT)).toBe(false);   // exactly at limit → blocked
-    expect(allowed(4, USER_DAILY_LIMIT)).toBe(true);
-    expect(allowed(5, USER_DAILY_LIMIT)).toBe(false);   // exactly at limit → blocked
+    expect(allowed(2, GUEST_DAILY_LIMIT)).toBe(false);
+    expect(allowed(1, USER_DAILY_LIMIT)).toBe(true);
+    expect(allowed(2, USER_DAILY_LIMIT)).toBe(false);
   });
 });
 

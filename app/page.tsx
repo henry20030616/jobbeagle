@@ -12,6 +12,7 @@ import { InterviewReport, UserInputs } from '@/types';
 import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 
 interface ReportSummary {
   id: string;
@@ -118,6 +119,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [lastReportId, setLastReportId] = useState<string | null>(null);
+  const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
   const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
 
   // Auth + History
@@ -172,6 +175,33 @@ export default function Home() {
           : (language === 'zh-TW' || language === 'zh-CN') ? '登入發生錯誤，請重試' : 'Login error, please retry';
         setError(msg);
         if (!fromExtension) window.history.replaceState({}, '', '/');
+      }
+
+      const checkout = urlParams.get('checkout');
+      if (checkout === 'success') {
+        const notice =
+          language === 'zh-TW' || language === 'zh-CN'
+            ? '付款成功！若已解鎖進階報告，請從歷史紀錄開啟或重新分析。'
+            : 'Payment successful! Open your report from history to see premium content.';
+        setCheckoutNotice(notice);
+        const storedId = sessionStorage.getItem('jb_last_report_id');
+        if (storedId) {
+          fetch(`/api/reports/${storedId}`)
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.report) {
+                setReport(data.report);
+                setLastReportId(storedId);
+              }
+            })
+            .catch(() => {});
+        }
+        window.history.replaceState({}, '', '/');
+      } else if (checkout === 'cancelled') {
+        setCheckoutNotice(
+          language === 'zh-TW' || language === 'zh-CN' ? '已取消付款。' : 'Checkout cancelled.',
+        );
+        window.history.replaceState({}, '', '/');
       }
     };
     init();
@@ -243,19 +273,39 @@ export default function Home() {
       const result = await response.json();
       
       if (!response.ok) {
-        if (result.errorCode) setErrorCode(result.errorCode);
-        if (result.error === 'AI Generated Invalid JSON') {
-          throw new Error((language === 'zh-TW' || language === 'zh-CN') ? 'AI 生成格式異常,請重試' : 'AI generated invalid format, please retry');
+        const code = result.errorCode as string | undefined;
+        if (code) setErrorCode(code);
+
+        if (code === 'PAYMENT_REQUIRED' || code === 'RATE_LIMIT_EXCEEDED') {
+          setError(result.error || t.rateTitle);
+          return;
         }
-        throw new Error(result.error || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗' : 'Analysis failed'));
+
+        if (result.error === 'AI Generated Invalid JSON') {
+          setError(
+            (language === 'zh-TW' || language === 'zh-CN')
+              ? 'AI 生成格式異常,請重試'
+              : 'AI generated invalid format, please retry',
+          );
+          return;
+        }
+
+        setError(
+          result.error
+            || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗' : 'Analysis failed'),
+        );
+        return;
       }
 
       setReport(result.report);
-
-
-    } catch (err: any) {
+      if (result.reportId) {
+        setLastReportId(result.reportId);
+        sessionStorage.setItem('jb_last_report_id', result.reportId);
+      }
+    } catch (err: unknown) {
       console.error('❌ [Frontend Error]', err);
-      setError(err.message);
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
     } finally {
       stopProgressSimulation();
       setLoading(false);
@@ -394,25 +444,28 @@ export default function Home() {
             language={language}
           />
         )}
-        {error && errorCode === 'RATE_LIMIT_EXCEEDED' && (
-          <div className="mb-6 p-5 bg-amber-900/20 border border-amber-500/50 rounded-xl">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h3 className="text-amber-300 font-bold text-lg mb-1">
-                  {t.rateTitle}
-                </h3>
-                <p className="text-amber-200/80 text-sm mb-3">{error}</p>
-                <p className="text-xs text-amber-400/60">
-                  {(language === 'zh-TW' || language === 'zh-CN')
-                    ? '💡 登入帳號可繼續使用，未來將推出無限制的進階方案。'
-                    : '💡 Log in to continue. An unlimited premium plan is coming soon.'}
-                </p>
-              </div>
-              <button onClick={() => { setError(null); setErrorCode(null); }} className="ml-4 text-amber-400 hover:text-amber-300">✕</button>
-            </div>
+        {checkoutNotice && (
+          <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
+            {checkoutNotice}
+            <button
+              type="button"
+              className="ml-3 text-emerald-400 hover:text-emerald-300"
+              onClick={() => setCheckoutNotice(null)}
+            >
+              ✕
+            </button>
           </div>
         )}
-        {error && errorCode !== 'RATE_LIMIT_EXCEEDED' && (
+        {error && (errorCode === 'PAYMENT_REQUIRED' || errorCode === 'RATE_LIMIT_EXCEEDED') && (
+          <QuotaPaywallCard
+            language={language}
+            message={error}
+            isLoggedIn={!!currentUser}
+            reportId={lastReportId}
+            onDismiss={() => { setError(null); setErrorCode(null); }}
+          />
+        )}
+        {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'RATE_LIMIT_EXCEEDED' && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1">

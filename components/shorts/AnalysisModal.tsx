@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { ResumeInput, InterviewReport } from '@/types';
 import { createClient } from '@/lib/supabase/browser';
+import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 
 interface SavedResume {
   id: string;
@@ -415,6 +416,8 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   const [isLoadingResumes, setIsLoadingResumes] = useState(false);
   const [report, setReport] = useState<InterviewReport | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [lastReportId, setLastReportId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [stageLabel, setStageLabel] = useState('');
   const [elapsed, setElapsed] = useState(0);
@@ -430,6 +433,8 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     setResume(null);
     setAnalyzedResumeId(null);
     setErrorMsg('');
+    setErrorCode(null);
+    setLastReportId(null);
     setProgress(0);
     loadUserAndResumes();
   }, [isOpen]);
@@ -502,8 +507,15 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         body: JSON.stringify({ jobDescription: jdText, resume: selectedResume, language }),
       });
       const result = await res.json();
-      if (!res.ok) throw new Error(result.error || '分析失敗，請稍後再試');
+      if (!res.ok) {
+        const code = result.errorCode as string | undefined;
+        setErrorCode(code ?? null);
+        setErrorMsg(result.error || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗，請稍後再試' : 'Analysis failed, please try again'));
+        setStep('error');
+        return;
+      }
       setReport(result.report);
+      if (result.reportId) setLastReportId(result.reportId);
       setStep('result');
     } catch (err: any) {
       setErrorMsg(err.message || '分析失敗，請稍後再試');
@@ -713,15 +725,27 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
 
           {/* ── STEP: error ───────────────────────────────── */}
           {step === 'error' && (
-            <div className="flex flex-col items-center gap-4 py-10 text-center">
-              <div className="text-4xl">😔</div>
-              <div className="text-sm text-red-400 font-semibold">{errorMsg}</div>
-              <button
-                onClick={() => setStep('resume')}
-                className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all active:scale-95"
-              >
-                {(language === 'zh-TW' || language === 'zh-CN') ? '重新嘗試' : 'Try Again'}
-              </button>
+            <div className="py-4">
+              {(errorCode === 'PAYMENT_REQUIRED' || errorCode === 'RATE_LIMIT_EXCEEDED') ? (
+                <QuotaPaywallCard
+                  language={language}
+                  message={errorMsg}
+                  isLoggedIn={isLoggedIn}
+                  reportId={lastReportId}
+                  onDismiss={() => setStep('resume')}
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-4 py-10 text-center">
+                  <div className="text-4xl">😔</div>
+                  <div className="text-sm text-red-400 font-semibold">{errorMsg}</div>
+                  <button
+                    onClick={() => setStep('resume')}
+                    className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all active:scale-95"
+                  >
+                    {(language === 'zh-TW' || language === 'zh-CN') ? '重新嘗試' : 'Try Again'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
