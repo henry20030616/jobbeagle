@@ -116,12 +116,12 @@ function getClientIP(request: NextRequest): string {
 async function checkUsage(
   limitKey: string,
   dailyLimit: number,
-): Promise<{ allowed: boolean; remaining: number; currentCount: number }> {
+): Promise<{ allowed: boolean; remaining: number; currentCount: number; configError?: boolean }> {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!serviceKey || !supabaseUrl) {
-    console.warn('⚠️ [RateLimit] SUPABASE_SERVICE_ROLE_KEY not set — skipping rate limit check');
-    return { allowed: true, remaining: dailyLimit, currentCount: 0 };
+    console.error('❌ [RateLimit] SUPABASE_SERVICE_ROLE_KEY not set — cannot enforce quota');
+    return { allowed: false, remaining: 0, currentCount: dailyLimit, configError: true };
   }
 
   const admin = createAdminClient(supabaseUrl, serviceKey);
@@ -135,8 +135,8 @@ async function checkUsage(
     .maybeSingle();
 
   if (error) {
-    console.error('⚠️ [RateLimit] DB read error:', error.message);
-    return { allowed: true, remaining: dailyLimit, currentCount: 0 };
+    console.error('❌ [RateLimit] DB read error:', error.message);
+    return { allowed: false, remaining: 0, currentCount: dailyLimit };
   }
 
   const currentCount = data?.count ?? 0;
@@ -147,9 +147,12 @@ async function checkUsage(
 }
 
 /** AI 成功回應後才呼叫，真正扣計數 */
-async function incrementUsage(limitKey: string, currentCount: number): Promise<void> {
+async function incrementUsage(limitKey: string, currentCount: number): Promise<boolean> {
   const admin = getAdminClient();
-  if (!admin) return;
+  if (!admin) {
+    console.error('❌ [RateLimit] increment skipped — no admin client');
+    return false;
+  }
   const today = new Date().toISOString().split('T')[0];
 
   const { error: upsertError } = await admin
@@ -160,8 +163,10 @@ async function incrementUsage(limitKey: string, currentCount: number): Promise<v
     );
 
   if (upsertError) {
-    console.error('⚠️ [RateLimit] DB write error:', upsertError.message);
+    console.error('❌ [RateLimit] DB write error:', upsertError.message, upsertError.details);
+    return false;
   }
+  return true;
 }
 
 // 設定最大執行時間（雖然 Vercel 免費版由平台控制，但這行可以提醒 Next.js 不要太早斷開）
@@ -466,8 +471,18 @@ export async function POST(request: NextRequest) {
 
     console.log(`🔒 [RateLimit] ${isLoggedIn ? '已登入用戶' : 'Guest'} limit=${dailyLimit}, key=${limitKey.substring(0, 8)}...`);
 
-    const { allowed, remaining, currentCount } = await checkUsage(limitKey, dailyLimit);
+    const { allowed, remaining, currentCount, configError } = await checkUsage(limitKey, dailyLimit);
     rateLimitCurrentCount = currentCount;
+
+    if (configError) {
+      return NextResponse.json(
+        {
+          error: 'Server configuration error: quota service unavailable',
+          errorCode: 'SERVER_CONFIG',
+        },
+        { status: 503 },
+      );
+    }
 
     if (!allowed) {
       if (isLoggedIn) {
@@ -720,8 +735,12 @@ export async function POST(request: NextRequest) {
 
     // AI 成功回應才扣額度（避免 API 故障消耗使用者次數）
     if (quotaSource === 'daily') {
-      await incrementUsage(limitKey, rateLimitCurrentCount);
-      console.log(`✅ [RateLimit] Daily usage incremented for ${limitKey.substring(0, 8)}...`);
+      const incremented = await incrementUsage(limitKey, rateLimitCurrentCount);
+      if (incremented) {
+        console.log(`✅ [RateLimit] Daily usage incremented for ${limitKey.substring(0, 8)}...`);
+      } else {
+        console.error(`❌ [RateLimit] Failed to increment usage for ${limitKey.substring(0, 8)}...`);
+      }
     } else if (currentUser) {
       const remainingBonus = await decrementBonusCredit(currentUser.id);
       console.log(`✅ [Quota] Bonus credit decremented; remaining=${remainingBonus}`);
