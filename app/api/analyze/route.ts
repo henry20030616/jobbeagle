@@ -116,7 +116,7 @@ function getClientIP(request: NextRequest): string {
 async function checkUsage(
   limitKey: string,
   dailyLimit: number,
-): Promise<{ allowed: boolean; remaining: number; currentCount: number; configError?: boolean }> {
+): Promise<{ allowed: boolean; remaining: number; currentCount: number; configError?: boolean; dbError?: boolean }> {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!serviceKey || !supabaseUrl) {
@@ -136,7 +136,7 @@ async function checkUsage(
 
   if (error) {
     console.error('❌ [RateLimit] DB read error:', error.message);
-    return { allowed: false, remaining: 0, currentCount: dailyLimit };
+    return { allowed: false, remaining: 0, currentCount: 0, dbError: true };
   }
 
   const currentCount = data?.count ?? 0;
@@ -471,10 +471,10 @@ export async function POST(request: NextRequest) {
 
     console.log(`🔒 [RateLimit] ${isLoggedIn ? '已登入用戶' : 'Guest'} limit=${dailyLimit}, key=${limitKey.substring(0, 8)}...`);
 
-    const { allowed, remaining, currentCount, configError } = await checkUsage(limitKey, dailyLimit);
+    const { allowed, remaining, currentCount, configError, dbError } = await checkUsage(limitKey, dailyLimit);
     rateLimitCurrentCount = currentCount;
 
-    if (configError) {
+    if (configError || dbError) {
       return NextResponse.json(
         {
           error: 'Server configuration error: quota service unavailable',
