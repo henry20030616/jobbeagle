@@ -176,12 +176,17 @@ describe('normalizeInstagramUrl', () => {
 // sourceTypeLabel / sourceTypeIcon
 // ──────────────────────────────────────────────
 describe('sourceTypeLabel', () => {
-  it('returns correct labels for all types', () => {
+  it('returns correct labels for all types (English default)', () => {
     expect(sourceTypeLabel('youtube')).toBe('YouTube');
     expect(sourceTypeLabel('instagram')).toBe('Instagram');
     expect(sourceTypeLabel('facebook')).toBe('Facebook');
-    expect(sourceTypeLabel('upload')).toBe('上傳影片');
-    expect(sourceTypeLabel('external')).toBe('外部連結');
+    expect(sourceTypeLabel('upload')).toBe('Uploaded Video');
+    expect(sourceTypeLabel('external')).toBe('External Link');
+  });
+
+  it('returns Chinese labels when lang is zh-TW', () => {
+    expect(sourceTypeLabel('upload', 'zh-TW')).toBe('上傳影片');
+    expect(sourceTypeLabel('external', 'zh-TW')).toBe('外部連結');
   });
 });
 
