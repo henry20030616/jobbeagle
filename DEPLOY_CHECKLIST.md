@@ -6,6 +6,7 @@
 > 程式碼 push 到 `main` 後 Vercel 會自動部署；**env / DB / 付款後台**須設定後才會全通。
 
 **Agent 代跑腳本：**
+- `bash scripts/ops/bootstrap-remote.sh` — **一鍵**：migration + GitHub auth + Lemon Squeezy + Vercel（需 `.env.local` 有 `SUPABASE_ACCESS_TOKEN` + `LEMONSQUEEZY_API_KEY`）
 - `bash scripts/ops/sync-all.sh` — Vercel 同步 + 三方驗證 + Production redeploy
 - `node scripts/ops/verify-integrations.mjs` — GitHub / Supabase / Vercel 健康檢查
 - `bash scripts/ops/sync-vercel-env.sh` — 僅同步 Vercel env

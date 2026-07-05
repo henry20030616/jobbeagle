@@ -9,7 +9,8 @@ alwaysApply: true
 
 - **能代跑的一律由 Agent 執行**（Shell、腳本、API、git push），不叫使用者開終端機。
 - 使用者**只做** Agent 無法代做的 **瀏覽器一次性 OAuth / 第三方後台點擊**（一次列完）。
-- 一鍵代跑：`bash scripts/ops/sync-all.sh`（Vercel env 同步 → 整合驗證 → Production redeploy）。
+- 一鍵代跑：`bash scripts/ops/bootstrap-remote.sh`（migration + GitHub auth + Lemon Squeezy + Vercel）
+- 一鍵同步：`bash scripts/ops/sync-all.sh`（Vercel env 同步 → 驗證 → redeploy）
 
 ## GitHub — Agent 代跑
 
@@ -29,14 +30,15 @@ alwaysApply: true
 | 驗證 DB | `node scripts/ops/verify-supabase.mjs` |
 | 驗證表 | `node scripts/ops/verify-integrations.mjs`（profiles / referrals / analysis_reports） |
 | 同步 env 到 Vercel | `scripts/ops/sync-vercel-env.sh`（`NEXT_PUBLIC_SUPABASE_*`、`SUPABASE_SERVICE_ROLE_KEY`） |
-| CLI migration | `npx supabase link --project-ref yvzorfeespljbitxxufo` + `db push`（需先 `supabase login`） |
+| CLI migration | `bash scripts/ops/bootstrap-remote.sh` 或 `node scripts/ops/supabase-apply-migrations.mjs` |
+| GitHub Provider | `node scripts/ops/supabase-configure-github.mjs`（Management API，需 `SUPABASE_ACCESS_TOKEN`） |
 
 **專案 ref：** `yvzorfeespljbitxxufo`
 
-**使用者僅需：**
-1. **`supabase login`** 首次瀏覽器授權（Agent 發連結，使用者點完說「好了」）
-2. **Dashboard 貼 OAuth**：Authentication → Providers → GitHub / Google（`.env.local` 的 `GITHUB_*` 給 Supabase 後台，不進 Vercel）
-3. **SQL Editor** 僅當無 `DATABASE_URL` 且 CLI 無法 push migration
+**使用者僅需（各一次，Agent 會 `open` 瀏覽器分頁）：**
+1. 複製 **`SUPABASE_ACCESS_TOKEN`** → 貼進 `.env.local` 或 Cursor 對話（[tokens 頁](https://supabase.com/dashboard/account/tokens)）
+2. 複製 **`LEMONSQUEEZY_API_KEY`** → 同上（[LS API 頁](https://app.lemonsqueezy.com/settings/api)）
+3. 貼完後 Agent 執行 `bootstrap-remote.sh`，其餘全自動
 
 ## Vercel — Agent 代跑
 
@@ -52,7 +54,7 @@ alwaysApply: true
 
 ## 其他代跑
 
-- Lemon Squeezy env 同步（`.env.local` 有值時由 sync 腳本帶上）
+- Lemon Squeezy：`node scripts/ops/setup-lemonsqueezy.mjs`（建產品、webhook、寫回 `.env.local`）
 - `curl` 驗收 `/api/checkout`、`/api/profile`
 - `npm run build` 本機 build 檢查
 
