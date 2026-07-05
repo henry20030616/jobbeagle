@@ -6,8 +6,10 @@
 > 程式碼 push 到 `main` 後 Vercel 會自動部署；**env / DB / 付款後台**須設定後才會全通。
 
 **Agent 代跑腳本：**
+- `bash scripts/ops/sync-all.sh` — Vercel 同步 + 三方驗證 + Production redeploy
+- `node scripts/ops/verify-integrations.mjs` — GitHub / Supabase / Vercel 健康檢查
+- `bash scripts/ops/sync-vercel-env.sh` — 僅同步 Vercel env
 - `node scripts/ops/verify-supabase.mjs` — 確認 profiles 表
-- `bash scripts/ops/sync-vercel-env.sh` — 從 `.env.local` 同步 Vercel Production env（需 `vercel login`）
 
 **預估時間：** 30–45 分鐘（含 Lemon Squeezy 建產品）  
 **你的 Supabase 專案：** `yvzorfeespljbitxxufo`  
