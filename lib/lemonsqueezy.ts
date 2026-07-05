@@ -1,39 +1,68 @@
 import { createHmac, timingSafeEqual } from 'crypto';
-import type { CheckoutPlanType } from '@/constants/checkout-plans';
+import {
+  ACTIVE_CHECKOUT_PLAN_TYPES,
+  type CheckoutPlanType,
+} from '@/constants/checkout-plans';
 
 export interface LemonSqueezyConfig {
   apiKey: string;
   storeId: string;
   webhookSecret: string;
-  variantIds: Partial<Record<CheckoutPlanType, string>> & {
-    basic_overage: string;
-    premium_report: string;
-    monthly_subscription: string;
+  variantIds: Partial<Record<CheckoutPlanType, string>>;
+}
+
+/** Resolve variant ID for a plan; single_lite falls back to BASIC_OVERAGE ($3). */
+export function resolveLemonSqueezyVariant(planType: CheckoutPlanType): string | null {
+  const map: Partial<Record<CheckoutPlanType, string | undefined>> = {
+    single_lite:
+      process.env.LEMONSQUEEZY_VARIANT_SINGLE_LITE
+      || process.env.LEMONSQUEEZY_VARIANT_BASIC_OVERAGE,
+    single_full: process.env.LEMONSQUEEZY_VARIANT_SINGLE_FULL,
+    standard_subscription: process.env.LEMONSQUEEZY_VARIANT_STANDARD_SUB,
+    advanced_subscription: process.env.LEMONSQUEEZY_VARIANT_ADVANCED_SUB,
+    basic_overage: process.env.LEMONSQUEEZY_VARIANT_BASIC_OVERAGE,
+    premium_report: process.env.LEMONSQUEEZY_VARIANT_PREMIUM_REPORT,
+    monthly_subscription: process.env.LEMONSQUEEZY_VARIANT_MONTHLY,
   };
+  const id = map[planType];
+  return id?.trim() ? id.trim() : null;
 }
 
 export function getLemonSqueezyConfig(): LemonSqueezyConfig | null {
   const apiKey = process.env.LEMONSQUEEZY_API_KEY;
   const storeId = process.env.LEMONSQUEEZY_STORE_ID;
-  const webhookSecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
-  const basic = process.env.LEMONSQUEEZY_VARIANT_BASIC_OVERAGE;
-  const premium = process.env.LEMONSQUEEZY_VARIANT_PREMIUM_REPORT;
-  const monthly = process.env.LEMONSQUEEZY_VARIANT_MONTHLY;
+  if (!apiKey || !storeId) return null;
 
-  if (!apiKey || !storeId || !basic || !premium || !monthly) {
-    return null;
+  const variantIds: Partial<Record<CheckoutPlanType, string>> = {};
+  for (const planType of ACTIVE_CHECKOUT_PLAN_TYPES) {
+    const id = resolveLemonSqueezyVariant(planType);
+    if (id) variantIds[planType] = id;
   }
 
   return {
     apiKey,
     storeId,
-    webhookSecret: webhookSecret ?? '',
-    variantIds: {
-      basic_overage: basic,
-      premium_report: premium,
-      monthly_subscription: monthly,
-    },
+    webhookSecret: process.env.LEMONSQUEEZY_WEBHOOK_SECRET ?? '',
+    variantIds,
   };
+}
+
+/** Returns missing env keys for active checkout plans (for error messages). */
+export function getMissingLemonSqueezyVariants(): string[] {
+  const required: Array<{ plan: CheckoutPlanType; env: string; fallback?: string }> = [
+    { plan: 'single_lite', env: 'LEMONSQUEEZY_VARIANT_SINGLE_LITE', fallback: 'LEMONSQUEEZY_VARIANT_BASIC_OVERAGE' },
+    { plan: 'single_full', env: 'LEMONSQUEEZY_VARIANT_SINGLE_FULL' },
+    { plan: 'standard_subscription', env: 'LEMONSQUEEZY_VARIANT_STANDARD_SUB' },
+    { plan: 'advanced_subscription', env: 'LEMONSQUEEZY_VARIANT_ADVANCED_SUB' },
+  ];
+
+  const missing: string[] = [];
+  for (const { plan, env, fallback } of required) {
+    if (!resolveLemonSqueezyVariant(plan)) {
+      missing.push(fallback ? `${env} (or ${fallback})` : env);
+    }
+  }
+  return missing;
 }
 
 export function verifyLemonSqueezySignature(

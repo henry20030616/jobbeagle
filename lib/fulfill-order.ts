@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
 import { CHECKOUT_PLANS, SUBSCRIPTION_ALLOWANCES } from '@/constants/checkout-plans';
 
-/** Idempotent post-payment fulfillment (Stripe). */
+/** Idempotent post-payment fulfillment (Lemon Squeezy). */
 export async function fulfillOrder(
   admin: SupabaseClient,
   orderId: string,
