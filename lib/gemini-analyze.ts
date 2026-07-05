@@ -52,16 +52,47 @@ export function isTokenLimitExceeded(tokenCount: number): boolean {
   return tokenCount > MAX_COMBINED_TOKENS;
 }
 
+export interface PdfInlineAttachment {
+  data: string;
+  mimeType: string;
+}
+
+function buildUserParts(
+  rawJd: string,
+  resumeText: string,
+  pdfInline?: PdfInlineAttachment,
+): Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> {
+  const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [
+    {
+      text: `=== JOB DESCRIPTION ===\n${rawJd}\n\n=== RESUME ===\n${
+        pdfInline
+          ? 'The candidate resume is attached as a PDF document below. Read it fully before scoring.'
+          : resumeText
+      }`,
+    },
+  ];
+  if (pdfInline) {
+    parts.push({
+      inlineData: {
+        mimeType: pdfInline.mimeType,
+        data: pdfInline.data,
+      },
+    });
+  }
+  return parts;
+}
+
 export async function executeLiteAnalysis(
   resumeText: string,
   rawJd: string,
+  pdfInline?: PdfInlineAttachment,
 ): Promise<{ report: LiteReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_LITE_MODEL;
 
   const response = await ai.models.generateContent({
     model,
-    contents: `=== JOB DESCRIPTION ===\n${rawJd}\n\n=== RESUME ===\n${resumeText}`,
+    contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline) }],
     config: {
       systemInstruction: LITE_SYSTEM_PROMPT,
       temperature: 0.3,
@@ -116,24 +147,24 @@ export async function executeFullAnalysis(
   rawJd: string,
   companyName: string,
   jobTitle: string,
+  pdfInline?: PdfInlineAttachment,
 ): Promise<{ report: FullReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_FULL_MODEL;
 
-  const userPrompt = `Target Company: ${companyName}
+  const intro = `Target Company: ${companyName}
 Job Title: ${jobTitle}
-
-=== JOB DESCRIPTION ===
-${rawJd}
-
-=== RESUME ===
-${resumeText}
 
 Search teamblind.com, glassdoor.com, and reddit.com for live intel on ${companyName} regarding layoffs, culture, interview process, and ghost job signals.`;
 
+  const parts = buildUserParts(rawJd, resumeText, pdfInline);
+  parts[0] = {
+    text: `${intro}\n\n${(parts[0] as { text: string }).text}`,
+  };
+
   const response = await ai.models.generateContent({
     model,
-    contents: userPrompt,
+    contents: [{ parts }],
     config: {
       systemInstruction: FULL_SYSTEM_PROMPT,
       temperature: 0.4,

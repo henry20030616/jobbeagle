@@ -41,6 +41,7 @@ interface ResolvedInput {
   raw_jd: string;
   linkedin_job_id: string;
   resume_text: string;
+  pdf_inline?: { data: string; mimeType: string };
 }
 
 async function resolveInput(
@@ -54,6 +55,14 @@ async function resolveInput(
     if (resume) {
       const resolved = await resolveResumeForAnalysis(resume);
       resumeText = resolved.text;
+      return {
+        company_name: pf.company_name,
+        job_title: pf.job_title,
+        raw_jd: truncateText(pf.raw_jd, MAX_JD_CHARS),
+        linkedin_job_id: deriveJobId(pf.linkedin_job_id, pf.raw_jd, pf.company_name),
+        resume_text: truncateText(resumeText, MAX_RESUME_CHARS),
+        pdf_inline: resolved.pdfInline,
+      };
     }
     return {
       company_name: pf.company_name,
@@ -77,7 +86,10 @@ async function resolveInput(
     job_title: titleMatch?.[1]?.trim().split('\n')[0] || 'Unknown Role',
     raw_jd: jd,
     linkedin_job_id: deriveJobId(undefined, jd, companyMatch?.[1] || 'unknown'),
-    resume_text: resolved.text,
+    resume_text: resolved.pdfInline
+      ? '[PDF resume attached]'
+      : truncateText(resolved.text, MAX_RESUME_CHARS),
+    pdf_inline: resolved.pdfInline,
   };
 }
 
@@ -136,18 +148,26 @@ export async function POST(request: NextRequest) {
     }
 
     const input = await resolveInput(body, body.resume);
-    if (!input.resume_text) {
+    if (!input.resume_text && !input.pdf_inline) {
       return NextResponse.json({ error: 'Resume is required.', code: 'MISSING_RESUME' }, { status: 400 });
     }
 
-    if (input.raw_jd.length > MAX_JD_CHARS || input.resume_text.length > MAX_RESUME_CHARS) {
+    if (
+      input.raw_jd.length > MAX_JD_CHARS
+      || (!input.pdf_inline && input.resume_text.length > MAX_RESUME_CHARS)
+    ) {
       return NextResponse.json(
         { error: 'Text length boundary breached.', code: 'TEXT_TOO_LONG' },
         { status: 400 },
       );
     }
 
-    const tokenCount = await countCombinedTokens(input.raw_jd, input.resume_text);
+    const tokenCount = await countCombinedTokens(
+      input.raw_jd,
+      input.pdf_inline
+        ? `${input.resume_text}\n[PDF attachment ~${Math.ceil(input.pdf_inline.data.length * 0.75)} bytes]`
+        : input.resume_text,
+    );
     if (isTokenLimitExceeded(tokenCount)) {
       return NextResponse.json(
         { error: 'Context window safe limit breached.', code: 'TOKEN_LIMIT' },
@@ -190,7 +210,11 @@ export async function POST(request: NextRequest) {
     let modelUsed: string;
 
     if (reportType === 'lite') {
-      const result = await executeLiteAnalysis(input.resume_text, input.raw_jd);
+      const result = await executeLiteAnalysis(
+        input.resume_text,
+        input.raw_jd,
+        input.pdf_inline,
+      );
       report = result.report;
       modelUsed = result.model;
     } else {
@@ -199,6 +223,7 @@ export async function POST(request: NextRequest) {
         input.raw_jd,
         input.company_name,
         input.job_title,
+        input.pdf_inline,
       );
       report = result.report;
       modelUsed = result.model;
