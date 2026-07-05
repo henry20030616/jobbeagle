@@ -11,104 +11,115 @@ interface QuotaPaywallCardProps {
   language: AppLanguage;
   message?: string;
   isLoggedIn: boolean;
-  reportId?: string | null;
   onDismiss: () => void;
 }
 
-const copy: Record<
-  AppLanguage,
-  {
-    thanks: string;
-    subtitle: string;
-    loginHint: string;
-    loginBtn: string;
-    extra: string;
-    premium: string;
-    monthly: string;
-    tomorrow: string;
-    checkoutError: string;
-    loggingIn: string;
-  }
-> = {
+type PaywallCopy = {
+  thanks: string;
+  subtitle: string;
+  loginHint: string;
+  loginBtn: string;
+  singleLite: string;
+  singleFull: string;
+  standard: string;
+  advanced: string;
+  footnote: string;
+  checkoutError: string;
+  loggingIn: string;
+};
+
+const copy: Record<AppLanguage, PaywallCopy> = {
   'zh-TW': {
     thanks: '感謝您使用 JobBeagle！',
-    subtitle: '您今日的 2 次免費分析已用完。登入可永久保存報告；付費可解鎖進階面試策略與薪資談判建議。',
-    loginHint: '訪客報告關閉分頁後將消失 — 登入即可雲端永久保存。',
-    loginBtn: 'Google 登入（免費保存報告）',
-    extra: '再加 1 次分析 · $3',
-    premium: '解鎖本報告進階內容 · $4.99',
-    monthly: '月費專業版 · $8.99/月',
-    tomorrow: '或明天再來使用免費額度',
-    checkoutError: '無法啟動付款，請稍後再試或先登入。',
+    subtitle: '您的終身 3 次 Lite 額度已用完。訂閱可解鎖每月 100 Lite + 10 Full 情報報告。',
+    loginHint: '請先 Google 登入 — 註冊即送 3 次 Lite 分析。',
+    loginBtn: 'Google 登入',
+    singleLite: '單次 Lite · $3',
+    singleFull: '單次 Full · $9.99',
+    standard: '標準版 · $19.99/月',
+    advanced: '高級版 · $39.99/月',
+    footnote: '免費額度為終身固定，不會每日重置',
+    checkoutError: '無法啟動付款，請稍後再試。',
     loggingIn: '正在跳轉登入…',
   },
   'zh-CN': {
     thanks: '感谢您使用 JobBeagle！',
-    subtitle: '您今日的 2 次免费分析已用完。登录可永久保存报告；付费可解锁进阶面试策略与薪资谈判建议。',
-    loginHint: '访客报告关闭分页后将消失 — 登录即可云端永久保存。',
-    loginBtn: 'Google 登录（免费保存报告）',
-    extra: '再加 1 次分析 · $3',
-    premium: '解锁本报告进阶内容 · $4.99',
-    monthly: '月费专业版 · $8.99/月',
-    tomorrow: '或明天再来使用免费额度',
-    checkoutError: '无法启动付款，请稍后再试或先登录。',
+    subtitle: '您的终身 3 次 Lite 额度已用完。订阅可解锁每月 100 Lite + 10 Full 情报报告。',
+    loginHint: '请先 Google 登录 — 注册即送 3 次 Lite 分析。',
+    loginBtn: 'Google 登录',
+    singleLite: '单次 Lite · $3',
+    singleFull: '单次 Full · $9.99',
+    standard: '标准版 · $19.99/月',
+    advanced: '高级版 · $39.99/月',
+    footnote: '免费额度为终身固定，不会每日重置',
+    checkoutError: '无法启动付款，请稍后再试。',
     loggingIn: '正在跳转登录…',
   },
   en: {
     thanks: 'Thanks for using JobBeagle!',
-    subtitle: 'You\'ve used today\'s 2 free analyses. Log in to save reports forever, or pay to unlock interview prep & salary strategy.',
-    loginHint: 'Guest reports vanish when you close the tab — log in for free cloud storage.',
-    loginBtn: 'Sign in with Google (save reports free)',
-    extra: 'One more analysis · $3',
-    premium: 'Unlock premium on this report · $4.99',
-    monthly: 'Monthly Pro · $8.99/mo',
-    tomorrow: 'Or come back tomorrow for free credits',
-    checkoutError: 'Could not start checkout. Please log in and try again.',
+    subtitle: 'Your lifetime 3 Lite credits are used up. Subscribe for 100 Lite + 10 Full reports per month.',
+    loginHint: 'Sign in with Google — 3 free Lite analyses on signup.',
+    loginBtn: 'Sign in with Google',
+    singleLite: 'Single Lite · $3',
+    singleFull: 'Single Full · $9.99',
+    standard: 'Standard · $19.99/mo',
+    advanced: 'Advanced · $39.99/mo',
+    footnote: 'Free credits are lifetime-fixed — no daily reset',
+    checkoutError: 'Could not start checkout.',
     loggingIn: 'Redirecting to sign in…',
   },
   es: {
     thanks: '¡Gracias por usar JobBeagle!',
-    subtitle: 'Has usado tus 2 análisis gratuitos de hoy. Inicia sesión para guardar informes o paga para desbloquear contenido premium.',
-    loginHint: 'Los informes de invitado desaparecen al cerrar la pestaña.',
+    subtitle: 'Has agotado tus 3 créditos Lite de por vida. Suscríbete para 100 Lite + 10 Full al mes.',
+    loginHint: 'Inicia sesión con Google — 3 análisis Lite gratis al registrarte.',
     loginBtn: 'Iniciar sesión con Google',
-    extra: 'Un análisis más · $3',
-    premium: 'Desbloquear informe premium · $4.99',
-    monthly: 'Pro mensual · $8.99/mes',
-    tomorrow: 'O vuelve mañana',
+    singleLite: 'Lite único · $3',
+    singleFull: 'Full único · $9.99',
+    standard: 'Estándar · $19.99/mes',
+    advanced: 'Avanzado · $39.99/mes',
+    footnote: 'Los créditos gratis son de por vida',
     checkoutError: 'No se pudo iniciar el pago.',
     loggingIn: 'Redirigiendo…',
   },
   hi: {
     thanks: 'JobBeagle उपयोग के लिए धन्यवाद!',
-    subtitle: 'आज के 2 मुफ़्त विश्लेषण समाप्त। लॉग इन करें या प्रीमियम अनलॉक करें।',
-    loginHint: 'अतिथि रिपोर्ट टैब बंद करने पर गायब हो जाती है।',
+    subtitle: 'आपके जीवनभर के 3 Lite क्रेडिट समाप्त। सदस्यता लें।',
+    loginHint: 'Google से साइन इन करें।',
     loginBtn: 'Google से साइन इन',
-    extra: 'एक और विश्लेषण · $3',
-    premium: 'प्रीमियम रिपोर्ट · $4.99',
-    monthly: 'मासिक Pro · $8.99',
-    tomorrow: 'या कल फिर आएं',
+    singleLite: 'Single Lite · $3',
+    singleFull: 'Single Full · $9.99',
+    standard: 'Standard · $19.99/mo',
+    advanced: 'Advanced · $39.99/mo',
+    footnote: 'मुफ़्त क्रेडिट जीवनभर के लिए',
     checkoutError: 'चेकआउट शुरू नहीं हो सका।',
     loggingIn: 'साइन इन…',
   },
   ar: {
     thanks: 'شكرًا لاستخدام JobBeagle!',
-    subtitle: 'لقد استخدمت تحليلين مجانيين اليوم. سجّل الدخول أو ادفع لفتح المحتوى المتقدم.',
-    loginHint: 'تقارير الزوار تختفي عند إغلاق التبويب.',
+    subtitle: 'لقد استنفدت رصيد Lite المجاني (3). اشترك للمزيد.',
+    loginHint: 'سجّل الدخول عبر Google.',
     loginBtn: 'تسجيل الدخول عبر Google',
-    extra: 'تحليل إضافي · $3',
-    premium: 'فتح التقرير المتقدم · $4.99',
-    monthly: 'اشتراك شهري · $8.99',
-    tomorrow: 'أو عد غدًا',
+    singleLite: 'Lite واحد · $3',
+    singleFull: 'Full واحد · $9.99',
+    standard: 'قياسي · $19.99/شهر',
+    advanced: 'متقدم · $39.99/شهر',
+    footnote: 'الرصيد المجاني مدى الحياة',
     checkoutError: 'تعذر بدء الدفع.',
     loggingIn: 'جارٍ التحويل…',
   },
 };
 
+const PLANS: Array<{ type: CheckoutPlanType; labelKey: keyof Pick<PaywallCopy, 'singleLite' | 'singleFull' | 'standard' | 'advanced'>; primary?: boolean }> = [
+  { type: 'single_lite', labelKey: 'singleLite' },
+  { type: 'single_full', labelKey: 'singleFull' },
+  { type: 'standard_subscription', labelKey: 'standard', primary: true },
+  { type: 'advanced_subscription', labelKey: 'advanced' },
+];
+
 export default function QuotaPaywallCard({
   language,
   message,
   isLoggedIn,
-  reportId,
   onDismiss,
 }: QuotaPaywallCardProps) {
   const t = copy[language] ?? copy.en;
@@ -120,9 +131,11 @@ export default function QuotaPaywallCard({
     setErr(null);
     try {
       const supabase = createClient();
+      const callbackUrl = new URL(`${window.location.origin}/auth/callback`);
+      callbackUrl.searchParams.set('redirect', window.location.pathname);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}/auth/callback` },
+        options: { redirectTo: callbackUrl.toString() },
       });
       if (error) setErr(error.message);
     } finally {
@@ -137,10 +150,7 @@ export default function QuotaPaywallCard({
     }
     setBusy(planType);
     setErr(null);
-    const result = await startCheckout(
-      planType,
-      planType === 'premium_report' ? reportId : undefined,
-    );
+    const result = await startCheckout(planType);
     if (!result.ok) {
       setErr(result.error);
       setBusy(null);
@@ -173,13 +183,13 @@ export default function QuotaPaywallCard({
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+      <div className="mt-5 grid gap-2 sm:grid-cols-2">
         {!isLoggedIn ? (
           <button
             type="button"
             onClick={handleLogin}
             disabled={busy === 'login'}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 disabled:opacity-60"
+            className="sm:col-span-2 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 disabled:opacity-60"
           >
             {busy === 'login' ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -189,34 +199,21 @@ export default function QuotaPaywallCard({
             {busy === 'login' ? t.loggingIn : t.loginBtn}
           </button>
         ) : (
-          <>
+          PLANS.map(({ type, labelKey, primary }) => (
             <CheckoutBtn
-              label={t.extra}
-              loading={busy === 'basic_overage'}
-              onClick={() => handleCheckout('basic_overage')}
+              key={type}
+              label={t[labelKey]}
+              loading={busy === type}
+              onClick={() => handleCheckout(type)}
+              variant={primary ? 'primary' : 'secondary'}
             />
-            {reportId && (
-              <CheckoutBtn
-                label={t.premium}
-                loading={busy === 'premium_report'}
-                onClick={() => handleCheckout('premium_report')}
-                variant="primary"
-              />
-            )}
-            <CheckoutBtn
-              label={t.monthly}
-              loading={busy === 'monthly_subscription'}
-              onClick={() => handleCheckout('monthly_subscription')}
-            />
-          </>
+          ))
         )}
       </div>
 
-      <p className="mt-4 text-center text-xs text-slate-500">{t.tomorrow}</p>
+      <p className="mt-4 text-center text-xs text-slate-500">{t.footnote}</p>
 
-      {(err) && (
-        <p className="mt-3 text-center text-xs text-red-400">{err}</p>
-      )}
+      {err && <p className="mt-3 text-center text-xs text-red-400">{err}</p>}
     </div>
   );
 }
@@ -233,7 +230,7 @@ function CheckoutBtn({
   variant?: 'primary' | 'secondary';
 }) {
   const base =
-    'inline-flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-60 min-w-[140px]';
+    'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-60';
   const styles =
     variant === 'primary'
       ? 'bg-indigo-500 text-white hover:bg-indigo-400'

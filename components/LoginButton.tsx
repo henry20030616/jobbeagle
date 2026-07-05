@@ -4,7 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 import { LogIn, LogOut, User } from 'lucide-react';
 
-const LoginButton: React.FC = () => {
+const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
+  redirectTo,
+  referralCode,
+}) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -47,10 +50,18 @@ const LoginButton: React.FC = () => {
         supabaseUrl: supabaseUrl.substring(0, 30) + '...',
       });
 
+      const callbackUrl = new URL(`${window.location.origin}/auth/callback`);
+      if (redirectTo) {
+        callbackUrl.searchParams.set('redirect', redirectTo);
+      }
+      if (referralCode) {
+        callbackUrl.searchParams.set('ref', referralCode);
+      }
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl.toString(),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

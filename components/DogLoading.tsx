@@ -7,6 +7,7 @@ import { AppLanguage } from '@/lib/language-context';
 interface DogLoadingProps {
   progress?: number;
   stage?: string;
+  stageLabel?: string;
   elapsed?: number;
   language?: AppLanguage;
 }
@@ -14,6 +15,7 @@ interface DogLoadingProps {
 const DogLoading: React.FC<DogLoadingProps> = ({
   progress = 0,
   stage,
+  stageLabel,
   elapsed = 0,
   language = 'en',
 }) => {
@@ -44,7 +46,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     ar: `مرت ${elapsed} ثانية`,
   };
 
-  const currentStage = stage || defaultStageMap[language];
+  const currentStage = stage || stageLabel || defaultStageMap[language];
   const estimatedLabel = estimatedMap[language];
   const elapsedLabel = elapsedMap[language];
 

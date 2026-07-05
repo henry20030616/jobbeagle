@@ -5,7 +5,11 @@ export interface LemonSqueezyConfig {
   apiKey: string;
   storeId: string;
   webhookSecret: string;
-  variantIds: Record<CheckoutPlanType, string>;
+  variantIds: Partial<Record<CheckoutPlanType, string>> & {
+    basic_overage: string;
+    premium_report: string;
+    monthly_subscription: string;
+  };
 }
 
 export function getLemonSqueezyConfig(): LemonSqueezyConfig | null {

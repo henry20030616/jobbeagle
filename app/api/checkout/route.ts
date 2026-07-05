@@ -4,22 +4,14 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import {
   CHECKOUT_PLANS,
   isCheckoutPlanType,
+  ACTIVE_CHECKOUT_PLAN_TYPES,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
+import { createStripeCheckoutSession, getStripe } from '@/lib/stripe';
 import { createLemonSqueezyCheckout, getLemonSqueezyConfig } from '@/lib/lemonsqueezy';
+import { ensureProfile } from '@/lib/profiles';
 
 export async function POST(request: NextRequest) {
-  const ls = getLemonSqueezyConfig();
-  if (!ls) {
-    return NextResponse.json(
-      {
-        error: 'Lemon Squeezy is not configured. Set LEMONSQUEEZY_API_KEY, STORE_ID, and variant IDs.',
-        errorCode: 'LEMONSQUEEZY_NOT_CONFIGURED',
-      },
-      { status: 503 },
-    );
-  }
-
   const admin = getSupabaseAdmin();
   if (!admin) {
     return NextResponse.json(
@@ -29,7 +21,9 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json(
       { error: 'Please log in before checkout', errorCode: 'AUTH_REQUIRED' },
@@ -53,38 +47,10 @@ export async function POST(request: NextRequest) {
   }
 
   const plan = CHECKOUT_PLANS[planType as CheckoutPlanType];
-  let reportId: string | null = body.reportId ?? null;
-
-  if (planType === 'premium_report') {
-    if (!reportId) {
-      return NextResponse.json(
-        { error: 'reportId is required for premium_report', errorCode: 'MISSING_REPORT' },
-        { status: 400 },
-      );
-    }
-    const { data: reportRow, error: reportErr } = await admin
-      .from('analysis_reports')
-      .select('id, user_id, is_premium')
-      .eq('id', reportId)
-      .maybeSingle();
-
-    if (reportErr || !reportRow || reportRow.user_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Report not found', errorCode: 'REPORT_NOT_FOUND' },
-        { status: 404 },
-      );
-    }
-    if (reportRow.is_premium) {
-      return NextResponse.json(
-        { error: 'Report is already premium', errorCode: 'ALREADY_PREMIUM' },
-        { status: 409 },
-      );
-    }
-  } else {
-    reportId = null;
-  }
-
+  const reportId: string | null = body.reportId ?? null;
   const amount = plan.amountCents / 100;
+
+  const profile = await ensureProfile(admin, user.id);
 
   const { data: order, error: orderErr } = await admin
     .from('orders')
@@ -95,7 +61,7 @@ export async function POST(request: NextRequest) {
       amount,
       currency: 'usd',
       status: 'pending',
-      payment_provider: 'lemonsqueezy',
+      payment_provider: getStripe() ? 'stripe' : 'lemonsqueezy',
       metadata: { plan_label: plan.labelEn },
     })
     .select('id')
@@ -110,9 +76,63 @@ export async function POST(request: NextRequest) {
   }
 
   const origin = request.nextUrl.origin;
+  const successUrl = `${origin}/pre-flight?checkout=success`;
+  const cancelUrl = `${origin}/pre-flight?checkout=cancel`;
+
+  // Prefer Stripe (Unified Master Spec)
+  const stripe = getStripe();
+  if (stripe) {
+    try {
+      const { url, sessionId } = await createStripeCheckoutSession({
+        planType: planType as CheckoutPlanType,
+        userId: user.id,
+        userEmail: user.email ?? '',
+        orderId: order.id,
+        reportId,
+        successUrl,
+        cancelUrl,
+        customerId: profile.stripe_customer_id,
+      });
+
+      await admin
+        .from('orders')
+        .update({ stripe_session_id: sessionId })
+        .eq('id', order.id);
+
+      return NextResponse.json({ url, orderId: order.id, provider: 'stripe' });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Stripe error';
+      console.error('[checkout] Stripe failed:', message);
+      await admin.from('orders').update({ status: 'failed' }).eq('id', order.id);
+      return NextResponse.json(
+        { error: message, errorCode: 'STRIPE_ERROR' },
+        { status: 500 },
+      );
+    }
+  }
+
+  // Fallback: Lemon Squeezy (legacy plans only)
+  const ls = getLemonSqueezyConfig();
+  const legacyPlans = ['basic_overage', 'premium_report', 'monthly_subscription'];
+  if (!legacyPlans.includes(planType)) {
+    return NextResponse.json(
+      { error: 'Stripe required for this plan. Set STRIPE_SECRET_KEY.', errorCode: 'STRIPE_REQUIRED' },
+      { status: 503 },
+    );
+  }
+  if (!ls) {
+    return NextResponse.json(
+      {
+        error: 'Payment not configured. Set STRIPE_SECRET_KEY or Lemon Squeezy env vars.',
+        errorCode: 'PAYMENT_NOT_CONFIGURED',
+      },
+      { status: 503 },
+    );
+  }
+
   const testMode =
-    process.env.LEMONSQUEEZY_TEST_MODE === 'true'
-    || process.env.NODE_ENV !== 'production';
+    process.env.LEMONSQUEEZY_TEST_MODE === 'true' ||
+    process.env.NODE_ENV !== 'production';
 
   const custom: Record<string, string> = {
     order_id: order.id,
@@ -122,24 +142,30 @@ export async function POST(request: NextRequest) {
   if (reportId) custom.report_id = reportId;
 
   try {
+    const variantId = ls.variantIds[planType as CheckoutPlanType];
+    if (!variantId) {
+      return NextResponse.json({ error: 'Variant not configured' }, { status: 503 });
+    }
     const checkoutUrl = await createLemonSqueezyCheckout(ls.apiKey, {
       planType: planType as CheckoutPlanType,
-      variantId: ls.variantIds[planType as CheckoutPlanType],
+      variantId,
       storeId: ls.storeId,
       email: user.email ?? undefined,
-      redirectUrl: `${origin}/?checkout=success`,
+      redirectUrl: successUrl,
       custom,
       testMode,
     });
 
-    return NextResponse.json({ url: checkoutUrl, orderId: order.id });
+    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'lemonsqueezy' });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
-    console.error('[checkout] Lemon Squeezy create failed:', message);
+    const message = err instanceof Error ? err.message : 'Checkout error';
     await admin.from('orders').update({ status: 'failed' }).eq('id', order.id);
-    return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: message, errorCode: 'CHECKOUT_ERROR' }, { status: 500 });
   }
+}
+
+export async function GET() {
+  return NextResponse.json({
+    plans: ACTIVE_CHECKOUT_PLAN_TYPES.map((t) => CHECKOUT_PLANS[t]),
+  });
 }

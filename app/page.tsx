@@ -8,7 +8,9 @@ import DogLoading from '@/components/DogLoading';
 import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import { createClient } from '@/lib/supabase/browser';
-import { InterviewReport, UserInputs } from '@/types';
+import { InterviewReport, LiteReport, UserInputs } from '@/types';
+import LiteReportDashboard from '@/components/LiteReportDashboard';
+import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -116,6 +118,7 @@ export default function Home() {
   const language = appLanguage;
 
   const [report, setReport] = useState<InterviewReport | null>(null);
+  const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -259,34 +262,46 @@ export default function Home() {
   };
 
   const handleGenerate = async (inputs: UserInputs) => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setError(
+        language === 'zh-TW' || language === 'zh-CN'
+          ? '請先 Google 登入後再分析（註冊即送 3 次 Lite）'
+          : 'Please sign in with Google first (3 free Lite credits on signup)',
+      );
+      setErrorCode('AUTH_REQUIRED');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setErrorCode(null);
+    setLiteReport(null);
+    setReport(null);
     startProgressSimulation(language);
     try {
+      const fingerprint = await getDeviceFingerprint();
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...inputs, language: appLanguage }),
+        body: JSON.stringify({
+          report_type: 'lite',
+          jobDescription: inputs.jobDescription,
+          resume: inputs.resume,
+          language: appLanguage,
+          device_fingerprint: fingerprint,
+        }),
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
-        const code = result.errorCode as string | undefined;
+        const code = (result.code || result.errorCode) as string | undefined;
         if (code) setErrorCode(code);
 
-        if (code === 'PAYMENT_REQUIRED' || code === 'RATE_LIMIT_EXCEEDED') {
+        if (code === 'PAYMENT_REQUIRED' || code === 'AUTH_REQUIRED') {
           setError(result.error || t.rateTitle);
-          return;
-        }
-
-        if (result.error === 'AI Generated Invalid JSON') {
-          setError(
-            (language === 'zh-TW' || language === 'zh-CN')
-              ? 'AI 生成格式異常,請重試'
-              : 'AI generated invalid format, please retry',
-          );
           return;
         }
 
@@ -297,10 +312,14 @@ export default function Home() {
         return;
       }
 
-      setReport(result.report);
-      if (result.reportId) {
-        setLastReportId(result.reportId);
-        sessionStorage.setItem('jb_last_report_id', result.reportId);
+      if (result.report_type === 'lite' && result.report?.match_score != null) {
+        setLiteReport(result.report as LiteReport);
+      } else {
+        setReport(result.report as InterviewReport);
+      }
+      if (result.report_id) {
+        setLastReportId(result.report_id);
+        sessionStorage.setItem('jb_last_report_id', result.report_id);
       }
     } catch (err: unknown) {
       console.error('❌ [Frontend Error]', err);
@@ -456,16 +475,15 @@ export default function Home() {
             </button>
           </div>
         )}
-        {error && (errorCode === 'PAYMENT_REQUIRED' || errorCode === 'RATE_LIMIT_EXCEEDED') && (
+        {error && (errorCode === 'PAYMENT_REQUIRED' || errorCode === 'AUTH_REQUIRED') && (
           <QuotaPaywallCard
             language={language}
             message={error}
             isLoggedIn={!!currentUser}
-            reportId={lastReportId}
             onDismiss={() => { setError(null); setErrorCode(null); }}
           />
         )}
-        {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'RATE_LIMIT_EXCEEDED' && (
+        {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'AUTH_REQUIRED' && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -492,7 +510,7 @@ export default function Home() {
           </div>
         )}
 
-        {!report ? (
+        {!report && !liteReport ? (
           <div className="max-w-4xl mx-auto">
             <InputForm 
               onSubmit={handleGenerate} 
@@ -506,13 +524,17 @@ export default function Home() {
         ) : (
           <div className="animate-fade-in">
             <button 
-              onClick={() => setReport(null)} 
+              onClick={() => { setReport(null); setLiteReport(null); }} 
               className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
             >
               <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" /> 
               {t.backToHome}
             </button>
-            <AnalysisDashboard data={report} language={language} />
+            {liteReport ? (
+              <LiteReportDashboard report={liteReport} />
+            ) : report ? (
+              <AnalysisDashboard data={report} language={language} />
+            ) : null}
           </div>
         )}
       </main>

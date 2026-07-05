@@ -131,6 +131,87 @@ export interface UserInputs {
   language?: 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
 }
 
+// ─── Unified Master Spec 2026: Lite / Full Reports ───
+
+export type ReportType = 'lite' | 'full';
+
+export type MembershipTier = 'free' | 'standard_sub' | 'advanced_sub';
+
+export type FlsaStatus =
+  | 'Exempt (Professional Exemption)'
+  | 'Non-Exempt'
+  | 'Exempt (Executive Exemption)';
+
+export interface Radford2026CompensationMatrix {
+  tier_25th_low: string;
+  tier_50th_mid: string;
+  tier_75th_high: string;
+}
+
+/** Lite Report — no web search, 3-second TTV snapshot */
+export interface LiteReport {
+  match_score: number;
+  dog_breed_archetype: string;
+  one_sentence_sharp_critique: string;
+  flsa_status: FlsaStatus;
+  radford_2026_compensation_matrix: Radford2026CompensationMatrix;
+}
+
+/** Full Report — targeted grounding + STAR interview bank */
+export interface FullReport {
+  online_intel_warning: string;
+  corporate_culture_blackbox: string;
+  custom_star_interview_bank: string[];
+  salary_negotiation_script: string;
+}
+
+export interface UserProfile {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  membership_tier: MembershipTier;
+  available_lite_credits: number;
+  available_full_credits: number;
+  referral_code: string | null;
+  device_fingerprint: string | null;
+}
+
+/** Chrome extension → pre-flight payload */
+export interface ExtensionJobPayload {
+  pageTitle: string;
+  pageUrl: string;
+  rawText: string;
+  jobId: string;
+}
+
+export interface PreFlightJobData {
+  company_name: string;
+  job_title: string;
+  raw_jd: string;
+  linkedin_job_id: string;
+  page_url?: string;
+}
+
+export interface AnalyzeRequestBody {
+  report_type: ReportType;
+  payload?: string;
+  /** Legacy manual flow */
+  jobDescription?: string;
+  resume?: ResumeInput;
+  language?: UserInputs['language'];
+  device_fingerprint?: string;
+  /** Mark as single-drop purchase snapshot */
+  is_single_drop?: boolean;
+}
+
+export interface AnalyzeResponseBody {
+  report: LiteReport | FullReport;
+  report_type: ReportType;
+  report_id: string | null;
+  cached: boolean;
+  model_used: string;
+}
+
 // Jobbeagle Shorts types
 
 /** 影片來源類型：upload = 上傳原檔；youtube / instagram / facebook = 社群連結；external = 其他外部連結 */

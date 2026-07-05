@@ -28,7 +28,8 @@
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "recharts": "^3.5.1",
-    "resend": "^6.10.0"
+    "resend": "^6.10.0",
+    "stripe": "^22.3.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.0",

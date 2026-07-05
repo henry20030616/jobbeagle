@@ -1,22 +1,19 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
+import { ensureProfile } from '@/lib/profiles';
+import { recordReferral } from '@/lib/referrals';
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const error = requestUrl.searchParams.get('error');
   const errorDescription = requestUrl.searchParams.get('error_description');
+  const referralCode = requestUrl.searchParams.get('ref');
   const origin = requestUrl.origin;
 
-  // 處理 OAuth 錯誤
   if (error) {
-    console.error('❌ OAuth 回調錯誤:', {
-      error,
-      errorDescription,
-      url: requestUrl.toString(),
-    });
-    
-    // 重定向到首頁並顯示錯誤
+    console.error('❌ OAuth 回調錯誤:', { error, errorDescription });
     const errorUrl = new URL(`${origin}/`);
     errorUrl.searchParams.set('auth_error', error);
     if (errorDescription) {
@@ -28,8 +25,8 @@ export async function GET(request: Request) {
   if (code) {
     try {
       const supabase = await createClient();
-      const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-      
+      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
       if (exchangeError) {
         console.error('❌ 交換 session 時發生錯誤:', exchangeError);
         const errorUrl = new URL(`${origin}/`);
@@ -38,21 +35,38 @@ export async function GET(request: Request) {
         return NextResponse.redirect(errorUrl.toString());
       }
 
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const admin = getSupabaseAdmin();
+        if (admin) {
+          await ensureProfile(admin, user.id, {
+            full_name: user.user_metadata?.full_name ?? user.user_metadata?.name,
+            avatar_url: user.user_metadata?.avatar_url ?? user.user_metadata?.picture,
+          });
+          if (referralCode) {
+            await recordReferral(admin, user.id, referralCode);
+          }
+        }
+      }
+
       console.log('✅ Session 交換成功');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '未知錯誤';
       console.error('❌ 處理回調時發生例外:', err);
       const errorUrl = new URL(`${origin}/`);
       errorUrl.searchParams.set('auth_error', 'callback_exception');
-      errorUrl.searchParams.set('error_description', err.message || '未知錯誤');
+      errorUrl.searchParams.set('error_description', message);
       return NextResponse.redirect(errorUrl.toString());
     }
   } else {
     console.warn('⚠️ 回調 URL 中沒有 code 參數');
   }
 
-  // 登入後導向；若回 Shorts，帶 shorts_view 讓前端寫入偏好（企業後台 vs 個人後台）
   const redirectTo = requestUrl.searchParams.get('redirect');
-  const loginType = requestUrl.searchParams.get('type'); // employer | talent
+  const loginType = requestUrl.searchParams.get('type');
 
   if (!redirectTo) {
     return NextResponse.redirect(`${origin}/`);

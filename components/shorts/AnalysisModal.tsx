@@ -731,7 +731,6 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                   language={language}
                   message={errorMsg}
                   isLoggedIn={isLoggedIn}
-                  reportId={lastReportId}
                   onDismiss={() => setStep('resume')}
                 />
               ) : (
