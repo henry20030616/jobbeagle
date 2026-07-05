@@ -8,6 +8,7 @@ import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { startCheckout } from '@/lib/checkout-client';
 import type { LiteReport, FullReport, ReportType, ResumeInput, UserProfile } from '@/types';
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
+import { normalizeLiteReport } from '@/lib/normalize-lite-report';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import DogLoading from '@/components/DogLoading';
@@ -162,7 +163,7 @@ export default function PreFlightPage() {
       if (data.report_type === 'full') {
         setFullReport(data.report as FullReport);
       } else {
-        setLiteReport(data.report as LiteReport);
+        setLiteReport(normalizeLiteReport(data.report as LiteReport));
       }
       await loadSession();
     } catch (e: unknown) {
@@ -341,7 +342,15 @@ export default function PreFlightPage() {
           </div>
         </div>
 
-        {liteReport && <LiteReportDashboard report={liteReport} />}
+        {liteReport && (
+          <LiteReportDashboard
+            report={liteReport}
+            onNewAnalysis={() => {
+              setLiteReport(null);
+              setFullReport(null);
+            }}
+          />
+        )}
         {fullReport && <FullReportDashboard report={fullReport} />}
       </main>
     </div>

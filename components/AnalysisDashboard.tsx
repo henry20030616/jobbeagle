@@ -109,7 +109,7 @@ const SCORE_TIERS: Record<AppLanguage, [string, string, string][]> = {
   ar: [['بيغل ماسي','توافق ممتاز: جاهز للتنفيذ','مهاراتك وخبرتك تتطابقان تقريبًا بشكل مثالي مع متطلبات الوظيفة.'],['بيغل ذهبي','توافق عالٍ: إمكانات قوية','لديك معظم المهارات الأساسية وتحتاج فقط إلى استعداد بسيط.'],['بيغل فضي','توافق متوسط: تداخل جزئي في المهارات','لديك أساس مناسب لكن عليك إبراز إمكاناتك بشكل أفضل.'],['بيغل برونزي','توافق منخفض: يُنصح بإعادة التقييم','هناك فجوة واضحة بين سيرتك الذاتية ومتطلبات الوظيفة.']],
 };
 
-const getScoreInfo = (score: number, language: AppLanguage = 'en') => {
+export const getScoreInfo = (score: number, language: AppLanguage = 'en') => {
   const tiers = SCORE_TIERS[language] ?? SCORE_TIERS['en'];
   const [level, label, description] = score >= 90 ? tiers[0] : score >= 75 ? tiers[1] : score >= 60 ? tiers[2] : tiers[3];
   const colorMap = { 0: { color: 'text-cyan-400', fill: '#22d3ee', spotColor: '#0e7490', glow: 'rgba(34,211,238,0.6)' }, 1: { color: 'text-amber-400', fill: '#fbbf24', spotColor: '#b45309', glow: 'rgba(251,191,36,0.6)' }, 2: { color: 'text-slate-300', fill: '#cbd5e1', spotColor: '#475569', glow: 'rgba(203,213,225,0.4)' }, 3: { color: 'text-orange-400', fill: '#fb923c', spotColor: '#9a3412', glow: 'rgba(251,146,60,0.4)' } } as const;

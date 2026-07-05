@@ -8,13 +8,14 @@ import DogLoading from '@/components/DogLoading';
 import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import { createClient } from '@/lib/supabase/browser';
-import { InterviewReport, LiteReport, UserInputs } from '@/types';
+import { InterviewReport, LiteReport, FullReport, UserInputs } from '@/types';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
+import { normalizeLiteReport, isLiteReport } from '@/lib/normalize-lite-report';
 
 interface ReportSummary {
   id: string;
@@ -22,7 +23,9 @@ interface ReportSummary {
   score: number | null;
   language: string;
   created_at: string;
-  report: InterviewReport;
+  report_type?: string | null;
+  report: InterviewReport | LiteReport | null;
+  report_json?: LiteReport | FullReport | InterviewReport | null;
 }
 // Maps elapsed seconds → simulated progress percentage (capped at 99 until API returns)
 const PROGRESS_SCHEDULE = [
@@ -247,7 +250,7 @@ export default function Home() {
       const supabase = createClient();
       const { data, error } = await supabase
         .from('analysis_reports')
-        .select('id, job_title, score, language, created_at, report')
+        .select('id, job_title, score, language, created_at, report_type, report, report_json')
         .order('created_at', { ascending: false })
         .limit(20);
       if (error) {
@@ -305,6 +308,11 @@ export default function Home() {
           return;
         }
 
+        if (code?.startsWith('JD_')) {
+          setError(result.error || t.analysisFailed);
+          return;
+        }
+
         setError(
           result.error
             || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗' : 'Analysis failed'),
@@ -313,7 +321,9 @@ export default function Home() {
       }
 
       if (result.report_type === 'lite' && result.report?.match_score != null) {
-        setLiteReport(result.report as LiteReport);
+        setLiteReport(normalizeLiteReport(result.report as LiteReport));
+      } else if (isLiteReport(result.report)) {
+        setLiteReport(normalizeLiteReport(result.report));
       } else {
         setReport(result.report as InterviewReport);
       }
@@ -425,7 +435,17 @@ export default function Home() {
                     return (
                       <button
                         key={item.id}
-                        onClick={() => { setReport(item.report); setShowHistory(false); }}
+                        onClick={() => {
+                          const payload = item.report_json ?? item.report;
+                          if (isLiteReport(payload)) {
+                            setLiteReport(normalizeLiteReport(payload));
+                            setReport(null);
+                          } else if (payload) {
+                            setReport(payload as InterviewReport);
+                            setLiteReport(null);
+                          }
+                          setShowHistory(false);
+                        }}
                         className="w-full text-left p-4 rounded-xl bg-slate-800/60 border border-slate-700 hover:border-indigo-500 hover:bg-slate-800 transition-all group"
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -522,18 +542,24 @@ export default function Home() {
             <FooterSection language={language} />
           </div>
         ) : (
-          <div className="animate-fade-in">
-            <button 
-              onClick={() => { setReport(null); setLiteReport(null); }} 
-              className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" /> 
-              {t.backToHome}
-            </button>
+          <div className="animate-fade-in max-w-6xl mx-auto">
             {liteReport ? (
-              <LiteReportDashboard report={liteReport} />
+              <LiteReportDashboard
+                report={liteReport}
+                language={language}
+                onNewAnalysis={() => { setReport(null); setLiteReport(null); }}
+              />
             ) : report ? (
-              <AnalysisDashboard data={report} language={language} />
+              <>
+                <button
+                  onClick={() => { setReport(null); setLiteReport(null); }}
+                  className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
+                  {t.backToHome}
+                </button>
+                <AnalysisDashboard data={report} language={language} />
+              </>
             ) : null}
           </div>
         )}

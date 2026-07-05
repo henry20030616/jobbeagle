@@ -28,10 +28,12 @@ import {
   executeLiteAnalysis,
   executeFullAnalysis,
 } from '@/lib/gemini-analyze';
+import { normalizeLiteReport, isEnrichedLiteReport } from '@/lib/normalize-lite-report';
 import { resolveResumeForAnalysis } from '@/lib/resume-parser';
 import { rateLimitAnalyze } from '@/lib/redis';
 import { tryActivateReferralMilestone } from '@/lib/referrals';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
+import { validateJobDescription } from '@/lib/validate-job-description';
 
 export const maxDuration = 60;
 
@@ -152,6 +154,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Resume is required.', code: 'MISSING_RESUME' }, { status: 400 });
     }
 
+    const jdCheck = validateJobDescription(input.raw_jd, body.language || 'en');
+    if (!jdCheck.valid) {
+      return NextResponse.json(
+        { error: jdCheck.message, code: jdCheck.code || 'INVALID_JD' },
+        { status: 400 },
+      );
+    }
+
     if (
       input.raw_jd.length > MAX_JD_CHARS
       || (!input.pdf_inline && input.resume_text.length > MAX_RESUME_CHARS)
@@ -182,13 +192,21 @@ export async function POST(request: NextRequest) {
       reportType,
     );
     if (cached?.report_json) {
-      return NextResponse.json({
-        report: cached.report_json,
-        report_type: reportType,
-        report_id: cached.id,
-        cached: true,
-        model_used: 'cache',
-      });
+      const useCache =
+        reportType !== 'lite' || isEnrichedLiteReport(cached.report_json);
+      if (useCache) {
+        const cachedReport =
+          reportType === 'lite'
+            ? normalizeLiteReport(cached.report_json as LiteReport)
+            : cached.report_json;
+        return NextResponse.json({
+          report: cachedReport,
+          report_type: reportType,
+          report_id: cached.id,
+          cached: true,
+          model_used: 'cache',
+        });
+      }
     }
 
     if (!canAffordReport(profile, reportType)) {

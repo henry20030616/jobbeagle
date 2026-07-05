@@ -6,7 +6,8 @@ import { UserInputs, ResumeInput, InterviewReport } from '@/types';
 import { FileText, Upload, X, Sparkles, Zap, Globe, AlertTriangle, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp } from 'lucide-react';
 import { BeagleIcon } from './AnalysisDashboard';
 import { createClient } from '@/lib/supabase/browser';
-import { AppLanguage } from '@/lib/language-context';
+import { validateJobDescription } from '@/lib/validate-job-description';
+import type { AppLanguage } from '@/lib/language-context';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -232,45 +233,15 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     }
   };
 
-  const validateJobDescription = (text: string): string | null => {
-    const trimmed = text.trim();
-    const lang = currentLanguage;
-
-    // URLs are always valid — let the API handle them
-    if (/^https?:\/\/[^\s]+$/.test(trimmed)) return null;
-
-    // 1. Minimum length
-    if (trimmed.length < 40) {
-      return lang === 'zh-TW' || lang === 'zh-CN'
-        ? '⚠️ 職缺描述太短，請貼上完整的職缺內容（至少 40 字元）。'
-        : '⚠️ Job description is too short. Please paste the complete job posting (at least 40 characters).';
-    }
-
-    const noSpace = trimmed.replace(/\s+/g, '');
-
-    // 2. Same character repeating 10+ times in a row (e.g. "aaaaaaaaaa")
-    if (/(.)\1{9,}/.test(noSpace)) {
-      return lang === 'zh-TW' || lang === 'zh-CN'
-        ? '⚠️ 偵測到無效內容（重複字元），請貼上真實的職缺描述。'
-        : '⚠️ Invalid content detected (repeating characters). Please paste a real job description.';
-    }
-
-    // 3. Meaningful character ratio: letters/CJK chars should be ≥ 15% of total
-    //    (lowered from 20% to accommodate LinkedIn/104 formatting with bullets, symbols, whitespace)
-    const meaningful = (trimmed.match(/[a-zA-Z\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
-    if (meaningful / trimmed.length < 0.15) {
-      return lang === 'zh-TW' || lang === 'zh-CN'
-        ? '⚠️ 職缺描述中幾乎沒有有效文字（主要為符號或數字），請確認是否已貼上正確內容。'
-        : '⚠️ Job description contains very little readable text (mostly symbols or numbers). Please check the content.';
-    }
-
-    return null;
+  const validateJobDescriptionLocal = (text: string): string | null => {
+    const result = validateJobDescription(text, currentLanguage);
+    return result.valid ? null : result.message;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationError = validateJobDescription(jobDescription);
+    const validationError = validateJobDescriptionLocal(jobDescription);
     if (validationError) {
       setJdError(validationError);
       return;
@@ -562,6 +533,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                   onChange={(e) => {
                     setJobDescription(e.target.value);
                     if (jdError) setJdError(null);
+                  }}
+                  onBlur={() => {
+                    const err = validateJobDescriptionLocal(jobDescription);
+                    if (err) setJdError(err);
                   }}
                   />
                   {inputType === 'url' && (

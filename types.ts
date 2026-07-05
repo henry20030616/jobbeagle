@@ -148,13 +148,37 @@ export interface Radford2026CompensationMatrix {
   tier_75th_high: string;
 }
 
-/** Lite Report — no web search, 3-second TTV snapshot */
+export interface LiteMatchPoint {
+  point: string;
+  description: string;
+}
+
+export interface LiteSkillGap {
+  gap: string;
+  description: string;
+}
+
+export type HardRequirementStatus = 'met' | 'partial' | 'missing';
+
+export interface LiteHardRequirement {
+  requirement: string;
+  status: HardRequirementStatus;
+}
+
+/** Lite Report — JD + resume only (no web search), enriched snapshot */
 export interface LiteReport {
   match_score: number;
   dog_breed_archetype: string;
   one_sentence_sharp_critique: string;
   flsa_status: FlsaStatus;
   radford_2026_compensation_matrix: Radford2026CompensationMatrix;
+  job_title: string;
+  company_name: string;
+  recruiter_verdict: string;
+  matching_strengths: LiteMatchPoint[];
+  critical_gaps: LiteSkillGap[];
+  hard_requirements_checklist: LiteHardRequirement[];
+  interview_starters: string[];
 }
 
 /** Full Report — targeted grounding + STAR interview bank */

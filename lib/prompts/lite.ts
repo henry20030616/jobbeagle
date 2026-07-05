@@ -1,13 +1,19 @@
 /** Lite Report system prompt — prompt-cache friendly, no web search */
 
-export const LITE_SYSTEM_PROMPT = `You are a ruthless, world-class executive recruiter in the US tech market. Analyze the provided Resume and Job Description (JD). Conduct advanced semantic reasoning. Do not be polite; do not use generic filler words. You must judge the match based on rigid corporate barriers and candidate deficiencies. Output strictly in the specified JSON schema format.
+export const LITE_SYSTEM_PROMPT = `You are a ruthless, world-class executive recruiter in the US tech market. Analyze the provided Resume and Job Description (JD). Conduct advanced semantic reasoning. Do not be polite; do not use generic filler words. You must judge the match based on rigid corporate barriers and candidate deficiencies.
 
-For compensation calculation, you must utilize your built-in memory of the Radford 2026 Compensation Benchmark Guide and reverse-engineer the real market 25th, 50th, and 75th percentiles based on the title and tech stack. Assess the FLSA exemption status based on the structural responsibilities.
+Extract job_title and company_name from the JD when present; otherwise infer reasonable labels from context.
 
-Scoring calibration (strict):
-- Most real candidates land 45–72; 85+ is rare.
-- Be brutally specific in one_sentence_sharp_critique — reference concrete JD vs resume gaps.
-- dog_breed_archetype: visual characterization (e.g., "German Shepherd" for strict corporate execution).
+For compensation, use your built-in Radford 2026 Compensation Benchmark memory — output real market 25th, 50th, 75th percentiles for the title and tech stack. Assess FLSA exemption from structural responsibilities.
+
+Deliver a substantive Lite report (not a minimal stub):
+- recruiter_verdict: 2–3 dense sentences — hiring manager POV, cite specific JD vs resume evidence.
+- matching_strengths: 3–4 items with concrete point + description (resume evidence).
+- critical_gaps: 3–4 items with gap + description (JD requirements the resume fails).
+- hard_requirements_checklist: 4–6 must-have JD requirements with status met | partial | missing.
+- interview_starters: exactly 3 role-specific questions a recruiter would ask this candidate (derived from gaps in the resume vs JD only — no web search).
+
+Scoring (strict): most candidates 45–72; 85+ rare. one_sentence_sharp_critique must name the single worst mismatch. dog_breed_archetype: visual characterization (e.g. Border Collie for analytical execution).
 
 Output valid JSON only. No markdown fences.`;
 
@@ -15,15 +21,49 @@ export const LITE_JSON_SCHEMA = {
   type: 'object',
   properties: {
     match_score: { type: 'integer', minimum: 0, maximum: 100 },
-    dog_breed_archetype: {
-      type: 'string',
-      description:
-        'Visual characterization match archetype, e.g., German Shepherd for strict corporate execution.',
+    job_title: { type: 'string' },
+    company_name: { type: 'string' },
+    dog_breed_archetype: { type: 'string' },
+    recruiter_verdict: { type: 'string' },
+    one_sentence_sharp_critique: { type: 'string' },
+    matching_strengths: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          point: { type: 'string' },
+          description: { type: 'string' },
+        },
+        required: ['point', 'description'],
+      },
     },
-    one_sentence_sharp_critique: {
-      type: 'string',
-      description:
-        'Brutal, high-density single sentence pointing out the exact mismatch gap based on defensive screening logic.',
+    critical_gaps: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          gap: { type: 'string' },
+          description: { type: 'string' },
+        },
+        required: ['gap', 'description'],
+      },
+    },
+    hard_requirements_checklist: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          requirement: { type: 'string' },
+          status: { type: 'string', enum: ['met', 'partial', 'missing'] },
+        },
+        required: ['requirement', 'status'],
+      },
+    },
+    interview_starters: {
+      type: 'array',
+      items: { type: 'string' },
+      minItems: 3,
+      maxItems: 3,
     },
     flsa_status: {
       type: 'string',
@@ -45,8 +85,15 @@ export const LITE_JSON_SCHEMA = {
   },
   required: [
     'match_score',
+    'job_title',
+    'company_name',
     'dog_breed_archetype',
+    'recruiter_verdict',
     'one_sentence_sharp_critique',
+    'matching_strengths',
+    'critical_gaps',
+    'hard_requirements_checklist',
+    'interview_starters',
     'flsa_status',
     'radford_2026_compensation_matrix',
   ],

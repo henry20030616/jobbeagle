@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import type { LiteReport, FullReport } from '@/types';
+import { normalizeLiteReport } from '@/lib/normalize-lite-report';
 import {
   GEMINI_LITE_MODEL,
   GEMINI_FULL_MODEL,
@@ -96,14 +97,57 @@ export async function executeLiteAnalysis(
     config: {
       systemInstruction: LITE_SYSTEM_PROMPT,
       temperature: 0.3,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 3072,
       responseMimeType: 'application/json',
       responseSchema: {
         type: Type.OBJECT,
         properties: {
           match_score: { type: Type.INTEGER },
+          job_title: { type: Type.STRING },
+          company_name: { type: Type.STRING },
           dog_breed_archetype: { type: Type.STRING },
+          recruiter_verdict: { type: Type.STRING },
           one_sentence_sharp_critique: { type: Type.STRING },
+          matching_strengths: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                point: { type: Type.STRING },
+                description: { type: Type.STRING },
+              },
+              required: ['point', 'description'],
+            },
+          },
+          critical_gaps: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                gap: { type: Type.STRING },
+                description: { type: Type.STRING },
+              },
+              required: ['gap', 'description'],
+            },
+          },
+          hard_requirements_checklist: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                requirement: { type: Type.STRING },
+                status: {
+                  type: Type.STRING,
+                  enum: ['met', 'partial', 'missing'],
+                },
+              },
+              required: ['requirement', 'status'],
+            },
+          },
+          interview_starters: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+          },
           flsa_status: {
             type: Type.STRING,
             enum: [
@@ -124,8 +168,15 @@ export async function executeLiteAnalysis(
         },
         required: [
           'match_score',
+          'job_title',
+          'company_name',
           'dog_breed_archetype',
+          'recruiter_verdict',
           'one_sentence_sharp_critique',
+          'matching_strengths',
+          'critical_gaps',
+          'hard_requirements_checklist',
+          'interview_starters',
           'flsa_status',
           'radford_2026_compensation_matrix',
         ],
@@ -136,8 +187,7 @@ export async function executeLiteAnalysis(
   const text = response.text;
   if (!text) throw new Error('Lite analysis returned empty response');
 
-  const report = parseJsonResponse<LiteReport>(text);
-  report.match_score = Math.max(0, Math.min(100, Math.round(report.match_score)));
+  const report = normalizeLiteReport(parseJsonResponse<LiteReport>(text));
 
   return { report, model };
 }
