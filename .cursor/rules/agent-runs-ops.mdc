@@ -1,0 +1,41 @@
+---
+description: Agent 代跑所有可自動化的部署與運維；使用者只做瀏覽器後台
+alwaysApply: true
+---
+
+# Agent 代跑運維（使用者不開終端機）
+
+## 原則
+
+- **能代跑的一律由 Agent 在 Cursor 內執行**（Shell、腳本、API、git push），不要叫使用者「開終端機」或分段手動做。
+- 使用者**只做** Agent 無法代做的 **瀏覽器一次性操作**（見下方清單），且應**一次列完**，不要分多輪催。
+- 參考 [`DEPLOY_CHECKLIST.md`](../../DEPLOY_CHECKLIST.md)、[`scripts/ops/`](../../scripts/ops/)。
+
+## Agent 必須代跑
+
+| 類別 | 範例 |
+|------|------|
+| Git / 部署 | `git add/commit/push`、`npm run build`、觸發 Vercel 部署 |
+| 環境同步 | 從 `.env.local` 同步到 Vercel（`scripts/ops/sync-vercel-env.sh`） |
+| Supabase 驗證 | `scripts/ops/verify-supabase.mjs`、能跑則跑 migration SQL |
+| 付款/分析驗收 | `curl` 測 `/api/checkout`、`/api/profile` |
+| 依賴 | `npm install`、`npx vercel`（需網路時主動申請權限） |
+
+執行前讀取 `.env.local`（**勿 commit、勿在對話貼出 secret**）。
+
+## 僅使用者瀏覽器可做（Agent 一次說清）
+
+1. **Vercel / Google OAuth** 首次登入授權（若 `vercel login` 需點連結）
+2. **Lemon Squeezy** 後台：建產品、Webhook（若 API 未建）、複製 Variant ID → 請使用者貼進 `.env.local` 或 Vercel
+3. **Supabase SQL Editor** 僅當無 `DATABASE_URL` 且 CLI 無法執行 migration 時
+
+## 結束時交付
+
+- 已完成項（簡短列表）
+- **若仍缺**：僅列「你要在網頁點的 1–3 件事」+ 連結
+- 卡關：請使用者貼**完整錯誤**，不要假設已做完
+
+## 與其他 rule 的關係
+
+- **git push**：有意義的程式變更後由 Agent push（見 `git-github-vercel-always.mdc`）。
+- **commit 衝突**：若使用者曾說「規則衝突先問我」，以使用者當次明確指示為準；預設仍由 Agent 提交並 push。

@@ -1,8 +1,13 @@
 # JobBeagle 上線部署清單（一次性完成）
 
-> **用法：** 照 **Step 0 → Step 5** 順序做完即可，不必分次回報。  
-> 任一步失敗 → 把**完整錯誤訊息**（或截圖）貼給 Cursor，不要自己猜。  
-> 程式碼已 push 到 `main`；Vercel 會自動部署，但 **env / DB / 付款後台** 必須你手動設定後才會全通。
+> **用法：** **Cursor Agent 代跑**所有可自動化步驟（見 `.cursor/rules/agent-runs-ops.mdc`）。  
+> 你**不必開終端機**；只需在 Agent 無法代做時完成瀏覽器後台操作（OAuth、Lemon Squeezy 建產品等）。  
+> 任一步失敗 → 把**完整錯誤訊息**貼給 Cursor。  
+> 程式碼 push 到 `main` 後 Vercel 會自動部署；**env / DB / 付款後台**須設定後才會全通。
+
+**Agent 代跑腳本：**
+- `node scripts/ops/verify-supabase.mjs` — 確認 profiles 表
+- `bash scripts/ops/sync-vercel-env.sh` — 從 `.env.local` 同步 Vercel Production env（需 `vercel login`）
 
 **預估時間：** 30–45 分鐘（含 Lemon Squeezy 建產品）  
 **你的 Supabase 專案：** `yvzorfeespljbitxxufo`  
