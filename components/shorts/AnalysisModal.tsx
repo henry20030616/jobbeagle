@@ -4,11 +4,15 @@ import { AppLanguage } from '@/lib/language-context';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   X, Upload, FileText, Sparkles, CheckCircle,
-  Loader2, ChevronDown, ChevronUp, Clock, BookmarkPlus, CheckCircle2
+  Loader2, Clock, CheckCircle2
 } from 'lucide-react';
-import { ResumeInput, InterviewReport } from '@/types';
+import { ResumeInput, LiteReport, FullReport, UserProfile } from '@/types';
 import { createClient } from '@/lib/supabase/browser';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
+import LiteReportDashboard from '@/components/LiteReportDashboard';
+import FullReportDashboard from '@/components/FullReportDashboard';
+import { getDeviceFingerprint } from '@/lib/device-fingerprint';
+import { normalizeLiteReport } from '@/lib/normalize-lite-report';
 
 interface SavedResume {
   id: string;
@@ -105,304 +109,6 @@ function getStageLabel(progress: number, lang: AppLanguage = 'en'): string {
   return stages[0].label;
 }
 
-// ─── Shared section wrapper ───────────────────────────────────────────────────
-
-const Section: React.FC<{
-  id: string;
-  title: string;
-  preview: React.ReactNode;
-  expanded: string | null;
-  onToggle: (id: string) => void;
-  children: React.ReactNode;
-}> = ({ id, title, preview, expanded, onToggle, children }) => {
-  const isOpen = expanded === id;
-  return (
-    <div className="bg-slate-800 rounded-2xl overflow-hidden">
-      <button onClick={() => onToggle(id)} className="w-full flex items-start justify-between px-4 py-3 gap-2 text-left">
-        <div className="flex-1 min-w-0">
-          <div className="font-bold text-white text-sm">{title}</div>
-          {!isOpen && (
-            <div className="text-xs text-gray-500 mt-1 line-clamp-1">{preview}</div>
-          )}
-        </div>
-        {isOpen ? <ChevronUp size={15} className="text-gray-400 shrink-0 mt-0.5" /> : <ChevronDown size={15} className="text-gray-400 shrink-0 mt-0.5" />}
-      </button>
-      {isOpen && <div className="px-4 pb-4">{children}</div>}
-    </div>
-  );
-};
-
-// ─── Full-data mobile report ──────────────────────────────────────────────────
-
-const CompactReport: React.FC<{ report: InterviewReport }> = ({ report }) => {
-  const { match_analysis, salary_analysis, reviews_analysis, interview_preparation, basic_analysis, market_analysis } = report;
-  const [expanded, setExpanded] = useState<string | null>('match');
-
-  const score = match_analysis.score;
-  const scoreColor =
-    score >= 90 ? '#22d3ee' :
-    score >= 75 ? '#fbbf24' :
-    score >= 60 ? '#cbd5e1' : '#fb923c';
-  const scoreLabel =
-    match_analysis.dog_type ||
-    (score >= 90 ? '頂級契合' :
-    score >= 75 ? '高度契合' :
-    score >= 60 ? '中度契合' : '低度契合');
-
-  const circumference = 2 * Math.PI * 32;
-  const toggle = (s: string) => setExpanded(prev => prev === s ? null : s);
-
-  return (
-    <div className="space-y-3">
-      {/* ── Score Hero ─────────────────────────────────── */}
-      <div className="bg-slate-800 rounded-2xl p-4 flex items-center gap-4">
-        <div className="relative w-20 h-20 shrink-0">
-          <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">
-            <circle cx="40" cy="40" r="32" fill="none" stroke="#1e293b" strokeWidth="8" />
-            <circle
-              cx="40" cy="40" r="32" fill="none"
-              stroke={scoreColor} strokeWidth="8"
-              strokeDasharray={circumference}
-              strokeDashoffset={circumference * (1 - score / 100)}
-              strokeLinecap="round"
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-xl font-black text-white">{score}</span>
-          </div>
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-base font-bold" style={{ color: scoreColor }}>{scoreLabel}</div>
-          <div className="text-xs text-gray-400 mt-0.5 truncate">{basic_analysis.job_title}</div>
-          {match_analysis.recruiter_insight && (
-            <div className="text-xs text-gray-300 mt-2 leading-relaxed line-clamp-4 border border-slate-600/60 rounded-lg p-2 bg-slate-800/50">
-              {match_analysis.recruiter_insight}
-            </div>
-          )}
-          {basic_analysis.job_summary && (
-            <div className="text-xs text-gray-500 mt-1 line-clamp-2">{basic_analysis.job_summary}</div>
-          )}
-        </div>
-      </div>
-
-      {/* ── 1. 核心優勢與缺口（全量） ─────────────────── */}
-      <Section
-        id="match" title="✅ 核心優勢與缺口"
-        preview={match_analysis.matching_points[0]?.point}
-        expanded={expanded} onToggle={toggle}
-      >
-        {match_analysis.matching_points.length > 0 && (
-          <div className="mb-3">
-            <div className="text-xs font-bold text-green-400 mb-2 uppercase tracking-wide">你的優勢</div>
-            <div className="space-y-2.5">
-              {match_analysis.matching_points.map((p, i) => (
-                <div key={i} className="flex gap-2">
-                  <span className="text-green-400 text-xs mt-0.5 shrink-0 font-bold">✓</span>
-                  <div>
-                    <div className="text-xs font-semibold text-green-300">{p.point}</div>
-                    {p.description && <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">{p.description}</div>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        {match_analysis.skill_gaps.length > 0 && (
-          <div>
-            <div className="text-xs font-bold text-amber-400 mb-2 uppercase tracking-wide">待補強</div>
-            <div className="space-y-2.5">
-              {match_analysis.skill_gaps.map((g, i) => (
-                <div key={i} className="flex gap-2">
-                  <span className="text-amber-400 text-xs mt-0.5 shrink-0 font-bold">!</span>
-                  <div>
-                    <div className="text-xs font-semibold text-amber-300">{g.gap}</div>
-                    {g.description && <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">{g.description}</div>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </Section>
-
-      {/* ── 2. 薪資情報（全量） ────────────────────────── */}
-      <Section
-        id="salary" title="💰 薪資情報"
-        preview={salary_analysis.estimated_range}
-        expanded={expanded} onToggle={toggle}
-      >
-        <div className="text-xl font-black text-amber-400 mb-1">{salary_analysis.estimated_range}</div>
-        {salary_analysis.market_position && (
-          <div className="text-xs text-gray-400 mb-3 leading-relaxed">{salary_analysis.market_position}</div>
-        )}
-        {salary_analysis.rationale && (
-          <div className="bg-slate-700/50 rounded-lg p-3 mb-3">
-            <div className="text-xs font-bold text-gray-300 mb-1">推估邏輯</div>
-            <div className="text-xs text-gray-400 leading-relaxed">{salary_analysis.rationale}</div>
-          </div>
-        )}
-        {salary_analysis.negotiation_tip && (
-          <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-3">
-            <div className="text-xs font-bold text-amber-400 mb-1">談判策略</div>
-            <div className="text-xs text-amber-300 leading-relaxed">{salary_analysis.negotiation_tip}</div>
-          </div>
-        )}
-      </Section>
-
-      {/* ── 3. 公司評價（全量，原本缺失） ────────────── */}
-      {(reviews_analysis?.company_reviews || reviews_analysis?.job_reviews) && (
-        <Section
-          id="reviews" title="🏢 公司評價與職場生態"
-          preview={reviews_analysis.company_reviews?.summary}
-          expanded={expanded} onToggle={toggle}
-        >
-          {reviews_analysis.company_reviews?.summary && (
-            <div className="mb-4">
-              <div className="text-xs text-gray-300 leading-relaxed mb-2">{reviews_analysis.company_reviews.summary}</div>
-              {reviews_analysis.company_reviews.pros?.length > 0 && (
-                <div className="mb-2">
-                  <div className="text-xs font-bold text-green-400 mb-1">優點</div>
-                  {reviews_analysis.company_reviews.pros.map((p, i) => (
-                    <div key={i} className="flex gap-1.5 mb-1">
-                      <span className="text-green-400 text-xs shrink-0">✓</span>
-                      <span className="text-xs text-gray-400 leading-relaxed">{p}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {reviews_analysis.company_reviews.cons?.length > 0 && (
-                <div>
-                  <div className="text-xs font-bold text-red-400 mb-1">缺點</div>
-                  {reviews_analysis.company_reviews.cons.map((c, i) => (
-                    <div key={i} className="flex gap-1.5 mb-1">
-                      <span className="text-red-400 text-xs shrink-0">✗</span>
-                      <span className="text-xs text-gray-400 leading-relaxed">{c}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {reviews_analysis.job_reviews?.summary && (
-            <div className="border-t border-slate-700 pt-3 mt-1">
-              <div className="text-xs font-bold text-gray-300 mb-1">職位評價</div>
-              <div className="text-xs text-gray-400 leading-relaxed mb-2">{reviews_analysis.job_reviews.summary}</div>
-              {reviews_analysis.job_reviews.pros?.length > 0 && (
-                <div className="mb-2">
-                  {reviews_analysis.job_reviews.pros.map((p, i) => (
-                    <div key={i} className="flex gap-1.5 mb-1">
-                      <span className="text-green-400 text-xs shrink-0">✓</span>
-                      <span className="text-xs text-gray-400 leading-relaxed">{p}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {reviews_analysis.job_reviews.cons?.length > 0 && (
-                <div>
-                  {reviews_analysis.job_reviews.cons.map((c, i) => (
-                    <div key={i} className="flex gap-1.5 mb-1">
-                      <span className="text-red-400 text-xs shrink-0">✗</span>
-                      <span className="text-xs text-gray-400 leading-relaxed">{c}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </Section>
-      )}
-
-      {/* ── 4. 公司與產業分析（全量，原本缺失） ──────── */}
-      {(basic_analysis.company_overview || market_analysis?.industry_trends) && (
-        <Section
-          id="market" title="🏭 公司介紹與產業分析"
-          preview={basic_analysis.company_overview}
-          expanded={expanded} onToggle={toggle}
-        >
-          {basic_analysis.company_overview && (
-            <div className="mb-3">
-              <div className="text-xs font-bold text-gray-300 mb-1">公司概況</div>
-              <div className="text-xs text-gray-400 leading-relaxed">{basic_analysis.company_overview}</div>
-            </div>
-          )}
-          {basic_analysis.business_scope && (
-            <div className="mb-3">
-              <div className="text-xs font-bold text-gray-300 mb-1">業務範疇</div>
-              <div className="text-xs text-gray-400 leading-relaxed">{basic_analysis.business_scope}</div>
-            </div>
-          )}
-          {market_analysis?.industry_trends && (
-            <div className="mb-3 border-t border-slate-700 pt-3">
-              <div className="text-xs font-bold text-gray-300 mb-1">產業趨勢</div>
-              <div className="text-xs text-gray-400 leading-relaxed">{market_analysis.industry_trends}</div>
-            </div>
-          )}
-          {market_analysis?.key_advantages?.length > 0 && (
-            <div className="mb-3">
-              <div className="text-xs font-bold text-cyan-400 mb-1">企業核心護城河</div>
-              {market_analysis.key_advantages.map((a, i) => (
-                <div key={i} className="mb-2">
-                  <div className="text-xs font-semibold text-white">{a.point}</div>
-                  {a.description && <div className="text-xs text-gray-500 leading-relaxed">{a.description}</div>}
-                </div>
-              ))}
-            </div>
-          )}
-          {market_analysis?.potential_risks?.length > 0 && (
-            <div>
-              <div className="text-xs font-bold text-red-400 mb-1">長期戰略風險</div>
-              {market_analysis.potential_risks.map((r, i) => (
-                <div key={i} className="mb-2">
-                  <div className="text-xs font-semibold text-red-300">{r.point}</div>
-                  {r.description && <div className="text-xs text-gray-500 leading-relaxed">{r.description}</div>}
-                </div>
-              ))}
-            </div>
-          )}
-        </Section>
-      )}
-
-      {/* ── 5. 面試考題預測（全量） ────────────────────── */}
-      <Section
-        id="interview" title="🎯 面試考題預測"
-        preview={interview_preparation.questions[0]?.question}
-        expanded={expanded} onToggle={toggle}
-      >
-        <div className="space-y-4">
-          {interview_preparation.questions.map((q, i) => (
-            <div key={i} className="border-l-2 border-violet-500 pl-3">
-              <div className="text-xs font-semibold text-white leading-relaxed">{q.question}</div>
-              {q.source && <div className="text-xs text-gray-600 mt-0.5">{q.source}</div>}
-              {q.answer_guide && (
-                <div className="text-xs text-gray-400 mt-1.5 leading-relaxed bg-slate-700/40 rounded-lg p-2">{q.answer_guide}</div>
-              )}
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── 6. 真實面試題目（全量） ──────────────────── */}
-      {reviews_analysis?.real_interview_questions?.length > 0 && (
-        <Section
-          id="real" title="📝 真實面試題目"
-          preview={reviews_analysis.real_interview_questions[0]?.question}
-          expanded={expanded} onToggle={toggle}
-        >
-          <div className="space-y-2">
-            {reviews_analysis.real_interview_questions.map((q, i) => (
-              <div key={i} className="bg-slate-700/50 rounded-lg p-2.5">
-                <div className="text-xs font-semibold text-white leading-relaxed">{q.question}</div>
-                {q.year && <div className="text-xs text-gray-500 mt-0.5">{q.year}</div>}
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
-    </div>
-  );
-};
-
-// ─── Main Modal ───────────────────────────────────────────────────────────────
 
 const AnalysisModal: React.FC<AnalysisModalProps> = ({
   isOpen, onClose, jobTitle, companyName, location, salary, jobDescription, language = 'en',
@@ -413,15 +119,18 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   const [analyzedResumeId, setAnalyzedResumeId] = useState<string | null>(null);
   const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoadingResumes, setIsLoadingResumes] = useState(false);
-  const [report, setReport] = useState<InterviewReport | null>(null);
+  const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
+  const [fullReport, setFullReport] = useState<FullReport | null>(null);
+  const [reportType, setReportType] = useState<'lite' | 'full'>('lite');
   const [errorMsg, setErrorMsg] = useState('');
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [lastReportId, setLastReportId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [stageLabel, setStageLabel] = useState('');
   const [elapsed, setElapsed] = useState(0);
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'need_login'>('idle');
+  const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -429,7 +138,9 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     setStep('resume');
-    setReport(null);
+    setLiteReport(null);
+    setFullReport(null);
+    setReportType('lite');
     setResume(null);
     setAnalyzedResumeId(null);
     setErrorMsg('');
@@ -446,6 +157,11 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
       if (user) {
+        const profileRes = await fetch('/api/profile');
+        if (profileRes.ok) {
+          const data = await profileRes.json();
+          setUserProfile(data.profile);
+        }
         const { data } = await supabase
           .from('resume_history')
           .select('id, type, content, mime_type, file_name, created_at')
@@ -496,59 +212,63 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   };
 
   const handleAnalyze = async (selectedResume: ResumeInput, savedResumeId?: string) => {
+    if (!isLoggedIn) {
+      setErrorCode('AUTH_REQUIRED');
+      setErrorMsg(
+        language === 'zh-TW' || language === 'zh-CN'
+          ? '請先 Google 登入後再分析'
+          : 'Please sign in with Google first',
+      );
+      setStep('error');
+      return;
+    }
+
     setAnalyzedResumeId(savedResumeId ?? null);
     setStep('analyzing');
     startProgress();
     try {
-      const jdText = `${jobTitle} at ${companyName}\n地點：${location}${salary ? `\n薪資：${salary}` : ''}\n\n${jobDescription}`;
+      const jdText = `${jobTitle} at ${companyName}\nLocation: ${location}${salary ? `\nSalary: ${salary}` : ''}\n\n${jobDescription}`;
+      const fingerprint = await getDeviceFingerprint();
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobDescription: jdText, resume: selectedResume, language }),
+        body: JSON.stringify({
+          report_type: reportType,
+          jobDescription: jdText,
+          resume: selectedResume,
+          language,
+          device_fingerprint: fingerprint,
+        }),
       });
       const result = await res.json();
       if (!res.ok) {
-        const code = result.errorCode as string | undefined;
+        const code = (result.code || result.errorCode) as string | undefined;
         setErrorCode(code ?? null);
-        setErrorMsg(result.error || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗，請稍後再試' : 'Analysis failed, please try again'));
+        setErrorMsg(
+          result.error
+            || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗，請稍後再試' : 'Analysis failed, please try again'),
+        );
         setStep('error');
         return;
       }
-      setReport(result.report);
-      if (result.reportId) setLastReportId(result.reportId);
+      if (result.report_type === 'full') {
+        setFullReport(result.report as FullReport);
+        setLiteReport(null);
+      } else {
+        setLiteReport(normalizeLiteReport(result.report as LiteReport));
+        setFullReport(null);
+      }
+      if (result.report_id) {
+        setLastReportId(result.report_id);
+        setSaveState('saved');
+      }
       setStep('result');
-    } catch (err: any) {
-      setErrorMsg(err.message || '分析失敗，請稍後再試');
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : '分析失敗，請稍後再試');
       setStep('error');
     } finally {
       stopProgress();
       setProgress(0);
-    }
-  };
-
-  const handleSaveReport = async () => {
-    if (!report) return;
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setSaveState('need_login');
-      setTimeout(() => setSaveState('idle'), 3000);
-      return;
-    }
-    setSaveState('saving');
-    try {
-      await supabase.from('analysis_reports').insert({
-        user_id: user.id,
-        job_title: report.basic_analysis.job_title || jobTitle,
-        job_description: jobDescription,
-        resume_file_name: 'shorts',
-        resume_type: 'text',
-        analysis_data: report,
-        content: JSON.stringify(report),
-      });
-      setSaveState('saved');
-    } catch {
-      setSaveState('idle');
     }
   };
 
@@ -619,10 +339,39 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                   </div>
                 </div>
               ) : !isLoggedIn ? (
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 text-xs text-blue-300 mb-1">
-                  💡 {(language === 'zh-TW' || language === 'zh-CN') ? '登入後可儲存履歷，下次免上傳直接分析' : 'Sign in to save your resume for one-click analysis next time'}
+                <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-200 mb-1">
+                  {(language === 'zh-TW' || language === 'zh-CN')
+                    ? '請先 Google 登入才能分析（註冊送 3 次 Lite）'
+                    : 'Sign in with Google to analyze (3 free Lite credits on signup)'}
                 </div>
               ) : null}
+
+              {isLoggedIn && userProfile && userProfile.available_full_credits > 0 && (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setReportType('lite')}
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold border ${
+                      reportType === 'lite'
+                        ? 'bg-indigo-600 border-indigo-500 text-white'
+                        : 'border-slate-600 text-slate-400'
+                    }`}
+                  >
+                    Lite
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReportType('full')}
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold border ${
+                      reportType === 'full'
+                        ? 'bg-violet-600 border-violet-500 text-white'
+                        : 'border-slate-600 text-slate-400'
+                    }`}
+                  >
+                    Full · Live Intel
+                  </button>
+                </div>
+              )}
 
               {/* Upload Area */}
               <div
@@ -685,9 +434,12 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           )}
 
           {/* ── STEP: result ─────────────────────────────── */}
-          {step === 'result' && report && (
+          {step === 'result' && (liteReport || fullReport) && (
             <div>
-              <CompactReport report={report} />
+              {liteReport && (
+                <LiteReportDashboard report={liteReport} language={language} embedded />
+              )}
+              {fullReport && <FullReportDashboard report={fullReport} embedded />}
               <div className="mt-4 mb-2 space-y-2">
                 {canApply && analyzedResumeId && onApplyWithResume && (
                   <button
@@ -699,25 +451,11 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                     {(language === 'zh-TW' || language === 'zh-CN') ? '用此履歷一鍵申請' : 'Apply with this resume'}
                   </button>
                 )}
-                {saveState === 'need_login' ? (
-                  <div className="w-full bg-blue-900/30 border border-blue-500/40 text-blue-300 text-xs font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
-                    💡 {(language === 'zh-TW' || language === 'zh-CN') ? '請先登入才能儲存報告' : 'Please sign in to save this report'}
-                  </div>
-                ) : saveState === 'saved' ? (
+                {saveState === 'saved' && (
                   <div className="w-full bg-green-900/30 border border-green-500/40 text-green-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
-                    <CheckCircle2 size={15} /> {(language === 'zh-TW' || language === 'zh-CN') ? '報告已儲存' : 'Report saved'}
+                    <CheckCircle2 size={15} />
+                    {(language === 'zh-TW' || language === 'zh-CN') ? '報告已自動儲存至雲端' : 'Report auto-saved to your account'}
                   </div>
-                ) : (
-                  <button
-                    onClick={handleSaveReport}
-                    disabled={saveState === 'saving'}
-                    className="w-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-gray-300 text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-                  >
-                    {saveState === 'saving'
-                      ? <><Loader2 size={15} className="animate-spin" /> {(language === 'zh-TW' || language === 'zh-CN') ? '儲存中…' : 'Saving…'}</>
-                      : <><BookmarkPlus size={15} /> {(language === 'zh-TW' || language === 'zh-CN') ? '儲存報告' : 'Save Report'}</>
-                    }
-                  </button>
                 )}
               </div>
             </div>
@@ -726,7 +464,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           {/* ── STEP: error ───────────────────────────────── */}
           {step === 'error' && (
             <div className="py-4">
-              {(errorCode === 'PAYMENT_REQUIRED' || errorCode === 'RATE_LIMIT_EXCEEDED') ? (
+              {(errorCode === 'PAYMENT_REQUIRED' || errorCode === 'AUTH_REQUIRED' || errorCode === 'RATE_LIMIT') ? (
                 <QuotaPaywallCard
                   language={language}
                   message={errorMsg}

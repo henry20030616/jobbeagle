@@ -16,6 +16,9 @@ import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import { normalizeLiteReport, isLiteReport } from '@/lib/normalize-lite-report';
+import CreditsBadge from '@/components/CreditsBadge';
+import ReferralCard from '@/components/ReferralCard';
+import type { UserProfile } from '@/types';
 
 interface ReportSummary {
   id: string;
@@ -127,6 +130,8 @@ export default function Home() {
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [lastReportId, setLastReportId] = useState<string | null>(null);
   const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
 
   // Auth + History
@@ -141,35 +146,61 @@ export default function Home() {
   const [analysisElapsed, setAnalysisElapsed] = useState(0);
   const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const loadProfile = async () => {
+    try {
+      const res = await fetch('/api/profile');
+      if (res.ok) {
+        const data = await res.json();
+        setUserProfile(data.profile);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       const urlParams = new URLSearchParams(window.location.search);
+      const payloadParam = urlParams.get('payload');
+      if (payloadParam) {
+        window.location.replace(`/pre-flight?payload=${encodeURIComponent(payloadParam)}`);
+        return;
+      }
+
+      const ref = urlParams.get('ref');
+      if (ref) {
+        localStorage.setItem('jb_referral_code', ref);
+        setReferralCode(ref);
+      } else {
+        setReferralCode(localStorage.getItem('jb_referral_code'));
+      }
+
       const fromExtension = urlParams.get('from') === 'extension';
       const encodedJob = urlParams.get('job');
       const jobId = urlParams.get('jobId');
-      const source = urlParams.get('source');
-      
-      if (fromExtension) {
-        console.log('🔌 [Extension] 檢測到來自插件，來源:', source);
-        
-        if (encodedJob) {
-          try {
-            const decodedData = decodeURIComponent(atob(encodedJob));
-            setExtensionJobData(decodedData);
-            console.log('✅ [Extension] 已從 URL 解碼職缺數據');
-          } catch (e) {
-            console.error('❌ [Extension] 解碼失敗:', e);
-          }
-        } else if (jobId) {
-          const storedData = localStorage.getItem(`jobbeagle_job_${jobId}`);
-          if (storedData) {
-            setExtensionJobData(storedData);
+
+      if (fromExtension && (encodedJob || jobId)) {
+        try {
+          let rawText = '';
+          if (encodedJob) {
+            rawText = decodeURIComponent(atob(encodedJob));
+          } else if (jobId) {
+            rawText = localStorage.getItem(`jobbeagle_job_${jobId}`) || '';
             localStorage.removeItem(`jobbeagle_job_${jobId}`);
-            console.log('✅ [Extension] 已從本地存儲讀取職缺數據');
           }
+          if (rawText) {
+            const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+              pageTitle: 'Imported Job',
+              pageUrl: window.location.href,
+              rawText,
+              jobId: jobId || 'extension-import',
+            }))));
+            window.location.replace(`/pre-flight?payload=${encodeURIComponent(payload)}`);
+            return;
+          }
+        } catch (e) {
+          console.error('Extension redirect failed:', e);
         }
-        
-        window.history.replaceState({}, '', '/');
       }
 
       // OAuth 登入失敗時顯示錯誤（auth/callback 會將錯誤帶回首頁）
@@ -187,21 +218,10 @@ export default function Home() {
       if (checkout === 'success') {
         const notice =
           language === 'zh-TW' || language === 'zh-CN'
-            ? '付款成功！若已解鎖進階報告，請從歷史紀錄開啟或重新分析。'
-            : 'Payment successful! Open your report from history to see premium content.';
+            ? '付款成功！額度已更新，可立即重新分析。'
+            : 'Payment successful! Credits updated — run a new analysis anytime.';
         setCheckoutNotice(notice);
-        const storedId = sessionStorage.getItem('jb_last_report_id');
-        if (storedId) {
-          fetch(`/api/reports/${storedId}`)
-            .then((r) => r.json())
-            .then((data) => {
-              if (data.report) {
-                setReport(data.report);
-                setLastReportId(storedId);
-              }
-            })
-            .catch(() => {});
-        }
+        await loadProfile();
         window.history.replaceState({}, '', '/');
       } else if (checkout === 'cancelled') {
         setCheckoutNotice(
@@ -214,9 +234,14 @@ export default function Home() {
 
     // Track login state for history feature
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user));
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUser(user);
+      if (user) loadProfile();
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setCurrentUser(session?.user ?? null);
+      if (session?.user) loadProfile();
+      else setUserProfile(null);
       if (!session?.user) setShowHistory(false);
     });
     return () => subscription.unsubscribe();
@@ -331,6 +356,7 @@ export default function Home() {
         setLastReportId(result.report_id);
         sessionStorage.setItem('jb_last_report_id', result.report_id);
       }
+      await loadProfile();
     } catch (err: unknown) {
       console.error('❌ [Frontend Error]', err);
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -375,7 +401,7 @@ export default function Home() {
                 <span className="hidden sm:inline">{t.history}</span>
               </button>
             )}
-            <LoginButton />
+            <LoginButton referralCode={referralCode ?? undefined} />
           </div>
         </div>
 
@@ -532,7 +558,13 @@ export default function Home() {
 
         {!report && !liteReport ? (
           <div className="max-w-4xl mx-auto">
-            <InputForm 
+            {currentUser && userProfile && (
+              <div className="mb-6 space-y-3">
+                <CreditsBadge profile={userProfile} language={language} />
+                <ReferralCard referralCode={userProfile.referral_code} language={language} />
+              </div>
+            )}
+            <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
               language={language}

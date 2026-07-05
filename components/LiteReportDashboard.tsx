@@ -25,6 +25,7 @@ interface LiteReportDashboardProps {
   report: LiteReport;
   language?: AppLanguage;
   onNewAnalysis?: () => void;
+  embedded?: boolean;
 }
 
 type Copy = {
@@ -190,6 +191,7 @@ export default function LiteReportDashboard({
   report,
   language = 'en',
   onNewAnalysis,
+  embedded = false,
 }: LiteReportDashboardProps) {
   const t = copy[language] ?? copy.en;
   const scoreInfo = getScoreInfo(report.match_score, language);
@@ -205,6 +207,7 @@ export default function LiteReportDashboard({
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {!embedded && (
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Link
           href="/"
@@ -224,6 +227,7 @@ export default function LiteReportDashboard({
           </button>
         ) : null}
       </div>
+      )}
 
       {/* Job header */}
       <div className="rounded-2xl border border-slate-700 bg-slate-800/80 px-6 py-5">
@@ -391,6 +395,7 @@ export default function LiteReportDashboard({
       </div>
 
       {/* Full upgrade CTA */}
+      {!embedded && (
       <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/80 to-indigo-950/60 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="font-bold text-white flex items-center gap-2">
@@ -408,6 +413,7 @@ export default function LiteReportDashboard({
           {checkoutBusy ? '…' : t.upgradeBtn}
         </button>
       </div>
+      )}
     </div>
   );
 }

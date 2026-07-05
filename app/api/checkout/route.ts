@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
   }
 
   const origin = request.nextUrl.origin;
-  const successUrl = `${origin}/pre-flight?checkout=success`;
+  const successUrl = `${origin}/?checkout=success`;
 
   const testMode =
     process.env.LEMONSQUEEZY_TEST_MODE === 'true'

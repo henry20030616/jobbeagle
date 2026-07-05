@@ -21,6 +21,7 @@ import {
   canAffordReport,
   deductCredit,
   findCachedReport,
+  hasSubscriptionCredits,
 } from '@/lib/profiles';
 import {
   countCombinedTokens,
@@ -272,7 +273,7 @@ export async function POST(request: NextRequest) {
         resume_snapshot_text: input.resume_text,
         linkedin_job_id: input.linkedin_job_id,
         report_type: reportType,
-        is_single_drop: body.is_single_drop === true,
+        is_single_drop: !hasSubscriptionCredits(profile.membership_tier),
         report_json: report,
         report: report,
         score,

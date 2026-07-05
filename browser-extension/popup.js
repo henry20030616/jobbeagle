@@ -46,37 +46,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
       showStatus('loading', '📤 正在準備數據...');
 
-      // 組合完整描述
-      let fullDescription = jobData.fullText || '';
-      
-      // 使用 base64 編碼（避免 URL 特殊字符問題）
-      const encodedData = btoa(encodeURIComponent(fullDescription));
-      
-      // 檢查數據大小（URL 有長度限制）
-      if (encodedData.length > 8000) {
-        // 數據太大，使用本地存儲
-        const jobId = `ext_${Date.now()}`;
-        localStorage.setItem(`jobbeagle_job_${jobId}`, fullDescription);
-        
-        showStatus('success', '✅ 成功！正在開啟分析頁面...');
-        
-        setTimeout(() => {
-          chrome.tabs.create({
-            url: `${WEBSITE_URL}?from=extension&jobId=${jobId}&source=${jobData.source}`
-          });
-          window.close();
-        }, 1000);
-      } else {
-        // 數據較小，直接通過 URL 傳遞
-        showStatus('success', '✅ 成功！正在開啟分析頁面...');
-        
-        setTimeout(() => {
-          chrome.tabs.create({
-            url: `${WEBSITE_URL}?from=extension&job=${encodedData}&source=${jobData.source}`
-          });
-          window.close();
-        }, 1000);
-      }
+      const pageTitle = document.title;
+      const pageUrl = tab.url;
+      const rawText = jobData.fullText || '';
+      const jobIdMatch = pageUrl.match(/view\/(\d+)/) || pageUrl.match(/currentJobId=(\d+)/);
+      const jobId = jobIdMatch ? jobIdMatch[1] : `ext_${Date.now()}`;
+
+      const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+        pageTitle,
+        pageUrl,
+        rawText,
+        jobId,
+      }))));
+
+      showStatus('success', '✅ 成功！正在開啟 Pre-Flight...');
+
+      setTimeout(() => {
+        chrome.tabs.create({
+          url: `${WEBSITE_URL}/pre-flight?payload=${encodeURIComponent(payload)}`,
+        });
+        window.close();
+      }, 800);
 
     } catch (error) {
       console.error('Error:', error);
