@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Map existing Lemon Squeezy products to env + create webhook.
- * Products must exist in LS dashboard (API cannot create products).
+ * Map Lemon Squeezy variant IDs + webhook into .env.local.
+ * Needs: LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_STORE_ID in .env.local
  */
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
@@ -13,11 +13,10 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const envPath = resolve(root, '.env.local');
 const WEBHOOK_URL = 'https://www.jobbeagle.com/api/payment/webhook';
 
-/** Map env key → product price in cents */
-const PRICE_MAP = [
-  { key: 'LEMONSQUEEZY_VARIANT_SINGLE_FULL', price: 999 },
-  { key: 'LEMONSQUEEZY_VARIANT_STANDARD_SUB', price: 1999 },
-  { key: 'LEMONSQUEEZY_VARIANT_ADVANCED_SUB', price: 3999 },
+const VARIANT_MAP = [
+  { key: 'LEMONSQUEEZY_VARIANT_SINGLE_FULL', match: /single.?full/i, price: 999 },
+  { key: 'LEMONSQUEEZY_VARIANT_STANDARD_SUB', match: /standard/i, price: 1999 },
+  { key: 'LEMONSQUEEZY_VARIANT_ADVANCED_SUB', match: /advanced/i, price: 3999 },
 ];
 
 const env = loadEnvLocal();
@@ -50,57 +49,78 @@ function upsertEnv(key, value) {
   console.log(`  set ${key}=${value}`);
 }
 
-const productsRes = await ls(
-  `/products?filter[store_id]=${env.LEMONSQUEEZY_STORE_ID}&include=variants&page[size]=100`,
-);
-
-for (const { key, price } of PRICE_MAP) {
-  if (env[key]?.trim()) {
-    console.log(`skip ${key} (already ${env[key]})`);
-    continue;
-  }
-  const product = (productsRes.data || []).find((p) => p.attributes?.price === price);
-  const variantId = product?.relationships?.variants?.data?.[0]?.id;
-  if (!variantId) {
-    console.warn(`WARN no product at $${(price / 100).toFixed(2)} for ${key}`);
-    continue;
-  }
-  upsertEnv(key, String(variantId));
-  console.log(`  matched ${product.attributes.name}`);
+function variantForProduct(product, variants) {
+  const relId = product.relationships?.variants?.data?.[0]?.id;
+  return (
+    variants.find((v) => v.id === relId)
+    || variants.find((v) => v.attributes?.product_id === Number(product.id))
+  );
 }
 
-// Store is in test mode if any mapped product is test_mode
-const anyTest = (productsRes.data || []).some((p) => p.attributes?.test_mode);
-if (anyTest && env.LEMONSQUEEZY_TEST_MODE !== 'true') {
-  upsertEnv('LEMONSQUEEZY_TEST_MODE', 'true');
-  console.log('  (products are test_mode — set LEMONSQUEEZY_TEST_MODE=true)');
+const catalog = await ls(
+  `/products?filter[store_id]=${env.LEMONSQUEEZY_STORE_ID}&include=variants&page[size]=100`,
+);
+const existingProducts = catalog.data || [];
+const existingVariants = (catalog.included || []).filter((x) => x.type === 'variants');
+
+for (const spec of VARIANT_MAP) {
+  if (env[spec.key]?.trim()) {
+    console.log(`skip ${spec.key} (already ${env[spec.key]})`);
+    continue;
+  }
+
+  const product = existingProducts.find((p) => {
+    const name = p.attributes?.name || '';
+    return spec.match.test(name) || p.attributes?.price === spec.price;
+  });
+
+  const variant =
+    (product && variantForProduct(product, existingVariants))
+    || existingVariants.find((v) => v.attributes?.price === spec.price);
+
+  if (!variant) {
+    console.warn(`WARN missing variant for ${spec.key} — create in LS dashboard`);
+    continue;
+  }
+  upsertEnv(spec.key, String(variant.id));
 }
 
 if (!env.LEMONSQUEEZY_WEBHOOK_SECRET?.trim()) {
-  const hooks = await ls(`/webhooks?filter[store_id]=${env.LEMONSQUEEZY_STORE_ID}`);
-  const found = (hooks.data || []).find((w) => w.attributes?.url === WEBHOOK_URL);
+  let found = null;
+  try {
+    const hooks = await ls(`/webhooks?filter[store_id]=${env.LEMONSQUEEZY_STORE_ID}&page[size]=50`);
+    found = (hooks.data || []).find((w) => w.attributes?.url === WEBHOOK_URL);
+  } catch (e) {
+    console.warn('Could not list webhooks:', e.message.slice(0, 120));
+  }
+
   if (found?.attributes?.secret) {
     upsertEnv('LEMONSQUEEZY_WEBHOOK_SECRET', found.attributes.secret);
   } else {
-    const secret = randomBytes(20).toString('hex');
+    const secret = randomBytes(16).toString('hex'); // 32 chars, LS max 40
     console.log('create webhook…');
-    const hook = await ls('/webhooks', {
-      method: 'POST',
-      body: JSON.stringify({
-        data: {
-          type: 'webhooks',
-          attributes: {
-            url: WEBHOOK_URL,
-            events: ['order_created', 'subscription_created', 'subscription_payment_success'],
-            secret,
+    try {
+      const hook = await ls('/webhooks', {
+        method: 'POST',
+        body: JSON.stringify({
+          data: {
+            type: 'webhooks',
+            attributes: {
+              url: WEBHOOK_URL,
+              events: ['order_created', 'subscription_created', 'subscription_payment_success'],
+              secret,
+            },
+            relationships: {
+              store: { data: { type: 'stores', id: String(env.LEMONSQUEEZY_STORE_ID) } },
+            },
           },
-          relationships: {
-            store: { data: { type: 'stores', id: String(env.LEMONSQUEEZY_STORE_ID) } },
-          },
-        },
-      }),
-    });
-    upsertEnv('LEMONSQUEEZY_WEBHOOK_SECRET', hook.data?.attributes?.secret || secret);
+        }),
+      });
+      upsertEnv('LEMONSQUEEZY_WEBHOOK_SECRET', hook.data?.attributes?.secret || secret);
+    } catch (e) {
+      console.warn('WARN webhook create failed (API key may be read-only):', e.message.slice(0, 200));
+      console.warn('Add webhook manually in LS dashboard and set LEMONSQUEEZY_WEBHOOK_SECRET');
+    }
   }
 } else {
   console.log('skip LEMONSQUEEZY_WEBHOOK_SECRET (already set)');
