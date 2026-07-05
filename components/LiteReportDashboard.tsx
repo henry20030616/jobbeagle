@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import type { LiteReport, HardRequirementStatus } from '@/types';
 import {
   CheckCircle2,
@@ -199,6 +198,14 @@ export default function LiteReportDashboard({
   const scoreData = [{ name: 'Score', value: report.match_score, fill: scoreInfo.fill }];
   const [checkoutBusy, setCheckoutBusy] = React.useState(false);
 
+  const handleBack = () => {
+    if (onNewAnalysis) {
+      onNewAnalysis();
+      return;
+    }
+    window.location.href = '/';
+  };
+
   const handleUpgrade = async () => {
     setCheckoutBusy(true);
     await startCheckout('single_full');
@@ -209,23 +216,22 @@ export default function LiteReportDashboard({
     <div className="space-y-6 animate-fade-in">
       {!embedded && (
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors"
+        <button
+          type="button"
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors active:scale-95"
         >
           <Home className="w-4 h-4" />
           {t.backHome}
-        </Link>
-        {onNewAnalysis ? (
-          <button
-            type="button"
-            onClick={onNewAnalysis}
-            className="inline-flex items-center gap-2 rounded-xl border border-indigo-500/50 bg-indigo-500/10 px-4 py-2.5 text-sm font-semibold text-indigo-200 hover:bg-indigo-500/20 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-            {t.newAnalysis}
-          </button>
-        ) : null}
+        </button>
+        <button
+          type="button"
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 rounded-xl border border-indigo-500/50 bg-indigo-500/10 px-4 py-2.5 text-sm font-semibold text-indigo-200 hover:bg-indigo-500/20 transition-colors active:scale-95"
+        >
+          <RotateCcw className="w-4 h-4" />
+          {t.newAnalysis}
+        </button>
       </div>
       )}
 

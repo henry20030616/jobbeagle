@@ -289,6 +289,15 @@ export default function Home() {
     }
   };
 
+  const handleResetToForm = () => {
+    setReport(null);
+    setLiteReport(null);
+    setError(null);
+    setErrorCode(null);
+    sessionStorage.removeItem('jb_last_report_id');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleGenerate = async (inputs: UserInputs) => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -579,12 +588,12 @@ export default function Home() {
               <LiteReportDashboard
                 report={liteReport}
                 language={language}
-                onNewAnalysis={() => { setReport(null); setLiteReport(null); }}
+                onNewAnalysis={handleResetToForm}
               />
             ) : report ? (
               <>
                 <button
-                  onClick={() => { setReport(null); setLiteReport(null); }}
+                  onClick={handleResetToForm}
                   className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />

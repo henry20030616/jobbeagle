@@ -348,6 +348,7 @@ export default function PreFlightPage() {
             onNewAnalysis={() => {
               setLiteReport(null);
               setFullReport(null);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />
         )}
