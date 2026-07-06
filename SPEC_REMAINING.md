@@ -1,5 +1,21 @@
 # Docx 規格對照 — 剩餘事項（2026-07-06）
 
+> **Agent 代跑驗證（2026-07-06 08:32）— 通過後才請你做下方手動清單**
+
+| 檢查項 | 結果 |
+|--------|------|
+| `www.jobbeagle.com` | HTTP 200 |
+| `/pre-flight` | HTTP 200 |
+| `/api/analyze`（未登入） | 401 `AUTH_REQUIRED`（非 500/503） |
+| `/api/checkout`（未登入） | 401 `AUTH_REQUIRED`（Lemon Squeezy 已設定） |
+| `/api/cron/purge-reports` | 200 `deleted:0`（CRON_SECRET 已同步並 redeploy） |
+| Supabase profiles / referrals | 表存在，20 profiles |
+| GitHub `main` 最新 | `f0b9170` |
+| 單元測試 | 121 passed |
+| Chrome 外掛 icon PNG | 已產生並 commit（可載入未封裝） |
+
+---
+
 對照 `20260705 我與gemini討論結果.docx` 與目前 repo / 線上狀態。
 
 ---
