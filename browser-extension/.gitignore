@@ -1,5 +1,8 @@
-# 這些是用戶自己產生的圖示檔案
-*.png
+# User-generated assets (keep committed extension icons)
+icon[0-9]*.png
+!icon16.png
+!icon48.png
+!icon128.png
 *.jpg
 *.jpeg
 
