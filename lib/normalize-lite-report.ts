@@ -64,3 +64,13 @@ export function isEnrichedLiteReport(raw: unknown): boolean {
     && raw.critical_gaps.length > 0
   );
 }
+
+export function isFullReport(value: unknown): value is import('@/types').FullReport {
+  if (!value || typeof value !== 'object') return false;
+  const r = value as Record<string, unknown>;
+  return (
+    Array.isArray(r.custom_star_interview_bank)
+    || typeof r.corporate_culture_blackbox === 'string'
+    || typeof r.salary_negotiation_script === 'string'
+  );
+}

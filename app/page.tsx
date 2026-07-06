@@ -8,16 +8,18 @@ import DogLoading from '@/components/DogLoading';
 import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import { createClient } from '@/lib/supabase/browser';
-import { InterviewReport, LiteReport, FullReport, UserInputs } from '@/types';
+import { InterviewReport, LiteReport, FullReport, UserInputs, ReportType } from '@/types';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
+import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
-import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
+import { ChevronLeft, History, X, ChevronRight, Loader2, Play, Sparkles } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
-import { normalizeLiteReport, isLiteReport } from '@/lib/normalize-lite-report';
+import { normalizeLiteReport, isLiteReport, isFullReport } from '@/lib/normalize-lite-report';
 import CreditsBadge from '@/components/CreditsBadge';
 import ReferralCard from '@/components/ReferralCard';
+import DeleteAccountButton from '@/components/DeleteAccountButton';
 import type { UserProfile } from '@/types';
 
 interface ReportSummary {
@@ -125,6 +127,8 @@ export default function Home() {
 
   const [report, setReport] = useState<InterviewReport | null>(null);
   const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
+  const [fullReport, setFullReport] = useState<FullReport | null>(null);
+  const [reportType, setReportType] = useState<ReportType>('lite');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -292,6 +296,7 @@ export default function Home() {
   const handleResetToForm = () => {
     setReport(null);
     setLiteReport(null);
+    setFullReport(null);
     setError(null);
     setErrorCode(null);
     sessionStorage.removeItem('jb_last_report_id');
@@ -315,6 +320,7 @@ export default function Home() {
     setError(null);
     setErrorCode(null);
     setLiteReport(null);
+    setFullReport(null);
     setReport(null);
     startProgressSimulation(language);
     try {
@@ -323,7 +329,7 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          report_type: 'lite',
+          report_type: reportType,
           jobDescription: inputs.jobDescription,
           resume: inputs.resume,
           language: appLanguage,
@@ -354,12 +360,22 @@ export default function Home() {
         return;
       }
 
-      if (result.report_type === 'lite' && result.report?.match_score != null) {
+      if (result.report_type === 'full') {
+        setFullReport(result.report as FullReport);
+        setLiteReport(null);
+        setReport(null);
+      } else if (result.report_type === 'lite' && result.report?.match_score != null) {
         setLiteReport(normalizeLiteReport(result.report as LiteReport));
+        setFullReport(null);
+        setReport(null);
       } else if (isLiteReport(result.report)) {
         setLiteReport(normalizeLiteReport(result.report));
+        setFullReport(null);
+        setReport(null);
       } else {
         setReport(result.report as InterviewReport);
+        setLiteReport(null);
+        setFullReport(null);
       }
       if (result.report_id) {
         setLastReportId(result.report_id);
@@ -414,7 +430,7 @@ export default function Home() {
           </div>
         </div>
 
-        {!report && (
+        {!report && !liteReport && !fullReport && (
           <Link
             href="/shorts"
             className="mb-8 flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
@@ -472,12 +488,18 @@ export default function Home() {
                         key={item.id}
                         onClick={() => {
                           const payload = item.report_json ?? item.report;
-                          if (isLiteReport(payload)) {
+                          if (item.report_type === 'full' || isFullReport(payload)) {
+                            setFullReport(payload as FullReport);
+                            setLiteReport(null);
+                            setReport(null);
+                          } else if (isLiteReport(payload)) {
                             setLiteReport(normalizeLiteReport(payload));
+                            setFullReport(null);
                             setReport(null);
                           } else if (payload) {
                             setReport(payload as InterviewReport);
                             setLiteReport(null);
+                            setFullReport(null);
                           }
                           setShowHistory(false);
                         }}
@@ -565,12 +587,51 @@ export default function Home() {
           </div>
         )}
 
-        {!report && !liteReport ? (
+        {!report && !liteReport && !fullReport ? (
           <div className="max-w-4xl mx-auto">
             {currentUser && userProfile && (
               <div className="mb-6 space-y-3">
                 <CreditsBadge profile={userProfile} language={language} />
                 <ReferralCard referralCode={userProfile.referral_code} language={language} />
+                <DeleteAccountButton language={language} />
+              </div>
+            )}
+            {currentUser && userProfile && (
+              <div className="mb-6 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setReportType('lite')}
+                  className={`flex-1 rounded-xl border p-4 text-left transition ${
+                    reportType === 'lite'
+                      ? 'border-indigo-500 bg-indigo-500/10'
+                      : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
+                  }`}
+                >
+                  <p className="font-semibold text-white text-sm">Lite Snapshot</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {language === 'zh-TW' || language === 'zh-CN'
+                      ? '無聯網 · 匹配分數 · Radford 薪酬'
+                      : 'No web search · Match score · Radford comp'}
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReportType('full')}
+                  className={`flex-1 rounded-xl border p-4 text-left transition ${
+                    reportType === 'full'
+                      ? 'border-violet-500 bg-violet-500/10'
+                      : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
+                  }`}
+                >
+                  <p className="font-semibold text-white text-sm flex items-center gap-1">
+                    Full Intel <Sparkles className="w-4 h-4 text-violet-400" />
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {language === 'zh-TW' || language === 'zh-CN'
+                      ? 'Blind/Glassdoor · 10 題 STAR · 談判腳本'
+                      : 'Blind/Glassdoor · 10 STAR Qs · Negotiation'}
+                  </p>
+                </button>
               </div>
             )}
             <InputForm
@@ -590,6 +651,19 @@ export default function Home() {
                 language={language}
                 onNewAnalysis={handleResetToForm}
               />
+            ) : fullReport ? (
+              <div className="space-y-6">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <button
+                    type="button"
+                    onClick={handleResetToForm}
+                    className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors"
+                  >
+                    {t.backToHome}
+                  </button>
+                </div>
+                <FullReportDashboard report={fullReport} />
+              </div>
             ) : report ? (
               <>
                 <button
