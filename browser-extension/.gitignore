@@ -1,5 +1,5 @@
-# User-generated assets (keep committed extension icons)
-icon[0-9]*.png
+# User-generated assets (committed extension icons are whitelisted)
+*.png
 !icon16.png
 !icon48.png
 !icon128.png
