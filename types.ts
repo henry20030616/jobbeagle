@@ -146,6 +146,10 @@ export interface Radford2026CompensationMatrix {
   tier_25th_low: string;
   tier_50th_mid: string;
   tier_75th_high: string;
+  market_region?: string;
+  compensation_rationale?: string;
+  candidate_salary_position?: 'below_p25' | 'p25_p50' | 'p50_p75' | 'above_p75';
+  candidate_position_label?: string;
 }
 
 export interface LiteMatchPoint {

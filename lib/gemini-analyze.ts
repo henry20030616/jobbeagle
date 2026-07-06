@@ -162,8 +162,15 @@ export async function executeLiteAnalysis(
               tier_25th_low: { type: Type.STRING },
               tier_50th_mid: { type: Type.STRING },
               tier_75th_high: { type: Type.STRING },
+              market_region: { type: Type.STRING },
+              compensation_rationale: { type: Type.STRING },
+              candidate_salary_position: {
+                type: Type.STRING,
+                enum: ['below_p25', 'p25_p50', 'p50_p75', 'above_p75'],
+              },
+              candidate_position_label: { type: Type.STRING },
             },
-            required: ['tier_25th_low', 'tier_50th_mid', 'tier_75th_high'],
+            required: ['tier_25th_low', 'tier_50th_mid', 'tier_75th_high', 'compensation_rationale', 'candidate_position_label'],
           },
         },
         required: [

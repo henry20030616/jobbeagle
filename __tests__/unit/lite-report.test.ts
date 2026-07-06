@@ -30,6 +30,10 @@ describe('LiteReport schema', () => {
         tier_25th_low: '$145K',
         tier_50th_mid: '$175K',
         tier_75th_high: '$210K',
+        market_region: 'San Francisco Bay Area',
+        compensation_rationale: 'Staff-level IC band for Bay Area tech.',
+        candidate_salary_position: 'p25_p50',
+        candidate_position_label: 'At 4 YOE you likely land P35–P45; push toward P50.',
       },
     };
     expect(report.match_score).toBeGreaterThanOrEqual(0);

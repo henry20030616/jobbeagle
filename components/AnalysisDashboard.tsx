@@ -69,10 +69,10 @@ const cleanText = (text: string | any): string => {
 
 export const BeagleIcon = ({ className, color = "#475569", spotColor = "#5d4037", bellyColor = "#5d4037" }: any) => (
   <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M35 65 C30 75 30 85 35 90 C40 95 60 95 65 90 C70 85 70 75 65 65" fill="currentColor" stroke={color} strokeWidth="1.5" />
+    <path d="M35 65 C30 75 30 85 35 90 C40 95 60 95 65 90 C70 85 70 75 65 65" fill={color} stroke={color} strokeWidth="1.5" />
     <path d="M40 70 Q50 65 60 70 L62 85 Q50 90 38 85 Z" fill="#f5f5f5" />
     <ellipse cx="50" cy="80" rx="8" ry="4" fill={bellyColor} opacity="0.3" />
-    <path d="M50 20 C65 20 75 30 75 45 C75 55 65 65 50 65 C35 65 25 55 25 45 C25 30 35 20 50 20Z" fill="currentColor" stroke={color} strokeWidth="2" />
+    <path d="M50 20 C65 20 75 30 75 45 C75 55 65 65 50 65 C35 65 25 55 25 45 C25 30 35 20 50 20Z" fill={color} stroke={color} strokeWidth="2" />
     <path d="M28 28 C20 30 15 45 15 55 C15 65 22 70 28 65" fill={spotColor} stroke={color} strokeWidth="1.5" />
     <path d="M72 28 C80 30 85 45 85 55 C85 65 78 70 72 65" fill={spotColor} stroke={color} strokeWidth="1.5" />
     <circle cx="58" cy="40" r="8" stroke={color} strokeWidth="1.5" fill="rgba(255,255,255,0.2)" />
@@ -127,7 +127,8 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'en' }) 
 
   const { basic_analysis, salary_analysis, reviews_analysis, market_analysis, match_analysis, interview_preparation } = data;
   const scoreInfo = getScoreInfo(match_analysis.score, language);
-  const tierName = match_analysis.dog_type || scoreInfo.level;
+  const tierName = scoreInfo.level;
+  const breedArchetype = match_analysis.dog_type;
   const scoreData = [{ name: 'Score', value: match_analysis.score, fill: scoreInfo.fill }];
 
   // 翻譯對象
@@ -164,6 +165,9 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'en' }) 
                   {scoreInfo.icon}
                   <div className="flex flex-col items-center mt-3">
                     <span className={`text-base font-bold ${scoreInfo.color}`}>{tierName}</span>
+                    {breedArchetype && (
+                      <span className="text-xs text-slate-500 mt-1">{breedArchetype}</span>
+                    )}
                   </div>
                </div>
                  <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">

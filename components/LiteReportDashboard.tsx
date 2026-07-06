@@ -38,6 +38,9 @@ type Copy = {
   hardReqs: string;
   interviewStarters: string;
   compensation: string;
+  salaryPosition: string;
+  salaryRationale: string;
+  marketRegion: string;
   flsa: string;
   upgradeTitle: string;
   upgradeDesc: string;
@@ -60,6 +63,9 @@ const copy: Record<AppLanguage, Copy> = {
     hardReqs: '硬性條件檢核',
     interviewStarters: '預測面試題（依 JD）',
     compensation: 'Radford 2026 薪酬矩陣',
+    salaryPosition: '你的薪資落點',
+    salaryRationale: '推估邏輯',
+    marketRegion: '市場區域',
     flsa: 'FLSA 分類',
     upgradeTitle: '需要 Blind / Glassdoor 即時情報？',
     upgradeDesc: 'Lite 僅分析 JD + 履歷。升級 Full 可取得網路情報、文化黑箱與 STAR 面試題庫。',
@@ -80,6 +86,9 @@ const copy: Record<AppLanguage, Copy> = {
     hardReqs: '硬性条件检核',
     interviewStarters: '预测面试题（依 JD）',
     compensation: 'Radford 2026 薪酬矩阵',
+    salaryPosition: '你的薪资落点',
+    salaryRationale: '推估逻辑',
+    marketRegion: '市场区域',
     flsa: 'FLSA 分类',
     upgradeTitle: '需要 Blind / Glassdoor 即时情报？',
     upgradeDesc: 'Lite 仅分析 JD + 简历。升级 Full 可取得网络情报、文化黑箱与 STAR 面试题库。',
@@ -100,6 +109,9 @@ const copy: Record<AppLanguage, Copy> = {
     hardReqs: 'Hard Requirements Check',
     interviewStarters: 'Predicted Interview Questions (JD-based)',
     compensation: 'Radford 2026 Compensation Matrix',
+    salaryPosition: 'Your salary position',
+    salaryRationale: 'Estimation logic',
+    marketRegion: 'Market region',
     flsa: 'FLSA Classification',
     upgradeTitle: 'Need live Blind / Glassdoor intel?',
     upgradeDesc:
@@ -121,6 +133,9 @@ const copy: Record<AppLanguage, Copy> = {
     hardReqs: 'Requisitos obligatorios',
     interviewStarters: 'Preguntas de entrevista previstas',
     compensation: 'Matriz salarial Radford 2026',
+    salaryPosition: 'Tu posición salarial',
+    salaryRationale: 'Lógica de estimación',
+    marketRegion: 'Región de mercado',
     flsa: 'Clasificación FLSA',
     upgradeTitle: '¿Necesitas intel en vivo?',
     upgradeDesc: 'Lite: JD + CV. Full: web + cultura + banco STAR.',
@@ -141,6 +156,9 @@ const copy: Record<AppLanguage, Copy> = {
     hardReqs: 'कठोर आवश्यकताएँ',
     interviewStarters: 'अनुमानित साक्षात्कार प्रश्न',
     compensation: 'Radford 2026 वेतन',
+    salaryPosition: 'आपकी वेतन स्थिति',
+    salaryRationale: 'अनुमान तर्क',
+    marketRegion: 'बाज़ार क्षेत्र',
     flsa: 'FLSA',
     upgradeTitle: 'लाइव इंटेल चाहिए?',
     upgradeDesc: 'Lite: JD + रिज़्यूमे। Full: वेब + संस्कृति + STAR।',
@@ -161,6 +179,9 @@ const copy: Record<AppLanguage, Copy> = {
     hardReqs: 'المتطلبات الصلبة',
     interviewStarters: 'أسئلة مقابلة متوقعة',
     compensation: 'مصفوفة Radford 2026',
+    salaryPosition: 'موقع راتبك',
+    salaryRationale: 'منطق التقدير',
+    marketRegion: 'منطقة السوق',
     flsa: 'تصنيف FLSA',
     upgradeTitle: 'تحتاج معلومات مباشرة؟',
     upgradeDesc: 'Lite: JD + السيرة. Full: ويب + ثقافة + STAR.',
@@ -194,7 +215,8 @@ export default function LiteReportDashboard({
 }: LiteReportDashboardProps) {
   const t = copy[language] ?? copy.en;
   const scoreInfo = getScoreInfo(report.match_score, language);
-  const tierName = report.dog_breed_archetype || scoreInfo.level;
+  const tierName = scoreInfo.level;
+  const breedArchetype = report.dog_breed_archetype;
   const scoreData = [{ name: 'Score', value: report.match_score, fill: scoreInfo.fill }];
   const [checkoutBusy, setCheckoutBusy] = React.useState(false);
 
@@ -265,6 +287,9 @@ export default function LiteReportDashboard({
               <div className="flex flex-col items-center shrink-0">
                 {scoreInfo.icon}
                 <span className={`text-sm font-bold mt-2 ${scoreInfo.color}`}>{tierName}</span>
+                {breedArchetype && (
+                  <span className="text-xs text-slate-500 mt-1 text-center max-w-[8rem]">{breedArchetype}</span>
+                )}
               </div>
               <div className="relative w-32 h-32 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
@@ -374,27 +399,48 @@ export default function LiteReportDashboard({
 
       {/* Compensation + FLSA */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1 font-bold">
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 md:col-span-2">
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1 font-bold">
             <DollarSign className="w-4 h-4" />
             {t.compensation}
           </p>
-          <div className="grid grid-cols-3 gap-2 text-center text-sm">
+          {report.radford_2026_compensation_matrix.market_region && (
+            <p className="text-xs text-slate-400 mb-4">
+              {t.marketRegion}: {report.radford_2026_compensation_matrix.market_region}
+            </p>
+          )}
+          <div className="grid grid-cols-3 gap-2 text-center text-sm mb-4">
             <div className="rounded-lg bg-white/5 p-3">
-              <p className="text-xs text-slate-500 mb-1">25th</p>
+              <p className="text-xs text-slate-500 mb-1">P25</p>
               <p className="font-medium text-white">{report.radford_2026_compensation_matrix.tier_25th_low}</p>
             </div>
             <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-3">
-              <p className="text-xs text-slate-500 mb-1">50th</p>
-              <p className="font-semibold text-white">{report.radford_2026_compensation_matrix.tier_50th_mid}</p>
+              <p className="text-xs text-blue-300 mb-1 font-bold">P50</p>
+              <p className="font-semibold text-white text-base">{report.radford_2026_compensation_matrix.tier_50th_mid}</p>
             </div>
             <div className="rounded-lg bg-white/5 p-3">
-              <p className="text-xs text-slate-500 mb-1">75th</p>
+              <p className="text-xs text-slate-500 mb-1">P75</p>
               <p className="font-medium text-white">{report.radford_2026_compensation_matrix.tier_75th_high}</p>
             </div>
           </div>
+          {report.radford_2026_compensation_matrix.candidate_position_label && (
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 mb-3">
+              <p className="text-xs font-bold text-emerald-300 uppercase tracking-wide mb-1">{t.salaryPosition}</p>
+              <p className="text-sm text-emerald-100 leading-relaxed">
+                {report.radford_2026_compensation_matrix.candidate_position_label}
+              </p>
+            </div>
+          )}
+          {report.radford_2026_compensation_matrix.compensation_rationale && (
+            <div className="rounded-lg bg-slate-900/50 p-4">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">{t.salaryRationale}</p>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                {report.radford_2026_compensation_matrix.compensation_rationale}
+              </p>
+            </div>
+          )}
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col justify-center">
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col justify-center md:col-span-2 lg:col-span-1">
           <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 font-bold">{t.flsa}</p>
           <p className="text-lg font-semibold text-white">{report.flsa_status}</p>
         </div>

@@ -4,7 +4,11 @@ export const LITE_SYSTEM_PROMPT = `You are a ruthless, world-class executive rec
 
 Extract job_title and company_name from the JD when present; otherwise infer reasonable labels from context.
 
-For compensation, use your built-in Radford 2026 Compensation Benchmark memory — output real market 25th, 50th, 75th percentiles for the title and tech stack. Assess FLSA exemption from structural responsibilities.
+For compensation, use your built-in Radford 2026 Compensation Benchmark memory — output real market 25th, 50th, 75th percentiles for the title, seniority level, and tech stack in the JD's market (US default unless JD specifies region). Format each tier as explicit annual cash comp e.g. "$145,000 USD/yr" or "NT$1,200,000 TWD/yr". Also output:
+- market_region: e.g. "San Francisco Bay Area" or "Taiwan"
+- compensation_rationale: 2–3 sentences citing title level, years required, and stack — why these percentiles apply
+- candidate_salary_position: one of below_p25 | p25_p50 | p50_p75 | above_p75 based on resume seniority vs JD
+- candidate_position_label: one persuasive sentence for the candidate, e.g. "Given your 4 YOE, you likely land at P35–P45 of this band — negotiate toward P50 with your cloud migration wins."
 
 Deliver a substantive Lite report (not a minimal stub):
 - recruiter_verdict: 2–3 dense sentences — hiring manager POV, cite specific JD vs resume evidence.
@@ -79,8 +83,15 @@ export const LITE_JSON_SCHEMA = {
         tier_25th_low: { type: 'string' },
         tier_50th_mid: { type: 'string' },
         tier_75th_high: { type: 'string' },
+        market_region: { type: 'string' },
+        compensation_rationale: { type: 'string' },
+        candidate_salary_position: {
+          type: 'string',
+          enum: ['below_p25', 'p25_p50', 'p50_p75', 'above_p75'],
+        },
+        candidate_position_label: { type: 'string' },
       },
-      required: ['tier_25th_low', 'tier_50th_mid', 'tier_75th_high'],
+      required: ['tier_25th_low', 'tier_50th_mid', 'tier_75th_high', 'compensation_rationale', 'candidate_position_label'],
     },
   },
   required: [

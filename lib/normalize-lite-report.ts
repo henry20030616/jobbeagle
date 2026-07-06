@@ -19,7 +19,15 @@ export function normalizeLiteReport(raw: Partial<LiteReport> & { match_score: nu
     tier_25th_low: '—',
     tier_50th_mid: '—',
     tier_75th_high: '—',
+    compensation_rationale: '',
+    candidate_position_label: '',
   };
+  if (!report.radford_2026_compensation_matrix.compensation_rationale) {
+    report.radford_2026_compensation_matrix.compensation_rationale = '';
+  }
+  if (!report.radford_2026_compensation_matrix.candidate_position_label) {
+    report.radford_2026_compensation_matrix.candidate_position_label = '';
+  }
   report.recruiter_verdict =
     report.recruiter_verdict?.trim() || report.one_sentence_sharp_critique || '';
   report.matching_strengths = Array.isArray(report.matching_strengths)

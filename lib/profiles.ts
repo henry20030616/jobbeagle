@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { MembershipTier, ReportType, UserProfile } from '@/types';
 import { SUBSCRIPTION_ALLOWANCES } from '@/constants/checkout-plans';
+import { FREE_LIFETIME_LITE_CREDITS } from '@/constants/credits';
 
 export interface ProfileRow {
   id: string;
@@ -36,7 +37,7 @@ export async function ensureProfile(
       full_name: meta?.full_name ?? null,
       avatar_url: meta?.avatar_url ?? null,
       referral_code: referralCode,
-      available_lite_credits: 3,
+      available_lite_credits: FREE_LIFETIME_LITE_CREDITS,
       available_full_credits: 0,
       membership_tier: 'free',
     })
@@ -137,6 +138,22 @@ export async function deductCredit(
   return typeof data === 'number' ? data : -1;
 }
 
+/** Refund one credit after a failed analysis (free / single-purchase tiers only) */
+export async function refundCredit(
+  admin: SupabaseClient,
+  userId: string,
+  reportType: ReportType,
+): Promise<void> {
+  const lite = reportType === 'lite' ? 1 : 0;
+  const full = reportType === 'full' ? 1 : 0;
+  const { error } = await admin.rpc('increment_profile_credits', {
+    p_user_id: userId,
+    p_lite: lite,
+    p_full: full,
+  });
+  if (error) throw new Error(`Credit refund failed: ${error.message}`);
+}
+
 export async function findCachedReport(
   admin: SupabaseClient,
   userId: string,
@@ -156,6 +173,14 @@ export async function findCachedReport(
     .maybeSingle();
 
   return data ?? null;
+}
+
+/** Client-safe afford check from UserProfile */
+export function canAffordUserProfile(
+  profile: Pick<ProfileRow, 'membership_tier' | 'available_lite_credits' | 'available_full_credits'>,
+  reportType: ReportType,
+): boolean {
+  return canAffordReport(profile as ProfileRow, reportType);
 }
 
 export function profileToUserProfile(row: ProfileRow): UserProfile {

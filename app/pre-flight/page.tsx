@@ -1,18 +1,22 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
+import { decodePayloadParamForPreFlight } from '@/lib/payload';
+import { canAffordUserProfile } from '@/lib/profiles';
 import { startCheckout } from '@/lib/checkout-client';
 import type { LiteReport, FullReport, ReportType, ResumeInput, UserProfile } from '@/types';
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
+import { FREE_LIFETIME_LITE_CREDITS } from '@/constants/credits';
 import { normalizeLiteReport } from '@/lib/normalize-lite-report';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import DogLoading from '@/components/DogLoading';
 import LoginButton from '@/components/LoginButton';
+import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import {
   Rocket,
   Building2,
@@ -24,55 +28,37 @@ import {
   Loader2,
 } from 'lucide-react';
 
-interface DecodedPayload {
+interface JobDisplayData {
   company_name: string;
   job_title: string;
   raw_jd: string;
   char_count: number;
 }
 
-function decodePayloadParam(encoded: string): DecodedPayload | null {
-  try {
-    const json = decodeURIComponent(atob(encoded));
-    const data = JSON.parse(json) as {
-      pageTitle?: string;
-      rawText?: string;
-      jobId?: string;
-    };
-    const raw_jd = data.rawText || '';
-    let company_name = 'Unknown Company';
-    let job_title = data.pageTitle || 'Unknown Role';
-
-    if (data.pageTitle?.includes(' at ')) {
-      const [t, c] = data.pageTitle.split(' at ');
-      job_title = t.trim();
-      company_name = c.replace(/\s*[-|].*$/, '').trim();
-    }
-
-    return {
-      company_name,
-      job_title,
-      raw_jd,
-      char_count: raw_jd.length,
-    };
-  } catch {
-    return null;
-  }
-}
+const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
+  not_job_detail: {
+    'zh-TW': '請先點進「單一職缺詳情頁」（URL 含 /jobs/view/ 或 currentJobId=），再點外掛圖示。列表頁／精選職缺無法抓取。',
+    en: 'Open a single job detail page (URL with /jobs/view/ or currentJobId=) before clicking the extension. List/collection pages cannot be scraped.',
+  },
+  scrape_failed: {
+    'zh-TW': '職缺內容抓取失敗或太短。請確認頁面已完全載入，或改到首頁手動貼上完整 JD。',
+    en: 'Job scrape failed or content too short. Ensure the page is fully loaded, or paste the full JD on the homepage.',
+  },
+};
 
 export default function PreFlightPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const payloadParam = searchParams.get('payload');
+  const scrapeErrorKey = searchParams.get('error');
 
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [jobData, setJobData] = useState<DecodedPayload | null>(null);
+  const [jobData, setJobData] = useState<JobDisplayData | null>(null);
   const [resumeText, setResumeText] = useState('');
   const [reportType, setReportType] = useState<ReportType>('lite');
-  const [loading, setLoading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
   const [fullReport, setFullReport] = useState<FullReport | null>(null);
   const [checkoutBusy, setCheckoutBusy] = useState<CheckoutPlanType | null>(null);
@@ -95,10 +81,26 @@ export default function PreFlightPage() {
 
   useEffect(() => {
     if (payloadParam) {
-      setJobData(decodePayloadParam(payloadParam));
+      const decoded = decodePayloadParamForPreFlight(payloadParam);
+      if (decoded) {
+        setJobData({
+          company_name: decoded.company_name,
+          job_title: decoded.job_title,
+          raw_jd: decoded.raw_jd,
+          char_count: decoded.raw_jd.length,
+        });
+      } else {
+        setError('Extension payload could not be decoded. Re-scrape from the job detail page.');
+      }
+    }
+    if (scrapeErrorKey && SCRAPE_ERRORS[scrapeErrorKey]) {
+      setError(SCRAPE_ERRORS[scrapeErrorKey]['zh-TW']);
     }
     loadSession();
-  }, [payloadParam, loadSession]);
+  }, [payloadParam, scrapeErrorKey, loadSession]);
+
+  const creditsExhausted =
+    !!profile && !!user && !canAffordUserProfile(profile, reportType);
 
   useEffect(() => {
     if (searchParams.get('checkout') === 'success') {
@@ -151,7 +153,8 @@ export default function PreFlightPage() {
       const data = await res.json();
 
       if (res.status === 402) {
-        setError('Insufficient credits. Purchase below to continue.');
+        setError(data.error || 'Insufficient credits.');
+        setErrorCode('PAYMENT_REQUIRED');
         await loadSession();
         return;
       }
@@ -173,10 +176,15 @@ export default function PreFlightPage() {
     }
   };
 
+  const jdTooShort = jobData != null && jobData.char_count < 40;
+
   const handleCheckout = async (plan: CheckoutPlanType) => {
     setCheckoutBusy(plan);
     const result = await startCheckout(plan);
-    if (!result.ok) setError(result.error);
+    if (!result.ok) {
+      setError(result.error);
+      setErrorCode(null);
+    }
     setCheckoutBusy(null);
   };
 
@@ -210,10 +218,27 @@ export default function PreFlightPage() {
           </p>
         </div>
 
-        {error && (
+        {error && errorCode === 'PAYMENT_REQUIRED' && (
+          <QuotaPaywallCard
+            language="zh-TW"
+            message={error}
+            isLoggedIn={!!user}
+            onDismiss={() => { setError(null); setErrorCode(null); }}
+          />
+        )}
+        {error && errorCode !== 'PAYMENT_REQUIRED' && (
           <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-200 text-sm">
             <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
             <span>{error}</span>
+          </div>
+        )}
+
+        {jdTooShort && (
+          <div className="flex items-start gap-3 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-200 text-sm">
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+            <span>
+              職缺內容太短（{jobData?.char_count} 字），無法分析。請在 LinkedIn 單一職缺詳情頁重新點外掛，或到首頁手動貼完整 JD。
+            </span>
           </div>
         )}
 
@@ -293,32 +318,48 @@ export default function PreFlightPage() {
 
         {/* Credits */}
         {profile && (
-          <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm flex justify-between">
-            <span className="text-slate-400">Your credits</span>
-            <span>
-              Lite: <strong>{profile.available_lite_credits}</strong> · Full:{' '}
-              <strong>{profile.available_full_credits}</strong>
-              {profile.membership_tier !== 'free' && (
-                <span className="ml-2 text-emerald-400 capitalize">({profile.membership_tier.replace('_', ' ')})</span>
-              )}
-            </span>
+          <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Your credits</span>
+              <span>
+                Lite: <strong>{profile.available_lite_credits}</strong> · Full:{' '}
+                <strong>{profile.available_full_credits}</strong>
+                {profile.membership_tier !== 'free' && (
+                  <span className="ml-2 text-emerald-400 capitalize">({profile.membership_tier.replace('_', ' ')})</span>
+                )}
+              </span>
+            </div>
+            {profile.membership_tier === 'free' && (
+              <p className="text-xs text-slate-500">
+                免費帳號終生固定 {FREE_LIFETIME_LITE_CREDITS} 次 Lite；用完需付費，按月/按日皆不重置。
+              </p>
+            )}
           </div>
+        )}
+
+        {creditsExhausted && user && (
+          <QuotaPaywallCard
+            language="zh-TW"
+            isLoggedIn
+            onDismiss={() => {}}
+          />
         )}
 
         <button
           type="button"
           onClick={handleLaunch}
-          disabled={loading || !resumeText.trim()}
+          disabled={!resumeText.trim() || creditsExhausted || jdTooShort || !jobData}
           className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 py-4 font-semibold transition"
         >
           <Rocket className="w-5 h-5" />
-          Launch AI Analysis
+          {creditsExhausted ? '額度已用完 — 請付費解鎖' : 'Launch AI Analysis'}
           <ChevronRight className="w-5 h-5" />
         </button>
 
-        {/* Paywall / upgrade */}
+        {!creditsExhausted && (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
           <p className="text-sm font-medium text-slate-300">Need more credits?</p>
+          <p className="text-xs text-slate-500">免費為終生 {FREE_LIFETIME_LITE_CREDITS} 次 Lite；下方為付費加購。</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {(
               [
@@ -331,7 +372,7 @@ export default function PreFlightPage() {
               <button
                 key={plan}
                 type="button"
-                disabled={checkoutBusy === plan}
+                disabled={checkoutBusy === plan || !user}
                 onClick={() => handleCheckout(plan)}
                 className="rounded-lg border border-white/10 px-4 py-2.5 text-sm hover:bg-white/10 disabled:opacity-50 flex items-center justify-center gap-2"
               >
@@ -341,6 +382,7 @@ export default function PreFlightPage() {
             ))}
           </div>
         </div>
+        )}
 
         {liteReport && (
           <LiteReportDashboard

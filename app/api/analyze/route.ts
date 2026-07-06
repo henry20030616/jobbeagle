@@ -20,8 +20,10 @@ import {
   bindDeviceFingerprint,
   canAffordReport,
   deductCredit,
+  refundCredit,
   findCachedReport,
   hasSubscriptionCredits,
+  type ProfileRow,
 } from '@/lib/profiles';
 import {
   countCombinedTokens,
@@ -37,6 +39,21 @@ import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
 import { validateJobDescription } from '@/lib/validate-job-description';
 
 export const maxDuration = 60;
+
+function paymentRequiredResponse(profile: ProfileRow) {
+  return NextResponse.json(
+    {
+      error: 'Insufficient credits. Upgrade or purchase to continue.',
+      code: 'PAYMENT_REQUIRED',
+      profile: {
+        lite_credits: profile.available_lite_credits,
+        full_credits: profile.available_full_credits,
+        membership_tier: profile.membership_tier,
+      },
+    },
+    { status: 402 },
+  );
+}
 
 interface ResolvedInput {
   company_name: string;
@@ -186,6 +203,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Credits must be checked before cache — free users at 0 cannot replay cached reports
+    if (!canAffordReport(profile, reportType)) {
+      return paymentRequiredResponse(profile);
+    }
+
     const cached = await findCachedReport(
       admin,
       user.id,
@@ -210,47 +232,44 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!canAffordReport(profile, reportType)) {
-      return NextResponse.json(
-        {
-          error: 'Insufficient credits. Upgrade or purchase to continue.',
-          code: 'PAYMENT_REQUIRED',
-          profile: {
-            lite_credits: profile.available_lite_credits,
-            full_credits: profile.available_full_credits,
-            membership_tier: profile.membership_tier,
-          },
-        },
-        { status: 402 },
-      );
+    // Deduct before AI call so concurrent requests cannot overspend
+    const remaining = await deductCredit(admin, user.id, reportType);
+    if (remaining < 0 && !hasSubscriptionCredits(profile.membership_tier)) {
+      return paymentRequiredResponse(profile);
     }
 
     let report: LiteReport | FullReport;
     let modelUsed: string;
 
-    if (reportType === 'lite') {
-      const result = await executeLiteAnalysis(
-        input.resume_text,
-        input.raw_jd,
-        input.pdf_inline,
-      );
-      report = result.report;
-      modelUsed = result.model;
-    } else {
-      const result = await executeFullAnalysis(
-        input.resume_text,
-        input.raw_jd,
-        input.company_name,
-        input.job_title,
-        input.pdf_inline,
-      );
-      report = result.report;
-      modelUsed = result.model;
-    }
-
-    const remaining = await deductCredit(admin, user.id, reportType);
-    if (remaining < 0 && profile.membership_tier === 'free') {
-      console.warn('[Analyze] Credit deduction returned -1 after success');
+    try {
+      if (reportType === 'lite') {
+        const result = await executeLiteAnalysis(
+          input.resume_text,
+          input.raw_jd,
+          input.pdf_inline,
+        );
+        report = result.report;
+        modelUsed = result.model;
+      } else {
+        const result = await executeFullAnalysis(
+          input.resume_text,
+          input.raw_jd,
+          input.company_name,
+          input.job_title,
+          input.pdf_inline,
+        );
+        report = result.report;
+        modelUsed = result.model;
+      }
+    } catch (analysisErr) {
+      if (!hasSubscriptionCredits(profile.membership_tier)) {
+        try {
+          await refundCredit(admin, user.id, reportType);
+        } catch (refundErr) {
+          console.error('[Analyze] Credit refund failed:', refundErr);
+        }
+      }
+      throw analysisErr;
     }
 
     if (reportType === 'lite') {
