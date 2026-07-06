@@ -68,41 +68,38 @@
 
 ---
 
-## 一次性手動清單（全部做完即 docx 上線完成）
+## 一次性手動清單（Agent 驗證通過後，你只要做這些）
 
-### A. 瀏覽器驗收（約 15 分鐘）
+> 只有瀏覽器操作，不必開終端機。約 20 分鐘。
 
-1. 打開 https://www.jobbeagle.com ，`Cmd+Shift+R` 硬重新整理
-2. Google 登入 → 確認右上角顯示 **Lite / Full 額度** 與 **推薦連結**
-3. 選 **Lite** → 貼真實 JD + PDF 履歷 → 分析 → 確認完整 Lite 報告
-4. 點 **Back to Home** → 應回到表單（非卡在報告）
-5. 若有 Full 額度：選 **Full** → 再分析 → 確認 Blind/Glassdoor 區塊
-6. LinkedIn 職缺頁 → 點 Chrome 外掛 → 應開 `/pre-flight`
-7. `/shorts` → 影片 AI 匹配 → Modal 為新 Lite 報告
-8. 額度用盡 → 付費牆 → 點 $3 → 應跳 Lemon Squeezy 結帳
+### 1. 網站驗收（https://www.jobbeagle.com）
 
-### B. Chrome 外掛安裝（一次性，約 3 分鐘）
+硬重新整理：`Cmd + Shift + R`
 
-1. Chrome → `chrome://extensions` → 開發人員模式 ON
-2. **載入未封裝項目** → 選本機資料夾 `jobbeagle/browser-extension`
-3. 到 LinkedIn 職缺頁點外掛圖示測試
+| # | 操作 | 預期 |
+|---|------|------|
+| 1 | Google 登入 | 右上角用戶名；Lite/Full 額度、推薦連結 |
+| 2 | 選 **Lite** → 真實 JD + PDF → 分析 | 完整 Lite 報告 |
+| 3 | 點 **Back to Home** | 回到 JD 表單 |
+| 4 | 有 Full 額度時選 **Full** 再分析 | Blind/Glassdoor / STAR 區塊 |
+| 5 | **History** 開舊報告 | 對應 Lite 或 Full UI |
+| 6 | `/shorts` → 影片 → AI 匹配 | 新 Lite 報告 Modal |
+| 7 | 額度用盡 → 付費牆 → $3 | 跳 Lemon Squeezy 結帳 |
 
-### C. 選用（只有要開通時才做）
+### 2. Chrome 外掛（一次性，約 3 分鐘）
 
-| 要做的事 | 連結 | 何時需要 |
-|----------|------|----------|
-| **Resend 寄信**（Shorts 應徵通知） | https://resend.com/api-keys | 雇主收到應徵 email 時 |
-| **LinkedIn OAuth 登入** | https://www.linkedin.com/developers/ | 若要 LinkedIn 一鍵登入（非現況） |
-| **旋轉已外洩的 API token** | Supabase Tokens / Lemon Squeezy API | 安全建議（對話曾貼過 key） |
+1. `chrome://extensions` → 開發人員模式 ON
+2. **載入未封裝項目** → `jobbeagle/browser-extension`
+3. LinkedIn 職缺頁 → 點外掛 → 開 `/pre-flight`
 
-### D. 不必再做
+### 3. 選用（現在不必做）
 
-- Supabase migration 008（已代跑）
-- Lemon Squeezy 產品 / webhook / Vercel env（已代跑）
-- Vercel `vercel login`（已完成）
-- 自己開終端機跑 deploy（Agent 規則已代跑）
+Resend 寄信、LinkedIn OAuth、旋轉 token — 見上方「刻意不做」表。
+
+### 不必再做
+
+Migration、Lemon Squeezy、Vercel env、CRON、deploy — Agent 已代跑並驗證（見頁首表格）。
 
 ---
 
-**全部 A + B 通過 = docx 規格上線驗收完成。**  
-卡關把完整錯誤貼給 Cursor，不必分次回報。
+**#1 + #2 全過 = docx 上線驗收完成。** 卡關貼完整錯誤或截圖。
