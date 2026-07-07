@@ -250,4 +250,15 @@
     await new Promise((resolve) => setTimeout(resolve, 1500));
     return scrapeJobPage();
   };
+
+  window.__jobbeagleScrapePage()
+    .then((data) => {
+      chrome.runtime.sendMessage({ type: 'JOBBEAGLE_SCRAPE_RESULT', data });
+    })
+    .catch((err) => {
+      chrome.runtime.sendMessage({
+        type: 'JOBBEAGLE_SCRAPE_RESULT',
+        data: { error: 'SCRAPE_RUNTIME', message: String(err) },
+      });
+    });
 })();
