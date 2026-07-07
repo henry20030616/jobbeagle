@@ -84,9 +84,7 @@
       '.job-details-jobs-unified-top-card__company-name',
       '.jobs-unified-top-card__company-name',
       '.job-details-jobs-unified-top-card__primary-description-container a',
-      '.job-details-jobs-unified-top-card__primary-description-container',
       '[data-test-job-details-company-name]',
-      'a[href*="/company/"]',
     ]);
 
     const location = firstText(scoped, [

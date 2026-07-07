@@ -26,23 +26,21 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   try {
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ['scrape-page.js'],
-    });
-
+    // files + func 必須在同一次 executeScript，否則第二次注入拿不到 __jobbeagleScrapePage
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
+      files: ['scrape-page.js'],
       func: async () => {
-        if (typeof window.__jobbeagleScrapePage === 'function') {
-          return window.__jobbeagleScrapePage();
+        if (typeof window.__jobbeagleScrapePage !== 'function') {
+          return { error: 'SCRAPE_SCRIPT_MISSING' };
         }
-        return null;
+        return window.__jobbeagleScrapePage();
       },
     });
 
     const result = results?.[0]?.result;
-    if (!result) {
+    if (!result || result.error === 'SCRAPE_SCRIPT_MISSING') {
+      console.error('[JobBeagle] scrape script not injected:', result);
       await openPreFlight(tab.id, null, 'scrape_failed');
       return;
     }
@@ -71,8 +69,8 @@ chrome.action.onClicked.addListener(async (tab) => {
     const captureData = await captureRes.json().catch(() => ({}));
 
     if (!captureRes.ok || !captureData.sid) {
-      console.error('[JobBeagle] capture API failed:', captureData);
-      await openPreFlight(tab.id, null, 'scrape_failed');
+      console.error('[JobBeagle] capture API failed:', captureRes.status, captureData);
+      await openPreFlight(tab.id, null, 'capture_failed');
       return;
     }
 

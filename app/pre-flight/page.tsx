@@ -44,6 +44,10 @@ const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
     'zh-TW': '職缺內容抓取失敗或太短。請在右側職缺詳情載入完成後再點外掛；或點「在新分頁中查看」打開完整職缺頁後再試。',
     en: 'Job scrape failed or content too short. Wait for the job detail panel to load, or open the job in a new tab and try again.',
   },
+  capture_failed: {
+    'zh-TW': '已抓到職缺，但傳送到 JobBeagle 伺服器失敗。請稍後再試，或到 chrome://extensions 點 JobBeagle 的「Service Worker」查看錯誤。',
+    en: 'Job was scraped but server handoff failed. Retry later or inspect the extension service worker console.',
+  },
 };
 
 export default function PreFlightPage() {
