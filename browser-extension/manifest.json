@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "JobBeagle - Headhunter-Level Job Triage",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Instant semantic fit scoring and live interview intel extraction.",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "sidePanel"],
   "action": {
     "default_title": "Analyze with JobBeagle",
     "default_icon": {
@@ -14,6 +14,9 @@
   },
   "background": {
     "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
   },
   "host_permissions": [
     "https://*.linkedin.com/*",

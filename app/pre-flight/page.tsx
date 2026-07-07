@@ -48,12 +48,16 @@ const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
 
 export default function PreFlightPage() {
   const searchParams = useSearchParams();
+  const sidParam = searchParams.get('sid');
   const payloadParam = searchParams.get('payload');
   const scrapeErrorKey = searchParams.get('error');
+  const embedded = searchParams.get('embedded') === '1';
 
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [jobData, setJobData] = useState<JobDisplayData | null>(null);
+  const [handoffSid, setHandoffSid] = useState<string | null>(null);
+  const [loadingJob, setLoadingJob] = useState(false);
   const [resumeText, setResumeText] = useState('');
   const [reportType, setReportType] = useState<ReportType>('lite');
   const [analyzing, setAnalyzing] = useState(false);
@@ -80,24 +84,60 @@ export default function PreFlightPage() {
   }, []);
 
   useEffect(() => {
-    if (payloadParam) {
-      const decoded = decodePayloadParamForPreFlight(payloadParam);
-      if (decoded) {
-        setJobData({
-          company_name: decoded.company_name,
-          job_title: decoded.job_title,
-          raw_jd: decoded.raw_jd,
-          char_count: decoded.raw_jd.length,
-        });
-      } else {
-        setError('Extension payload could not be decoded. Re-scrape from the job detail page.');
+    let cancelled = false;
+
+    async function loadJob() {
+      if (sidParam) {
+        setLoadingJob(true);
+        setHandoffSid(sidParam);
+        try {
+          const res = await fetch(`/api/extension-capture?sid=${encodeURIComponent(sidParam)}`);
+          const data = await res.json();
+          if (cancelled) return;
+          if (!res.ok) {
+            setError(data.error || 'Handoff session expired. Re-capture from LinkedIn.');
+            return;
+          }
+          setJobData({
+            company_name: data.job.company_name,
+            job_title: data.job.job_title,
+            raw_jd: data.job.raw_jd,
+            char_count: data.job.char_count,
+          });
+        } catch {
+          if (!cancelled) setError('Could not load captured job data.');
+        } finally {
+          if (!cancelled) setLoadingJob(false);
+        }
+        return;
+      }
+
+      setHandoffSid(null);
+      if (payloadParam) {
+        const decoded = decodePayloadParamForPreFlight(payloadParam);
+        if (decoded) {
+          setJobData({
+            company_name: decoded.company_name,
+            job_title: decoded.job_title,
+            raw_jd: decoded.raw_jd,
+            char_count: decoded.raw_jd.length,
+          });
+        } else {
+          setError('Extension payload could not be decoded. Re-scrape from the job detail page.');
+        }
       }
     }
+
+    loadJob();
     if (scrapeErrorKey && SCRAPE_ERRORS[scrapeErrorKey]) {
       setError(SCRAPE_ERRORS[scrapeErrorKey]['zh-TW']);
     }
     loadSession();
-  }, [payloadParam, scrapeErrorKey, loadSession]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sidParam, payloadParam, scrapeErrorKey, loadSession]);
 
   const creditsExhausted =
     !!profile && !!user && !canAffordUserProfile(profile, reportType);
@@ -138,7 +178,9 @@ export default function PreFlightPage() {
         language: 'en',
       };
 
-      if (payloadParam) {
+      if (handoffSid) {
+        body.handoff_sid = handoffSid;
+      } else if (payloadParam) {
         body.payload = payloadParam;
       } else if (jobData) {
         body.jobDescription = jobData.raw_jd;
@@ -188,16 +230,17 @@ export default function PreFlightPage() {
     setCheckoutBusy(null);
   };
 
-  if (analyzing) {
+  if (analyzing || loadingJob) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <DogLoading progress={72} stageLabel="Running headhunter triage..." />
+        <DogLoading progress={loadingJob ? 35 : 72} stageLabel={loadingJob ? 'Loading job capture...' : 'Running headhunter triage...'} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className={`min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white ${embedded ? 'text-sm' : ''}`}>
+      {!embedded && (
       <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
         <Link href="/" className="text-lg font-bold tracking-tight">
           JobBeagle
@@ -208,15 +251,25 @@ export default function PreFlightPage() {
           <LoginButton redirectTo="/pre-flight" />
         )}
       </header>
+      )}
 
-      <main className="max-w-3xl mx-auto px-4 py-10 space-y-8">
+      <main className={`max-w-3xl mx-auto px-4 space-y-8 ${embedded ? 'py-6' : 'py-10'}`}>
         <div>
-          <h1 className="text-2xl font-bold mb-2">Pre-Flight Check</h1>
+          <h1 className={`font-bold mb-2 ${embedded ? 'text-xl' : 'text-2xl'}`}>Pre-Flight Check</h1>
           <p className="text-slate-400 text-sm">
             Confirm scraped job data and resume before launching. You are responsible for
             data accuracy before credits are consumed.
           </p>
+          {embedded && (
+            <p className="text-xs text-indigo-300/80 mt-2">Opened in Chrome Side Panel — you can stay on LinkedIn.</p>
+          )}
         </div>
+
+        {embedded && !user && (
+          <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-3">
+            <LoginButton redirectTo={`/pre-flight?sid=${encodeURIComponent(sidParam || '')}&embedded=1`} />
+          </div>
+        )}
 
         {error && errorCode === 'PAYMENT_REQUIRED' && (
           <QuotaPaywallCard

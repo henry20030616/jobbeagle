@@ -23,6 +23,19 @@ const nextConfig = {
       },
     ];
   },
+  async headers() {
+    return [
+      {
+        source: '/pre-flight',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self' chrome-extension:;",
+          },
+        ],
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig

@@ -222,7 +222,10 @@ export interface PreFlightJobData {
 
 export interface AnalyzeRequestBody {
   report_type: ReportType;
+  /** Legacy base64 URL payload */
   payload?: string;
+  /** Signed handoff from POST /api/extension-capture */
+  handoff_sid?: string;
   /** Legacy manual flow */
   jobDescription?: string;
   resume?: ResumeInput;

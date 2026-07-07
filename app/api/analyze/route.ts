@@ -14,6 +14,7 @@ import {
   deriveJobId,
   truncateText,
 } from '@/lib/payload';
+import { verifyHandoffToken } from '@/lib/extension-handoff';
 import {
   ensureProfile,
   checkDeviceSybil,
@@ -68,9 +69,28 @@ async function resolveInput(
   body: AnalyzeRequestBody,
   resume?: ResumeInput,
 ): Promise<ResolvedInput> {
-  if (body.payload) {
-    const ext = decodeExtensionPayload(body.payload);
+  const fromExtension = (ext: ReturnType<typeof verifyHandoffToken>) => {
     const pf = payloadToPreFlightData(ext);
+    return pf;
+  };
+
+  if (body.handoff_sid) {
+    const pf = fromExtension(verifyHandoffToken(body.handoff_sid));
+    const resolved = resume ? await resolveResumeForAnalysis(resume) : null;
+    return {
+      company_name: pf.company_name,
+      job_title: pf.job_title,
+      raw_jd: truncateText(pf.raw_jd, MAX_JD_CHARS),
+      linkedin_job_id: deriveJobId(pf.linkedin_job_id, pf.raw_jd, pf.company_name),
+      resume_text: resolved?.pdfInline
+        ? '[PDF resume attached]'
+        : truncateText(resolved?.text || '', MAX_RESUME_CHARS),
+      pdf_inline: resolved?.pdfInline,
+    };
+  }
+
+  if (body.payload) {
+    const pf = fromExtension(decodeExtensionPayload(body.payload));
     let resumeText = '';
     if (resume) {
       const resolved = await resolveResumeForAnalysis(resume);
