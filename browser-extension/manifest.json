@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "JobBeagle - Headhunter-Level Job Triage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Instant semantic fit scoring and live interview intel extraction.",
   "permissions": ["activeTab", "scripting"],
   "action": {
@@ -16,7 +16,7 @@
     "service_worker": "background.js"
   },
   "host_permissions": [
-    "https://*.linkedin.com/jobs/*",
+    "https://*.linkedin.com/*",
     "https://www.jobbeagle.com/*",
     "http://localhost:3000/*"
   ],

@@ -24,7 +24,7 @@ export function decodeExtensionPayload(encoded: string): ExtensionJobPayload {
   return parsed;
 }
 
-const LINKEDIN_NOISE_TITLES = /精選職缺|推薦職缺|jobs?\s*search|linkedin/i;
+const LINKEDIN_NOISE_TITLES = /精選職缺|推薦職缺|符合.*的職缺|jobs?\s*search|linkedin/i;
 
 function parseTitleParts(pageTitle: string): { job_title: string; company_name: string } | null {
   if (!pageTitle || LINKEDIN_NOISE_TITLES.test(pageTitle) && !pageTitle.includes(' at ')) {

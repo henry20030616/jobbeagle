@@ -37,12 +37,12 @@ interface JobDisplayData {
 
 const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
   not_job_detail: {
-    'zh-TW': '請先點進「單一職缺詳情頁」（URL 含 /jobs/view/ 或 currentJobId=），再點外掛圖示。列表頁／精選職缺無法抓取。',
-    en: 'Open a single job detail page (URL with /jobs/view/ or currentJobId=) before clicking the extension. List/collection pages cannot be scraped.',
+    'zh-TW': '請先在左側列表點選一個職缺，等右側詳情出現後再點外掛；或點「在新分頁中查看」/ 職缺標題進入完整頁面。',
+    en: 'Select a job in the left list and wait for details on the right, or open the job in a full page before clicking the extension.',
   },
   scrape_failed: {
-    'zh-TW': '職缺內容抓取失敗或太短。請確認頁面已完全載入，或改到首頁手動貼上完整 JD。',
-    en: 'Job scrape failed or content too short. Ensure the page is fully loaded, or paste the full JD on the homepage.',
+    'zh-TW': '職缺內容抓取失敗或太短。請在右側職缺詳情載入完成後再點外掛；或點「在新分頁中查看」打開完整職缺頁後再試。',
+    en: 'Job scrape failed or content too short. Wait for the job detail panel to load, or open the job in a new tab and try again.',
   },
 };
 
