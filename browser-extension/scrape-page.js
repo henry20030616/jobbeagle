@@ -1,6 +1,5 @@
 /**
- * Injected scrape bundle — runs in page context via chrome.scripting.executeScript.
- * Exposes window.__jobbeagleScrapePage() for the service worker.
+ * Injected scrape bundle — single injection with background.js func callback.
  */
 (function jobbeagleScrapeBundle() {
   function cleanText(value) {
@@ -51,6 +50,7 @@
       '.jobs-details',
       '.jobs-details__main-content',
       'div[data-job-details]',
+      '[data-view-name="job-details"]',
       '[class*="jobs-search__job-details"]',
       '[class*="jobs-details__container"]',
     ];
@@ -60,16 +60,31 @@
       const hasJobSignal = el.querySelector(
         '[class*="job-title"], [class*="company-name"], [class*="jobs-description"], h1, h2',
       );
-      if (hasJobSignal) return el;
+      if (hasJobSignal || cleanText(el.innerText).length > 400) return el;
     }
     return null;
   }
 
-  function scrapeLinkedIn(pageUrl, documentTitle) {
-    const detailRoot = findLinkedInDetailsRoot() || document;
-    const scoped = detailRoot === document ? document : detailRoot;
+  /** Fallback: largest text block on the right side of split-pane search */
+  function scrapeHeuristicRightPanel() {
+    const vw = window.innerWidth || 1200;
+    let best = '';
+    const nodes = document.querySelectorAll('div, section, article, main');
+    for (let i = 0; i < nodes.length; i++) {
+      const el = nodes[i];
+      const rect = el.getBoundingClientRect();
+      if (rect.left < vw * 0.25 || rect.width < 260 || rect.height < 180) continue;
+      const text = (el.innerText || '').trim();
+      if (text.length <= best.length || text.length < 350) continue;
+      if (!/Apply|Easy Apply|儲存|儲存職缺|分享|Save/i.test(text)) continue;
+      if (/符合.*的職缺|jobs search|搜尋結果/i.test(text.slice(0, 80))) continue;
+      best = text;
+    }
+    return best;
+  }
 
-    const title = firstText(scoped, [
+  function parseTitleCompanyFromPanel(panelText, scoped) {
+    let title = firstText(scoped, [
       '.job-details-jobs-unified-top-card__job-title',
       '.jobs-unified-top-card__job-title',
       '.job-details-jobs-unified-top-card h1',
@@ -79,19 +94,36 @@
       'main h1',
       'h1',
     ]);
-
-    const company = firstText(scoped, [
+    let company = firstText(scoped, [
       '.job-details-jobs-unified-top-card__company-name',
       '.jobs-unified-top-card__company-name',
       '.job-details-jobs-unified-top-card__primary-description-container a',
       '[data-test-job-details-company-name]',
     ]);
 
-    const location = firstText(scoped, [
-      '.job-details-jobs-unified-top-card__bullet',
-      '.jobs-unified-top-card__bullet',
-      '.job-details-jobs-unified-top-card__primary-description-container',
-    ]);
+    if (!title && panelText) {
+      const lines = panelText.split('\n').map((l) => l.trim()).filter(Boolean);
+      for (let i = 0; i < Math.min(lines.length, 12); i++) {
+        const line = lines[i];
+        if (line.length < 4 || line.length > 120) continue;
+        if (/Apply|Save|Share|儲存|分享|Easy Apply/i.test(line)) continue;
+        if (!title) {
+          title = line;
+          continue;
+        }
+        if (!company && line !== title && !/^\d|ago|前|·/.test(line)) {
+          company = line;
+          break;
+        }
+      }
+    }
+
+    return { title, company };
+  }
+
+  function scrapeLinkedIn(pageUrl, documentTitle) {
+    const detailRoot = findLinkedInDetailsRoot();
+    const scoped = detailRoot || document;
 
     let description = firstText(scoped, [
       '.jobs-description__content',
@@ -104,8 +136,8 @@
       '[data-test-description-section]',
     ]);
 
-    if (description.length < 80 && scoped !== document) {
-      const panelText = cleanText(scoped.innerText);
+    if (description.length < 80 && detailRoot) {
+      const panelText = cleanText(detailRoot.innerText);
       if (panelText.length > description.length) description = panelText;
     }
 
@@ -117,6 +149,18 @@
       }
     }
 
+    if (description.length < 200) {
+      const heuristic = scrapeHeuristicRightPanel();
+      if (heuristic.length > description.length) description = heuristic;
+    }
+
+    const { title, company } = parseTitleCompanyFromPanel(description, scoped);
+
+    const location = firstText(scoped, [
+      '.job-details-jobs-unified-top-card__bullet',
+      '.jobs-unified-top-card__bullet',
+    ]);
+
     const parts = [];
     if (title) parts.push('職位：' + title);
     if (company) parts.push('公司：' + company);
@@ -126,17 +170,17 @@
     const rawText = parts.join('\n\n');
     const pageTitle = title && company ? title + ' | ' + company : title || documentTitle;
 
-    const hasDetailPanel = !!findLinkedInDetailsRoot();
     const isFullView = /\/jobs\/view\/\d+/.test(pageUrl) || /currentJobId=\d+/.test(pageUrl);
-    const isSearchWithSelection = hasDetailPanel && title.length > 2 && description.length > 40;
+    const hasEnough = rawText.length >= 40 && (title.length > 2 || description.length > 200);
 
-    if (!isFullView && !isSearchWithSelection && rawText.length < 40) {
+    if (!isFullView && !hasEnough) {
       return {
         error: 'NOT_JOB_DETAIL',
         pageTitle: documentTitle,
         pageUrl,
         rawText: '',
         jobId: extractJobId(pageUrl),
+        _debug: { descLen: description.length, titleLen: title.length, hasRoot: !!detailRoot },
       };
     }
 
@@ -145,6 +189,7 @@
       pageUrl,
       rawText,
       jobId: extractJobId(pageUrl),
+      _debug: { descLen: description.length, titleLen: title.length },
     };
   }
 
@@ -202,7 +247,7 @@
   }
 
   window.__jobbeagleScrapePage = async function __jobbeagleScrapePage() {
-    await new Promise((resolve) => setTimeout(resolve, 900));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     return scrapeJobPage();
   };
 })();

@@ -1,5 +1,5 @@
 /**
- * JobBeagle Chrome Extension v1.1
+ * JobBeagle Chrome Extension v1.1.2
  * Scrape → POST /api/extension-capture → Side Panel (or tab) pre-flight
  */
 
@@ -7,6 +7,7 @@ const WEBSITE_ORIGIN = 'https://www.jobbeagle.com';
 // Dev: const WEBSITE_ORIGIN = 'http://localhost:3000';
 
 const CAPTURE_API = `${WEBSITE_ORIGIN}/api/extension-capture`;
+const LINKEDIN_ORIGINS = ['https://*.linkedin.com/*', 'https://www.linkedin.com/*'];
 
 chrome.runtime.onInstalled.addListener(() => {
   if (chrome.sidePanel?.setPanelBehavior) {
@@ -14,10 +15,28 @@ chrome.runtime.onInstalled.addListener(() => {
   }
 });
 
+async function ensureHostAccess(tabUrl) {
+  if (!tabUrl.includes('linkedin.com') && !tabUrl.includes('104.com.tw')) {
+    return true;
+  }
+  const origins = tabUrl.includes('linkedin.com')
+    ? LINKEDIN_ORIGINS
+    : ['https://*.104.com.tw/*', 'https://www.104.com.tw/*'];
+
+  try {
+    const has = await chrome.permissions.contains({ origins });
+    if (has) return true;
+    return chrome.permissions.request({ origins });
+  } catch (e) {
+    console.warn('[JobBeagle] permission request failed:', e);
+    return true;
+  }
+}
+
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab.id || !tab.url) return;
 
-  const isLinkedIn = tab.url.includes('linkedin.com/jobs');
+  const isLinkedIn = tab.url.includes('linkedin.com');
   const is104 = tab.url.includes('104.com.tw/job/');
 
   if (!isLinkedIn && !is104) {
@@ -25,12 +44,17 @@ chrome.action.onClicked.addListener(async (tab) => {
     return;
   }
 
+  const allowed = await ensureHostAccess(tab.url);
+  if (!allowed) {
+    await openPreFlight(tab.id, null, 'site_access');
+    return;
+  }
+
   try {
-    // files + func 必須在同一次 executeScript，否則第二次注入拿不到 __jobbeagleScrapePage
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ['scrape-page.js'],
-      func: async () => {
+      func: () => {
         if (typeof window.__jobbeagleScrapePage !== 'function') {
           return { error: 'SCRAPE_SCRIPT_MISSING' };
         }
@@ -39,8 +63,9 @@ chrome.action.onClicked.addListener(async (tab) => {
     });
 
     const result = results?.[0]?.result;
+
     if (!result || result.error === 'SCRAPE_SCRIPT_MISSING') {
-      console.error('[JobBeagle] scrape script not injected:', result);
+      console.error('[JobBeagle] scrape script missing:', result);
       await openPreFlight(tab.id, null, 'scrape_failed');
       return;
     }
@@ -51,6 +76,7 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
 
     if (!result.rawText || result.rawText.trim().length < 40) {
+      console.error('[JobBeagle] scrape too short:', result.rawText?.length, result._debug);
       await openPreFlight(tab.id, null, 'scrape_failed');
       return;
     }
@@ -76,8 +102,13 @@ chrome.action.onClicked.addListener(async (tab) => {
 
     await openPreFlight(tab.id, captureData.sid, null);
   } catch (err) {
-    console.error('[JobBeagle] scrape failed:', err);
-    await openPreFlight(tab.id, null, 'scrape_failed');
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[JobBeagle] scrape failed:', msg);
+    if (/cannot access|permission|denied/i.test(msg)) {
+      await openPreFlight(tab.id, null, 'site_access');
+    } else {
+      await openPreFlight(tab.id, null, 'scrape_failed');
+    }
   }
 });
 

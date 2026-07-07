@@ -48,6 +48,10 @@ const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
     'zh-TW': '已抓到職缺，但傳送到 JobBeagle 伺服器失敗。請稍後再試，或到 chrome://extensions 點 JobBeagle 的「Service Worker」查看錯誤。',
     en: 'Job was scraped but server handoff failed. Retry later or inspect the extension service worker console.',
   },
+  site_access: {
+    'zh-TW': 'Chrome 未允許外掛存取 LinkedIn。請到 chrome://extensions → JobBeagle →「網站存取權限」→ 把 https://*.linkedin.com/* 的開關打開，或選「在所有網站上」。',
+    en: 'Chrome blocked LinkedIn access. Open chrome://extensions → JobBeagle → enable site access for linkedin.com.',
+  },
 };
 
 export default function PreFlightPage() {
