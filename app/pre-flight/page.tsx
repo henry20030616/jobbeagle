@@ -323,9 +323,9 @@ export default function PreFlightPage() {
             <FileText className="w-6 h-6 text-emerald-400 shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">JD Summary</p>
-              <p className="text-sm text-slate-300 line-clamp-3">
-                {jobData?.raw_jd?.slice(0, 280) || 'No extension payload — paste JD on homepage.'}
-              </p>
+              <div className="max-h-48 overflow-y-auto rounded-lg border border-white/5 bg-black/20 p-3 text-sm text-slate-300 whitespace-pre-wrap">
+                {jobData?.raw_jd || 'No extension payload — paste JD on homepage.'}
+              </div>
               {jobData && (
                 <p className="text-xs text-slate-500 mt-2">{jobData.char_count.toLocaleString()} characters</p>
               )}
