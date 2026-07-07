@@ -92,5 +92,18 @@ try {
   failed = true;
 }
 
+try {
+  const cap = await fetch(`${site}/api/extension-capture`, { method: 'OPTIONS' });
+  console.log(
+    cap.status === 204 || cap.ok
+      ? `OK  /api/extension-capture OPTIONS ${cap.status}`
+      : `FAIL /api/extension-capture OPTIONS ${cap.status}`,
+  );
+  if (cap.status !== 204 && !cap.ok) failed = true;
+} catch (e) {
+  console.error('FAIL extension-capture:', e.message);
+  failed = true;
+}
+
 console.log(failed ? '\nRESULT: SOME CHECKS FAILED' : '\nRESULT: ALL CHECKS PASSED');
 process.exit(failed ? 1 : 0);

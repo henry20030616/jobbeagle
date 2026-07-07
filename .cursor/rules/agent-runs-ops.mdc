@@ -1,72 +1,98 @@
 ---
-description: Agent 代跑 GitHub / Supabase / Vercel 整合與部署；使用者只做瀏覽器 OAuth
+description: Agent 代跑 GitHub / Supabase / Vercel / 第三方整合；使用者只做瀏覽器 OAuth 與 Chrome 外掛重載
 alwaysApply: true
 ---
 
-# Agent 代跑運維（GitHub · Supabase · Vercel）
+# Agent 代跑運維（全自動優先）
 
 ## 原則
 
-- **能代跑的一律由 Agent 執行**（Shell、腳本、API、git push），不叫使用者開終端機。
-- 使用者**只做** Agent 無法代做的 **瀏覽器一次性 OAuth / 第三方後台點擊**（一次列完）。
-- 一鍵代跑：`bash scripts/ops/bootstrap-remote.sh`（migration + GitHub auth + Lemon Squeezy + Vercel）
-- 一鍵同步：`bash scripts/ops/sync-all.sh`（Vercel env 同步 → 驗證 → redeploy）
+- **能代跑的一律由 Agent 執行**（Shell、腳本、API、git push、Vercel redeploy），**不叫使用者開終端機**。
+- 使用者**只做** Agent 無法代做的：
+  1. 瀏覽器 **OAuth / 第三方後台**（各一次）
+  2. **Chrome 外掛「重新載入」**（每次更新 `browser-extension/` 後）
+  3. **手動驗收**（點 LinkedIn、點外掛、看 pre-flight）
+- 任務結束前：Agent **必須**跑驗證腳本 + push +（必要時）`sync-all.sh`。
+- **勿 commit / 勿在對話貼出** `.env.local` 內 secret。
+
+## 一鍵腳本
+
+| 腳本 | 用途 |
+|------|------|
+| `bash scripts/ops/bootstrap-remote.sh` | migration + GitHub auth + Lemon Squeezy + Vercel（需 token） |
+| `bash scripts/ops/sync-all.sh` | Vercel env 同步 → 驗證 → production redeploy |
+| `bash scripts/ops/sync-vercel-env.sh` | 僅同步 env |
+| `node scripts/ops/verify-integrations.mjs` | GitHub / Supabase / Vercel 健康檢查 |
+| `node scripts/ops/verify-supabase.mjs` | profiles 表 |
+| `node scripts/ops/setup-lemonsqueezy.mjs` | LS 產品 / webhook / 寫回 `.env.local` |
 
 ## GitHub — Agent 代跑
 
-| 動作 | 命令 / 方式 |
-|------|-------------|
-| 確認 remote | `git remote -v` → `github.com/henry20030616/jobbeagle` |
-| 拉取 / 比對 | `git fetch origin`、`git status` |
-| 提交並推送 | `git add/commit/push origin main`（觸發 Vercel 自動部署） |
-| CI | push 後由 `.github/workflows` 自動跑 |
-
-**使用者僅需：** 首次若 push 要授權，在 Cursor 彈窗點 Allow；無需手動開 GitHub 設定頁。
+- `git fetch` / `status` / `add` / `commit` / `push origin main`
+- push 觸發 Vercel 自動部署；必要時再 `npx vercel deploy --prod --yes`
 
 ## Supabase — Agent 代跑
 
-| 動作 | 命令 / 方式 |
-|------|-------------|
-| 驗證 DB | `node scripts/ops/verify-supabase.mjs` |
-| 驗證表 | `node scripts/ops/verify-integrations.mjs`（profiles / referrals / analysis_reports） |
-| 同步 env 到 Vercel | `scripts/ops/sync-vercel-env.sh`（`NEXT_PUBLIC_SUPABASE_*`、`SUPABASE_SERVICE_ROLE_KEY`） |
-| CLI migration | `bash scripts/ops/bootstrap-remote.sh` 或 `node scripts/ops/supabase-apply-migrations.mjs` |
-| GitHub Provider | `node scripts/ops/supabase-configure-github.mjs`（Management API，需 `SUPABASE_ACCESS_TOKEN`） |
+- **專案 ref：** `yvzorfeespljbitxxufo`
+- `node scripts/ops/supabase-apply-migrations.mjs`
+- `node scripts/ops/supabase-configure-github.mjs`（需 `SUPABASE_ACCESS_TOKEN`）
+- SQL 補 profiles、驗證 `decrement_lite_credit` RPC
 
-**專案 ref：** `yvzorfeespljbitxxufo`
-
-**使用者僅需（各一次，Agent 會 `open` 瀏覽器分頁）：**
-1. 複製 **`SUPABASE_ACCESS_TOKEN`** → 貼進 `.env.local` 或 Cursor 對話（[tokens 頁](https://supabase.com/dashboard/account/tokens)）
-2. 複製 **`LEMONSQUEEZY_API_KEY`** → 同上（[LS API 頁](https://app.lemonsqueezy.com/settings/api)）
-3. 貼完後 Agent 執行 `bootstrap-remote.sh`，其餘全自動
+**使用者僅需（一次）：** [Supabase Access Token](https://supabase.com/dashboard/account/tokens) 貼入 `.env.local`
 
 ## Vercel — Agent 代跑
 
-| 動作 | 命令 / 方式 |
-|------|-------------|
-| 登入狀態 | `npx vercel whoami` |
-| Link 專案 | `npx vercel link --yes` |
-| 同步 env | `scripts/ops/sync-vercel-env.sh` |
-| Production 部署 | `npx vercel deploy --prod --yes` |
-| 驗證線上 | `curl -sI https://www.jobbeagle.com` |
+- `npx vercel whoami` / `vercel link --yes`
+- `scripts/ops/sync-vercel-env.sh`（見下方 env 清單）
+- `npx vercel deploy --prod --yes`
+- `curl -sI https://www.jobbeagle.com`
+- `curl` 驗收 `/api/extension-capture`（OPTIONS/GET）、`/api/checkout` GET
 
-**使用者僅需：** 首次 `vercel login` / `supabase login` 的 device OAuth 連結（各一次）。
+**使用者僅需（一次）：** `vercel login` device OAuth
 
-## 其他代跑
+## 環境變數 — Agent 代跑同步到 Vercel
 
-- Lemon Squeezy：`node scripts/ops/setup-lemonsqueezy.mjs`（建產品、webhook、寫回 `.env.local`）
-- `curl` 驗收 `/api/checkout`、`/api/profile`
-- `npm run build` 本機 build 檢查
+從 `.env.local` 同步（`sync-vercel-env.sh`）：
 
-**勿 commit / 勿在對話貼出** `.env.local` 內 secret。
+| 類別 | 變數 |
+|------|------|
+| Supabase | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` |
+| Gemini | `GEMINI_API_KEY` 或 `GOOGLE_GEMINI_API_KEY`（分析 API 必備） |
+| Lemon Squeezy | `LEMONSQUEEZY_API_KEY`, `STORE_ID`, `WEBHOOK_SECRET`, `TEST_MODE`, 各 `VARIANT_*` |
+| Cron / 外掛 handoff | `CRON_SECRET`（簽名 extension `sid`；可選 `EXTENSION_HANDOFF_SECRET`） |
+| 其他 | `RESEND_API_KEY`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` |
 
-## 結束交付
+**Gemini：** 金鑰在 [Google AI Studio](https://aistudio.google.com/apikey)；Agent 寫入 `.env.local` 後執行 sync + redeploy。  
+**Lemon Squeezy：** Agent 跑 `setup-lemonsqueezy.mjs`；使用者僅在 LS 後台確認產品價格（若腳本失敗）。
 
-1. 已完成項（GitHub / Supabase / Vercel 各一行）
-2. 若仍缺：僅列瀏覽器要點的 1–3 件事 + 直連
-3. 卡關：請使用者貼完整錯誤
+## Chrome 外掛 — Agent vs 使用者
+
+| 誰做 | 項目 |
+|------|------|
+| Agent | 改 `browser-extension/`、push、部署網站 API、寫文件 |
+| **使用者** | **`chrome://extensions` → JobBeagle →「重新載入」**（無法代跑） |
+| 使用者 | 釘選工具列、在 LinkedIn 實測 |
+
+外掛版本以 `browser-extension/manifest.json` 的 `version` 為準；更新後提醒使用者確認版本號。
+
+## 程式變更後 Agent 必做檢查
+
+1. `npm test`（unit；e2e 可略）
+2. 若動到 `/api` 或 env：`node scripts/ops/verify-integrations.mjs`
+3. `git push origin main`
+4. 若動到 env 或 extension-capture：`bash scripts/ops/sync-all.sh`（或至少 redeploy）
+5. 對話結束交付：**使用者清單**（見下）
+
+## 結束交付格式（給使用者）
+
+1. **Agent 已完成**（一行：GitHub push / Vercel / Supabase / env）
+2. **你要做**（編號清單，通常 2–4 項）：
+   - 重載 Chrome 外掛（若 `browser-extension/` 有變）
+   - 硬重新整理 jobbeagle.com
+   - LinkedIn 測試步驟
+3. **若仍缺**：僅列瀏覽器後台 1–3 個直連
 
 ## 與其他 rule
 
 - 程式變更後 push：見 `git-github-vercel-always.mdc`
-- commit 以使用者當次明確指示為準；預設 Agent 提交並 push
+- 使用者未明確說「不要 commit」時，Agent 應提交並 push
