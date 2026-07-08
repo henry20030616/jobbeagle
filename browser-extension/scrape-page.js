@@ -6,6 +6,18 @@
     return (value || '').replace(/\s+/g, ' ').trim();
   }
 
+  /** Preserve line breaks for job descriptions (lists, paragraphs) */
+  function blockText(value) {
+    return (value || '')
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .split('\n')
+      .map((line) => line.replace(/[ \t\f\v]+/g, ' ').trim())
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
   function firstText(root, selectors) {
     for (let i = 0; i < selectors.length; i++) {
       const nodes = root.querySelectorAll(selectors[i]);
@@ -15,6 +27,24 @@
       }
     }
     return '';
+  }
+
+  function firstBlockText(root, selectors) {
+    for (let i = 0; i < selectors.length; i++) {
+      const nodes = root.querySelectorAll(selectors[i]);
+      for (let j = 0; j < nodes.length; j++) {
+        const text = blockText(nodes[j].innerText || nodes[j].textContent);
+        if (text.length > 1 && !/^linkedin$/i.test(text)) return text;
+      }
+    }
+    return '';
+  }
+
+  function stripDescriptionHeader(text) {
+    return text
+      .replace(/^(關於該職缺|About the job|Job Description)\s*\n?/i, '')
+      .replace(/^(關於該職缺|About the job|Job Description)\s*/i, '')
+      .trim();
   }
 
   function extractJobId(pageUrl) {
@@ -74,7 +104,7 @@
       const el = nodes[i];
       const rect = el.getBoundingClientRect();
       if (rect.left < vw * 0.25 || rect.width < 260 || rect.height < 180) continue;
-      const text = (el.innerText || '').trim();
+      const text = blockText(el.innerText || '');
       if (text.length <= best.length || text.length < 350) continue;
       if (!/Apply|Easy Apply|儲存|儲存職缺|分享|Save/i.test(text)) continue;
       if (/符合.*的職缺|jobs search|搜尋結果/i.test(text.slice(0, 80))) continue;
@@ -125,7 +155,7 @@
     const detailRoot = findLinkedInDetailsRoot();
     const scoped = detailRoot || document;
 
-    let description = firstText(scoped, [
+    let description = firstBlockText(scoped, [
       '.jobs-description__content',
       '.jobs-box__html-content',
       '.jobs-description-content__text',
@@ -135,23 +165,28 @@
       'article[class*="jobs-description"]',
       '[data-test-description-section]',
     ]);
+    description = stripDescriptionHeader(description);
 
     if (description.length < 80 && detailRoot) {
-      const panelText = cleanText(detailRoot.innerText);
-      if (panelText.length > description.length) description = panelText;
+      const panelText = blockText(detailRoot.innerText);
+      if (panelText.length > description.length) description = stripDescriptionHeader(panelText);
     }
 
     if (description.length < 80) {
       const mainDetail = document.querySelector('.scaffold-layout__detail');
       if (mainDetail) {
-        const mainText = cleanText(mainDetail.innerText);
-        if (mainText.length > description.length) description = mainText;
+        const mainText = blockText(mainDetail.innerText);
+        if (mainText.length > description.length) {
+          description = stripDescriptionHeader(mainText);
+        }
       }
     }
 
     if (description.length < 200) {
       const heuristic = scrapeHeuristicRightPanel();
-      if (heuristic.length > description.length) description = heuristic;
+      if (heuristic.length > description.length) {
+        description = stripDescriptionHeader(heuristic);
+      }
     }
 
     const { title, company } = parseTitleCompanyFromPanel(description, scoped);

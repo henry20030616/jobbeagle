@@ -1,5 +1,5 @@
 /**
- * JobBeagle Chrome Extension v1.1.3
+ * JobBeagle Chrome Extension v1.1.4
  * Scrape → POST /api/extension-capture → Side Panel (or tab) pre-flight
  */
 
