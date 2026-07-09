@@ -1,5 +1,5 @@
 /**
- * JobBeagle Chrome Extension v1.1.4
+ * JobBeagle Chrome Extension v1.1.5
  * Scrape → POST /api/extension-capture → Side Panel (or tab) pre-flight
  */
 
@@ -101,35 +101,24 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 });
 
-/** Inject scrape-page.js only (Chrome forbids files+func together) */
-function scrapeViaInjection(tabId) {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      chrome.runtime.onMessage.removeListener(listener);
-      reject(new Error('Scrape timeout'));
-    }, 20000);
-
-    function listener(msg, sender) {
-      if (msg?.type !== 'JOBBEAGLE_SCRAPE_RESULT') return;
-      if (sender.tab?.id !== tabId) return;
-      chrome.runtime.onMessage.removeListener(listener);
-      clearTimeout(timeout);
-      resolve(msg.data);
-    }
-
-    chrome.runtime.onMessage.addListener(listener);
-
-    chrome.scripting
-      .executeScript({
-        target: { tabId },
-        files: ['scrape-page.js'],
-      })
-      .catch((err) => {
-        chrome.runtime.onMessage.removeListener(listener);
-        clearTimeout(timeout);
-        reject(err);
-      });
+/** Load scrape bundle then invoke (files+func forbidden in one call; two calls OK) */
+async function scrapeViaInjection(tabId) {
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    files: ['scrape-page.js'],
   });
+
+  const results = await chrome.scripting.executeScript({
+    target: { tabId },
+    func: async () => {
+      if (typeof window.__jobbeagleScrapePage !== 'function') {
+        return { error: 'SCRAPE_SCRIPT_MISSING' };
+      }
+      return await window.__jobbeagleScrapePage();
+    },
+  });
+
+  return results?.[0]?.result;
 }
 
 async function openPreFlight(tabId, sid, errorKey) {

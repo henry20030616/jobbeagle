@@ -29,12 +29,13 @@
     return '';
   }
 
-  function firstBlockText(root, selectors) {
+  function firstBlockText(root, selectors, minLen) {
+    const min = minLen || 80;
     for (let i = 0; i < selectors.length; i++) {
       const nodes = root.querySelectorAll(selectors[i]);
       for (let j = 0; j < nodes.length; j++) {
         const text = blockText(nodes[j].innerText || nodes[j].textContent);
-        if (text.length > 1 && !/^linkedin$/i.test(text)) return text;
+        if (text.length >= min && !/^linkedin$/i.test(text)) return text;
       }
     }
     return '';
@@ -43,8 +44,19 @@
   function stripDescriptionHeader(text) {
     return text
       .replace(/^(關於該職缺|About the job|Job Description)\s*\n?/i, '')
-      .replace(/^(關於該職缺|About the job|Job Description)\s*/i, '')
       .trim();
+  }
+
+  function extractDescriptionFromPanel(panelText) {
+    if (!panelText) return '';
+    const markers = [/關於該職缺/i, /About the job/i, /Job Description/i];
+    for (let i = 0; i < markers.length; i++) {
+      const match = panelText.match(markers[i]);
+      if (!match || match.index === undefined) continue;
+      const slice = panelText.slice(match.index + match[0].length).trim();
+      if (slice.length >= 80) return slice;
+    }
+    return panelText;
   }
 
   function extractJobId(pageUrl) {
@@ -106,7 +118,7 @@
       if (rect.left < vw * 0.25 || rect.width < 260 || rect.height < 180) continue;
       const text = blockText(el.innerText || '');
       if (text.length <= best.length || text.length < 350) continue;
-      if (!/Apply|Easy Apply|儲存|儲存職缺|分享|Save/i.test(text)) continue;
+      if (!/Apply|Easy Apply|套用|儲存|儲存職缺|分享|Save/i.test(text)) continue;
       if (/符合.*的職缺|jobs search|搜尋結果/i.test(text.slice(0, 80))) continue;
       best = text;
     }
@@ -154,6 +166,7 @@
   function scrapeLinkedIn(pageUrl, documentTitle) {
     const detailRoot = findLinkedInDetailsRoot();
     const scoped = detailRoot || document;
+    const panelText = detailRoot ? blockText(detailRoot.innerText) : '';
 
     let description = firstBlockText(scoped, [
       '.jobs-description__content',
@@ -167,29 +180,28 @@
     ]);
     description = stripDescriptionHeader(description);
 
-    if (description.length < 80 && detailRoot) {
-      const panelText = blockText(detailRoot.innerText);
-      if (panelText.length > description.length) description = stripDescriptionHeader(panelText);
+    if (description.length < 80 && panelText) {
+      const fromPanel = extractDescriptionFromPanel(panelText);
+      if (fromPanel.length > description.length) description = fromPanel;
     }
 
     if (description.length < 80) {
       const mainDetail = document.querySelector('.scaffold-layout__detail');
       if (mainDetail) {
         const mainText = blockText(mainDetail.innerText);
-        if (mainText.length > description.length) {
-          description = stripDescriptionHeader(mainText);
-        }
+        const fromMain = extractDescriptionFromPanel(mainText);
+        if (fromMain.length > description.length) description = fromMain;
       }
     }
 
     if (description.length < 200) {
       const heuristic = scrapeHeuristicRightPanel();
       if (heuristic.length > description.length) {
-        description = stripDescriptionHeader(heuristic);
+        description = extractDescriptionFromPanel(heuristic);
       }
     }
 
-    const { title, company } = parseTitleCompanyFromPanel(description, scoped);
+    const { title, company } = parseTitleCompanyFromPanel(panelText || description, scoped);
 
     const location = firstText(scoped, [
       '.job-details-jobs-unified-top-card__bullet',
@@ -285,15 +297,4 @@
     await new Promise((resolve) => setTimeout(resolve, 1500));
     return scrapeJobPage();
   };
-
-  window.__jobbeagleScrapePage()
-    .then((data) => {
-      chrome.runtime.sendMessage({ type: 'JOBBEAGLE_SCRAPE_RESULT', data });
-    })
-    .catch((err) => {
-      chrome.runtime.sendMessage({
-        type: 'JOBBEAGLE_SCRAPE_RESULT',
-        data: { error: 'SCRAPE_RUNTIME', message: String(err) },
-      });
-    });
 })();
