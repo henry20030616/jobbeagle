@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MessageCircle, Send, CheckCircle } from 'lucide-react';
 
 import { AppLanguage } from '@/lib/language-context';
+import { isShortsEnabled } from '@/constants/features';
 
 interface FooterSectionProps {
   language: AppLanguage;
@@ -130,8 +131,12 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
         <Link href="/privacy" className="hover:text-slate-300 transition-colors">{t.privacy}</Link>
         <span className="text-slate-700">·</span>
         <Link href="/terms" className="hover:text-slate-300 transition-colors">{t.terms}</Link>
-        <span className="text-slate-700">·</span>
-        <Link href="/shorts" className="hover:text-slate-300 transition-colors">Shorts</Link>
+        {isShortsEnabled() && (
+          <>
+            <span className="text-slate-700">·</span>
+            <Link href="/shorts" className="hover:text-slate-300 transition-colors">Shorts</Link>
+          </>
+        )}
       </div>
 
       <p className="text-center text-xs text-slate-600 pb-4">

@@ -55,7 +55,7 @@
 |------|------|
 | **LinkedIn OAuth 登入** | docx 寫 Google/LinkedIn；產品決策僅 Google。LinkedIn 需另建 Developer App（見下方手動清單） |
 | **GitHub 登入 UI** | 僅後台 Management API 已設，前端無按鈕 |
-| **Stripe** | 已全面改用 Lemon Squeezy；`lib/stripe.ts` 為死碼 |
+| **Stripe** | 已全面改用 Lemon Squeezy；`lib/stripe.ts` 與 `stripe` npm 套件已移除 |
 | **Gemini 3.1 型號字串** | 實際用 `constants/models.ts` 可用型號（Flash/Pro），行為符合 spec |
 | **Full 報告合併 Lite 分數於同一畫面** | 目前 Lite / Full 分開兩種報告類型（各扣各額度） |
 | **Employer dashboard 獨立 hub** | 預設導向 Shorts 公司視圖；`?legacy=1` 保留舊編輯 |

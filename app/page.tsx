@@ -21,6 +21,7 @@ import CreditsBadge from '@/components/CreditsBadge';
 import ReferralCard from '@/components/ReferralCard';
 import DeleteAccountButton from '@/components/DeleteAccountButton';
 import type { UserProfile } from '@/types';
+import { isShortsEnabled } from '@/constants/features';
 
 interface ReportSummary {
   id: string;
@@ -430,7 +431,7 @@ export default function Home() {
           </div>
         </div>
 
-        {!report && !liteReport && !fullReport && (
+        {isShortsEnabled() && !report && !liteReport && !fullReport && (
           <Link
             href="/shorts"
             className="mb-8 flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"

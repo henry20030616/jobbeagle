@@ -75,4 +75,15 @@
 
 ---
 
-*Env 變數名稱以 repo 為準：`LEMONSQUEEZY_*`（非 `LEMON_SQUEEZY_*`）。*
+## Status (2026-07-11)
+
+Implemented in repo:
+- Privacy/Terms updated for extension whitelist + CCPA hard delete
+- Rate limit on analyze + extension-capture (Redis or memory fallback)
+- Account delete clears reports + Shorts storage folders
+- Shorts frozen unless `NEXT_PUBLIC_SHORTS_ENABLED=true`
+- Stripe package/`lib/stripe.ts` removed
+- Web Store listing draft: `browser-extension/STORE_LISTING.md`
+
+Remaining manual: Chrome Developer Dashboard upload + screenshots (see STORE_LISTING.md).
+

@@ -199,7 +199,7 @@
 - **Lemon Squeezy：** API key、store id、webhook secret、各 `VARIANT_*`、test mode  
 - **外掛／Cron：** `CRON_SECRET`、可選 `EXTENSION_HANDOFF_SECRET`  
 - **其他：** `RESEND_API_KEY`、`NEXT_PUBLIC_GA_MEASUREMENT_ID`  
-- **遺留：** Stripe 相關變數／`lib/stripe.ts` 視為死碼（已改 LS）
+- **遺留：** DB 欄位仍可能殘留 `stripe_*` 命名（歷史相容）；支付路徑僅 Lemon Squeezy
 
 ---
 
@@ -232,12 +232,16 @@
 
 - Lite / Full 雙報告 + UI dashboard  
 - Google 登入強制分析  
-- 誘餌定價四方案 + LS webhook  
+- 誘餌定價四方案 + LS webhook（簽章驗證 + 訂單等冪）  
 - 外掛 → Pre-Flight 責任轉移  
 - 終身 3 Lite + 付費牆  
-- 推薦碼、帳戶刪除、報告 30 天清除  
-- Shorts 基礎流程  
-- 美國主流職缺站外掛支援（v1.2.0）
+- 推薦碼、帳戶刪除（硬刪 + Storage 清理）、報告 30 天清除  
+- **Rate limit**：`/api/analyze`、`/api/extension-capture`（Upstash 或記憶體 fallback，不 fail-open）  
+- **Shorts 預設凍結**（`NEXT_PUBLIC_SHORTS_ENABLED=true` 才開啟）  
+- **Stripe 死碼已移除**  
+- 美國主流職缺站外掛支援（v1.2.0）  
+- Privacy／Terms 已更新外掛白名單與 CCPA 刪除說明  
+- Chrome Web Store 上架草稿：`browser-extension/STORE_LISTING.md`
 
 ### 7.2 刻意不做或與舊規格落差
 

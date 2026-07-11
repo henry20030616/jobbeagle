@@ -1,7 +1,31 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { isShortsEnabled } from '@/constants/features';
 
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  // Freeze Shorts public surface unless explicitly re-enabled
+  if (
+    !isShortsEnabled() &&
+    (path === '/shorts' ||
+      path.startsWith('/shorts/') ||
+      path === '/employer' ||
+      path.startsWith('/employer/') ||
+      path.startsWith('/api/shorts'))
+  ) {
+    if (path.startsWith('/api/')) {
+      return NextResponse.json(
+        { error: 'Shorts is temporarily unavailable.', errorCode: 'SHORTS_FROZEN' },
+        { status: 503 },
+      );
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = '/';
+    url.search = '';
+    return NextResponse.redirect(url);
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -23,7 +47,6 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired — crucial for server-side getUser() in API routes
   await supabase.auth.getUser();
 
   return supabaseResponse;
@@ -31,7 +54,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Apply to all routes except static files, Next.js internals, and _next
     '/((?!_next/static|_next/image|favicon.ico|icon.svg|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

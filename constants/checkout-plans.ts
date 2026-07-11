@@ -1,6 +1,6 @@
 /**
  * Checkout plans — Decoy Pricing matrix (Unified Master Spec 2026)
- * Stripe Checkout Sessions / Subscriptions
+ * Lemon Squeezy Checkout / Subscriptions
  */
 
 export type CheckoutPlanType =

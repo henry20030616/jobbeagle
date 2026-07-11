@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { getLegalDocument, LEGAL_UI, type LegalDocument } from '@/lib/legal-content';
+import { isShortsEnabled } from '@/constants/features';
 
 type LegalDocType = 'privacy' | 'terms';
 
@@ -48,7 +49,9 @@ export default function LegalDocumentPage({ type }: { type: LegalDocType }) {
         <footer className="mt-12 pt-8 border-t border-slate-800 flex flex-wrap gap-4 text-sm text-slate-500">
           <Link href="/privacy" className="hover:text-white transition-colors">{ui.privacy}</Link>
           <Link href="/terms" className="hover:text-white transition-colors">{ui.terms}</Link>
-          <Link href="/shorts" className="hover:text-white transition-colors">Jobbeagle Shorts</Link>
+          {isShortsEnabled() && (
+            <Link href="/shorts" className="hover:text-white transition-colors">Jobbeagle Shorts</Link>
+          )}
         </footer>
       </div>
     </div>

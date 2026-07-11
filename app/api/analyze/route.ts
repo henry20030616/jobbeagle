@@ -34,7 +34,7 @@ import {
 } from '@/lib/gemini-analyze';
 import { normalizeLiteReport, isEnrichedLiteReport } from '@/lib/normalize-lite-report';
 import { resolveResumeForAnalysis } from '@/lib/resume-parser';
-import { rateLimitAnalyze } from '@/lib/redis';
+import { rateLimitAnalyze } from '@/lib/rate-limit';
 import { tryActivateReferralMilestone } from '@/lib/referrals';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
 import { validateJobDescription } from '@/lib/validate-job-description';

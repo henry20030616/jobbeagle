@@ -5,6 +5,7 @@ import {
   verifyHandoffToken,
 } from '@/lib/extension-handoff';
 import { payloadToPreFlightData } from '@/lib/payload';
+import { clientIpFromRequest, rateLimitExtensionCapture } from '@/lib/rate-limit';
 
 function corsHeaders(): HeadersInit {
   return {
@@ -20,6 +21,15 @@ export async function OPTIONS() {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = clientIpFromRequest(request);
+    const rl = await rateLimitExtensionCapture(ip, 60, 3600);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.', errorCode: 'RATE_LIMIT' },
+        { status: 429, headers: corsHeaders() },
+      );
+    }
+
     const body = await request.json();
     const input = validateCaptureInput(body);
     const sid = createHandoffToken(input);
@@ -34,10 +44,9 @@ export async function POST(request: NextRequest) {
     );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Invalid capture payload';
-    const status = message.includes('too short') ? 400 : 400;
     return NextResponse.json(
       { error: message, errorCode: 'INVALID_CAPTURE' },
-      { status, headers: corsHeaders() },
+      { status: 400, headers: corsHeaders() },
     );
   }
 }
