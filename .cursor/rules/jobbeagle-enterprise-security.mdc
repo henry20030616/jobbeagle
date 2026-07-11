@@ -1,0 +1,30 @@
+---
+description: Enterprise security — rate limit, webhook, PII, RLS, secrets
+alwaysApply: true
+---
+
+# JobBeagle — Enterprise Security Constraints
+
+When changing APIs, auth, payments, or storage, enforce all five:
+
+## 1. Rate limiting & anti-Sybil
+- `POST /api/analyze` and `POST /api/extension-capture` must rate-limit by IP and/or user id (in-memory Map or Upstash Redis).
+- Preserve device-fingerprint Sybil checks for free Lite credits (`lib/profiles.ts`).
+
+## 2. Payment integrity (Lemon Squeezy)
+- Webhook `POST /api/payment/webhook`: verify `x-signature` with HMAC-SHA256 vs `LEMONSQUEEZY_WEBHOOK_SECRET` (`crypto`) **before** mutating credits.
+- Idempotency: if `order_id` already processed → return 200, do not grant twice.
+
+## 3. Data privacy / PII
+- Resume PDF/DOCX: prefer in-memory parse. Storage uploads need strict RLS (owner-only) + 30-day purge via `/api/cron/purge-reports`.
+- Do not put card numbers / extreme secrets into Gemini prompts.
+- Account delete (`/api/account/delete`) must hard-delete profile, reports, and stored resume files (CCPA).
+
+## 4. Secrets & architecture
+- No service-role / Gemini / LS API keys in Client Components.
+- Keep RLS enabled on `profiles`, `analysis_reports`, and related tables.
+
+## 5. Scraping safety
+- Extension scrapers: try/catch, delays, graceful degrade to “paste JD manually” — never crash the SW.
+
+Role trigger: user says `@SecOpsExpert` → prioritize this rule.

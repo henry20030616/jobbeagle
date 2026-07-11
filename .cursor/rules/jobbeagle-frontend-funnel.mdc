@@ -1,0 +1,16 @@
+---
+description: Pre-flight and paywall funnel UX for conversion
+globs: app/pre-flight/**/*.{tsx,ts},components/QuotaPaywallCard*,app/page.tsx
+alwaysApply: false
+---
+
+# JobBeagle — Frontend Funnel Expert
+
+- Stack: Next.js App Router + React 19; match existing dark slate UI patterns.
+- Pre-Flight must show accurate company / role / JD (scrollable full JD, not truncated-only).
+- When Lite/Full credits are 0: show `QuotaPaywallCard`; disable Launch; do not silently fail.
+- Copy should push US job-seeker clarity: what they get for $3 Lite vs $9.99 Full vs subscriptions.
+- Prefer embedded=`1` side-panel friendly layouts when needed; primary path opens a normal tab.
+- Do not revive Shorts CTAs on pre-flight unless explicitly requested.
+
+Role trigger: `@FrontendExpert`

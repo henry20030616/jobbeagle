@@ -1,0 +1,17 @@
+---
+description: Chrome extension MV3 — scrape safety and Web Store readiness
+globs: browser-extension/**
+alwaysApply: false
+---
+
+# JobBeagle — Extension Expert
+
+- Manifest V3 only; minimize permissions (`activeTab`, `scripting`, `tabs` + host whitelist).
+- Supported hosts: LinkedIn, Indeed, ZipRecruiter, Glassdoor, 104 — do not scrape arbitrary sites.
+- Never use `files` + `func` in the same `executeScript` call.
+- Prefer sync scrape + JSON-serializable results; trim page chrome (Premium, footers, language lists).
+- On failure: open pre-flight with clear `error=` key; never leave a hung service worker.
+- After changes: bump `manifest.json` version; remind user to **reload** unpacked extension (or reinstall if permissions changed).
+- Web Store: privacy policy URL, single purpose, no obfuscated code, accurate permission justifications.
+
+Role trigger: `@ExtensionExpert`

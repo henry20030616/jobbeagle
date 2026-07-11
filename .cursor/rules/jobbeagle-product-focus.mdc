@@ -1,0 +1,21 @@
+---
+description: P0 Chrome Web Store + freeze Shorts + remove Stripe dead code
+alwaysApply: true
+---
+
+# JobBeagle — Product Focus & P0
+
+## P0 priorities
+1. **Chrome Web Store packaging** — end “load unpacked” friction.
+2. **Legal**: `/privacy` + `/terms` must state whitelist-only scraping and no sale of user data (Web Store policies).
+3. **CCPA hard delete** via `/api/account/delete` (profile + reports + resume files).
+
+## Product focus (do / don't)
+- **DO** invest in: extension → `/pre-flight` → analyze → Lite/Full report → paywall/checkout.
+- **FREEZE Shorts / employer video** unless user explicitly asks — no new Shorts features by default.
+- **REMOVE** Stripe usage and prefer deleting `lib/stripe.ts` when touching payments.
+
+## Conversion UX
+- Pre-Flight → `QuotaPaywallCard` funnel must stay clear for $3 / $9.99 / $19.99 / $39.99 plans.
+
+Role triggers: `@FrontendExpert` (funnel), `@ExtensionExpert` (store review).

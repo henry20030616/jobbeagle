@@ -3,7 +3,8 @@
 > **用途：** 把本文件貼給 Gemini（或其他顧問），完整說明網站現況，並討論「還缺什麼、該優先改善什麼」。  
 > **基準日：** 2026-07-11  
 > **正式網域：** https://www.jobbeagle.com  
-> **程式庫：** GitHub `henry20030616/jobbeagle`（`main`）
+> **程式庫：** GitHub `henry20030616/jobbeagle`（`main`）  
+> **企業架構／Cursor Rules 原文：** `ENTERPRISE_ARCHITECTURE.md`（規則檔在 `.cursor/rules/jobbeagle-*.mdc`）
 
 ---
 
