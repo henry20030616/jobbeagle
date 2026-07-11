@@ -293,8 +293,13 @@
     };
   }
 
+  /** Sync scrape for background executeScript (must be JSON-serializable) */
+  window.__jobbeagleScrapeSync = function __jobbeagleScrapeSync() {
+    return scrapeJobPage();
+  };
+
+  /** Async alias kept for debugging */
   window.__jobbeagleScrapePage = async function __jobbeagleScrapePage() {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
     return scrapeJobPage();
   };
 })();

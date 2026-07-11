@@ -1,17 +1,15 @@
 /**
- * JobBeagle Chrome Extension v1.1.5
- * Scrape → POST /api/extension-capture → Side Panel (or tab) pre-flight
+ * JobBeagle Chrome Extension v1.1.6
+ * Scrape → POST /api/extension-capture → open pre-flight tab
  */
 
 const WEBSITE_ORIGIN = 'https://www.jobbeagle.com';
-// Dev: const WEBSITE_ORIGIN = 'http://localhost:3000';
-
 const CAPTURE_API = `${WEBSITE_ORIGIN}/api/extension-capture`;
 const LINKEDIN_ORIGINS = ['https://*.linkedin.com/*', 'https://www.linkedin.com/*'];
 
 chrome.runtime.onInstalled.addListener(() => {
   if (chrome.sidePanel?.setPanelBehavior) {
-    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch(() => {});
   }
 });
 
@@ -26,7 +24,7 @@ async function ensureHostAccess(tabUrl) {
   try {
     const has = await chrome.permissions.contains({ origins });
     if (has) return true;
-    return chrome.permissions.request({ origins });
+    return Boolean(await chrome.permissions.request({ origins }));
   } catch (e) {
     console.warn('[JobBeagle] permission request failed:', e);
     return true;
@@ -37,36 +35,45 @@ chrome.action.onClicked.addListener(async (tab) => {
   if (!tab.id || !tab.url) return;
 
   const isLinkedIn = tab.url.includes('linkedin.com');
-  const is104 = tab.url.includes('104.com.tw/job/');
+  const is104 = tab.url.includes('104.com.tw');
 
   if (!isLinkedIn && !is104) {
-    await openPreFlight(tab.id, null, 'no_job_page');
+    await openPreFlight(null, 'no_job_page');
     return;
   }
 
   const allowed = await ensureHostAccess(tab.url);
   if (!allowed) {
-    await openPreFlight(tab.id, null, 'site_access');
+    await openPreFlight(null, 'site_access');
     return;
   }
 
   try {
+    // Wait briefly so LinkedIn right-pane DOM can settle
+    await sleep(600);
+
     const result = await scrapeViaInjection(tab.id);
 
     if (!result || result.error === 'SCRAPE_SCRIPT_MISSING') {
       console.error('[JobBeagle] scrape script missing:', result);
-      await openPreFlight(tab.id, null, 'scrape_failed');
+      await openPreFlight(null, 'scrape_failed');
       return;
     }
 
     if (result.error === 'NOT_JOB_DETAIL') {
-      await openPreFlight(tab.id, null, 'not_job_detail');
+      await openPreFlight(null, 'not_job_detail');
+      return;
+    }
+
+    if (result.error) {
+      console.error('[JobBeagle] scrape error:', result);
+      await openPreFlight(null, 'scrape_failed');
       return;
     }
 
     if (!result.rawText || result.rawText.trim().length < 40) {
       console.error('[JobBeagle] scrape too short:', result.rawText?.length, result._debug);
-      await openPreFlight(tab.id, null, 'scrape_failed');
+      await openPreFlight(null, 'scrape_failed');
       return;
     }
 
@@ -85,23 +92,30 @@ chrome.action.onClicked.addListener(async (tab) => {
 
     if (!captureRes.ok || !captureData.sid) {
       console.error('[JobBeagle] capture API failed:', captureRes.status, captureData);
-      await openPreFlight(tab.id, null, 'capture_failed');
+      await openPreFlight(null, 'capture_failed');
       return;
     }
 
-    await openPreFlight(tab.id, captureData.sid, null);
+    await openPreFlight(captureData.sid, null);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[JobBeagle] scrape failed:', msg);
-    if (/cannot access|permission|denied/i.test(msg)) {
-      await openPreFlight(tab.id, null, 'site_access');
+    if (/cannot access|permission|denied|host/i.test(msg)) {
+      await openPreFlight(null, 'site_access');
     } else {
-      await openPreFlight(tab.id, null, 'scrape_failed');
+      await openPreFlight(null, 'scrape_failed');
     }
   }
 });
 
-/** Load scrape bundle then invoke (files+func forbidden in one call; two calls OK) */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Two-step inject (Chrome forbids files+func in one call).
+ * Uses sync scrape + JSON round-trip so the result always serializes.
+ */
 async function scrapeViaInjection(tabId) {
   await chrome.scripting.executeScript({
     target: { tabId },
@@ -110,43 +124,39 @@ async function scrapeViaInjection(tabId) {
 
   const results = await chrome.scripting.executeScript({
     target: { tabId },
-    func: async () => {
-      if (typeof window.__jobbeagleScrapePage !== 'function') {
-        return { error: 'SCRAPE_SCRIPT_MISSING' };
+    func: () => {
+      try {
+        if (typeof window.__jobbeagleScrapeSync !== 'function') {
+          return JSON.stringify({ error: 'SCRAPE_SCRIPT_MISSING' });
+        }
+        const data = window.__jobbeagleScrapeSync();
+        return JSON.stringify(data ?? { error: 'SCRAPE_EMPTY' });
+      } catch (e) {
+        return JSON.stringify({
+          error: 'SCRAPE_RUNTIME',
+          message: e instanceof Error ? e.message : String(e),
+        });
       }
-      return await window.__jobbeagleScrapePage();
     },
   });
 
-  return results?.[0]?.result;
+  const raw = results?.[0]?.result;
+  if (raw == null) {
+    throw new Error('Scrape returned empty (injection failed)');
+  }
+  if (typeof raw === 'string') {
+    return JSON.parse(raw);
+  }
+  return raw;
 }
 
-async function openPreFlight(tabId, sid, errorKey) {
+/** Always open a normal tab — more reliable than Side Panel iframe */
+async function openPreFlight(sid, errorKey) {
   const query = sid
     ? `?sid=${encodeURIComponent(sid)}`
     : errorKey
       ? `?error=${encodeURIComponent(errorKey)}`
       : '';
 
-  const sidePanelPath = sid
-    ? `sidepanel.html?sid=${encodeURIComponent(sid)}`
-    : errorKey
-      ? `sidepanel.html?error=${encodeURIComponent(errorKey)}`
-      : 'sidepanel.html';
-
-  try {
-    if (chrome.sidePanel?.setOptions && chrome.sidePanel?.open) {
-      await chrome.sidePanel.setOptions({
-        tabId,
-        path: sidePanelPath,
-        enabled: true,
-      });
-      await chrome.sidePanel.open({ tabId });
-      return;
-    }
-  } catch (e) {
-    console.warn('[JobBeagle] side panel unavailable, opening tab:', e);
-  }
-
-  chrome.tabs.create({ url: `${WEBSITE_ORIGIN}/pre-flight${query}` });
+  await chrome.tabs.create({ url: `${WEBSITE_ORIGIN}/pre-flight${query}` });
 }
