@@ -102,21 +102,74 @@
       const el = nodes[i];
       const rect = el.getBoundingClientRect();
       if (rect.width < 240 || rect.height < 120) continue;
-      // Skip tiny left rail cards; allow full-page content that starts near left
       if (rect.width < vw * 0.35 && rect.left < vw * 0.2) continue;
       const text = blockText(el.innerText || '');
       if (text.length <= best.length || text.length < 200) continue;
-      if (!/Apply|Easy Apply|套用|儲存|儲存職缺|分享|Save|關於該職缺|About the job|Job Description/i.test(text)) {
-        continue;
-      }
+      // Prefer blocks that contain the actual JD heading
+      if (!/關於該職缺|About the job|Job Description/i.test(text)) continue;
       if (/符合.*的職缺|jobs search|搜尋結果/i.test(text.slice(0, 100))) continue;
       best = text;
     }
     return best;
   }
 
-  function parseTitleCompanyFromPanel(panelText, scoped) {
-    let title = firstText(scoped, [
+  function looksLikeJobTitle(s) {
+    return /analyst|engineer|manager|architect|developer|designer|scientist|intern|專員|工程師|分析師|經理|架構|顧問|研究員/i.test(
+      s || '',
+    );
+  }
+
+  function looksLikeCompanyName(s) {
+    return /科技|股份|集團|銀行|大學|inc\.?|ltd\.?|corp\.?|company|mediatek|聯發|microsoft|google|meta|amazon/i.test(
+      s || '',
+    );
+  }
+
+  /** Keep only the job description body; drop Premium / similar jobs / footer / languages */
+  function extractCoreJd(text) {
+    if (!text) return '';
+    let slice = text;
+
+    const startRe = /(?:關於該職缺|About the job|Job Description)\s*/i;
+    const startMatch = slice.match(startRe);
+    if (startMatch && startMatch.index != null) {
+      slice = slice.slice(startMatch.index + startMatch[0].length);
+    }
+
+    const endRe =
+      /(?:設定相似職缺通知|展開\s*更多職缺|更多相似職缺|關於本公司|About the company|將來有興趣加入|啟用 Premium|以 \$0 的價格|尋找千里馬|刊登職缺|LinkedIn Corporation|選擇語言|Show more jobs|People also viewed|Similar jobs|公司照片)/i;
+    const endMatch = slice.match(endRe);
+    if (endMatch && endMatch.index != null && endMatch.index > 60) {
+      slice = slice.slice(0, endMatch.index);
+    }
+
+    // Drop trailing "… 更多" LinkedIn expand control
+    slice = slice.replace(/\s*[….]{1,3}\s*更多\s*$/i, '').trim();
+
+    return blockText(slice);
+  }
+
+  function parseTitleCompanyFromDocumentTitle(documentTitle) {
+    const parts = (documentTitle || '')
+      .split(/\s*[|\-–]\s*/)
+      .map((p) => p.trim())
+      .filter((p) => p && !/^linkedin$/i.test(p));
+    if (parts.length >= 2) {
+      return { title: parts[0], company: parts[1] };
+    }
+    if (parts.length === 1 && looksLikeJobTitle(parts[0])) {
+      return { title: parts[0], company: '' };
+    }
+    return { title: '', company: '' };
+  }
+
+  function parseTitleCompanyFromPanel(panelText, scoped, documentTitle) {
+    // Prefer LinkedIn tab title: "Role | Company | LinkedIn"
+    const fromDoc = parseTitleCompanyFromDocumentTitle(documentTitle);
+    let title = fromDoc.title;
+    let company = fromDoc.company;
+
+    const cssTitle = firstText(scoped, [
       '.job-details-jobs-unified-top-card__job-title a',
       '.job-details-jobs-unified-top-card__job-title',
       '.jobs-unified-top-card__job-title a',
@@ -126,10 +179,8 @@
       '.jobs-unified-top-card h1',
       'h1.t-24',
       'h2.t-24',
-      'main h1',
-      'h1',
     ]);
-    let company = firstText(scoped, [
+    const cssCompany = firstText(scoped, [
       '.job-details-jobs-unified-top-card__company-name a',
       '.job-details-jobs-unified-top-card__company-name',
       '.jobs-unified-top-card__company-name a',
@@ -138,23 +189,46 @@
       '[data-test-job-details-company-name]',
     ]);
 
+    if (cssTitle && looksLikeJobTitle(cssTitle)) title = cssTitle;
+    else if (cssTitle && !title) title = cssTitle;
+    if (cssCompany) company = cssCompany;
+
     if ((!title || !company) && panelText) {
       const lines = panelText.split('\n').map((l) => l.trim()).filter(Boolean);
-      for (let i = 0; i < Math.min(lines.length, 20); i++) {
+      const candidates = [];
+      for (let i = 0; i < Math.min(lines.length, 25); i++) {
         const line = lines[i];
-        if (line.length < 3 || line.length > 160) continue;
-        if (/Apply|Save|Share|儲存|分享|Easy Apply|套用|Premium|關於該職缺|About the job/i.test(line)) {
+        if (line.length < 2 || line.length > 160) continue;
+        if (
+          /Apply|Save|Share|儲存|分享|Easy Apply|套用|Premium|關於該職缺|About the job|全職|Part-time|應徵|台灣|Taiwan|週前|天前|位會員/i.test(
+            line,
+          )
+        ) {
           continue;
         }
-        if (!title) {
-          title = line;
-          continue;
-        }
-        if (!company && line !== title && !/^\d|ago|前|·|申請人|applicants/i.test(line)) {
-          company = line;
-          break;
-        }
+        candidates.push(line);
       }
+      // LinkedIn TW text order is often: company, then title
+      if (!company && candidates[0]) {
+        if (looksLikeCompanyName(candidates[0]) || looksLikeJobTitle(candidates[1] || '')) {
+          company = candidates[0];
+          if (!title && candidates[1]) title = candidates[1];
+        } else {
+          if (!title) title = candidates[0];
+          if (!company && candidates[1]) company = candidates[1];
+        }
+      } else if (!title && candidates[0]) {
+        title = looksLikeJobTitle(candidates[0])
+          ? candidates[0]
+          : candidates.find(looksLikeJobTitle) || candidates[0];
+      }
+    }
+
+    // Fix swapped fields (seen: 職位=聯發科技, 公司=AI analyst)
+    if (looksLikeCompanyName(title) && looksLikeJobTitle(company)) {
+      const tmp = title;
+      title = company;
+      company = tmp;
     }
 
     return { title: title || '', company: company || '' };
@@ -165,17 +239,21 @@
     const scoped = detailRoot || document;
     let panelText = detailRoot ? blockText(detailRoot.innerText) : '';
 
-    let description = firstBlockText(scoped, [
-      '.jobs-description__content',
-      '.jobs-box__html-content',
-      '.jobs-description-content__text',
-      '.jobs-description',
-      '#job-details',
-      '[class*="jobs-description__content"]',
-      '[class*="jobs-description-content"]',
-      'article[class*="jobs-description"]',
-      '[data-test-description-section]',
-    ], 40);
+    let description = firstBlockText(
+      scoped,
+      [
+        '.jobs-description__content',
+        '.jobs-box__html-content',
+        '.jobs-description-content__text',
+        '.jobs-description',
+        '#job-details',
+        '[class*="jobs-description__content"]',
+        '[class*="jobs-description-content"]',
+        'article[class*="jobs-description"]',
+        '[data-test-description-section]',
+      ],
+      40,
+    );
 
     if (description.length < 80 && panelText.length > description.length) {
       description = panelText;
@@ -189,13 +267,26 @@
       }
     }
 
-    // Last resort: whole page text (still better than empty)
+    // Last resort: body text, but ONLY after core extraction below
     if (description.length < 120) {
       const bodyText = blockText(document.body ? document.body.innerText : '');
       if (bodyText.length > description.length) description = bodyText;
     }
 
-    const { title, company } = parseTitleCompanyFromPanel(panelText || description, scoped);
+    // Always trim to JD core (removes footer / Premium / similar jobs)
+    description = extractCoreJd(description);
+    if (panelText) panelText = extractCoreJd(panelText) || panelText;
+
+    // If core extract emptied a noisy blob, try panel/largest again then re-extract
+    if (description.length < 80 && panelText.length >= 80) {
+      description = extractCoreJd(panelText);
+    }
+
+    const { title, company } = parseTitleCompanyFromPanel(
+      detailRoot ? blockText(detailRoot.innerText) : description,
+      scoped,
+      documentTitle,
+    );
 
     const location = firstText(scoped, [
       '.job-details-jobs-unified-top-card__bullet',
@@ -206,7 +297,9 @@
     const parts = [];
     if (title) parts.push('職位：' + title);
     if (company) parts.push('公司：' + company);
-    if (location && location !== company) parts.push('地點：' + location);
+    if (location && location !== company && location.length < 80) {
+      parts.push('地點：' + location);
+    }
     if (description) parts.push('職缺描述：\n' + description);
 
     const rawText = parts.join('\n\n');
@@ -216,7 +309,7 @@
       /\/jobs\/view\/\d+/.test(pageUrl) ||
       /currentJobId=\d+/.test(pageUrl) ||
       /\/jobs\/collections\//.test(pageUrl);
-    const hasEnough = rawText.length >= 40 && (title.length > 2 || description.length > 120);
+    const hasEnough = rawText.length >= 40 && (title.length > 2 || description.length > 80);
 
     if (!isJobUrl && !hasEnough) {
       return {
@@ -229,7 +322,7 @@
           descLen: description.length,
           titleLen: title.length,
           hasRoot: !!detailRoot,
-          bodyLen: (document.body && document.body.innerText || '').length,
+          bodyLen: ((document.body && document.body.innerText) || '').length,
         },
       };
     }
