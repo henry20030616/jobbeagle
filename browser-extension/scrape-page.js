@@ -46,7 +46,13 @@
     const fromUrl =
       pageUrl.match(/view\/(\d+)/) ||
       pageUrl.match(/currentJobId=(\d+)/) ||
-      pageUrl.match(/jobId=(\d+)/);
+      pageUrl.match(/jobId=(\d+)/) ||
+      pageUrl.match(/[?&]jk=([a-f0-9]+)/i) ||
+      pageUrl.match(/[?&]vjk=([a-f0-9]+)/i) ||
+      pageUrl.match(/jobListingId=(\d+)/i) ||
+      pageUrl.match(/jl=(\d+)/i) ||
+      pageUrl.match(/\/jobs\/([a-z0-9-]+)/i) ||
+      pageUrl.match(/\/job\/([a-z0-9-]+)/i);
     if (fromUrl) return fromUrl[1];
 
     const linkSelectors = [
@@ -55,11 +61,16 @@
       '.jobs-search__job-details a[href*="/jobs/view/"]',
       '.scaffold-layout__detail a[href*="/jobs/view/"]',
       'a[href*="/jobs/view/"]',
+      'a[href*="jk="]',
+      'a[href*="jobListingId="]',
     ];
     for (let i = 0; i < linkSelectors.length; i++) {
       const link = document.querySelector(linkSelectors[i]);
       if (link && link.href) {
-        const m = link.href.match(/view\/(\d+)/);
+        const m =
+          link.href.match(/view\/(\d+)/) ||
+          link.href.match(/[?&]jk=([a-f0-9]+)/i) ||
+          link.href.match(/jobListingId=(\d+)/i);
         if (m) return m[1];
       }
     }
@@ -105,8 +116,14 @@
       if (rect.width < vw * 0.35 && rect.left < vw * 0.2) continue;
       const text = blockText(el.innerText || '');
       if (text.length <= best.length || text.length < 200) continue;
-      // Prefer blocks that contain the actual JD heading
-      if (!/關於該職缺|About the job|Job Description/i.test(text)) continue;
+      // Prefer blocks that contain the actual JD heading (LinkedIn + US boards)
+      if (
+        !/關於該職缺|About the job|Job Description|Full Job Description|Job Details|Apply now|Apply$/i.test(
+          text,
+        )
+      ) {
+        continue;
+      }
       if (/符合.*的職缺|jobs search|搜尋結果/i.test(text.slice(0, 100))) continue;
       best = text;
     }
@@ -376,22 +393,234 @@
     };
   }
 
+  function buildPayload(pageUrl, documentTitle, title, company, location, description, extra) {
+    const parts = [];
+    if (title) parts.push('職位：' + title);
+    if (company) parts.push('公司：' + company);
+    if (location && location !== company && location.length < 120) {
+      parts.push('地點：' + location);
+    }
+    if (extra && extra.salary) parts.push('薪資：' + extra.salary);
+    if (description) parts.push('職缺描述：\n' + description);
+
+    const rawText = parts.join('\n\n');
+    return {
+      pageTitle: title && company ? title + ' | ' + company : title || documentTitle,
+      pageUrl,
+      rawText,
+      jobId: extractJobId(pageUrl),
+      _debug: {
+        descLen: (description || '').length,
+        titleLen: (title || '').length,
+        companyLen: (company || '').length,
+        rawLen: rawText.length,
+        site: (extra && extra.site) || 'unknown',
+      },
+    };
+  }
+
+  function trimUsBoardNoise(text) {
+    if (!text) return '';
+    let slice = text;
+    const endRe =
+      /(?:Similar jobs|People also viewed|Recommended jobs|Other jobs you may like|Report job|Save job|Get email updates|Sign in to|Create account|Cookie|Privacy|Terms of|©\s*\d{4}|Glassdoor,?\s*Inc|Indeed,?\s*a?\s*Glassdoor|ZipRecruiter)/i;
+    const endMatch = slice.match(endRe);
+    if (endMatch && endMatch.index != null && endMatch.index > 120) {
+      slice = slice.slice(0, endMatch.index);
+    }
+    return blockText(slice);
+  }
+
+  function scrapeGenericBoard(pageUrl, documentTitle, config) {
+    const title =
+      firstText(document, config.titleSelectors) ||
+      parseTitleCompanyFromDocumentTitle(documentTitle).title;
+    const company =
+      firstText(document, config.companySelectors) ||
+      parseTitleCompanyFromDocumentTitle(documentTitle).company;
+    const location = firstText(document, config.locationSelectors || []);
+    const salary = firstText(document, config.salarySelectors || []);
+
+    let description = firstBlockText(document, config.descriptionSelectors, 40);
+
+    if (description.length < 120) {
+      const largest = scrapeLargestJobBlock();
+      if (largest.length > description.length) description = largest;
+    }
+    if (description.length < 120) {
+      const main = document.querySelector('main') || document.body;
+      const mainText = blockText(main ? main.innerText : '');
+      if (mainText.length > description.length) description = mainText;
+    }
+
+    description = trimUsBoardNoise(description);
+    if (config.coreExtract) {
+      description = config.coreExtract(description) || description;
+    }
+
+    const payload = buildPayload(pageUrl, documentTitle, title, company, location, description, {
+      salary,
+      site: config.site,
+    });
+
+    if (!payload.rawText || payload.rawText.trim().length < 40) {
+      return {
+        error: 'NOT_JOB_DETAIL',
+        pageTitle: documentTitle,
+        pageUrl,
+        rawText: '',
+        jobId: extractJobId(pageUrl),
+        _debug: payload._debug,
+      };
+    }
+    return payload;
+  }
+
+  function scrapeIndeed(pageUrl, documentTitle) {
+    return scrapeGenericBoard(pageUrl, documentTitle, {
+      site: 'indeed',
+      titleSelectors: [
+        '[data-testid="jobsearch-JobInfoHeader-title"]',
+        'h1.jobsearch-JobInfoHeader-title',
+        '.jobsearch-JobInfoHeader-title',
+        'h2.jobTitle',
+        'h1',
+      ],
+      companySelectors: [
+        '[data-testid="inlineHeader-companyName"] a',
+        '[data-testid="inlineHeader-companyName"]',
+        '[data-company-name="true"]',
+        '.jobsearch-InlineCompanyRating a',
+        '.jobsearch-CompanyInfoContainer a',
+      ],
+      locationSelectors: [
+        '[data-testid="job-location"]',
+        '[data-testid="inlineHeader-companyLocation"]',
+        '.jobsearch-JobInfoHeader-subtitle > div',
+      ],
+      salarySelectors: [
+        '#salaryInfoAndJobType',
+        '[data-testid="attribute_snippet_testid"]',
+        '.jobsearch-JobMetadataHeader-item',
+      ],
+      descriptionSelectors: [
+        '#jobDescriptionText',
+        '.jobsearch-jobDescriptionText',
+        '[id*="jobDescription"]',
+        '.jobsearch-JobComponent-description',
+      ],
+      coreExtract: (text) => {
+        const m = text.match(/(?:Job Description|Full Job Description|Description)\s*/i);
+        if (m && m.index != null) {
+          return trimUsBoardNoise(text.slice(m.index + m[0].length));
+        }
+        return trimUsBoardNoise(text);
+      },
+    });
+  }
+
+  function scrapeZipRecruiter(pageUrl, documentTitle) {
+    return scrapeGenericBoard(pageUrl, documentTitle, {
+      site: 'ziprecruiter',
+      titleSelectors: [
+        'h1.job_title',
+        'h1[class*="JobTitle"]',
+        '[data-testid="job-title"]',
+        '.job_title',
+        'h1',
+      ],
+      companySelectors: [
+        'a.company_name',
+        '[data-testid="company-name"]',
+        '.company_name',
+        'a[href*="/co/"]',
+      ],
+      locationSelectors: [
+        '[data-testid="job-location"]',
+        '.location',
+        '.job_location',
+      ],
+      salarySelectors: ['.job_salary', '[data-testid="job-salary"]', '.salary'],
+      descriptionSelectors: [
+        '.jobDescriptionSection',
+        '[data-testid="job-description"]',
+        '#job_description',
+        '.job_description',
+        '[class*="JobDescription"]',
+      ],
+    });
+  }
+
+  function scrapeGlassdoor(pageUrl, documentTitle) {
+    return scrapeGenericBoard(pageUrl, documentTitle, {
+      site: 'glassdoor',
+      titleSelectors: [
+        '[data-test="job-title"]',
+        'h1[class*="JobDetails_jobTitle"]',
+        '.JobDetails_jobTitle__',
+        'h1.heading_Level1',
+        'h1',
+      ],
+      companySelectors: [
+        '[data-test="employer-name"]',
+        '[data-test="employerName"]',
+        'a[class*="EmployerProfile"]',
+        '.EmployerProfile_employerName__',
+      ],
+      locationSelectors: [
+        '[data-test="location"]',
+        '[data-test="job-location"]',
+        '.JobDetails_location__',
+      ],
+      salarySelectors: [
+        '[data-test="detailSalary"]',
+        '[data-test="salary-estimate"]',
+        '.SalaryEstimate_salary__',
+      ],
+      descriptionSelectors: [
+        '#JobDescriptionContainer',
+        '.jobDescriptionContent',
+        '[class*="JobDetails_jobDescription"]',
+        '[data-test="description"]',
+        '.desc',
+      ],
+      coreExtract: (text) => {
+        const end = text.search(
+          /(?:Company Overview|What is the team|Glassdoor has millions|Show more jobs)/i,
+        );
+        if (end > 120) return blockText(text.slice(0, end));
+        return trimUsBoardNoise(text);
+      },
+    });
+  }
+
   function scrapeJobPage() {
     const pageUrl = window.location.href;
     const documentTitle = document.title;
+    const host = (window.location.hostname || '').toLowerCase();
 
-    if (pageUrl.includes('104.com.tw')) {
+    if (host.includes('104.com.tw')) {
       return scrape104(pageUrl, documentTitle);
     }
-    if (pageUrl.includes('linkedin.com')) {
+    if (host.includes('linkedin.com')) {
       return scrapeLinkedIn(pageUrl, documentTitle);
+    }
+    if (host.includes('indeed.com')) {
+      return scrapeIndeed(pageUrl, documentTitle);
+    }
+    if (host.includes('ziprecruiter.com')) {
+      return scrapeZipRecruiter(pageUrl, documentTitle);
+    }
+    if (host.includes('glassdoor.com')) {
+      return scrapeGlassdoor(pageUrl, documentTitle);
     }
 
     return {
+      error: 'NOT_JOB_DETAIL',
       pageTitle: documentTitle,
       pageUrl,
-      rawText: blockText(document.body ? document.body.innerText : ''),
-      jobId: extractJobId(pageUrl),
+      rawText: '',
+      jobId: 'unknown',
     };
   }
 

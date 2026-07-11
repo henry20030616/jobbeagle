@@ -1,22 +1,37 @@
 /**
- * JobBeagle Chrome Extension v1.1.8
+ * JobBeagle Chrome Extension v1.2.0
+ * US boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor (+ 104 TW)
  * Scrape → POST /api/extension-capture → open pre-flight tab
  */
 
 const WEBSITE_ORIGIN = 'https://www.jobbeagle.com';
 const CAPTURE_API = `${WEBSITE_ORIGIN}/api/extension-capture`;
-const LINKEDIN_ORIGINS = ['https://*.linkedin.com/*', 'https://www.linkedin.com/*'];
+
+/** hostname substring → origins to request */
+const SITE_ORIGINS = {
+  'linkedin.com': ['https://*.linkedin.com/*', 'https://www.linkedin.com/*'],
+  'indeed.com': ['https://*.indeed.com/*', 'https://www.indeed.com/*'],
+  'ziprecruiter.com': ['https://*.ziprecruiter.com/*', 'https://www.ziprecruiter.com/*'],
+  'glassdoor.com': ['https://*.glassdoor.com/*', 'https://www.glassdoor.com/*'],
+  '104.com.tw': ['https://*.104.com.tw/*', 'https://www.104.com.tw/*'],
+};
+
+function detectSite(url) {
+  const u = (url || '').toLowerCase();
+  if (u.includes('linkedin.com')) return 'linkedin.com';
+  if (u.includes('indeed.com')) return 'indeed.com';
+  if (u.includes('ziprecruiter.com')) return 'ziprecruiter.com';
+  if (u.includes('glassdoor.com')) return 'glassdoor.com';
+  if (u.includes('104.com.tw')) return '104.com.tw';
+  return null;
+}
 
 chrome.runtime.onInstalled.addListener(() => {});
 
 async function ensureHostAccess(tabUrl) {
-  if (!tabUrl.includes('linkedin.com') && !tabUrl.includes('104.com.tw')) {
-    return true;
-  }
-  const origins = tabUrl.includes('linkedin.com')
-    ? LINKEDIN_ORIGINS
-    : ['https://*.104.com.tw/*', 'https://www.104.com.tw/*'];
-
+  const site = detectSite(tabUrl);
+  if (!site) return true;
+  const origins = SITE_ORIGINS[site];
   try {
     const has = await chrome.permissions.contains({ origins });
     if (has) return true;
@@ -30,10 +45,8 @@ async function ensureHostAccess(tabUrl) {
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab.id || !tab.url) return;
 
-  const isLinkedIn = tab.url.includes('linkedin.com');
-  const is104 = tab.url.includes('104.com.tw');
-
-  if (!isLinkedIn && !is104) {
+  const site = detectSite(tab.url);
+  if (!site) {
     await openPreFlight(null, 'no_job_page');
     return;
   }
@@ -45,8 +58,8 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   try {
-    // LinkedIn right pane often needs a moment after click
-    await sleep(1500);
+    // Split-pane boards (LinkedIn / Indeed) need a moment after selection
+    await sleep(site === 'linkedin.com' || site === 'indeed.com' ? 1500 : 800);
 
     const result = await scrapeViaInjection(tab.id);
     console.log('[JobBeagle] scrape result:', JSON.stringify(result?._debug || result));
