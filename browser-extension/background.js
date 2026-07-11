@@ -1,5 +1,5 @@
 /**
- * JobBeagle Chrome Extension v1.1.6
+ * JobBeagle Chrome Extension v1.1.7
  * Scrape → POST /api/extension-capture → open pre-flight tab
  */
 
@@ -7,11 +7,7 @@ const WEBSITE_ORIGIN = 'https://www.jobbeagle.com';
 const CAPTURE_API = `${WEBSITE_ORIGIN}/api/extension-capture`;
 const LINKEDIN_ORIGINS = ['https://*.linkedin.com/*', 'https://www.linkedin.com/*'];
 
-chrome.runtime.onInstalled.addListener(() => {
-  if (chrome.sidePanel?.setPanelBehavior) {
-    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch(() => {});
-  }
-});
+chrome.runtime.onInstalled.addListener(() => {});
 
 async function ensureHostAccess(tabUrl) {
   if (!tabUrl.includes('linkedin.com') && !tabUrl.includes('104.com.tw')) {
@@ -49,10 +45,11 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   try {
-    // Wait briefly so LinkedIn right-pane DOM can settle
-    await sleep(600);
+    // LinkedIn right pane often needs a moment after click
+    await sleep(1500);
 
     const result = await scrapeViaInjection(tab.id);
+    console.log('[JobBeagle] scrape result:', JSON.stringify(result?._debug || result));
 
     if (!result || result.error === 'SCRAPE_SCRIPT_MISSING') {
       console.error('[JobBeagle] scrape script missing:', result);
@@ -66,13 +63,17 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
 
     if (result.error) {
-      console.error('[JobBeagle] scrape error:', result);
+      console.error('[JobBeagle] scrape error:', JSON.stringify(result));
       await openPreFlight(null, 'scrape_failed');
       return;
     }
 
     if (!result.rawText || result.rawText.trim().length < 40) {
-      console.error('[JobBeagle] scrape too short:', result.rawText?.length, result._debug);
+      console.error(
+        '[JobBeagle] scrape too short:',
+        result.rawText?.length ?? 0,
+        JSON.stringify(result._debug || {}),
+      );
       await openPreFlight(null, 'scrape_failed');
       return;
     }
@@ -112,10 +113,6 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Two-step inject (Chrome forbids files+func in one call).
- * Uses sync scrape + JSON round-trip so the result always serializes.
- */
 async function scrapeViaInjection(tabId) {
   await chrome.scripting.executeScript({
     target: { tabId },
@@ -150,7 +147,6 @@ async function scrapeViaInjection(tabId) {
   return raw;
 }
 
-/** Always open a normal tab — more reliable than Side Panel iframe */
 async function openPreFlight(sid, errorKey) {
   const query = sid
     ? `?sid=${encodeURIComponent(sid)}`
