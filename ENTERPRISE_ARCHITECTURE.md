@@ -85,5 +85,6 @@ Implemented in repo:
 - Stripe package/`lib/stripe.ts` removed
 - Web Store listing draft: `browser-extension/STORE_LISTING.md`
 
-Remaining manual: Chrome Developer Dashboard upload + screenshots (see STORE_LISTING.md).
+Remaining manual **when launching publicly:** Chrome Developer Dashboard upload + screenshots + **Submit for review** (see STORE_LISTING.md).  
+**Deferred (2026-07-11):** Owner chose not to submit yet; keep using load-unpacked.
 

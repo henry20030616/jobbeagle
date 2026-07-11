@@ -1,19 +1,24 @@
 ---
-description: P0 Chrome Web Store + freeze Shorts + remove Stripe dead code
+description: P0 focus + deferred Chrome Web Store submit reminder on launch
 alwaysApply: true
 ---
 
-# JobBeagle — Product Focus & P0
+# JobBeagle — Product Focus & Launch Reminder
 
-## P0 priorities
-1. **Chrome Web Store packaging** — end “load unpacked” friction.
-2. **Legal**: `/privacy` + `/terms` must state whitelist-only scraping and no sale of user data (Web Store policies).
-3. **CCPA hard delete** via `/api/account/delete` (profile + reports + resume files).
+## Chrome Web Store status (2026-07-11)
+- **Decision:** Keep current extension as-is; **do NOT submit for Chrome Web Store review yet.**
+- Zip / listing draft may exist (`jobbeagle-extension-*.zip`, `browser-extension/STORE_LISTING.md`) for later use only.
+- When the user says **正式上線 / launch / go live / 上架外掛 / 公開發布**, Agent **must remind** them to complete Chrome Web Store submit (upload zip, privacy URL, screenshots, Submit for review). Do not assume they already submitted.
+
+## P0 (mostly done in code)
+1. Legal: `/privacy` + `/terms` whitelist + no sale of data
+2. CCPA hard delete via `/api/account/delete`
+3. Packaging draft ready; **store review = user action when they choose to launch**
 
 ## Product focus (do / don't)
 - **DO** invest in: extension → `/pre-flight` → analyze → Lite/Full report → paywall/checkout.
-- **FREEZE Shorts / employer video** unless user explicitly asks — no new Shorts features by default.
-- **REMOVE** Stripe usage and prefer deleting `lib/stripe.ts` when touching payments.
+- **FREEZE Shorts / employer video** unless user explicitly asks.
+- **Stripe:** removed from code; do not reintroduce.
 
 ## Conversion UX
 - Pre-Flight → `QuotaPaywallCard` funnel must stay clear for $3 / $9.99 / $19.99 / $39.99 plans.

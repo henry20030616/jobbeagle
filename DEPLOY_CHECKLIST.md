@@ -281,6 +281,24 @@ Supabase → **Authentication → Providers → Google** 亦須啟用並填入 C
 
 ---
 
+## 正式上線前 — Chrome 外掛商店（暫緩）
+
+> **2026-07-11 決定：保留現狀，先不送審。**  
+> 之後你說「正式上線／要公開／要上架外掛」時，Agent 必須提醒你做下面清單。
+
+### 到時候你要做
+
+1. 確認 zip：`jobbeagle-extension-*.zip`（或請 Agent 依最新 `browser-extension/` 重打）  
+2. 開 https://chrome.google.com/webstore/devconsole → 新增／更新項目 → 上傳 zip  
+3. 隱私政策填：`https://www.jobbeagle.com/privacy`  
+4. 上傳截圖（LinkedIn／Indeed／Pre-Flight／報告）  
+5. 按 **提交審查（Submit for review）**  
+6. 細節見 `browser-extension/STORE_LISTING.md`
+
+**現在不用做：** 不要按送審。本機繼續用「載入未封裝」即可。
+
+---
+
 ## 使用者只要做的事（日常）
 
 > Agent 代跑：git push、Vercel 部署、Supabase migration、env 同步、LS webhook。  
@@ -292,14 +310,14 @@ Supabase → **Authentication → Providers → Google** 亦須啟用並填入 C
 2. 右上角開啟 **「開發人員模式」**（若尚未開啟）  
 3. 找到 **JobBeagle - Headhunter-Level Job Triage**  
 4. 點該卡片上的 **「重新載入」** 圓形箭頭按鈕  
-5. 確認版本為 **1.1.0**（或 Agent 告知的版本）
+5. 確認版本為 **1.2.0**（或 Agent 告知的版本）
 
 ### B. 測試 LinkedIn 外掛（約 2 分鐘）
 
 1. 打開 [LinkedIn 職缺搜尋](https://www.linkedin.com/jobs/)，搜尋關鍵字  
 2. **左側點選一個職缺**，等 **右側詳情** 完全載入  
 3. 點工具列 **JobBeagle 圖示**  
-4. 預期：右側 **Chrome Side Panel** 出現 Pre-Flight，公司／職稱／JD 字數正確  
+4. 預期：開 Pre-Flight 分頁，公司／職稱／JD 正確  
 5. 貼履歷 → **Launch**（額度足夠）或看到 **付費牆**（額度 0）
 
 ### C. 僅 Agent 無法代做時（通常各做一次）
@@ -309,6 +327,7 @@ Supabase → **Authentication → Providers → Google** 亦須啟用並填入 C
 | Google 登入 OAuth | Supabase → Authentication → Google |
 | Lemon Squeezy 確認產品價格 | [LS Dashboard](https://app.lemonsqueezy.com/) |
 | 貼 Access Token 給 Agent | [Supabase tokens](https://supabase.com/dashboard/account/tokens)、[LS API](https://app.lemonsqueezy.com/settings/api) |
+| **（正式上線時）Chrome Web Store 送審** | 見上方「正式上線前」；[Developer Dashboard](https://chrome.google.com/webstore/devconsole) |
 
 ---
 

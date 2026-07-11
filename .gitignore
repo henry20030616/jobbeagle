@@ -61,3 +61,6 @@ UPDATE_*.md
 # API keys and credentials
 **/credentials.json
 **/*key*.json
+
+# Chrome Web Store packaging (local only)
+jobbeagle-extension-*.zip

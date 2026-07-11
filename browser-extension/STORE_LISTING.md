@@ -1,5 +1,8 @@
 # JobBeagle Chrome Web Store — Listing Draft
 
+> **Status (2026-07-11):** Packaging ready. **Do not submit for review yet** (owner decision).  
+> When launching publicly, remind owner to upload zip + Submit for review.
+
 ## Single purpose
 Help job seekers capture a job posting from supported boards and open JobBeagle Pre-Flight for AI triage analysis.
 
@@ -31,7 +34,7 @@ cd browser-extension
 zip -r ../jobbeagle-extension-1.2.0.zip . -x "*.md" -x ".gitignore"
 ```
 
-Upload the zip in Chrome Developer Dashboard → New item.
+Upload the zip in Chrome Developer Dashboard → New item → **Submit for review only when owner asks to go live.**
 
 ## Notes
 - Do not obfuscate code.
