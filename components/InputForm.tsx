@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType } from '@/types';
-import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp, ChevronDown, ChevronRight } from 'lucide-react';
+import { FileText, Upload, X, Sparkles, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, ScanSearch, BadgeDollarSign, ChartNoAxesCombined, BrainCircuit } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
@@ -467,10 +467,38 @@ const InputForm: React.FC<InputFormProps> = ({
            <div className="relative">
                <div className="grid grid-cols-1 lg:grid-cols-4 lg:divide-x divide-slate-700/80">
                   {([
-                    { id: 'match', icon: Zap, iconBg: 'bg-yellow-500/20', iconColor: 'text-yellow-400', title: t.matchAnalysis, desc: t.matchAnalysisDesc },
-                    { id: 'salary', icon: Briefcase, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: t.salaryResearch, desc: t.salaryResearchDesc },
-                    { id: 'industry', icon: TrendingUp, iconBg: 'bg-sky-500/20', iconColor: 'text-sky-400', title: t.industryAnalysis, desc: t.industryAnalysisDesc },
-                    { id: 'interview', icon: MessageSquare, iconBg: 'bg-indigo-500/20', iconColor: 'text-indigo-400', title: t.interviewPrep, desc: t.interviewPrepDesc },
+                    {
+                      id: 'match',
+                      icon: ScanSearch,
+                      iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
+                      iconColor: 'text-amber-300',
+                      title: t.matchAnalysis,
+                      desc: t.matchAnalysisDesc,
+                    },
+                    {
+                      id: 'salary',
+                      icon: BadgeDollarSign,
+                      iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
+                      iconColor: 'text-emerald-300',
+                      title: t.salaryResearch,
+                      desc: t.salaryResearchDesc,
+                    },
+                    {
+                      id: 'industry',
+                      icon: ChartNoAxesCombined,
+                      iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
+                      iconColor: 'text-sky-300',
+                      title: t.industryAnalysis,
+                      desc: t.industryAnalysisDesc,
+                    },
+                    {
+                      id: 'interview',
+                      icon: BrainCircuit,
+                      iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
+                      iconColor: 'text-violet-300',
+                      title: t.interviewPrep,
+                      desc: t.interviewPrepDesc,
+                    },
                   ] as const).map((item) => {
                     const open = expandedFeature === item.id;
                     const Icon = item.icon;
@@ -488,8 +516,10 @@ const InputForm: React.FC<InputFormProps> = ({
                         }}
                         className="w-full text-left flex items-start gap-3 p-4 sm:p-5 hover:bg-slate-700/30 transition-colors border-b lg:border-b-0 border-slate-700/60 last:border-b-0"
                       >
-                        <div className={`${item.iconBg} p-2 rounded-lg shrink-0`}>
-                          <Icon className={`w-5 h-5 ${item.iconColor}`} />
+                        <div
+                          className={`shrink-0 rounded-xl p-2.5 bg-gradient-to-br ring-1 shadow-inner ${item.iconWrap}`}
+                        >
+                          <Icon className={`w-5 h-5 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
