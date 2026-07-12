@@ -18,6 +18,8 @@ export interface SmartInputAreaProps {
   disabled?: boolean;
   /** Shown while public ATS URL is being fetched */
   parsing?: boolean;
+  /** Tighter height for horizontal step layouts */
+  compact?: boolean;
 }
 
 const PLACEHOLDER_ZH =
@@ -36,6 +38,7 @@ export default function SmartInputArea({
   onBlurValidate,
   disabled = false,
   parsing = false,
+  compact = false,
 }: SmartInputAreaProps) {
   const zh = language === 'zh-TW' || language === 'zh-CN';
   const classification: JobInputClassification = useMemo(
@@ -97,7 +100,7 @@ export default function SmartInputArea({
         <textarea
           required
           disabled={disabled || parsing}
-          className={`w-full min-h-[200px] bg-slate-900/30 border-2 border-dashed rounded-xl p-5 text-base text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+          className={`w-full ${compact ? 'min-h-[140px]' : 'min-h-[200px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 text-sm' : 'p-5 text-base'} text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN}
           value={value}
           onChange={(e) => onChange(e.target.value)}

@@ -468,19 +468,19 @@ const InputForm: React.FC<InputFormProps> = ({
 
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden flex flex-col h-full relative group">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden relative group">
            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity duration-500">
               <Sparkles className="w-64 h-64 text-indigo-500" />
            </div>
 
-           <div className="p-8 flex-1 flex flex-col">
-               <h2 className="text-2xl font-bold text-white flex items-center mb-6">
-                  <span className="w-1.5 h-8 bg-emerald-500 rounded-full mr-4"></span>
+           <div className="p-5 sm:p-6 relative">
+               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-3">
+                  <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></span>
                   {t.reportOutput}
                </h2>
                
-               <div className="grid grid-cols-1 gap-2">
+               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-1 sm:gap-2">
                   {([
                     { id: 'match', icon: Zap, iconBg: 'bg-yellow-500/20', iconColor: 'text-yellow-400', title: t.matchAnalysis, desc: t.matchAnalysisDesc },
                     { id: 'salary', icon: Briefcase, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: t.salaryResearch, desc: t.salaryResearchDesc },
@@ -499,7 +499,6 @@ const InputForm: React.FC<InputFormProps> = ({
                         onFocus={() => setExpandedFeature(item.id)}
                         onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
                         onClick={() => {
-                          // Touch / keyboard fallback when hover is unavailable
                           setExpandedFeature(open ? null : item.id);
                         }}
                         className="w-full text-left flex items-start gap-3 p-3 rounded-xl hover:bg-slate-700/30 transition-colors"
@@ -509,7 +508,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-base font-bold text-slate-200">{item.title}</span>
+                            <span className="text-sm font-bold text-slate-200">{item.title}</span>
                             <ChevronDown
                               className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                               aria-hidden
@@ -519,7 +518,7 @@ const InputForm: React.FC<InputFormProps> = ({
                             className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
                           >
                             <div className="overflow-hidden">
-                              <p className="text-sm text-slate-400 leading-normal pt-1.5 pb-0.5">
+                              <p className="text-xs text-slate-400 leading-normal pt-1.5 pb-0.5">
                                 {item.desc}
                               </p>
                             </div>
@@ -532,11 +531,13 @@ const InputForm: React.FC<InputFormProps> = ({
            </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden flex flex-col h-full relative">
-          <div className="p-6 pb-4">
-              <h2 className="text-2xl font-bold text-white flex items-center mb-5">
-                <span className="w-1.5 h-8 bg-indigo-500 rounded-full mr-4"></span>
-                {t.jobData}
+        <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:divide-x divide-slate-700/80">
+            {/* 1. Job */}
+            <div className="lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 border-b lg:border-b-0 border-slate-700/80">
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3">
+                <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3 shrink-0" />
+                <span className="leading-snug">{t.jobData}</span>
               </h2>
               <SmartInputArea
                 value={jobDescription}
@@ -548,6 +549,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 error={jdError}
                 parsing={isParsingUrl}
                 disabled={isLoading}
+                compact
                 onBlurValidate={() => {
                   if (classifyJobInput(jobDescription).kind === 'blocked_board') {
                     setJdError(null);
@@ -561,227 +563,210 @@ const InputForm: React.FC<InputFormProps> = ({
                   if (err) setJdError(err);
                 }}
               />
-          </div>
+            </div>
 
-          <div className="px-6">
-             <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent my-2" />
-          </div>
-
-          <div className="p-6 pt-4 flex-1 flex flex-col">
-              <div className="flex justify-between items-center gap-3 mb-5">
-                <h2 className="text-2xl font-bold text-white flex items-center min-w-0 shrink">
-                  <span className="w-1.5 h-8 bg-violet-500 rounded-full mr-4 shrink-0"></span>
+            {/* 2. Resume */}
+            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 border-b lg:border-b-0 border-slate-700/80">
+              <div className="flex justify-between items-center gap-2 mb-3">
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center min-w-0">
+                  <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3 shrink-0" />
                   <span className="whitespace-nowrap">{t.resume}</span>
                 </h2>
-                {/* 履歷庫按鈕 */}
                 <div className="relative shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-                        className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 sm:px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
-                      >
-                        <History className="w-4 h-4" />
-                        <span className="font-bold">{t.resumeLibrary} {resumeHistory.length > 0 && `(${resumeHistory.length})`}</span>
-                      </button>
-                    {showHistoryDropdown && (
+                  <button
+                    type="button"
+                    onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
+                    className="flex items-center gap-1.5 text-xs text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
+                  >
+                    <History className="w-3.5 h-3.5" />
+                    <span className="font-bold hidden sm:inline">{t.resumeLibrary}</span>
+                    {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
+                  </button>
+                  {showHistoryDropdown && (
                     <>
-                        <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
-                        <div className="absolute right-0 top-10 w-80 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
+                      <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
+                      <div className="absolute right-0 top-9 w-72 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
                         <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                            {t.recentlyUploaded}
+                          {t.recentlyUploaded}
                         </div>
                         {resumeHistory.length === 0 ? (
-                            <div className="p-6 text-center text-slate-500 text-sm">
-                                <p>{t.noResume}</p>
-                            </div>
+                          <div className="p-6 text-center text-slate-500 text-sm">
+                            <p>{t.noResume}</p>
+                          </div>
                         ) : (
-                            resumeHistory.map((historyItem) => (
-                            <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-4 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all active:bg-slate-600">
-                                <FileText className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5 mr-3 group-hover:scale-110 transition-transform" />
-                                <div className="flex-1 overflow-hidden text-left">
-                                <p className="text-sm text-slate-200 font-bold truncate group-hover:text-indigo-300 transition-colors">{historyItem.fileName}</p>
-                                <p className="text-[10px] text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
-                                </div>
-                                <button onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded transition-all active:scale-90"><X className="w-4 h-4" /></button>
+                          resumeHistory.map((historyItem) => (
+                            <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-3 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all">
+                              <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5 mr-2" />
+                              <div className="flex-1 overflow-hidden text-left">
+                                <p className="text-sm text-slate-200 font-bold truncate">{historyItem.fileName}</p>
+                                <p className="text-[10px] text-slate-500 flex items-center mt-1"><Clock className="w-3 h-3 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
+                              </div>
+                              <button type="button" onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-1.5 text-slate-600 hover:text-red-400 rounded"><X className="w-3.5 h-3.5" /></button>
                             </div>
-                            ))
+                          ))
                         )}
-                        </div>
+                      </div>
                     </>
-                    )}
+                  )}
                 </div>
               </div>
 
-              <div className="mb-4">
-                  {!resume ? (
-                    <div className="w-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
-                        <label 
-                          htmlFor="resume-file-input"
-                          className="flex flex-row sm:flex-col items-center justify-center gap-3 sm:gap-2 cursor-pointer hover:bg-slate-700/30 w-full px-4 py-3 sm:py-4 rounded-xl group relative z-10"
-                        >
-                            <div className="p-2 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30 shrink-0">
-                                <Upload className="w-5 h-5 text-slate-400 group-hover:text-indigo-400" />
-                            </div>
-                            <div className="text-left sm:text-center min-w-0">
-                              <p className="text-sm text-slate-300 font-bold">{t.upload}</p>
-                              <p className="text-[11px] text-slate-500 mt-0.5 font-medium">{t.uploadSupport}</p>
-                            </div>
-                        </label>
-                        <input 
-                          id="resume-file-input"
-                          type="file" 
-                          ref={fileInputRef} 
-                          onChange={handleFileChange} 
-                          accept=".pdf,.doc,.docx,.txt,.md" 
-                          className="hidden" 
-                          aria-label="Upload resume file"
-                        />
+              <div className="flex-1 flex flex-col justify-center">
+                {!resume ? (
+                  <div className="w-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative min-h-[120px]">
+                    <label
+                      htmlFor="resume-file-input"
+                      className="flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-700/30 w-full px-3 py-4 rounded-xl group relative z-10"
+                    >
+                      <div className="p-2 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
+                        <Upload className="w-5 h-5 text-slate-400 group-hover:text-indigo-400" />
+                      </div>
+                      <div className="text-center min-w-0">
+                        <p className="text-sm text-slate-300 font-bold">{t.upload}</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5 font-medium leading-snug">{t.uploadSupport}</p>
+                      </div>
+                    </label>
+                    <input
+                      id="resume-file-input"
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept=".pdf,.doc,.docx,.txt,.md"
+                      className="hidden"
+                      aria-label="Upload resume file"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col gap-2 p-3 animate-fade-in">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0"><FileText className="w-4 h-4 text-white" /></div>
+                      <div className="min-w-0 text-left">
+                        <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
+                        <p className="text-[10px] text-indigo-300">Ready for Analysis</p>
+                      </div>
+                      <button type="button" onClick={clearFile} className="p-1.5 hover:bg-white/10 rounded-full text-slate-400 ml-auto shrink-0"><X className="w-4 h-4" /></button>
                     </div>
-                  ) : (
-                     <div className="w-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex items-center justify-between p-3 sm:p-4 animate-fade-in h-auto">
-                       <div className="flex items-center space-x-3 overflow-hidden">
-                         <div className="bg-indigo-500 p-2 rounded-lg shrink-0 shadow-lg"><FileText className="w-5 h-5 text-white" /></div>
-                         <div className="min-w-0 text-left"><p className="text-sm font-bold text-white truncate">{resume.fileName}</p><p className="text-[11px] text-indigo-300 mt-0.5">Ready for Analysis</p></div>
-                       </div>
-                       <div className="flex items-center space-x-2">
-                           <button 
-                             type="button" 
-                             onClick={handleManualSave} 
-                             disabled={isSaving}
-                             className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg border transition-all relative group ${
-                               isSaving 
-                                 ? 'bg-emerald-500/5 text-emerald-400/50 border-emerald-500/10 cursor-wait' 
-                                 : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border-emerald-500/20 active:scale-95'
-                             }`}
-                           >
-                             {isSaving ? (
-                               <>
-                                 <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                 </svg>
-                                 <span className="text-xs font-bold">{t.saving}</span>
-                               </>
-                             ) : (
-                               <>
-                                 <Save className="w-4 h-4" />
-                                 <span className="text-xs font-bold">{t.save}</span>
-                               </>
-                             )}
-                             {showSaveSuccess && (
-                               <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] px-2 py-1 rounded shadow animate-fade-in whitespace-nowrap z-10">
-                                 {t.saved}
-                               </span>
-                             )}
-                           </button>
-                           <button type="button" onClick={clearFile} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all active:scale-95"><X className="w-5 h-5" /></button>
-                       </div>
-                     </div>
-                  )}
+                    <button
+                      type="button"
+                      onClick={handleManualSave}
+                      disabled={isSaving}
+                      className={`inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
+                        isSaving
+                          ? 'bg-emerald-500/5 text-emerald-400/50 border-emerald-500/10'
+                          : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/20'
+                      }`}
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      {isSaving ? t.saving : t.save}
+                    </button>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* 3. Report type */}
+            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 border-b lg:border-b-0 border-slate-700/80">
+              {onReportTypeChange ? (
+                <>
+                  <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3">
+                    <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3 shrink-0" />
+                    <span className="leading-snug">{t.reportTypeStep}</span>
+                  </h2>
+                  <div className="flex flex-col gap-2 flex-1">
+                    <button
+                      type="button"
+                      onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                      className={`flex-1 rounded-xl border px-3 py-3 text-left transition ${
+                        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                          ? 'border-indigo-500 bg-indigo-500/10'
+                          : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
+                      }`}
+                    >
+                      <p className="font-semibold text-white text-sm">Job Fit Snapshot</p>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">{t.snapshotBlurb}</p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                      className={`flex-1 rounded-xl border px-3 py-3 text-left transition ${
+                        reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                          ? 'border-violet-500 bg-violet-500/10'
+                          : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
+                      }`}
+                    >
+                      <p className="font-semibold text-white text-sm flex items-center gap-1 flex-wrap">
+                        Interview Strategy Guide <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">{t.strategyBlurb}</p>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="text-sm text-slate-500">—</div>
+              )}
+            </div>
+
+            {/* Launch */}
+            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col justify-stretch">
+              {(() => {
+                const blocked = jobInputKind.kind === 'blocked_board';
+                const publicAts = jobInputKind.kind === 'public_ats';
+                const zh = currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN';
+                const submitLabel = publicAts
+                  ? resume
+                    ? zh
+                      ? '立即解析並分析'
+                      : 'Parse & analyze'
+                    : zh
+                      ? '解析網址'
+                      : 'Parse URL'
+                  : t.generate;
+                const disabled =
+                  isLoading ||
+                  isParsingUrl ||
+                  isSaving ||
+                  !jobDescription ||
+                  blocked ||
+                  (!publicAts && !resume);
+                return (
+                  <button
+                    type="submit"
+                    disabled={disabled}
+                    className={`w-full h-full min-h-[120px] lg:min-h-0 px-3 py-4 rounded-xl font-black text-sm sm:text-base text-white shadow-lg transition-all transform flex flex-col justify-center items-center gap-2 text-center ${
+                      disabled
+                        ? 'bg-slate-700 cursor-not-allowed text-slate-500'
+                        : publicAts
+                          ? 'bg-gradient-to-b from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 ring-1 ring-white/10'
+                          : jdError
+                            ? 'bg-gradient-to-b from-red-700 to-red-600 ring-1 ring-red-500/30'
+                            : 'bg-gradient-to-b from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 ring-1 ring-white/10'
+                    }`}
+                  >
+                    {isLoading || isParsingUrl ? (
+                      <>
+                        <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="animate-pulse text-xs leading-snug">
+                          {isParsingUrl
+                            ? (zh ? '解析中…' : 'Parsing…')
+                            : t.generating}
+                        </span>
+                      </>
+                    ) : isSaving ? (
+                      <span className="text-slate-500 text-xs">{t.waitingSave}</span>
+                    ) : (
+                      <>
+                        <span className="leading-snug px-1">{submitLabel}</span>
+                        <ArrowRight className="w-5 h-5 shrink-0" />
+                      </>
+                    )}
+                  </button>
+                );
+              })()}
+            </div>
           </div>
-
-          {onReportTypeChange && (
-            <>
-              <div className="px-6">
-                <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent my-2" />
-              </div>
-              <div className="p-6 pt-4">
-                <h2 className="text-2xl font-bold text-white flex items-center mb-4">
-                  <span className="w-1.5 h-8 bg-emerald-500 rounded-full mr-4"></span>
-                  {t.reportTypeStep}
-                </h2>
-                <div className="flex gap-2 sm:gap-3">
-                  <button
-                    type="button"
-                    onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                    className={`flex-1 rounded-xl border px-3 py-3 text-left transition ${
-                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                        ? 'border-indigo-500 bg-indigo-500/10'
-                        : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
-                    }`}
-                  >
-                    <p className="font-semibold text-white text-sm">Job Fit Snapshot</p>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-snug">{t.snapshotBlurb}</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                    className={`flex-1 rounded-xl border px-3 py-3 text-left transition ${
-                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                        ? 'border-violet-500 bg-violet-500/10'
-                        : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
-                    }`}
-                  >
-                    <p className="font-semibold text-white text-sm flex items-center gap-1">
-                      Interview Strategy Guide <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0" />
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-snug">{t.strategyBlurb}</p>
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-              <div className="px-6 pb-6 pt-2 mt-auto space-y-3 border-t border-slate-700/50">
-                 {(() => {
-                   const blocked = jobInputKind.kind === 'blocked_board';
-                   const publicAts = jobInputKind.kind === 'public_ats';
-                   const zh = currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN';
-                   const submitLabel = publicAts
-                     ? resume
-                       ? zh
-                         ? '立即解析網址並分析'
-                         : 'Parse URL & analyze'
-                       : zh
-                         ? '立即解析網址'
-                         : 'Parse job URL'
-                     : t.generate;
-                   const disabled =
-                     isLoading ||
-                     isParsingUrl ||
-                     isSaving ||
-                     !jobDescription ||
-                     blocked ||
-                     (!publicAts && !resume);
-                   return (
-                 <button 
-                   type="submit" 
-                   disabled={disabled}
-                   className={`w-full py-5 px-6 rounded-xl font-black text-xl text-white shadow-lg transition-all transform flex justify-center items-center ${
-                     disabled
-                       ? 'bg-slate-700 cursor-not-allowed text-slate-500'
-                       : publicAts
-                         ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 hover:shadow-emerald-500/25 ring-1 ring-white/10 shadow-emerald-500/20 active:scale-[0.98] hover:scale-[1.02]'
-                         : jdError
-                         ? 'bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 ring-1 ring-red-500/30 active:scale-[0.98]'
-                         : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/25 ring-1 ring-white/10 shadow-indigo-500/20 active:scale-[0.98] hover:scale-[1.02]'
-                   }`}
-                 >
-                  {isLoading || isParsingUrl ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      <span className="animate-pulse">
-                        {isParsingUrl
-                          ? (zh ? '解析網址中…' : 'Parsing URL…')
-                          : t.generating}
-                      </span>
-                    </>
-                  ) : isSaving ? (
-                    <span className="text-slate-500">{t.waitingSave}</span>
-                  ) : (
-                    <>
-                      <span className="mr-2">{submitLabel}</span>
-                      <ArrowRight className="w-6 h-6" />
-                    </>
-                  )}
-                </button>
-                   );
-                 })()}
-              </div>
         </div>
       </form>
     </div>

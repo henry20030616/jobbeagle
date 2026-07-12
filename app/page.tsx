@@ -596,7 +596,7 @@ export default function Home() {
         )}
 
         {!report && !liteReport && !fullReport ? (
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {currentUser && userProfile && (
               <div className="mb-6 space-y-3">
                 <CreditsBadge profile={userProfile} language={language} />
