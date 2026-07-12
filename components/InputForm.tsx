@@ -3,10 +3,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { UserInputs, ResumeInput, InterviewReport } from '@/types';
-import { FileText, Upload, X, Sparkles, Zap, Globe, AlertTriangle, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp } from 'lucide-react';
+import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp } from 'lucide-react';
 import { BeagleIcon } from './AnalysisDashboard';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
+import { classifyJobInput } from '@/lib/url-parser-logic';
+import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
 
 interface SavedResume extends ResumeInput {
@@ -26,12 +28,12 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(language);
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState<ResumeInput | null>(null);
-  const [inputType, setInputType] = useState<'text' | 'url'>('text');
   const [resumeHistory, setResumeHistory] = useState<SavedResume[]>([]);
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [jdError, setJdError] = useState<string | null>(null);
+  const [isParsingUrl, setIsParsingUrl] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,14 +118,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
   };
 
-  useEffect(() => {
-    const urlRegex = /^(https?:\/\/[^\s]+)$/;
-    if (urlRegex.test(jobDescription.trim())) {
-      setInputType('url');
-    } else {
-      setInputType('text');
-    }
-  }, [jobDescription]);
+  const jobInputKind = classifyJobInput(jobDescription);
 
   const saveResumeToHistory = async (newResume: ResumeInput) => {
     const startTime = Date.now();
@@ -238,8 +233,71 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     return result.valid ? null : result.message;
   };
 
+  const parsePublicAtsUrl = async (url: string): Promise<string | null> => {
+    setIsParsingUrl(true);
+    setJdError(null);
+    try {
+      const res = await fetch('/api/job-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || typeof data.text !== 'string') {
+        const msg =
+          typeof data.error === 'string'
+            ? data.error
+            : currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+              ? '無法解析此職缺網址，請改貼完整 JD 文字。'
+              : 'Could not parse this job URL. Paste the full JD text instead.';
+        setJdError(msg);
+        return null;
+      }
+      setJobDescription(data.text);
+      return data.text as string;
+    } catch {
+      setJdError(
+        currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+          ? '解析網址失敗，請稍後再試或改貼 JD 文字。'
+          : 'URL parse failed. Retry or paste the JD text.',
+      );
+      return null;
+    } finally {
+      setIsParsingUrl(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const classification = classifyJobInput(jobDescription);
+
+    if (classification.kind === 'blocked_board') {
+      setJdError(null);
+      return;
+    }
+
+    if (classification.kind === 'public_ats' && classification.url) {
+      const text = await parsePublicAtsUrl(classification.url);
+      if (!text) return;
+      if (!resume) return;
+      const validationError = validateJobDescriptionLocal(text);
+      if (validationError) {
+        setJdError(validationError);
+        return;
+      }
+      onSubmit({ jobDescription: text, resume, language: currentLanguage });
+      return;
+    }
+
+    if (classification.kind === 'other_url') {
+      setJdError(
+        currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+          ? '⚠️ 請勿只貼網址。Greenhouse / Lever 可自動解析；其他請貼完整 JD 或使用外掛。'
+          : '⚠️ URL only is not accepted. Greenhouse / Lever can auto-fetch; otherwise paste full JD or use the extension.',
+      );
+      return;
+    }
 
     const validationError = validateJobDescriptionLocal(jobDescription);
     if (validationError) {
@@ -509,49 +567,29 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                 <span className="w-1.5 h-8 bg-indigo-500 rounded-full mr-4"></span>
                 {t.jobData}
               </h2>
-              <label className="block text-base font-medium text-slate-300 mb-3 flex items-center justify-between">
-                  <div className="flex items-center">
-                  {inputType === 'url' ? (
-                      <Globe className="w-5 h-5 mr-2 text-blue-400 animate-pulse" />
-                  ) : (
-                      <FileText className="w-5 h-5 mr-2 text-indigo-400" />
-                  )}
-                  {t.inputJobUrl}
-                  </div>
-              </label>
-              <p className="mb-3 text-sm text-amber-200/90 leading-relaxed bg-amber-950/40 border border-amber-600/40 rounded-lg px-3 py-2.5">
-                {t.jdFullTextHint}
-              </p>
-              <div className="relative">
-                  <textarea
-                  required
-                  className={`w-full min-h-[180px] bg-slate-900 border rounded-xl p-5 text-base text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-y ${
-                      inputType === 'url' ? 'border-blue-500/50 text-blue-100' : 'border-slate-700'
-                  }`}
-                  placeholder={t.jobUrlPlaceholder}
-                  value={jobDescription}
-                  onChange={(e) => {
-                    setJobDescription(e.target.value);
-                    if (jdError) setJdError(null);
-                  }}
-                  onBlur={() => {
-                    const err = validateJobDescriptionLocal(jobDescription);
-                    if (err) setJdError(err);
-                  }}
-                  />
-                  {inputType === 'url' && (
-                  <div className="absolute bottom-3 left-3 right-3 flex items-start p-2 bg-blue-900/40 rounded border border-blue-500/30 text-sm text-blue-200 backdrop-blur-sm">
-                      <AlertTriangle className="w-4 h-4 mr-2 shrink-0 text-blue-400 mt-0.5" />
-                      <span>{t.urlTip}</span>
-                  </div>
-                  )}
-              </div>
-              {jdError && (
-                <div className="mt-3 flex items-start gap-2 p-3 bg-red-900/30 border border-red-500/50 rounded-xl text-sm text-red-300 animate-fade-in">
-                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
-                  <span>{jdError}</span>
-                </div>
-              )}
+              <SmartInputArea
+                value={jobDescription}
+                onChange={(next) => {
+                  setJobDescription(next);
+                  if (jdError) setJdError(null);
+                }}
+                language={currentLanguage}
+                error={jdError}
+                parsing={isParsingUrl}
+                disabled={isLoading}
+                onBlurValidate={() => {
+                  if (classifyJobInput(jobDescription).kind === 'blocked_board') {
+                    setJdError(null);
+                    return;
+                  }
+                  if (classifyJobInput(jobDescription).kind === 'public_ats') {
+                    setJdError(null);
+                    return;
+                  }
+                  const err = validateJobDescriptionLocal(jobDescription);
+                  if (err) setJdError(err);
+                }}
+              />
           </div>
 
           <div className="px-6">
@@ -671,35 +709,63 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
 
 
               <div className="pt-4 border-t border-slate-700/50 mt-auto">
-                 {/* 啟動 AI 戰略分析按鈕 */}
+                 {(() => {
+                   const blocked = jobInputKind.kind === 'blocked_board';
+                   const publicAts = jobInputKind.kind === 'public_ats';
+                   const zh = currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN';
+                   const submitLabel = publicAts
+                     ? resume
+                       ? zh
+                         ? '立即解析網址並分析'
+                         : 'Parse URL & analyze'
+                       : zh
+                         ? '立即解析網址'
+                         : 'Parse job URL'
+                     : t.generate;
+                   const disabled =
+                     isLoading ||
+                     isParsingUrl ||
+                     isSaving ||
+                     !jobDescription ||
+                     blocked ||
+                     (!publicAts && !resume);
+                   return (
                  <button 
                    type="submit" 
-                   disabled={isLoading || !jobDescription || !resume || isSaving} 
+                   disabled={disabled}
                    className={`w-full py-5 px-6 rounded-xl font-black text-xl text-white shadow-lg transition-all transform flex justify-center items-center ${
-                     isLoading || !jobDescription || !resume || isSaving
+                     disabled
                        ? 'bg-slate-700 cursor-not-allowed text-slate-500'
-                       : jdError
+                       : publicAts
+                         ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 hover:shadow-emerald-500/25 ring-1 ring-white/10 shadow-emerald-500/20 active:scale-[0.98] hover:scale-[1.02]'
+                         : jdError
                          ? 'bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 ring-1 ring-red-500/30 active:scale-[0.98]'
                          : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/25 ring-1 ring-white/10 shadow-indigo-500/20 active:scale-[0.98] hover:scale-[1.02]'
                    }`}
                  >
-                  {isLoading ? (
+                  {isLoading || isParsingUrl ? (
                     <>
                       <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span className="animate-pulse">{t.generating}</span>
+                      <span className="animate-pulse">
+                        {isParsingUrl
+                          ? (zh ? '解析網址中…' : 'Parsing URL…')
+                          : t.generating}
+                      </span>
                     </>
                   ) : isSaving ? (
                     <span className="text-slate-500">{t.waitingSave}</span>
                   ) : (
                     <>
-                      <span className="mr-2">{t.generate}</span>
+                      <span className="mr-2">{submitLabel}</span>
                       <ArrowRight className="w-6 h-6" />
                     </>
                   )}
                 </button>
+                   );
+                 })()}
               </div>
           </div>
         </div>
