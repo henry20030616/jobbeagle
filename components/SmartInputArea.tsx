@@ -70,8 +70,8 @@ export default function SmartInputArea({
         {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}
         {classification.kind !== 'blocked_board' && (
           compact ? (
-            <p className="mb-2 flex items-start gap-1.5 text-[11px] text-slate-400 leading-snug">
-              <Puzzle className="w-3 h-3 text-indigo-400 shrink-0 mt-0.5" />
+            <p className="mb-2 flex items-start gap-1.5 text-xs text-slate-400 leading-snug">
+              <Puzzle className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
               <span>
                 {zh
                   ? '職缺頁可一鍵抓 JD，免手動貼上。'
@@ -79,7 +79,7 @@ export default function SmartInputArea({
                 {' '}
                 <Link
                   href="/extension"
-                  className="font-semibold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 whitespace-nowrap"
+                  className="font-bold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 whitespace-nowrap"
                 >
                   {zh ? '安裝 Chrome 外掛 →' : 'Install Chrome extension →'}
                 </Link>
