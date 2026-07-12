@@ -5,7 +5,7 @@ import { isShortsEnabled } from '@/constants/features';
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Freeze Shorts public surface unless explicitly re-enabled
+  // Shorts frozen only when NEXT_PUBLIC_SHORTS_ENABLED=false
   if (
     !isShortsEnabled() &&
     (path === '/shorts' ||

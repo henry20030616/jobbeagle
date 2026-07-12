@@ -16,8 +16,8 @@ alwaysApply: true
 3. Packaging draft ready; **store review = user action when they choose to launch**
 
 ## Product focus (do / don't)
-- **DO** invest in: extension → `/pre-flight` → analyze → Lite/Full report → paywall/checkout.
-- **FREEZE Shorts / employer video** unless user explicitly asks.
+- **DO** invest in: extension → `/confirm` → analyze → Job Fit Snapshot / Interview Strategy Guide → paywall/checkout.
+- **Shorts / employer video:** enabled by default (`NEXT_PUBLIC_SHORTS_ENABLED=false` to freeze).
 - **Stripe:** removed from code; do not reintroduce.
 
 ## Conversion UX

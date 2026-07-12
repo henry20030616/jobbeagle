@@ -1,10 +1,9 @@
-/** Product feature flags — freeze non-core surfaces by default */
+/** Product feature flags */
 
 /**
  * Shorts / employer video recruiting surface.
- * Set NEXT_PUBLIC_SHORTS_ENABLED=true to re-enable public CTAs and /shorts routes.
- * Default: frozen (false) so engineering focus stays on extension → /confirm → analyze.
+ * Enabled by default. Set NEXT_PUBLIC_SHORTS_ENABLED=false to freeze.
  */
 export function isShortsEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_SHORTS_ENABLED === 'true';
+  return process.env.NEXT_PUBLIC_SHORTS_ENABLED !== 'false';
 }
