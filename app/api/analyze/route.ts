@@ -36,6 +36,7 @@ import { normalizeLiteReport, isEnrichedLiteReport } from '@/lib/normalize-lite-
 import { resolveResumeForAnalysis } from '@/lib/resume-parser';
 import { rateLimitAnalyze } from '@/lib/rate-limit';
 import { tryActivateReferralMilestone } from '@/lib/referrals';
+import { upsertResumeForUser } from '@/lib/resumes';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
 import { validateJobDescription } from '@/lib/validate-job-description';
 
@@ -301,6 +302,33 @@ export async function POST(request: NextRequest) {
         ? (report as LiteReport).match_score
         : null;
 
+    let resumeId: string | null = null;
+    try {
+      const resumeTextForStore = input.pdf_inline
+        ? normalizePdfResumeStoreText(
+            input.resume_text,
+            body.resume?.fileName,
+          )
+        : input.resume_text;
+      const hashMaterial = input.pdf_inline
+        ? `pdf:${input.pdf_inline.data.slice(0, 64)}:${input.pdf_inline.data.length}`
+        : resumeTextForStore;
+      const upserted = await upsertResumeForUser(admin, user.id, {
+        contentText: resumeTextForStore,
+        hashMaterial,
+        fileName: body.resume?.fileName ?? null,
+        mimeType: body.resume?.mimeType ?? input.pdf_inline?.mimeType ?? null,
+        type: body.resume?.type === 'file' || input.pdf_inline ? 'file' : 'text',
+        source: 'analyze',
+      });
+      resumeId = upserted.id;
+    } catch (resumeErr) {
+      console.warn(
+        '[Analyze] Resume upsert failed (report will still save):',
+        resumeErr instanceof Error ? resumeErr.message : resumeErr,
+      );
+    }
+
     const { data: inserted, error: dbError } = await admin
       .from('analysis_reports')
       .insert({
@@ -310,6 +338,7 @@ export async function POST(request: NextRequest) {
         job_description_preview: input.raw_jd.substring(0, 300),
         raw_jd_text: input.raw_jd,
         resume_snapshot_text: input.resume_text,
+        resume_id: resumeId,
         linkedin_job_id: input.linkedin_job_id,
         report_type: reportType,
         is_single_drop: !hasSubscriptionCredits(profile.membership_tier),
@@ -333,6 +362,7 @@ export async function POST(request: NextRequest) {
       report,
       report_type: reportType,
       report_id: inserted?.id ?? null,
+      resume_id: resumeId,
       cached: false,
       model_used: modelUsed,
       credits_remaining: {
@@ -348,4 +378,12 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+function normalizePdfResumeStoreText(
+  placeholder: string,
+  fileName?: string | null,
+): string {
+  const name = fileName?.trim() || 'resume.pdf';
+  return `[PDF resume: ${name}]\n${placeholder}`.slice(0, MAX_RESUME_CHARS);
 }

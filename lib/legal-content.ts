@@ -16,14 +16,14 @@ type LegalDocKey = 'privacy' | 'terms';
 
 const PRIVACY_EN: LegalDocument = {
   title: 'Privacy Policy',
-  lastUpdated: 'July 11, 2026',
+  lastUpdated: 'July 12, 2026',
   intro: 'JobBeagle ("we", "us") operates jobbeagle.com and the JobBeagle Chrome extension. This policy explains what we collect and how we use it. We do not sell personal information.',
   sections: [
     {
       title: 'Information We Collect',
       paragraphs: [
         'Account data: When you sign in with Google, we receive your name, email, and profile photo via Supabase Auth.',
-        'Job seeker data: Job descriptions you paste or capture, resumes (text/PDF/DOCX) you submit for analysis, and AI analysis reports.',
+        'Job seeker data: Job descriptions you paste or capture, resumes (text/PDF/DOCX) you submit for analysis, and AI analysis reports. Successful analyses automatically save a resume version in your account library (deduplicated by content) and link each report to that version.',
         'Chrome extension data: On supported job boards only, the extension reads the active job posting page (title, company, description, URL) when you click the extension icon, then sends that text to JobBeagle over HTTPS for Pre-Flight review. We do not scrape your browsing history or unrelated tabs.',
         'Technical data: IP address (for rate limiting), browser type, device fingerprint (to prevent free-credit abuse), and cookies for session management.',
         'Usage data: Page views (Google Analytics, if enabled) and product interaction metrics.',
@@ -57,8 +57,8 @@ const PRIVACY_EN: LegalDocument = {
     {
       title: 'Data Retention & Deletion (CCPA / GDPR)',
       paragraphs: [
-        'Analysis reports may be retained while your account is active. Certain single-use reports may be purged automatically after about 30 days.',
-        'You may delete your account in-product (signed-in Delete Account control). This triggers a hard delete of your auth user, profile, analysis reports, and associated uploaded Shorts media files where applicable.',
+        'Resume versions and analysis reports are retained while your account is active so you can review history. Removing a resume from your library hides it (soft delete) but does not erase past reports that used it. Certain single-use free reports may be purged automatically after about 90 days.',
+        'You may delete your account in-product (signed-in Delete Account control). This triggers a hard delete of your auth user, profile, resume library, analysis reports, and associated uploaded Shorts media files where applicable.',
         'California residents (CCPA) and users under similar laws may request access or deletion by using in-product delete or emailing henry061680@gmail.com.',
       ],
     },
@@ -93,14 +93,14 @@ const PRIVACY_EN: LegalDocument = {
 
 const PRIVACY_ZH_TW: LegalDocument = {
   title: '隱私權政策',
-  lastUpdated: '2026 年 7 月 11 日',
+  lastUpdated: '2026 年 7 月 12 日',
   intro: 'JobBeagle（「我們」）營運 jobbeagle.com 與 JobBeagle Chrome 外掛。本政策說明我們收集哪些資料及如何使用。我們不會出售個人資料。',
   sections: [
     {
       title: '我們收集的資訊',
       paragraphs: [
         '帳號資料：使用 Google 登入時，我們透過 Supabase Auth 取得您的姓名、Email 與大頭照。',
-        '求職者資料：您貼上或外掛抓取的職缺描述、上傳的履歷（文字／PDF／DOCX）與 AI 分析報告。',
+        '求職者資料：您貼上或外掛抓取的職缺描述、上傳的履歷（文字／PDF／DOCX）與 AI 分析報告。成功分析後，系統會自動將履歷版本存入您的帳號履歷庫（依內容去重），並把每份報告與該履歷版本對應。',
         'Chrome 外掛資料：僅在您點擊外掛圖示時，於支援的職缺網站讀取當前職缺頁（職稱、公司、描述、網址），並以 HTTPS 傳至 JobBeagle 供 Pre-Flight 確認。我們不會抓取瀏覽紀錄或其他分頁。',
         '技術資料：IP（用於限流）、瀏覽器類型、裝置指紋（防止濫用免費額度）及登入 Cookie。',
         '使用資料：頁面瀏覽（若啟用 Google Analytics）與產品互動指標。',
@@ -134,8 +134,8 @@ const PRIVACY_ZH_TW: LegalDocument = {
     {
       title: '資料保留與刪除（CCPA／GDPR）',
       paragraphs: [
-        '分析報告於帳號有效期間可能保留；部分單次報告約 30 天後自動清除。',
-        '您可於登入後使用「刪除帳號」執行硬刪除：包含驗證帳號、profile、分析報告，以及相關上傳媒體檔案。',
+        '履歷版本與分析報告於帳號有效期間保留。從履歷庫移除為軟刪除（列表隱藏），不會抹去曾使用該履歷的歷史報告。部分免費用戶單次報告約 90 天後可能自動清除。',
+        '您可於登入後使用「刪除帳號」執行硬刪除：包含驗證帳號、profile、履歷庫、分析報告，以及相關上傳媒體檔案。',
         '加州 CCPA 等法規下的使用者，亦可透過站內刪除或 henry061680@gmail.com 行使權利。',
       ],
     },

@@ -42,8 +42,9 @@ export async function POST() {
   }
 
   try {
-    // Explicit report wipe (also cascades via FK when auth user is deleted)
+    // Explicit wipe before auth delete (FK cascade also covers these)
     await admin.from('analysis_reports').delete().eq('user_id', user.id);
+    await admin.from('resume_history').delete().eq('user_id', user.id);
 
     // Shorts uploads scoped under uploads/{uid} and logos/{uid}
     await purgeUserStorageFolder(admin, `uploads/${user.id}`);

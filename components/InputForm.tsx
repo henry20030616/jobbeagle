@@ -49,66 +49,75 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
   const loadResumeHistory = async () => {
     try {
       const supabase = createClient();
-      // 先檢查用戶是否登入
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
       if (userError || !user) {
-        // 未登入，安靜地停止，不執行查詢，不顯示錯誤
         setResumeHistory([]);
         return;
       }
 
-      // 確保只查詢當前用戶的履歷（RLS 應該會自動過濾，但我們明確指定以確保安全）
       const { data, error } = await supabase
         .from('resume_history')
-        .select('id, type, content, mime_type, file_name, created_at')
-        .eq('user_id', user.id) // 明確過濾當前用戶的資料
-        .order('created_at', { ascending: false })
-        .limit(3);
+        .select('id, type, content, mime_type, file_name, created_at, last_used_at, label')
+        .eq('user_id', user.id)
+        .is('deleted_at', null)
+        .order('last_used_at', { ascending: false, nullsFirst: false })
+        .limit(50);
 
       if (error) {
-        // 檢查是否為資料表不存在的錯誤
-        if (error.code === '42P01' || error.message?.includes('does not exist')) {
-          console.warn('resume_history 資料表尚未建立');
+        const legacy = await supabase
+          .from('resume_history')
+          .select('id, type, content, mime_type, file_name, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(20);
+        if (legacy.error) {
+          if (legacy.error.code === '42P01' || legacy.error.message?.includes('does not exist')) {
+            console.warn('resume_history 資料表尚未建立');
+          } else {
+            console.warn('無法載入履歷歷史', legacy.error.message);
+          }
           setResumeHistory([]);
           return;
         }
-        // 其他錯誤只記錄在 console（warn 而非 error），不顯示給用戶
-        console.warn("無法載入履歷歷史（可能是權限問題）", {
-          error: JSON.stringify(error, null, 2),
-          message: error.message,
-          code: error.code,
-        });
-        setResumeHistory([]);
+        setResumeHistory(
+          (legacy.data || [])
+            .filter((item) => item.id && item.content && item.created_at)
+            .map((item: any) => ({
+              id: item.id,
+              type: item.type,
+              content: item.content,
+              mimeType: item.mime_type,
+              fileName: item.file_name,
+              timestamp: new Date(item.created_at).getTime(),
+            })),
+        );
         return;
       }
 
-      // 處理資料：空陣列是正常情況（新用戶），不應該觸發錯誤
       if (data && Array.isArray(data)) {
         const mappedData = data
-          .filter(item => item.id && item.content && item.created_at) // 確保必要欄位存在
+          .filter(item => item.id && item.content && item.created_at)
           .map((item: any) => ({
             id: item.id,
             type: item.type,
             content: item.content,
             mimeType: item.mime_type,
-            fileName: item.file_name,
-            timestamp: new Date(item.created_at).getTime()
+            fileName: item.file_name || item.label,
+            timestamp: new Date(item.last_used_at || item.created_at).getTime()
           }));
 
         setResumeHistory(mappedData);
       } else {
-        // 如果 data 為 null 或 undefined，設為空陣列（正常情況）
         setResumeHistory([]);
       }
     } catch (e: any) {
-      // 只有在非預期的錯誤時才記錄（使用 warn 而非 error，避免顯示紅字）
       console.warn("載入履歷歷史時發生非預期錯誤", {
         error: JSON.stringify(e, null, 2),
         message: e?.message,
         code: e?.code,
       });
-      setResumeHistory([]); // 發生錯誤時設為空陣列，避免 UI 錯誤
+      setResumeHistory([]);
     }
   };
 
@@ -125,72 +134,34 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
     console.log('🔵 [saveResumeToHistory] 開始儲存', { type: newResume.type, fileName: newResume.fileName });
     try {
       const supabase = createClient();
-      
-      // 快速獲取用戶信息（使用緩存的 session）
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-      console.log('🔵 [saveResumeToHistory] 用戶檢查', { hasUser: !!user, userError: userError?.message });
 
       if (userError || !user || !user.id) {
         console.warn('⚠️ [saveResumeToHistory] User not logged in, skipping resume save.');
         alert('請先登入才能儲存履歷');
-        // 靜默失敗，不打斷用戶流程
         return;
       }
 
-      // ============================================
-      // 欄位對齊：確保插入資料的物件欄位名稱與資料庫完全一致
-      // 資料庫欄位：user_id, type, content, mime_type, file_name, created_at
-      // 注意：不要使用 job_title, analysis_data 等錯誤欄位（這些是 analysis_reports 表的欄位）
-      // ============================================
-      const insertPayload = {
-        user_id: user.id, // 必須使用 user_id (底線格式)
-        type: newResume.type,
-        content: newResume.content, // 必須使用 content (小寫)
-        mime_type: newResume.mimeType, // 必須使用 mime_type (底線格式)
-        file_name: newResume.fileName || 'unknown', // 必須使用 file_name (底線格式)
-        created_at: new Date().toISOString(),
-      };
-
-      // 強制最多 3 份：超過時刪除最舊的
-      const { data: existing } = await supabase
-        .from('resume_history')
-        .select('id, created_at')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
-      if (existing && existing.length >= 3) {
-        const toDelete = existing.slice(0, existing.length - 2); // keep 2, will add 1 → total 3
-        for (const r of toDelete) {
-          await supabase.from('resume_history').delete().eq('id', r.id);
-        }
-      }
-
-      const { error } = await supabase
-        .from('resume_history')
-        .insert(insertPayload);
-
+      const res = await fetch('/api/resumes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resume: newResume }),
+      });
+      const data = await res.json().catch(() => ({}));
       const duration = Date.now() - startTime;
-      
-      if (error) {
-        console.error('❌ [saveResumeToHistory] 儲存履歷失敗:', error);
-        console.error('❌ [saveResumeToHistory] 錯誤詳情:', JSON.stringify(error, null, 2));
-        alert(`儲存失敗: ${error.message || '未知錯誤'}`);
+
+      if (!res.ok) {
+        console.error('❌ [saveResumeToHistory] 儲存履歷失敗:', data);
+        alert(`儲存失敗: ${data.error || '未知錯誤'}`);
         return;
       }
 
-      // 成功
-      console.log(`✅ 履歷儲存成功 (${duration}ms)`);
-      
-      // 異步刷新列表，不阻塞UI
+      console.log(`✅ 履歷儲存成功 (${duration}ms)`, data);
       loadResumeHistory().catch(e => console.warn('刷新履歷列表失敗:', e));
-      
-      // 顯示成功提示
       setShowSaveSuccess(true);
       setTimeout(() => setShowSaveSuccess(false), 2000);
-      
     } catch (e: any) {
       console.error('❌ 儲存履歷時發生例外:', e?.message);
-      // 靜默失敗，不打斷用戶
     }
   };
 
@@ -333,39 +304,35 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
         return;
       }
 
-      // 確保只刪除自己的履歷
+      // Soft-delete so historical analysis_reports.resume_id stays valid
       const { error } = await supabase
         .from('resume_history')
-        .delete()
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id)
         .eq('user_id', user.id);
       
       if (error) {
-        const errorString = JSON.stringify(error, null, 2);
-        const errorMessage = error.message || '未知錯誤';
-        const errorCode = error.code || 'UNKNOWN';
-
-        console.error('❌ 刪除履歷失敗');
-        console.error('錯誤代碼:', errorCode);
-        console.error('錯誤訊息:', errorMessage);
-        console.error('完整錯誤物件:', errorString);
-
-        if (errorCode === '42501' || errorMessage?.includes('permission denied')) {
-          console.warn('沒有權限刪除履歷，請檢查 RLS policies');
-          alert('沒有權限刪除履歷，請檢查 RLS policies 設定');
+        // Fallback hard delete if soft-delete columns not migrated
+        const hard = await supabase
+          .from('resume_history')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
+        if (hard.error) {
+          const errorMessage = hard.error.message || error.message || '未知錯誤';
+          console.error('❌ 刪除履歷失敗', errorMessage);
+          alert('刪除失敗：' + errorMessage);
           return;
         }
-        alert('刪除失敗：' + (errorMessage || '未知錯誤'));
-        return;
       }
       
       await loadResumeHistory();
     } catch (e: any) {
-      const errorString = JSON.stringify(e, null, 2);
       const errorMessage = e?.message || '未知例外';
-      console.error('❌ 刪除履歷時發生例外');
-      console.error('例外訊息:', errorMessage);
-      console.error('完整例外物件:', errorString);
+      console.error('❌ 刪除履歷時發生例外', errorMessage);
       alert('刪除履歷時發生非預期錯誤：' + errorMessage);
     }
   };

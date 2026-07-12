@@ -30,6 +30,7 @@ interface ReportSummary {
   language: string;
   created_at: string;
   report_type?: string | null;
+  resume_id?: string | null;
   report: InterviewReport | LiteReport | null;
   report_json?: LiteReport | FullReport | InterviewReport | null;
 }
@@ -280,7 +281,7 @@ export default function Home() {
       const supabase = createClient();
       const { data, error } = await supabase
         .from('analysis_reports')
-        .select('id, job_title, score, language, created_at, report_type, report, report_json')
+        .select('id, job_title, score, language, created_at, report_type, report, report_json, resume_id')
         .order('created_at', { ascending: false })
         .limit(20);
       if (error) {
