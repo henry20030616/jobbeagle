@@ -50,7 +50,7 @@ export default function SmartInputArea({
         ? 'border-emerald-500/50 focus:ring-emerald-500/40'
         : classification.kind === 'other_url'
           ? 'border-blue-500/40 focus:ring-blue-500/30'
-          : 'border-slate-700 focus:ring-indigo-500';
+          : 'border-slate-600 focus:ring-indigo-500/40';
 
   return (
     <div className="space-y-0">
@@ -97,7 +97,7 @@ export default function SmartInputArea({
         <textarea
           required
           disabled={disabled || parsing}
-          className={`w-full min-h-[200px] bg-slate-900 border rounded-xl p-5 text-base text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-transparent transition-all resize-y disabled:opacity-60 ${borderClass}`}
+          className={`w-full min-h-[200px] bg-slate-900/30 border-2 border-dashed rounded-xl p-5 text-base text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN}
           value={value}
           onChange={(e) => onChange(e.target.value)}
