@@ -13,7 +13,7 @@ import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
-import { ChevronLeft, History, X, ChevronRight, Loader2, Play, Sparkles } from 'lucide-react';
+import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
@@ -605,50 +605,14 @@ export default function Home() {
                 <DeleteAccountButton language={language} />
               </div>
             )}
-            {currentUser && userProfile && (
-              <div className="mb-6 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                  className={`flex-1 rounded-xl border p-4 text-left transition ${
-                    reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                      ? 'border-indigo-500 bg-indigo-500/10'
-                      : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
-                  }`}
-                >
-                  <p className="font-semibold text-white text-sm">Job Fit Snapshot</p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {language === 'zh-TW' || language === 'zh-CN'
-                      ? '無聯網 · 匹配分數 · 薪酬定位'
-                      : 'No web search · Match score · Comp positioning'}
-                  </p>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                  className={`flex-1 rounded-xl border p-4 text-left transition ${
-                    reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                      ? 'border-violet-500 bg-violet-500/10'
-                      : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
-                  }`}
-                >
-                  <p className="font-semibold text-white text-sm flex items-center gap-1">
-                    Interview Strategy Guide <Sparkles className="w-4 h-4 text-violet-400" />
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {language === 'zh-TW' || language === 'zh-CN'
-                      ? '含完整 Snapshot · 即時情報 · STAR · 談判'
-                      : 'Includes Snapshot + live intel · STAR · Negotiation'}
-                  </p>
-                </button>
-              </div>
-            )}
             <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
               language={language}
               onLanguageChange={undefined}
               initialJobDescription={extensionJobData || undefined}
+              reportType={reportType}
+              onReportTypeChange={setReportType}
             />
             <FooterSection language={language} />
           </div>

@@ -311,14 +311,16 @@ export default function ResumeInputPanel({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="w-full rounded-xl border-2 border-dashed border-slate-600 hover:border-indigo-500/60 bg-white/5 hover:bg-indigo-500/5 px-4 py-10 flex flex-col items-center justify-center gap-2 transition-colors"
+          className="w-full rounded-xl border-2 border-dashed border-slate-600 hover:border-indigo-500/60 bg-white/5 hover:bg-indigo-500/5 px-4 py-3 sm:py-4 flex flex-row sm:flex-col items-center justify-center gap-3 sm:gap-1.5 transition-colors"
         >
-          <Upload className="w-8 h-8 text-slate-400" />
-          <span className="text-sm font-semibold text-slate-200">
-            {zh ? '點擊上傳履歷檔案' : 'Click to upload resume'}
-          </span>
-          <span className="text-xs text-slate-500">
-            {zh ? '支援 PDF / Word / TXT（最大 4MB）' : 'PDF / Word / TXT · max 4MB'}
+          <Upload className="w-5 h-5 text-slate-400 shrink-0" />
+          <span className="flex flex-col text-left sm:text-center min-w-0">
+            <span className="text-sm font-semibold text-slate-200">
+              {zh ? '點擊上傳履歷檔案' : 'Click to upload resume'}
+            </span>
+            <span className="text-[11px] text-slate-500">
+              {zh ? '支援 PDF / Word / TXT（最大 4MB）' : 'PDF / Word / TXT · max 4MB'}
+            </span>
           </span>
         </button>
       )}

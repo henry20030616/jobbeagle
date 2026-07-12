@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { UserInputs, ResumeInput, InterviewReport } from '@/types';
+import { UserInputs, ResumeInput, InterviewReport, ReportType } from '@/types';
 import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp } from 'lucide-react';
 import { BeagleIcon } from './AnalysisDashboard';
 import { createClient } from '@/lib/supabase/browser';
@@ -11,6 +11,7 @@ import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
+import { REPORT_CODES } from '@/constants/report-products';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -23,9 +24,19 @@ interface InputFormProps {
   language?: AppLanguage;
   onLanguageChange?: (lang: AppLanguage) => void;
   initialJobDescription?: string;
+  reportType?: ReportType;
+  onReportTypeChange?: (type: ReportType) => void;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = 'en', onLanguageChange, initialJobDescription }) => {
+const InputForm: React.FC<InputFormProps> = ({
+  onSubmit,
+  isLoading,
+  language = 'en',
+  onLanguageChange,
+  initialJobDescription,
+  reportType = REPORT_CODES.JOB_FIT_SNAPSHOT,
+  onReportTypeChange,
+}) => {
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(language);
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState<ResumeInput | null>(null);
@@ -609,18 +620,20 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                 </div>
               </div>
 
-              <div className="mb-6 flex-1">
+              <div className="mb-4">
                   {!resume ? (
-                    <div className="w-full h-full min-h-[180px] border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
+                    <div className="w-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                         <label 
                           htmlFor="resume-file-input"
-                          className="flex flex-col items-center justify-center cursor-pointer hover:bg-slate-700/30 w-full p-6 flex-1 rounded-t-xl group relative z-10"
+                          className="flex flex-row sm:flex-col items-center justify-center gap-3 sm:gap-2 cursor-pointer hover:bg-slate-700/30 w-full px-4 py-3 sm:py-4 rounded-xl group relative z-10"
                         >
-                            <div className="p-4 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors mb-3 border border-slate-700 group-hover:border-indigo-500/30">
-                                <Upload className="w-8 h-8 text-slate-400 group-hover:text-indigo-400" />
+                            <div className="p-2 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30 shrink-0">
+                                <Upload className="w-5 h-5 text-slate-400 group-hover:text-indigo-400" />
                             </div>
-                            <p className="text-base text-slate-300 font-bold">{t.upload}</p>
-                            <p className="text-xs text-slate-500 mt-1 font-medium">{t.uploadSupport}</p>
+                            <div className="text-left sm:text-center min-w-0">
+                              <p className="text-sm text-slate-300 font-bold">{t.upload}</p>
+                              <p className="text-[11px] text-slate-500 mt-0.5 font-medium">{t.uploadSupport}</p>
+                            </div>
                         </label>
                         <input 
                           id="resume-file-input"
@@ -633,17 +646,17 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
                         />
                     </div>
                   ) : (
-                     <div className="w-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex items-center justify-between p-6 animate-fade-in h-auto">
-                       <div className="flex items-center space-x-4 overflow-hidden">
-                         <div className="bg-indigo-500 p-3 rounded-lg shrink-0 shadow-lg"><FileText className="w-8 h-8 text-white" /></div>
-                         <div className="min-w-0 text-left"><p className="text-base font-bold text-white truncate">{resume.fileName}</p><p className="text-xs text-indigo-300 mt-1">Ready for Analysis</p></div>
+                     <div className="w-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex items-center justify-between p-3 sm:p-4 animate-fade-in h-auto">
+                       <div className="flex items-center space-x-3 overflow-hidden">
+                         <div className="bg-indigo-500 p-2 rounded-lg shrink-0 shadow-lg"><FileText className="w-5 h-5 text-white" /></div>
+                         <div className="min-w-0 text-left"><p className="text-sm font-bold text-white truncate">{resume.fileName}</p><p className="text-[11px] text-indigo-300 mt-0.5">Ready for Analysis</p></div>
                        </div>
-                       <div className="flex items-center space-x-3">
+                       <div className="flex items-center space-x-2">
                            <button 
                              type="button" 
                              onClick={handleManualSave} 
                              disabled={isSaving}
-                             className={`flex items-center space-x-1 px-4 py-2 rounded-lg border transition-all relative group ${
+                             className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg border transition-all relative group ${
                                isSaving 
                                  ? 'bg-emerald-500/5 text-emerald-400/50 border-emerald-500/10 cursor-wait' 
                                  : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border-emerald-500/20 active:scale-95'
@@ -676,7 +689,45 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
               </div>
 
 
-              <div className="pt-4 border-t border-slate-700/50 mt-auto">
+              <div className="pt-4 border-t border-slate-700/50 mt-auto space-y-3">
+                 {onReportTypeChange && (
+                   <div className="flex gap-2 sm:gap-3">
+                     <button
+                       type="button"
+                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                       className={`flex-1 rounded-xl border px-3 py-3 text-left transition ${
+                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                           ? 'border-indigo-500 bg-indigo-500/10'
+                           : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
+                       }`}
+                     >
+                       <p className="font-semibold text-white text-sm">Job Fit Snapshot</p>
+                       <p className="text-[11px] text-slate-400 mt-1 leading-snug">
+                         {currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+                           ? '無聯網 · 匹配分數 · 薪酬定位'
+                           : 'No web search · Match score · Comp positioning'}
+                       </p>
+                     </button>
+                     <button
+                       type="button"
+                       onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                       className={`flex-1 rounded-xl border px-3 py-3 text-left transition ${
+                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                           ? 'border-violet-500 bg-violet-500/10'
+                           : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
+                       }`}
+                     >
+                       <p className="font-semibold text-white text-sm flex items-center gap-1">
+                         Interview Strategy Guide <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                       </p>
+                       <p className="text-[11px] text-slate-400 mt-1 leading-snug">
+                         {currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+                           ? '含完整 Snapshot · 即時情報 · STAR · 談判'
+                           : 'Includes Snapshot + live intel · STAR · Negotiation'}
+                       </p>
+                     </button>
+                   </div>
+                 )}
                  {(() => {
                    const blocked = jobInputKind.kind === 'blocked_board';
                    const publicAts = jobInputKind.kind === 'public_ats';
