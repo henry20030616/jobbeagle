@@ -45,7 +45,7 @@ import {
   normalizeReportType,
 } from '@/constants/report-products';
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 function paymentRequiredResponse(profile: ProfileRow) {
   return NextResponse.json(

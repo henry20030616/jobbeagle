@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
@@ -12,6 +12,10 @@ import type { LiteReport, FullReport, ReportType, ResumeInput, UserProfile } fro
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
 import { FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS } from '@/constants/credits';
 import { normalizeLiteReport } from '@/lib/normalize-lite-report';
+import {
+  getAnalysisProgressAtTime,
+  getAnalysisStageLabel,
+} from '@/lib/analysis-progress';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import DogLoading from '@/components/DogLoading';
@@ -87,6 +91,34 @@ export default function PreFlightPage() {
   const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
   const [fullReport, setFullReport] = useState<FullReport | null>(null);
   const [checkoutBusy, setCheckoutBusy] = useState<CheckoutPlanType | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [analysisElapsed, setAnalysisElapsed] = useState(0);
+  const [analysisStage, setAnalysisStage] = useState('Running headhunter triage...');
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopProgressSimulation = useCallback(() => {
+    if (progressTimerRef.current) {
+      clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+    }
+  }, []);
+
+  const startProgressSimulation = useCallback(() => {
+    stopProgressSimulation();
+    const startTime = Date.now();
+    setAnalysisProgress(0);
+    setAnalysisElapsed(0);
+    setAnalysisStage(getAnalysisStageLabel(0, 'en'));
+    progressTimerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const prog = getAnalysisProgressAtTime(elapsed);
+      setAnalysisProgress(prog);
+      setAnalysisElapsed(elapsed);
+      setAnalysisStage(getAnalysisStageLabel(prog, 'en'));
+    }, 400);
+  }, [stopProgressSimulation]);
+
+  useEffect(() => () => stopProgressSimulation(), [stopProgressSimulation]);
 
   const loadSession = useCallback(async () => {
     const supabase = createClient();
@@ -187,6 +219,7 @@ export default function PreFlightPage() {
     setError(null);
     setLiteReport(null);
     setFullReport(null);
+    startProgressSimulation();
 
     try {
       const fingerprint = await getDeviceFingerprint();
@@ -222,7 +255,11 @@ export default function PreFlightPage() {
       }
 
       if (!res.ok) {
-        throw new Error(data.error || 'Analysis failed');
+        throw new Error(
+          typeof data.error === 'string'
+            ? data.error
+            : data.error?.message || 'Analysis failed',
+        );
       }
 
       if (normalizeReportType(data.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
@@ -234,6 +271,7 @@ export default function PreFlightPage() {
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Analysis failed');
     } finally {
+      stopProgressSimulation();
       setAnalyzing(false);
     }
   };
@@ -253,7 +291,14 @@ export default function PreFlightPage() {
   if (analyzing || loadingJob) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <DogLoading progress={loadingJob ? 35 : 72} stageLabel={loadingJob ? 'Loading job capture...' : 'Running headhunter triage...'} />
+        <DogLoading
+          progress={loadingJob ? Math.max(analysisProgress, 20) : analysisProgress}
+          elapsed={loadingJob ? 0 : analysisElapsed}
+          stageLabel={
+            loadingJob ? 'Loading job capture...' : analysisStage
+          }
+          language="en"
+        />
       </div>
     );
   }

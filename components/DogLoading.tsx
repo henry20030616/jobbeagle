@@ -30,12 +30,12 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     ar: 'يقوم البيغل بالبحث عن البيانات...',
   };
   const estimatedMap: Record<AppLanguage, string> = {
-    'zh-TW': '通常需要 30–60 秒',
-    'zh-CN': '通常需要 30–60 秒',
-    en: 'Usually takes 30–60 seconds',
-    es: 'Normalmente tarda 30–60 segundos',
-    hi: 'आमतौर पर 30–60 सेकंड लगते हैं',
-    ar: 'عادةً يستغرق 30–60 ثانية',
+    'zh-TW': '通常需要 30–90 秒，請稍候',
+    'zh-CN': '通常需要 30–90 秒，请稍候',
+    en: 'Usually takes 30–90 seconds',
+    es: 'Normalmente tarda 30–90 segundos',
+    hi: 'आमतौर पर 30–90 सेकंड लगते हैं',
+    ar: 'عادةً يستغرق 30–90 ثانية',
   };
   const elapsedMap: Record<AppLanguage, string> = {
     'zh-TW': `已分析 ${elapsed} 秒`,
