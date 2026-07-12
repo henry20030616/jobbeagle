@@ -131,9 +131,10 @@ export interface UserInputs {
   language?: 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
 }
 
-// ─── Unified Master Spec 2026: Lite / Full Reports ───
+// ─── Report products: Job Fit Snapshot / Interview Strategy Guide ───
 
-export type ReportType = 'lite' | 'full';
+export type { ReportType } from '@/constants/report-products';
+export { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 
 export type MembershipTier = 'free' | 'standard_sub' | 'advanced_sub';
 
@@ -198,13 +199,17 @@ export interface UserProfile {
   full_name: string | null;
   avatar_url: string | null;
   membership_tier: MembershipTier;
-  available_lite_credits: number;
-  available_full_credits: number;
+  available_job_fit_snapshot_credits: number;
+  available_interview_strategy_guide_credits: number;
+  /** @deprecated use available_job_fit_snapshot_credits */
+  available_lite_credits?: number;
+  /** @deprecated use available_interview_strategy_guide_credits */
+  available_full_credits?: number;
   referral_code: string | null;
   device_fingerprint: string | null;
 }
 
-/** Chrome extension → pre-flight payload */
+/** Chrome extension → confirm-job payload */
 export interface ExtensionJobPayload {
   pageTitle: string;
   pageUrl: string;

@@ -70,8 +70,8 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   },
   es: {
     thanks: '¡Gracias por usar JobBeagle!',
-    subtitle: 'Has agotado tus 3 créditos Lite de por vida. Suscríbete para 100 Lite + 10 Full al mes.',
-    loginHint: 'Inicia sesión con Google — 3 análisis Lite gratis al registrarte.',
+    subtitle: 'Has agotado tus 3 créditos Job Fit Snapshot de por vida. Suscríbete para 100 Snapshot + 10 Strategy Guide al mes.',
+    loginHint: 'Inicia sesión con Google — 3 análisis Job Fit Snapshot gratis al registrarte.',
     loginBtn: 'Iniciar sesión con Google',
     singleLite: 'Job Fit Snapshot · $3',
     singleFull: 'Interview Strategy Guide · $9.99',
@@ -83,7 +83,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   },
   hi: {
     thanks: 'JobBeagle उपयोग के लिए धन्यवाद!',
-    subtitle: 'आपके जीवनभर के 3 Lite क्रेडिट समाप्त। सदस्यता लें।',
+    subtitle: 'आपके जीवनभर के 3 Job Fit Snapshot क्रेडिट समाप्त। सदस्यता लें।',
     loginHint: 'Google से साइन इन करें।',
     loginBtn: 'Google से साइन इन',
     singleLite: 'Job Fit Snapshot · $3',
@@ -110,8 +110,8 @@ const copy: Record<AppLanguage, PaywallCopy> = {
 };
 
 const PLANS: Array<{ type: CheckoutPlanType; labelKey: keyof Pick<PaywallCopy, 'singleLite' | 'singleFull' | 'standard' | 'advanced'>; primary?: boolean }> = [
-  { type: 'single_lite', labelKey: 'singleLite' },
-  { type: 'single_full', labelKey: 'singleFull' },
+  { type: 'single_job_fit_snapshot', labelKey: 'singleLite' },
+  { type: 'single_interview_strategy_guide', labelKey: 'singleFull' },
   { type: 'standard_subscription', labelKey: 'standard', primary: true },
   { type: 'advanced_subscription', labelKey: 'advanced' },
 ];

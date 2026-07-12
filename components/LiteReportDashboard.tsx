@@ -230,7 +230,7 @@ export default function LiteReportDashboard({
 
   const handleUpgrade = async () => {
     setCheckoutBusy(true);
-    await startCheckout('single_full');
+    await startCheckout('single_interview_strategy_guide');
     setCheckoutBusy(false);
   };
 

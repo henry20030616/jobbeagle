@@ -4,6 +4,7 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import {
   CHECKOUT_PLANS,
   isCheckoutPlanType,
+  normalizeCheckoutPlanType,
   ACTIVE_CHECKOUT_PLAN_TYPES,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
@@ -53,7 +54,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const planType = body.planType;
+  const planTypeRaw = body.planType;
+  const planType = planTypeRaw ? normalizeCheckoutPlanType(planTypeRaw) : null;
   if (!planType || !isCheckoutPlanType(planType)) {
     return NextResponse.json(
       { error: 'Invalid planType', errorCode: 'INVALID_PLAN' },
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const variantId = resolveLemonSqueezyVariant(planType as CheckoutPlanType);
+  const variantId = resolveLemonSqueezyVariant(planType);
   if (!variantId) {
     const missing = getMissingLemonSqueezyVariants();
     return NextResponse.json(

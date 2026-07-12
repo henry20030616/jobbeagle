@@ -4,7 +4,8 @@ import React from 'react';
 import type { UserProfile } from '@/types';
 import type { AppLanguage } from '@/lib/language-context';
 import { Sparkles, Zap } from 'lucide-react';
-import { FREE_LIFETIME_LITE_CREDITS } from '@/constants/credits';
+import { FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS } from '@/constants/credits';
+import { reportShortLabel, REPORT_CODES } from '@/constants/report-products';
 
 interface CreditsBadgeProps {
   profile: UserProfile | null;
@@ -12,18 +13,16 @@ interface CreditsBadgeProps {
   className?: string;
 }
 
-const copy: Record<AppLanguage, { lite: string; full: string; tier: string; freeNote: string }> = {
-  'zh-TW': { lite: 'Snapshot', full: 'Strategy', tier: '訂閱', freeNote: `免費 · 終生 ${FREE_LIFETIME_LITE_CREDITS} 次` },
-  'zh-CN': { lite: 'Snapshot', full: 'Strategy', tier: '订阅', freeNote: `免费 · 终生 ${FREE_LIFETIME_LITE_CREDITS} 次` },
-  en: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `Free · ${FREE_LIFETIME_LITE_CREDITS} lifetime` },
-  es: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `Gratis · ${FREE_LIFETIME_LITE_CREDITS} de por vida` },
-  hi: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `मुफ़्त · जीवनभर ${FREE_LIFETIME_LITE_CREDITS}` },
-  ar: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `مجاني · ${FREE_LIFETIME_LITE_CREDITS} مدى الحياة` },
-};
-
 export default function CreditsBadge({ profile, language = 'en', className = '' }: CreditsBadgeProps) {
   if (!profile) return null;
-  const t = copy[language] ?? copy.en;
+  const snapshot =
+    profile.available_job_fit_snapshot_credits
+    ?? profile.available_lite_credits
+    ?? 0;
+  const strategy =
+    profile.available_interview_strategy_guide_credits
+    ?? profile.available_full_credits
+    ?? 0;
   const tierLabel =
     profile.membership_tier === 'advanced_sub'
       ? 'Advanced'
@@ -35,19 +34,29 @@ export default function CreditsBadge({ profile, language = 'en', className = '' 
     <div className={`flex flex-wrap items-center gap-2 text-xs ${className}`}>
       {tierLabel && (
         <span className="rounded-full bg-violet-500/20 border border-violet-500/40 px-2.5 py-1 text-violet-200 font-semibold">
-          {tierLabel} {t.tier}
+          {tierLabel}
         </span>
       )}
-      <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 border border-slate-600 px-2.5 py-1 text-slate-200">
+      <span
+        className="inline-flex items-center gap-1 rounded-full bg-slate-800 border border-slate-600 px-2.5 py-1 text-slate-200"
+        title={reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language)}
+      >
         <Sparkles className="w-3 h-3 text-indigo-400" />
-        {profile.available_lite_credits} {t.lite}
+        {snapshot} {reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language)}
       </span>
-      <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 border border-slate-600 px-2.5 py-1 text-slate-200">
+      <span
+        className="inline-flex items-center gap-1 rounded-full bg-slate-800 border border-slate-600 px-2.5 py-1 text-slate-200"
+        title={reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language)}
+      >
         <Zap className="w-3 h-3 text-amber-400" />
-        {profile.available_full_credits} {t.full}
+        {strategy} {reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language)}
       </span>
       {profile.membership_tier === 'free' && (
-        <span className="text-slate-500">{t.freeNote}</span>
+        <span className="text-slate-500">
+          {language === 'zh-TW' || language === 'zh-CN'
+            ? `免費 · 終生 ${FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS} 次`
+            : `Free · ${FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS} lifetime`}
+        </span>
       )}
     </div>
   );

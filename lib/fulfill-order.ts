@@ -1,6 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
-import { CHECKOUT_PLANS, SUBSCRIPTION_ALLOWANCES } from '@/constants/checkout-plans';
+import {
+  CHECKOUT_PLANS,
+  SUBSCRIPTION_ALLOWANCES,
+  normalizeCheckoutPlanType,
+} from '@/constants/checkout-plans';
 
 /** Idempotent post-payment fulfillment (Lemon Squeezy). */
 export async function fulfillOrder(
@@ -11,6 +15,8 @@ export async function fulfillOrder(
   reportId: string | null,
   externalPaymentId: string | null,
 ): Promise<void> {
+  const canonical = normalizeCheckoutPlanType(planType) ?? planType;
+
   const { data: existing } = await admin
     .from('orders')
     .select('status')
@@ -30,33 +36,57 @@ export async function fulfillOrder(
     })
     .eq('id', orderId);
 
-  const plan = CHECKOUT_PLANS[planType];
+  const plan = CHECKOUT_PLANS[canonical] ?? CHECKOUT_PLANS[planType];
   if (!plan) return;
 
-  // New spec plans
-  if (plan.liteCredits || plan.fullCredits) {
-    await admin.rpc('increment_profile_credits', {
+  const snapshot =
+    plan.jobFitSnapshotCredits ?? plan.liteCredits ?? 0;
+  const strategy =
+    plan.interviewStrategyGuideCredits ?? plan.fullCredits ?? 0;
+
+  if (snapshot || strategy) {
+    let { error } = await admin.rpc('increment_profile_credits', {
       p_user_id: userId,
-      p_lite: plan.liteCredits ?? 0,
-      p_full: plan.fullCredits ?? 0,
+      p_job_fit_snapshot: snapshot,
+      p_interview_strategy_guide: strategy,
     });
+    if (error) {
+      const retry = await admin.rpc('increment_profile_credits', {
+        p_user_id: userId,
+        p_lite: snapshot,
+        p_full: strategy,
+      });
+      error = retry.error;
+    }
+    if (error) throw new Error(error.message);
   }
 
   if (plan.membershipTier) {
     const allowance = SUBSCRIPTION_ALLOWANCES[plan.membershipTier];
-    await admin
-      .from('profiles')
-      .update({
-        membership_tier: plan.membershipTier,
-        available_lite_credits: allowance.lite,
-        available_full_credits: allowance.full,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', userId);
+    const patchNew = {
+      membership_tier: plan.membershipTier,
+      available_job_fit_snapshot_credits: allowance.job_fit_snapshot,
+      available_interview_strategy_guide_credits: allowance.interview_strategy_guide,
+      updated_at: new Date().toISOString(),
+    };
+    let { error } = await admin.from('profiles').update(patchNew).eq('id', userId);
+    if (error) {
+      await admin
+        .from('profiles')
+        .update({
+          membership_tier: plan.membershipTier,
+          available_lite_credits: allowance.job_fit_snapshot,
+          available_full_credits: allowance.interview_strategy_guide,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', userId);
+    }
   }
 
-  // Legacy: premium report unlock
-  if (planType === 'premium_report' && reportId) {
+  if (
+    (canonical === 'single_interview_strategy_guide' || planType === 'premium_report')
+    && reportId
+  ) {
     await admin
       .from('analysis_reports')
       .update({ is_premium: true })
@@ -64,29 +94,42 @@ export async function fulfillOrder(
       .eq('user_id', userId);
   }
 
-  // Legacy: bonus credits via user_rewards
+  if (planType === 'basic_overage' || canonical === 'single_job_fit_snapshot') {
+    // no-op beyond credits above for new plans
+  }
   if (planType === 'basic_overage') {
-    await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 1 });
+    await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 1 }).catch(() => {});
   }
   if (planType === 'monthly_subscription') {
-    await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 30 });
+    await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 30 }).catch(() => {});
   }
 }
 
-/** Reset subscription credits on invoice.paid */
 export async function fulfillSubscriptionRenewal(
   admin: SupabaseClient,
   userId: string,
   tier: 'standard_sub' | 'advanced_sub',
 ): Promise<void> {
   const allowance = SUBSCRIPTION_ALLOWANCES[tier];
-  await admin
+  const { error } = await admin
     .from('profiles')
     .update({
       membership_tier: tier,
-      available_lite_credits: allowance.lite,
-      available_full_credits: allowance.full,
+      available_job_fit_snapshot_credits: allowance.job_fit_snapshot,
+      available_interview_strategy_guide_credits: allowance.interview_strategy_guide,
       updated_at: new Date().toISOString(),
     })
     .eq('id', userId);
+
+  if (error) {
+    await admin
+      .from('profiles')
+      .update({
+        membership_tier: tier,
+        available_lite_credits: allowance.job_fit_snapshot,
+        available_full_credits: allowance.interview_strategy_guide,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId);
+  }
 }

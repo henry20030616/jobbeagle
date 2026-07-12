@@ -5,7 +5,7 @@ const params = new URLSearchParams(window.location.search);
 const sid = params.get('sid');
 const error = params.get('error');
 
-let target = `${WEBSITE_ORIGIN}/pre-flight`;
+let target = `${WEBSITE_ORIGIN}/confirm`;
 if (sid) {
   target += `?sid=${encodeURIComponent(sid)}&embedded=1`;
 } else if (error) {

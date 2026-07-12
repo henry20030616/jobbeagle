@@ -9,6 +9,7 @@ import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, LiteReport, FullReport, UserInputs, ReportType } from '@/types';
+import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
@@ -130,7 +131,7 @@ export default function Home() {
   const [report, setReport] = useState<InterviewReport | null>(null);
   const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
   const [fullReport, setFullReport] = useState<FullReport | null>(null);
-  const [reportType, setReportType] = useState<ReportType>('lite');
+  const [reportType, setReportType] = useState<ReportType>(REPORT_CODES.JOB_FIT_SNAPSHOT);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -169,7 +170,7 @@ export default function Home() {
       const urlParams = new URLSearchParams(window.location.search);
       const payloadParam = urlParams.get('payload');
       if (payloadParam) {
-        window.location.replace(`/pre-flight?payload=${encodeURIComponent(payloadParam)}`);
+        window.location.replace(`/confirm?payload=${encodeURIComponent(payloadParam)}`);
         return;
       }
 
@@ -201,7 +202,7 @@ export default function Home() {
               rawText,
               jobId: jobId || 'extension-import',
             }))));
-            window.location.replace(`/pre-flight?payload=${encodeURIComponent(payload)}`);
+            window.location.replace(`/confirm?payload=${encodeURIComponent(payload)}`);
             return;
           }
         } catch (e) {
@@ -362,11 +363,14 @@ export default function Home() {
         return;
       }
 
-      if (result.report_type === 'full') {
+      if (normalizeReportType(result.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
         setFullReport(result.report as FullReport);
         setLiteReport(null);
         setReport(null);
-      } else if (result.report_type === 'lite' && result.report?.match_score != null) {
+      } else if (
+        normalizeReportType(result.report_type) === REPORT_CODES.JOB_FIT_SNAPSHOT
+        && result.report?.match_score != null
+      ) {
         setLiteReport(normalizeLiteReport(result.report as LiteReport));
         setFullReport(null);
         setReport(null);
@@ -490,7 +494,10 @@ export default function Home() {
                         key={item.id}
                         onClick={() => {
                           const payload = item.report_json ?? item.report;
-                          if (item.report_type === 'full' || isFullReport(payload)) {
+                          if (
+                            normalizeReportType(item.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                            || isFullReport(payload)
+                          ) {
                             setFullReport(payload as FullReport);
                             setLiteReport(null);
                             setReport(null);
@@ -602,9 +609,9 @@ export default function Home() {
               <div className="mb-6 flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setReportType('lite')}
+                  onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                   className={`flex-1 rounded-xl border p-4 text-left transition ${
-                    reportType === 'lite'
+                    reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                       ? 'border-indigo-500 bg-indigo-500/10'
                       : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
                   }`}
@@ -618,9 +625,9 @@ export default function Home() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setReportType('full')}
+                  onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                   className={`flex-1 rounded-xl border p-4 text-left transition ${
-                    reportType === 'full'
+                    reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                       ? 'border-violet-500 bg-violet-500/10'
                       : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
                   }`}

@@ -7,7 +7,11 @@ import {
   verifyLemonSqueezySignature,
   type LemonWebhookPayload,
 } from '@/lib/lemonsqueezy';
-import { isCheckoutPlanType, type CheckoutPlanType } from '@/constants/checkout-plans';
+import {
+  isCheckoutPlanType,
+  normalizeCheckoutPlanType,
+  type CheckoutPlanType,
+} from '@/constants/checkout-plans';
 
 export const runtime = 'nodejs';
 
@@ -75,12 +79,11 @@ export async function POST(request: NextRequest) {
   const planTypeRaw = custom.plan_type;
   const reportId = custom.report_id ?? null;
 
-  if (!userId || !planTypeRaw || !isCheckoutPlanType(planTypeRaw)) {
+  const planType = planTypeRaw ? normalizeCheckoutPlanType(planTypeRaw) : null;
+  if (!userId || !planType || !isCheckoutPlanType(planType)) {
     console.error('[webhook] missing custom_data', { eventName, custom });
     return NextResponse.json({ error: 'Missing custom_data' }, { status: 400 });
   }
-
-  const planType = planTypeRaw as CheckoutPlanType;
 
   // Subscription renewal: reset monthly credits without a new order row
   if (

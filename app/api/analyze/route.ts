@@ -39,6 +39,11 @@ import { tryActivateReferralMilestone } from '@/lib/referrals';
 import { upsertResumeForUser } from '@/lib/resumes';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
 import { validateJobDescription } from '@/lib/validate-job-description';
+import {
+  REPORT_CODES,
+  isInterviewStrategyGuide,
+  normalizeReportType,
+} from '@/constants/report-products';
 
 export const maxDuration = 60;
 
@@ -48,8 +53,13 @@ function paymentRequiredResponse(profile: ProfileRow) {
       error: 'Insufficient credits. Upgrade or purchase to continue.',
       code: 'PAYMENT_REQUIRED',
       profile: {
-        lite_credits: profile.available_lite_credits,
-        full_credits: profile.available_full_credits,
+        job_fit_snapshot_credits: profile.available_job_fit_snapshot_credits,
+        interview_strategy_guide_credits:
+          profile.available_interview_strategy_guide_credits,
+        /** @deprecated */
+        lite_credits: profile.available_job_fit_snapshot_credits,
+        /** @deprecated */
+        full_credits: profile.available_interview_strategy_guide_credits,
         membership_tier: profile.membership_tier,
       },
     },
@@ -139,7 +149,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as AnalyzeRequestBody;
-    const reportType: ReportType = body.report_type === 'full' ? 'full' : 'lite';
+    const reportType = normalizeReportType(body.report_type);
 
     const supabase = await createClient();
     const {
@@ -237,10 +247,12 @@ export async function POST(request: NextRequest) {
     );
     if (cached?.report_json) {
       const useCache =
-        reportType !== 'lite' || isEnrichedLiteReport(cached.report_json);
+        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+          ? isEnrichedLiteReport(cached.report_json)
+          : true;
       if (useCache) {
         const cachedReport =
-          reportType === 'lite'
+          reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
             ? normalizeLiteReport(cached.report_json as LiteReport)
             : cached.report_json;
         return NextResponse.json({
@@ -263,7 +275,7 @@ export async function POST(request: NextRequest) {
     let modelUsed: string;
 
     try {
-      if (reportType === 'lite') {
+      if (reportType === REPORT_CODES.JOB_FIT_SNAPSHOT) {
         const result = await executeLiteAnalysis(
           input.resume_text,
           input.raw_jd,
@@ -293,12 +305,12 @@ export async function POST(request: NextRequest) {
       throw analysisErr;
     }
 
-    if (reportType === 'lite') {
+    if (reportType === REPORT_CODES.JOB_FIT_SNAPSHOT) {
       await tryActivateReferralMilestone(admin, user.id);
     }
 
     const score =
-      reportType === 'lite'
+      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
         ? (report as LiteReport).match_score
         : null;
 
@@ -346,7 +358,7 @@ export async function POST(request: NextRequest) {
         report: report,
         score,
         language: body.language || 'en',
-        is_premium: reportType === 'full',
+        is_premium: isInterviewStrategyGuide(reportType),
       })
       .select('id')
       .single();
@@ -366,8 +378,22 @@ export async function POST(request: NextRequest) {
       cached: false,
       model_used: modelUsed,
       credits_remaining: {
-        lite: reportType === 'lite' ? remaining : profile.available_lite_credits,
-        full: reportType === 'full' ? remaining : profile.available_full_credits,
+        job_fit_snapshot:
+          reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+            ? remaining
+            : profile.available_job_fit_snapshot_credits,
+        interview_strategy_guide:
+          reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+            ? remaining
+            : profile.available_interview_strategy_guide_credits,
+        lite:
+          reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+            ? remaining
+            : profile.available_job_fit_snapshot_credits,
+        full:
+          reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+            ? remaining
+            : profile.available_interview_strategy_guide_credits,
       },
     });
   } catch (error: unknown) {

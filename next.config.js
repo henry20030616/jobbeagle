@@ -21,10 +21,24 @@ const nextConfig = {
         destination: '/api/shorts',
         permanent: true,
       },
+      {
+        source: '/pre-flight',
+        destination: '/confirm',
+        permanent: false,
+      },
     ];
   },
   async headers() {
     return [
+      {
+        source: '/confirm',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self' chrome-extension:;",
+          },
+        ],
+      },
       {
         source: '/pre-flight',
         headers: [

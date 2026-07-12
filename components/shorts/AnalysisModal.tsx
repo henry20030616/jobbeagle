@@ -6,7 +6,8 @@ import {
   X, Upload, FileText, Sparkles, CheckCircle,
   Loader2, Clock, CheckCircle2
 } from 'lucide-react';
-import { ResumeInput, LiteReport, FullReport, UserProfile } from '@/types';
+import { ResumeInput, LiteReport, FullReport, UserProfile, ReportType } from '@/types';
+import { REPORT_CODES, normalizeReportType, reportShortLabel } from '@/constants/report-products';
 import { createClient } from '@/lib/supabase/browser';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
@@ -123,7 +124,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   const [isLoadingResumes, setIsLoadingResumes] = useState(false);
   const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
   const [fullReport, setFullReport] = useState<FullReport | null>(null);
-  const [reportType, setReportType] = useState<'lite' | 'full'>('lite');
+  const [reportType, setReportType] = useState<ReportType>(REPORT_CODES.JOB_FIT_SNAPSHOT);
   const [errorMsg, setErrorMsg] = useState('');
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [lastReportId, setLastReportId] = useState<string | null>(null);
@@ -140,7 +141,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     setStep('resume');
     setLiteReport(null);
     setFullReport(null);
-    setReportType('lite');
+    setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT);
     setResume(null);
     setAnalyzedResumeId(null);
     setErrorMsg('');
@@ -251,7 +252,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         setStep('error');
         return;
       }
-      if (result.report_type === 'full') {
+      if (normalizeReportType(result.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
         setFullReport(result.report as FullReport);
         setLiteReport(null);
       } else {
@@ -341,34 +342,38 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
               ) : !isLoggedIn ? (
                 <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-200 mb-1">
                   {(language === 'zh-TW' || language === 'zh-CN')
-                    ? '請先 Google 登入才能分析（註冊送 3 次 Lite）'
-                    : 'Sign in with Google to analyze (3 free Lite credits on signup)'}
+                    ? '請先 Google 登入才能分析（註冊送 3 次 Job Fit Snapshot）'
+                    : 'Sign in with Google to analyze (3 free Job Fit Snapshot credits on signup)'}
                 </div>
               ) : null}
 
-              {isLoggedIn && userProfile && userProfile.available_full_credits > 0 && (
+              {isLoggedIn && userProfile && (
+                (userProfile.available_interview_strategy_guide_credits
+                  ?? userProfile.available_full_credits
+                  ?? 0) > 0
+              ) && (
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    onClick={() => setReportType('lite')}
+                    onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                     className={`flex-1 py-2 rounded-lg text-xs font-bold border ${
-                      reportType === 'lite'
+                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                         ? 'bg-indigo-600 border-indigo-500 text-white'
                         : 'border-slate-600 text-slate-400'
                     }`}
                   >
-                    Lite
+                    {reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language)}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setReportType('full')}
+                    onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                     className={`flex-1 py-2 rounded-lg text-xs font-bold border ${
-                      reportType === 'full'
+                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                         ? 'bg-violet-600 border-violet-500 text-white'
                         : 'border-slate-600 text-slate-400'
                     }`}
                   >
-                    Full · Live Intel
+                    {reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language)}
                   </button>
                 </div>
               )}

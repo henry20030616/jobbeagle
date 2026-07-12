@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import {
   ACTIVE_CHECKOUT_PLAN_TYPES,
+  normalizeCheckoutPlanType,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 
@@ -11,9 +12,17 @@ export interface LemonSqueezyConfig {
   variantIds: Partial<Record<CheckoutPlanType, string>>;
 }
 
-/** Resolve variant ID for a plan; single_lite falls back to BASIC_OVERAGE ($3). */
+/** Resolve variant ID; accepts canonical + legacy plan codes. */
 export function resolveLemonSqueezyVariant(planType: CheckoutPlanType): string | null {
-  const map: Partial<Record<CheckoutPlanType, string | undefined>> = {
+  const canonical = normalizeCheckoutPlanType(planType) ?? planType;
+  const map: Partial<Record<string, string | undefined>> = {
+    single_job_fit_snapshot:
+      process.env.LEMONSQUEEZY_VARIANT_SINGLE_JOB_FIT_SNAPSHOT
+      || process.env.LEMONSQUEEZY_VARIANT_SINGLE_LITE
+      || process.env.LEMONSQUEEZY_VARIANT_BASIC_OVERAGE,
+    single_interview_strategy_guide:
+      process.env.LEMONSQUEEZY_VARIANT_SINGLE_INTERVIEW_STRATEGY_GUIDE
+      || process.env.LEMONSQUEEZY_VARIANT_SINGLE_FULL,
     single_lite:
       process.env.LEMONSQUEEZY_VARIANT_SINGLE_LITE
       || process.env.LEMONSQUEEZY_VARIANT_BASIC_OVERAGE,
@@ -24,7 +33,7 @@ export function resolveLemonSqueezyVariant(planType: CheckoutPlanType): string |
     premium_report: process.env.LEMONSQUEEZY_VARIANT_PREMIUM_REPORT,
     monthly_subscription: process.env.LEMONSQUEEZY_VARIANT_MONTHLY,
   };
-  const id = map[planType];
+  const id = map[canonical] || map[planType];
   return id?.trim() ? id.trim() : null;
 }
 
@@ -47,11 +56,18 @@ export function getLemonSqueezyConfig(): LemonSqueezyConfig | null {
   };
 }
 
-/** Returns missing env keys for active checkout plans (for error messages). */
 export function getMissingLemonSqueezyVariants(): string[] {
   const required: Array<{ plan: CheckoutPlanType; env: string; fallback?: string }> = [
-    { plan: 'single_lite', env: 'LEMONSQUEEZY_VARIANT_SINGLE_LITE', fallback: 'LEMONSQUEEZY_VARIANT_BASIC_OVERAGE' },
-    { plan: 'single_full', env: 'LEMONSQUEEZY_VARIANT_SINGLE_FULL' },
+    {
+      plan: 'single_job_fit_snapshot',
+      env: 'LEMONSQUEEZY_VARIANT_SINGLE_JOB_FIT_SNAPSHOT',
+      fallback: 'LEMONSQUEEZY_VARIANT_SINGLE_LITE or LEMONSQUEEZY_VARIANT_BASIC_OVERAGE',
+    },
+    {
+      plan: 'single_interview_strategy_guide',
+      env: 'LEMONSQUEEZY_VARIANT_SINGLE_INTERVIEW_STRATEGY_GUIDE',
+      fallback: 'LEMONSQUEEZY_VARIANT_SINGLE_FULL',
+    },
     { plan: 'standard_subscription', env: 'LEMONSQUEEZY_VARIANT_STANDARD_SUB' },
     { plan: 'advanced_subscription', env: 'LEMONSQUEEZY_VARIANT_ADVANCED_SUB' },
   ];

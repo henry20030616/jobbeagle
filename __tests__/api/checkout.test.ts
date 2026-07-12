@@ -3,32 +3,38 @@ import { createHmac } from 'crypto';
 import {
   CHECKOUT_PLANS,
   isCheckoutPlanType,
+  normalizeCheckoutPlanType,
   ACTIVE_CHECKOUT_PLAN_TYPES,
 } from '@/constants/checkout-plans';
 import { verifyLemonSqueezySignature } from '@/lib/lemonsqueezy';
 
 describe('checkout plans (Unified Master Spec 2026)', () => {
-  it('defines new decoy pricing plans', () => {
-    expect(CHECKOUT_PLANS.single_lite.amountCents).toBe(300);
-    expect(CHECKOUT_PLANS.single_full.amountCents).toBe(999);
+  it('defines canonical pricing plans', () => {
+    expect(CHECKOUT_PLANS.single_job_fit_snapshot.amountCents).toBe(300);
+    expect(CHECKOUT_PLANS.single_interview_strategy_guide.amountCents).toBe(999);
     expect(CHECKOUT_PLANS.standard_subscription.amountCents).toBe(1999);
     expect(CHECKOUT_PLANS.advanced_subscription.amountCents).toBe(3999);
   });
 
   it('active plans include four tiers', () => {
     expect(ACTIVE_CHECKOUT_PLAN_TYPES).toHaveLength(4);
-    expect(isCheckoutPlanType('single_lite')).toBe(true);
-    expect(isCheckoutPlanType('single_full')).toBe(true);
+    expect(isCheckoutPlanType('single_job_fit_snapshot')).toBe(true);
+    expect(isCheckoutPlanType('single_interview_strategy_guide')).toBe(true);
     expect(isCheckoutPlanType('standard_subscription')).toBe(true);
     expect(isCheckoutPlanType('advanced_subscription')).toBe(true);
     expect(isCheckoutPlanType('invalid')).toBe(false);
   });
 
-  it('subscription plans grant lite and full credits', () => {
-    expect(CHECKOUT_PLANS.standard_subscription.liteCredits).toBe(100);
-    expect(CHECKOUT_PLANS.standard_subscription.fullCredits).toBe(10);
-    expect(CHECKOUT_PLANS.advanced_subscription.liteCredits).toBe(300);
-    expect(CHECKOUT_PLANS.advanced_subscription.fullCredits).toBe(30);
+  it('normalizes legacy plan codes', () => {
+    expect(normalizeCheckoutPlanType('single_lite')).toBe('single_job_fit_snapshot');
+    expect(normalizeCheckoutPlanType('single_full')).toBe('single_interview_strategy_guide');
+  });
+
+  it('subscription plans grant snapshot and strategy credits', () => {
+    expect(CHECKOUT_PLANS.standard_subscription.jobFitSnapshotCredits).toBe(100);
+    expect(CHECKOUT_PLANS.standard_subscription.interviewStrategyGuideCredits).toBe(10);
+    expect(CHECKOUT_PLANS.advanced_subscription.jobFitSnapshotCredits).toBe(300);
+    expect(CHECKOUT_PLANS.advanced_subscription.interviewStrategyGuideCredits).toBe(30);
   });
 });
 
