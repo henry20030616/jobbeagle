@@ -96,8 +96,8 @@ export default function ReferralCard({ referralCode, language = 'en', compact = 
         }
       }}
     >
-      <p className="font-semibold text-white text-sm flex items-center gap-2">
-        <Gift className="w-4 h-4 text-indigo-400" />
+      <p className="font-semibold text-white text-base flex items-center gap-2">
+        <Gift className="w-5 h-5 text-indigo-400" />
         {t.title}
       </p>
       <div
@@ -106,13 +106,13 @@ export default function ReferralCard({ referralCode, language = 'en', compact = 
         }`}
       >
         <div className="overflow-hidden">
-          <p className="text-xs text-slate-400 mt-1">{t.desc}</p>
+          <p className="text-sm text-slate-400 mt-1">{t.desc}</p>
         </div>
       </div>
       <button
         type="button"
         onClick={handleCopy}
-        className="mt-3 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white"
+        className="mt-3 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 text-base font-semibold text-white"
       >
         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
         {copied ? t.copied : t.copy}

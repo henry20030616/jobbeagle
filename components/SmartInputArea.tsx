@@ -70,8 +70,8 @@ export default function SmartInputArea({
         {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}
         {classification.kind !== 'blocked_board' && (
           compact ? (
-            <p className="mb-2 flex items-start gap-1.5 text-xs text-slate-400 leading-snug">
-              <Puzzle className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+            <p className="mb-2 flex items-start gap-1.5 text-sm text-slate-400 leading-snug">
+              <Puzzle className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
               <span>
                 {zh
                   ? '職缺頁可一鍵抓 JD，免手動貼上。'
@@ -86,8 +86,8 @@ export default function SmartInputArea({
               </span>
             </p>
           ) : (
-          <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-slate-400">
-            <Puzzle className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+          <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-base text-slate-400">
+            <Puzzle className="w-4 h-4 text-indigo-400 shrink-0" />
             <span>
               {zh
                 ? 'LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs 職缺頁？用外掛一鍵抓取更方便。'
@@ -106,7 +106,7 @@ export default function SmartInputArea({
         <textarea
           required
           disabled={disabled || parsing}
-          className={`w-full ${compact ? 'flex-1 min-h-[180px]' : 'min-h-[200px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 text-sm' : 'p-5 text-base'} text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+          className={`w-full ${compact ? 'flex-1 min-h-[200px]' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3.5 text-base' : 'p-5 text-base'} text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN}
           value={value}
           onChange={(e) => onChange(e.target.value)}

@@ -97,7 +97,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
     <div className="mt-12 space-y-6">
       <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
 
-      <div className="max-w-lg mx-auto">
+      <div className="max-w-xl mx-auto">
         <div
           ref={panelRef}
           className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden"
@@ -114,10 +114,10 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
             className="w-full flex items-center gap-3 px-5 py-4 text-left"
             aria-expanded={open}
           >
-            <MessageCircle className="w-5 h-5 text-indigo-400 shrink-0" />
+            <MessageCircle className="w-6 h-6 text-indigo-400 shrink-0" />
             <span className="flex-1 min-w-0">
-              <span className="block text-base font-bold text-white">{t.contactTitle}</span>
-              <span className="block text-xs text-slate-400 mt-0.5 truncate">
+              <span className="block text-lg font-bold text-white">{t.contactTitle}</span>
+              <span className="block text-sm text-slate-400 mt-0.5 truncate">
                 {open ? t.contactDesc : t.expandHint}
               </span>
             </span>
@@ -179,7 +179,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-xs text-slate-500 pb-2">
+      <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm text-slate-500 pb-2">
         <Link href="/privacy" className="hover:text-slate-300 transition-colors">{t.privacy}</Link>
         <span className="text-slate-700">·</span>
         <Link href="/terms" className="hover:text-slate-300 transition-colors">{t.terms}</Link>

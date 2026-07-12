@@ -18,9 +18,9 @@ type BrandLogoProps = {
 };
 
 const sizeClasses = {
-  nav: 'text-xl sm:text-2xl font-black tracking-tight',
-  inline: 'text-lg font-bold tracking-tight',
-  hero: 'text-4xl md:text-6xl font-black tracking-tight',
+  nav: 'text-2xl sm:text-3xl font-black tracking-tight',
+  inline: 'text-xl font-bold tracking-tight',
+  hero: 'text-5xl md:text-7xl font-black tracking-tight',
 } as const;
 
 export function BrandWordmark({ className = '' }: { className?: string }) {
@@ -50,8 +50,8 @@ export default function BrandLogo({
           <BeagleIcon
             className={
               size === 'hero'
-                ? 'w-16 h-16 md:w-28 md:h-28 drop-shadow-xl'
-                : 'w-7 h-7 sm:w-8 sm:h-8'
+                ? 'w-20 h-20 md:w-32 md:h-32 drop-shadow-xl'
+                : 'w-8 h-8 sm:w-9 sm:h-9'
             }
             color="#cbd5e1"
             spotColor="#5d4037"

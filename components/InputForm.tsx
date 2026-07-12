@@ -452,7 +452,7 @@ const InputForm: React.FC<InputFormProps> = ({
     <div className="flex flex-col gap-10">
       <div className="text-center space-y-3 py-4">
         <BrandLogo size="hero" as="h1" className="justify-center" />
-        <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto font-medium">
+        <p className="text-slate-400 text-lg md:text-xl max-w-3xl mx-auto font-medium leading-relaxed">
           {t.description}
         </p>
 
@@ -517,13 +517,13 @@ const InputForm: React.FC<InputFormProps> = ({
                         className="w-full text-left flex items-start gap-3 p-4 sm:p-5 hover:bg-slate-700/30 transition-colors border-b lg:border-b-0 border-slate-700/60 last:border-b-0"
                       >
                         <div
-                          className={`shrink-0 rounded-xl p-2.5 bg-gradient-to-br ring-1 shadow-inner ${item.iconWrap}`}
+                          className={`shrink-0 rounded-xl p-3 bg-gradient-to-br ring-1 shadow-inner ${item.iconWrap}`}
                         >
-                          <Icon className={`w-5 h-5 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
+                          <Icon className={`w-6 h-6 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
-                            <span className="text-sm font-bold text-slate-200 leading-snug">{item.title}</span>
+                            <span className="text-base font-bold text-slate-200 leading-snug">{item.title}</span>
                             <ChevronDown
                               className={`w-4 h-4 text-slate-500 shrink-0 mt-0.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                               aria-hidden
@@ -533,7 +533,7 @@ const InputForm: React.FC<InputFormProps> = ({
                             className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
                           >
                             <div className="overflow-hidden">
-                              <p className="text-xs text-slate-400 leading-normal pt-1.5 pb-0.5">
+                              <p className="text-sm text-slate-400 leading-normal pt-1.5 pb-0.5">
                                 {item.desc}
                               </p>
                             </div>
@@ -549,12 +549,12 @@ const InputForm: React.FC<InputFormProps> = ({
         <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
-            <div className="relative lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
-                <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3 shrink-0" />
+            <div className="relative lg:col-span-4 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
+                <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
-              <div className="flex-1 flex flex-col min-h-[200px]">
+              <div className="flex-1 flex flex-col min-h-[220px]">
               <SmartInputArea
                 value={jobDescription}
                 onChange={(next) => {
@@ -592,27 +592,27 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 2. Resume */}
-            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <div className="mb-3 space-y-2">
-                <h2 className="text-base sm:text-lg font-bold text-white flex items-center min-h-[2.75rem]">
-                  <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3 shrink-0" />
+                <h2 className="text-lg sm:text-xl font-bold text-white flex items-center min-h-[2.75rem]">
+                  <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
                   <span className="whitespace-nowrap">{t.resume}</span>
                 </h2>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-                    className="flex items-center gap-1.5 text-xs text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
+                    className="flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
                   >
-                    <History className="w-3.5 h-3.5" />
+                    <History className="w-4 h-4" />
                     <span className="font-bold">{t.resumeLibrary}</span>
                     {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
                   </button>
                   {showHistoryDropdown && (
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
-                      <div className="absolute left-0 top-9 w-72 max-w-[calc(100vw-2rem)] bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
-                        <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      <div className="absolute left-0 top-9 w-80 max-w-[calc(100vw-2rem)] bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
+                        <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-xs font-bold text-slate-500 uppercase tracking-widest">
                           {t.recentlyUploaded}
                         </div>
                         {resumeHistory.length === 0 ? (
@@ -625,7 +625,7 @@ const InputForm: React.FC<InputFormProps> = ({
                               <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5 mr-2" />
                               <div className="flex-1 overflow-hidden text-left">
                                 <p className="text-sm text-slate-200 font-bold truncate">{historyItem.fileName}</p>
-                                <p className="text-[10px] text-slate-500 flex items-center mt-1"><Clock className="w-3 h-3 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
+                                <p className="text-xs text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
                               </div>
                               <button type="button" onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-1.5 text-slate-600 hover:text-red-400 rounded"><X className="w-3.5 h-3.5" /></button>
                             </div>
@@ -637,19 +637,19 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col min-h-[200px]">
+              <div className="flex-1 flex flex-col min-h-[220px]">
                 {!resume ? (
                   <div className="w-full flex-1 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
                       htmlFor="resume-file-input"
                       className="flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-700/30 w-full h-full px-3 py-4 rounded-xl group relative z-10"
                     >
-                      <div className="p-2 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
-                        <Upload className="w-5 h-5 text-slate-400 group-hover:text-indigo-400" />
+                      <div className="p-2.5 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
+                        <Upload className="w-6 h-6 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="text-center min-w-0">
-                        <p className="text-sm text-slate-300 font-bold">{t.upload}</p>
-                        <p className="text-[10px] text-slate-500 mt-0.5 font-medium leading-snug">{t.uploadSupport}</p>
+                        <p className="text-base text-slate-300 font-bold">{t.upload}</p>
+                        <p className="text-xs text-slate-500 mt-1 font-medium leading-snug">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input
@@ -667,8 +667,8 @@ const InputForm: React.FC<InputFormProps> = ({
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0"><FileText className="w-4 h-4 text-white" /></div>
                       <div className="min-w-0 text-left">
-                        <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
-                        <p className="text-[10px] text-indigo-300">Ready for Analysis</p>
+                        <p className="text-base font-bold text-white truncate">{resume.fileName}</p>
+                        <p className="text-xs text-indigo-300">Ready for Analysis</p>
                       </div>
                       <button type="button" onClick={clearFile} className="p-1.5 hover:bg-white/10 rounded-full text-slate-400 ml-auto shrink-0"><X className="w-4 h-4" /></button>
                     </div>
@@ -700,39 +700,39 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 3. Report type */}
-            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               {onReportTypeChange ? (
                 <>
-                  <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
-                    <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3 shrink-0" />
+                  <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
+                    <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                     <span className="leading-snug">{t.reportTypeStep}</span>
                   </h2>
-                  <div className="flex flex-col gap-2 flex-1 min-h-[200px]">
+                  <div className="flex flex-col gap-2.5 flex-1 min-h-[220px]">
                     <button
                       type="button"
                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                      className={`flex-1 rounded-xl border-2 px-3 py-3 text-left transition ${
+                      className={`flex-1 rounded-xl border-2 px-3.5 py-3.5 text-left transition ${
                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
                       }`}
                     >
-                      <p className="font-semibold text-white text-sm">Job Fit Snapshot</p>
-                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">{t.snapshotBlurb}</p>
+                      <p className="font-semibold text-white text-base">Job Fit Snapshot</p>
+                      <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
                     </button>
                     <button
                       type="button"
                       onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                      className={`flex-1 rounded-xl border-2 px-3 py-3 text-left transition ${
+                      className={`flex-1 rounded-xl border-2 px-3.5 py-3.5 text-left transition ${
                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
                       }`}
                     >
-                      <p className="font-semibold text-white text-sm flex items-center gap-1 flex-wrap">
-                        Interview Strategy Guide <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                      <p className="font-semibold text-white text-base flex items-center gap-1.5 flex-wrap">
+                        Interview Strategy Guide <Sparkles className="w-4 h-4 text-violet-400 shrink-0" />
                       </p>
-                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">{t.strategyBlurb}</p>
+                      <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
                     </button>
                   </div>
                 </>
@@ -751,7 +751,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* Launch */}
-            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col min-h-0 bg-slate-700/30">
+            <div className="lg:col-span-2 p-5 sm:p-6 flex flex-col min-h-0 bg-slate-700/30">
               {(() => {
                 const blocked = jobInputKind.kind === 'blocked_board';
                 const publicAts = jobInputKind.kind === 'public_ats';
@@ -776,7 +776,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   <button
                     type="submit"
                     disabled={disabled}
-                    className={`w-full h-full min-h-[120px] lg:min-h-0 px-3 py-4 rounded-xl font-black text-sm sm:text-base text-white shadow-lg transition-all transform flex flex-col justify-center items-center gap-2 text-center ${
+                    className={`w-full h-full min-h-[140px] lg:min-h-0 px-4 py-5 rounded-xl font-black text-base sm:text-lg text-white shadow-lg transition-all transform flex flex-col justify-center items-center gap-2.5 text-center ${
                       disabled
                         ? 'bg-slate-700 cursor-not-allowed text-slate-500'
                         : publicAts
@@ -803,7 +803,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     ) : (
                       <>
                         <span className="leading-snug px-1">{submitLabel}</span>
-                        <ArrowRight className="w-5 h-5 shrink-0" />
+                        <ArrowRight className="w-6 h-6 shrink-0" />
                       </>
                     )}
                   </button>
