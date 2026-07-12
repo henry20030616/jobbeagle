@@ -422,10 +422,10 @@ export default function PreFlightPage() {
             <button
               type="button"
               onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-              className={`flex-1 rounded-xl border p-4 text-left transition ${
+              className={`flex-1 rounded-xl border-2 p-4 text-left transition ${
                 reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                  ? 'border-blue-500 bg-blue-500/10'
-                  : 'border-white/10 bg-white/5 hover:bg-white/10'
+                  ? 'border-solid border-violet-500 bg-violet-500/10'
+                  : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
               }`}
             >
               <p className="font-semibold">{reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)}</p>
@@ -434,10 +434,10 @@ export default function PreFlightPage() {
             <button
               type="button"
               onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-              className={`flex-1 rounded-xl border p-4 text-left transition ${
+              className={`flex-1 rounded-xl border-2 p-4 text-left transition ${
                 reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                  ? 'border-violet-500 bg-violet-500/10'
-                  : 'border-white/10 bg-white/5 hover:bg-white/10'
+                  ? 'border-solid border-violet-500 bg-violet-500/10'
+                  : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
               }`}
             >
               <p className="font-semibold flex items-center gap-1">
