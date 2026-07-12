@@ -32,7 +32,7 @@ import {
   executeLiteAnalysis,
   executeFullAnalysis,
 } from '@/lib/gemini-analyze';
-import { normalizeLiteReport, isEnrichedLiteReport } from '@/lib/normalize-lite-report';
+import { normalizeLiteReport, isEnrichedLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import { resolveResumeForAnalysis } from '@/lib/resume-parser';
 import { rateLimitAnalyze } from '@/lib/rate-limit';
 import { tryActivateReferralMilestone } from '@/lib/referrals';
@@ -45,7 +45,7 @@ import {
   normalizeReportType,
 } from '@/constants/report-products';
 
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 function paymentRequiredResponse(profile: ProfileRow) {
   return NextResponse.json(
@@ -249,12 +249,14 @@ export async function POST(request: NextRequest) {
       const useCache =
         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
           ? isEnrichedLiteReport(cached.report_json)
-          : true;
+          : isEnrichedLiteReport(cached.report_json)
+            && Array.isArray((cached.report_json as FullReport)?.custom_star_interview_bank)
+            && ((cached.report_json as FullReport).custom_star_interview_bank?.length ?? 0) >= 5;
       if (useCache) {
         const cachedReport =
           reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
             ? normalizeLiteReport(cached.report_json as LiteReport)
-            : cached.report_json;
+            : normalizeFullReport(cached.report_json as FullReport);
         return NextResponse.json({
           report: cachedReport,
           report_type: reportType,
@@ -291,7 +293,7 @@ export async function POST(request: NextRequest) {
           input.job_title,
           input.pdf_inline,
         );
-        report = result.report;
+        report = normalizeFullReport(result.report);
         modelUsed = result.model;
       }
     } catch (analysisErr) {
@@ -310,7 +312,7 @@ export async function POST(request: NextRequest) {
     }
 
     const score =
-      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+      typeof (report as LiteReport).match_score === 'number'
         ? (report as LiteReport).match_score
         : null;
 

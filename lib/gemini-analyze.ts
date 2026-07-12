@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type } from '@google/genai';
-import type { LiteReport, FullReport } from '@/types';
-import { normalizeLiteReport } from '@/lib/normalize-lite-report';
+import type { LiteReport, FullReport, StrategyIntelFields } from '@/types';
+import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import { parseJsonResponse } from '@/lib/parse-gemini-json';
 import {
   GEMINI_LITE_MODEL,
@@ -312,64 +312,89 @@ export async function executeFullAnalysis(
   jobTitle: string,
   pdfInline?: PdfInlineAttachment,
 ): Promise<{ report: FullReport; model: string }> {
+  // Pass 1: complete Job Fit Snapshot (no search — reliable structured JSON)
+  const snapshotResult = await executeLiteAnalysis(resumeText, rawJd, pdfInline);
+
+  // Pass 2: live intel + STAR + negotiation (search grounding)
   const ai = getAI();
   const model = GEMINI_FULL_MODEL;
 
-  const intro = `Target Company: ${companyName}
-Job Title: ${jobTitle}
+  const intro = `Target Company: ${companyName || snapshotResult.report.company_name}
+Job Title: ${jobTitle || snapshotResult.report.job_title}
 
-Search teamblind.com, glassdoor.com, and reddit.com for live intel on ${companyName} regarding layoffs, culture, interview process, and ghost job signals.`;
+Candidate match score from Snapshot pass: ${snapshotResult.report.match_score}/100
+Sharp critique: ${snapshotResult.report.one_sentence_sharp_critique}
+Key gaps: ${snapshotResult.report.critical_gaps.map((g) => g.gap).join('; ')}
+Key strengths: ${snapshotResult.report.matching_strengths.map((s) => s.point).join('; ')}
+
+Search teamblind.com, glassdoor.com, and reddit.com for live intel on ${companyName || snapshotResult.report.company_name} regarding layoffs, culture, interview process, and ghost job signals.
+Use the gaps/strengths above to tailor STAR questions and negotiation leverage.`;
 
   const parts = buildUserParts(rawJd, resumeText, pdfInline);
   parts[0] = {
     text: `${intro}\n\n${(parts[0] as { text: string }).text}`,
   };
 
-  const response = await ai.models.generateContent({
-    model,
-    contents: [{ parts }],
-    config: {
-      systemInstruction: FULL_SYSTEM_PROMPT,
-      temperature: 0.4,
-      maxOutputTokens: 8192,
-      responseMimeType: 'application/json',
-      tools: [{ googleSearch: {} }],
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          online_intel_warning: { type: Type.STRING },
-          corporate_culture_blackbox: { type: Type.STRING },
-          custom_star_interview_bank: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING },
+  let intel: StrategyIntelFields;
+  try {
+    const response = await ai.models.generateContent({
+      model,
+      contents: [{ parts }],
+      config: {
+        systemInstruction: FULL_SYSTEM_PROMPT,
+        temperature: 0.4,
+        maxOutputTokens: 8192,
+        responseMimeType: 'application/json',
+        tools: [{ googleSearch: {} }],
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            online_intel_warning: { type: Type.STRING },
+            corporate_culture_blackbox: { type: Type.STRING },
+            custom_star_interview_bank: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+            },
+            salary_negotiation_script: { type: Type.STRING },
           },
-          salary_negotiation_script: { type: Type.STRING },
+          required: [
+            'online_intel_warning',
+            'corporate_culture_blackbox',
+            'custom_star_interview_bank',
+            'salary_negotiation_script',
+          ],
         },
-        required: [
-          'online_intel_warning',
-          'corporate_culture_blackbox',
-          'custom_star_interview_bank',
-          'salary_negotiation_script',
-        ],
       },
-    },
+    });
+
+    const text = response.text;
+    if (!text) throw new Error('Strategy intel returned empty response');
+    intel = parseJsonResponse<StrategyIntelFields>(text);
+  } catch (intelErr) {
+    console.warn(
+      '[Full] Intel pass failed, returning Snapshot with fallback intel:',
+      intelErr instanceof Error ? intelErr.message : intelErr,
+    );
+    intel = {
+      online_intel_warning: '',
+      corporate_culture_blackbox:
+        'Live web grounding was unavailable for this run. Re-run Interview Strategy Guide shortly, or manually check Blind/Glassdoor.',
+      custom_star_interview_bank: snapshotResult.report.interview_starters.map(
+        (q, i) => `Expand into STAR: ${q}`,
+      ),
+      salary_negotiation_script:
+        snapshotResult.report.radford_2026_compensation_matrix.candidate_position_label
+        || 'Negotiate toward mid-band using quantified resume wins.',
+    };
+  }
+
+  const report = normalizeFullReport({
+    ...snapshotResult.report,
+    ...intel,
   });
 
-  const text = response.text;
-  if (!text) throw new Error('Full analysis returned empty response');
-
-  const report = parseJsonResponse<FullReport>(text);
-
-  if (!Array.isArray(report.custom_star_interview_bank)) {
-    report.custom_star_interview_bank = [];
-  }
-  while (report.custom_star_interview_bank.length < 10) {
-    report.custom_star_interview_bank.push(
-      `[Placeholder ${report.custom_star_interview_bank.length + 1}] Prepare a STAR story aligned to this role.`,
-    );
-  }
-  report.custom_star_interview_bank =
-    report.custom_star_interview_bank.slice(0, 10);
-
-  return { report, model };
+  return {
+    report,
+    model: `${snapshotResult.model}+${model}`,
+  };
 }

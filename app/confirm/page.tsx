@@ -11,7 +11,7 @@ import { startCheckout } from '@/lib/checkout-client';
 import type { LiteReport, FullReport, ReportType, ResumeInput, UserProfile } from '@/types';
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
 import { FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS } from '@/constants/credits';
-import { normalizeLiteReport } from '@/lib/normalize-lite-report';
+import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import {
   getAnalysisProgressAtTime,
   getAnalysisStageLabel,
@@ -263,7 +263,7 @@ export default function PreFlightPage() {
       }
 
       if (normalizeReportType(data.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
-        setFullReport(data.report as FullReport);
+        setFullReport(normalizeFullReport(data.report));
       } else {
         setLiteReport(normalizeLiteReport(data.report as LiteReport));
       }
@@ -514,7 +514,16 @@ export default function PreFlightPage() {
             }}
           />
         )}
-        {fullReport && <FullReportDashboard report={fullReport} />}
+        {fullReport && (
+          <FullReportDashboard
+            report={normalizeFullReport(fullReport)}
+            onNewAnalysis={() => {
+              setLiteReport(null);
+              setFullReport(null);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
       </main>
     </div>
   );

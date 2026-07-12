@@ -76,9 +76,43 @@ export function isEnrichedLiteReport(raw: unknown): boolean {
 export function isFullReport(value: unknown): value is import('@/types').FullReport {
   if (!value || typeof value !== 'object') return false;
   const r = value as Record<string, unknown>;
-  return (
-    Array.isArray(r.custom_star_interview_bank)
-    || typeof r.corporate_culture_blackbox === 'string'
-    || typeof r.salary_negotiation_script === 'string'
-  );
+  // Strategy Guide always includes STAR bank; Snapshot alone does not.
+  return Array.isArray(r.custom_star_interview_bank);
+}
+
+/** Normalize merged Strategy Guide (Snapshot fields + live intel). */
+export function normalizeFullReport(
+  raw: Partial<import('@/types').FullReport> & { match_score?: number },
+): import('@/types').FullReport {
+  const snapshot = normalizeLiteReport({
+    ...raw,
+    match_score: typeof raw.match_score === 'number' ? raw.match_score : 50,
+  });
+
+  let bank = Array.isArray(raw.custom_star_interview_bank)
+    ? raw.custom_star_interview_bank.filter((q) => typeof q === 'string' && q.trim())
+    : [];
+  while (bank.length < 10) {
+    bank.push(
+      `[Placeholder ${bank.length + 1}] Prepare a STAR story aligned to this role and your resume gaps.`,
+    );
+  }
+  bank = bank.slice(0, 10);
+
+  return {
+    ...snapshot,
+    online_intel_warning:
+      typeof raw.online_intel_warning === 'string' ? raw.online_intel_warning.trim() : '',
+    corporate_culture_blackbox:
+      typeof raw.corporate_culture_blackbox === 'string'
+        && raw.corporate_culture_blackbox.trim()
+        ? raw.corporate_culture_blackbox.trim()
+        : 'Live culture signals were limited — use Blind/Glassdoor manually before accepting an offer.',
+    custom_star_interview_bank: bank,
+    salary_negotiation_script:
+      typeof raw.salary_negotiation_script === 'string'
+        && raw.salary_negotiation_script.trim()
+        ? raw.salary_negotiation_script.trim()
+        : 'Anchor to market mid-band with concrete resume wins; trade scope for cash if equity is illiquid.',
+  };
 }

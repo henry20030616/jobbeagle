@@ -17,7 +17,7 @@ import { ChevronLeft, History, X, ChevronRight, Loader2, Play, Sparkles } from '
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
-import { normalizeLiteReport, isLiteReport, isFullReport } from '@/lib/normalize-lite-report';
+import { normalizeLiteReport, isLiteReport, isFullReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import CreditsBadge from '@/components/CreditsBadge';
 import ReferralCard from '@/components/ReferralCard';
 import DeleteAccountButton from '@/components/DeleteAccountButton';
@@ -364,7 +364,7 @@ export default function Home() {
       }
 
       if (normalizeReportType(result.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
-        setFullReport(result.report as FullReport);
+        setFullReport(normalizeFullReport(result.report));
         setLiteReport(null);
         setReport(null);
       } else if (
@@ -637,8 +637,8 @@ export default function Home() {
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
                     {language === 'zh-TW' || language === 'zh-CN'
-                      ? 'Blind/Glassdoor · 10 題 STAR · 談判腳本'
-                      : 'Blind/Glassdoor · 10 STAR Qs · Negotiation'}
+                      ? '含完整 Snapshot · 即時情報 · STAR · 談判'
+                      : 'Includes Snapshot + live intel · STAR · Negotiation'}
                   </p>
                 </button>
               </div>
@@ -671,7 +671,11 @@ export default function Home() {
                     {t.backToHome}
                   </button>
                 </div>
-                <FullReportDashboard report={fullReport} />
+                <FullReportDashboard
+                  report={normalizeFullReport(fullReport)}
+                  language={language}
+                  onNewAnalysis={handleResetToForm}
+                />
               </div>
             ) : report ? (
               <>

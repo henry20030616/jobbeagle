@@ -32,7 +32,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
   const estimatedMap: Record<AppLanguage, string> = {
     'zh-TW': '通常需要 30–90 秒，請稍候',
     'zh-CN': '通常需要 30–90 秒，请稍候',
-    en: 'Usually takes 30–90 seconds',
+    en: 'Usually takes 45–120 seconds for Strategy Guide',
     es: 'Normalmente tarda 30–90 segundos',
     hi: 'आमतौर पर 30–90 सेकंड लगते हैं',
     ar: 'عادةً يستغرق 30–90 ثانية',

@@ -189,13 +189,19 @@ export interface LiteReport {
   interview_starters: string[];
 }
 
-/** Full Report — targeted grounding + STAR interview bank */
-export interface FullReport {
+/** Live-intel layer unique to Interview Strategy Guide */
+export interface StrategyIntelFields {
   online_intel_warning: string;
   corporate_culture_blackbox: string;
   custom_star_interview_bank: string[];
   salary_negotiation_script: string;
 }
+
+/**
+ * Interview Strategy Guide = full Job Fit Snapshot + live intel / STAR / negotiation.
+ * Always includes every LiteReport field.
+ */
+export type FullReport = LiteReport & StrategyIntelFields;
 
 export interface UserProfile {
   id: string;

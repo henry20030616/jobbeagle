@@ -13,7 +13,7 @@ import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
-import { normalizeLiteReport } from '@/lib/normalize-lite-report';
+import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 
 interface SavedResume {
   id: string;
@@ -253,7 +253,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         return;
       }
       if (normalizeReportType(result.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
-        setFullReport(result.report as FullReport);
+        setFullReport(normalizeFullReport(result.report));
         setLiteReport(null);
       } else {
         setLiteReport(normalizeLiteReport(result.report as LiteReport));
