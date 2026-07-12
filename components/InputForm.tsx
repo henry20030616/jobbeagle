@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { UserInputs, ResumeInput, InterviewReport, ReportType } from '@/types';
-import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp } from 'lucide-react';
+import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp, ChevronDown } from 'lucide-react';
 import { BeagleIcon } from './AnalysisDashboard';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -46,6 +46,7 @@ const InputForm: React.FC<InputFormProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [jdError, setJdError] = useState<string | null>(null);
   const [isParsingUrl, setIsParsingUrl] = useState(false);
+  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -493,46 +494,47 @@ const InputForm: React.FC<InputFormProps> = ({
                   {t.reportOutput}
                </h2>
                
-               <div className="grid grid-cols-1 gap-4">
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-yellow-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <Zap className="w-6 h-6 text-yellow-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.matchAnalysis}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.matchAnalysisDesc}</span>
-                     </div>
-                  </div>
-                  
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-emerald-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <Briefcase className="w-6 h-6 text-emerald-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.salaryResearch}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.salaryResearchDesc}</span>
-                     </div>
-                  </div>
-
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-sky-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <TrendingUp className="w-6 h-6 text-sky-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.industryAnalysis}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.industryAnalysisDesc}</span>
-                     </div>
-                  </div>
-
-                  <div className="flex items-start p-4 rounded-xl hover:bg-slate-700/30 transition-colors">
-                     <div className="bg-indigo-500/20 p-2.5 rounded-lg mr-4 shrink-0 mt-1">
-                        <MessageSquare className="w-6 h-6 text-indigo-400" />
-                     </div>
-                     <div className="flex flex-col">
-                       <span className="text-lg font-bold text-slate-200 mb-1">{t.interviewPrep}</span>
-                       <span className="text-sm text-slate-400 leading-normal">{t.interviewPrepDesc}</span>
-                     </div>
-                  </div>
+               <div className="grid grid-cols-1 gap-2">
+                  {([
+                    { id: 'match', icon: Zap, iconBg: 'bg-yellow-500/20', iconColor: 'text-yellow-400', title: t.matchAnalysis, desc: t.matchAnalysisDesc },
+                    { id: 'salary', icon: Briefcase, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: t.salaryResearch, desc: t.salaryResearchDesc },
+                    { id: 'industry', icon: TrendingUp, iconBg: 'bg-sky-500/20', iconColor: 'text-sky-400', title: t.industryAnalysis, desc: t.industryAnalysisDesc },
+                    { id: 'interview', icon: MessageSquare, iconBg: 'bg-indigo-500/20', iconColor: 'text-indigo-400', title: t.interviewPrep, desc: t.interviewPrepDesc },
+                  ] as const).map((item) => {
+                    const open = expandedFeature === item.id;
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        aria-expanded={open}
+                        onClick={() => setExpandedFeature(open ? null : item.id)}
+                        className="w-full text-left flex items-start gap-3 p-3 rounded-xl hover:bg-slate-700/30 transition-colors"
+                      >
+                        <div className={`${item.iconBg} p-2 rounded-lg shrink-0`}>
+                          <Icon className={`w-5 h-5 ${item.iconColor}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-base font-bold text-slate-200">{item.title}</span>
+                            <ChevronDown
+                              className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                              aria-hidden
+                            />
+                          </div>
+                          <div
+                            className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+                          >
+                            <div className="overflow-hidden">
+                              <p className="text-sm text-slate-400 leading-normal pt-1.5 pb-0.5">
+                                {item.desc}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                </div>
            </div>
         </div>
