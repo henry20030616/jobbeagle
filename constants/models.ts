@@ -1,17 +1,19 @@
 /**
- * Gemini model configuration — Unified Master Spec (2026)
- * Lite: fast reasoning, no grounding, prompt-cache friendly
- * Full: pro model + Google Search grounding for live intel
+ * Gemini model configuration — keep IDs in sync with Google AI Studio availability.
+ * Lite: fast reasoning, no grounding
+ * Full: pro-tier + Google Search grounding for live intel
+ *
+ * Note (2026-07): gemini-2.5-pro returns 404 for new API keys ("no longer available to new users").
  */
 
-/** Lite report — gemini-3.1-flash-lite (pure reasoning, no web search) */
-export const GEMINI_LITE_MODEL = 'gemini-2.5-flash-lite';
+/** Job Fit Snapshot — flash-lite (pure reasoning, no web search) */
+export const GEMINI_LITE_MODEL = 'gemini-3.1-flash-lite';
 
-/** Full report — gemini-3.1-pro with targeted grounding */
-export const GEMINI_FULL_MODEL = 'gemini-2.5-pro';
+/** Interview Strategy Guide — pro with targeted grounding */
+export const GEMINI_FULL_MODEL = 'gemini-3.1-pro-preview';
 
 /** Token count gate model */
-export const GEMINI_TOKEN_COUNT_MODEL = 'gemini-2.5-flash-lite';
+export const GEMINI_TOKEN_COUNT_MODEL = 'gemini-3.1-flash-lite';
 
 export const GEMINI_ANALYSIS_MODEL = GEMINI_LITE_MODEL;
 export const GEMINI_VIDEO_MODEL = GEMINI_LITE_MODEL;
