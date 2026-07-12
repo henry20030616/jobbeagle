@@ -576,17 +576,17 @@ const InputForm: React.FC<InputFormProps> = ({
           </div>
 
           <div className="p-6 pt-4 flex-1 flex flex-col">
-              <div className="flex justify-between items-center mb-5">
-                <h2 className="text-2xl font-bold text-white flex items-center">
-                  <span className="w-1.5 h-8 bg-violet-500 rounded-full mr-4"></span>
-                  {t.resume}
+              <div className="flex justify-between items-center gap-3 mb-5">
+                <h2 className="text-2xl font-bold text-white flex items-center min-w-0 shrink">
+                  <span className="w-1.5 h-8 bg-violet-500 rounded-full mr-4 shrink-0"></span>
+                  <span className="whitespace-nowrap">{t.resume}</span>
                 </h2>
                 {/* 履歷庫按鈕 */}
-                <div className="relative">
+                <div className="relative shrink-0">
                       <button
                         type="button"
                         onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-                        className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
+                        className="flex items-center space-x-2 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 sm:px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all active:scale-95 hover:scale-105 whitespace-nowrap"
                       >
                         <History className="w-4 h-4" />
                         <span className="font-bold">{t.resumeLibrary} {resumeHistory.length > 0 && `(${resumeHistory.length})`}</span>
