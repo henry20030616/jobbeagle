@@ -20,7 +20,6 @@ import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import { normalizeLiteReport, isLiteReport, isFullReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import CreditsBadge from '@/components/CreditsBadge';
 import ReferralCard from '@/components/ReferralCard';
-import DeleteAccountButton from '@/components/DeleteAccountButton';
 import type { UserProfile } from '@/types';
 import { isShortsEnabled } from '@/constants/features';
 
@@ -602,7 +601,6 @@ export default function Home() {
               <div className="mb-6 space-y-3">
                 <CreditsBadge profile={userProfile} language={language} />
                 <ReferralCard referralCode={userProfile.referral_code} language={language} />
-                <DeleteAccountButton language={language} />
               </div>
             )}
             <InputForm

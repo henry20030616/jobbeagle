@@ -54,8 +54,13 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
       if (redirectTo) {
         callbackUrl.searchParams.set('redirect', redirectTo);
       }
-      if (referralCode) {
-        callbackUrl.searchParams.set('ref', referralCode);
+      const refFromStorage =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('jb_referral_code')
+          : null;
+      const ref = (referralCode || refFromStorage || '').trim();
+      if (ref) {
+        callbackUrl.searchParams.set('ref', ref);
       }
 
       const { data, error } = await supabase.auth.signInWithOAuth({

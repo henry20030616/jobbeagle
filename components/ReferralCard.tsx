@@ -12,38 +12,38 @@ interface ReferralCardProps {
 
 const copy: Record<AppLanguage, { title: string; desc: string; copied: string; copy: string }> = {
   'zh-TW': {
-    title: '推薦好友 +1 Lite',
-    desc: '好友註冊並完成首次 Lite 分析後，你獲得 1 次 Lite 額度。',
+    title: '推薦好友 · +1 Job Fit Snapshot',
+    desc: '好友註冊並完成首次 Job Fit Snapshot 分析後，你獲得 1 次 Snapshot 額度。',
     copied: '已複製',
     copy: '複製推薦連結',
   },
   'zh-CN': {
-    title: '推荐好友 +1 Lite',
-    desc: '好友注册并完成首次 Lite 分析后，你获得 1 次 Lite 额度。',
+    title: '推荐好友 · +1 Job Fit Snapshot',
+    desc: '好友注册并完成首次 Job Fit Snapshot 分析后，你获得 1 次 Snapshot 额度。',
     copied: '已复制',
     copy: '复制推荐链接',
   },
   en: {
-    title: 'Refer a friend · +1 Lite',
-    desc: 'You earn +1 Lite when they sign up and complete their first Lite analysis.',
+    title: 'Refer a friend · +1 Job Fit Snapshot',
+    desc: 'You earn +1 Job Fit Snapshot when they sign up and complete their first Snapshot analysis.',
     copied: 'Copied',
     copy: 'Copy referral link',
   },
   es: {
-    title: 'Invita · +1 Lite',
-    desc: 'Ganas +1 Lite cuando completen su primer análisis Lite.',
+    title: 'Invita · +1 Job Fit Snapshot',
+    desc: 'Ganas +1 Snapshot cuando completen su primer análisis Job Fit Snapshot.',
     copied: 'Copiado',
     copy: 'Copiar enlace',
   },
   hi: {
-    title: 'रेफर करें · +1 Lite',
-    desc: 'पहला Lite विश्लेषण पूरा करने पर +1 Lite।',
+    title: 'रेफर करें · +1 Job Fit Snapshot',
+    desc: 'पहला Job Fit Snapshot पूरा करने पर आपको +1 Snapshot मिलता है।',
     copied: 'कॉपी हो गया',
     copy: 'लिंक कॉपी करें',
   },
   ar: {
-    title: 'أحِل صديقًا · +1 Lite',
-    desc: 'تحصل على +1 Lite عند إكمالهم أول تحليل Lite.',
+    title: 'أحِل صديقًا · +1 Job Fit Snapshot',
+    desc: 'تحصل على +1 Snapshot عند إكمالهم أول تحليل Job Fit Snapshot.',
     copied: 'تم النسخ',
     copy: 'نسخ رابط الإحالة',
   },
@@ -57,8 +57,8 @@ export default function ReferralCard({ referralCode, language = 'en', compact = 
 
   const link =
     typeof window !== 'undefined'
-      ? `${window.location.origin}/?ref=${referralCode}`
-      : `https://www.jobbeagle.com/?ref=${referralCode}`;
+      ? `${window.location.origin}/?ref=${encodeURIComponent(referralCode)}`
+      : `https://www.jobbeagle.com/?ref=${encodeURIComponent(referralCode)}`;
 
   const handleCopy = async () => {
     try {

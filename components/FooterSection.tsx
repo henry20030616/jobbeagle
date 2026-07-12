@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageCircle, Send, CheckCircle, ChevronDown } from 'lucide-react';
 
 import { AppLanguage } from '@/lib/language-context';
 import { isShortsEnabled } from '@/constants/features';
+import { createClient } from '@/lib/supabase/browser';
+import DeleteAccountButton from '@/components/DeleteAccountButton';
 
 interface FooterSectionProps {
   language: AppLanguage;
@@ -35,6 +37,18 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setSignedIn(!!user));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,7 +163,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-slate-500 pb-2">
+      <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-xs text-slate-500 pb-2">
         <Link href="/privacy" className="hover:text-slate-300 transition-colors">{t.privacy}</Link>
         <span className="text-slate-700">·</span>
         <Link href="/terms" className="hover:text-slate-300 transition-colors">{t.terms}</Link>
@@ -157,6 +171,12 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
           <>
             <span className="text-slate-700">·</span>
             <Link href="/shorts" className="hover:text-slate-300 transition-colors">Shorts</Link>
+          </>
+        )}
+        {signedIn && (
+          <>
+            <span className="text-slate-700">·</span>
+            <DeleteAccountButton language={language} />
           </>
         )}
       </div>
