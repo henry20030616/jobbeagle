@@ -23,8 +23,8 @@ export interface ResumeInputPanelProps {
 }
 
 /**
- * Shared resume UX: paste / upload PDF·DOCX·text + library pick/save/soft-delete.
- * Used on homepage-adjacent flows and Confirm Job page (extension handoff).
+ * Resume UX: file upload only (PDF / Word / text) + library pick/save.
+ * Used on Confirm Job page (extension handoff).
  */
 export default function ResumeInputPanel({
   value,
@@ -38,9 +38,6 @@ export default function ResumeInputPanel({
   const [showLibrary, setShowLibrary] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveOk, setSaveOk] = useState(false);
-  const [pasteDraft, setPasteDraft] = useState(
-    value?.type === 'text' ? value.content : '',
-  );
 
   const loadLibrary = async () => {
     try {
@@ -103,23 +100,9 @@ export default function ResumeInputPanel({
     loadLibrary();
   }, [libraryLimit]);
 
-  useEffect(() => {
-    if (value?.type === 'text') setPasteDraft(value.content);
-    if (!value) setPasteDraft('');
-  }, [value]);
-
   const formatDate = (ts: number) => {
     const d = new Date(ts);
     return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
-  };
-
-  const applyText = (text: string) => {
-    setPasteDraft(text);
-    if (text.trim()) {
-      onChange({ type: 'text', content: text });
-    } else {
-      onChange(null);
-    }
   };
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,14 +134,16 @@ export default function ResumeInputPanel({
             : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           fileName: file.name,
         });
-        setPasteDraft('');
       };
       reader.readAsDataURL(file);
     } else {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const text = String(ev.target?.result || '');
-        applyText(text);
+        if (!text.trim()) {
+          alert(zh ? '檔案是空的' : 'File is empty');
+          return;
+        }
         onChange({
           type: 'text',
           content: text,
@@ -209,15 +194,18 @@ export default function ResumeInputPanel({
 
   const clear = () => {
     onChange(null);
-    setPasteDraft('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
+
+  const displayName =
+    value?.fileName
+    || (value?.type === 'file' ? 'Uploaded file' : value ? 'Selected resume' : null);
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
         <label className="text-sm font-medium text-slate-300">
-          {zh ? '履歷（上傳或貼上）' : 'Resume (upload or paste)'}
+          {zh ? '履歷（上傳檔案）' : 'Resume (upload file)'}
         </label>
         <div className="relative">
           <button
@@ -253,8 +241,6 @@ export default function ResumeInputPanel({
                           mimeType: item.mimeType,
                           fileName: item.fileName,
                         });
-                        if (item.type === 'text') setPasteDraft(item.content);
-                        else setPasteDraft('');
                         setShowLibrary(false);
                       }}
                       onKeyDown={(ev) => {
@@ -297,42 +283,56 @@ export default function ResumeInputPanel({
         </div>
       </div>
 
-      {!value || value.type === 'text' ? (
-        <textarea
-          value={pasteDraft}
-          onChange={(e) => applyText(e.target.value)}
-          rows={7}
-          placeholder={zh ? '貼上履歷文字，或下方上傳檔案…' : 'Paste resume text, or upload a file below…'}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-        />
-      ) : (
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-3">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.doc,.docx,.txt,.md,application/pdf,text/plain"
+        className="hidden"
+        onChange={handleFile}
+      />
+
+      {value && displayName ? (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-4">
           <div className="flex items-center gap-2 min-w-0">
             <FileText className="w-5 h-5 text-indigo-300 shrink-0" />
-            <span className="text-sm font-medium truncate">{value.fileName || 'Uploaded file'}</span>
+            <div className="min-w-0">
+              <p className="text-sm font-medium truncate text-white">{displayName}</p>
+              <p className="text-[11px] text-indigo-300/80 mt-0.5">
+                {zh ? '已選取，可直接啟動分析' : 'Ready — launch analysis when set'}
+              </p>
+            </div>
           </div>
-          <button type="button" onClick={clear} className="text-slate-400 hover:text-white p-1">
+          <button type="button" onClick={clear} className="text-slate-400 hover:text-white p-1 shrink-0">
             <X className="w-4 h-4" />
           </button>
         </div>
-      )}
-
-      <div className="flex flex-wrap items-center gap-2">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf,.doc,.docx,.txt,.md,application/pdf,text/plain"
-          className="hidden"
-          onChange={handleFile}
-        />
+      ) : (
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700"
+          className="w-full rounded-xl border-2 border-dashed border-slate-600 hover:border-indigo-500/60 bg-white/5 hover:bg-indigo-500/5 px-4 py-10 flex flex-col items-center justify-center gap-2 transition-colors"
         >
-          <Upload className="w-3.5 h-3.5" />
-          {zh ? '上傳 PDF / Word / 文字' : 'Upload PDF / Word / text'}
+          <Upload className="w-8 h-8 text-slate-400" />
+          <span className="text-sm font-semibold text-slate-200">
+            {zh ? '點擊上傳履歷檔案' : 'Click to upload resume'}
+          </span>
+          <span className="text-xs text-slate-500">
+            {zh ? '支援 PDF / Word / TXT（最大 4MB）' : 'PDF / Word / TXT · max 4MB'}
+          </span>
         </button>
+      )}
+
+      <div className="flex flex-wrap items-center gap-2">
+        {value && (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            {zh ? '更換檔案' : 'Replace file'}
+          </button>
+        )}
         <button
           type="button"
           disabled={!value || saving}

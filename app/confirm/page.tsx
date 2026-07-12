@@ -178,7 +178,7 @@ export default function PreFlightPage() {
       return;
     }
     if (!resume || (!(resume.content || '').trim() && resume.type !== 'file')) {
-      setError('Please upload or paste your resume before launching.');
+      setError('Please upload your resume file before launching.');
       return;
     }
 
