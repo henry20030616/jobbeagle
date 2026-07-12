@@ -32,7 +32,7 @@ export default function ExtensionInstallPage() {
         },
         {
           title: '釘選並使用',
-          body: '在 LinkedIn / Indeed / ZipRecruiter / Glassdoor 職缺詳情頁點工具列 JobBeagle 圖示，即可開啟 Pre-Flight。',
+          body: '在 LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs 職缺詳情頁點工具列 JobBeagle 圖示，即可開啟 Confirm。',
         },
       ]
     : [
@@ -50,7 +50,7 @@ export default function ExtensionInstallPage() {
         },
         {
           title: 'Pin and capture',
-          body: 'On a LinkedIn / Indeed / ZipRecruiter / Glassdoor job detail page, click the JobBeagle toolbar icon to open Pre-Flight.',
+          body: 'On a LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs job detail page, click the JobBeagle toolbar icon to open Confirm.',
         },
       ];
 

@@ -82,8 +82,8 @@ export default function SmartInputArea({
             <Puzzle className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
             <span>
               {zh
-                ? 'LinkedIn / Indeed 等職缺頁？用外掛一鍵抓取更方便。'
-                : 'On LinkedIn / Indeed? Capture in one click with the extension.'}
+                ? 'LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs 職缺頁？用外掛一鍵抓取更方便。'
+                : 'On LinkedIn, Indeed, ZipRecruiter, Glassdoor, or GovernmentJobs? Capture in one click with the extension.'}
             </span>
             <Link
               href="/extension"

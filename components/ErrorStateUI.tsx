@@ -15,7 +15,7 @@ export interface ErrorStateUIProps {
  * Dark-theme warning (matches JobBeagle slate UI).
  */
 export default function ErrorStateUI({
-  boardLabel = 'LinkedIn / Indeed',
+  boardLabel = 'LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs',
   language = 'en',
   extensionHref = '/extension',
 }: ErrorStateUIProps) {
