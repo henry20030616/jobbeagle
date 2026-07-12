@@ -521,10 +521,10 @@ const InputForm: React.FC<InputFormProps> = ({
            </div>
         </div>
 
-        <div className="rounded-2xl border-2 border-indigo-500/35 bg-gradient-to-b from-indigo-950/70 via-slate-950 to-slate-950 shadow-2xl shadow-indigo-950/40 overflow-hidden">
+        <div className="rounded-2xl border border-slate-700 bg-gradient-to-b from-slate-700/55 to-slate-800 shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
-            <div className="relative lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-indigo-500/15">
+            <div className="relative lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
                 <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
@@ -556,18 +556,18 @@ const InputForm: React.FC<InputFormProps> = ({
               />
               </div>
               <div
-                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-indigo-950 border border-indigo-400/50 text-indigo-300 shadow-md"
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md"
                 aria-hidden
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </div>
-              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-indigo-400/70" aria-hidden>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
                 <ChevronDown className="w-5 h-5" />
               </div>
             </div>
 
             {/* 2. Resume */}
-            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-indigo-500/15">
+            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <div className="mb-3 space-y-2">
                 <h2 className="text-base sm:text-lg font-bold text-white flex items-center min-h-[2.75rem]">
                   <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3 shrink-0" />
@@ -664,18 +664,18 @@ const InputForm: React.FC<InputFormProps> = ({
                 )}
               </div>
               <div
-                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-indigo-950 border border-indigo-400/50 text-indigo-300 shadow-md"
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md"
                 aria-hidden
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </div>
-              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-indigo-400/70" aria-hidden>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
                 <ChevronDown className="w-5 h-5" />
               </div>
             </div>
 
             {/* 3. Report type */}
-            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-indigo-500/15">
+            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               {onReportTypeChange ? (
                 <>
                   <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
@@ -715,18 +715,18 @@ const InputForm: React.FC<InputFormProps> = ({
                 <div className="text-sm text-slate-500">—</div>
               )}
               <div
-                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-indigo-950 border border-indigo-400/50 text-indigo-300 shadow-md"
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md"
                 aria-hidden
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </div>
-              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-indigo-400/70" aria-hidden>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
                 <ChevronDown className="w-5 h-5" />
               </div>
             </div>
 
             {/* Launch */}
-            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col min-h-0 bg-indigo-950/30">
+            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col min-h-0 bg-slate-700/30">
               {(() => {
                 const blocked = jobInputKind.kind === 'blocked_board';
                 const publicAts = jobInputKind.kind === 'public_ats';
