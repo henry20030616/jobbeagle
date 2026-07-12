@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import BrandLogo from '@/components/BrandLogo';
 import { getLegalDocument, LEGAL_UI, type LegalDocument } from '@/lib/legal-content';
 import { isShortsEnabled } from '@/constants/features';
 
@@ -17,11 +18,12 @@ export default function LegalDocumentPage({ type }: { type: LegalDocType }) {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
         <div className="flex items-center justify-between gap-4 mb-8">
-          <Link href="/" className="text-sm text-slate-400 hover:text-white transition-colors">
-            {ui.backHome}
-          </Link>
+          <BrandLogo size="inline" />
           <LanguageSwitcher variant="dark" />
         </div>
+        <Link href="/" className="inline-block text-sm text-slate-400 hover:text-white transition-colors mb-8">
+          {ui.backHome}
+        </Link>
 
         <header className="mb-10">
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">{doc.title}</h1>

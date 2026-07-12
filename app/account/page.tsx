@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -18,6 +17,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import LoginButton from '@/components/LoginButton';
 import DeleteAccountButton from '@/components/DeleteAccountButton';
 import ReferralCard from '@/components/ReferralCard';
+import BrandLogo from '@/components/BrandLogo';
 import { startCheckout } from '@/lib/checkout-client';
 import {
   ACTIVE_CHECKOUT_PLAN_TYPES,
@@ -450,11 +450,7 @@ export default function AccountPage() {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="shrink-0">
-            <span className="text-white font-black text-xl tracking-tight">
-              Job<span className="text-indigo-400">beagle</span>
-            </span>
-          </Link>
+          <BrandLogo size="nav" />
           <div className="flex items-center gap-2">
             <LanguageSwitcher variant="dark" />
             <LoginButton redirectTo="/account" />

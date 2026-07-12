@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import { UserInputs, ResumeInput, InterviewReport, ReportType } from '@/types';
 import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp, ChevronDown } from 'lucide-react';
-import { BeagleIcon } from './AnalysisDashboard';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
+import BrandLogo from '@/components/BrandLogo';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES } from '@/constants/report-products';
@@ -452,16 +451,7 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <div className="flex flex-col gap-10">
       <div className="text-center space-y-3 py-4">
-        <Link href="/" className="inline-block">
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight flex items-center justify-center hover:opacity-80 transition-opacity cursor-pointer">
-            <div className="flex items-center">
-              <div className="mr-6">
-                 <BeagleIcon className="w-16 h-16 md:w-28 md:h-28 drop-shadow-xl" color="#cbd5e1" spotColor="#5d4037" bellyColor="#94a3b8" />
-              </div>
-              <span><span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span></span>
-            </div>
-          </h1>
-        </Link>
+        <BrandLogo size="hero" as="h1" className="justify-center" />
         <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto font-medium">
           {t.description}
         </p>

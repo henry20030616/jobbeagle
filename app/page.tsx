@@ -7,6 +7,7 @@ import AnalysisDashboard from '@/components/AnalysisDashboard';
 import DogLoading from '@/components/DogLoading';
 import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
+import BrandLogo from '@/components/BrandLogo';
 import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, LiteReport, FullReport, UserInputs, ReportType } from '@/types';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
@@ -415,11 +416,7 @@ export default function Home() {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between gap-4 mb-6">
-          <Link href="/" className="shrink-0">
-            <span className="text-white font-black text-xl sm:text-2xl tracking-tight">
-              <span>Job</span><span className="text-indigo-400">beagle</span>
-            </span>
-          </Link>
+          <BrandLogo size="nav" />
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher variant="dark" />
             {currentUser && (

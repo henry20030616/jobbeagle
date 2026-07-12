@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/browser';
 import { useRouter } from 'next/navigation';
 import { Mail, Building2, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
+import { BrandWordmark } from '@/components/BrandLogo';
 
 const EL = {
   en: { title: 'Employer Login', sub: 'Unified account with the main site', desc: 'First login automatically creates your employer account.\nAfter login you can upload and manage recruitment videos.', btn: 'Sign in with Google', back: '← Back to Home', loading: 'Loading…', errLogin: 'Login error: ' },
@@ -98,7 +99,7 @@ export default function EmployerLoginPage() {
               <Building2 className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              <span className="text-white">Job</span><span className="text-blue-400">beagle</span>
+              <BrandWordmark />
             </h1>
             <p className="text-slate-400 text-sm">{tl.title}</p>
             <p className="text-slate-500 text-xs mt-2">{tl.sub}</p>

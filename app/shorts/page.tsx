@@ -16,6 +16,7 @@ import { FALLBACK_VIDEOS } from './fallback-videos';
 import { setStoredShortsViewRole, setStoredAccountRole, resolveUserRole } from '@/lib/shorts-view-role';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { BrandWordmark } from '@/components/BrandLogo';
 
 const getLogoUrl = (n: string) =>
   `https://www.google.com/s2/favicons?domain=${n.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
@@ -404,8 +405,8 @@ export default function JobbeagleShortsPage() {
           <div className="w-full flex-shrink-0 px-4 pt-3 pb-3 md:px-6 z-30 flex justify-between items-center bg-black/90 backdrop-blur-md border-b border-white/8">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <span className="text-white font-black text-2xl md:text-3xl leading-none tracking-tight">
-                <span>Job</span><span className="text-blue-500">beagle</span>
+              <span className="font-black text-2xl md:text-3xl leading-none tracking-tight">
+                <BrandWordmark />
               </span>
               <span className="text-white/70 text-sm md:text-base font-semibold ml-1">Shorts</span>
             </Link>

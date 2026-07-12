@@ -23,6 +23,7 @@ import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import ResumeInputPanel from '@/components/ResumeInputPanel';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
+import BrandLogo from '@/components/BrandLogo';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import {
   CONFIRM_PAGE,
@@ -308,9 +309,7 @@ export default function PreFlightPage() {
     <div className={`min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white ${embedded ? 'text-sm' : ''}`}>
       {!embedded && (
       <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          JobBeagle
-        </Link>
+        <BrandLogo size="inline" />
         {user ? (
           <span className="text-sm text-slate-400">{user.email}</span>
         ) : (

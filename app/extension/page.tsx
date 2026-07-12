@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   Chrome,
   Puzzle,
   CheckCircle2,
@@ -11,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function ExtensionInstallPage() {
   const { language } = useLanguage();
@@ -58,13 +58,7 @@ export default function ExtensionInstallPage() {
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-8">
         <div className="flex items-center justify-between gap-3">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {zh ? '回首頁' : 'Back home'}
-          </Link>
+          <BrandLogo size="inline" />
           <LanguageSwitcher />
         </div>
 
