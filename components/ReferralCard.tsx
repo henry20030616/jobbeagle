@@ -51,6 +51,7 @@ const copy: Record<AppLanguage, { title: string; desc: string; copied: string; c
 
 export default function ReferralCard({ referralCode, language = 'en', compact = false }: ReferralCardProps) {
   const [copied, setCopied] = useState(false);
+  const [descOpen, setDescOpen] = useState(false);
   const t = copy[language] ?? copy.en;
 
   if (!referralCode) return null;
@@ -84,16 +85,34 @@ export default function ReferralCard({ referralCode, language = 'en', compact = 
   }
 
   return (
-    <div className="rounded-xl border border-indigo-500/30 bg-indigo-950/40 p-4">
+    <div
+      className="rounded-xl border border-indigo-500/30 bg-indigo-950/40 p-4 group/referral"
+      onMouseEnter={() => setDescOpen(true)}
+      onMouseLeave={() => setDescOpen(false)}
+      onFocus={() => setDescOpen(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          setDescOpen(false);
+        }
+      }}
+    >
       <p className="font-semibold text-white text-sm flex items-center gap-2">
         <Gift className="w-4 h-4 text-indigo-400" />
         {t.title}
       </p>
-      <p className="text-xs text-slate-400 mt-1 mb-3">{t.desc}</p>
+      <div
+        className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+          descOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <p className="text-xs text-slate-400 mt-1">{t.desc}</p>
+        </div>
+      </div>
       <button
         type="button"
         onClick={handleCopy}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white"
+        className="mt-3 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white"
       >
         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
         {copied ? t.copied : t.copy}
