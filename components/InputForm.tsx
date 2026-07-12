@@ -516,7 +516,7 @@ const InputForm: React.FC<InputFormProps> = ({
            </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-600/80 bg-gradient-to-b from-slate-600/50 to-slate-700/80 shadow-xl overflow-hidden">
+        <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
             <div className="relative lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
