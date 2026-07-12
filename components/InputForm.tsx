@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType } from '@/types';
-import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp, ChevronDown } from 'lucide-react';
+import { FileText, Upload, X, Sparkles, Zap, History, Clock, ArrowRight, Save, MessageSquare, Briefcase, TrendingUp, ChevronDown, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
@@ -521,10 +521,47 @@ const InputForm: React.FC<InputFormProps> = ({
            </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 lg:divide-x divide-slate-700/80 lg:items-stretch">
+        <div className="rounded-2xl border-2 border-indigo-500/35 bg-gradient-to-b from-indigo-950/70 via-slate-950 to-slate-950 shadow-2xl shadow-indigo-950/40 overflow-hidden">
+          {/* Flow legend: makes 1 → 2 → 3 → Launch order obvious */}
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 px-3 py-2.5 border-b border-indigo-500/25 bg-indigo-950/50 text-xs font-bold tracking-wide"
+            aria-label={
+              currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+                ? '分析步驟順序'
+                : 'Analysis step order'
+            }
+          >
+            {(currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+              ? [
+                  { n: '1', label: '職缺', color: 'text-indigo-300' },
+                  { n: '2', label: '履歷', color: 'text-violet-300' },
+                  { n: '3', label: '報告', color: 'text-emerald-300' },
+                  { n: '4', label: '啟動', color: 'text-white' },
+                ]
+              : [
+                  { n: '1', label: 'Job', color: 'text-indigo-300' },
+                  { n: '2', label: 'Resume', color: 'text-violet-300' },
+                  { n: '3', label: 'Report', color: 'text-emerald-300' },
+                  { n: '4', label: 'Launch', color: 'text-white' },
+                ]
+            ).map((step, i, arr) => (
+              <React.Fragment key={step.label}>
+                <span className={`inline-flex items-center gap-1 ${step.color}`}>
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900/80 border border-white/15 text-[10px] font-black text-white">
+                    {step.n}
+                  </span>
+                  {step.label}
+                </span>
+                {i < arr.length - 1 && (
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" aria-hidden />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
-            <div className="lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 border-slate-700/80">
+            <div className="relative lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-indigo-500/15">
               <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
                 <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
@@ -555,10 +592,19 @@ const InputForm: React.FC<InputFormProps> = ({
                 }}
               />
               </div>
+              <div
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-indigo-950 border border-indigo-400/50 text-indigo-300 shadow-md"
+                aria-hidden
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-indigo-400/70" aria-hidden>
+                <ChevronDown className="w-5 h-5" />
+              </div>
             </div>
 
             {/* 2. Resume */}
-            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 border-slate-700/80">
+            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-indigo-500/15">
               <div className="mb-3 space-y-2">
                 <h2 className="text-base sm:text-lg font-bold text-white flex items-center min-h-[2.75rem]">
                   <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3 shrink-0" />
@@ -654,10 +700,19 @@ const InputForm: React.FC<InputFormProps> = ({
                   </div>
                 )}
               </div>
+              <div
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-indigo-950 border border-indigo-400/50 text-indigo-300 shadow-md"
+                aria-hidden
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-indigo-400/70" aria-hidden>
+                <ChevronDown className="w-5 h-5" />
+              </div>
             </div>
 
             {/* 3. Report type */}
-            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 border-slate-700/80">
+            <div className="relative lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-indigo-500/15">
               {onReportTypeChange ? (
                 <>
                   <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
@@ -696,10 +751,19 @@ const InputForm: React.FC<InputFormProps> = ({
               ) : (
                 <div className="text-sm text-slate-500">—</div>
               )}
+              <div
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-indigo-950 border border-indigo-400/50 text-indigo-300 shadow-md"
+                aria-hidden
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-indigo-400/70" aria-hidden>
+                <ChevronDown className="w-5 h-5" />
+              </div>
             </div>
 
             {/* Launch */}
-            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col min-h-0">
+            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col min-h-0 bg-indigo-950/30">
               {(() => {
                 const blocked = jobInputKind.kind === 'blocked_board';
                 const publicAts = jobInputKind.kind === 'public_ats';
