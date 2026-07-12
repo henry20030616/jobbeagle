@@ -10,6 +10,7 @@ import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
+import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -62,7 +63,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
         .eq('user_id', user.id)
         .is('deleted_at', null)
         .order('last_used_at', { ascending: false, nullsFirst: false })
-        .limit(50);
+        .limit(RESUME_LIBRARY_LIMIT);
 
       if (error) {
         const legacy = await supabase
@@ -70,7 +71,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, language = '
           .select('id, type, content, mime_type, file_name, created_at')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
-          .limit(20);
+          .limit(RESUME_LIBRARY_LIMIT);
         if (legacy.error) {
           if (legacy.error.code === '42P01' || legacy.error.message?.includes('does not exist')) {
             console.warn('resume_history 資料表尚未建立');

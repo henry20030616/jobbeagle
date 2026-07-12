@@ -4,6 +4,7 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { upsertResumeForUser } from '@/lib/resumes';
 import type { ResumeInput } from '@/types';
 import { extractResumeText, isPdfResume } from '@/lib/resume-parser';
+import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 
 /**
  * POST /api/resumes — upsert resume into the user's library (manual pin / save).
@@ -80,7 +81,7 @@ export async function GET() {
     .eq('user_id', user.id)
     .is('deleted_at', null)
     .order('last_used_at', { ascending: false, nullsFirst: false })
-    .limit(50);
+    .limit(RESUME_LIBRARY_LIMIT);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

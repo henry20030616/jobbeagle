@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 import type { ResumeInput } from '@/types';
 import { FileText, History, Upload, X, Save, Clock, Loader2 } from 'lucide-react';
+import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 
 interface LibraryItem {
   id: string;
@@ -30,7 +31,7 @@ export default function ResumeInputPanel({
   value,
   onChange,
   language = 'en',
-  libraryLimit = 3,
+  libraryLimit = RESUME_LIBRARY_LIMIT,
 }: ResumeInputPanelProps) {
   const zh = language === 'zh-TW' || language === 'zh-CN';
   const fileInputRef = useRef<HTMLInputElement>(null);

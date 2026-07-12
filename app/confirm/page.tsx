@@ -18,6 +18,7 @@ import DogLoading from '@/components/DogLoading';
 import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import ResumeInputPanel from '@/components/ResumeInputPanel';
+import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import {
   CONFIRM_PAGE,
   REPORT_CODES,
@@ -350,7 +351,7 @@ export default function PreFlightPage() {
           value={resume}
           onChange={setResume}
           language="en"
-          libraryLimit={3}
+          libraryLimit={RESUME_LIBRARY_LIMIT}
         />
 
         {/* Report type */}
