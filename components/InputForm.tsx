@@ -465,12 +465,7 @@ const InputForm: React.FC<InputFormProps> = ({
            </div>
 
            <div className="relative">
-               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center px-4 sm:px-5 pt-4 sm:pt-5 mb-0">
-                  <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></span>
-                  {t.reportOutput}
-               </h2>
-               
-               <div className="grid grid-cols-1 lg:grid-cols-4 lg:divide-x divide-slate-700/80 border-t border-slate-700/60">
+               <div className="grid grid-cols-1 lg:grid-cols-4 lg:divide-x divide-slate-700/80">
                   {([
                     { id: 'match', icon: Zap, iconBg: 'bg-yellow-500/20', iconColor: 'text-yellow-400', title: t.matchAnalysis, desc: t.matchAnalysisDesc },
                     { id: 'salary', icon: Briefcase, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: t.salaryResearch, desc: t.salaryResearchDesc },
