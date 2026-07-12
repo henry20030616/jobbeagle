@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { CheckCircle2, FileText, Globe, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { CheckCircle2, FileText, Globe, Loader2, Puzzle } from 'lucide-react';
 import {
   classifyJobInput,
   type JobInputClassification,
@@ -74,6 +75,24 @@ export default function SmartInputArea({
             </span>
           )}
         </div>
+
+        {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}
+        {classification.kind !== 'blocked_board' && (
+          <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-slate-400">
+            <Puzzle className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+            <span>
+              {zh
+                ? 'LinkedIn / Indeed 等職缺頁？用外掛一鍵抓取更方便。'
+                : 'On LinkedIn / Indeed? Capture in one click with the extension.'}
+            </span>
+            <Link
+              href="/extension"
+              className="font-semibold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 decoration-indigo-500/40 hover:decoration-indigo-300 transition-colors"
+            >
+              {zh ? '獲取官方外掛 →' : 'Get the extension →'}
+            </Link>
+          </p>
+        )}
 
         <textarea
           required
