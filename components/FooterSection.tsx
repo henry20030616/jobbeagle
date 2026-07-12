@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { MessageCircle, Send, CheckCircle, ChevronDown } from 'lucide-react';
 
@@ -18,12 +18,12 @@ type FT = {
   errorMsg: string; privacy: string; terms: string; expandHint: string; accountManagement: string;
 };
 const translations: Record<AppLanguage, FT> = {
-  'zh-TW': { contactTitle: '留言給作者', contactDesc: '有任何建議或問題，歡迎直接留言，我會看到！', namePlaceholder: '您的稱呼（選填）', emailPlaceholder: '您的信箱（方便我回覆，選填）', messagePlaceholder: '輸入留言內容…', send: '送出留言', sending: '送出中…', successTitle: '留言已送出！', successDesc: '謝謝您的回饋，我會盡快查看。', errorMsg: '送出失敗，請稍後再試。', privacy: '隱私權政策', terms: '服務條款', expandHint: '點擊展開留言', accountManagement: '帳戶管理' },
-  'zh-CN': { contactTitle: '留言给作者', contactDesc: '有任何建议或问题，欢迎直接留言，我会看到！', namePlaceholder: '您的称呼（选填）', emailPlaceholder: '您的邮箱（方便我回复，选填）', messagePlaceholder: '输入留言内容…', send: '发送留言', sending: '发送中…', successTitle: '留言已发送！', successDesc: '感谢您的反馈，我会尽快查看。', errorMsg: '发送失败，请稍后再试。', privacy: '隐私权政策', terms: '服务条款', expandHint: '点击展开留言', accountManagement: '账户管理' },
-  en:      { contactTitle: 'Message the Author', contactDesc: 'Have suggestions or feedback? Leave a message—I read every one!', namePlaceholder: 'Your name (optional)', emailPlaceholder: 'Your email so I can reply (optional)', messagePlaceholder: 'Write your message…', send: 'Send Message', sending: 'Sending…', successTitle: 'Message sent!', successDesc: 'Thanks for your feedback. I will check it soon.', errorMsg: 'Failed to send. Please try again later.', privacy: 'Privacy Policy', terms: 'Terms of Service', expandHint: 'Click to leave a message', accountManagement: 'Account management' },
-  es:      { contactTitle: 'Mensaje al Autor', contactDesc: '¿Tienes sugerencias? Deja un mensaje—¡los leo todos!', namePlaceholder: 'Tu nombre (opcional)', emailPlaceholder: 'Tu email para responder (opcional)', messagePlaceholder: 'Escribe tu mensaje…', send: 'Enviar Mensaje', sending: 'Enviando…', successTitle: '¡Mensaje enviado!', successDesc: 'Gracias por tu opinión. Lo revisaré pronto.', errorMsg: 'Error al enviar. Inténtalo de nuevo más tarde.', privacy: 'Política de privacidad', terms: 'Términos de servicio', expandHint: 'Haz clic para escribir', accountManagement: 'Gestión de cuenta' },
-  hi:      { contactTitle: 'लेखक को संदेश', contactDesc: 'सुझाव या प्रतिक्रिया है? संदेश छोड़ें—मैं सभी पढ़ता हूँ!', namePlaceholder: 'आपका नाम (वैकल्पिक)', emailPlaceholder: 'आपका ईमेल (उत्तर के लिए, वैकल्पिक)', messagePlaceholder: 'अपना संदेश लिखें…', send: 'संदेश भेजें', sending: 'भेज रहे हैं…', successTitle: 'संदेश भेजा गया!', successDesc: 'आपकी प्रतिक्रिया के लिए धन्यवाद। मैं जल्द जांचूंगा।', errorMsg: 'भेजने में विफल। कृपया बाद में पुनः प्रयास करें।', privacy: 'गोपनीयता नीति', terms: 'सेवा की शर्तें', expandHint: 'संदेश लिखने के लिए क्लिक करें', accountManagement: 'खाता प्रबंधन' },
-  ar:      { contactTitle: 'راسل المؤسس', contactDesc: 'هل لديك اقتراحات أو ملاحظات؟ اترك رسالة، سأقرأها كلها.', namePlaceholder: 'اسمك (اختياري)', emailPlaceholder: 'بريدك الإلكتروني للرد (اختياري)', messagePlaceholder: 'اكتب رسالتك…', send: 'إرسال الرسالة', sending: 'جارٍ الإرسال…', successTitle: 'تم إرسال الرسالة!', successDesc: 'شكرًا لملاحظاتك. سأراجعها قريبًا.', errorMsg: 'فشل الإرسال. يرجى المحاولة لاحقًا.', privacy: 'سياسة الخصوصية', terms: 'شروط الخدمة', expandHint: 'انقر لترك رسالة', accountManagement: 'إدارة الحساب' },
+  'zh-TW': { contactTitle: '留言給作者', contactDesc: '有任何建議或問題，歡迎直接留言，我會看到！', namePlaceholder: '您的稱呼（選填）', emailPlaceholder: '您的信箱（方便我回覆，選填）', messagePlaceholder: '輸入留言內容…', send: '送出留言', sending: '送出中…', successTitle: '留言已送出！', successDesc: '謝謝您的回饋，我會盡快查看。', errorMsg: '送出失敗，請稍後再試。', privacy: '隱私權政策', terms: '服務條款', expandHint: '滑鼠移近以留言', accountManagement: '帳戶管理' },
+  'zh-CN': { contactTitle: '留言给作者', contactDesc: '有任何建议或问题，欢迎直接留言，我会看到！', namePlaceholder: '您的称呼（选填）', emailPlaceholder: '您的邮箱（方便我回复，选填）', messagePlaceholder: '输入留言内容…', send: '发送留言', sending: '发送中…', successTitle: '留言已发送！', successDesc: '感谢您的反馈，我会尽快查看。', errorMsg: '发送失败，请稍后再试。', privacy: '隐私权政策', terms: '服务条款', expandHint: '鼠标移近以留言', accountManagement: '账户管理' },
+  en:      { contactTitle: 'Message the Author', contactDesc: 'Have suggestions or feedback? Leave a message—I read every one!', namePlaceholder: 'Your name (optional)', emailPlaceholder: 'Your email so I can reply (optional)', messagePlaceholder: 'Write your message…', send: 'Send Message', sending: 'Sending…', successTitle: 'Message sent!', successDesc: 'Thanks for your feedback. I will check it soon.', errorMsg: 'Failed to send. Please try again later.', privacy: 'Privacy Policy', terms: 'Terms of Service', expandHint: 'Hover to leave a message', accountManagement: 'Account management' },
+  es:      { contactTitle: 'Mensaje al Autor', contactDesc: '¿Tienes sugerencias? Deja un mensaje—¡los leo todos!', namePlaceholder: 'Tu nombre (opcional)', emailPlaceholder: 'Tu email para responder (opcional)', messagePlaceholder: 'Escribe tu mensaje…', send: 'Enviar Mensaje', sending: 'Enviando…', successTitle: '¡Mensaje enviado!', successDesc: 'Gracias por tu opinión. Lo revisaré pronto.', errorMsg: 'Error al enviar. Inténtalo de nuevo más tarde.', privacy: 'Política de privacidad', terms: 'Términos de servicio', expandHint: 'Pasa el cursor para escribir', accountManagement: 'Gestión de cuenta' },
+  hi:      { contactTitle: 'लेखक को संदेश', contactDesc: 'सुझाव या प्रतिक्रिया है? संदेश छोड़ें—मैं सभी पढ़ता हूँ!', namePlaceholder: 'आपका नाम (वैकल्पिक)', emailPlaceholder: 'आपका ईमेल (उत्तर के लिए, वैकल्पिक)', messagePlaceholder: 'अपना संदेश लिखें…', send: 'संदेश भेजें', sending: 'भेज रहे हैं…', successTitle: 'संदेश भेजा गया!', successDesc: 'आपकी प्रतिक्रिया के लिए धन्यवाद। मैं जल्द जांचूंगा।', errorMsg: 'भेजने में विफल। कृपया बाद में पुनः प्रयास करें।', privacy: 'गोपनीयता नीति', terms: 'सेवा की शर्तें', expandHint: 'संदेश के लिए होवर करें', accountManagement: 'खाता प्रबंधन' },
+  ar:      { contactTitle: 'راسل المؤسس', contactDesc: 'هل لديك اقتراحات أو ملاحظات؟ اترك رسالة، سأقرأها كلها.', namePlaceholder: 'اسمك (اختياري)', emailPlaceholder: 'بريدك الإلكتروني للرد (اختياري)', messagePlaceholder: 'اكتب رسالتك…', send: 'إرسال الرسالة', sending: 'جارٍ الإرسال…', successTitle: 'تم إرسال الرسالة!', successDesc: 'شكرًا لملاحظاتك. سأراجعها قريبًا.', errorMsg: 'فشل الإرسال. يرجى المحاولة لاحقًا.', privacy: 'سياسة الخصوصية', terms: 'شروط الخدمة', expandHint: 'مرّر للمراسلة', accountManagement: 'إدارة الحساب' },
 };
 
 const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
@@ -37,6 +37,14 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const closeIfIdle = () => {
+    if (submitting) return;
+    const active = document.activeElement;
+    if (active && panelRef.current?.contains(active)) return;
+    setOpen(false);
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -90,12 +98,21 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
       <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
 
       <div className="max-w-lg mx-auto">
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
+        <div
+          ref={panelRef}
+          className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden"
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={closeIfIdle}
+          onFocus={() => setOpen(true)}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+              closeIfIdle();
+            }
+          }}
+        >
+          <div
+            className="w-full flex items-center gap-3 px-5 py-4 text-left"
             aria-expanded={open}
-            className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-slate-800/80 transition-colors"
           >
             <MessageCircle className="w-5 h-5 text-indigo-400 shrink-0" />
             <span className="flex-1 min-w-0">
@@ -108,7 +125,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
               className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
               aria-hidden
             />
-          </button>
+          </div>
 
           <div
             className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
