@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, FileText, Globe, Loader2, Puzzle } from 'lucide-react';
+import { CheckCircle2, Loader2, Puzzle } from 'lucide-react';
 import {
   classifyJobInput,
   type JobInputClassification,
@@ -58,29 +58,16 @@ export default function SmartInputArea({
   return (
     <div className={compact ? 'flex flex-col h-full min-h-0 gap-2' : 'space-y-0'}>
       <div className={`relative ${compact ? 'flex flex-col flex-1 min-h-0' : ''}`}>
-        <div className={`${compact ? 'mb-1.5' : 'mb-3'} flex items-center justify-between gap-2`}>
-          <div className={`flex items-center ${compact ? 'text-xs' : 'text-base'} font-medium text-slate-300`}>
-            {classification.kind === 'public_ats' ? (
-              <CheckCircle2 className={`${compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} mr-1.5 text-emerald-400`} />
-            ) : classification.kind === 'blocked_board' ||
-              classification.kind === 'other_url' ? (
-              <Globe className={`${compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} mr-1.5 text-blue-400`} />
-            ) : (
-              <FileText className={`${compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} mr-1.5 text-indigo-400`} />
-            )}
-            <span>{zh ? '職缺內容' : 'Job posting'}</span>
-          </div>
-
-          {classification.kind === 'public_ats' && (
+        {classification.kind === 'public_ats' && (
+          <div className={`${compact ? 'mb-1.5' : 'mb-3'} flex justify-end`}>
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/50 border border-emerald-500/30 rounded-full px-2.5 py-1 transition-all">
               <CheckCircle2 className="w-3.5 h-3.5" />
               {classification.boardLabel} URL
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}
-        {classification.kind !== 'blocked_board' && (
+        {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}        {classification.kind !== 'blocked_board' && (
           compact ? (
             <p className="mb-2 flex items-center gap-1 text-[11px] text-slate-400 truncate">
               <Puzzle className="w-3 h-3 text-indigo-400 shrink-0" />
