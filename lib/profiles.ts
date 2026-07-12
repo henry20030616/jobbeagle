@@ -19,6 +19,7 @@ export interface ProfileRow {
   device_fingerprint: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
+  deactivated_at: string | null;
 }
 
 /** Normalize DB row that may still use legacy lite/full column names. */
@@ -47,6 +48,7 @@ export function coerceProfileRow(raw: Record<string, unknown>): ProfileRow {
     device_fingerprint: (raw.device_fingerprint as string | null) ?? null,
     stripe_customer_id: (raw.stripe_customer_id as string | null) ?? null,
     stripe_subscription_id: (raw.stripe_subscription_id as string | null) ?? null,
+    deactivated_at: (raw.deactivated_at as string | null) ?? null,
   };
 }
 
@@ -294,6 +296,7 @@ export function canAffordUserProfile(
       device_fingerprint: null,
       stripe_customer_id: null,
       stripe_subscription_id: null,
+      deactivated_at: null,
     },
     reportType,
   );
@@ -314,5 +317,6 @@ export function profileToUserProfile(row: ProfileRow): UserProfile {
     available_full_credits: row.available_interview_strategy_guide_credits,
     referral_code: row.referral_code,
     device_fingerprint: row.device_fingerprint,
+    deactivated_at: row.deactivated_at,
   };
 }

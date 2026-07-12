@@ -176,6 +176,16 @@ export async function POST(request: NextRequest) {
       avatar_url: user.user_metadata?.avatar_url,
     });
 
+    if (profile.deactivated_at) {
+      return NextResponse.json(
+        {
+          error: 'Account is deactivated. Reactivate from Account management.',
+          code: 'ACCOUNT_DEACTIVATED',
+        },
+        { status: 403 },
+      );
+    }
+
     const sybil = await checkDeviceSybil(
       admin,
       user.id,

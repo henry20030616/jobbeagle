@@ -216,6 +216,7 @@ export interface UserProfile {
   available_full_credits?: number;
   referral_code: string | null;
   device_fingerprint: string | null;
+  deactivated_at?: string | null;
 }
 
 /** Chrome extension → confirm-job payload */

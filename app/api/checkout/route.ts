@@ -80,7 +80,16 @@ export async function POST(request: NextRequest) {
   const reportId: string | null = body.reportId ?? null;
   const amount = plan.amountCents / 100;
 
-  await ensureProfile(admin, user.id);
+  const profile = await ensureProfile(admin, user.id);
+  if (profile.deactivated_at) {
+    return NextResponse.json(
+      {
+        error: 'Account is deactivated. Reactivate from Account management.',
+        errorCode: 'ACCOUNT_DEACTIVATED',
+      },
+      { status: 403 },
+    );
+  }
 
   const { data: order, error: orderErr } = await admin
     .from('orders')

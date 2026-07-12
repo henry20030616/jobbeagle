@@ -20,6 +20,7 @@ import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import { normalizeLiteReport, isLiteReport, isFullReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import CreditsBadge from '@/components/CreditsBadge';
 import ReferralCard from '@/components/ReferralCard';
+import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import type { UserProfile } from '@/types';
 import { isShortsEnabled, isHomepageShortsBannerEnabled } from '@/constants/features';
 
@@ -434,6 +435,10 @@ export default function Home() {
             <LoginButton referralCode={referralCode ?? undefined} />
           </div>
         </div>
+
+        {currentUser && userProfile?.deactivated_at && (
+          <AccountDeactivatedBanner language={language} />
+        )}
 
         {isHomepageShortsBannerEnabled() && isShortsEnabled() && !report && !liteReport && !fullReport && (
           <Link

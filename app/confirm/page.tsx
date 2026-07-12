@@ -22,6 +22,7 @@ import DogLoading from '@/components/DogLoading';
 import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import ResumeInputPanel from '@/components/ResumeInputPanel';
+import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import {
   CONFIRM_PAGE,
@@ -319,6 +320,7 @@ export default function PreFlightPage() {
       )}
 
       <main className={`max-w-3xl mx-auto px-4 space-y-8 ${embedded ? 'py-6' : 'py-10'}`}>
+        {profile?.deactivated_at && <AccountDeactivatedBanner language="en" />}
         <div>
           <h1 className={`font-bold mb-2 ${embedded ? 'text-xl' : 'text-2xl'}`}>
             {CONFIRM_PAGE.titleEn}

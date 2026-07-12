@@ -14,6 +14,7 @@ const freeProfile = (snapshot: number, strategy = 0): ProfileRow => ({
   device_fingerprint: null,
   stripe_customer_id: null,
   stripe_subscription_id: null,
+  deactivated_at: null,
 });
 
 describe('canAffordReport', () => {

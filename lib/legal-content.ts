@@ -58,14 +58,14 @@ const PRIVACY_EN: LegalDocument = {
       title: 'Data Retention & Deletion (CCPA / GDPR)',
       paragraphs: [
         'Resume versions and analysis reports are retained while your account is active so you can review history. Removing a resume from your library hides it (soft delete) but does not erase past reports that used it. Certain single-use free reports may be purged automatically after about 90 days.',
-        'You may delete your account in-product (signed-in Delete Account control). This triggers a hard delete of your auth user, profile, resume library, analysis reports, and associated uploaded Shorts media files where applicable.',
+        'You may delete your account in-product via Account management (signed-in). This triggers a hard delete of your auth user, profile, resume library, analysis reports, and associated uploaded Shorts media files where applicable.',
         'California residents (CCPA) and users under similar laws may request access or deletion by using in-product delete or emailing henry061680@gmail.com.',
       ],
     },
     {
       title: 'Your Rights',
       paragraphs: [
-        'You may access, update, or delete your account data by signing in and using Delete Account, or by emailing us.',
+        'You may access, update, or delete your account data by signing in and using Account management, or by emailing us.',
         'Depending on your jurisdiction, you may have additional rights under GDPR, CCPA, or similar laws.',
       ],
     },
@@ -135,14 +135,14 @@ const PRIVACY_ZH_TW: LegalDocument = {
       title: '資料保留與刪除（CCPA／GDPR）',
       paragraphs: [
         '履歷版本與分析報告於帳號有效期間保留。從履歷庫移除為軟刪除（列表隱藏），不會抹去曾使用該履歷的歷史報告。部分免費用戶單次報告約 90 天後可能自動清除。',
-        '您可於登入後使用「刪除帳號」執行硬刪除：包含驗證帳號、profile、履歷庫、分析報告，以及相關上傳媒體檔案。',
+        '您可於登入後至「帳戶管理」執行硬刪除：包含驗證帳號、profile、履歷庫、分析報告，以及相關上傳媒體檔案。',
         '加州 CCPA 等法規下的使用者，亦可透過站內刪除或 henry061680@gmail.com 行使權利。',
       ],
     },
     {
       title: '您的權利',
       paragraphs: [
-        '您可登入後刪除帳號，或 Email 聯絡我們存取、更新、刪除資料。',
+        '您可登入後至帳戶管理刪除帳號，或 Email 聯絡我們存取、更新、刪除資料。',
         '依司法管轄區，您可能享有 GDPR、CCPA 等額外權利。',
       ],
     },
