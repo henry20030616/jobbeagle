@@ -18,12 +18,14 @@ import LoginButton from '@/components/LoginButton';
 import DeleteAccountButton from '@/components/DeleteAccountButton';
 import ReferralCard from '@/components/ReferralCard';
 import BrandLogo from '@/components/BrandLogo';
+import CreditsBadge from '@/components/CreditsBadge';
 import { startCheckout } from '@/lib/checkout-client';
 import {
   ACTIVE_CHECKOUT_PLAN_TYPES,
   CHECKOUT_PLANS,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
+import type { MembershipTier, UserProfile } from '@/types';
 
 type AccountOrder = {
   id: string;
@@ -69,6 +71,7 @@ const copy: Record<
     tier: string;
     snapshotCredits: string;
     strategyCredits: string;
+    remainingCredits: string;
     statusActive: string;
     statusDeactivated: string;
     subscription: string;
@@ -106,6 +109,7 @@ const copy: Record<
     tier: 'Membership',
     snapshotCredits: 'Job Fit Snapshot credits',
     strategyCredits: 'Interview Strategy Guide credits',
+    remainingCredits: 'Remaining credits',
     statusActive: 'Active',
     statusDeactivated: 'Deactivated',
     subscription: 'Subscription & credits',
@@ -144,6 +148,7 @@ const copy: Record<
     tier: '會員等級',
     snapshotCredits: 'Job Fit Snapshot 額度',
     strategyCredits: 'Interview Strategy Guide 額度',
+    remainingCredits: '剩餘額度',
     statusActive: '啟用中',
     statusDeactivated: '已停用',
     subscription: '訂閱與額度',
@@ -181,6 +186,7 @@ const copy: Record<
     tier: '会员等级',
     snapshotCredits: 'Job Fit Snapshot 额度',
     strategyCredits: 'Interview Strategy Guide 额度',
+    remainingCredits: '剩余额度',
     statusActive: '启用中',
     statusDeactivated: '已停用',
     subscription: '订阅与额度',
@@ -218,6 +224,7 @@ const copy: Record<
     tier: 'Membresía',
     snapshotCredits: 'Créditos Job Fit Snapshot',
     strategyCredits: 'Créditos Interview Strategy Guide',
+    remainingCredits: 'Créditos restantes',
     statusActive: 'Activa',
     statusDeactivated: 'Desactivada',
     subscription: 'Suscripción y créditos',
@@ -255,6 +262,7 @@ const copy: Record<
     tier: 'सदस्यता',
     snapshotCredits: 'Job Fit Snapshot क्रेडिट',
     strategyCredits: 'Interview Strategy Guide क्रेडिट',
+    remainingCredits: 'शेष क्रेडिट',
     statusActive: 'सक्रिय',
     statusDeactivated: 'निष्क्रिय',
     subscription: 'सदस्यता और क्रेडिट',
@@ -292,6 +300,7 @@ const copy: Record<
     tier: 'العضوية',
     snapshotCredits: 'رصيد Job Fit Snapshot',
     strategyCredits: 'رصيد Interview Strategy Guide',
+    remainingCredits: 'الرصيد المتبقي',
     statusActive: 'نشط',
     statusDeactivated: 'معطّل',
     subscription: 'الاشتراك والرصيد',
@@ -503,14 +512,24 @@ export default function AccountPage() {
                   <dt className="text-slate-500">{t.tier}</dt>
                   <dd className="text-white">{tierLabel(data.profile.membership_tier)}</dd>
                 </div>
-                <div>
-                  <dt className="text-slate-500">{t.snapshotCredits}</dt>
-                  <dd className="text-white">{data.profile.available_job_fit_snapshot_credits}</dd>
-                </div>
-                <div>
-                  <dt className="text-slate-500">{t.strategyCredits}</dt>
-                  <dd className="text-white">
-                    {data.profile.available_interview_strategy_guide_credits}
+                <div className="sm:col-span-2">
+                  <dt className="text-slate-500 mb-1.5">{t.remainingCredits}</dt>
+                  <dd>
+                    <CreditsBadge
+                      profile={{
+                        id: data.profile.id,
+                        full_name: data.profile.full_name,
+                        avatar_url: null,
+                        membership_tier: data.profile.membership_tier as MembershipTier,
+                        available_job_fit_snapshot_credits:
+                          data.profile.available_job_fit_snapshot_credits,
+                        available_interview_strategy_guide_credits:
+                          data.profile.available_interview_strategy_guide_credits,
+                        referral_code: data.profile.referral_code,
+                        device_fingerprint: null,
+                      } satisfies UserProfile}
+                      language={language}
+                    />
                   </dd>
                 </div>
                 <div className="sm:col-span-2">

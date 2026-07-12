@@ -19,7 +19,6 @@ import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import { normalizeLiteReport, isLiteReport, isFullReport, normalizeFullReport } from '@/lib/normalize-lite-report';
-import CreditsBadge from '@/components/CreditsBadge';
 import ReferralCard from '@/components/ReferralCard';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import type { UserProfile } from '@/types';
@@ -609,8 +608,7 @@ export default function Home() {
               onReportTypeChange={setReportType}
             />
             {currentUser && userProfile && (
-              <div className="mt-6 mb-2 space-y-3">
-                <CreditsBadge profile={userProfile} language={language} />
+              <div className="mt-6 mb-2">
                 <ReferralCard referralCode={userProfile.referral_code} language={language} />
               </div>
             )}
