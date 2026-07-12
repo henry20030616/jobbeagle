@@ -16,11 +16,15 @@ describe('extension handoff', () => {
       pageUrl: 'https://www.linkedin.com/jobs/search/?currentJobId=123',
       rawText: '職位：AI Analyst\n\n公司：MediaTek\n\n' + '描述 '.repeat(30),
       jobId: '123',
+      jobTitle: 'AI Analyst',
+      companyName: 'MediaTek',
     };
     const sid = createHandoffToken(input);
     const payload = verifyHandoffToken(sid);
     expect(payload.rawText).toContain('MediaTek');
     expect(payload.jobId).toBe('123');
+    expect(payload.jobTitle).toBe('AI Analyst');
+    expect(payload.companyName).toBe('MediaTek');
   });
 
   it('rejects short job text on capture', () => {

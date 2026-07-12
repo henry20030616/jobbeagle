@@ -26,6 +26,8 @@ export interface HandoffCaptureInput {
   pageUrl: string;
   rawText: string;
   jobId: string;
+  jobTitle?: string;
+  companyName?: string;
 }
 
 export function validateCaptureInput(body: unknown): HandoffCaptureInput {
@@ -37,6 +39,8 @@ export function validateCaptureInput(body: unknown): HandoffCaptureInput {
   const pageUrl = typeof b.pageUrl === 'string' ? b.pageUrl.trim() : '';
   const rawText = typeof b.rawText === 'string' ? b.rawText.trim() : '';
   const jobId = typeof b.jobId === 'string' && b.jobId.trim() ? b.jobId.trim() : 'unknown';
+  const jobTitle = typeof b.jobTitle === 'string' ? b.jobTitle.trim() : undefined;
+  const companyName = typeof b.companyName === 'string' ? b.companyName.trim() : undefined;
 
   if (!rawText || rawText.length < 40) {
     throw new Error('Job text too short (min 40 characters)');
@@ -48,16 +52,18 @@ export function validateCaptureInput(body: unknown): HandoffCaptureInput {
     throw new Error('Invalid pageUrl');
   }
 
-  return { pageTitle, pageUrl, rawText, jobId };
+  return { pageTitle, pageUrl, rawText, jobId, jobTitle, companyName };
 }
 
-/** Create a signed handoff token (sid) for pre-flight */
+/** Create a signed handoff token (sid) for confirm page */
 export function createHandoffToken(input: HandoffCaptureInput): string {
   const payload = {
     pageTitle: input.pageTitle,
     pageUrl: input.pageUrl,
     rawText: input.rawText,
     jobId: input.jobId,
+    jobTitle: input.jobTitle || undefined,
+    companyName: input.companyName || undefined,
     exp: Date.now() + HANDOFF_TTL_MS,
   };
   const payloadB64 = Buffer.from(JSON.stringify(payload), 'utf-8').toString('base64url');
@@ -94,5 +100,7 @@ export function verifyHandoffToken(sid: string): ExtensionJobPayload {
     pageUrl: parsed.pageUrl || '',
     rawText: parsed.rawText,
     jobId: parsed.jobId,
+    jobTitle: parsed.jobTitle,
+    companyName: parsed.companyName,
   };
 }

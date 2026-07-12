@@ -57,12 +57,12 @@ const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
     en: 'Job was scraped but server handoff failed. Retry later or inspect the extension service worker console.',
   },
   site_access: {
-    'zh-TW': 'Chrome 未允許外掛存取此職缺網站。請到 chrome://extensions → JobBeagle →「網站存取權限」→ 打開對應網站（LinkedIn / Indeed / ZipRecruiter / Glassdoor），或選「在所有網站上」。',
-    en: 'Chrome blocked site access. Open chrome://extensions → JobBeagle → enable site access for LinkedIn / Indeed / ZipRecruiter / Glassdoor.',
+    'zh-TW': 'Chrome 未允許外掛存取此職缺網站。請到 chrome://extensions → JobBeagle →「網站存取權限」→ 打開對應網站（LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs），或選「在所有網站上」。',
+    en: 'Chrome blocked site access. Open chrome://extensions → JobBeagle → enable site access for LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs.',
   },
   no_job_page: {
-    'zh-TW': '此頁面不在支援清單。目前支援：LinkedIn、Indeed、ZipRecruiter、Glassdoor（與台灣 104）。請在職缺詳情頁再點外掛。',
-    en: 'This page is not supported. Supported: LinkedIn, Indeed, ZipRecruiter, Glassdoor (and Taiwan 104). Open a job detail page and try again.',
+    'zh-TW': '此頁面不在支援清單。目前支援：LinkedIn、Indeed、ZipRecruiter、Glassdoor、GovernmentJobs（與台灣 104）。請在職缺詳情頁再點外掛。',
+    en: 'This page is not supported. Supported: LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs (and Taiwan 104). Open a job detail page and try again.',
   },
 };
 

@@ -52,6 +52,22 @@ describe('url-parser-logic', () => {
     expect(r.boardId).toBe('glassdoor');
   });
 
+  it('blocks ZipRecruiter URLs', () => {
+    const r = classifyJobInput(
+      'https://www.ziprecruiter.com/jobs/software-engineer-abc',
+    );
+    expect(r.kind).toBe('blocked_board');
+    expect(r.boardId).toBe('ziprecruiter');
+  });
+
+  it('blocks GovernmentJobs URLs', () => {
+    const r = classifyJobInput(
+      'https://www.governmentjobs.com/careers/colorado/jobs/4611796/analyst',
+    );
+    expect(r.kind).toBe('blocked_board');
+    expect(r.boardId).toBe('governmentjobs');
+  });
+
   it('prefers blocked board when mixed with ATS', () => {
     const r = classifyJobInput(
       'See https://www.linkedin.com/jobs/view/1 and https://boards.greenhouse.io/x/jobs/2',

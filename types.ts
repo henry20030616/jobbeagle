@@ -218,6 +218,9 @@ export interface ExtensionJobPayload {
   pageUrl: string;
   rawText: string;
   jobId: string;
+  /** Structured fields from scrape (preferred over pageTitle parsing) */
+  jobTitle?: string;
+  companyName?: string;
 }
 
 export interface PreFlightJobData {

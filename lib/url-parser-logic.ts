@@ -5,7 +5,12 @@
 
 export type JobInputKind = 'plain' | 'public_ats' | 'blocked_board' | 'other_url';
 
-export type BlockedBoardId = 'linkedin' | 'indeed' | 'glassdoor' | 'ziprecruiter';
+export type BlockedBoardId =
+  | 'linkedin'
+  | 'indeed'
+  | 'glassdoor'
+  | 'ziprecruiter'
+  | 'governmentjobs';
 
 export type PublicAtsId = 'greenhouse' | 'lever';
 
@@ -59,6 +64,13 @@ const BLOCKED_BOARDS: Array<{
     id: 'ziprecruiter',
     label: 'ZipRecruiter',
     test: (u) => /(^|\.)ziprecruiter\.com$/i.test(u.hostname),
+  },
+  {
+    id: 'governmentjobs',
+    label: 'GovernmentJobs',
+    test: (u) =>
+      /(^|\.)governmentjobs\.com$/i.test(u.hostname)
+      || /(^|\.)schooljobs\.com$/i.test(u.hostname),
   },
 ];
 

@@ -34,6 +34,7 @@ describe('payload decode', () => {
       jobId: 'unknown',
     });
     expect(pf.company_name).toBe('Unknown Company');
+    expect(pf.job_title).toBe('Unknown Role');
   });
 
   it('parses English "Title at Company" format', () => {
@@ -45,5 +46,33 @@ describe('payload decode', () => {
     });
     expect(pf.job_title).toBe('Staff Engineer');
     expect(pf.company_name).toBe('Meta');
+  });
+
+  it('prefers structured jobTitle/companyName from scrape', () => {
+    const pf = payloadToPreFlightData({
+      pageTitle: '精選職缺 | LinkedIn',
+      pageUrl: 'https://www.linkedin.com/jobs/view/99',
+      rawText: '職位：AI Engineer\n公司：OpenAI\n' + 'y'.repeat(40),
+      jobId: '99',
+      jobTitle: 'AI Engineer',
+      companyName: 'OpenAI',
+    });
+    expect(pf.job_title).toBe('AI Engineer');
+    expect(pf.company_name).toBe('OpenAI');
+  });
+
+  it('parses GovernmentJobs department label from rawText', () => {
+    const pf = payloadToPreFlightData({
+      pageTitle: 'Analyst | State of Colorado',
+      pageUrl: 'https://www.governmentjobs.com/careers/colorado/jobs/4611796/x',
+      rawText:
+        '職位：ACSES Financial Operations Analyst\n\n公司：Colorado Department of Human Services\n\n'
+        + 'Description of Job\n' + 'duty '.repeat(20),
+      jobId: '4611796',
+      jobTitle: 'ACSES Financial Operations Analyst',
+      companyName: 'Colorado Department of Human Services',
+    });
+    expect(pf.job_title).toContain('Financial Operations');
+    expect(pf.company_name).toContain('Human Services');
   });
 });

@@ -1,6 +1,6 @@
 /**
- * JobBeagle Chrome Extension v1.2.0
- * US boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor (+ 104 TW)
+ * JobBeagle Chrome Extension v1.3.0
+ * US boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs (+ 104 TW)
  * Scrape → POST /api/extension-capture → open /confirm tab
  */
 
@@ -13,6 +13,12 @@ const SITE_ORIGINS = {
   'indeed.com': ['https://*.indeed.com/*', 'https://www.indeed.com/*'],
   'ziprecruiter.com': ['https://*.ziprecruiter.com/*', 'https://www.ziprecruiter.com/*'],
   'glassdoor.com': ['https://*.glassdoor.com/*', 'https://www.glassdoor.com/*'],
+  'governmentjobs.com': [
+    'https://*.governmentjobs.com/*',
+    'https://www.governmentjobs.com/*',
+    'https://*.schooljobs.com/*',
+    'https://www.schooljobs.com/*',
+  ],
   '104.com.tw': ['https://*.104.com.tw/*', 'https://www.104.com.tw/*'],
 };
 
@@ -22,6 +28,9 @@ function detectSite(url) {
   if (u.includes('indeed.com')) return 'indeed.com';
   if (u.includes('ziprecruiter.com')) return 'ziprecruiter.com';
   if (u.includes('glassdoor.com')) return 'glassdoor.com';
+  if (u.includes('governmentjobs.com') || u.includes('schooljobs.com')) {
+    return 'governmentjobs.com';
+  }
   if (u.includes('104.com.tw')) return '104.com.tw';
   return null;
 }
@@ -58,8 +67,12 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   try {
-    // Split-pane boards (LinkedIn / Indeed) need a moment after selection
-    await sleep(site === 'linkedin.com' || site === 'indeed.com' ? 1500 : 800);
+    // Split-pane / SPA boards need a moment after selection
+    const waitMs =
+      site === 'linkedin.com' || site === 'indeed.com' || site === 'governmentjobs.com'
+        ? 1500
+        : 800;
+    await sleep(waitMs);
 
     const result = await scrapeViaInjection(tab.id);
     console.log('[JobBeagle] scrape result:', JSON.stringify(result?._debug || result));
@@ -99,6 +112,8 @@ chrome.action.onClicked.addListener(async (tab) => {
         pageUrl: result.pageUrl,
         rawText: result.rawText,
         jobId: result.jobId,
+        jobTitle: result.jobTitle || undefined,
+        companyName: result.companyName || undefined,
       }),
     });
 

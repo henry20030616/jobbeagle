@@ -24,10 +24,17 @@ export function decodeExtensionPayload(encoded: string): ExtensionJobPayload {
   return parsed;
 }
 
-const LINKEDIN_NOISE_TITLES = /精選職缺|推薦職缺|符合.*的職缺|jobs?\s*search|linkedin/i;
+const LINKEDIN_NOISE_TITLES =
+  /精選職缺|推薦職缺|符合.*的職缺|jobs?\s*for\s*you|top\s*job\s*picks|jobs?\s*search|linkedin/i;
+
+function isNoisePageTitle(pageTitle: string): boolean {
+  if (!pageTitle) return true;
+  const first = pageTitle.split(/\s*[|\-–]\s*/)[0]?.trim() || pageTitle;
+  return LINKEDIN_NOISE_TITLES.test(first) && !pageTitle.includes(' at ');
+}
 
 function parseTitleParts(pageTitle: string): { job_title: string; company_name: string } | null {
-  if (!pageTitle || LINKEDIN_NOISE_TITLES.test(pageTitle) && !pageTitle.includes(' at ')) {
+  if (!pageTitle || isNoisePageTitle(pageTitle)) {
     return null;
   }
 
@@ -42,7 +49,7 @@ function parseTitleParts(pageTitle: string): { job_title: string; company_name: 
   const pipeParts = pageTitle.split(/\s*\|\s*/).map((p) => p.trim()).filter(Boolean);
   if (pipeParts.length >= 2) {
     const last = pipeParts[pipeParts.length - 1];
-    if (/^linkedin$/i.test(last)) {
+    if (/^(linkedin|indeed|ziprecruiter|glassdoor|governmentjobs\.com)$/i.test(last)) {
       if (pipeParts.length >= 3) {
         return {
           job_title: pipeParts[0],
@@ -60,26 +67,43 @@ function parseTitleParts(pageTitle: string): { job_title: string; company_name: 
   return null;
 }
 
-/** Parse extension payload into pre-flight job data */
+/** Parse extension payload into confirm-page job data */
 export function payloadToPreFlightData(
   payload: ExtensionJobPayload,
 ): PreFlightJobData {
   const { pageTitle, pageUrl, rawText, jobId } = payload;
 
   let company_name = 'Unknown Company';
-  let job_title = pageTitle || 'Unknown Role';
+  let job_title = 'Unknown Role';
+
+  // Prefer structured scrape fields
+  if (payload.jobTitle?.trim() && !isNoisePageTitle(payload.jobTitle)) {
+    job_title = payload.jobTitle.trim();
+  }
+  if (payload.companyName?.trim() && !isNoisePageTitle(payload.companyName)) {
+    company_name = payload.companyName.trim();
+  }
 
   const fromTitle = parseTitleParts(pageTitle);
   if (fromTitle) {
-    job_title = fromTitle.job_title;
-    company_name = fromTitle.company_name;
+    if (job_title === 'Unknown Role') job_title = fromTitle.job_title;
+    if (company_name === 'Unknown Company') company_name = fromTitle.company_name;
   }
 
-  const companyMatch = rawText.match(/(?:Company|公司|雇主)[：:]\s*(.+)/i);
-  if (companyMatch) company_name = companyMatch[1].trim().split('\n')[0];
+  const companyMatch = rawText.match(/(?:Company|公司|雇主|Agency|Department)[：:]\s*(.+)/i);
+  if (companyMatch && (company_name === 'Unknown Company' || !payload.companyName)) {
+    company_name = companyMatch[1].trim().split('\n')[0];
+  }
 
   const titleMatch = rawText.match(/(?:職位|职位|Position|Title|職缺)[：:]\s*(.+)/i);
-  if (titleMatch) job_title = titleMatch[1].trim().split('\n')[0];
+  if (titleMatch && (job_title === 'Unknown Role' || !payload.jobTitle)) {
+    job_title = titleMatch[1].trim().split('\n')[0];
+  }
+
+  // Never surface LinkedIn list-page titles as the role
+  if (isNoisePageTitle(job_title) || job_title === pageTitle && isNoisePageTitle(pageTitle)) {
+    job_title = 'Unknown Role';
+  }
 
   return {
     company_name,
@@ -90,7 +114,7 @@ export function payloadToPreFlightData(
   };
 }
 
-/** Client-safe pre-flight decode from URL query param */
+/** Client-safe confirm-page decode from URL query param */
 export function decodePayloadParamForPreFlight(encoded: string): PreFlightJobData | null {
   try {
     const payload = decodeExtensionPayload(encoded);

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "JobBeagle - Headhunter-Level Job Triage",
-  "version": "1.2.1",
-  "description": "Capture jobs from LinkedIn, Indeed, ZipRecruiter, Glassdoor for AI triage.",
+  "version": "1.3.0",
+  "description": "Capture jobs from LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs for AI triage.",
   "permissions": ["activeTab", "scripting", "tabs"],
   "action": {
     "default_title": "Analyze with JobBeagle",
@@ -24,6 +24,10 @@
     "https://www.ziprecruiter.com/*",
     "https://*.glassdoor.com/*",
     "https://www.glassdoor.com/*",
+    "https://*.governmentjobs.com/*",
+    "https://www.governmentjobs.com/*",
+    "https://*.schooljobs.com/*",
+    "https://www.schooljobs.com/*",
     "https://*.104.com.tw/*",
     "https://www.jobbeagle.com/*",
     "http://localhost:3000/*"
