@@ -98,10 +98,18 @@ export async function fulfillOrder(
     // no-op beyond credits above for new plans
   }
   if (planType === 'basic_overage') {
-    await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 1 }).catch(() => {});
+    try {
+      await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 1 });
+    } catch {
+      /* legacy RPC may be absent */
+    }
   }
   if (planType === 'monthly_subscription') {
-    await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 30 }).catch(() => {});
+    try {
+      await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 30 });
+    } catch {
+      /* legacy RPC may be absent */
+    }
   }
 }
 

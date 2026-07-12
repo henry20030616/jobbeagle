@@ -1,3 +1,5 @@
+import type { ReportType as ReportTypeCode } from '@/constants/report-products';
+
 export interface BasicAnalysis {
   job_title: string;
   company_overview: string;
@@ -136,6 +138,7 @@ export interface UserInputs {
 export type { ReportType } from '@/constants/report-products';
 export { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 
+type ReportType = ReportTypeCode;
 export type MembershipTier = 'free' | 'standard_sub' | 'advanced_sub';
 
 export type FlsaStatus =

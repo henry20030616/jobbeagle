@@ -1,21 +1,19 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-/** Legacy URL — redirects to /confirm (canonical). */
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-export default function LegacyPreFlightRedirect() {
-  const router = useRouter();
-  const params = useSearchParams();
-
-  useEffect(() => {
-    const q = params.toString();
-    router.replace(q ? `/confirm?${q}` : '/confirm');
-  }, [router, params]);
-
-  return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400 text-sm">
-      Redirecting to Confirm Job & Resume…
-    </div>
-  );
+/** Legacy URL — server redirect to /confirm (canonical). */
+export default async function LegacyPreFlightRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const q = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === 'string') q.set(key, value);
+    else if (Array.isArray(value)) {
+      for (const item of value) q.append(key, item);
+    }
+  }
+  const qs = q.toString();
+  redirect(qs ? `/confirm?${qs}` : '/confirm');
 }

@@ -115,7 +115,7 @@ const copy: Record<AppLanguage, Copy> = {
     flsa: 'FLSA Classification',
     upgradeTitle: 'Need live Blind / Glassdoor intel?',
     upgradeDesc:
-    upgradeDesc: 'Job Fit Snapshot uses JD + resume only. Interview Strategy Guide adds live web intel, culture blackbox, and a STAR interview bank.',
+      'Job Fit Snapshot uses JD + resume only. Interview Strategy Guide adds live web intel, culture blackbox, and a STAR interview bank.',
     upgradeBtn: 'Upgrade to Interview Strategy Guide · $9.99',
     liteBadge: 'Job Fit Snapshot',
     met: 'Met',
