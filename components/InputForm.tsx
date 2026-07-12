@@ -474,13 +474,13 @@ const InputForm: React.FC<InputFormProps> = ({
               <Sparkles className="w-64 h-64 text-indigo-500" />
            </div>
 
-           <div className="p-5 sm:p-6 relative">
-               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-3">
+           <div className="relative">
+               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center px-4 sm:px-5 pt-4 sm:pt-5 mb-0">
                   <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></span>
                   {t.reportOutput}
                </h2>
                
-               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-1 sm:gap-2">
+               <div className="grid grid-cols-1 lg:grid-cols-4 lg:divide-x divide-slate-700/80 border-t border-slate-700/60">
                   {([
                     { id: 'match', icon: Zap, iconBg: 'bg-yellow-500/20', iconColor: 'text-yellow-400', title: t.matchAnalysis, desc: t.matchAnalysisDesc },
                     { id: 'salary', icon: Briefcase, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: t.salaryResearch, desc: t.salaryResearchDesc },
@@ -501,16 +501,16 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => {
                           setExpandedFeature(open ? null : item.id);
                         }}
-                        className="w-full text-left flex items-start gap-3 p-3 rounded-xl hover:bg-slate-700/30 transition-colors"
+                        className="w-full text-left flex items-start gap-3 p-4 sm:p-5 hover:bg-slate-700/30 transition-colors border-b lg:border-b-0 border-slate-700/60 last:border-b-0"
                       >
                         <div className={`${item.iconBg} p-2 rounded-lg shrink-0`}>
                           <Icon className={`w-5 h-5 ${item.iconColor}`} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-sm font-bold text-slate-200">{item.title}</span>
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-sm font-bold text-slate-200 leading-snug">{item.title}</span>
                             <ChevronDown
-                              className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                              className={`w-4 h-4 text-slate-500 shrink-0 mt-0.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                               aria-hidden
                             />
                           </div>
