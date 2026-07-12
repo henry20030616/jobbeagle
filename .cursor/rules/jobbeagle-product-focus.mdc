@@ -17,7 +17,7 @@ alwaysApply: true
 
 ## Product focus (do / don't)
 - **DO** invest in: extension → `/confirm` → analyze → Job Fit Snapshot / Interview Strategy Guide → paywall/checkout.
-- **Shorts / employer video:** enabled by default (`NEXT_PUBLIC_SHORTS_ENABLED=false` to freeze).
+- **Shorts / employer video:** routes enabled by default (`NEXT_PUBLIC_SHORTS_ENABLED=false` to freeze). Homepage **"Explore Job Shorts" banner is temporarily hidden** via `isHomepageShortsBannerEnabled()` — when doing detailed Shorts work, **remind user / re-enable** that banner.
 - **Stripe:** removed from code; do not reintroduce.
 
 ## Conversion UX

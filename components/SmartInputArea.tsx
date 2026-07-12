@@ -56,17 +56,17 @@ export default function SmartInputArea({
           : 'border-slate-600 focus:ring-indigo-500/40';
 
   return (
-    <div className="space-y-0">
-      <div className="relative">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center text-base font-medium text-slate-300">
+    <div className={compact ? 'flex flex-col h-full min-h-0 gap-2' : 'space-y-0'}>
+      <div className={`relative ${compact ? 'flex flex-col flex-1 min-h-0' : ''}`}>
+        <div className={`${compact ? 'mb-1.5' : 'mb-3'} flex items-center justify-between gap-2`}>
+          <div className={`flex items-center ${compact ? 'text-xs' : 'text-base'} font-medium text-slate-300`}>
             {classification.kind === 'public_ats' ? (
-              <CheckCircle2 className="w-5 h-5 mr-2 text-emerald-400" />
+              <CheckCircle2 className={`${compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} mr-1.5 text-emerald-400`} />
             ) : classification.kind === 'blocked_board' ||
               classification.kind === 'other_url' ? (
-              <Globe className="w-5 h-5 mr-2 text-blue-400" />
+              <Globe className={`${compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} mr-1.5 text-blue-400`} />
             ) : (
-              <FileText className="w-5 h-5 mr-2 text-indigo-400" />
+              <FileText className={`${compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} mr-1.5 text-indigo-400`} />
             )}
             <span>{zh ? '職缺內容' : 'Job posting'}</span>
           </div>
@@ -81,6 +81,17 @@ export default function SmartInputArea({
 
         {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}
         {classification.kind !== 'blocked_board' && (
+          compact ? (
+            <p className="mb-2 flex items-center gap-1 text-[11px] text-slate-400 truncate">
+              <Puzzle className="w-3 h-3 text-indigo-400 shrink-0" />
+              <Link
+                href="/extension"
+                className="font-semibold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 truncate"
+              >
+                {zh ? '外掛一鍵抓取 →' : 'Get the extension →'}
+              </Link>
+            </p>
+          ) : (
           <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-slate-400">
             <Puzzle className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
             <span>
@@ -95,12 +106,13 @@ export default function SmartInputArea({
               {zh ? '獲取官方外掛 →' : 'Get the extension →'}
             </Link>
           </p>
+          )
         )}
 
         <textarea
           required
           disabled={disabled || parsing}
-          className={`w-full ${compact ? 'min-h-[140px]' : 'min-h-[200px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 text-sm' : 'p-5 text-base'} text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+          className={`w-full ${compact ? 'flex-1 min-h-[180px]' : 'min-h-[200px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 text-sm' : 'p-5 text-base'} text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN}
           value={value}
           onChange={(e) => onChange(e.target.value)}

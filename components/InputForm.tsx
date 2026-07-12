@@ -532,13 +532,14 @@ const InputForm: React.FC<InputFormProps> = ({
         </div>
 
         <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 lg:divide-x divide-slate-700/80">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:divide-x divide-slate-700/80 lg:items-stretch">
             {/* 1. Job */}
-            <div className="lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 border-b lg:border-b-0 border-slate-700/80">
-              <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3">
+            <div className="lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 border-slate-700/80">
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
                 <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
+              <div className="flex-1 flex flex-col min-h-[200px]">
               <SmartInputArea
                 value={jobDescription}
                 onChange={(next) => {
@@ -563,11 +564,12 @@ const InputForm: React.FC<InputFormProps> = ({
                   if (err) setJdError(err);
                 }}
               />
+              </div>
             </div>
 
             {/* 2. Resume */}
-            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 border-b lg:border-b-0 border-slate-700/80">
-              <div className="flex justify-between items-center gap-2 mb-3">
+            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 border-slate-700/80">
+              <div className="flex justify-between items-center gap-2 mb-3 min-h-[2.75rem]">
                 <h2 className="text-base sm:text-lg font-bold text-white flex items-center min-w-0">
                   <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3 shrink-0" />
                   <span className="whitespace-nowrap">{t.resume}</span>
@@ -611,12 +613,12 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col justify-center">
+              <div className="flex-1 flex flex-col min-h-[200px]">
                 {!resume ? (
-                  <div className="w-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative min-h-[120px]">
+                  <div className="w-full flex-1 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
                       htmlFor="resume-file-input"
-                      className="flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-700/30 w-full px-3 py-4 rounded-xl group relative z-10"
+                      className="flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-700/30 w-full h-full px-3 py-4 rounded-xl group relative z-10"
                     >
                       <div className="p-2 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
                         <Upload className="w-5 h-5 text-slate-400 group-hover:text-indigo-400" />
@@ -637,7 +639,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                   </div>
                 ) : (
-                  <div className="w-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col gap-2 p-3 animate-fade-in">
+                  <div className="w-full flex-1 bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col justify-center gap-2 p-3 animate-fade-in">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0"><FileText className="w-4 h-4 text-white" /></div>
                       <div className="min-w-0 text-left">
@@ -665,14 +667,14 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 3. Report type */}
-            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 border-b lg:border-b-0 border-slate-700/80">
+            <div className="lg:col-span-3 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 border-slate-700/80">
               {onReportTypeChange ? (
                 <>
-                  <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3">
+                  <h2 className="text-base sm:text-lg font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
                     <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3 shrink-0" />
                     <span className="leading-snug">{t.reportTypeStep}</span>
                   </h2>
-                  <div className="flex flex-col gap-2 flex-1">
+                  <div className="flex flex-col gap-2 flex-1 min-h-[200px]">
                     <button
                       type="button"
                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
@@ -707,7 +709,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* Launch */}
-            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col justify-stretch">
+            <div className="lg:col-span-2 p-4 sm:p-5 flex flex-col min-h-0">
               {(() => {
                 const blocked = jobInputKind.kind === 'blocked_board';
                 const publicAts = jobInputKind.kind === 'public_ats';

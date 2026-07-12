@@ -21,7 +21,7 @@ import { normalizeLiteReport, isLiteReport, isFullReport, normalizeFullReport } 
 import CreditsBadge from '@/components/CreditsBadge';
 import ReferralCard from '@/components/ReferralCard';
 import type { UserProfile } from '@/types';
-import { isShortsEnabled } from '@/constants/features';
+import { isShortsEnabled, isHomepageShortsBannerEnabled } from '@/constants/features';
 
 interface ReportSummary {
   id: string;
@@ -435,7 +435,7 @@ export default function Home() {
           </div>
         </div>
 
-        {isShortsEnabled() && !report && !liteReport && !fullReport && (
+        {isHomepageShortsBannerEnabled() && isShortsEnabled() && !report && !liteReport && !fullReport && (
           <Link
             href="/shorts"
             className="mb-8 flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
@@ -597,12 +597,6 @@ export default function Home() {
 
         {!report && !liteReport && !fullReport ? (
           <div className="max-w-6xl mx-auto">
-            {currentUser && userProfile && (
-              <div className="mb-6 space-y-3">
-                <CreditsBadge profile={userProfile} language={language} />
-                <ReferralCard referralCode={userProfile.referral_code} language={language} />
-              </div>
-            )}
             <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
@@ -612,6 +606,12 @@ export default function Home() {
               reportType={reportType}
               onReportTypeChange={setReportType}
             />
+            {currentUser && userProfile && (
+              <div className="mt-6 mb-2 space-y-3">
+                <CreditsBadge profile={userProfile} language={language} />
+                <ReferralCard referralCode={userProfile.referral_code} language={language} />
+              </div>
+            )}
             <FooterSection language={language} />
           </div>
         ) : (
