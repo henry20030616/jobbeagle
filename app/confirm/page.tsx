@@ -402,7 +402,7 @@ export default function PreFlightPage() {
         <div className="space-y-3">
           <h2 className="text-lg font-bold text-white flex items-center">
             <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3" />
-            2. Your Resume
+            2. My Resume
           </h2>
           <ResumeInputPanel
             value={resume}
