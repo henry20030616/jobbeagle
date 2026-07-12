@@ -508,7 +508,14 @@ const InputForm: React.FC<InputFormProps> = ({
                         key={item.id}
                         type="button"
                         aria-expanded={open}
-                        onClick={() => setExpandedFeature(open ? null : item.id)}
+                        onMouseEnter={() => setExpandedFeature(item.id)}
+                        onMouseLeave={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
+                        onFocus={() => setExpandedFeature(item.id)}
+                        onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
+                        onClick={() => {
+                          // Touch / keyboard fallback when hover is unavailable
+                          setExpandedFeature(open ? null : item.id);
+                        }}
                         className="w-full text-left flex items-start gap-3 p-3 rounded-xl hover:bg-slate-700/30 transition-colors"
                       >
                         <div className={`${item.iconBg} p-2 rounded-lg shrink-0`}>
