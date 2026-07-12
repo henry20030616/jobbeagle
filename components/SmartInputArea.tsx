@@ -67,16 +67,23 @@ export default function SmartInputArea({
           </div>
         )}
 
-        {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}        {classification.kind !== 'blocked_board' && (
+        {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}
+        {classification.kind !== 'blocked_board' && (
           compact ? (
-            <p className="mb-2 flex items-center gap-1 text-[11px] text-slate-400 truncate">
-              <Puzzle className="w-3 h-3 text-indigo-400 shrink-0" />
-              <Link
-                href="/extension"
-                className="font-semibold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 truncate"
-              >
-                {zh ? '外掛一鍵抓取 →' : 'Get the extension →'}
-              </Link>
+            <p className="mb-2 flex items-start gap-1.5 text-[11px] text-slate-400 leading-snug">
+              <Puzzle className="w-3 h-3 text-indigo-400 shrink-0 mt-0.5" />
+              <span>
+                {zh
+                  ? '職缺頁可一鍵抓 JD，免手動貼上。'
+                  : 'On a job page? Grab the JD in one click — no paste.'}
+                {' '}
+                <Link
+                  href="/extension"
+                  className="font-semibold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 whitespace-nowrap"
+                >
+                  {zh ? '安裝 Chrome 外掛 →' : 'Install Chrome extension →'}
+                </Link>
+              </span>
             </p>
           ) : (
           <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-slate-400">
@@ -84,13 +91,13 @@ export default function SmartInputArea({
             <span>
               {zh
                 ? 'LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs 職缺頁？用外掛一鍵抓取更方便。'
-                : 'On LinkedIn, Indeed, ZipRecruiter, Glassdoor, or GovernmentJobs? Capture in one click with the extension.'}
+                : 'On LinkedIn, Indeed, ZipRecruiter, Glassdoor, or GovernmentJobs? Capture the JD in one click with the Chrome extension.'}
             </span>
             <Link
               href="/extension"
               className="font-semibold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 decoration-indigo-500/40 hover:decoration-indigo-300 transition-colors"
             >
-              {zh ? '獲取官方外掛 →' : 'Get the extension →'}
+              {zh ? '安裝外掛 →' : 'Install extension →'}
             </Link>
           </p>
           )
