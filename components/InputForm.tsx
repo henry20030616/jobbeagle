@@ -522,43 +522,6 @@ const InputForm: React.FC<InputFormProps> = ({
         </div>
 
         <div className="rounded-2xl border-2 border-indigo-500/35 bg-gradient-to-b from-indigo-950/70 via-slate-950 to-slate-950 shadow-2xl shadow-indigo-950/40 overflow-hidden">
-          {/* Flow legend: makes 1 → 2 → 3 → Launch order obvious */}
-          <div
-            className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 px-3 py-2.5 border-b border-indigo-500/25 bg-indigo-950/50 text-xs font-bold tracking-wide"
-            aria-label={
-              currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
-                ? '分析步驟順序'
-                : 'Analysis step order'
-            }
-          >
-            {(currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
-              ? [
-                  { n: '1', label: '職缺', color: 'text-indigo-300' },
-                  { n: '2', label: '履歷', color: 'text-violet-300' },
-                  { n: '3', label: '報告', color: 'text-emerald-300' },
-                  { n: '4', label: '啟動', color: 'text-white' },
-                ]
-              : [
-                  { n: '1', label: 'Job', color: 'text-indigo-300' },
-                  { n: '2', label: 'Resume', color: 'text-violet-300' },
-                  { n: '3', label: 'Report', color: 'text-emerald-300' },
-                  { n: '4', label: 'Launch', color: 'text-white' },
-                ]
-            ).map((step, i, arr) => (
-              <React.Fragment key={step.label}>
-                <span className={`inline-flex items-center gap-1 ${step.color}`}>
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900/80 border border-white/15 text-[10px] font-black text-white">
-                    {step.n}
-                  </span>
-                  {step.label}
-                </span>
-                {i < arr.length - 1 && (
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" aria-hidden />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
             <div className="relative lg:col-span-4 p-4 sm:p-5 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-indigo-500/15">
