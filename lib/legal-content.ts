@@ -172,7 +172,7 @@ const TERMS_EN: LegalDocument = {
     {
       title: 'Service Description',
       paragraphs: [
-        'JobBeagle provides AI-powered job triage and analysis (Lite Snapshot and Full Intel), optional Pre-Flight review after Chrome extension capture, and paid credit plans.',
+        'JobBeagle provides AI-powered job triage and analysis (Job Fit Snapshot and Interview Strategy Guide), optional confirm-job review after Chrome extension capture, and paid credit plans.',
         'We may update, suspend, or discontinue features at any time.',
       ],
     },

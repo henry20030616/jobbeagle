@@ -15,7 +15,7 @@ export default function FullReportDashboard({ report, embedded = false }: FullRe
       <div className="border-b border-white/10 px-6 py-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold flex items-center gap-2 text-white">
           <Globe className="w-5 h-5 text-violet-400" />
-          Full Intel Report
+          Interview Strategy Guide
         </h2>
         <span className="text-xs font-semibold text-violet-300 bg-violet-500/15 border border-violet-500/30 px-2.5 py-1 rounded-full shrink-0">
           Blind · Glassdoor · Reddit

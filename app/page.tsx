@@ -609,11 +609,11 @@ export default function Home() {
                       : 'border-slate-700 bg-slate-800/60 hover:bg-slate-800'
                   }`}
                 >
-                  <p className="font-semibold text-white text-sm">Lite Snapshot</p>
+                  <p className="font-semibold text-white text-sm">Job Fit Snapshot</p>
                   <p className="text-xs text-slate-400 mt-1">
                     {language === 'zh-TW' || language === 'zh-CN'
-                      ? '無聯網 · 匹配分數 · Radford 薪酬'
-                      : 'No web search · Match score · Radford comp'}
+                      ? '無聯網 · 匹配分數 · 薪酬定位'
+                      : 'No web search · Match score · Comp positioning'}
                   </p>
                 </button>
                 <button
@@ -626,7 +626,7 @@ export default function Home() {
                   }`}
                 >
                   <p className="font-semibold text-white text-sm flex items-center gap-1">
-                    Full Intel <Sparkles className="w-4 h-4 text-violet-400" />
+                    Interview Strategy Guide <Sparkles className="w-4 h-4 text-violet-400" />
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
                     {language === 'zh-TW' || language === 'zh-CN'

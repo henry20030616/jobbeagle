@@ -13,12 +13,12 @@ interface CreditsBadgeProps {
 }
 
 const copy: Record<AppLanguage, { lite: string; full: string; tier: string; freeNote: string }> = {
-  'zh-TW': { lite: 'Lite', full: 'Full', tier: '訂閱', freeNote: `免費 · 終生 ${FREE_LIFETIME_LITE_CREDITS} 次` },
-  'zh-CN': { lite: 'Lite', full: 'Full', tier: '订阅', freeNote: `免费 · 终生 ${FREE_LIFETIME_LITE_CREDITS} 次` },
-  en: { lite: 'Lite', full: 'Full', tier: 'Plan', freeNote: `Free · ${FREE_LIFETIME_LITE_CREDITS} lifetime` },
-  es: { lite: 'Lite', full: 'Full', tier: 'Plan', freeNote: `Gratis · ${FREE_LIFETIME_LITE_CREDITS} de por vida` },
-  hi: { lite: 'Lite', full: 'Full', tier: 'Plan', freeNote: `मुफ़्त · जीवनभर ${FREE_LIFETIME_LITE_CREDITS}` },
-  ar: { lite: 'Lite', full: 'Full', tier: 'Plan', freeNote: `مجاني · ${FREE_LIFETIME_LITE_CREDITS} مدى الحياة` },
+  'zh-TW': { lite: 'Snapshot', full: 'Strategy', tier: '訂閱', freeNote: `免費 · 終生 ${FREE_LIFETIME_LITE_CREDITS} 次` },
+  'zh-CN': { lite: 'Snapshot', full: 'Strategy', tier: '订阅', freeNote: `免费 · 终生 ${FREE_LIFETIME_LITE_CREDITS} 次` },
+  en: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `Free · ${FREE_LIFETIME_LITE_CREDITS} lifetime` },
+  es: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `Gratis · ${FREE_LIFETIME_LITE_CREDITS} de por vida` },
+  hi: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `मुफ़्त · जीवनभर ${FREE_LIFETIME_LITE_CREDITS}` },
+  ar: { lite: 'Snapshot', full: 'Strategy', tier: 'Plan', freeNote: `مجاني · ${FREE_LIFETIME_LITE_CREDITS} مدى الحياة` },
 };
 
 export default function CreditsBadge({ profile, language = 'en', className = '' }: CreditsBadgeProps) {

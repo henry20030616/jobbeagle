@@ -17,6 +17,12 @@ import FullReportDashboard from '@/components/FullReportDashboard';
 import DogLoading from '@/components/DogLoading';
 import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
+import ResumeInputPanel from '@/components/ResumeInputPanel';
+import {
+  CONFIRM_PAGE_LABELS,
+  reportProductBlurb,
+  reportProductLabel,
+} from '@/constants/product-labels';
 import {
   Rocket,
   Building2,
@@ -70,7 +76,7 @@ export default function PreFlightPage() {
   const [jobData, setJobData] = useState<JobDisplayData | null>(null);
   const [handoffSid, setHandoffSid] = useState<string | null>(null);
   const [loadingJob, setLoadingJob] = useState(false);
-  const [resumeText, setResumeText] = useState('');
+  const [resume, setResume] = useState<ResumeInput | null>(null);
   const [reportType, setReportType] = useState<ReportType>('lite');
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -165,12 +171,12 @@ export default function PreFlightPage() {
       setError('Please sign in with Google to launch analysis.');
       return;
     }
-    if (!jobData && !resumeText) {
+    if (!jobData) {
       setError('Missing job data. Use the Chrome extension or paste a JD on the homepage.');
       return;
     }
-    if (!resumeText.trim()) {
-      setError('Please paste your resume before launching.');
+    if (!resume || (!(resume.content || '').trim() && resume.type !== 'file')) {
+      setError('Please upload or paste your resume before launching.');
       return;
     }
 
@@ -181,7 +187,6 @@ export default function PreFlightPage() {
 
     try {
       const fingerprint = await getDeviceFingerprint();
-      const resume: ResumeInput = { type: 'text', content: resumeText };
 
       const body: Record<string, unknown> = {
         report_type: reportType,
@@ -267,10 +272,11 @@ export default function PreFlightPage() {
 
       <main className={`max-w-3xl mx-auto px-4 space-y-8 ${embedded ? 'py-6' : 'py-10'}`}>
         <div>
-          <h1 className={`font-bold mb-2 ${embedded ? 'text-xl' : 'text-2xl'}`}>Pre-Flight Check</h1>
+          <h1 className={`font-bold mb-2 ${embedded ? 'text-xl' : 'text-2xl'}`}>
+            {CONFIRM_PAGE_LABELS.title.en}
+          </h1>
           <p className="text-slate-400 text-sm">
-            Confirm scraped job data and resume before launching. You are responsible for
-            data accuracy before credits are consumed.
+            {CONFIRM_PAGE_LABELS.subtitle.en}
           </p>
           {embedded && (
             <p className="text-xs text-indigo-300/80 mt-2">Opened in Chrome Side Panel — you can stay on LinkedIn.</p>
@@ -337,19 +343,13 @@ export default function PreFlightPage() {
           </div>
         </div>
 
-        {/* Resume */}
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            Resume (paste text)
-          </label>
-          <textarea
-            value={resumeText}
-            onChange={(e) => setResumeText(e.target.value)}
-            rows={8}
-            placeholder="Paste your resume here..."
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-          />
-        </div>
+        {/* Resume — same capabilities as homepage */}
+        <ResumeInputPanel
+          value={resume}
+          onChange={setResume}
+          language="en"
+          libraryLimit={3}
+        />
 
         {/* Report type */}
         <div className="flex gap-3">
@@ -362,8 +362,8 @@ export default function PreFlightPage() {
                 : 'border-white/10 bg-white/5 hover:bg-white/10'
             }`}
           >
-            <p className="font-semibold">Lite Snapshot</p>
-            <p className="text-xs text-slate-400 mt-1">No web search · 3s TTV · Match score + Radford comp</p>
+            <p className="font-semibold">{reportProductLabel('lite')}</p>
+            <p className="text-xs text-slate-400 mt-1">{reportProductBlurb('lite')}</p>
           </button>
           <button
             type="button"
@@ -375,19 +375,20 @@ export default function PreFlightPage() {
             }`}
           >
             <p className="font-semibold flex items-center gap-1">
-              Full Intel <Sparkles className="w-4 h-4 text-violet-400" />
+              {reportProductLabel('full')} <Sparkles className="w-4 h-4 text-violet-400" />
             </p>
-            <p className="text-xs text-slate-400 mt-1">Live Blind/Glassdoor · 10 STAR Qs · Negotiation script</p>
+            <p className="text-xs text-slate-400 mt-1">{reportProductBlurb('full')}</p>
           </button>
         </div>
 
         {/* Credits */}
         {profile && (
           <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm space-y-1">
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-3 flex-wrap">
               <span className="text-slate-400">Your credits</span>
               <span>
-                Lite: <strong>{profile.available_lite_credits}</strong> · Full:{' '}
+                {reportProductLabel('lite')}: <strong>{profile.available_lite_credits}</strong> ·{' '}
+                {reportProductLabel('full')}:{' '}
                 <strong>{profile.available_full_credits}</strong>
                 {profile.membership_tier !== 'free' && (
                   <span className="ml-2 text-emerald-400 capitalize">({profile.membership_tier.replace('_', ' ')})</span>
@@ -396,7 +397,7 @@ export default function PreFlightPage() {
             </div>
             {profile.membership_tier === 'free' && (
               <p className="text-xs text-slate-500">
-                免費帳號終生固定 {FREE_LIFETIME_LITE_CREDITS} 次 Lite；用完需付費，按月/按日皆不重置。
+                Free accounts include {FREE_LIFETIME_LITE_CREDITS} lifetime {reportProductLabel('lite')} credits; they do not reset monthly.
               </p>
             )}
           </div>
@@ -404,7 +405,7 @@ export default function PreFlightPage() {
 
         {creditsExhausted && user && (
           <QuotaPaywallCard
-            language="zh-TW"
+            language="en"
             isLoggedIn
             onDismiss={() => {}}
           />
@@ -413,23 +414,25 @@ export default function PreFlightPage() {
         <button
           type="button"
           onClick={handleLaunch}
-          disabled={!resumeText.trim() || creditsExhausted || jdTooShort || !jobData}
+          disabled={!resume || creditsExhausted || jdTooShort || !jobData}
           className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 py-4 font-semibold transition"
         >
           <Rocket className="w-5 h-5" />
-          {creditsExhausted ? '額度已用完 — 請付費解鎖' : 'Launch AI Analysis'}
+          {creditsExhausted ? 'Out of credits — unlock to continue' : 'Launch AI Analysis'}
           <ChevronRight className="w-5 h-5" />
         </button>
 
         {!creditsExhausted && (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
           <p className="text-sm font-medium text-slate-300">Need more credits?</p>
-          <p className="text-xs text-slate-500">免費為終生 {FREE_LIFETIME_LITE_CREDITS} 次 Lite；下方為付費加購。</p>
+          <p className="text-xs text-slate-500">
+            Free accounts include {FREE_LIFETIME_LITE_CREDITS} lifetime Job Fit Snapshot credits. Buy more below.
+          </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {(
               [
-                ['single_lite', 'Single Lite · $3'],
-                ['single_full', 'Single Full · $9.99'],
+                ['single_lite', 'Job Fit Snapshot · $3'],
+                ['single_full', 'Interview Strategy Guide · $9.99'],
                 ['standard_subscription', 'Standard · $19.99/mo'],
                 ['advanced_subscription', 'Advanced · $39.99/mo'],
               ] as [CheckoutPlanType, string][]
