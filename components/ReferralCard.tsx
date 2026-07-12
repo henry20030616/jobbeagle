@@ -86,7 +86,7 @@ export default function ReferralCard({ referralCode, language = 'en', compact = 
 
   return (
     <div
-      className="rounded-xl border border-indigo-500/30 bg-indigo-950/40 p-4 group/referral"
+      className="rounded-xl border border-slate-700 bg-slate-800/80 p-4 group/referral"
       onMouseEnter={() => setDescOpen(true)}
       onMouseLeave={() => setDescOpen(false)}
       onFocus={() => setDescOpen(true)}
