@@ -53,3 +53,29 @@ if (!res.ok) {
 
 const count = res.headers.get('content-range')?.split('/')[1] ?? '?';
 console.log('profiles table OK — row count:', count);
+
+// Entitlement lock (migration 011): anon must not EXECUTE increment_profile_credits
+const anon = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+if (anon) {
+  const rpc = await fetch(`${url}/rest/v1/rpc/increment_profile_credits`, {
+    method: 'POST',
+    headers: {
+      apikey: anon,
+      Authorization: `Bearer ${anon}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      p_user_id: '00000000-0000-0000-0000-000000000000',
+      p_job_fit_snapshot: 1,
+      p_interview_strategy_guide: 0,
+    }),
+  });
+  // Expect 401/403/404 — never 200 from anon
+  if (rpc.ok) {
+    console.error('SECURITY FAIL: anon can call increment_profile_credits');
+    process.exit(1);
+  }
+  console.log('credit RPC locked from anon OK — status:', rpc.status);
+} else {
+  console.warn('skip anon RPC check (no NEXT_PUBLIC_SUPABASE_ANON_KEY)');
+}
