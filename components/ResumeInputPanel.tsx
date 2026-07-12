@@ -205,7 +205,7 @@ export default function ResumeInputPanel({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <label className="text-sm font-medium text-slate-300">
+        <label className="text-sm font-medium text-slate-300 sr-only">
           {zh ? '履歷（上傳檔案）' : 'Resume (upload file)'}
         </label>
         <div className="relative">

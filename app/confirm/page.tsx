@@ -361,7 +361,12 @@ export default function PreFlightPage() {
           </div>
         )}
 
-        {/* Capsule cards */}
+        {/* 1. Job info */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-white flex items-center">
+            <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3" />
+            1. Job Information
+          </h2>
         <div className="grid gap-4">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex items-start gap-4">
             <Building2 className="w-6 h-6 text-blue-400 shrink-0" />
@@ -390,43 +395,56 @@ export default function PreFlightPage() {
             </div>
           </div>
         </div>
+        </div>
 
-        {/* Resume — same capabilities as homepage */}
-        <ResumeInputPanel
-          value={resume}
-          onChange={setResume}
-          language="en"
-          libraryLimit={RESUME_LIBRARY_LIMIT}
-        />
+        {/* 2. Resume */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-bold text-white flex items-center">
+            <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3" />
+            2. Your Resume
+          </h2>
+          <ResumeInputPanel
+            value={resume}
+            onChange={setResume}
+            language="en"
+            libraryLimit={RESUME_LIBRARY_LIMIT}
+          />
+        </div>
 
-        {/* Report type */}
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-            className={`flex-1 rounded-xl border p-4 text-left transition ${
-              reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                ? 'border-blue-500 bg-blue-500/10'
-                : 'border-white/10 bg-white/5 hover:bg-white/10'
-            }`}
-          >
-            <p className="font-semibold">{reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)}</p>
-            <p className="text-xs text-slate-400 mt-1">{reportBlurb(REPORT_CODES.JOB_FIT_SNAPSHOT)}</p>
-          </button>
-          <button
-            type="button"
-            onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-            className={`flex-1 rounded-xl border p-4 text-left transition ${
-              reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                ? 'border-violet-500 bg-violet-500/10'
-                : 'border-white/10 bg-white/5 hover:bg-white/10'
-            }`}
-          >
-            <p className="font-semibold flex items-center gap-1">
-              {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)} <Sparkles className="w-4 h-4 text-violet-400" />
-            </p>
-            <p className="text-xs text-slate-400 mt-1">{reportBlurb(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}</p>
-          </button>
+        {/* 3. Report type */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-bold text-white flex items-center">
+            <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3" />
+            3. Report type
+          </h2>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+              className={`flex-1 rounded-xl border p-4 text-left transition ${
+                reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                  ? 'border-blue-500 bg-blue-500/10'
+                  : 'border-white/10 bg-white/5 hover:bg-white/10'
+              }`}
+            >
+              <p className="font-semibold">{reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)}</p>
+              <p className="text-xs text-slate-400 mt-1">{reportBlurb(REPORT_CODES.JOB_FIT_SNAPSHOT)}</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+              className={`flex-1 rounded-xl border p-4 text-left transition ${
+                reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                  ? 'border-violet-500 bg-violet-500/10'
+                  : 'border-white/10 bg-white/5 hover:bg-white/10'
+              }`}
+            >
+              <p className="font-semibold flex items-center gap-1">
+                {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)} <Sparkles className="w-4 h-4 text-violet-400" />
+              </p>
+              <p className="text-xs text-slate-400 mt-1">{reportBlurb(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}</p>
+            </button>
+          </div>
         </div>
 
         {/* Credits */}
