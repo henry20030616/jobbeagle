@@ -452,16 +452,13 @@ const InputForm: React.FC<InputFormProps> = ({
     <div className="flex flex-col gap-10">
       <div className="text-center space-y-3 py-4">
         <Link href="/" className="inline-block">
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight flex flex-col md:flex-row items-center justify-center hover:opacity-80 transition-opacity cursor-pointer">
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight flex items-center justify-center hover:opacity-80 transition-opacity cursor-pointer">
             <div className="flex items-center">
               <div className="mr-6">
                  <BeagleIcon className="w-16 h-16 md:w-28 md:h-28 drop-shadow-xl" color="#cbd5e1" spotColor="#5d4037" bellyColor="#94a3b8" />
               </div>
               <span><span className="text-white">Job</span><span className="text-blue-600 dark:text-blue-500">beagle</span></span>
             </div>
-            <span className="text-sm md:text-lg font-medium text-slate-500 mt-2 md:mt-0 md:ml-6 tracking-normal">
-              {t.subtitle}
-            </span>
           </h1>
         </Link>
         <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto font-medium">
