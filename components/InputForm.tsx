@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType } from '@/types';
-import { FileText, Upload, X, Sparkles, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, ScanSearch, BadgeDollarSign, ChartNoAxesCombined, BrainCircuit } from 'lucide-react';
+import { FileText, Upload, X, Sparkles, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, ScanSearch, BadgeDollarSign, ChartNoAxesCombined, BrainCircuit, Puzzle } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
@@ -554,6 +555,24 @@ const InputForm: React.FC<InputFormProps> = ({
                 <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
+              <div className="mb-3 min-h-[2.125rem] flex items-center">
+                <Link
+                  href="/extension"
+                  className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
+                  title={
+                    currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+                      ? '職缺頁可一鍵抓 JD，免手動貼上'
+                      : 'On a job page? Grab the JD in one click — no paste'
+                  }
+                >
+                  <Puzzle className="w-4 h-4 shrink-0" />
+                  <span className="font-bold">
+                    {currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
+                      ? '安裝 Chrome 外掛 →'
+                      : 'Install Chrome extension →'}
+                  </span>
+                </Link>
+              </div>
               <div className="flex-1 flex flex-col min-h-[220px]">
               <SmartInputArea
                 value={jobDescription}
@@ -566,6 +585,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 parsing={isParsingUrl}
                 disabled={isLoading}
                 compact
+                hideExtensionHint
                 onBlurValidate={() => {
                   if (classifyJobInput(jobDescription).kind === 'blocked_board') {
                     setJdError(null);
@@ -593,12 +613,11 @@ const InputForm: React.FC<InputFormProps> = ({
 
             {/* 2. Resume */}
             <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <div className="mb-3 space-y-2">
-                <h2 className="text-lg sm:text-xl font-bold text-white flex items-center min-h-[2.75rem]">
-                  <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
-                  <span className="whitespace-nowrap">{t.resume}</span>
-                </h2>
-                <div className="relative">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
+                <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
+                <span className="whitespace-nowrap">{t.resume}</span>
+              </h2>
+              <div className="relative mb-3 min-h-[2.125rem] flex items-center">
                   <button
                     type="button"
                     onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
@@ -634,7 +653,6 @@ const InputForm: React.FC<InputFormProps> = ({
                       </div>
                     </>
                   )}
-                </div>
               </div>
 
               <div className="flex-1 flex flex-col min-h-[220px]">
@@ -707,11 +725,13 @@ const InputForm: React.FC<InputFormProps> = ({
                     <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                     <span className="leading-snug">{t.reportTypeStep}</span>
                   </h2>
+                  {/* Spacer matches step 1–2 pill row so dashed/content boxes align */}
+                  <div className="mb-3 min-h-[2.125rem]" aria-hidden />
                   <div className="flex flex-col gap-2.5 flex-1 min-h-[220px]">
                     <button
                       type="button"
                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                      className={`flex-1 rounded-xl border-2 px-3.5 py-3.5 text-left transition ${
+                      className={`flex-1 min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -723,7 +743,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     <button
                       type="button"
                       onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                      className={`flex-1 rounded-xl border-2 px-3.5 py-3.5 text-left transition ${
+                      className={`flex-1 min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'

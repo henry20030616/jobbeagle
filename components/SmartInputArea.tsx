@@ -20,6 +20,8 @@ export interface SmartInputAreaProps {
   parsing?: boolean;
   /** Tighter height for horizontal step layouts */
   compact?: boolean;
+  /** When true, hide the extension CTA (parent renders a matching pill) */
+  hideExtensionHint?: boolean;
 }
 
 const PLACEHOLDER_ZH =
@@ -39,6 +41,7 @@ export default function SmartInputArea({
   disabled = false,
   parsing = false,
   compact = false,
+  hideExtensionHint = false,
 }: SmartInputAreaProps) {
   const zh = language === 'zh-TW' || language === 'zh-CN';
   const classification: JobInputClassification = useMemo(
@@ -68,23 +71,19 @@ export default function SmartInputArea({
         )}
 
         {/* Persistent light hint — hidden when blocked-board ErrorStateUI takes over */}
-        {classification.kind !== 'blocked_board' && (
+        {classification.kind !== 'blocked_board' && !hideExtensionHint && (
           compact ? (
-            <p className="mb-2 flex items-start gap-1.5 text-sm text-slate-400 leading-snug">
-              <Puzzle className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-              <span>
-                {zh
-                  ? '職缺頁可一鍵抓 JD，免手動貼上。'
-                  : 'On a job page? Grab the JD in one click — no paste.'}
-                {' '}
-                <Link
-                  href="/extension"
-                  className="font-bold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 whitespace-nowrap"
-                >
+            <div className="mb-3 min-h-[2.125rem] flex items-center">
+              <Link
+                href="/extension"
+                className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
+              >
+                <Puzzle className="w-4 h-4 shrink-0" />
+                <span className="font-bold">
                   {zh ? '安裝 Chrome 外掛 →' : 'Install Chrome extension →'}
-                </Link>
-              </span>
-            </p>
+                </span>
+              </Link>
+            </div>
           ) : (
           <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-base text-slate-400">
             <Puzzle className="w-4 h-4 text-indigo-400 shrink-0" />
@@ -95,7 +94,7 @@ export default function SmartInputArea({
             </span>
             <Link
               href="/extension"
-              className="font-semibold text-indigo-300 hover:text-indigo-200 underline underline-offset-2 decoration-indigo-500/40 hover:decoration-indigo-300 transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
             >
               {zh ? '安裝外掛 →' : 'Install extension →'}
             </Link>
