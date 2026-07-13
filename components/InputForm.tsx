@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { UserInputs, ResumeInput, InterviewReport, ReportType } from '@/types';
-import { FileText, Upload, X, Sparkles, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, ScanSearch, BadgeDollarSign, ChartNoAxesCombined, BrainCircuit, Puzzle } from 'lucide-react';
+import { UserInputs, ResumeInput, InterviewReport, ReportType, UserProfile } from '@/types';
+import { FileText, Upload, X, Sparkles, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, ScanSearch, BadgeDollarSign, ChartNoAxesCombined, BrainCircuit, Puzzle, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -26,6 +26,8 @@ interface InputFormProps {
   initialJobDescription?: string;
   reportType?: ReportType;
   onReportTypeChange?: (type: ReportType) => void;
+  /** When set, credits pill shows remaining Snapshot / Strategy counts */
+  userProfile?: UserProfile | null;
 }
 
 const InputForm: React.FC<InputFormProps> = ({
@@ -36,6 +38,7 @@ const InputForm: React.FC<InputFormProps> = ({
   initialJobDescription,
   reportType = REPORT_CODES.JOB_FIT_SNAPSHOT,
   onReportTypeChange,
+  userProfile = null,
 }) => {
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(language);
   const [jobDescription, setJobDescription] = useState('');
@@ -448,6 +451,26 @@ const InputForm: React.FC<InputFormProps> = ({
 
 
   const t = translations[currentLanguage];
+  const zh = currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN';
+  const snapshotCredits =
+    userProfile?.available_job_fit_snapshot_credits
+    ?? userProfile?.available_lite_credits
+    ?? null;
+  const strategyCredits =
+    userProfile?.available_interview_strategy_guide_credits
+    ?? userProfile?.available_full_credits
+    ?? null;
+  const creditsPillLabel = (() => {
+    if (snapshotCredits == null || strategyCredits == null) {
+      return zh ? '額度與方案 →' : 'Credits & plans →';
+    }
+    if (snapshotCredits <= 0 && strategyCredits <= 0) {
+      return zh ? '加購額度 →' : 'Buy credits →';
+    }
+    return zh
+      ? `額度 · ${snapshotCredits} / ${strategyCredits} →`
+      : `Credits · ${snapshotCredits} / ${strategyCredits} →`;
+  })();
 
   return (
     <div className="flex flex-col gap-10">
@@ -725,8 +748,20 @@ const InputForm: React.FC<InputFormProps> = ({
                     <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                     <span className="leading-snug">{t.reportTypeStep}</span>
                   </h2>
-                  {/* Spacer matches step 1–2 pill row so dashed/content boxes align */}
-                  <div className="mb-3 min-h-[2.125rem]" aria-hidden />
+                  <div className="mb-3 min-h-[2.125rem] flex items-center">
+                    <Link
+                      href="/account"
+                      className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
+                      title={
+                        zh
+                          ? '查看剩餘額度、加購報告或管理帳戶'
+                          : 'View remaining credits, buy reports, or manage your account'
+                      }
+                    >
+                      <CreditCard className="w-4 h-4 shrink-0" />
+                      <span className="font-bold">{creditsPillLabel}</span>
+                    </Link>
+                  </div>
                   <div className="flex flex-col gap-2.5 flex-1 min-h-[220px]">
                     <button
                       type="button"

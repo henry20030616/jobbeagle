@@ -606,6 +606,7 @@ export default function Home() {
               initialJobDescription={extensionJobData || undefined}
               reportType={reportType}
               onReportTypeChange={setReportType}
+              userProfile={userProfile}
             />
             {currentUser && userProfile && (
               <div className="mt-6 mb-2">
