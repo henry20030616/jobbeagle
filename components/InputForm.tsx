@@ -576,7 +576,7 @@ const InputForm: React.FC<InputFormProps> = ({
         <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
-            <div className="relative lg:col-span-4 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-4 p-5 sm:p-6 flex flex-col h-full min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
                 <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
@@ -644,7 +644,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 2. Resume */}
-            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col h-full min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
                 <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
                 <span className="whitespace-nowrap">{t.resume}</span>
@@ -751,9 +751,9 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 3. Report type */}
-            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col h-full min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               {onReportTypeChange ? (
-                <>
+                <div className="flex flex-col flex-1 min-h-0">
                   <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
                     <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                     <span className="leading-snug">{t.reportTypeStep}</span>
@@ -769,11 +769,11 @@ const InputForm: React.FC<InputFormProps> = ({
                       <span className="font-bold leading-snug">{creditsPillLabel}</span>
                     </Link>
                   </div>
-                  <div className="flex flex-col gap-2.5 flex-1 min-h-[220px]">
+                  <div className="grid grid-rows-2 gap-2.5 flex-1 min-h-[220px]">
                     <button
                       type="button"
                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                      className={`flex-1 min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
+                      className={`w-full h-full min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -785,7 +785,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     <button
                       type="button"
                       onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                      className={`flex-1 min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
+                      className={`w-full h-full min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -795,7 +795,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
                     </button>
                   </div>
-                </>
+                </div>
               ) : (
                 <div className="text-sm text-slate-500">—</div>
               )}
