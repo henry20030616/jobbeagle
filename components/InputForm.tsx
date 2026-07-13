@@ -11,7 +11,7 @@ import SmartInputArea from '@/components/SmartInputArea';
 import BrandLogo from '@/components/BrandLogo';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
-import { REPORT_CODES } from '@/constants/report-products';
+import { REPORT_CODES, reportShortLabel } from '@/constants/report-products';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -467,10 +467,13 @@ const InputForm: React.FC<InputFormProps> = ({
     if (snapshotCredits <= 0 && strategyCredits <= 0) {
       return zh ? '加購額度 →' : 'Buy credits →';
     }
-    return zh
-      ? `額度 · ${snapshotCredits} / ${strategyCredits} →`
-      : `Credits · ${snapshotCredits} / ${strategyCredits} →`;
+    const snap = reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage);
+    const strat = reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage);
+    return `${snap} ${snapshotCredits} · ${strat} ${strategyCredits} →`;
   })();
+  const creditsPillTitle = zh
+    ? '剩餘額度：匹配快照 / 面試策略（點此加購或管理帳戶）'
+    : 'Remaining credits: Snapshot / Strategy Guide (buy more or manage account)';
 
   return (
     <div className="flex flex-col gap-10">
@@ -755,15 +758,11 @@ const InputForm: React.FC<InputFormProps> = ({
                   <div className="mb-3 min-h-[2.125rem] flex items-center">
                     <Link
                       href="/account"
-                      className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
-                      title={
-                        zh
-                          ? '查看剩餘額度、加購報告或管理帳戶'
-                          : 'View remaining credits, buy reports, or manage your account'
-                      }
+                      className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all max-w-full"
+                      title={creditsPillTitle}
                     >
                       <CreditCard className="w-4 h-4 shrink-0" />
-                      <span className="font-bold">{creditsPillLabel}</span>
+                      <span className="font-bold leading-snug">{creditsPillLabel}</span>
                     </Link>
                   </div>
                   <div className="flex flex-col gap-2.5 flex-1 min-h-[220px]">
