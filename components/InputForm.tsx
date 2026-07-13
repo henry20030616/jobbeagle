@@ -811,7 +811,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* Launch */}
-            <div className="lg:col-span-2 p-5 sm:p-6 flex flex-col min-h-0 bg-slate-700/30">
+            <div className="lg:col-span-2 p-5 sm:p-6 flex flex-col h-full min-h-0 bg-slate-700/30">
               {(() => {
                 const blocked = jobInputKind.kind === 'blocked_board';
                 const publicAts = jobInputKind.kind === 'public_ats';
