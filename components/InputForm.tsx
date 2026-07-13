@@ -604,7 +604,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   </Link>
                 </div>
               </div>
-              <div className="flex-1 flex flex-col min-h-[220px]">
+              <div className="flex-1 basis-0 min-h-[220px] flex flex-col">
               <SmartInputArea
                 value={jobDescription}
                 onChange={(next) => {
@@ -690,7 +690,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col min-h-[220px]">
+              <div className="flex-1 basis-0 min-h-[220px] flex flex-col">
                 {!resume ? (
                   <div className="w-full flex-1 h-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
@@ -752,56 +752,56 @@ const InputForm: React.FC<InputFormProps> = ({
               </div>
             </div>
 
-            {/* 3. Report type */}
+            {/* 3. Report type — same header/content flex contract as steps 1–2 */}
             <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col h-full min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
+                <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
+                <span className="leading-snug">{t.reportTypeStep}</span>
+              </h2>
+              <div className="mb-3 shrink-0 flex flex-col gap-1.5">
+                <div className="min-h-[1.25rem]" aria-hidden />
+                <div className="min-h-[2.125rem] flex items-center">
+                  {onReportTypeChange ? (
+                    <Link
+                      href="/account"
+                      className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all max-w-full"
+                      title={creditsPillTitle}
+                    >
+                      <CreditCard className="w-4 h-4 shrink-0" />
+                      <span className="font-bold leading-snug">{creditsPillLabel}</span>
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
               {onReportTypeChange ? (
-                <div className="flex flex-col flex-1 min-h-0">
-                  <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
-                    <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
-                    <span className="leading-snug">{t.reportTypeStep}</span>
-                  </h2>
-                  <div className="mb-3 shrink-0 flex flex-col gap-1.5">
-                    <div className="min-h-[1.25rem]" aria-hidden />
-                    <div className="min-h-[2.125rem] flex items-center">
-                      <Link
-                        href="/account"
-                        className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all max-w-full"
-                        title={creditsPillTitle}
-                      >
-                        <CreditCard className="w-4 h-4 shrink-0" />
-                        <span className="font-bold leading-snug">{creditsPillLabel}</span>
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="grid grid-rows-2 gap-2.5 flex-1 min-h-[220px]">
-                    <button
-                      type="button"
-                      onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                      className={`w-full h-full min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
-                        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                          ? 'border-solid border-violet-500 bg-violet-500/10'
-                          : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-                      }`}
-                    >
-                      <p className="font-semibold text-white text-base">Job Fit Snapshot</p>
-                      <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                      className={`w-full h-full min-h-0 rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
-                        reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                          ? 'border-solid border-violet-500 bg-violet-500/10'
-                          : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-                      }`}
-                    >
-                      <p className="font-semibold text-white text-base">Interview Strategy Guide</p>
-                      <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
-                    </button>
-                  </div>
+                <div className="flex-1 basis-0 min-h-[220px] grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                    className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
+                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                        ? 'border-solid border-violet-500 bg-violet-500/10'
+                        : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
+                    }`}
+                  >
+                    <p className="font-semibold text-white text-base">Job Fit Snapshot</p>
+                    <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                    className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
+                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                        ? 'border-solid border-violet-500 bg-violet-500/10'
+                        : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
+                    }`}
+                  >
+                    <p className="font-semibold text-white text-base">Interview Strategy Guide</p>
+                    <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
+                  </button>
                 </div>
               ) : (
-                <div className="text-sm text-slate-500">—</div>
+                <div className="flex-1 basis-0 min-h-[220px] text-sm text-slate-500">—</div>
               )}
               <div
                 className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md"
