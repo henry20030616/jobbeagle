@@ -22,12 +22,14 @@ export interface SmartInputAreaProps {
   compact?: boolean;
   /** When true, hide the extension CTA (parent renders a matching pill) */
   hideExtensionHint?: boolean;
+  /** Overrides default empty-state placeholder */
+  placeholder?: string;
 }
 
 const PLACEHOLDER_ZH =
-  '貼上完整的職缺描述 (JD)，或直接貼上 Greenhouse / Lever 職缺網址，立即獲得 AI 獵頭分析...';
+  '請貼上：公司名稱、職缺名稱，以及完整職缺內文（條件、職責等）。勿只貼職責段落或網址…';
 const PLACEHOLDER_EN =
-  'Paste the full job description (JD), or a Greenhouse / Lever job URL for instant AI triage...';
+  'Paste company name, job title, and the full posting (requirements, responsibilities…). Don’t paste only the body text or a URL…';
 
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
@@ -42,6 +44,7 @@ export default function SmartInputArea({
   parsing = false,
   compact = false,
   hideExtensionHint = false,
+  placeholder,
 }: SmartInputAreaProps) {
   const zh = language === 'zh-TW' || language === 'zh-CN';
   const classification: JobInputClassification = useMemo(
@@ -57,6 +60,8 @@ export default function SmartInputArea({
         : classification.kind === 'other_url'
           ? 'border-blue-500/40 focus:ring-blue-500/30'
           : 'border-slate-600 focus:ring-indigo-500/40';
+
+  const resolvedPlaceholder = placeholder ?? (zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN);
 
   return (
     <div className={compact ? 'flex flex-col h-full min-h-0 gap-2' : 'space-y-0'}>
@@ -106,7 +111,7 @@ export default function SmartInputArea({
           required
           disabled={disabled || parsing}
           className={`w-full ${compact ? 'flex-1 min-h-[200px]' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3.5 text-base' : 'p-5 text-base'} text-slate-200 placeholder-slate-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
-          placeholder={zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN}
+          placeholder={resolvedPlaceholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlurValidate}
