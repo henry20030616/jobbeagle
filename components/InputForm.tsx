@@ -468,8 +468,12 @@ const InputForm: React.FC<InputFormProps> = ({
       return zh ? '加購額度 →' : 'Buy credits →';
     }
     const snap = reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage);
-    const strat = reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage);
-    return `${snap} (${snapshotCredits}) · ${strat} (${strategyCredits}) →`;
+    const strat = zh
+      ? reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)
+      : 'Strategy';
+    return zh
+      ? `額度 · ${snap} (${snapshotCredits}) · ${strat} (${strategyCredits}) →`
+      : `Credits · ${snap} (${snapshotCredits}) · ${strat} (${strategyCredits}) →`;
   })();
   const creditsPillTitle = zh
     ? '剩餘額度：匹配快照 / 面試策略（點此加購或管理帳戶）'
