@@ -469,7 +469,7 @@ const InputForm: React.FC<InputFormProps> = ({
     }
     const snap = reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage);
     const strat = reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage);
-    return `${snap} ${snapshotCredits} · ${strat} ${strategyCredits} →`;
+    return `${snap} (${snapshotCredits}) · ${strat} (${strategyCredits}) →`;
   })();
   const creditsPillTitle = zh
     ? '剩餘額度：匹配快照 / 面試策略（點此加購或管理帳戶）'
