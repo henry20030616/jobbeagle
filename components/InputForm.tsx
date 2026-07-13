@@ -574,15 +574,19 @@ const InputForm: React.FC<InputFormProps> = ({
         </div>
 
         <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
+          {/*
+            Desktop: CSS subgrid shares title / controls / content row heights across cols 1–3
+            so Job Fit Snapshot top aligns with Job + Resume boxes.
+          */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_auto_minmax(220px,1fr)]">
             {/* 1. Job */}
-            <div className="relative lg:col-span-4 p-5 sm:p-6 flex flex-col h-full min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
+            <div className="relative lg:col-span-4 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
-              <div className="mb-3 shrink-0 flex flex-col gap-1.5">
-                <p className="text-sm text-slate-400 leading-snug min-h-[1.25rem] pl-[1.125rem]">
+              <div className="pb-3 flex flex-col gap-1.5 justify-end">
+                <p className="text-sm text-slate-400 leading-snug pl-[1.125rem]">
                   {t.jobStepHint}
                 </p>
                 <div className="min-h-[2.125rem] flex items-center">
@@ -604,54 +608,53 @@ const InputForm: React.FC<InputFormProps> = ({
                   </Link>
                 </div>
               </div>
-              <div className="flex-1 basis-0 min-h-[220px] flex flex-col">
-              <SmartInputArea
-                value={jobDescription}
-                onChange={(next) => {
-                  setJobDescription(next);
-                  if (jdError) setJdError(null);
-                }}
-                language={currentLanguage}
-                error={jdError}
-                parsing={isParsingUrl}
-                disabled={isLoading}
-                compact
-                hideExtensionHint
-                placeholder={t.jobUrlPlaceholder}
-                onBlurValidate={() => {
-                  if (classifyJobInput(jobDescription).kind === 'blocked_board') {
-                    setJdError(null);
-                    return;
-                  }
-                  if (classifyJobInput(jobDescription).kind === 'public_ats') {
-                    setJdError(null);
-                    return;
-                  }
-                  const err = validateJobDescriptionLocal(jobDescription);
-                  if (err) setJdError(err);
-                }}
-              />
+              <div className="min-h-[220px] h-full flex flex-col">
+                <SmartInputArea
+                  value={jobDescription}
+                  onChange={(next) => {
+                    setJobDescription(next);
+                    if (jdError) setJdError(null);
+                  }}
+                  language={currentLanguage}
+                  error={jdError}
+                  parsing={isParsingUrl}
+                  disabled={isLoading}
+                  compact
+                  hideExtensionHint
+                  placeholder={t.jobUrlPlaceholder}
+                  onBlurValidate={() => {
+                    if (classifyJobInput(jobDescription).kind === 'blocked_board') {
+                      setJdError(null);
+                      return;
+                    }
+                    if (classifyJobInput(jobDescription).kind === 'public_ats') {
+                      setJdError(null);
+                      return;
+                    }
+                    const err = validateJobDescriptionLocal(jobDescription);
+                    if (err) setJdError(err);
+                  }}
+                />
               </div>
               <div
-                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md"
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md col-start-1 row-start-1 row-span-3 pointer-events-none"
                 aria-hidden
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </div>
-              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
+              <div className="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-slate-500 col-start-1 row-start-3 pointer-events-none" aria-hidden>
                 <ChevronDown className="w-5 h-5" />
               </div>
             </div>
 
             {/* 2. Resume */}
-            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col h-full min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
                 <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
-              <div className="mb-3 shrink-0 flex flex-col gap-1.5">
-                <div className="min-h-[1.25rem]" aria-hidden />
-                <div className="relative min-h-[2.125rem] flex items-center">
+              <div className="relative pb-3 flex flex-col justify-end">
+                <div className="min-h-[2.125rem] flex items-center">
                   <button
                     type="button"
                     onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
@@ -661,36 +664,36 @@ const InputForm: React.FC<InputFormProps> = ({
                     <span className="font-bold">{t.resumeLibrary}</span>
                     {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
                   </button>
-                  {showHistoryDropdown && (
-                    <>
-                      <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
-                      <div className="absolute left-0 top-9 w-80 max-w-[calc(100vw-2rem)] bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
-                        <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                          {t.recentlyUploaded}
-                        </div>
-                        {resumeHistory.length === 0 ? (
-                          <div className="p-6 text-center text-slate-500 text-sm">
-                            <p>{t.noResume}</p>
-                          </div>
-                        ) : (
-                          resumeHistory.map((historyItem) => (
-                            <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-3 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all">
-                              <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5 mr-2" />
-                              <div className="flex-1 overflow-hidden text-left">
-                                <p className="text-sm text-slate-200 font-bold truncate">{historyItem.fileName}</p>
-                                <p className="text-xs text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
-                              </div>
-                              <button type="button" onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-1.5 text-slate-600 hover:text-red-400 rounded"><X className="w-3.5 h-3.5" /></button>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </>
-                  )}
                 </div>
+                {showHistoryDropdown && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
+                    <div className="absolute left-0 top-full mt-1 w-80 max-w-[calc(100vw-2rem)] bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
+                      <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        {t.recentlyUploaded}
+                      </div>
+                      {resumeHistory.length === 0 ? (
+                        <div className="p-6 text-center text-slate-500 text-sm">
+                          <p>{t.noResume}</p>
+                        </div>
+                      ) : (
+                        resumeHistory.map((historyItem) => (
+                          <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-3 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all">
+                            <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5 mr-2" />
+                            <div className="flex-1 overflow-hidden text-left">
+                              <p className="text-sm text-slate-200 font-bold truncate">{historyItem.fileName}</p>
+                              <p className="text-xs text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
+                            </div>
+                            <button type="button" onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-1.5 text-slate-600 hover:text-red-400 rounded"><X className="w-3.5 h-3.5" /></button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
 
-              <div className="flex-1 basis-0 min-h-[220px] flex flex-col">
+              <div className="min-h-[220px] h-full flex flex-col">
                 {!resume ? (
                   <div className="w-full flex-1 h-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
@@ -742,24 +745,23 @@ const InputForm: React.FC<InputFormProps> = ({
                 )}
               </div>
               <div
-                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md"
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md col-start-1 row-start-1 row-span-3 pointer-events-none"
                 aria-hidden
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </div>
-              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
+              <div className="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-slate-500 col-start-1 row-start-3 pointer-events-none" aria-hidden>
                 <ChevronDown className="w-5 h-5" />
               </div>
             </div>
 
-            {/* 3. Report type — same header/content flex contract as steps 1–2 */}
-            <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col h-full min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
+            {/* 3. Report type */}
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.reportTypeStep}</span>
               </h2>
-              <div className="mb-3 shrink-0 flex flex-col gap-1.5">
-                <div className="min-h-[1.25rem]" aria-hidden />
+              <div className="pb-3 flex flex-col justify-end">
                 <div className="min-h-[2.125rem] flex items-center">
                   {onReportTypeChange ? (
                     <Link
@@ -774,7 +776,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
               {onReportTypeChange ? (
-                <div className="flex-1 basis-0 min-h-[220px] grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
+                <div className="min-h-[220px] h-full grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
                   <button
                     type="button"
                     onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
@@ -801,21 +803,21 @@ const InputForm: React.FC<InputFormProps> = ({
                   </button>
                 </div>
               ) : (
-                <div className="flex-1 basis-0 min-h-[220px] text-sm text-slate-500">—</div>
+                <div className="min-h-[220px] text-sm text-slate-500">—</div>
               )}
               <div
-                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md"
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md col-start-1 row-start-1 row-span-3 pointer-events-none"
                 aria-hidden
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </div>
-              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
+              <div className="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-slate-500 col-start-1 row-start-3 pointer-events-none" aria-hidden>
                 <ChevronDown className="w-5 h-5" />
               </div>
             </div>
 
-            {/* Launch */}
-            <div className="lg:col-span-2 p-5 sm:p-6 flex flex-col h-full min-h-0 bg-slate-700/30">
+            {/* Launch — spans all three shared rows */}
+            <div className="lg:col-span-2 lg:row-span-3 p-5 sm:p-6 flex flex-col min-h-0 bg-slate-700/30">
               {(() => {
                 const blocked = jobInputKind.kind === 'blocked_board';
                 const publicAts = jobInputKind.kind === 'public_ats';
