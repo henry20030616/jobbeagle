@@ -577,14 +577,16 @@ const InputForm: React.FC<InputFormProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
             <div className="relative lg:col-span-4 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem]">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
                 <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
-              <p className="text-sm text-slate-400 mb-3 leading-snug pl-[1.125rem]">
-                {t.jobStepHint}
-              </p>
-              <div className="mb-3 min-h-[2.125rem] flex items-center">
+              <div className="mb-3 min-h-[2.75rem] shrink-0 flex items-start">
+                <p className="text-sm text-slate-400 leading-snug pl-[1.125rem]">
+                  {t.jobStepHint}
+                </p>
+              </div>
+              <div className="mb-3 min-h-[2.125rem] shrink-0 flex items-center">
                 <Link
                   href="/extension"
                   className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
@@ -643,11 +645,12 @@ const InputForm: React.FC<InputFormProps> = ({
 
             {/* 2. Resume */}
             <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
                 <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
                 <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
-              <div className="relative mb-3 min-h-[2.125rem] flex items-center">
+              <div className="mb-3 min-h-[2.75rem] shrink-0" aria-hidden />
+              <div className="relative mb-3 min-h-[2.125rem] shrink-0 flex items-center">
                   <button
                     type="button"
                     onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
@@ -687,7 +690,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
               <div className="flex-1 flex flex-col min-h-[220px]">
                 {!resume ? (
-                  <div className="w-full flex-1 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
+                  <div className="w-full flex-1 h-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
                       htmlFor="resume-file-input"
                       className="flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-700/30 w-full h-full px-3 py-4 rounded-xl group relative z-10"
@@ -711,7 +714,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                   </div>
                 ) : (
-                  <div className="w-full flex-1 bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col justify-center gap-2 p-3 animate-fade-in">
+                  <div className="w-full flex-1 h-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col justify-center gap-2 p-3 animate-fade-in">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0"><FileText className="w-4 h-4 text-white" /></div>
                       <div className="min-w-0 text-left">
@@ -751,11 +754,12 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className="relative lg:col-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               {onReportTypeChange ? (
                 <>
-                  <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-3 min-h-[2.75rem]">
+                  <h2 className="text-lg sm:text-xl font-bold text-white flex items-center mb-1.5 min-h-[2.75rem] shrink-0">
                     <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                     <span className="leading-snug">{t.reportTypeStep}</span>
                   </h2>
-                  <div className="mb-3 min-h-[2.125rem] flex items-center">
+                  <div className="mb-3 min-h-[2.75rem] shrink-0" aria-hidden />
+                  <div className="mb-3 min-h-[2.125rem] shrink-0 flex items-center">
                     <Link
                       href="/account"
                       className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all max-w-full"
