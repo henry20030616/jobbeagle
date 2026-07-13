@@ -784,9 +784,7 @@ const InputForm: React.FC<InputFormProps> = ({
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
                       }`}
                     >
-                      <p className="font-semibold text-white text-base flex items-center gap-1.5 flex-wrap">
-                        Interview Strategy Guide <Sparkles className="w-4 h-4 text-violet-400 shrink-0" />
-                      </p>
+                      <p className="font-semibold text-white text-base">Interview Strategy Guide</p>
                       <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
                     </button>
                   </div>

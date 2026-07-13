@@ -39,7 +39,6 @@ import {
   FileText,
   ChevronRight,
   AlertTriangle,
-  Sparkles,
   Loader2,
 } from 'lucide-react';
 
@@ -440,8 +439,8 @@ export default function PreFlightPage() {
                   : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
               }`}
             >
-              <p className="font-semibold flex items-center gap-1">
-                {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)} <Sparkles className="w-4 h-4 text-violet-400" />
+              <p className="font-semibold">
+                {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
               </p>
               <p className="text-xs text-slate-400 mt-1">{reportBlurb(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}</p>
             </button>
