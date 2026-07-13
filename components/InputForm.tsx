@@ -568,8 +568,8 @@ const InputForm: React.FC<InputFormProps> = ({
                   <Puzzle className="w-4 h-4 shrink-0" />
                   <span className="font-bold">
                     {currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
-                      ? '安裝 Chrome 外掛 →'
-                      : 'Install Chrome extension →'}
+                      ? 'Chrome 外掛一鍵抓職缺 →'
+                      : 'Grab JD with Chrome extension →'}
                   </span>
                 </Link>
               </div>

@@ -80,7 +80,7 @@ export default function SmartInputArea({
               >
                 <Puzzle className="w-4 h-4 shrink-0" />
                 <span className="font-bold">
-                  {zh ? '安裝 Chrome 外掛 →' : 'Install Chrome extension →'}
+                  {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
                 </span>
               </Link>
             </div>
@@ -96,7 +96,7 @@ export default function SmartInputArea({
               href="/extension"
               className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
             >
-              {zh ? '安裝外掛 →' : 'Install extension →'}
+              {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
             </Link>
           </p>
           )
