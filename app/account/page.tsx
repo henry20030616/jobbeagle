@@ -631,7 +631,18 @@ export default function AccountPage() {
               <ReferralCard
                 referralCode={data.profile.referral_code}
                 language={language}
-                userProfile={data.profile}
+                userProfile={{
+                  id: data.profile.id,
+                  full_name: data.profile.full_name,
+                  avatar_url: null,
+                  membership_tier: data.profile.membership_tier as MembershipTier,
+                  available_job_fit_snapshot_credits:
+                    data.profile.available_job_fit_snapshot_credits,
+                  available_interview_strategy_guide_credits:
+                    data.profile.available_interview_strategy_guide_credits,
+                  referral_code: data.profile.referral_code,
+                  device_fingerprint: null,
+                } satisfies UserProfile}
               />
               {data.referrals.length === 0 ? (
                 <p className="text-sm text-slate-500">{t.referralEmpty}</p>
