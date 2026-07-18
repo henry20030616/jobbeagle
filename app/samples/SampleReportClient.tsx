@@ -57,9 +57,8 @@ export default function SampleReportClient() {
       </header>
 
       <main className="px-4 py-6 sm:py-8">
-        <div className="mx-auto w-full max-w-5xl space-y-3">
-          {/* Always visible for Snapshot + Guide samples */}
-          <div className="sticky top-0 z-30 -mx-1 px-1 py-2 bg-slate-950/95 backdrop-blur-sm flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="mx-auto w-full max-w-7xl space-y-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button type="button" onClick={goHome} className={REPORT_ACTION_BTN}>
               <Home className="w-4 h-4" />
               Back to Home
@@ -70,30 +69,42 @@ export default function SampleReportClient() {
             </button>
           </div>
 
-          <div
-            className={`${SAMPLE_NOTICE_SURFACE} px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5`}
-          >
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
-              Sample {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
-            </span>
-            <span className="text-[11px] text-slate-500">
-              Preview only — not saved, no credits used
-            </span>
-            <Link
-              href="/"
-              className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-white"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Back to analyze
-            </Link>
-          </div>
+          {/* Sample box left · report right — tops aligned */}
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+            <aside className="w-full sm:w-56 lg:w-64 shrink-0">
+              <div className={`${SAMPLE_NOTICE_SURFACE} px-4 py-4 flex flex-col gap-3`}>
+                <div className="flex items-start gap-2.5">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 border border-sky-400/60">
+                    <Sparkles className="w-4 h-4 text-sky-300" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-white leading-snug">
+                      Sample{' '}
+                      {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+                      Fictional candidate & role for product preview — not saved, no credits used.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-300 hover:text-sky-200"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Back to analyze
+                </Link>
+              </div>
+            </aside>
 
-          {isGuide ? (
-            <FullReportDashboard report={guide} language="en" embedded onNewAnalysis={goHome} />
-          ) : (
-            <LiteReportDashboard report={snapshot} language="en" embedded onNewAnalysis={goHome} />
-          )}
+            <div className="min-w-0 flex-1">
+              {isGuide ? (
+                <FullReportDashboard report={guide} language="en" embedded onNewAnalysis={goHome} />
+              ) : (
+                <LiteReportDashboard report={snapshot} language="en" embedded onNewAnalysis={goHome} />
+              )}
+            </div>
+          </div>
         </div>
       </main>
     </div>
