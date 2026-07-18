@@ -11,7 +11,6 @@ import {
   Sparkles,
   Building2,
   Briefcase,
-  Compass,
   Shield,
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
@@ -38,13 +37,6 @@ function hardTone(status: string): string {
     default:
       return 'border-slate-500/40 bg-slate-500/10 text-slate-200';
   }
-}
-
-function applyTone(label: string): string {
-  if (label === 'Apply now') return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-100';
-  if (label === 'Skip') return 'border-red-500/40 bg-red-500/10 text-red-100';
-  if (label === 'Clarify first') return 'border-amber-500/40 bg-amber-500/10 text-amber-50';
-  return 'border-indigo-500/40 bg-indigo-500/10 text-indigo-100';
 }
 
 /**
@@ -190,6 +182,11 @@ export default function LiteReportDashboard({
                   : ''}
               </p>
             )}
+            {report.apply_decision?.next_best_action && (
+              <p className="text-xs text-slate-500 mt-1">
+                Next: {report.apply_decision.next_best_action}
+              </p>
+            )}
           </div>
         </div>
 
@@ -235,26 +232,6 @@ export default function LiteReportDashboard({
           )}
         </div>
       </div>
-
-      {/* Apply decision */}
-      {report.apply_decision && (
-        <div className={`rounded-xl border px-4 py-3 ${applyTone(report.apply_decision.label)}`}>
-          <div className="flex items-start gap-2">
-            <Compass className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="min-w-0">
-              <p className="text-sm font-black">
-                {report.apply_decision.label}
-                <span className="font-normal opacity-80"> — {report.apply_decision.reason}</span>
-              </p>
-              {report.apply_decision.next_best_action && (
-                <p className="text-xs mt-1 opacity-80">
-                  Next: {report.apply_decision.next_best_action}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Strengths / Gaps — compact */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
