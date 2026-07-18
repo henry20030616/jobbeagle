@@ -11,7 +11,6 @@ import {
   Sparkles,
   Building2,
   Briefcase,
-  Shield,
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
@@ -24,19 +23,6 @@ interface LiteReportDashboardProps {
   language?: 'en';
   onNewAnalysis?: () => void;
   embedded?: boolean;
-}
-
-function hardTone(status: string): string {
-  switch (status) {
-    case 'Pass':
-      return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200';
-    case 'Risk':
-      return 'border-amber-500/40 bg-amber-500/10 text-amber-100';
-    case 'Blocked':
-      return 'border-red-500/40 bg-red-500/10 text-red-200';
-    default:
-      return 'border-slate-500/40 bg-slate-500/10 text-slate-200';
-  }
 }
 
 /**
@@ -149,12 +135,6 @@ export default function LiteReportDashboard({
                 {scoreInfo.level}
               </p>
               <p className="text-sm font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
-              <div className="mt-2 inline-flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-slate-400" />
-                <span className={`text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 rounded border ${hardTone(hardStatus)}`}>
-                  Hard Filter: {hardStatus}
-                </span>
-              </div>
             </div>
           </div>
 
