@@ -58,7 +58,7 @@ export default function SampleReportClient() {
       </header>
 
       <main className="px-4 py-6 sm:py-8">
-        <div className="mx-auto w-full max-w-7xl">
+        <div className="mx-auto w-full max-w-[96rem]">
           {/*
             Left column: actions (same width as Sample) + Sample box
             Right column: report — tops of actions & report aligned

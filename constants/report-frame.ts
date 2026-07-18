@@ -12,3 +12,6 @@ export const SAMPLE_NOTICE_SURFACE =
   'rounded-lg border border-slate-400 bg-sky-500';
 
 export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950`;
+
+/** Shared max width so Snapshot and Guide report shells match */
+export const REPORT_SHELL_WIDTH = 'max-w-7xl';

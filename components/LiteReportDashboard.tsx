@@ -15,7 +15,7 @@ import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from '
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { getBeagleTierLegend } from '@/lib/beagle-tiers';
 import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
-import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
+import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
 interface LiteReportDashboardProps {
@@ -62,7 +62,7 @@ export default function LiteReportDashboard({
   return (
     <div
       className={`animate-fade-in w-full mx-auto ${
-        embedded ? '' : 'max-w-5xl space-y-4'
+        embedded ? '' : `${REPORT_SHELL_WIDTH} space-y-4`
       }`}
     >
       {!embedded && (
@@ -99,14 +99,14 @@ export default function LiteReportDashboard({
         <header className="border-b border-slate-700/90 px-5 py-4 sm:px-6 sm:py-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400 mb-1.5">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 mb-1.5">
                 Job Fit Snapshot
               </p>
-              <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 flex-wrap leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-black text-white flex items-center gap-2 flex-wrap leading-tight">
                 <Briefcase className="w-5 h-5 text-slate-400 shrink-0" />
                 {report.job_title || 'Unknown Role'}
               </h1>
-              <p className="text-slate-400 mt-1.5 flex items-center gap-2 text-sm">
+              <p className="text-slate-400 mt-1.5 flex items-center gap-2 text-lg">
                 <Building2 className="w-4 h-4 shrink-0" />
                 {report.company_name || 'Unknown Company'}
               </p>
@@ -115,8 +115,8 @@ export default function LiteReportDashboard({
               className="shrink-0 rounded-lg border border-sky-400/70 bg-slate-950/60 px-3 py-1.5 text-right"
               style={{ borderColor: `${scoreInfo.fill}66` }}
             >
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fit</p>
-              <p className={`text-lg font-black tabular-nums leading-none ${scoreInfo.color}`}>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Fit</p>
+              <p className={`text-2xl font-black tabular-nums leading-none ${scoreInfo.color}`}>
                 {score}
               </p>
             </div>
@@ -126,7 +126,7 @@ export default function LiteReportDashboard({
         {/* Heroes + equal-height Score Summary | Range Evaluation */}
         <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-[auto_1fr] divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
           <section className="flex flex-col p-5 sm:p-6 lg:col-start-1 lg:row-start-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-400 mb-3">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 mb-3">
               Candidate Fit Score
             </p>
             <div className="flex items-center gap-3 sm:gap-4">
@@ -166,7 +166,7 @@ export default function LiteReportDashboard({
                     </RadialBarChart>
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
-                    <span className={`text-3xl font-black ${scoreInfo.color}`}>{score}</span>
+                    <span className={`text-5xl font-black ${scoreInfo.color}`}>{score}</span>
                   </div>
                 </button>
 
@@ -176,7 +176,7 @@ export default function LiteReportDashboard({
                     role="tooltip"
                     className="absolute left-1/2 top-[calc(100%+0.5rem)] z-30 w-[min(20rem,calc(100vw-2.5rem))] -translate-x-1/2 rounded-xl border border-slate-600/90 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-md animate-fade-in"
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
                       Beagle Scale — what each level means
                     </p>
                     <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
@@ -190,18 +190,18 @@ export default function LiteReportDashboard({
                           }`}
                         >
                           <div className="flex items-baseline justify-between gap-1">
-                            <p className={`text-[11px] font-bold ${tier.visual.color}`}>
+                            <p className={`text-sm font-bold ${tier.visual.color}`}>
                               {tier.name}
                               {tier.active ? ' · You' : ''}
                             </p>
-                            <span className="text-[9px] font-semibold text-slate-500 tabular-nums shrink-0">
+                            <span className="text-[11px] font-semibold text-slate-500 tabular-nums shrink-0">
                               {tier.scoreRange}
                             </span>
                           </div>
-                          <p className="text-[10px] font-semibold text-slate-300 mt-0.5">
+                          <p className="text-xs font-semibold text-slate-300 mt-0.5">
                             {tier.label}
                           </p>
-                          <p className="text-[10px] text-slate-500 mt-1 leading-snug">
+                          <p className="text-xs text-slate-500 mt-1 leading-snug">
                             {tier.description}
                           </p>
                         </li>
@@ -211,11 +211,11 @@ export default function LiteReportDashboard({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className={`text-lg sm:text-xl font-black leading-tight ${scoreInfo.color}`}>
+                <p className={`text-2xl sm:text-3xl font-black leading-tight ${scoreInfo.color}`}>
                   {scoreInfo.level}
                 </p>
-                <p className="text-sm font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed line-clamp-3">
+                <p className="text-lg font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
+                <p className="text-base text-slate-400 mt-1.5 leading-relaxed line-clamp-3">
                   {scoreInfo.description}
                 </p>
               </div>
@@ -224,14 +224,14 @@ export default function LiteReportDashboard({
 
           <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 lg:col-start-1 lg:row-start-2">
             <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
                 Score Summary
               </p>
-              <p className={`text-sm font-bold ${scoreInfo.color} mb-1`}>
+              <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
                 {score}/100 · {scoreInfo.level}
                 {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
               </p>
-              <p className="text-sm text-slate-200 leading-relaxed flex-1">
+              <p className="text-lg text-slate-200 leading-relaxed flex-1">
                 {report.fit_score?.sharp_verdict
                   || report.recruiter_verdict
                   || report.one_sentence_sharp_critique
@@ -241,11 +241,11 @@ export default function LiteReportDashboard({
           </div>
 
           <section className="flex flex-col p-5 sm:p-6 lg:col-start-2 lg:row-start-1 border-t border-slate-700/90 lg:border-t-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400/90 mb-1 flex items-center gap-1">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-400/90 mb-1 flex items-center gap-1">
               <DollarSign className="w-3.5 h-3.5" />
               Expected Offer Range
             </p>
-            <p className="text-[11px] text-slate-500 mb-4">
+            <p className="text-sm text-slate-500 mb-4">
               {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
               {offer?.evidence_tier ? ` · Tier ${offer.evidence_tier}` : ''}
             </p>
@@ -253,19 +253,19 @@ export default function LiteReportDashboard({
             <div className="flex-1 flex flex-col justify-center py-1">
               {offerRange ? (
                 <>
-                  <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-none">
+                  <p className="text-5xl sm:text-6xl font-black text-white tracking-tight leading-none">
                     {offerRange}
                   </p>
                   {offer?.candidate_position_label && (
-                    <p className="text-sm text-emerald-100/90 leading-relaxed mt-3">
+                    <p className="text-lg text-emerald-100/90 leading-relaxed mt-3">
                       {offer.candidate_position_label}
                     </p>
                   )}
                 </>
               ) : (
                 <>
-                  <p className="text-lg font-bold text-slate-200">No reliable offer band yet</p>
-                  <p className="text-sm text-slate-400 mt-1 leading-relaxed">
+                  <p className="text-2xl font-bold text-slate-200">No reliable offer band yet</p>
+                  <p className="text-lg text-slate-400 mt-1 leading-relaxed">
                     Ask the recruiter for the approved cash range before you invest interview time.
                   </p>
                 </>
@@ -275,13 +275,13 @@ export default function LiteReportDashboard({
 
           <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 border-t border-slate-700/90 lg:border-t-0 lg:col-start-2 lg:row-start-2">
             <div className="h-full min-h-[8.5rem] rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3 flex flex-col">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 mb-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-300 mb-1">
                 Range Evaluation
               </p>
-              <p className="text-sm font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
-              <p className="text-sm text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
+              <p className="text-lg font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
+              <p className="text-lg text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
               {offerEval.note ? (
-                <p className="text-xs text-slate-400 mt-2 leading-relaxed">{offerEval.note}</p>
+                <p className="text-base text-slate-400 mt-2 leading-relaxed">{offerEval.note}</p>
               ) : null}
             </div>
           </div>
@@ -290,29 +290,29 @@ export default function LiteReportDashboard({
         {/* Strengths | Gaps — bottom of same slide */}
         <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-700/90 border-t border-slate-700/90">
           <section className="p-5 sm:px-6 sm:py-5">
-            <h3 className="text-[10px] font-bold text-emerald-400 mb-3 flex items-center uppercase tracking-[0.18em]">
+            <h3 className="text-xs font-bold text-emerald-400 mb-3 flex items-center uppercase tracking-[0.18em]">
               <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
               Top Strengths
             </h3>
             <ul className="space-y-2.5">
               {strengths.map((item, idx) => (
                 <li key={idx} className="border-l-2 border-emerald-500/40 pl-3">
-                  <p className="text-sm font-semibold text-slate-200">{item.point}</p>
-                  <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
+                  <p className="text-lg font-semibold text-slate-200">{item.point}</p>
+                  <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
                 </li>
               ))}
             </ul>
           </section>
           <section className="p-5 sm:px-6 sm:py-5">
-            <h3 className="text-[10px] font-bold text-violet-300 mb-3 flex items-center uppercase tracking-[0.18em]">
+            <h3 className="text-xs font-bold text-violet-300 mb-3 flex items-center uppercase tracking-[0.18em]">
               <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
               Critical Gaps
             </h3>
             <ul className="space-y-2.5">
               {gaps.map((item, idx) => (
                 <li key={idx} className="border-l-2 border-violet-400/40 pl-3">
-                  <p className="text-sm font-semibold text-slate-200">{item.gap}</p>
-                  <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
+                  <p className="text-lg font-semibold text-slate-200">{item.gap}</p>
+                  <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
                 </li>
               ))}
             </ul>
