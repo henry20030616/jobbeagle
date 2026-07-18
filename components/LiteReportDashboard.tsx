@@ -101,7 +101,7 @@ export default function LiteReportDashboard({
 
       {/* Dual heroes — Fit + Offer */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 flex flex-col shadow-xl backdrop-blur-sm">
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 flex flex-col shadow-xl backdrop-blur-sm h-full">
           <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-3">
             Candidate Fit Score
           </p>
@@ -175,8 +175,8 @@ export default function LiteReportDashboard({
             </div>
           </div>
 
-          {/* Comprehensive score summary under the Beagle + score */}
-          <div className="mt-4 rounded-xl border border-indigo-500/25 bg-indigo-500/10 px-4 py-3">
+          {/* Comprehensive score summary — stretches to match Range Evaluation */}
+          <div className="mt-auto flex-1 flex flex-col rounded-xl border border-indigo-500/25 bg-indigo-500/10 px-4 py-3 min-h-[9.5rem]">
             <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1.5">
               Score Summary
             </p>
@@ -207,7 +207,7 @@ export default function LiteReportDashboard({
           </div>
         </div>
 
-        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 flex flex-col shadow-xl backdrop-blur-sm">
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 flex flex-col shadow-xl backdrop-blur-sm h-full">
           <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-400/90 mb-1 flex items-center gap-1">
             <DollarSign className="w-4 h-4" />
             Expected Offer Range
@@ -242,16 +242,16 @@ export default function LiteReportDashboard({
             )}
           </div>
 
-          {/* Aligns with Score Summary on the left */}
-          <div className="mt-4 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3">
+          {/* Market value of the role — same height as Score Summary */}
+          <div className="mt-auto flex-1 flex flex-col rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 min-h-[9.5rem]">
             <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 mb-1.5">
               Range Evaluation
             </p>
             <p className="text-sm font-bold text-emerald-100 mb-1.5">{offerEval.headline}</p>
-            <p className="text-sm text-slate-200 leading-relaxed">{offerEval.basis}</p>
-            {offerEval.detail && (
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">{offerEval.detail}</p>
-            )}
+            <p className="text-sm text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
+            {offerEval.note ? (
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">{offerEval.note}</p>
+            ) : null}
           </div>
         </div>
       </div>

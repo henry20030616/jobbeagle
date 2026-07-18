@@ -47,7 +47,7 @@ describe('formatOfferRange', () => {
 });
 
 describe('offerEvaluationSummary', () => {
-  it('explains tier C market benchmarks', () => {
+  it('explains market value of the role, not tier glossary', () => {
     const summary = offerEvaluationSummary({
       posted_range: null,
       p25: '$85K',
@@ -59,8 +59,28 @@ describe('offerEvaluationSummary', () => {
       evidence_tier: 'C',
       sources: ['BLS-style market band'],
     });
-    expect(summary.headline).toContain('Tier C');
-    expect(summary.basis).toMatch(/market benchmarks/i);
-    expect(summary.detail).toContain('JD does not provide');
+    expect(summary.headline).toMatch(/Market value/i);
+    expect(summary.headline).toContain('$85K – $125K');
+    expect(summary.body).toMatch(/comparable roles/i);
+    expect(summary.body).not.toMatch(/Tier C —/i);
+    expect(summary.note).toContain('JD does not provide');
+  });
+
+  it('uses posted range as the clearest market signal', () => {
+    const summary = offerEvaluationSummary({
+      posted_range: '$160K – $190K',
+      p25: null,
+      p50: null,
+      p75: null,
+      currency: 'USD',
+      region: 'United States',
+      target_gap: '',
+      evidence_tier: 'A',
+      sources: [],
+      candidate_position_label: 'Mid-band is realistic.',
+    });
+    expect(summary.headline).toContain('$160K – $190K');
+    expect(summary.body).toMatch(/employer disclosed/i);
+    expect(summary.note).toContain('Mid-band');
   });
 });
