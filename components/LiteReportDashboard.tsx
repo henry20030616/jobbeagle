@@ -239,7 +239,7 @@ export default function LiteReportDashboard({
             )}
             {report.apply_decision?.next_best_action && (
               <p className="text-xs text-slate-500 mt-1">
-                Next: {report.apply_decision.next_best_action}
+                Next decision: {report.apply_decision.next_best_action}
               </p>
             )}
           </div>

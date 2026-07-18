@@ -103,9 +103,8 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
       },
     ],
     resume_actions: [
-      'Add one ACH/returns bullet if true — even adjacent banking ops counts.',
-      'Move the 28% cycle-time win into the top third of page one.',
-      'Name tools already used (SQL, Looker) next to payments-adjacent work.',
+      'ACH / returns ownership not evidenced on the supplied resume.',
+      'Named payments-processor experience not evidenced.',
     ],
     screenability_note: 'Strong ops keywords; payments rails keywords are thin.',
   },
@@ -123,8 +122,10 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
   },
   apply_decision: {
     label: 'Apply after fixes',
-    reason: 'Fit is strong, but ACH/payments evidence should land on page one before a senior screen.',
-    next_best_action: 'Spend 15 minutes adding one verified payments-adjacent bullet, then apply.',
+    reason:
+      'Fit is strong overall, but ACH/payments depth is still a senior-screen risk versus this JD.',
+    next_best_action:
+      'Ask the recruiter whether ACH/returns ownership is required or preferred before you invest interview time.',
   },
   role_read: {
     mission: 'Own requirements and analytics for payments operations improvements.',

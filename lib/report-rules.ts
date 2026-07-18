@@ -60,6 +60,6 @@ export function resolveApplyDecision(
       || `Decision based on fit ${report.fit_score?.score ?? '—'} and hard filter ${report.hard_filter?.status ?? 'Unknown'}.`,
     next_best_action:
       report.apply_decision?.next_best_action?.trim()
-      || 'Spend 15 minutes strengthening the top resume gap against the JD must-haves.',
+      || 'Confirm the largest hard-filter risk or gap with the recruiter before you invest more time.',
   };
 }
