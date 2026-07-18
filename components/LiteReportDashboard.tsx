@@ -15,7 +15,7 @@ import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from '
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { getBeagleTierLegend } from '@/lib/beagle-tiers';
 import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
-import { REPORT_SLIDE_SURFACE } from '@/constants/report-frame';
+import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
@@ -66,7 +66,7 @@ export default function LiteReportDashboard({
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors"
+            className={REPORT_ACTION_BTN}
           >
             <Home className="w-4 h-4" />
             Back to Home
@@ -74,7 +74,7 @@ export default function LiteReportDashboard({
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors"
+            className={REPORT_ACTION_BTN}
           >
             <RotateCcw className="w-4 h-4" />
             New Analysis
@@ -103,7 +103,7 @@ export default function LiteReportDashboard({
               </p>
             </div>
             <div
-              className="shrink-0 rounded-lg border border-slate-600/80 bg-slate-950/60 px-3 py-1.5 text-right"
+              className="shrink-0 rounded-lg border border-sky-400/70 bg-slate-950/60 px-3 py-1.5 text-right"
               style={{ borderColor: `${scoreInfo.fill}66` }}
             >
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fit</p>
@@ -214,7 +214,7 @@ export default function LiteReportDashboard({
           </section>
 
           <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 lg:col-start-1 lg:row-start-2">
-            <div className="h-full min-h-[8.5rem] rounded-lg border border-indigo-500/25 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
+            <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
               <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1">
                 Score Summary
               </p>
@@ -265,7 +265,7 @@ export default function LiteReportDashboard({
           </section>
 
           <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 border-t border-slate-700/90 lg:border-t-0 lg:col-start-2 lg:row-start-2">
-            <div className="h-full min-h-[8.5rem] rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3.5 py-3 flex flex-col">
+            <div className="h-full min-h-[8.5rem] rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3 flex flex-col">
               <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 mb-1">
                 Range Evaluation
               </p>

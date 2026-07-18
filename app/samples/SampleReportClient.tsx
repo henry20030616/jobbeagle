@@ -11,11 +11,8 @@ import {
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
-import { SAMPLE_NOTICE_SURFACE } from '@/constants/report-frame';
+import { SAMPLE_NOTICE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
 import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
-
-const actionBtnClass =
-  'inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
 export default function SampleReportClient() {
   const searchParams = useSearchParams();
@@ -63,11 +60,11 @@ export default function SampleReportClient() {
         <div className="mx-auto w-full max-w-5xl space-y-3">
           {/* Always visible for Snapshot + Guide samples */}
           <div className="sticky top-0 z-30 -mx-1 px-1 py-2 bg-slate-950/95 backdrop-blur-sm flex flex-wrap items-center gap-2 sm:gap-3">
-            <button type="button" onClick={goHome} className={actionBtnClass}>
+            <button type="button" onClick={goHome} className={REPORT_ACTION_BTN}>
               <Home className="w-4 h-4" />
               Back to Home
             </button>
-            <button type="button" onClick={goHome} className={actionBtnClass}>
+            <button type="button" onClick={goHome} className={REPORT_ACTION_BTN}>
               <RotateCcw className="w-4 h-4" />
               New Analysis
             </button>

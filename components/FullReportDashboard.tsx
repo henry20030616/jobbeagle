@@ -22,7 +22,7 @@ import {
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
 import { formatOfferRange } from '@/lib/offer-display';
-import { REPORT_SLIDE_SURFACE } from '@/constants/report-frame';
+import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
 
 type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
 
@@ -218,8 +218,6 @@ export default function FullReportDashboard({
   };
 
   const activeNav = NAV.find((n) => n.id === tab) ?? NAV[0];
-  const actionBtnClass =
-    'inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
   return (
     <div
@@ -229,11 +227,11 @@ export default function FullReportDashboard({
     >
       {!embedded && (
         <div className="no-print flex flex-wrap items-center gap-2 sm:gap-3">
-          <button type="button" onClick={handleBack} className={actionBtnClass}>
+          <button type="button" onClick={handleBack} className={REPORT_ACTION_BTN}>
             <Home className="w-4 h-4" />
             Back to Home
           </button>
-          <button type="button" onClick={handleBack} className={actionBtnClass}>
+          <button type="button" onClick={handleBack} className={REPORT_ACTION_BTN}>
             <RotateCcw className="w-4 h-4" />
             New Analysis
           </button>
