@@ -54,26 +54,22 @@ export default function SampleReportClient() {
 
       <main className="px-4 py-6 sm:py-8">
         <div className="mx-auto w-full max-w-5xl space-y-4">
+          {/* Quiet sample chip — does not replace Back to Home / New Analysis */}
           <div
-            className={`${SAMPLE_NOTICE_SURFACE} px-5 py-4 flex flex-wrap items-center gap-4`}
+            className={`${SAMPLE_NOTICE_SURFACE} px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5`}
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/45 border border-indigo-200/50">
-              <Sparkles className="w-5 h-5 text-indigo-50" />
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
+              Sample {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
             </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-base font-bold text-white leading-snug">
-                Sample {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
-              </p>
-              <p className="text-sm text-indigo-50/90 mt-1 leading-relaxed">
-                Fictional candidate & role for product preview — not saved to your account, no
-                credits used.
-              </p>
-            </div>
+            <span className="text-[11px] text-slate-500">
+              Preview only — not saved, no credits used
+            </span>
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-indigo-100 shrink-0"
+              className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-white"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               Back to analyze
             </Link>
           </div>

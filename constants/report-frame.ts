@@ -1,7 +1,9 @@
-/** Shared report / sample chrome — keep Sample banner and report frames identical */
+/** Shared report / sample chrome — matched borders, muted (not neon) */
 export const REPORT_FRAME_BORDER =
-  'border-2 border-indigo-300/70 shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)]';
+  'border border-indigo-500/40 shadow-xl shadow-black/40';
 
-export const SAMPLE_NOTICE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-indigo-800`;
+/** Sample notice: dark surface, same border language as the slide */
+export const SAMPLE_NOTICE_SURFACE = `rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900`;
 
+/** Snapshot / Guide outer frame */
 export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950`;
