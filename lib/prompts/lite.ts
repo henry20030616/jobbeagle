@@ -13,9 +13,9 @@ Rules:
 - Suggest score breakdown weights as guidance for your assessment (backend may recompute): hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain experience 15%, proven impact 10%.
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Use Blocked ONLY for explicit conflicts (e.g. must be onsite NYC but candidate is remote-only with no relocation). Missing data → Unknown or Risk, not Blocked.
 - expected_offer is a product hero — always fill it thoughtfully:
-  A = JD/employer posted range (copy into posted_range AND derive p25/p50/p75 from it when possible)
+  A = JD/employer posted range (copy into posted_range; also set p25/p75 as the low/high ends of that range)
   B = highly matching public role-level data you can cite in sources[]
-  C = reputable US market benchmark for this title/level/region (state uncertainty in target_gap) — USE THIS when the JD has no pay but the role is clear. Still output p25/p50/p75 as dollar strings (e.g. "$140K").
+  C = reputable US market benchmark for this title/level/region (state uncertainty in target_gap) — USE THIS when the JD has no pay but the role is clear. Set p25 = low end, p75 = high end, p50 = midpoint as dollar strings (e.g. "$140K"). UI shows a single range (low–high), not percentile labels.
   D = only when title/level/region are too vague to estimate → null numbers + explain in target_gap
 - Prefer tier C over empty D whenever job title + level + US region are identifiable.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.

@@ -21,6 +21,7 @@ import {
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
 import { getScoreInfo } from '@/components/AnalysisDashboard';
+import { formatOfferRange } from '@/lib/offer-display';
 
 type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
 type ViewMode = 'snapshot' | 'guide';
@@ -58,11 +59,6 @@ const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }
     blurb: 'Sources and confidence limits for this guide.',
   },
 ];
-
-function displayMoney(v: string | null | undefined): string {
-  if (!v || !v.trim() || v.trim() === '—') return '';
-  return v.trim();
-}
 
 function Card({
   title,
@@ -103,14 +99,9 @@ export default function FullReportDashboard({
   const offer = report.offer_strategy;
   const fitSalary = report.strategy_fit_salary;
   const expected = report.expected_offer;
+  const offerRange = formatOfferRange(expected);
   const score = report.fit_score?.score ?? report.match_score ?? 0;
   const scoreInfo = getScoreInfo(score, 'en');
-
-  const p25 = displayMoney(expected?.p25);
-  const p50 = displayMoney(expected?.p50);
-  const p75 = displayMoney(expected?.p75);
-  const posted = displayMoney(expected?.posted_range);
-  const hasOfferNumbers = Boolean(p25 || p50 || p75 || posted);
 
   const sources = useMemo(() => {
     const list: { label: string; url?: string; date?: string }[] = [];
@@ -225,6 +216,26 @@ export default function FullReportDashboard({
           <LiteReportDashboard report={report} language="en" embedded onNewAnalysis={onNewAnalysis} />
         </div>
       ) : (
+        <div className="space-y-0">
+          {/* Full Guide always includes Snapshot (lite) first */}
+          <div className="border-b border-slate-700 p-4 sm:p-6 bg-slate-900/40">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="w-1.5 h-5 bg-indigo-500 rounded-full shrink-0" />
+              <p className="text-sm font-semibold text-indigo-200">
+                Includes Job Fit Snapshot
+              </p>
+              <span className="text-[11px] text-slate-500 ml-auto hidden sm:inline">
+                Fit · Offer · Apply Decision · Strengths & Gaps
+              </span>
+            </div>
+            <LiteReportDashboard
+              report={report}
+              language="en"
+              embedded
+              onNewAnalysis={onNewAnalysis}
+            />
+          </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] min-h-[28rem]">
           {/* Sidebar */}
           <aside className="border-b lg:border-b-0 lg:border-r border-slate-700 p-4 space-y-3 bg-slate-900/60">
@@ -497,34 +508,14 @@ export default function FullReportDashboard({
                     <p className="text-[11px] text-slate-500 mb-3">
                       {[expected?.region, expected?.currency].filter(Boolean).join(' · ') || 'USD'}
                     </p>
-                    {posted && (
-                      <p className="text-xs text-slate-400 mb-3">
-                        Posted on JD:{' '}
-                        <span className="text-slate-100 font-semibold">{posted}</span>
-                      </p>
-                    )}
-                    {hasOfferNumbers && (p25 || p50 || p75) ? (
-                      <div className="mb-4">
-                        <p className="text-3xl font-black text-indigo-300 tracking-tight">
-                          {p50 || p25 || p75}
+                    {offerRange ? (
+                      <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 px-4 py-5 mb-4 text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 mb-2">
+                          Expected range
                         </p>
-                        <p className="text-xs text-slate-500 mt-1 mb-4">
-                          {p50 ? 'Mid (P50) estimate' : 'Available estimate'}
+                        <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                          {offerRange}
                         </p>
-                        <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                          <div className="rounded-xl bg-white/5 p-3">
-                            <p className="text-[10px] text-slate-500 mb-1 uppercase">P25</p>
-                            <p className="font-semibold text-white">{p25 || '—'}</p>
-                          </div>
-                          <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-3">
-                            <p className="text-[10px] text-indigo-300 mb-1 font-bold uppercase">P50</p>
-                            <p className="font-bold text-white">{p50 || '—'}</p>
-                          </div>
-                          <div className="rounded-xl bg-white/5 p-3">
-                            <p className="text-[10px] text-slate-500 mb-1 uppercase">P75</p>
-                            <p className="font-semibold text-white">{p75 || '—'}</p>
-                          </div>
-                        </div>
                       </div>
                     ) : (
                       <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
@@ -698,6 +689,7 @@ export default function FullReportDashboard({
               </div>
             )}
           </section>
+        </div>
         </div>
       )}
     </div>

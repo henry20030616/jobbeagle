@@ -17,6 +17,7 @@ import {
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { startCheckout } from '@/lib/checkout-client';
+import { formatOfferRange } from '@/lib/offer-display';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
@@ -38,11 +39,6 @@ function beagleGlowForScore(score: number): string {
   if (score >= 75) return 'drop-shadow-[0_0_18px_rgba(251,191,36,0.55)]';
   if (score >= 60) return 'drop-shadow-[0_0_14px_rgba(203,213,225,0.35)]';
   return 'drop-shadow-[0_0_14px_rgba(251,146,60,0.4)]';
-}
-
-function displayMoney(v: string | null | undefined): string {
-  if (!v || !v.trim() || v.trim() === '—') return '';
-  return v.trim();
 }
 
 function hardTone(status: string): string {
@@ -83,11 +79,7 @@ export default function LiteReportDashboard({
   const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 4);
   const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
   const offer = report.expected_offer;
-  const p25 = displayMoney(offer?.p25);
-  const p50 = displayMoney(offer?.p50);
-  const p75 = displayMoney(offer?.p75);
-  const posted = displayMoney(offer?.posted_range);
-  const hasOfferNumbers = Boolean(p25 || p50 || p75 || posted);
+  const offerRange = formatOfferRange(offer);
   const hardStatus = report.hard_filter?.status ?? 'Unknown';
 
   const handleBack = () => {
@@ -205,27 +197,14 @@ export default function LiteReportDashboard({
             {offer?.evidence_tier ? ` · Tier ${offer.evidence_tier}` : ''}
           </p>
 
-          {posted && (
-            <p className="text-xs text-slate-400 mb-2">
-              Posted on JD:{' '}
-              <span className="text-slate-100 font-semibold">{posted}</span>
-            </p>
-          )}
-
-          {hasOfferNumbers && (p25 || p50 || p75) ? (
-            <div className="grid grid-cols-3 gap-2 text-center text-sm mb-3">
-              <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-[10px] text-slate-500 mb-1 uppercase">P25</p>
-                <p className="font-semibold text-white text-sm">{p25 || '—'}</p>
-              </div>
-              <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/25 p-3">
-                <p className="text-[10px] text-emerald-300 mb-1 font-bold uppercase">P50</p>
-                <p className="font-bold text-white text-base">{p50 || '—'}</p>
-              </div>
-              <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-[10px] text-slate-500 mb-1 uppercase">P75</p>
-                <p className="font-semibold text-white text-sm">{p75 || '—'}</p>
-              </div>
+          {offerRange ? (
+            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/25 px-4 py-5 mb-3 text-center">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90 mb-2">
+                Expected range
+              </p>
+              <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                {offerRange}
+              </p>
             </div>
           ) : (
             <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
