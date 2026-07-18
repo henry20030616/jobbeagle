@@ -222,16 +222,30 @@ export default function FullReportDashboard({
   };
 
   const activeNav = NAV.find((n) => n.id === tab) ?? NAV[0];
-  const navBtnClass =
-    'inline-flex items-center gap-1.5 rounded-lg border border-slate-500/50 bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
+  const actionBtnClass =
+    'inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
   return (
-    <div
-      className={`rounded-2xl border border-violet-500/30 bg-slate-950 overflow-hidden ${
-        embedded ? '' : 'shadow-2xl shadow-black/40'
-      }`}
-    >
-      {/* Top bar */}
+    <div className={embedded ? '' : 'space-y-4'}>
+      {!embedded && (
+        <div className="no-print flex flex-wrap items-center gap-2 sm:gap-3">
+          <button type="button" onClick={handleBack} className={actionBtnClass}>
+            <Home className="w-4 h-4" />
+            Back to Home
+          </button>
+          <button type="button" onClick={handleBack} className={actionBtnClass}>
+            <RotateCcw className="w-4 h-4" />
+            New Analysis
+          </button>
+        </div>
+      )}
+
+      <div
+        className={`rounded-2xl border border-violet-500/30 bg-slate-950 overflow-hidden ${
+          embedded ? '' : 'shadow-2xl shadow-black/40'
+        }`}
+      >
+      {/* Title bar inside slide */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
           <p className="text-sm font-bold text-white tracking-tight">Interview Strategy Guide</p>
@@ -239,18 +253,6 @@ export default function FullReportDashboard({
             Snapshot + playbook — switch pages from the top nav
           </p>
         </div>
-        {!embedded && (
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={handleBack} className={navBtnClass}>
-              <Home className="w-3.5 h-3.5" />
-              Home
-            </button>
-            <button type="button" onClick={handleBack} className={navBtnClass}>
-              <RotateCcw className="w-3.5 h-3.5" />
-              New
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Job meta strip */}
@@ -776,6 +778,7 @@ export default function FullReportDashboard({
               </div>
             )}
           </section>
+      </div>
     </div>
   );
 }
