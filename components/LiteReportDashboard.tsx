@@ -61,8 +61,8 @@ export default function LiteReportDashboard({
 
   return (
     <div
-      className={`animate-fade-in mx-auto ${REPORT_SHELL_WIDTH}${
-        embedded ? '' : ' space-y-4'
+      className={`animate-fade-in w-full mx-auto ${
+        embedded ? '' : `${REPORT_SHELL_WIDTH} space-y-4`
       }`}
     >
       {!embedded && (

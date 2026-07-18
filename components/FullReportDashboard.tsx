@@ -225,8 +225,8 @@ export default function FullReportDashboard({
 
   return (
     <div
-      className={`mx-auto ${REPORT_SHELL_WIDTH}${
-        embedded ? '' : ' space-y-4'
+      className={`w-full mx-auto ${
+        embedded ? '' : `${REPORT_SHELL_WIDTH} space-y-4`
       }`}
     >
       {!embedded && (

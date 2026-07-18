@@ -13,10 +13,5 @@ export const SAMPLE_NOTICE_SURFACE =
 
 export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950`;
 
-/**
- * Shared Snapshot / Guide shell width.
- * Desktop: ~62vw (capped at 80rem) to match the approved centered-report
- * occupancy (~60% viewport with side margins). Full width on small screens.
- */
-export const REPORT_SHELL_WIDTH =
-  'w-full max-w-full sm:max-w-[min(80rem,62vw)]';
+/** Shared max width so Snapshot and Guide report shells match */
+export const REPORT_SHELL_WIDTH = 'max-w-7xl';
