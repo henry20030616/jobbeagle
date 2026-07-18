@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatOfferRange, hasOfferRange } from '@/lib/offer-display';
+import { formatOfferRange, hasOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
 
 describe('formatOfferRange', () => {
   it('prefers posted range', () => {
@@ -43,5 +43,24 @@ describe('formatOfferRange', () => {
       evidence_tier: 'D',
       sources: [],
     })).toBe(false);
+  });
+});
+
+describe('offerEvaluationSummary', () => {
+  it('explains tier C market benchmarks', () => {
+    const summary = offerEvaluationSummary({
+      posted_range: null,
+      p25: '$85K',
+      p50: '$100K',
+      p75: '$125K',
+      currency: 'USD',
+      region: 'APAC',
+      target_gap: 'JD does not provide a range.',
+      evidence_tier: 'C',
+      sources: ['BLS-style market band'],
+    });
+    expect(summary.headline).toContain('Tier C');
+    expect(summary.basis).toMatch(/market benchmarks/i);
+    expect(summary.detail).toContain('JD does not provide');
   });
 });
