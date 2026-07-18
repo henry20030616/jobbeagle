@@ -1,0 +1,28 @@
+---
+description: Keep Snapshot/Guide report UX and /samples fixtures in sync
+alwaysApply: true
+---
+
+# Report format ↔ sample reports (always sync)
+
+When adjusting **either** report product UI or content rules, **always update both sample fixtures in the same change**:
+
+| Product | Live UI | Sample source | Preview URL |
+|---------|---------|---------------|-------------|
+| Job Fit Snapshot | `components/LiteReportDashboard.tsx` (+ lite prompts/normalize) | `lib/sample-reports.ts` → `getSampleSnapshotReport()` | `/samples?type=job_fit_snapshot` |
+| Interview Strategy Guide | `components/FullReportDashboard.tsx` (+ full prompts/normalize) | `lib/sample-reports.ts` → `getSampleStrategyGuideReport()` | `/samples?type=interview_strategy_guide` |
+
+## Checklist (do not skip)
+
+1. Change report layout, copy rules, fields shown/hidden, or Score Summary / Range Evaluation / Beagle Scale behavior.
+2. Update **both** sample payloads in `lib/sample-reports.ts` so `/samples` still looks like production.
+3. If Strategy Guide embeds Snapshot, ensure Guide sample’s Snapshot layer matches the Snapshot sample rules.
+4. Run/adjust `__tests__/unit/sample-reports.test.ts` if structure changes.
+5. Commit samples with the UI/prompt change — never leave samples stale for “later”.
+
+## Current Snapshot content rules (as of 2026-07-18)
+
+- **Score Summary**: fit evaluation only (why match / why not). No Apply/Next resume coaching.
+- **Range Evaluation**: plain-language **market value of the role**, not evidence-tier glossary.
+- **Beagle Scale**: collapsed by default; expand on hover (like homepage feature cards).
+- JobBeagle evaluates fit — it is **not** a resume coach.

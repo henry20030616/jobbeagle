@@ -115,17 +115,19 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     p75: '$190K',
     currency: 'USD',
     region: 'United States · Remote-friendly',
-    target_gap: 'JD does not post a range. Market band for Senior BA in fintech ops.',
+    target_gap:
+      'For Senior BA fintech-ops seats in the US remote market, comparable cash typically lands in this band; confirm the employer’s approved range before negotiating.',
     evidence_tier: 'C',
     sources: ['Market benchmark for Senior BA / fintech ops (US)'],
-    candidate_position_label: 'Likely mid-band with payments domain proof; low-mid without it.',
+    candidate_position_label:
+      'This seat’s market value sits mid-band when payments domain proof is credible; lower mid-band without it.',
   },
   apply_decision: {
     label: 'Apply after fixes',
     reason:
-      'Fit is strong overall, but ACH/payments depth is still a senior-screen risk versus this JD.',
+      'Strong core BA fit, with ACH/payments depth as the main mismatch versus this JD.',
     next_best_action:
-      'Ask the recruiter whether ACH/returns ownership is required or preferred before you invest interview time.',
+      'Clarify with the recruiter whether ACH/returns ownership is required or preferred.',
   },
   role_read: {
     mission: 'Own requirements and analytics for payments operations improvements.',
