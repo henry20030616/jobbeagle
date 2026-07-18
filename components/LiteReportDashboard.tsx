@@ -77,9 +77,9 @@ export default function LiteReportDashboard({
         </div>
       )}
 
-      {/* One-page slide frame */}
+      {/* One-page slide frame — brighter outer border (was on upgrade CTA) */}
       <article
-        className={`overflow-hidden rounded-2xl border border-slate-600/80 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 shadow-[0_0_0_1px_rgba(15,23,42,0.8),0_25px_50px_-12px_rgba(0,0,0,0.55)] ${
+        className={`overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.55)] ${
           embedded ? '' : 'max-w-5xl'
         }`}
       >
