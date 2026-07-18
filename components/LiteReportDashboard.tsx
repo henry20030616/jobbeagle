@@ -15,6 +15,7 @@ import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from '
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { getBeagleTierLegend } from '@/lib/beagle-tiers';
 import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
+import { REPORT_SLIDE_SURFACE } from '@/constants/report-frame';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
@@ -82,7 +83,9 @@ export default function LiteReportDashboard({
       )}
 
       {/* One-page slide frame — brighter outer border (was on upgrade CTA) */}
-      <article className="overflow-hidden rounded-2xl border-2 border-indigo-300/70 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)]">
+      <article
+        className={`overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
+      >
         {/* Slide header */}
         <header className="border-b border-slate-700/90 px-5 py-4 sm:px-6 sm:py-5">
           <div className="flex flex-wrap items-start justify-between gap-3">

@@ -11,6 +11,7 @@ import {
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
+import { SAMPLE_NOTICE_SURFACE } from '@/constants/report-frame';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 
 export default function SampleReportClient() {
@@ -53,7 +54,9 @@ export default function SampleReportClient() {
 
       <main className="px-4 py-6 sm:py-8">
         <div className="mx-auto w-full max-w-5xl space-y-4">
-          <div className="rounded-2xl border-2 border-indigo-300/70 bg-indigo-800 px-5 py-4 shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)] flex flex-wrap items-center gap-4">
+          <div
+            className={`${SAMPLE_NOTICE_SURFACE} px-5 py-4 flex flex-wrap items-center gap-4`}
+          >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/45 border border-indigo-200/50">
               <Sparkles className="w-5 h-5 text-indigo-50" />
             </span>

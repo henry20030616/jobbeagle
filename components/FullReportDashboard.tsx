@@ -22,6 +22,7 @@ import {
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
 import { formatOfferRange } from '@/lib/offer-display';
+import { REPORT_SLIDE_SURFACE } from '@/constants/report-frame';
 
 type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
 
@@ -239,9 +240,7 @@ export default function FullReportDashboard({
         </div>
       )}
 
-      <div
-        className="rounded-2xl border-2 border-indigo-300/70 bg-slate-950 overflow-hidden shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)]"
-      >
+      <div className={`overflow-hidden ${REPORT_SLIDE_SURFACE}`}>
       {/* Title bar inside slide */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
