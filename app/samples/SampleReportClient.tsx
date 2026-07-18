@@ -33,20 +33,6 @@ export default function SampleReportClient() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      {/* Absolute top — above logo / Sample / report */}
-      <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3">
-        <div className="mx-auto w-full max-w-5xl flex flex-wrap items-center gap-2 sm:gap-3">
-          <button type="button" onClick={goHome} className={actionBtnClass}>
-            <Home className="w-4 h-4" />
-            Back to Home
-          </button>
-          <button type="button" onClick={goHome} className={actionBtnClass}>
-            <RotateCcw className="w-4 h-4" />
-            New Analysis
-          </button>
-        </div>
-      </div>
-
       <header className="border-b border-slate-800 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
         <BrandLogo size="inline" />
         <div className="flex items-center gap-2">
@@ -74,7 +60,19 @@ export default function SampleReportClient() {
       </header>
 
       <main className="px-4 py-6 sm:py-8">
-        <div className="mx-auto w-full max-w-5xl space-y-4">
+        <div className="mx-auto w-full max-w-5xl space-y-3">
+          {/* Tight stack: actions → Sample notice → report (no header gap between) */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <button type="button" onClick={goHome} className={actionBtnClass}>
+              <Home className="w-4 h-4" />
+              Back to Home
+            </button>
+            <button type="button" onClick={goHome} className={actionBtnClass}>
+              <RotateCcw className="w-4 h-4" />
+              New Analysis
+            </button>
+          </div>
+
           <div
             className={`${SAMPLE_NOTICE_SURFACE} px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5`}
           >
