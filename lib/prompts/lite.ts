@@ -10,7 +10,7 @@ Rules:
 - Do NOT output FLSA classification.
 - Do NOT include culture-fit inside the numeric score.
 - Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
-- fit_score.sharp_verdict: 2–3 sentences that synthesize the score result for the candidate — why this score, what it means for competitiveness, and the main strength vs gap tradeoff. This is the Score Summary under the Beagle rating.
+- fit_score.sharp_verdict: 2–3 sentences that ONLY evaluate candidate↔role fit — why this score, what makes them a strong or weak match for THIS JD, and the main strength vs gap tradeoff. No apply checklist. No resume rewrite advice. This is the Score Summary under the Beagle rating.
 - Suggest score breakdown weights as guidance for your assessment (backend may recompute): hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain experience 15%, proven impact 10%.
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Use Blocked ONLY for explicit conflicts (e.g. must be onsite NYC but candidate is remote-only with no relocation). Missing data → Unknown or Risk, not Blocked.
 - expected_offer is a product hero — always fill it thoughtfully:

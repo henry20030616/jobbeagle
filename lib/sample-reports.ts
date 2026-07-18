@@ -35,7 +35,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     band: 'Strong',
     evidence_coverage: 'High',
     sharp_verdict:
-      'Strong analytical and stakeholder story; payments-specific ACH depth is the main stretch for a senior screen.',
+      'Strong analytical and stakeholder story for this Senior BA seat; payments-specific ACH depth is the main stretch versus the JD’s settlement focus.',
     breakdown: [
       {
         dimension: 'Hard requirements / feasibility',

@@ -213,7 +213,7 @@ export default function LiteReportDashboard({
             </div>
           </div>
 
-          {/* Comprehensive score summary — stretches to match Range Evaluation */}
+          {/* Fit evaluation only — why this candidate matches or does not */}
           <div className="mt-auto flex-1 flex flex-col rounded-xl border border-indigo-500/25 bg-indigo-500/10 px-4 py-3 min-h-[9.5rem]">
             <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1.5">
               Score Summary
@@ -222,26 +222,12 @@ export default function LiteReportDashboard({
               {score}/100 · {scoreInfo.level}
               {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
             </p>
-            <p className="text-sm text-slate-200 leading-relaxed">
+            <p className="text-sm text-slate-200 leading-relaxed flex-1">
               {report.fit_score?.sharp_verdict
                 || report.recruiter_verdict
                 || report.one_sentence_sharp_critique
                 || scoreInfo.description}
             </p>
-            {report.apply_decision?.label && (
-              <p className="text-xs text-slate-400 mt-2">
-                Bottom line:{' '}
-                <span className="font-semibold text-slate-200">{report.apply_decision.label}</span>
-                {report.apply_decision.reason
-                  ? ` — ${report.apply_decision.reason}`
-                  : ''}
-              </p>
-            )}
-            {report.apply_decision?.next_best_action && (
-              <p className="text-xs text-slate-500 mt-1">
-                Next decision: {report.apply_decision.next_best_action}
-              </p>
-            )}
           </div>
         </div>
 
