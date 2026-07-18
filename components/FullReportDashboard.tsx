@@ -12,8 +12,6 @@ import {
   Home,
   RotateCcw,
   Layers,
-  Briefcase,
-  Building2,
   ChevronDown,
   ExternalLink,
   Copy,
@@ -23,7 +21,6 @@ import {
 } from 'lucide-react';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
-import { getScoreInfo } from '@/components/AnalysisDashboard';
 import { formatOfferRange } from '@/lib/offer-display';
 
 type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
@@ -187,8 +184,6 @@ export default function FullReportDashboard({
   const fitSalary = report.strategy_fit_salary;
   const expected = report.expected_offer;
   const offerRange = formatOfferRange(expected);
-  const score = report.fit_score?.score ?? report.match_score ?? 0;
-  const scoreInfo = getScoreInfo(score, 'en');
 
   const sources = useMemo(() => {
     const list: { label: string; url?: string; date?: string }[] = [];
@@ -255,24 +250,7 @@ export default function FullReportDashboard({
         </div>
       </div>
 
-      {/* Job meta strip */}
-      <div className="px-4 sm:px-6 py-3 border-b border-slate-700 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-        <span className="font-semibold text-white flex items-center gap-1.5 min-w-0">
-          <Briefcase className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-          <span className="truncate">{report.job_title || 'Unknown Role'}</span>
-        </span>
-        <span className="text-slate-600 hidden sm:inline">·</span>
-        <span className="text-slate-400 flex items-center gap-1.5 min-w-0">
-          <Building2 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-          <span className="truncate">{report.company_name || 'Unknown Company'}</span>
-        </span>
-        <span className="text-slate-600 hidden sm:inline">·</span>
-        <span className={`text-xs font-bold ${scoreInfo.color}`}>
-          {score} · {scoreInfo.level}
-        </span>
-      </div>
-
-      {/* Page nav — horizontal under meta */}
+      {/* Page nav — horizontal under title */}
       <nav className="px-4 sm:px-6 py-2.5 border-b border-slate-700 bg-slate-900/60 flex gap-2 overflow-x-auto no-scrollbar">
         {NAV.map((item) => {
           const active = tab === item.id;
