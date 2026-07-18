@@ -35,7 +35,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     band: 'Strong',
     evidence_coverage: 'High',
     sharp_verdict:
-      'Strong analytical and stakeholder story for this Senior BA seat; payments-specific ACH depth is the main stretch versus the JD’s settlement focus.',
+      'Strong analytical and stakeholder story for this Senior BA seat: SQL/Looker ownership, quantified ops wins, and cross-functional facilitation map cleanly to the JD’s core scope. Level and tenure also line up—six years of fintech ops is a natural step into senior ownership rather than a stretch title. The main fit gap is payments-specific ACH/settlement depth: the resume is adjacent banking ops, so screeners may still question returns and rails fluency against this JD’s settlement focus.',
     breakdown: [
       {
         dimension: 'Hard requirements / feasibility',
