@@ -61,8 +61,8 @@ export default function SampleReportClient() {
 
       <main className="px-4 py-6 sm:py-8">
         <div className="mx-auto w-full max-w-5xl space-y-3">
-          {/* Tight stack: actions → Sample notice → report (no header gap between) */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Always visible for Snapshot + Guide samples */}
+          <div className="sticky top-0 z-30 -mx-1 px-1 py-2 bg-slate-950/95 backdrop-blur-sm flex flex-wrap items-center gap-2 sm:gap-3">
             <button type="button" onClick={goHome} className={actionBtnClass}>
               <Home className="w-4 h-4" />
               Back to Home
