@@ -65,19 +65,19 @@ export default function SampleReportClient() {
             className={`lg:w-64 xl:w-72 shrink-0 ${isGuide ? '' : 'flex'}`}
           >
             <div
-              className={`rounded-2xl border-2 border-indigo-400/55 bg-indigo-950 px-5 py-5 shadow-[0_0_40px_-12px_rgba(99,102,241,0.55)] ${
+              className={`rounded-2xl border-2 border-indigo-300/70 bg-indigo-800 px-5 py-5 shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)] ${
                 isGuide ? '' : 'w-full h-full flex flex-col'
               }`}
             >
               <div className={`flex items-start gap-3 ${isGuide ? '' : 'h-full'}`}>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/30 border border-indigo-400/40">
-                  <Sparkles className="w-4 h-4 text-indigo-200" />
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/45 border border-indigo-200/50">
+                  <Sparkles className="w-4 h-4 text-indigo-50" />
                 </span>
                 <div className={`min-w-0 flex-1 ${isGuide ? '' : 'flex flex-col h-full'}`}>
                   <p className="text-base font-bold text-white leading-snug">
                     Sample {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
                   </p>
-                  <p className="text-sm text-indigo-100/85 mt-2.5 leading-relaxed">
+                  <p className="text-sm text-indigo-50/90 mt-2.5 leading-relaxed">
                     Fictional candidate & role for product preview — not saved to your account, no
                     credits used.
                   </p>
