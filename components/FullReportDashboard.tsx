@@ -236,7 +236,7 @@ export default function FullReportDashboard({
         <div className="min-w-0">
           <p className="text-sm font-bold text-white tracking-tight">Interview Strategy Guide</p>
           <p className="text-[11px] text-slate-500">
-            Snapshot + playbook — switch pages from the left nav
+            Snapshot + playbook — switch pages from the top nav
           </p>
         </div>
         {!embedded && (
@@ -270,36 +270,30 @@ export default function FullReportDashboard({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] min-h-[28rem]">
-        {/* Sidebar — Snapshot + Guide pages */}
-        <aside className="border-b lg:border-b-0 lg:border-r border-slate-700 p-4 space-y-3 bg-slate-900/60">
-          <p className="text-[11px] text-slate-500 leading-relaxed px-1">
-            Guide · Deep — fit snapshot plus the full playbook to closing the offer.
-          </p>
-          <nav className="flex lg:flex-col gap-2 overflow-x-auto pb-1 lg:pb-0">
-            {NAV.map((item) => {
-              const active = tab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setTab(item.id)}
-                  className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors border ${
-                    active
-                      ? 'border-violet-500 bg-violet-500/10 text-violet-100'
-                      : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
-                  }`}
-                >
-                  <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
-                  {item.label}
-                </button>
-              );
-            })}
-          </nav>
-        </aside>
+      {/* Page nav — horizontal under meta */}
+      <nav className="px-4 sm:px-6 py-2.5 border-b border-slate-700 bg-slate-900/60 flex gap-2 overflow-x-auto no-scrollbar">
+        {NAV.map((item) => {
+          const active = tab === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setTab(item.id)}
+              className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors border ${
+                active
+                  ? 'border-violet-500 bg-violet-500/10 text-violet-100'
+                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
+              }`}
+            >
+              <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
+              {item.label}
+            </button>
+          );
+        })}
+      </nav>
 
-        {/* Content panel */}
-        <section className="p-4 sm:p-6 space-y-4 bg-slate-950 min-w-0">
+      {/* Content panel */}
+      <section className="p-4 sm:p-6 space-y-4 bg-slate-950 min-w-0 min-h-[28rem]">
           {tab !== 'snapshot' && (
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-1">
@@ -782,7 +776,6 @@ export default function FullReportDashboard({
               </div>
             )}
           </section>
-        </div>
     </div>
   );
 }
