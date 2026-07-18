@@ -30,4 +30,4 @@ When adjusting **either** report product UI or content rules, **always update bo
 - JobBeagle evaluates fit — it is **not** a resume coach.
 - Strategy Guide uses **top horizontal nav** pages: Snapshot · Hiring Context · Interview · Salary · Provenance (no left sidebar; Snapshot is the first page).
 - Strategy Guide sample opens on Snapshot page by default; same Snapshot slide frame as standalone.
-- Homepage `ReferralCard` is referral-only (credits live on `/account`).
+- All report surfaces (Snapshot, Guide, `/samples`, `/report`) center as a single `max-w-5xl` column — no left rail that shifts the slide.

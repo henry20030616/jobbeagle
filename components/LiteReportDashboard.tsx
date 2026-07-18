@@ -55,7 +55,11 @@ export default function LiteReportDashboard({
   };
 
   return (
-    <div className={`animate-fade-in ${embedded ? '' : 'space-y-4'}`}>
+    <div
+      className={`animate-fade-in w-full mx-auto ${
+        embedded ? '' : 'max-w-5xl space-y-4'
+      }`}
+    >
       {!embedded && (
         <div className="no-print flex flex-wrap items-center gap-2 sm:gap-3">
           <button
@@ -78,11 +82,7 @@ export default function LiteReportDashboard({
       )}
 
       {/* One-page slide frame — brighter outer border (was on upgrade CTA) */}
-      <article
-        className={`overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.55)] ${
-          embedded ? '' : 'max-w-5xl'
-        }`}
-      >
+      <article className="overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.55)]">
         {/* Slide header */}
         <header className="border-b border-slate-700/90 px-5 py-4 sm:px-6 sm:py-5">
           <div className="flex flex-wrap items-start justify-between gap-3">

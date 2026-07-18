@@ -66,20 +66,22 @@ export default function ReportPage() {
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
         </span>
       </header>
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {strategy ? (
-          <FullReportDashboard
-            report={normalizeFullReport(payload.report as FullReport)}
-            language="en"
-            onNewAnalysis={handleNewAnalysis}
-          />
-        ) : (
-          <LiteReportDashboard
-            report={normalizeLiteReport(payload.report as LiteReport)}
-            language="en"
-            onNewAnalysis={handleNewAnalysis}
-          />
-        )}
+      <main className="w-full px-4 py-8 flex justify-center">
+        <div className="w-full max-w-5xl">
+          {strategy ? (
+            <FullReportDashboard
+              report={normalizeFullReport(payload.report as FullReport)}
+              language="en"
+              onNewAnalysis={handleNewAnalysis}
+            />
+          ) : (
+            <LiteReportDashboard
+              report={normalizeLiteReport(payload.report as LiteReport)}
+              language="en"
+              onNewAnalysis={handleNewAnalysis}
+            />
+          )}
+        </div>
       </main>
     </div>
   );

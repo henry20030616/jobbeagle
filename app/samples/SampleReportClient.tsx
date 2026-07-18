@@ -51,70 +51,47 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
-        {/*
-          Equal-height row: sample rail stretches to the report slide height.
-          Guide stays content-sized on the left so it does not become a tall empty column.
-        */}
-        <div
-          className={`flex flex-col gap-4 lg:gap-5 ${
-            isGuide ? 'lg:flex-row lg:items-start' : 'lg:flex-row lg:items-stretch'
-          }`}
-        >
-          <aside
-            className={`lg:w-64 xl:w-72 shrink-0 ${isGuide ? '' : 'flex'}`}
-          >
-            <div
-              className={`rounded-2xl border-2 border-indigo-300/70 bg-indigo-800 px-5 py-5 shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)] ${
-                isGuide ? '' : 'w-full h-full flex flex-col'
-              }`}
-            >
-              <div className={`flex items-start gap-3 ${isGuide ? '' : 'h-full'}`}>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/45 border border-indigo-200/50">
-                  <Sparkles className="w-4 h-4 text-indigo-50" />
-                </span>
-                <div className={`min-w-0 flex-1 ${isGuide ? '' : 'flex flex-col h-full'}`}>
-                  <p className="text-base font-bold text-white leading-snug">
-                    Sample {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
-                  </p>
-                  <p className="text-sm text-indigo-50/90 mt-2.5 leading-relaxed">
-                    Fictional candidate & role for product preview — not saved to your account, no
-                    credits used.
-                  </p>
-                  <Link
-                    href="/"
-                    className={`inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-indigo-100 ${
-                      isGuide ? 'mt-4' : 'mt-auto pt-6'
-                    }`}
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to analyze
-                  </Link>
-                </div>
-              </div>
+      <main className="px-4 py-6 sm:py-8">
+        <div className="mx-auto w-full max-w-5xl space-y-4">
+          <div className="rounded-2xl border-2 border-indigo-300/70 bg-indigo-800 px-5 py-4 shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)] flex flex-wrap items-center gap-4">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/45 border border-indigo-200/50">
+              <Sparkles className="w-5 h-5 text-indigo-50" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-base font-bold text-white leading-snug">
+                Sample {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
+              </p>
+              <p className="text-sm text-indigo-50/90 mt-1 leading-relaxed">
+                Fictional candidate & role for product preview — not saved to your account, no
+                credits used.
+              </p>
             </div>
-          </aside>
-
-          <div className="min-w-0 flex-1">
-            {isGuide ? (
-              <FullReportDashboard
-                report={guide}
-                language="en"
-                onNewAnalysis={() => {
-                  window.location.href = '/';
-                }}
-              />
-            ) : (
-              <LiteReportDashboard
-                report={snapshot}
-                language="en"
-                embedded
-                onNewAnalysis={() => {
-                  window.location.href = '/';
-                }}
-              />
-            )}
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-indigo-100 shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to analyze
+            </Link>
           </div>
+
+          {isGuide ? (
+            <FullReportDashboard
+              report={guide}
+              language="en"
+              onNewAnalysis={() => {
+                window.location.href = '/';
+              }}
+            />
+          ) : (
+            <LiteReportDashboard
+              report={snapshot}
+              language="en"
+              onNewAnalysis={() => {
+                window.location.href = '/';
+              }}
+            />
+          )}
         </div>
       </main>
     </div>

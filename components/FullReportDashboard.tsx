@@ -221,7 +221,11 @@ export default function FullReportDashboard({
     'inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
   return (
-    <div className={embedded ? '' : 'space-y-4'}>
+    <div
+      className={`w-full mx-auto ${
+        embedded ? '' : 'max-w-5xl space-y-4'
+      }`}
+    >
       {!embedded && (
         <div className="no-print flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleBack} className={actionBtnClass}>
