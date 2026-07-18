@@ -51,45 +51,54 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-6 sm:py-8 space-y-3">
-        {/* Compact sample chip — not a left rail */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-indigo-200/80">
-          <span className="inline-flex items-center gap-1.5 font-semibold text-indigo-100">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
-            Sample {isGuide ? 'Guide' : 'Snapshot'}
-          </span>
-          <span className="text-slate-600 hidden sm:inline" aria-hidden>
-            ·
-          </span>
-          <span className="text-slate-500">
-            Preview only — not saved, no credits used
-          </span>
-          <Link
-            href="/"
-            className="ml-auto inline-flex items-center gap-1 font-semibold text-slate-400 hover:text-white"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to analyze
-          </Link>
-        </div>
+      <main className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-5">
+          <aside className="lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-6">
+            <div className="rounded-2xl border-2 border-indigo-400/55 bg-indigo-950 px-5 py-6 shadow-[0_0_40px_-12px_rgba(99,102,241,0.55)]">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/30 border border-indigo-400/40">
+                  <Sparkles className="w-5 h-5 text-indigo-200" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-base font-bold text-white leading-snug">
+                    Sample {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
+                  </p>
+                  <p className="text-sm text-indigo-100/85 mt-3 leading-relaxed">
+                    Fictional candidate & role for product preview — not saved to your account, no
+                    credits used.
+                  </p>
+                  <Link
+                    href="/"
+                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-indigo-100"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to analyze
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </aside>
 
-        {isGuide ? (
-          <FullReportDashboard
-            report={guide}
-            language="en"
-            onNewAnalysis={() => {
-              window.location.href = '/';
-            }}
-          />
-        ) : (
-          <LiteReportDashboard
-            report={snapshot}
-            language="en"
-            onNewAnalysis={() => {
-              window.location.href = '/';
-            }}
-          />
-        )}
+          <div className="min-w-0 flex-1">
+            {isGuide ? (
+              <FullReportDashboard
+                report={guide}
+                language="en"
+                onNewAnalysis={() => {
+                  window.location.href = '/';
+                }}
+              />
+            ) : (
+              <LiteReportDashboard
+                report={snapshot}
+                language="en"
+                onNewAnalysis={() => {
+                  window.location.href = '/';
+                }}
+              />
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );
