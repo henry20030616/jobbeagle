@@ -409,9 +409,13 @@ export default function ConfirmPage() {
             compactChrome={embedded}
           />
 
-          {user && profile?.referral_code && !embedded && (
-            <div className="mt-6 mb-2">
-              <ReferralCard referralCode={profile.referral_code} language={language} />
+          {user && profile && !embedded && (
+            <div className="mt-4 mb-1">
+              <ReferralCard
+                referralCode={profile.referral_code}
+                language={language}
+                userProfile={profile}
+              />
             </div>
           )}
 

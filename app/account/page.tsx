@@ -628,7 +628,11 @@ export default function AccountPage() {
                   </p>
                 </div>
               </div>
-              <ReferralCard referralCode={data.profile.referral_code} language={language} />
+              <ReferralCard
+                referralCode={data.profile.referral_code}
+                language={language}
+                userProfile={data.profile}
+              />
               {data.referrals.length === 0 ? (
                 <p className="text-sm text-slate-500">{t.referralEmpty}</p>
               ) : (

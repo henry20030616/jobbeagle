@@ -621,8 +621,12 @@ export default function Home() {
               userProfile={userProfile}
             />
             {currentUser && userProfile && (
-              <div className="mt-6 mb-2">
-                <ReferralCard referralCode={userProfile.referral_code} language={language} />
+              <div className="mt-4 mb-1">
+                <ReferralCard
+                  referralCode={userProfile.referral_code}
+                  language={language}
+                  userProfile={userProfile}
+                />
               </div>
             )}
             <FooterSection language={language} />
