@@ -57,24 +57,35 @@ export default function SampleReportClient() {
       </header>
 
       <main className="px-4 py-6 sm:py-8">
-        <div className="mx-auto w-full max-w-7xl space-y-3">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <button type="button" onClick={goHome} className={REPORT_ACTION_BTN}>
-              <Home className="w-4 h-4" />
-              Back to Home
-            </button>
-            <button type="button" onClick={goHome} className={REPORT_ACTION_BTN}>
-              <RotateCcw className="w-4 h-4" />
-              New Analysis
-            </button>
-          </div>
-
-          {/* Sample box left · report right — tops aligned */}
+        <div className="mx-auto w-full max-w-7xl">
+          {/*
+            Left column: actions (same width as Sample) + Sample box
+            Right column: report — tops of actions & report aligned
+          */}
           <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-            <aside className="w-full sm:w-56 lg:w-64 shrink-0">
-              <div className={`${SAMPLE_NOTICE_SURFACE} px-4 py-4 flex flex-col gap-3`}>
+            <aside className="w-full sm:w-56 lg:w-64 shrink-0 flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-2 w-full">
+                <button
+                  type="button"
+                  onClick={goHome}
+                  className={`${REPORT_ACTION_BTN} w-full justify-center px-2 text-xs sm:text-[13px]`}
+                >
+                  <Home className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Back to Home</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={goHome}
+                  className={`${REPORT_ACTION_BTN} w-full justify-center px-2 text-xs sm:text-[13px]`}
+                >
+                  <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">New Analysis</span>
+                </button>
+              </div>
+
+              <div className={`${SAMPLE_NOTICE_SURFACE} w-full px-4 py-4 flex flex-col gap-3`}>
                 <div className="flex items-start gap-2.5">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 border border-sky-400/60">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 border border-sky-400">
                     <Sparkles className="w-4 h-4 text-sky-300" />
                   </span>
                   <div className="min-w-0">
