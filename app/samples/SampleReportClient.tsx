@@ -85,22 +85,22 @@ export default function SampleReportClient() {
 
               <div className={`${SAMPLE_NOTICE_SURFACE} w-full px-4 py-4 flex flex-col gap-3`}>
                 <div className="flex items-start gap-2.5">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 border border-sky-400">
-                    <Sparkles className="w-4 h-4 text-sky-300" />
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
+                    <Sparkles className="w-4 h-4 text-white" />
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-white leading-snug">
                       Sample{' '}
                       {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
                     </p>
-                    <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+                    <p className="text-[11px] text-blue-50/90 mt-1.5 leading-relaxed">
                       Fictional candidate & role for product preview — not saved, no credits used.
                     </p>
                   </div>
                 </div>
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-300 hover:text-sky-200"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-blue-50"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Back to analyze

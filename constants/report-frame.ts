@@ -4,10 +4,11 @@ export const REPORT_ACTION_BTN =
 
 /**
  * Snapshot / Guide large frames — brighter blue (never white / grey).
- * Sample notice uses the same token so chrome stays consistent.
  */
 export const REPORT_FRAME_BORDER = 'border-2 border-sky-400';
 
-export const SAMPLE_NOTICE_SURFACE = `rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900`;
+/** Sample notice — thin dark-blue frame, bright blue fill */
+export const SAMPLE_NOTICE_SURFACE =
+  'rounded-lg border border-blue-950 bg-sky-500';
 
 export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950`;
