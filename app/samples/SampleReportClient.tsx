@@ -63,23 +63,23 @@ export default function SampleReportClient() {
             Right column: report — tops of actions & report aligned
           */}
           <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-            <aside className="w-full sm:w-56 lg:w-64 shrink-0 flex flex-col gap-3">
-              <div className="grid grid-cols-2 gap-2 w-full">
+            <aside className="w-full sm:w-64 lg:w-72 shrink-0 flex flex-col gap-3">
+              <div className="flex flex-col gap-2 w-full">
                 <button
                   type="button"
                   onClick={goHome}
-                  className={`${REPORT_ACTION_BTN} w-full justify-center px-2 text-xs sm:text-[13px]`}
+                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap px-3`}
                 >
                   <Home className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">Back to Home</span>
+                  Back to Home
                 </button>
                 <button
                   type="button"
                   onClick={goHome}
-                  className={`${REPORT_ACTION_BTN} w-full justify-center px-2 text-xs sm:text-[13px]`}
+                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap px-3`}
                 >
                   <RotateCcw className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">New Analysis</span>
+                  New Analysis
                 </button>
               </div>
 
