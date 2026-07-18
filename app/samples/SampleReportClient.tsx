@@ -12,7 +12,10 @@ import {
 } from '@/lib/sample-reports';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import { SAMPLE_NOTICE_SURFACE } from '@/constants/report-frame';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
+
+const actionBtnClass =
+  'inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
 export default function SampleReportClient() {
   const searchParams = useSearchParams();
@@ -23,6 +26,10 @@ export default function SampleReportClient() {
 
   const snapshot = useMemo(() => getSampleSnapshotReport(), []);
   const guide = useMemo(() => getSampleStrategyGuideReport(), []);
+
+  const goHome = () => {
+    window.location.href = '/';
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
@@ -54,7 +61,18 @@ export default function SampleReportClient() {
 
       <main className="px-4 py-6 sm:py-8">
         <div className="mx-auto w-full max-w-5xl space-y-4">
-          {/* Quiet sample chip — does not replace Back to Home / New Analysis */}
+          {/* Actions above Sample notice */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <button type="button" onClick={goHome} className={actionBtnClass}>
+              <Home className="w-4 h-4" />
+              Back to Home
+            </button>
+            <button type="button" onClick={goHome} className={actionBtnClass}>
+              <RotateCcw className="w-4 h-4" />
+              New Analysis
+            </button>
+          </div>
+
           <div
             className={`${SAMPLE_NOTICE_SURFACE} px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5`}
           >
@@ -75,21 +93,9 @@ export default function SampleReportClient() {
           </div>
 
           {isGuide ? (
-            <FullReportDashboard
-              report={guide}
-              language="en"
-              onNewAnalysis={() => {
-                window.location.href = '/';
-              }}
-            />
+            <FullReportDashboard report={guide} language="en" embedded onNewAnalysis={goHome} />
           ) : (
-            <LiteReportDashboard
-              report={snapshot}
-              language="en"
-              onNewAnalysis={() => {
-                window.location.href = '/';
-              }}
-            />
+            <LiteReportDashboard report={snapshot} language="en" embedded onNewAnalysis={goHome} />
           )}
         </div>
       </main>
