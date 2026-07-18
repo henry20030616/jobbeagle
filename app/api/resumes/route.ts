@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { upsertResumeForUser } from '@/lib/resumes';
 import type { ResumeInput } from '@/types';
-import { extractResumeText, isPdfResume } from '@/lib/resume-parser';
+import { extractResumeText, isPdfResume, isValidPdfBase64, sanitizePdfBase64 } from '@/lib/resume-parser';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 
 /**
@@ -35,8 +35,19 @@ export async function POST(request: NextRequest) {
     let hashMaterial: string;
 
     if (isPdfResume(resume)) {
-      contentText = `[PDF resume: ${resume.fileName || 'resume.pdf'}]\n[Resume provided as PDF attachment]`;
-      hashMaterial = `pdf:${resume.content.slice(0, 64)}:${resume.content.length}`;
+      // Must persist real PDF base64 — placeholder stubs break Gemini inline_data on library pick.
+      if (!isValidPdfBase64(resume.content)) {
+        return NextResponse.json(
+          {
+            error:
+              'PDF bytes missing. Re-upload the PDF file before saving to your library.',
+            code: 'INVALID_PDF',
+          },
+          { status: 400 },
+        );
+      }
+      contentText = sanitizePdfBase64(resume.content);
+      hashMaterial = `pdf:${contentText.slice(0, 64)}:${contentText.length}`;
     } else {
       contentText = await extractResumeText(resume);
       hashMaterial = contentText;

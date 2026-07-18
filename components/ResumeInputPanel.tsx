@@ -236,6 +236,22 @@ export default function ResumeInputPanel({
                       role="button"
                       tabIndex={0}
                       onClick={() => {
+                        if (
+                          item.mimeType === 'application/pdf'
+                          && typeof item.content === 'string'
+                          && (
+                            item.content.trim().startsWith('[PDF resume:')
+                            || item.content.includes('[PDF resume attached]')
+                            || item.content.includes('[Resume provided as PDF attachment]')
+                          )
+                        ) {
+                          alert(
+                            zh
+                              ? '這份已存 PDF 只有檔名、沒有檔案內容。請重新上傳 PDF 後再分析。'
+                              : 'This saved PDF is incomplete (name only). Please re-upload the PDF file, then launch again.',
+                          );
+                          return;
+                        }
                         onChange({
                           type: item.type,
                           content: item.content,
@@ -246,6 +262,22 @@ export default function ResumeInputPanel({
                       }}
                       onKeyDown={(ev) => {
                         if (ev.key === 'Enter') {
+                          if (
+                            item.mimeType === 'application/pdf'
+                            && typeof item.content === 'string'
+                            && (
+                              item.content.trim().startsWith('[PDF resume:')
+                              || item.content.includes('[PDF resume attached]')
+                              || item.content.includes('[Resume provided as PDF attachment]')
+                            )
+                          ) {
+                            alert(
+                              zh
+                                ? '這份已存 PDF 只有檔名、沒有檔案內容。請重新上傳 PDF 後再分析。'
+                                : 'This saved PDF is incomplete (name only). Please re-upload the PDF file, then launch again.',
+                            );
+                            return;
+                          }
                           onChange({
                             type: item.type,
                             content: item.content,

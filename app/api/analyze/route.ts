@@ -335,11 +335,9 @@ export async function POST(request: NextRequest) {
 
     let resumeId: string | null = null;
     try {
+      // Persist real PDF base64 so "Saved Resumes" can re-run analysis.
       const resumeTextForStore = input.pdf_inline
-        ? normalizePdfResumeStoreText(
-            input.resume_text,
-            body.resume?.fileName,
-          )
+        ? input.pdf_inline.data
         : input.resume_text;
       const hashMaterial = input.pdf_inline
         ? `pdf:${input.pdf_inline.data.slice(0, 64)}:${input.pdf_inline.data.length}`
@@ -418,17 +416,14 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Analysis failed';
     console.error('[Analyze] Error:', message);
+    const friendly =
+      message.includes('Base64 decoding failed')
+      || message.includes('inline_data.data')
+        ? 'Resume PDF could not be read. Please re-upload the PDF file (do not reuse an old Saved Resume stub), then launch again.'
+        : message;
     return NextResponse.json(
-      { error: message, code: 'ANALYSIS_ERROR' },
+      { error: friendly, code: 'ANALYSIS_ERROR' },
       { status: 500 },
     );
   }
-}
-
-function normalizePdfResumeStoreText(
-  placeholder: string,
-  fileName?: string | null,
-): string {
-  const name = fileName?.trim() || 'resume.pdf';
-  return `[PDF resume: ${name}]\n${placeholder}`.slice(0, MAX_RESUME_CHARS);
 }

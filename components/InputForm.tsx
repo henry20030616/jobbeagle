@@ -299,6 +299,22 @@ const InputForm: React.FC<InputFormProps> = ({
   };
 
   const handleSelectResume = (saved: SavedResume) => {
+    if (
+      saved.mimeType === 'application/pdf'
+      && typeof saved.content === 'string'
+      && (
+        saved.content.trim().startsWith('[PDF resume:')
+        || saved.content.includes('[PDF resume attached]')
+        || saved.content.includes('[Resume provided as PDF attachment]')
+      )
+    ) {
+      alert(
+        language === 'zh-TW' || language === 'zh-CN'
+          ? '這份已存 PDF 只有檔名、沒有檔案內容。請重新上傳 PDF 後再分析。'
+          : 'This saved PDF is incomplete (name only). Please re-upload the PDF file, then launch again.',
+      );
+      return;
+    }
     setResume({
       type: saved.type,
       content: saved.content,
