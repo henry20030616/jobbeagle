@@ -15,7 +15,7 @@ import {
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { startCheckout } from '@/lib/checkout-client';
-import { formatOfferRange } from '@/lib/offer-display';
+import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
@@ -44,7 +44,7 @@ export default function LiteReportDashboard({
   const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
   const offer = report.expected_offer;
   const offerRange = formatOfferRange(offer);
-  const hardStatus = report.hard_filter?.status ?? 'Unknown';
+  const offerEval = offerEvaluationSummary(offer);
 
   const handleBack = () => {
     if (onNewAnalysis) {
@@ -180,36 +180,42 @@ export default function LiteReportDashboard({
             {offer?.evidence_tier ? ` · Tier ${offer.evidence_tier}` : ''}
           </p>
 
-          {offerRange ? (
-            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/25 px-4 py-5 mb-3 text-center">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90 mb-2">
-                Expected range
-              </p>
-              <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                {offerRange}
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
-              <p className="text-sm font-semibold text-indigo-100">
-                No reliable offer band yet
-              </p>
-              <p className="text-xs text-indigo-100/80 mt-1 leading-relaxed">
-                Ask the recruiter for the approved cash range before you invest interview time.
-              </p>
-            </div>
-          )}
+          <div className="flex-1 flex flex-col justify-center py-2">
+            {offerRange ? (
+              <>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90 mb-1.5">
+                  Expected range
+                </p>
+                <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                  {offerRange}
+                </p>
+                {offer?.candidate_position_label && (
+                  <p className="text-sm text-emerald-100/90 leading-relaxed mt-2">
+                    {offer.candidate_position_label}
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-bold text-slate-200">No reliable offer band yet</p>
+                <p className="text-sm text-slate-400 mt-1 leading-relaxed">
+                  Ask the recruiter for the approved cash range before you invest interview time.
+                </p>
+              </>
+            )}
+          </div>
 
-          {offer?.candidate_position_label && (
-            <p className="text-sm text-emerald-100/90 leading-relaxed mb-2">
-              {offer.candidate_position_label}
+          {/* Aligns with Score Summary on the left */}
+          <div className="mt-4 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 mb-1.5">
+              Range Evaluation
             </p>
-          )}
-          {offer?.target_gap && (
-            <p className="text-xs text-slate-400 leading-relaxed mt-auto">
-              {offer.target_gap}
-            </p>
-          )}
+            <p className="text-sm font-bold text-emerald-100 mb-1.5">{offerEval.headline}</p>
+            <p className="text-sm text-slate-200 leading-relaxed">{offerEval.basis}</p>
+            {offerEval.detail && (
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">{offerEval.detail}</p>
+            )}
+          </div>
         </div>
       </div>
 
