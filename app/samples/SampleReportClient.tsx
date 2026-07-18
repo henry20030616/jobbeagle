@@ -64,12 +64,13 @@ export default function SampleReportClient() {
             Right column: report — tops of actions & report aligned
           */}
           <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-            <aside className="w-full sm:w-64 lg:w-72 shrink-0 flex flex-col gap-3">
-              <div className="flex flex-col gap-2 w-full">
+            <aside className="w-full sm:w-80 lg:w-[22rem] shrink-0 flex flex-col gap-3">
+              {/* Two buttons side-by-side; combined width = Sample box width */}
+              <div className="grid grid-cols-2 gap-2 w-full">
                 <button
                   type="button"
                   onClick={goHome}
-                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap px-3`}
+                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
                 >
                   <Home className="w-3.5 h-3.5 shrink-0" />
                   Back to Home
@@ -77,7 +78,7 @@ export default function SampleReportClient() {
                 <button
                   type="button"
                   onClick={goHome}
-                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap px-3`}
+                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
                 >
                   <RotateCcw className="w-3.5 h-3.5 shrink-0" />
                   New Analysis
