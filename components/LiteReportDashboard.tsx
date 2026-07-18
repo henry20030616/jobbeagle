@@ -179,12 +179,32 @@ export default function LiteReportDashboard({
               </div>
             </div>
           </div>
-          <p className="text-sm text-slate-300 leading-relaxed mt-4 line-clamp-3">
-            {report.fit_score?.sharp_verdict
-              || report.one_sentence_sharp_critique
-              || report.recruiter_verdict
-              || scoreInfo.description}
-          </p>
+
+          {/* Comprehensive score summary under the Beagle + score */}
+          <div className="mt-4 rounded-xl border border-indigo-500/25 bg-indigo-500/10 px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1.5">
+              Score Summary
+            </p>
+            <p className={`text-sm font-bold ${scoreInfo.color} mb-1.5`}>
+              {score}/100 · {scoreInfo.level}
+              {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+            </p>
+            <p className="text-sm text-slate-200 leading-relaxed">
+              {report.fit_score?.sharp_verdict
+                || report.recruiter_verdict
+                || report.one_sentence_sharp_critique
+                || scoreInfo.description}
+            </p>
+            {report.apply_decision?.label && (
+              <p className="text-xs text-slate-400 mt-2">
+                Bottom line:{' '}
+                <span className="font-semibold text-slate-200">{report.apply_decision.label}</span>
+                {report.apply_decision.reason
+                  ? ` — ${report.apply_decision.reason}`
+                  : ''}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 flex flex-col shadow-xl backdrop-blur-sm">
