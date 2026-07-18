@@ -256,12 +256,17 @@ export async function POST(request: NextRequest) {
       reportType,
     );
     if (cached?.report_json) {
+      const fullCached = cached.report_json as FullReport;
+      const strategyReady =
+        (Array.isArray(fullCached?.concerns_defenses)
+          && fullCached.concerns_defenses.length >= 3)
+        || (Array.isArray(fullCached?.custom_star_interview_bank)
+          && fullCached.custom_star_interview_bank.length >= 5)
+        || Boolean(fullCached?.interview_playbook?.predicted?.length);
       const useCache =
         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
           ? isEnrichedLiteReport(cached.report_json)
-          : isEnrichedLiteReport(cached.report_json)
-            && Array.isArray((cached.report_json as FullReport)?.custom_star_interview_bank)
-            && ((cached.report_json as FullReport).custom_star_interview_bank?.length ?? 0) >= 5;
+          : isEnrichedLiteReport(cached.report_json) && strategyReady;
       if (useCache) {
         const cachedReport =
           reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
@@ -322,9 +327,11 @@ export async function POST(request: NextRequest) {
     }
 
     const score =
-      typeof (report as LiteReport).match_score === 'number'
-        ? (report as LiteReport).match_score
-        : null;
+      typeof (report as LiteReport).fit_score?.score === 'number'
+        ? (report as LiteReport).fit_score.score
+        : typeof (report as LiteReport).match_score === 'number'
+          ? (report as LiteReport).match_score
+          : null;
 
     let resumeId: string | null = null;
     try {

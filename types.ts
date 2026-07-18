@@ -141,11 +141,13 @@ export { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 type ReportType = ReportTypeCode;
 export type MembershipTier = 'free' | 'standard_sub' | 'advanced_sub';
 
+/** @deprecated FLSA removed from core product (Report Spec v3) */
 export type FlsaStatus =
   | 'Exempt (Professional Exemption)'
   | 'Non-Exempt'
   | 'Exempt (Executive Exemption)';
 
+/** @deprecated use ExpectedOfferRange */
 export interface Radford2026CompensationMatrix {
   tier_25th_low: string;
   tier_50th_mid: string;
@@ -173,33 +175,197 @@ export interface LiteHardRequirement {
   status: HardRequirementStatus;
 }
 
-/** Lite Report — JD + resume only (no web search), enriched snapshot */
-export interface LiteReport {
-  match_score: number;
-  dog_breed_archetype: string;
-  one_sentence_sharp_critique: string;
-  flsa_status: FlsaStatus;
-  radford_2026_compensation_matrix: Radford2026CompensationMatrix;
-  job_title: string;
-  company_name: string;
-  recruiter_verdict: string;
-  matching_strengths: LiteMatchPoint[];
-  critical_gaps: LiteSkillGap[];
-  hard_requirements_checklist: LiteHardRequirement[];
-  interview_starters: string[];
+// ─── Report Spec v3 — dual heroes: Fit Score + Expected Offer ───
+
+export type CompletenessLevel = 'High' | 'Medium' | 'Low';
+export type HardFilterStatus = 'Pass' | 'Risk' | 'Blocked' | 'Unknown';
+export type FitBand = 'Strong' | 'Viable' | 'Stretch' | 'Mismatch';
+export type EvidenceCoverage = 'High' | 'Medium' | 'Low';
+export type SalaryEvidenceTier = 'A' | 'B' | 'C' | 'D';
+export type ApplyDecisionLabel =
+  | 'Apply now'
+  | 'Apply after fixes'
+  | 'Clarify first'
+  | 'Skip';
+
+export interface DataCompleteness {
+  level: CompletenessLevel;
+  missing_inputs: string[];
+  confidence_notes: string;
 }
 
-/** Live-intel layer unique to Interview Strategy Guide */
-export interface StrategyIntelFields {
-  online_intel_warning: string;
-  corporate_culture_blackbox: string;
-  custom_star_interview_bank: string[];
-  salary_negotiation_script: string;
+export interface HardFilterItem {
+  requirement: string;
+  status: HardFilterStatus | HardRequirementStatus;
+  evidence: string;
+}
+
+export interface HardFilter {
+  status: HardFilterStatus;
+  items: HardFilterItem[];
+}
+
+export interface FitScoreBreakdownItem {
+  dimension: string;
+  weight_pct: number;
+  score: number;
+  note: string;
+}
+
+export interface FitScoreBlock {
+  score: number;
+  band: FitBand;
+  evidence_coverage: EvidenceCoverage;
+  sharp_verdict: string;
+  breakdown: FitScoreBreakdownItem[];
+}
+
+export interface ProofMap {
+  strengths: LiteMatchPoint[];
+  gaps: LiteSkillGap[];
+  resume_actions: string[];
+  screenability_note: string;
+}
+
+export interface ExpectedOfferRange {
+  posted_range: string | null;
+  p25: string | null;
+  p50: string | null;
+  p75: string | null;
+  currency: string;
+  region: string;
+  target_gap: string;
+  evidence_tier: SalaryEvidenceTier;
+  sources: string[];
+  /** Short positioning line for Snapshot */
+  candidate_position_label?: string;
+}
+
+export interface ApplyDecision {
+  label: ApplyDecisionLabel;
+  reason: string;
+  next_best_action: string;
+}
+
+export interface RoleRead {
+  mission: string;
+  responsibilities: string[];
+  hiring_signals: string[];
+}
+
+export interface HiringInsight {
+  claim: string;
+  why_it_matters: string;
+  source_url: string;
+  date: string;
+}
+
+export interface HiringContext {
+  insights: HiringInsight[];
+  limitations: string[];
+  validation_questions: string[];
+}
+
+export interface ConcernDefense {
+  concern: string;
+  why: string;
+  evidence: string;
+  missing_proof: string;
+  answer_guide: string;
+  do_not_claim: string;
+}
+
+export interface InterviewQuestionCard {
+  question: string;
+  predicted?: boolean;
+  source_url?: string;
+  source_date?: string;
+  evidence?: string;
+  star_outline?: string;
+  missing_facts?: string;
+}
+
+export interface InterviewPlaybook {
+  reported: InterviewQuestionCard[];
+  predicted: InterviewQuestionCard[];
+  star_outlines: string[];
+  reverse_questions: string[];
+  validate_before_join: string[];
+}
+
+export interface OfferStrategy {
+  target: string;
+  acceptable: string;
+  walk_away: string;
+  levers: string[];
+  script: string;
+  discovery_questions: string[];
+}
+
+export interface StrategyFitSalary {
+  score_implications: string;
+  offer_implications: string;
+  validate_with_recruiter: string[];
 }
 
 /**
- * Interview Strategy Guide = full Job Fit Snapshot + live intel / STAR / negotiation.
- * Always includes every LiteReport field.
+ * Job Fit Snapshot — Spec v3
+ * Dual heroes: fit_score + expected_offer. No FLSA. No culture-in-score.
+ */
+export interface LiteReport {
+  job_title: string;
+  company_name: string;
+  data_completeness: DataCompleteness;
+  hard_filter: HardFilter;
+  fit_score: FitScoreBlock;
+  proof_map: ProofMap;
+  expected_offer: ExpectedOfferRange;
+  apply_decision: ApplyDecision;
+  role_read: RoleRead;
+  /** Snapshot-only predicted starters (no web search) */
+  interview_starters: string[];
+
+  /** @deprecated use fit_score.score */
+  match_score: number;
+  /** @deprecated use fit_score.sharp_verdict / apply_decision */
+  recruiter_verdict?: string;
+  /** @deprecated use fit_score.sharp_verdict */
+  one_sentence_sharp_critique?: string;
+  /** @deprecated removed from product */
+  dog_breed_archetype?: string;
+  /** @deprecated removed from core product */
+  flsa_status?: FlsaStatus;
+  /** @deprecated use expected_offer */
+  radford_2026_compensation_matrix?: Radford2026CompensationMatrix;
+  /** @deprecated use proof_map.strengths */
+  matching_strengths?: LiteMatchPoint[];
+  /** @deprecated use proof_map.gaps */
+  critical_gaps?: LiteSkillGap[];
+  /** @deprecated use hard_filter.items */
+  hard_requirements_checklist?: LiteHardRequirement[];
+}
+
+/** Strategy Guide layer — Spec v3 (Pro + optional grounding) */
+export interface StrategyIntelFields {
+  strategy_fit_salary: StrategyFitSalary;
+  hiring_context: HiringContext;
+  concerns_defenses: ConcernDefense[];
+  interview_playbook: InterviewPlaybook;
+  offer_strategy: OfferStrategy;
+  report_version?: string;
+
+  /** @deprecated mapped into hiring_context / validate_before_join */
+  online_intel_warning?: string;
+  /** @deprecated use hiring_context + validate_before_join */
+  corporate_culture_blackbox?: string;
+  /** @deprecated use interview_playbook.star_outlines / predicted */
+  custom_star_interview_bank?: string[];
+  /** @deprecated use offer_strategy.script */
+  salary_negotiation_script?: string;
+}
+
+/**
+ * Interview Strategy Guide = Snapshot + strategy layer.
  */
 export type FullReport = LiteReport & StrategyIntelFields;
 

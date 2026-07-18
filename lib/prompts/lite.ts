@@ -1,67 +1,161 @@
-/** Lite Report system prompt — prompt-cache friendly, no web search */
+/** Job Fit Snapshot — Spec v3 (Flash-Lite, no web search) */
 
-export const LITE_SYSTEM_PROMPT = `You are a ruthless, world-class executive recruiter in the US tech market. Analyze the provided Resume and Job Description (JD). Conduct advanced semantic reasoning. Do not be polite; do not use generic filler words. You must judge the match based on rigid corporate barriers and candidate deficiencies.
+export const LITE_SYSTEM_PROMPT = `You are a senior US executive recruiter producing a Job Fit Snapshot.
+Your job is to support TWO hero decisions only:
+1) Candidate Fit Score — how competitive is this candidate for THIS JD?
+2) Expected Offer Range — what compensation is reasonably expectable, with an evidence tier?
 
-Extract job_title and company_name from the JD when present; otherwise infer reasonable labels from context.
-
-For compensation, use your built-in Radford 2026 Compensation Benchmark memory — output real market 25th, 50th, 75th percentiles for the title, seniority level, and tech stack in the JD's market (US default unless JD specifies region). Format each tier as explicit annual cash comp e.g. "$145,000 USD/yr" or "NT$1,200,000 TWD/yr". Also output:
-- market_region: e.g. "San Francisco Bay Area" or "Taiwan"
-- compensation_rationale: 2–3 sentences citing title level, years required, and stack — why these percentiles apply
-- candidate_salary_position: one of below_p25 | p25_p50 | p50_p75 | above_p75 based on resume seniority vs JD
-- candidate_position_label: one persuasive sentence for the candidate, e.g. "Given your 4 YOE, you likely land at P35–P45 of this band — negotiate toward P50 with your cloud migration wins."
-
-Deliver a substantive Lite report (not a minimal stub):
-- recruiter_verdict: 2–3 dense sentences — hiring manager POV, cite specific JD vs resume evidence.
-- matching_strengths: 3–4 items with concrete point + description (resume evidence).
-- critical_gaps: 3–4 items with gap + description (JD requirements the resume fails).
-- hard_requirements_checklist: 4–6 must-have JD requirements with status met | partial | missing.
-- interview_starters: exactly 3 role-specific questions a recruiter would ask this candidate (derived from gaps in the resume vs JD only — no web search).
-
-Scoring (strict): most candidates 45–72; 85+ rare. one_sentence_sharp_critique must name the single worst mismatch. dog_breed_archetype: visual characterization (e.g. Border Collie for analytical execution).
+Rules:
+- Extract facts from the JD and resume only. Never invent experience, visas, or compensation from model memory.
+- Do NOT output FLSA classification.
+- Do NOT include culture-fit inside the numeric score.
+- Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
+- Suggest score breakdown weights as guidance for your assessment (backend may recompute): hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain experience 15%, proven impact 10%.
+- hard_filter.status: Pass | Risk | Blocked | Unknown. Use Blocked ONLY for explicit conflicts (e.g. must be onsite NYC but candidate is remote-only with no relocation). Missing data → Unknown or Risk, not Blocked.
+- expected_offer.evidence_tier:
+  A = JD/employer posted range
+  B = highly matching public role-level data you can cite as a short note in sources[]
+  C = reputable market benchmark with region (state uncertainty)
+  D = insufficient → set p25/p50/p75/posted_range to null and explain in target_gap
+- Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
+- apply_decision.label must be one of: Apply now | Apply after fixes | Clarify first | Skip
+- interview_starters: exactly 3 predicted questions from resume↔JD gaps (no web). Label them as predicted in prose if needed; do not invent "reported" questions.
+- Tone: direct, evidence-based, respectful. No humiliation.
 
 Output valid JSON only. No markdown fences.`;
 
 export const LITE_JSON_SCHEMA = {
   type: 'object',
   properties: {
-    match_score: { type: 'integer', minimum: 0, maximum: 100 },
     job_title: { type: 'string' },
     company_name: { type: 'string' },
-    dog_breed_archetype: { type: 'string' },
-    recruiter_verdict: { type: 'string' },
-    one_sentence_sharp_critique: { type: 'string' },
-    matching_strengths: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          point: { type: 'string' },
-          description: { type: 'string' },
-        },
-        required: ['point', 'description'],
+    data_completeness: {
+      type: 'object',
+      properties: {
+        level: { type: 'string', enum: ['High', 'Medium', 'Low'] },
+        missing_inputs: { type: 'array', items: { type: 'string' } },
+        confidence_notes: { type: 'string' },
       },
+      required: ['level', 'missing_inputs', 'confidence_notes'],
     },
-    critical_gaps: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          gap: { type: 'string' },
-          description: { type: 'string' },
+    hard_filter: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', enum: ['Pass', 'Risk', 'Blocked', 'Unknown'] },
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              requirement: { type: 'string' },
+              status: { type: 'string' },
+              evidence: { type: 'string' },
+            },
+            required: ['requirement', 'status', 'evidence'],
+          },
         },
-        required: ['gap', 'description'],
       },
+      required: ['status', 'items'],
     },
-    hard_requirements_checklist: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          requirement: { type: 'string' },
-          status: { type: 'string', enum: ['met', 'partial', 'missing'] },
+    fit_score: {
+      type: 'object',
+      properties: {
+        score: { type: 'integer', minimum: 0, maximum: 100 },
+        band: { type: 'string', enum: ['Strong', 'Viable', 'Stretch', 'Mismatch'] },
+        evidence_coverage: { type: 'string', enum: ['High', 'Medium', 'Low'] },
+        sharp_verdict: { type: 'string' },
+        breakdown: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              dimension: { type: 'string' },
+              weight_pct: { type: 'number' },
+              score: { type: 'number' },
+              note: { type: 'string' },
+            },
+            required: ['dimension', 'weight_pct', 'score', 'note'],
+          },
         },
-        required: ['requirement', 'status'],
       },
+      required: ['score', 'band', 'evidence_coverage', 'sharp_verdict', 'breakdown'],
+    },
+    proof_map: {
+      type: 'object',
+      properties: {
+        strengths: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              point: { type: 'string' },
+              description: { type: 'string' },
+            },
+            required: ['point', 'description'],
+          },
+        },
+        gaps: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              gap: { type: 'string' },
+              description: { type: 'string' },
+            },
+            required: ['gap', 'description'],
+          },
+        },
+        resume_actions: { type: 'array', items: { type: 'string' } },
+        screenability_note: { type: 'string' },
+      },
+      required: ['strengths', 'gaps', 'resume_actions', 'screenability_note'],
+    },
+    expected_offer: {
+      type: 'object',
+      properties: {
+        posted_range: { type: ['string', 'null'] },
+        p25: { type: ['string', 'null'] },
+        p50: { type: ['string', 'null'] },
+        p75: { type: ['string', 'null'] },
+        currency: { type: 'string' },
+        region: { type: 'string' },
+        target_gap: { type: 'string' },
+        evidence_tier: { type: 'string', enum: ['A', 'B', 'C', 'D'] },
+        sources: { type: 'array', items: { type: 'string' } },
+        candidate_position_label: { type: 'string' },
+      },
+      required: [
+        'posted_range',
+        'p25',
+        'p50',
+        'p75',
+        'currency',
+        'region',
+        'target_gap',
+        'evidence_tier',
+        'sources',
+      ],
+    },
+    apply_decision: {
+      type: 'object',
+      properties: {
+        label: {
+          type: 'string',
+          enum: ['Apply now', 'Apply after fixes', 'Clarify first', 'Skip'],
+        },
+        reason: { type: 'string' },
+        next_best_action: { type: 'string' },
+      },
+      required: ['label', 'reason', 'next_best_action'],
+    },
+    role_read: {
+      type: 'object',
+      properties: {
+        mission: { type: 'string' },
+        responsibilities: { type: 'array', items: { type: 'string' } },
+        hiring_signals: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['mission', 'responsibilities', 'hiring_signals'],
     },
     interview_starters: {
       type: 'array',
@@ -69,43 +163,17 @@ export const LITE_JSON_SCHEMA = {
       minItems: 3,
       maxItems: 3,
     },
-    flsa_status: {
-      type: 'string',
-      enum: [
-        'Exempt (Professional Exemption)',
-        'Non-Exempt',
-        'Exempt (Executive Exemption)',
-      ],
-    },
-    radford_2026_compensation_matrix: {
-      type: 'object',
-      properties: {
-        tier_25th_low: { type: 'string' },
-        tier_50th_mid: { type: 'string' },
-        tier_75th_high: { type: 'string' },
-        market_region: { type: 'string' },
-        compensation_rationale: { type: 'string' },
-        candidate_salary_position: {
-          type: 'string',
-          enum: ['below_p25', 'p25_p50', 'p50_p75', 'above_p75'],
-        },
-        candidate_position_label: { type: 'string' },
-      },
-      required: ['tier_25th_low', 'tier_50th_mid', 'tier_75th_high', 'compensation_rationale', 'candidate_position_label'],
-    },
   },
   required: [
-    'match_score',
     'job_title',
     'company_name',
-    'dog_breed_archetype',
-    'recruiter_verdict',
-    'one_sentence_sharp_critique',
-    'matching_strengths',
-    'critical_gaps',
-    'hard_requirements_checklist',
+    'data_completeness',
+    'hard_filter',
+    'fit_score',
+    'proof_map',
+    'expected_offer',
+    'apply_decision',
+    'role_read',
     'interview_starters',
-    'flsa_status',
-    'radford_2026_compensation_matrix',
   ],
 };

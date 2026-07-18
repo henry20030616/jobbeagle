@@ -36,7 +36,6 @@ export async function countCombinedTokens(
     });
     return res.totalTokens ?? 0;
   } catch {
-    // Rough estimate: ~4 chars per token
     return Math.ceil((jd.length + resume.length) / 4);
   }
 }
@@ -75,6 +74,283 @@ function buildUserParts(
   return parts;
 }
 
+const pointDescItem = {
+  type: Type.OBJECT,
+  properties: {
+    point: { type: Type.STRING },
+    description: { type: Type.STRING },
+  },
+  required: ['point', 'description'],
+};
+
+const gapDescItem = {
+  type: Type.OBJECT,
+  properties: {
+    gap: { type: Type.STRING },
+    description: { type: Type.STRING },
+  },
+  required: ['gap', 'description'],
+};
+
+const LITE_RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    job_title: { type: Type.STRING },
+    company_name: { type: Type.STRING },
+    data_completeness: {
+      type: Type.OBJECT,
+      properties: {
+        level: { type: Type.STRING, enum: ['High', 'Medium', 'Low'] },
+        missing_inputs: { type: Type.ARRAY, items: { type: Type.STRING } },
+        confidence_notes: { type: Type.STRING },
+      },
+      required: ['level', 'missing_inputs', 'confidence_notes'],
+    },
+    hard_filter: {
+      type: Type.OBJECT,
+      properties: {
+        status: { type: Type.STRING, enum: ['Pass', 'Risk', 'Blocked', 'Unknown'] },
+        items: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              requirement: { type: Type.STRING },
+              status: { type: Type.STRING },
+              evidence: { type: Type.STRING },
+            },
+            required: ['requirement', 'status', 'evidence'],
+          },
+        },
+      },
+      required: ['status', 'items'],
+    },
+    fit_score: {
+      type: Type.OBJECT,
+      properties: {
+        score: { type: Type.INTEGER },
+        band: { type: Type.STRING, enum: ['Strong', 'Viable', 'Stretch', 'Mismatch'] },
+        evidence_coverage: { type: Type.STRING, enum: ['High', 'Medium', 'Low'] },
+        sharp_verdict: { type: Type.STRING },
+        breakdown: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              dimension: { type: Type.STRING },
+              weight_pct: { type: Type.NUMBER },
+              score: { type: Type.NUMBER },
+              note: { type: Type.STRING },
+            },
+            required: ['dimension', 'weight_pct', 'score', 'note'],
+          },
+        },
+      },
+      required: ['score', 'band', 'evidence_coverage', 'sharp_verdict', 'breakdown'],
+    },
+    proof_map: {
+      type: Type.OBJECT,
+      properties: {
+        strengths: { type: Type.ARRAY, items: pointDescItem },
+        gaps: { type: Type.ARRAY, items: gapDescItem },
+        resume_actions: { type: Type.ARRAY, items: { type: Type.STRING } },
+        screenability_note: { type: Type.STRING },
+      },
+      required: ['strengths', 'gaps', 'resume_actions', 'screenability_note'],
+    },
+    expected_offer: {
+      type: Type.OBJECT,
+      properties: {
+        posted_range: { type: Type.STRING, nullable: true },
+        p25: { type: Type.STRING, nullable: true },
+        p50: { type: Type.STRING, nullable: true },
+        p75: { type: Type.STRING, nullable: true },
+        currency: { type: Type.STRING },
+        region: { type: Type.STRING },
+        target_gap: { type: Type.STRING },
+        evidence_tier: { type: Type.STRING, enum: ['A', 'B', 'C', 'D'] },
+        sources: { type: Type.ARRAY, items: { type: Type.STRING } },
+        candidate_position_label: { type: Type.STRING },
+      },
+      required: [
+        'posted_range',
+        'p25',
+        'p50',
+        'p75',
+        'currency',
+        'region',
+        'target_gap',
+        'evidence_tier',
+        'sources',
+      ],
+    },
+    apply_decision: {
+      type: Type.OBJECT,
+      properties: {
+        label: {
+          type: Type.STRING,
+          enum: ['Apply now', 'Apply after fixes', 'Clarify first', 'Skip'],
+        },
+        reason: { type: Type.STRING },
+        next_best_action: { type: Type.STRING },
+      },
+      required: ['label', 'reason', 'next_best_action'],
+    },
+    role_read: {
+      type: Type.OBJECT,
+      properties: {
+        mission: { type: Type.STRING },
+        responsibilities: { type: Type.ARRAY, items: { type: Type.STRING } },
+        hiring_signals: { type: Type.ARRAY, items: { type: Type.STRING } },
+      },
+      required: ['mission', 'responsibilities', 'hiring_signals'],
+    },
+    interview_starters: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+    },
+  },
+  required: [
+    'job_title',
+    'company_name',
+    'data_completeness',
+    'hard_filter',
+    'fit_score',
+    'proof_map',
+    'expected_offer',
+    'apply_decision',
+    'role_read',
+    'interview_starters',
+  ],
+};
+
+const FULL_INTEL_RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    strategy_fit_salary: {
+      type: Type.OBJECT,
+      properties: {
+        score_implications: { type: Type.STRING },
+        offer_implications: { type: Type.STRING },
+        validate_with_recruiter: { type: Type.ARRAY, items: { type: Type.STRING } },
+      },
+      required: ['score_implications', 'offer_implications', 'validate_with_recruiter'],
+    },
+    hiring_context: {
+      type: Type.OBJECT,
+      properties: {
+        insights: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              claim: { type: Type.STRING },
+              why_it_matters: { type: Type.STRING },
+              source_url: { type: Type.STRING },
+              date: { type: Type.STRING },
+            },
+            required: ['claim', 'why_it_matters', 'source_url', 'date'],
+          },
+        },
+        limitations: { type: Type.ARRAY, items: { type: Type.STRING } },
+        validation_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      },
+      required: ['insights', 'limitations', 'validation_questions'],
+    },
+    concerns_defenses: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          concern: { type: Type.STRING },
+          why: { type: Type.STRING },
+          evidence: { type: Type.STRING },
+          missing_proof: { type: Type.STRING },
+          answer_guide: { type: Type.STRING },
+          do_not_claim: { type: Type.STRING },
+        },
+        required: [
+          'concern',
+          'why',
+          'evidence',
+          'missing_proof',
+          'answer_guide',
+          'do_not_claim',
+        ],
+      },
+    },
+    interview_playbook: {
+      type: Type.OBJECT,
+      properties: {
+        reported: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              question: { type: Type.STRING },
+              source_url: { type: Type.STRING },
+              source_date: { type: Type.STRING },
+              evidence: { type: Type.STRING },
+              star_outline: { type: Type.STRING },
+            },
+            required: ['question'],
+          },
+        },
+        predicted: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              question: { type: Type.STRING },
+              predicted: { type: Type.BOOLEAN },
+              evidence: { type: Type.STRING },
+              star_outline: { type: Type.STRING },
+              missing_facts: { type: Type.STRING },
+            },
+            required: ['question'],
+          },
+        },
+        star_outlines: { type: Type.ARRAY, items: { type: Type.STRING } },
+        reverse_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+        validate_before_join: { type: Type.ARRAY, items: { type: Type.STRING } },
+      },
+      required: [
+        'reported',
+        'predicted',
+        'star_outlines',
+        'reverse_questions',
+        'validate_before_join',
+      ],
+    },
+    offer_strategy: {
+      type: Type.OBJECT,
+      properties: {
+        target: { type: Type.STRING },
+        acceptable: { type: Type.STRING },
+        walk_away: { type: Type.STRING },
+        levers: { type: Type.ARRAY, items: { type: Type.STRING } },
+        script: { type: Type.STRING },
+        discovery_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      },
+      required: [
+        'target',
+        'acceptable',
+        'walk_away',
+        'levers',
+        'script',
+        'discovery_questions',
+      ],
+    },
+  },
+  required: [
+    'strategy_fit_salary',
+    'hiring_context',
+    'concerns_defenses',
+    'interview_playbook',
+    'offer_strategy',
+  ],
+};
+
 export async function executeLiteAnalysis(
   resumeText: string,
   rawJd: string,
@@ -91,95 +367,7 @@ export async function executeLiteAnalysis(
       temperature: 0.3,
       maxOutputTokens: 8192,
       responseMimeType: 'application/json',
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          match_score: { type: Type.INTEGER },
-          job_title: { type: Type.STRING },
-          company_name: { type: Type.STRING },
-          dog_breed_archetype: { type: Type.STRING },
-          recruiter_verdict: { type: Type.STRING },
-          one_sentence_sharp_critique: { type: Type.STRING },
-          matching_strengths: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                point: { type: Type.STRING },
-                description: { type: Type.STRING },
-              },
-              required: ['point', 'description'],
-            },
-          },
-          critical_gaps: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                gap: { type: Type.STRING },
-                description: { type: Type.STRING },
-              },
-              required: ['gap', 'description'],
-            },
-          },
-          hard_requirements_checklist: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                requirement: { type: Type.STRING },
-                status: {
-                  type: Type.STRING,
-                  enum: ['met', 'partial', 'missing'],
-                },
-              },
-              required: ['requirement', 'status'],
-            },
-          },
-          interview_starters: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING },
-          },
-          flsa_status: {
-            type: Type.STRING,
-            enum: [
-              'Exempt (Professional Exemption)',
-              'Non-Exempt',
-              'Exempt (Executive Exemption)',
-            ],
-          },
-          radford_2026_compensation_matrix: {
-            type: Type.OBJECT,
-            properties: {
-              tier_25th_low: { type: Type.STRING },
-              tier_50th_mid: { type: Type.STRING },
-              tier_75th_high: { type: Type.STRING },
-              market_region: { type: Type.STRING },
-              compensation_rationale: { type: Type.STRING },
-              candidate_salary_position: {
-                type: Type.STRING,
-                enum: ['below_p25', 'p25_p50', 'p50_p75', 'above_p75'],
-              },
-              candidate_position_label: { type: Type.STRING },
-            },
-            required: ['tier_25th_low', 'tier_50th_mid', 'tier_75th_high', 'compensation_rationale', 'candidate_position_label'],
-          },
-        },
-        required: [
-          'match_score',
-          'job_title',
-          'company_name',
-          'dog_breed_archetype',
-          'recruiter_verdict',
-          'one_sentence_sharp_critique',
-          'matching_strengths',
-          'critical_gaps',
-          'hard_requirements_checklist',
-          'interview_starters',
-          'flsa_status',
-          'radford_2026_compensation_matrix',
-        ],
-      },
+      responseSchema: LITE_RESPONSE_SCHEMA,
     },
   });
 
@@ -190,111 +378,16 @@ export async function executeLiteAnalysis(
   try {
     report = normalizeLiteReport(parseJsonResponse<LiteReport>(text));
   } catch (firstErr) {
-    // One retry — truncated JSON is usually token-budget related
     const retry = await ai.models.generateContent({
       model,
       contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline) }],
       config: {
         systemInstruction:
-          `${LITE_SYSTEM_PROMPT}\n\nCRITICAL: Return COMPLETE valid JSON only. Keep string fields concise (1–2 sentences each). Do not truncate.`,
+          `${LITE_SYSTEM_PROMPT}\n\nCRITICAL: Return COMPLETE valid JSON only. Keep string fields concise (1–2 sentences each). Do not truncate. Tier D → null salary numbers.`,
         temperature: 0.2,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            match_score: { type: Type.INTEGER },
-            job_title: { type: Type.STRING },
-            company_name: { type: Type.STRING },
-            dog_breed_archetype: { type: Type.STRING },
-            recruiter_verdict: { type: Type.STRING },
-            one_sentence_sharp_critique: { type: Type.STRING },
-            matching_strengths: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  point: { type: Type.STRING },
-                  description: { type: Type.STRING },
-                },
-                required: ['point', 'description'],
-              },
-            },
-            critical_gaps: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  gap: { type: Type.STRING },
-                  description: { type: Type.STRING },
-                },
-                required: ['gap', 'description'],
-              },
-            },
-            hard_requirements_checklist: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  requirement: { type: Type.STRING },
-                  status: {
-                    type: Type.STRING,
-                    enum: ['met', 'partial', 'missing'],
-                  },
-                },
-                required: ['requirement', 'status'],
-              },
-            },
-            interview_starters: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-            },
-            flsa_status: {
-              type: Type.STRING,
-              enum: [
-                'Exempt (Professional Exemption)',
-                'Non-Exempt',
-                'Exempt (Executive Exemption)',
-              ],
-            },
-            radford_2026_compensation_matrix: {
-              type: Type.OBJECT,
-              properties: {
-                tier_25th_low: { type: Type.STRING },
-                tier_50th_mid: { type: Type.STRING },
-                tier_75th_high: { type: Type.STRING },
-                market_region: { type: Type.STRING },
-                compensation_rationale: { type: Type.STRING },
-                candidate_salary_position: {
-                  type: Type.STRING,
-                  enum: ['below_p25', 'p25_p50', 'p50_p75', 'above_p75'],
-                },
-                candidate_position_label: { type: Type.STRING },
-              },
-              required: [
-                'tier_25th_low',
-                'tier_50th_mid',
-                'tier_75th_high',
-                'compensation_rationale',
-                'candidate_position_label',
-              ],
-            },
-          },
-          required: [
-            'match_score',
-            'job_title',
-            'company_name',
-            'dog_breed_archetype',
-            'recruiter_verdict',
-            'one_sentence_sharp_critique',
-            'matching_strengths',
-            'critical_gaps',
-            'hard_requirements_checklist',
-            'interview_starters',
-            'flsa_status',
-            'radford_2026_compensation_matrix',
-          ],
-        },
+        responseSchema: LITE_RESPONSE_SCHEMA,
       },
     });
     const retryText = retry.text;
@@ -312,23 +405,25 @@ export async function executeFullAnalysis(
   jobTitle: string,
   pdfInline?: PdfInlineAttachment,
 ): Promise<{ report: FullReport; model: string }> {
-  // Pass 1: complete Job Fit Snapshot (no search — reliable structured JSON)
   const snapshotResult = await executeLiteAnalysis(resumeText, rawJd, pdfInline);
+  const snap = snapshotResult.report;
 
-  // Pass 2: live intel + STAR + negotiation (search grounding)
   const ai = getAI();
   const model = GEMINI_FULL_MODEL;
 
-  const intro = `Target Company: ${companyName || snapshotResult.report.company_name}
-Job Title: ${jobTitle || snapshotResult.report.job_title}
+  const intro = `Target Company: ${companyName || snap.company_name}
+Job Title: ${jobTitle || snap.job_title}
 
-Candidate match score from Snapshot pass: ${snapshotResult.report.match_score}/100
-Sharp critique: ${snapshotResult.report.one_sentence_sharp_critique}
-Key gaps: ${snapshotResult.report.critical_gaps.map((g) => g.gap).join('; ')}
-Key strengths: ${snapshotResult.report.matching_strengths.map((s) => s.point).join('; ')}
+LOCKED SNAPSHOT (do not change scores or offer percentiles):
+- Fit score: ${snap.fit_score.score}/100 (${snap.fit_score.band}), evidence ${snap.fit_score.evidence_coverage}
+- Hard filter: ${snap.hard_filter.status}
+- Sharp verdict: ${snap.fit_score.sharp_verdict}
+- Expected offer tier ${snap.expected_offer.evidence_tier}: P25=${snap.expected_offer.p25 ?? 'null'} P50=${snap.expected_offer.p50 ?? 'null'} P75=${snap.expected_offer.p75 ?? 'null'} region=${snap.expected_offer.region}
+- Strengths: ${snap.proof_map.strengths.map((s) => s.point).join('; ')}
+- Gaps: ${snap.proof_map.gaps.map((g) => g.gap).join('; ')}
+- Apply decision: ${snap.apply_decision.label}
 
-Search teamblind.com, glassdoor.com, and reddit.com for live intel on ${companyName || snapshotResult.report.company_name} regarding layoffs, culture, interview process, and ghost job signals.
-Use the gaps/strengths above to tailor STAR questions and negotiation leverage.`;
+Use public web sources only when citing hiring_context insights or reported interview questions. Prefer IR, trusted news, company blogs, Glassdoor/Blind/Reddit when accessible. If sources are thin, return limitations + validation_questions — that is success, not failure.`;
 
   const parts = buildUserParts(rawJd, resumeText, pdfInline);
   parts[0] = {
@@ -346,24 +441,7 @@ Use the gaps/strengths above to tailor STAR questions and negotiation leverage.`
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
         tools: [{ googleSearch: {} }],
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            online_intel_warning: { type: Type.STRING },
-            corporate_culture_blackbox: { type: Type.STRING },
-            custom_star_interview_bank: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-            },
-            salary_negotiation_script: { type: Type.STRING },
-          },
-          required: [
-            'online_intel_warning',
-            'corporate_culture_blackbox',
-            'custom_star_interview_bank',
-            'salary_negotiation_script',
-          ],
-        },
+        responseSchema: FULL_INTEL_RESPONSE_SCHEMA,
       },
     });
 
@@ -372,24 +450,69 @@ Use the gaps/strengths above to tailor STAR questions and negotiation leverage.`
     intel = parseJsonResponse<StrategyIntelFields>(text);
   } catch (intelErr) {
     console.warn(
-      '[Full] Intel pass failed, returning Snapshot with fallback intel:',
+      '[Full] Intel pass failed, returning Snapshot with fallback strategy:',
       intelErr instanceof Error ? intelErr.message : intelErr,
     );
     intel = {
-      online_intel_warning: '',
-      corporate_culture_blackbox:
-        'Live web grounding was unavailable for this run. Re-run Interview Strategy Guide shortly, or manually check Blind/Glassdoor.',
-      custom_star_interview_bank: snapshotResult.report.interview_starters.map(
-        (q, i) => `Expand into STAR: ${q}`,
-      ),
-      salary_negotiation_script:
-        snapshotResult.report.radford_2026_compensation_matrix.candidate_position_label
-        || 'Negotiate toward mid-band using quantified resume wins.',
+      strategy_fit_salary: {
+        score_implications: `Fit ${snap.fit_score.score} (${snap.fit_score.band}) — treat interview odds accordingly.`,
+        offer_implications: `Evidence tier ${snap.expected_offer.evidence_tier}; prefer discovery before hard anchors.`,
+        validate_with_recruiter: [
+          'Confirm leveling and must-haves for this req.',
+          'Ask for the approved compensation band.',
+        ],
+      },
+      hiring_context: {
+        insights: [],
+        limitations: [
+          'Live web grounding was unavailable for this run. Re-run Interview Strategy Guide shortly.',
+        ],
+        validation_questions: [
+          'Why is this role open now?',
+          'What does success look like in 90 days?',
+        ],
+      },
+      concerns_defenses: snap.proof_map.gaps.slice(0, 3).map((g) => ({
+        concern: g.gap,
+        why: g.description,
+        evidence: '',
+        missing_proof: g.description,
+        answer_guide: 'Use one verified resume fact; acknowledge the gap without inventing experience.',
+        do_not_claim: 'Do not invent tools, years, or outcomes absent from the resume.',
+      })),
+      interview_playbook: {
+        reported: [],
+        predicted: snap.interview_starters.map((question) => ({
+          question,
+          predicted: true,
+        })),
+        star_outlines: snap.interview_starters.map((q) => `STAR outline for: ${q}`),
+        reverse_questions: [
+          'What problem is this hire meant to solve in the next two quarters?',
+          'How will success be measured in the first 90 days?',
+        ],
+        validate_before_join: [
+          'Validate team stability and scope before accepting an offer.',
+        ],
+      },
+      offer_strategy: {
+        target: snap.expected_offer.p50 ?? 'Confirm band with recruiter',
+        acceptable: snap.expected_offer.p25 ?? 'Confirm floor with recruiter',
+        walk_away: 'Walk away if cash + scope fall below your documented floor.',
+        levers: ['Scope', 'Sign-on', 'Remote flexibility'],
+        script:
+          snap.expected_offer.candidate_position_label
+          || 'Lead with discovery questions if evidence is weak; then anchor to verified mid-band.',
+        discovery_questions: [
+          'What is the approved band for this level in this location?',
+          'How does total compensation split between cash, bonus, and equity?',
+        ],
+      },
     };
   }
 
   const report = normalizeFullReport({
-    ...snapshotResult.report,
+    ...snap,
     ...intel,
   });
 

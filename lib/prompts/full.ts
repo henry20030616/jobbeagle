@@ -1,57 +1,161 @@
-/** Interview Strategy Guide — live intel layer (Snapshot produced in a separate pass) */
+/** Interview Strategy Guide — Spec v3 (Pro + optional Search grounding) */
 
-export const FULL_SYSTEM_PROMPT = `You are a virtual CHRO and executive coach with live Search Grounding.
-Crawl real-time signals about the target company from teamblind.com, glassdoor.com, and reddit.com.
-Focus on: layoffs, hiring freezes / ghost jobs, culture toxicity or strengths, interview process quirks, and leverage points for negotiation.
+export const FULL_SYSTEM_PROMPT = `You are a CHRO-level interview strategist producing an Interview Strategy Guide.
+You receive a locked Job Fit Snapshot (fit score + expected offer already computed). Do NOT change numeric scores or compensation percentiles.
 
-Rules:
-- If search finds layoffs / reorg / frozen headcount, put an explicit red flag in online_intel_warning (else empty string "").
-- corporate_culture_blackbox: 3–6 dense sentences with concrete Blind/Glassdoor/Reddit themes (cite source type, not URLs).
-- custom_star_interview_bank: EXACTLY 10 questions. Each must be STAR-ready, role-specific, and reference either the company's stack/culture OR a gap/strength from this candidate's resume vs the JD. Number them mentally 1–10; do not prefix "Q1".
-- salary_negotiation_script: a tactical talk-track (bullets or short paragraphs) the candidate can use, leveraging company tech debt / urgency / market bands. Be specific to this company + role.
+Produce strategy that turns the two hero numbers into actionable interview/offer outcomes:
 
-Keep every string field complete — do not truncate mid-sentence.
+1) strategy_fit_salary — what the locked fit score and expected offer imply for interview odds and negotiation posture. If evidence is weak, give recruiter validation questions instead of false precision.
+
+2) hiring_context — 3–5 dated tactical insights from PUBLIC web sources only (IR, trusted news, company blogs). Attach source_url + date. If insufficient public data, return limitations + validation_questions (this is NOT a failure). Never claim paywalled or login-walled content.
+
+3) concerns_defenses — EXACTLY 3 recruiter concerns for THIS candidate vs THIS JD. Each: concern, why, resume evidence, missing_proof, answer_guide, do_not_claim. Direct and respectful — no humiliation; never invent experience.
+
+4) interview_playbook — SEPARATE reported questions (citation required: source_url, source_date) from predicted questions (predicted=true). STAR outlines only from supplied resume facts. Include reverse_questions and validate_before_join hypotheses (not culture "truth scores"). If no citable reported questions, reported=[].
+
+5) offer_strategy — target / acceptable / walk_away aligned to any career context provided; levers; script. If expected_offer.evidence_tier is D or weak, prioritize discovery_questions over aggressive anchoring. Never invent compensation numbers.
+
 Output valid JSON only. No markdown fences.`;
 
 export const FULL_INTEL_JSON_SCHEMA = {
   type: 'object',
   properties: {
-    online_intel_warning: {
-      type: 'string',
-      description:
-        'Populated ONLY if layoffs, reorg, or ghost jobs are caught via live web grounding. Otherwise return empty string.',
+    strategy_fit_salary: {
+      type: 'object',
+      properties: {
+        score_implications: { type: 'string' },
+        offer_implications: { type: 'string' },
+        validate_with_recruiter: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['score_implications', 'offer_implications', 'validate_with_recruiter'],
     },
-    corporate_culture_blackbox: {
-      type: 'string',
-      description:
-        'Scraped inner culture flags and negative/positive data from Blind/Glassdoor/Reddit.',
+    hiring_context: {
+      type: 'object',
+      properties: {
+        insights: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              claim: { type: 'string' },
+              why_it_matters: { type: 'string' },
+              source_url: { type: 'string' },
+              date: { type: 'string' },
+            },
+            required: ['claim', 'why_it_matters', 'source_url', 'date'],
+          },
+        },
+        limitations: { type: 'array', items: { type: 'string' } },
+        validation_questions: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['insights', 'limitations', 'validation_questions'],
     },
-    custom_star_interview_bank: {
+    concerns_defenses: {
       type: 'array',
-      items: { type: 'string' },
-      minItems: 10,
-      maxItems: 10,
+      minItems: 3,
+      maxItems: 3,
+      items: {
+        type: 'object',
+        properties: {
+          concern: { type: 'string' },
+          why: { type: 'string' },
+          evidence: { type: 'string' },
+          missing_proof: { type: 'string' },
+          answer_guide: { type: 'string' },
+          do_not_claim: { type: 'string' },
+        },
+        required: [
+          'concern',
+          'why',
+          'evidence',
+          'missing_proof',
+          'answer_guide',
+          'do_not_claim',
+        ],
+      },
     },
-    salary_negotiation_script: {
-      type: 'string',
-      description:
-        'Tailored tactical negotiation script leveraging company intel and candidate strengths.',
+    interview_playbook: {
+      type: 'object',
+      properties: {
+        reported: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              question: { type: 'string' },
+              source_url: { type: 'string' },
+              source_date: { type: 'string' },
+              evidence: { type: 'string' },
+              star_outline: { type: 'string' },
+            },
+            required: ['question'],
+          },
+        },
+        predicted: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              question: { type: 'string' },
+              predicted: { type: 'boolean' },
+              evidence: { type: 'string' },
+              star_outline: { type: 'string' },
+              missing_facts: { type: 'string' },
+            },
+            required: ['question'],
+          },
+        },
+        star_outlines: { type: 'array', items: { type: 'string' } },
+        reverse_questions: { type: 'array', items: { type: 'string' } },
+        validate_before_join: { type: 'array', items: { type: 'string' } },
+      },
+      required: [
+        'reported',
+        'predicted',
+        'star_outlines',
+        'reverse_questions',
+        'validate_before_join',
+      ],
+    },
+    offer_strategy: {
+      type: 'object',
+      properties: {
+        target: { type: 'string' },
+        acceptable: { type: 'string' },
+        walk_away: { type: 'string' },
+        levers: { type: 'array', items: { type: 'string' } },
+        script: { type: 'string' },
+        discovery_questions: { type: 'array', items: { type: 'string' } },
+      },
+      required: [
+        'target',
+        'acceptable',
+        'walk_away',
+        'levers',
+        'script',
+        'discovery_questions',
+      ],
     },
   },
   required: [
-    'online_intel_warning',
-    'corporate_culture_blackbox',
-    'custom_star_interview_bank',
-    'salary_negotiation_script',
+    'strategy_fit_salary',
+    'hiring_context',
+    'concerns_defenses',
+    'interview_playbook',
+    'offer_strategy',
   ],
 };
 
-/** @deprecated alias — prefer FULL_INTEL_JSON_SCHEMA */
+/** @deprecated alias */
 export const FULL_JSON_SCHEMA = FULL_INTEL_JSON_SCHEMA;
 
-/** High-signal domains for targeted grounding */
+/** Preferred public domains for grounding (not exclusive) */
 export const GROUNDING_SEARCH_DOMAINS = [
-  'teamblind.com',
+  'sec.gov',
+  'reuters.com',
+  'bloomberg.com',
+  'techcrunch.com',
   'glassdoor.com',
+  'teamblind.com',
   'reddit.com',
 ];

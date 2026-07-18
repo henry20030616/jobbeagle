@@ -369,7 +369,8 @@ export default function Home() {
         setReport(null);
       } else if (
         normalizeReportType(result.report_type) === REPORT_CODES.JOB_FIT_SNAPSHOT
-        && result.report?.match_score != null
+        && (result.report?.match_score != null
+          || (result.report as LiteReport)?.fit_score?.score != null)
       ) {
         setLiteReport(normalizeLiteReport(result.report as LiteReport));
         setFullReport(null);

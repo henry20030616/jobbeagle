@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import type { LiteReport, HardRequirementStatus } from '@/types';
+import type { HardFilterStatus, LiteReport } from '@/types';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -14,6 +14,8 @@ import {
   Building2,
   Briefcase,
   ListChecks,
+  Shield,
+  Compass,
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import type { AppLanguage } from '@/lib/language-context';
@@ -30,181 +32,117 @@ interface LiteReportDashboardProps {
 type Copy = {
   newAnalysis: string;
   backHome: string;
-  matchSection: string;
+  fitHero: string;
+  offerHero: string;
+  evidenceCoverage: string;
+  hardFilter: string;
   strengths: string;
   gaps: string;
-  sharpCritique: string;
-  recruiterVerdict: string;
-  hardReqs: string;
+  resumeActions: string;
+  sharpVerdict: string;
+  applyDecision: string;
+  nextAction: string;
+  roleRead: string;
   interviewStarters: string;
-  compensation: string;
-  salaryPosition: string;
-  salaryRationale: string;
-  marketRegion: string;
-  flsa: string;
+  postedRange: string;
+  targetGap: string;
+  evidenceTier: string;
   upgradeTitle: string;
   upgradeDesc: string;
   upgradeBtn: string;
   liteBadge: string;
-  met: string;
-  partial: string;
-  missing: string;
+  completeness: string;
+};
+
+const en: Copy = {
+  newAnalysis: 'New Analysis',
+  backHome: 'Back to Home',
+  fitHero: 'Candidate Fit Score',
+  offerHero: 'Expected Offer Range',
+  evidenceCoverage: 'Evidence Coverage',
+  hardFilter: 'Hard Filter',
+  strengths: 'Proof Strengths',
+  gaps: 'Critical Gaps',
+  resumeActions: 'Resume Actions',
+  sharpVerdict: 'Sharp Verdict',
+  applyDecision: 'Apply Decision',
+  nextAction: 'Next best action',
+  roleRead: 'Role Read',
+  interviewStarters: 'Predicted Interview Starters',
+  postedRange: 'Posted range',
+  targetGap: 'Target gap',
+  evidenceTier: 'Evidence tier',
+  upgradeTitle: 'Need interview strategy?',
+  upgradeDesc:
+    'Snapshot answers fit + offer. Interview Strategy Guide adds hiring context, concerns & defenses, reported vs predicted questions, and offer strategy.',
+  upgradeBtn: 'Upgrade to Interview Strategy Guide · $9.99',
+  liteBadge: 'Job Fit Snapshot',
+  completeness: 'Data completeness',
 };
 
 const copy: Record<AppLanguage, Copy> = {
+  en,
   'zh-TW': {
+    ...en,
     newAnalysis: '重新分析',
     backHome: '回首頁',
-    matchSection: '職位匹配分析',
-    strengths: '核心優勢',
-    gaps: '待補強項目',
-    sharpCritique: '一針見血',
-    recruiterVerdict: '人資判斷',
-    hardReqs: '硬性條件檢核',
-    interviewStarters: '預測面試題（依 JD）',
-    compensation: 'Radford 2026 薪酬矩陣',
-    salaryPosition: '你的薪資落點',
-    salaryRationale: '推估邏輯',
-    marketRegion: '市場區域',
-    flsa: 'FLSA 分類',
-    upgradeTitle: '需要 Blind / Glassdoor 即時情報？',
-    upgradeDesc: 'Job Fit Snapshot 僅分析 JD + 履歷。升級 Interview Strategy Guide 可取得網路情報、文化黑箱與 STAR 面試題庫。',
+    fitHero: '候選人匹配分數',
+    offerHero: '預期薪酬區間',
+    evidenceCoverage: '證據覆蓋度',
+    hardFilter: '硬性條件',
+    strengths: '可證明優勢',
+    gaps: '關鍵缺口',
+    resumeActions: '履歷動作',
+    sharpVerdict: '一針見血',
+    applyDecision: '投遞決策',
+    nextAction: '下一步',
+    roleRead: '職位解讀',
+    interviewStarters: '預測面試題',
+    postedRange: '職缺標示薪資',
+    targetGap: '目標差距',
+    evidenceTier: '薪資證據等級',
+    upgradeTitle: '需要面試作戰策略？',
+    upgradeDesc:
+      'Snapshot 回答匹配與預期薪資。Interview Strategy Guide 加上招募情境、疑慮防禦、真實／預測面試題與談薪策略。',
     upgradeBtn: '升級 Interview Strategy Guide · $9.99',
     liteBadge: 'Job Fit Snapshot',
-    met: '符合',
-    partial: '部分',
-    missing: '缺失',
+    completeness: '資料完整度',
   },
   'zh-CN': {
+    ...en,
     newAnalysis: '重新分析',
     backHome: '回首页',
-    matchSection: '职位匹配分析',
-    strengths: '核心优势',
-    gaps: '待补强项目',
-    sharpCritique: '一针见血',
-    recruiterVerdict: '人资判断',
-    hardReqs: '硬性条件检核',
-    interviewStarters: '预测面试题（依 JD）',
-    compensation: 'Radford 2026 薪酬矩阵',
-    salaryPosition: '你的薪资落点',
-    salaryRationale: '推估逻辑',
-    marketRegion: '市场区域',
-    flsa: 'FLSA 分类',
-    upgradeTitle: '需要 Blind / Glassdoor 即时情报？',
-    upgradeDesc: 'Job Fit Snapshot 仅分析 JD + 简历。升级 Interview Strategy Guide 可取得网络情报、文化黑箱与 STAR 面试题库。',
-    upgradeBtn: '升级 Interview Strategy Guide · $9.99',
+    fitHero: '候选人匹配分数',
+    offerHero: '预期薪酬区间',
     liteBadge: 'Job Fit Snapshot',
-    met: '符合',
-    partial: '部分',
-    missing: '缺失',
   },
-  en: {
-    newAnalysis: 'New Analysis',
-    backHome: 'Back to Home',
-    matchSection: 'Job Match Analysis',
-    strengths: 'Core Strengths',
-    gaps: 'Critical Gaps',
-    sharpCritique: 'Sharp Critique',
-    recruiterVerdict: 'Recruiter Verdict',
-    hardReqs: 'Hard Requirements Check',
-    interviewStarters: 'Predicted Interview Questions (JD-based)',
-    compensation: 'Radford 2026 Compensation Matrix',
-    salaryPosition: 'Your salary position',
-    salaryRationale: 'Estimation logic',
-    marketRegion: 'Market region',
-    flsa: 'FLSA Classification',
-    upgradeTitle: 'Need live Blind / Glassdoor intel?',
-    upgradeDesc:
-      'Job Fit Snapshot uses JD + resume only. Interview Strategy Guide adds live web intel, culture blackbox, and a STAR interview bank.',
-    upgradeBtn: 'Upgrade to Interview Strategy Guide · $9.99',
-    liteBadge: 'Job Fit Snapshot',
-    met: 'Met',
-    partial: 'Partial',
-    missing: 'Missing',
-  },
-  es: {
-    newAnalysis: 'Nuevo análisis',
-    backHome: 'Inicio',
-    matchSection: 'Análisis de coincidencia',
-    strengths: 'Fortalezas',
-    gaps: 'Brechas críticas',
-    sharpCritique: 'Crítica directa',
-    recruiterVerdict: 'Veredicto del reclutador',
-    hardReqs: 'Requisitos obligatorios',
-    interviewStarters: 'Preguntas de entrevista previstas',
-    compensation: 'Matriz salarial Radford 2026',
-    salaryPosition: 'Tu posición salarial',
-    salaryRationale: 'Lógica de estimación',
-    marketRegion: 'Región de mercado',
-    flsa: 'Clasificación FLSA',
-    upgradeTitle: '¿Necesitas intel en vivo?',
-    upgradeDesc: 'Lite: JD + CV. Full: web + cultura + banco STAR.',
-    upgradeBtn: 'Full · $9.99',
-    liteBadge: 'Instantánea Lite',
-    met: 'Cumple',
-    partial: 'Parcial',
-    missing: 'Falta',
-  },
-  hi: {
-    newAnalysis: 'नया विश्लेषण',
-    backHome: 'होम',
-    matchSection: 'नौकरी मिलान',
-    strengths: 'मुख्य ताकत',
-    gaps: 'महत्वपूर्ण अंतर',
-    sharpCritique: 'तीखी आलोचना',
-    recruiterVerdict: 'भर्ती निर्णय',
-    hardReqs: 'कठोर आवश्यकताएँ',
-    interviewStarters: 'अनुमानित साक्षात्कार प्रश्न',
-    compensation: 'Radford 2026 वेतन',
-    salaryPosition: 'आपकी वेतन स्थिति',
-    salaryRationale: 'अनुमान तर्क',
-    marketRegion: 'बाज़ार क्षेत्र',
-    flsa: 'FLSA',
-    upgradeTitle: 'लाइव इंटेल चाहिए?',
-    upgradeDesc: 'Lite: JD + रिज़्यूमे। Full: वेब + संस्कृति + STAR।',
-    upgradeBtn: 'Full · $9.99',
-    liteBadge: 'Lite स्नैपशॉट',
-    met: 'पूरा',
-    partial: 'आंशिक',
-    missing: 'अनुपस्थित',
-  },
-  ar: {
-    newAnalysis: 'تحليل جديد',
-    backHome: 'الرئيسية',
-    matchSection: 'تحليل التوافق',
-    strengths: 'نقاط القوة',
-    gaps: 'الفجوات الحرجة',
-    sharpCritique: 'نقد حاد',
-    recruiterVerdict: 'حكم المسؤول عن التوظيف',
-    hardReqs: 'المتطلبات الصلبة',
-    interviewStarters: 'أسئلة مقابلة متوقعة',
-    compensation: 'مصفوفة Radford 2026',
-    salaryPosition: 'موقع راتبك',
-    salaryRationale: 'منطق التقدير',
-    marketRegion: 'منطقة السوق',
-    flsa: 'تصنيف FLSA',
-    upgradeTitle: 'تحتاج معلومات مباشرة؟',
-    upgradeDesc: 'Lite: JD + السيرة. Full: ويب + ثقافة + STAR.',
-    upgradeBtn: 'Full · $9.99',
-    liteBadge: 'لمحة Lite',
-    met: 'متحقق',
-    partial: 'جزئي',
-    missing: 'مفقود',
-  },
+  es: { ...en, liteBadge: 'Job Fit Snapshot' },
+  hi: { ...en, liteBadge: 'Job Fit Snapshot' },
+  ar: { ...en, liteBadge: 'Job Fit Snapshot' },
 };
 
-function statusBadge(status: HardRequirementStatus, labels: Copy) {
-  const map = {
-    met: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-    partial: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-    missing: 'bg-red-500/15 text-red-300 border-red-500/30',
-  };
-  const label = status === 'met' ? labels.met : status === 'partial' ? labels.partial : labels.missing;
-  return (
-    <span className={`shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded border ${map[status]}`}>
-      {label}
-    </span>
-  );
+function hardFilterTone(status: HardFilterStatus): string {
+  switch (status) {
+    case 'Pass':
+      return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+    case 'Risk':
+      return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+    case 'Blocked':
+      return 'bg-red-500/15 text-red-300 border-red-500/30';
+    default:
+      return 'bg-slate-500/15 text-slate-300 border-slate-500/30';
+  }
+}
+
+function applyTone(label: string): string {
+  if (label === 'Apply now') return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200';
+  if (label === 'Skip') return 'border-red-500/40 bg-red-500/10 text-red-200';
+  if (label === 'Clarify first') return 'border-amber-500/40 bg-amber-500/10 text-amber-100';
+  return 'border-indigo-500/40 bg-indigo-500/10 text-indigo-100';
+}
+
+function displayMoney(v: string | null | undefined): string {
+  return v && v.trim() ? v : '—';
 }
 
 export default function LiteReportDashboard({
@@ -214,11 +152,16 @@ export default function LiteReportDashboard({
   embedded = false,
 }: LiteReportDashboardProps) {
   const t = copy[language] ?? copy.en;
-  const scoreInfo = getScoreInfo(report.match_score, language);
-  const tierName = scoreInfo.level;
-  const breedArchetype = report.dog_breed_archetype;
-  const scoreData = [{ name: 'Score', value: report.match_score, fill: scoreInfo.fill }];
+  const score = report.fit_score?.score ?? report.match_score ?? 0;
+  const scoreInfo = getScoreInfo(score, language);
+  const band = report.fit_score?.band ?? scoreInfo.level;
+  const scoreData = [{ name: 'Score', value: score, fill: scoreInfo.fill }];
   const [checkoutBusy, setCheckoutBusy] = React.useState(false);
+
+  const strengths = report.proof_map?.strengths ?? report.matching_strengths ?? [];
+  const gaps = report.proof_map?.gaps ?? report.critical_gaps ?? [];
+  const hardItems = report.hard_filter?.items ?? [];
+  const offer = report.expected_offer;
 
   const handleBack = () => {
     if (onNewAnalysis) {
@@ -237,27 +180,26 @@ export default function LiteReportDashboard({
   return (
     <div className="space-y-6 animate-fade-in">
       {!embedded && (
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors active:scale-95"
-        >
-          <Home className="w-4 h-4" />
-          {t.backHome}
-        </button>
-        <button
-          type="button"
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 rounded-xl border border-indigo-500/50 bg-indigo-500/10 px-4 py-2.5 text-sm font-semibold text-indigo-200 hover:bg-indigo-500/20 transition-colors active:scale-95"
-        >
-          <RotateCcw className="w-4 h-4" />
-          {t.newAnalysis}
-        </button>
-      </div>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors active:scale-95"
+          >
+            <Home className="w-4 h-4" />
+            {t.backHome}
+          </button>
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center gap-2 rounded-xl border border-indigo-500/50 bg-indigo-500/10 px-4 py-2.5 text-sm font-semibold text-indigo-200 hover:bg-indigo-500/20 transition-colors active:scale-95"
+          >
+            <RotateCcw className="w-4 h-4" />
+            {t.newAnalysis}
+          </button>
+        </div>
       )}
 
-      {/* Job header */}
       <div className="rounded-2xl border border-slate-700 bg-slate-800/80 px-6 py-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -271,116 +213,243 @@ export default function LiteReportDashboard({
               {report.company_name || 'Unknown Company'}
             </p>
           </div>
+          {report.data_completeness && (
+            <div className="text-right">
+              <p className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">{t.completeness}</p>
+              <p className="text-sm font-semibold text-slate-200">{report.data_completeness.level}</p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Match grid — mirrors legacy AnalysisDashboard */}
-      <div className="space-y-4">
-        <div className="flex items-center">
-          <span className="w-1.5 h-6 bg-yellow-500 rounded-full mr-3" />
-          <h2 className="text-xl font-bold text-white">{t.matchSection}</h2>
+      {/* Dual heroes */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col">
+          <p className="text-xs font-bold uppercase tracking-widest text-yellow-400/90 mb-4">{t.fitHero}</p>
+          <div className="flex items-center justify-center gap-6 mb-4">
+            <div className="flex flex-col items-center shrink-0">
+              {scoreInfo.icon}
+              <span className={`text-sm font-bold mt-2 ${scoreInfo.color}`}>{band}</span>
+            </div>
+            <div className="relative w-32 h-32 flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadialBarChart
+                  innerRadius="70%"
+                  outerRadius="100%"
+                  barSize={10}
+                  data={scoreData}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
+                  <RadialBar background dataKey="value" cornerRadius={30} />
+                </RadialBarChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex items-center justify-center flex-col">
+                <span className={`text-4xl font-black ${scoreInfo.color}`}>{score}</span>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">/ 100</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wide px-2.5 py-1 rounded border border-slate-600 text-slate-300">
+              {t.evidenceCoverage}: {report.fit_score?.evidence_coverage ?? '—'}
+            </span>
+            <span
+              className={`text-[11px] font-bold uppercase tracking-wide px-2.5 py-1 rounded border ${hardFilterTone(
+                report.hard_filter?.status ?? 'Unknown',
+              )}`}
+            >
+              {t.hardFilter}: {report.hard_filter?.status ?? 'Unknown'}
+            </span>
+          </div>
+          <p className="text-sm text-slate-300 leading-relaxed">
+            {report.fit_score?.sharp_verdict
+              || report.one_sentence_sharp_critique
+              || report.recruiter_verdict
+              || ''}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col items-center">
-            <div className="flex items-center justify-center w-full mt-4 mb-6 space-x-6">
-              <div className="flex flex-col items-center shrink-0">
-                {scoreInfo.icon}
-                <span className={`text-sm font-bold mt-2 ${scoreInfo.color}`}>{tierName}</span>
-                {breedArchetype && (
-                  <span className="text-xs text-slate-500 mt-1 text-center max-w-[8rem]">{breedArchetype}</span>
-                )}
-              </div>
-              <div className="relative w-32 h-32 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadialBarChart innerRadius="70%" outerRadius="100%" barSize={10} data={scoreData} startAngle={90} endAngle={-270}>
-                    <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                    <RadialBar background dataKey="value" cornerRadius={30} />
-                  </RadialBarChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex items-center justify-center flex-col">
-                  <span className={`text-4xl font-black ${scoreInfo.color}`}>{report.match_score}</span>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Score</span>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col">
+          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400/90 mb-1 flex items-center gap-1">
+            <DollarSign className="w-4 h-4" />
+            {t.offerHero}
+          </p>
+          <p className="text-[11px] text-slate-500 mb-4">
+            {t.evidenceTier} {offer?.evidence_tier ?? 'D'}
+            {offer?.region ? ` · ${offer.region}` : ''}
+            {offer?.currency ? ` · ${offer.currency}` : ''}
+          </p>
+          {offer?.posted_range && (
+            <p className="text-xs text-slate-400 mb-3">
+              {t.postedRange}: <span className="text-slate-200">{offer.posted_range}</span>
+            </p>
+          )}
+          <div className="grid grid-cols-3 gap-2 text-center text-sm mb-4">
+            <div className="rounded-lg bg-white/5 p-3">
+              <p className="text-xs text-slate-500 mb-1">P25</p>
+              <p className="font-medium text-white">{displayMoney(offer?.p25)}</p>
+            </div>
+            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3">
+              <p className="text-xs text-emerald-300 mb-1 font-bold">P50</p>
+              <p className="font-semibold text-white text-base">{displayMoney(offer?.p50)}</p>
+            </div>
+            <div className="rounded-lg bg-white/5 p-3">
+              <p className="text-xs text-slate-500 mb-1">P75</p>
+              <p className="font-medium text-white">{displayMoney(offer?.p75)}</p>
+            </div>
+          </div>
+          {offer?.candidate_position_label && (
+            <p className="text-sm text-emerald-100/90 mb-2 leading-relaxed">{offer.candidate_position_label}</p>
+          )}
+          {offer?.target_gap && (
+            <div className="rounded-lg bg-slate-900/50 p-3 mt-auto">
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">{t.targetGap}</p>
+              <p className="text-sm text-slate-300 leading-relaxed">{offer.target_gap}</p>
+            </div>
+          )}
+          {(offer?.sources?.length ?? 0) > 0 && (
+            <p className="text-[11px] text-slate-500 mt-3">
+              Sources: {offer!.sources.slice(0, 3).join(' · ')}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Apply decision */}
+      {report.apply_decision && (
+        <div className={`rounded-xl border p-5 ${applyTone(report.apply_decision.label)}`}>
+          <div className="flex items-start gap-3">
+            <Compass className="w-5 h-5 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider mb-1">{t.applyDecision}</p>
+              <p className="text-lg font-black mb-1">{report.apply_decision.label}</p>
+              <p className="text-sm leading-relaxed opacity-90">{report.apply_decision.reason}</p>
+              {report.apply_decision.next_best_action && (
+                <p className="text-sm mt-2 opacity-80">
+                  <span className="font-semibold">{t.nextAction}: </span>
+                  {report.apply_decision.next_best_action}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Proof map */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-bold text-emerald-400 mb-4 flex items-center uppercase tracking-wide">
+            <CheckCircle2 className="w-4 h-4 mr-2" />
+            {t.strengths}
+          </h3>
+          <ul className="space-y-3">
+            {strengths.map((item, idx) => (
+              <li key={idx} className="flex items-start">
+                <span className="mt-2 mr-3 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-slate-200">{item.point}</p>
+                  <p className="text-xs text-slate-500 mt-1">{item.description}</p>
                 </div>
-              </div>
-            </div>
-            <p className={`text-lg font-bold ${scoreInfo.color} text-center`}>{scoreInfo.label}</p>
-            <p className="text-sm text-slate-400 text-center mt-2 px-2 leading-relaxed">{scoreInfo.description}</p>
-            {report.recruiter_verdict && (
-              <div className="w-full mt-4 p-3 rounded-lg border border-slate-600/50 bg-slate-900/40 text-left">
-                <p className="text-xs font-bold text-amber-500/90 uppercase tracking-wide mb-1">{t.recruiterVerdict}</p>
-                <p className="text-sm text-slate-300 leading-relaxed">{report.recruiter_verdict}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl flex flex-col md:flex-row overflow-hidden">
-            <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-slate-700">
-              <h3 className="text-base font-bold text-emerald-400 mb-4 flex items-center uppercase tracking-wide">
-                <CheckCircle2 className="w-4 h-4 mr-2" />
-                {t.strengths}
-              </h3>
-              <ul className="space-y-3">
-                {(report.matching_strengths || []).map((item, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="mt-2 mr-3 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <div>
-                      <p className="text-sm font-bold text-slate-200">{item.point}</p>
-                      <p className="text-xs text-slate-500 mt-1">{item.description}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex-1 p-6 bg-slate-800/50">
-              <h3 className="text-base font-bold text-amber-400 mb-4 flex items-center uppercase tracking-wide">
-                <AlertTriangle className="w-5 h-5 mr-2" />
-                {t.gaps}
-              </h3>
-              <ul className="space-y-3">
-                {(report.critical_gaps || []).map((item, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="mt-2 mr-3 w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                    <div>
-                      <p className="text-sm font-bold text-slate-200">{item.gap}</p>
-                      <p className="text-xs text-slate-500 mt-1">{item.description}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-bold text-amber-400 mb-4 flex items-center uppercase tracking-wide">
+            <AlertTriangle className="w-5 h-5 mr-2" />
+            {t.gaps}
+          </h3>
+          <ul className="space-y-3">
+            {gaps.map((item, idx) => (
+              <li key={idx} className="flex items-start">
+                <span className="mt-2 mr-3 w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-slate-200">{item.gap}</p>
+                  <p className="text-xs text-slate-500 mt-1">{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      {/* Sharp critique */}
-      <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-5">
-        <p className="text-xs text-red-300 uppercase tracking-wider mb-2 flex items-center gap-1 font-bold">
-          <Target className="w-4 h-4" />
-          {t.sharpCritique}
-        </p>
-        <p className="text-sm leading-relaxed text-red-100/90">{report.one_sentence_sharp_critique}</p>
-      </div>
+      {(report.proof_map?.resume_actions?.length ?? 0) > 0 && (
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
+            <Target className="w-5 h-5 text-indigo-400" />
+            {t.resumeActions}
+          </h3>
+          <ol className="space-y-2 list-decimal list-inside">
+            {report.proof_map!.resume_actions.map((a, i) => (
+              <li key={i} className="text-sm text-slate-300 leading-relaxed">
+                {a}
+              </li>
+            ))}
+          </ol>
+          {report.proof_map?.screenability_note && (
+            <p className="text-xs text-slate-500 mt-3">{report.proof_map.screenability_note}</p>
+          )}
+        </div>
+      )}
 
-      {/* Hard requirements */}
-      {(report.hard_requirements_checklist?.length ?? 0) > 0 && (
+      {hardItems.length > 0 && (
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
           <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
             <ListChecks className="w-5 h-5 text-indigo-400" />
-            {t.hardReqs}
+            {t.hardFilter}
           </h3>
           <ul className="space-y-3">
-            {report.hard_requirements_checklist.map((item, idx) => (
-              <li key={idx} className="flex items-start justify-between gap-3 p-3 rounded-lg bg-slate-900/40 border border-slate-700/50">
-                <span className="text-sm text-slate-300">{item.requirement}</span>
-                {statusBadge(item.status, t)}
+            {hardItems.map((item, idx) => (
+              <li
+                key={idx}
+                className="flex items-start justify-between gap-3 p-3 rounded-lg bg-slate-900/40 border border-slate-700/50"
+              >
+                <div>
+                  <span className="text-sm text-slate-300">{item.requirement}</span>
+                  {item.evidence && (
+                    <p className="text-xs text-slate-500 mt-1">{item.evidence}</p>
+                  )}
+                </div>
+                <span
+                  className={`shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded border ${hardFilterTone(
+                    (['Pass', 'Risk', 'Blocked', 'Unknown'].includes(String(item.status))
+                      ? item.status
+                      : item.status === 'met'
+                        ? 'Pass'
+                        : item.status === 'missing'
+                          ? 'Blocked'
+                          : 'Risk') as HardFilterStatus,
+                  )}`}
+                >
+                  {String(item.status)}
+                </span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* Interview starters */}
+      {report.role_read?.mission && (
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+            <Shield className="w-5 h-5 text-slate-400" />
+            {t.roleRead}
+          </h3>
+          <p className="text-sm text-slate-300 leading-relaxed mb-3">{report.role_read.mission}</p>
+          {(report.role_read.responsibilities?.length ?? 0) > 0 && (
+            <ul className="space-y-1 mb-2">
+              {report.role_read.responsibilities.map((r, i) => (
+                <li key={i} className="text-sm text-slate-400">
+                  · {r}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       {(report.interview_starters?.length ?? 0) > 0 && (
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
           <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
@@ -397,74 +466,24 @@ export default function LiteReportDashboard({
         </div>
       )}
 
-      {/* Compensation + FLSA */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 md:col-span-2">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1 font-bold">
-            <DollarSign className="w-4 h-4" />
-            {t.compensation}
-          </p>
-          {report.radford_2026_compensation_matrix.market_region && (
-            <p className="text-xs text-slate-400 mb-4">
-              {t.marketRegion}: {report.radford_2026_compensation_matrix.market_region}
-            </p>
-          )}
-          <div className="grid grid-cols-3 gap-2 text-center text-sm mb-4">
-            <div className="rounded-lg bg-white/5 p-3">
-              <p className="text-xs text-slate-500 mb-1">P25</p>
-              <p className="font-medium text-white">{report.radford_2026_compensation_matrix.tier_25th_low}</p>
-            </div>
-            <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-3">
-              <p className="text-xs text-blue-300 mb-1 font-bold">P50</p>
-              <p className="font-semibold text-white text-base">{report.radford_2026_compensation_matrix.tier_50th_mid}</p>
-            </div>
-            <div className="rounded-lg bg-white/5 p-3">
-              <p className="text-xs text-slate-500 mb-1">P75</p>
-              <p className="font-medium text-white">{report.radford_2026_compensation_matrix.tier_75th_high}</p>
-            </div>
-          </div>
-          {report.radford_2026_compensation_matrix.candidate_position_label && (
-            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 mb-3">
-              <p className="text-xs font-bold text-emerald-300 uppercase tracking-wide mb-1">{t.salaryPosition}</p>
-              <p className="text-sm text-emerald-100 leading-relaxed">
-                {report.radford_2026_compensation_matrix.candidate_position_label}
-              </p>
-            </div>
-          )}
-          {report.radford_2026_compensation_matrix.compensation_rationale && (
-            <div className="rounded-lg bg-slate-900/50 p-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">{t.salaryRationale}</p>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                {report.radford_2026_compensation_matrix.compensation_rationale}
-              </p>
-            </div>
-          )}
-        </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col justify-center md:col-span-2 lg:col-span-1">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 font-bold">{t.flsa}</p>
-          <p className="text-lg font-semibold text-white">{report.flsa_status}</p>
-        </div>
-      </div>
-
-      {/* Full upgrade CTA */}
       {!embedded && (
-      <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/80 to-indigo-950/60 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <p className="font-bold text-white flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-violet-400" />
-            {t.upgradeTitle}
-          </p>
-          <p className="text-sm text-slate-400 mt-1 max-w-xl">{t.upgradeDesc}</p>
+        <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/80 to-indigo-950/60 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="font-bold text-white flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-violet-400" />
+              {t.upgradeTitle}
+            </p>
+            <p className="text-sm text-slate-400 mt-1 max-w-xl">{t.upgradeDesc}</p>
+          </div>
+          <button
+            type="button"
+            disabled={checkoutBusy}
+            onClick={handleUpgrade}
+            className="shrink-0 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-5 py-3 text-sm font-bold text-white transition-colors"
+          >
+            {checkoutBusy ? '…' : t.upgradeBtn}
+          </button>
         </div>
-        <button
-          type="button"
-          disabled={checkoutBusy}
-          onClick={handleUpgrade}
-          className="shrink-0 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-5 py-3 text-sm font-bold text-white transition-colors"
-        >
-          {checkoutBusy ? '…' : t.upgradeBtn}
-        </button>
-      </div>
       )}
     </div>
   );
