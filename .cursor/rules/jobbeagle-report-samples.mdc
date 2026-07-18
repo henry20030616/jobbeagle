@@ -23,8 +23,7 @@ When adjusting **either** report product UI or content rules, **always update bo
 ## Current Snapshot content rules (as of 2026-07-18)
 
 - **Layout**: one-page slide frame (`LiteReportDashboard`) — single outer border; internal sections use dividers, not separate floating cards. No upgrade CTA under the slide.
-- **Score Summary**: fit evaluation only (why match / why not). No Apply/Next resume coaching.
-- **Range Evaluation**: plain-language **market value of the role**, not evidence-tier glossary.
+- **Score Summary / Range Evaluation**: same row in the slide grid so both boxes always match height.
 - **Beagle Scale**: hidden by default; popover appears when hovering / focusing / tapping the fit-score circle only.
 - JobBeagle evaluates fit — it is **not** a resume coach.
 - Strategy Guide embeds the same Snapshot slide frame; keep Guide chrome consistent when Snapshot layout changes.

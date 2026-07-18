@@ -111,9 +111,9 @@ export default function LiteReportDashboard({
           </div>
         </header>
 
-        {/* Heroes: Fit | Offer */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:divide-x divide-y lg:divide-y-0 divide-slate-700/90">
-          <section className="flex flex-col p-5 sm:p-6 min-h-0">
+        {/* Heroes + equal-height Score Summary | Range Evaluation */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-[auto_1fr] divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
+          <section className="flex flex-col p-5 sm:p-6 lg:col-start-1 lg:row-start-1">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-400 mb-3">
               Candidate Fit Score
             </p>
@@ -208,27 +208,27 @@ export default function LiteReportDashboard({
                 </p>
               </div>
             </div>
-
-            <div className="mt-auto pt-4">
-              <div className="rounded-lg border border-indigo-500/25 bg-indigo-500/10 px-3.5 py-3 min-h-[7.5rem] flex flex-col">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1">
-                  Score Summary
-                </p>
-                <p className={`text-sm font-bold ${scoreInfo.color} mb-1`}>
-                  {score}/100 · {scoreInfo.level}
-                  {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
-                </p>
-                <p className="text-sm text-slate-200 leading-relaxed flex-1">
-                  {report.fit_score?.sharp_verdict
-                    || report.recruiter_verdict
-                    || report.one_sentence_sharp_critique
-                    || scoreInfo.description}
-                </p>
-              </div>
-            </div>
           </section>
 
-          <section className="flex flex-col p-5 sm:p-6 min-h-0">
+          <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 lg:col-start-1 lg:row-start-2">
+            <div className="h-full min-h-[8.5rem] rounded-lg border border-indigo-500/25 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1">
+                Score Summary
+              </p>
+              <p className={`text-sm font-bold ${scoreInfo.color} mb-1`}>
+                {score}/100 · {scoreInfo.level}
+                {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+              </p>
+              <p className="text-sm text-slate-200 leading-relaxed flex-1">
+                {report.fit_score?.sharp_verdict
+                  || report.recruiter_verdict
+                  || report.one_sentence_sharp_critique
+                  || scoreInfo.description}
+              </p>
+            </div>
+          </div>
+
+          <section className="flex flex-col p-5 sm:p-6 lg:col-start-2 lg:row-start-1 border-t border-slate-700/90 lg:border-t-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400/90 mb-1 flex items-center gap-1">
               <DollarSign className="w-3.5 h-3.5" />
               Expected Offer Range
@@ -259,20 +259,20 @@ export default function LiteReportDashboard({
                 </>
               )}
             </div>
-
-            <div className="mt-auto pt-4">
-              <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3.5 py-3 min-h-[7.5rem] flex flex-col">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 mb-1">
-                  Range Evaluation
-                </p>
-                <p className="text-sm font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
-                <p className="text-sm text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
-                {offerEval.note ? (
-                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">{offerEval.note}</p>
-                ) : null}
-              </div>
-            </div>
           </section>
+
+          <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 border-t border-slate-700/90 lg:border-t-0 lg:col-start-2 lg:row-start-2">
+            <div className="h-full min-h-[8.5rem] rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3.5 py-3 flex flex-col">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 mb-1">
+                Range Evaluation
+              </p>
+              <p className="text-sm font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
+              <p className="text-sm text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
+              {offerEval.note ? (
+                <p className="text-xs text-slate-400 mt-2 leading-relaxed">{offerEval.note}</p>
+              ) : null}
+            </div>
+          </div>
         </div>
 
         {/* Strengths | Gaps — bottom of same slide */}
