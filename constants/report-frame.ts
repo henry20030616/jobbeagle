@@ -1,6 +1,6 @@
-/** Action buttons — dark blue outline only */
+/** Action buttons — thin dark-blue frame */
 export const REPORT_ACTION_BTN =
-  'inline-flex items-center gap-2 rounded-xl border border-blue-900 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-blue-800 transition-colors';
+  'inline-flex items-center gap-2 rounded-lg border border-blue-950 bg-slate-900/80 px-3 py-2 text-sm font-semibold text-slate-100 hover:bg-slate-800 hover:border-blue-900 transition-colors';
 
 /**
  * Snapshot / Guide large frames — brighter blue (never white / grey).
