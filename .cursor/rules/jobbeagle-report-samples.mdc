@@ -28,5 +28,6 @@ When adjusting **either** report product UI or content rules, **always update bo
 - **Score Summary / Range Evaluation height**: same CSS grid row so both boxes always match height.
 - **Beagle Scale**: hidden by default; popover appears when hovering / focusing / tapping the fit-score circle only.
 - JobBeagle evaluates fit — it is **not** a resume coach.
-- Strategy Guide embeds the same Snapshot slide frame; keep Guide chrome consistent when Snapshot layout changes.
+- Strategy Guide uses left sidebar pages: Snapshot · Hiring Context · Interview · Salary · Provenance (no separate LITE/DEEP toggle; Snapshot is the first nav page).
+- Strategy Guide sample opens on Snapshot page by default; same Snapshot slide frame as standalone.
 - Homepage `ReferralCard` is referral-only (credits live on `/account`).

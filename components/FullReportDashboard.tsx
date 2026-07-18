@@ -14,11 +14,12 @@ import {
   Layers,
   Briefcase,
   Building2,
-  FileText,
   ChevronDown,
   ExternalLink,
   Copy,
   Check,
+  ScanSearch,
+  FileText,
 } from 'lucide-react';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
@@ -26,7 +27,6 @@ import { getScoreInfo } from '@/components/AnalysisDashboard';
 import { formatOfferRange } from '@/lib/offer-display';
 
 type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
-type ViewMode = 'snapshot' | 'guide';
 
 interface FullReportDashboardProps {
   report: FullReport;
@@ -36,6 +36,12 @@ interface FullReportDashboardProps {
 }
 
 const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }[] = [
+  {
+    id: 'snapshot',
+    label: 'Snapshot',
+    icon: <ScanSearch className="w-4 h-4" />,
+    blurb: 'One-page fit score, offer range, strengths and gaps.',
+  },
   {
     id: 'hiring',
     label: 'Hiring Context',
@@ -171,8 +177,7 @@ export default function FullReportDashboard({
   embedded = false,
   onNewAnalysis,
 }: FullReportDashboardProps) {
-  const [mode, setMode] = useState<ViewMode>('guide');
-  const [tab, setTab] = useState<GuideTab>('hiring');
+  const [tab, setTab] = useState<GuideTab>('snapshot');
   const [provenanceOpen, setProvenanceOpen] = useState(false);
 
   const playbook = report.interview_playbook;
@@ -217,43 +222,35 @@ export default function FullReportDashboard({
   };
 
   const activeNav = NAV.find((n) => n.id === tab) ?? NAV[0];
+  const navBtnClass =
+    'inline-flex items-center gap-1.5 rounded-lg border border-slate-500/50 bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
   return (
     <div
-      className={`rounded-2xl border border-slate-700 bg-slate-950 overflow-hidden ${
+      className={`rounded-2xl border border-violet-500/30 bg-slate-950 overflow-hidden ${
         embedded ? '' : 'shadow-2xl shadow-black/40'
       }`}
     >
-      {/* Top bar — Snapshot LITE / Guide DEEP */}
+      {/* Top bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
-          <p className="text-sm font-bold text-white tracking-tight">JobBeagle</p>
-          <p className="text-[11px] text-slate-500">Evidence-based job intelligence</p>
+          <p className="text-sm font-bold text-white tracking-tight">Interview Strategy Guide</p>
+          <p className="text-[11px] text-slate-500">
+            Snapshot + playbook — switch pages from the left nav
+          </p>
         </div>
-        <div className="flex items-center rounded-full border border-slate-700 bg-black/30 p-1">
-          <button
-            type="button"
-            onClick={() => setMode('snapshot')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors ${
-              mode === 'snapshot'
-                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Snapshot <span className="opacity-70 font-semibold">LITE</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('guide')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors ${
-              mode === 'guide'
-                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Guide <span className="opacity-70 font-semibold">DEEP</span>
-          </button>
-        </div>
+        {!embedded && (
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={handleBack} className={navBtnClass}>
+              <Home className="w-3.5 h-3.5" />
+              Home
+            </button>
+            <button type="button" onClick={handleBack} className={navBtnClass}>
+              <RotateCcw className="w-3.5 h-3.5" />
+              New
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Job meta strip */}
@@ -271,92 +268,58 @@ export default function FullReportDashboard({
         <span className={`text-xs font-bold ${scoreInfo.color}`}>
           {score} · {scoreInfo.level}
         </span>
-        {!embedded && (
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleBack}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1.5 text-[11px] font-semibold text-slate-300 hover:bg-white/5"
-            >
-              <Home className="w-3.5 h-3.5" />
-              Home
-            </button>
-            <button
-              type="button"
-              onClick={handleBack}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-200 hover:bg-indigo-500/20"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              New
-            </button>
-          </div>
-        )}
       </div>
 
-      {mode === 'snapshot' ? (
-        <div className="p-4 sm:p-6">
-          <LiteReportDashboard report={report} language="en" embedded onNewAnalysis={onNewAnalysis} />
-        </div>
-      ) : (
-        <div className="space-y-0">
-          {/* Full Guide always includes Snapshot (lite) first */}
-          <div className="border-b border-slate-700 p-4 sm:p-6 bg-slate-950/50">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-1.5 h-5 bg-indigo-500 rounded-full shrink-0" />
-              <p className="text-sm font-semibold text-indigo-200">
-                Includes Job Fit Snapshot
-              </p>
-              <span className="text-[11px] text-slate-500 ml-auto hidden sm:inline">
-                One-page fit · Offer · Strengths & Gaps
-              </span>
-            </div>
-            <LiteReportDashboard
-              report={report}
-              language="en"
-              embedded
-              onNewAnalysis={onNewAnalysis}
-            />
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] min-h-[28rem]">
+        {/* Sidebar — Snapshot + Guide pages */}
+        <aside className="border-b lg:border-b-0 lg:border-r border-slate-700 p-4 space-y-3 bg-slate-900/60">
+          <p className="text-[11px] text-slate-500 leading-relaxed px-1">
+            Guide · Deep — fit snapshot plus the full playbook to closing the offer.
+          </p>
+          <nav className="flex lg:flex-col gap-2 overflow-x-auto pb-1 lg:pb-0">
+            {NAV.map((item) => {
+              const active = tab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setTab(item.id)}
+                  className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors border ${
+                    active
+                      ? 'border-violet-500 bg-violet-500/10 text-violet-100'
+                      : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  }`}
+                >
+                  <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] min-h-[28rem]">
-          {/* Sidebar */}
-          <aside className="border-b lg:border-b-0 lg:border-r border-slate-700 p-4 space-y-3 bg-slate-900/60">
-            <p className="text-[11px] text-slate-500 leading-relaxed px-1">
-              Guide · Deep — the full playbook from context to closing the offer.
-            </p>
-            <nav className="flex lg:flex-col gap-2 overflow-x-auto pb-1 lg:pb-0">
-              {NAV.map((item) => {
-                const active = tab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setTab(item.id)}
-                    className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors border ${
-                      active
-                        ? 'border-violet-500 bg-violet-500/10 text-violet-100'
-                        : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
-                    }`}
-                  >
-                    <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
-                    {item.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </aside>
-
-          {/* Content panel */}
-          <section className="p-4 sm:p-6 space-y-4 bg-slate-950">
+        {/* Content panel */}
+        <section className="p-4 sm:p-6 space-y-4 bg-slate-950 min-w-0">
+          {tab !== 'snapshot' && (
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-1">
                 {activeNav.label}
               </p>
               <p className="text-xs text-slate-500">{activeNav.blurb}</p>
             </div>
+          )}
 
-            <div key={tab} className="animate-fade-in space-y-4">
-              {tab === 'hiring' && (
+          <div key={tab} className="animate-fade-in space-y-4">
+            {tab === 'snapshot' && (
+              <LiteReportDashboard
+                report={report}
+                language="en"
+                embedded
+                onNewAnalysis={onNewAnalysis}
+              />
+            )}
+
+            {tab === 'hiring' && (
                 <>
                   {fitSalary && (
                     <Card title="Fit implications">
@@ -778,7 +741,7 @@ export default function FullReportDashboard({
             </div>
 
             {/* Collapsible provenance log footer — style cue from mock */}
-            {tab !== 'provenance' && (
+            {tab !== 'provenance' && tab !== 'snapshot' && (
               <button
                 type="button"
                 onClick={() => setProvenanceOpen((v) => !v)}
@@ -798,7 +761,7 @@ export default function FullReportDashboard({
                 />
               </button>
             )}
-            {provenanceOpen && tab !== 'provenance' && (
+            {provenanceOpen && tab !== 'provenance' && tab !== 'snapshot' && (
               <div className="rounded-xl border border-slate-700 bg-slate-800/80 p-4 space-y-2">
                 {sources.length === 0 ? (
                   <p className="text-xs text-slate-500">No sources listed for this panel.</p>
@@ -820,8 +783,6 @@ export default function FullReportDashboard({
             )}
           </section>
         </div>
-        </div>
-      )}
     </div>
   );
 }
