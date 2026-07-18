@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { beagleTierIndex, getBeagleTierCopy, getBeagleTierVisual } from '@/lib/beagle-tiers';
+import { beagleTierIndex, getBeagleTierCopy, getBeagleTierLegend, getBeagleTierVisual } from '@/lib/beagle-tiers';
 
 describe('beagle tiers', () => {
   it('maps score bands', () => {
@@ -19,5 +19,14 @@ describe('beagle tiers', () => {
   it('returns brand-aligned colors', () => {
     expect(getBeagleTierVisual(95).fill).toBe('#a5b4fc');
     expect(getBeagleTierVisual(35).fill).toBe('#d6a07c');
+  });
+
+  it('builds a legend with score ranges and active tier', () => {
+    const legend = getBeagleTierLegend(45, 'en');
+    expect(legend).toHaveLength(4);
+    expect(legend[0].name).toBe('Diamond Beagle');
+    expect(legend[0].scoreRange).toBe('90–100');
+    expect(legend[3].active).toBe(true);
+    expect(legend[3].description).toMatch(/0–59/);
   });
 });

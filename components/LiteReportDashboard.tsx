@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
+import { getBeagleTierLegend } from '@/lib/beagle-tiers';
 import { startCheckout } from '@/lib/checkout-client';
 import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
 
@@ -135,6 +136,42 @@ export default function LiteReportDashboard({
                 {scoreInfo.level}
               </p>
               <p className="text-sm font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                {scoreInfo.description}
+              </p>
+            </div>
+          </div>
+
+          {/* What each Beagle level means */}
+          <div className="mt-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+              Beagle Scale — what each level means
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {getBeagleTierLegend(score, 'en').map((tier) => (
+                <div
+                  key={tier.index}
+                  className={`rounded-lg border px-3 py-2 ${
+                    tier.active
+                      ? 'border-indigo-400/50 bg-indigo-500/15'
+                      : 'border-slate-700/80 bg-slate-900/40'
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className={`text-xs font-bold ${tier.visual.color}`}>
+                      {tier.name}
+                      {tier.active ? ' · You' : ''}
+                    </p>
+                    <span className="text-[10px] font-semibold text-slate-500 tabular-nums shrink-0">
+                      {tier.scoreRange}
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-semibold text-slate-300 mt-0.5">{tier.label}</p>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-snug line-clamp-2">
+                    {tier.description}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 
