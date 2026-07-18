@@ -300,14 +300,14 @@ export default function FullReportDashboard({
       ) : (
         <div className="space-y-0">
           {/* Full Guide always includes Snapshot (lite) first */}
-          <div className="border-b border-slate-700 p-4 sm:p-6 bg-slate-900/40">
-            <div className="flex items-center gap-2 mb-4">
+          <div className="border-b border-slate-700 p-4 sm:p-6 bg-slate-950/50">
+            <div className="flex items-center gap-2 mb-3">
               <span className="w-1.5 h-5 bg-indigo-500 rounded-full shrink-0" />
               <p className="text-sm font-semibold text-indigo-200">
                 Includes Job Fit Snapshot
               </p>
               <span className="text-[11px] text-slate-500 ml-auto hidden sm:inline">
-                Fit · Offer · Apply Decision · Strengths & Gaps
+                One-page fit · Offer · Strengths & Gaps
               </span>
             </div>
             <LiteReportDashboard
