@@ -64,7 +64,7 @@ export default function SampleReportClient() {
             Right column: report — tops of actions & report aligned
           */}
           <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-            <aside className="w-full sm:w-80 lg:w-[22rem] shrink-0 flex flex-col gap-3">
+            <aside className="w-full sm:w-72 lg:w-80 shrink-0 flex flex-col gap-3">
               {/* Two buttons side-by-side; combined width = Sample box width */}
               <div className="grid grid-cols-2 gap-2 w-full">
                 <button

@@ -260,8 +260,8 @@ export default function FullReportDashboard({
         </div>
       </div>
 
-      {/* Page nav — horizontal under title */}
-      <nav className="px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex gap-2 overflow-x-auto no-scrollbar">
+      {/* Page nav — wrap so no tab is clipped */}
+      <nav className="px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex flex-wrap gap-2">
         {NAV.map((item) => {
           const active = tab === item.id;
           return (
@@ -269,7 +269,7 @@ export default function FullReportDashboard({
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`shrink-0 flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xl sm:text-2xl font-black transition-colors border ${
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-base sm:text-lg font-bold transition-colors border ${
                 active
                   ? 'border-violet-500 bg-violet-500/10 text-violet-100'
                   : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
