@@ -14,7 +14,10 @@ import { normalizeFullReport, normalizeLiteReport } from '@/lib/normalize-lite-r
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import BrandLogo from '@/components/BrandLogo';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Home, RotateCcw } from 'lucide-react';
+
+const actionBtnClass =
+  'inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
 export default function ReportPage() {
   const router = useRouter();
@@ -60,6 +63,20 @@ export default function ReportPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
+      {/* Absolute top — above logo / report */}
+      <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3">
+        <div className="mx-auto w-full max-w-5xl flex flex-wrap items-center gap-2 sm:gap-3">
+          <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
+            <Home className="w-4 h-4" />
+            Back to Home
+          </button>
+          <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
+            <RotateCcw className="w-4 h-4" />
+            New Analysis
+          </button>
+        </div>
+      </div>
+
       <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
         <BrandLogo size="inline" />
         <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
@@ -72,12 +89,14 @@ export default function ReportPage() {
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}
               language="en"
+              embedded
               onNewAnalysis={handleNewAnalysis}
             />
           ) : (
             <LiteReportDashboard
               report={normalizeLiteReport(payload.report as LiteReport)}
               language="en"
+              embedded
               onNewAnalysis={handleNewAnalysis}
             />
           )}
