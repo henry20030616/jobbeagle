@@ -11,6 +11,7 @@ import {
   Sparkles,
   Building2,
   Briefcase,
+  ChevronDown,
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
@@ -40,6 +41,7 @@ export default function LiteReportDashboard({
   const scoreInfo = getScoreInfo(score, 'en');
   const scoreData = [{ name: 'Score', value: score, fill: scoreInfo.fill }];
   const [checkoutBusy, setCheckoutBusy] = React.useState(false);
+  const [expandedBeagleTier, setExpandedBeagleTier] = React.useState<number | null>(null);
 
   const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 4);
   const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
@@ -142,36 +144,72 @@ export default function LiteReportDashboard({
             </div>
           </div>
 
-          {/* What each Beagle level means */}
+          {/* What each Beagle level means — hover to expand (same pattern as homepage features) */}
           <div className="mt-4">
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
               Beagle Scale — what each level means
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {getBeagleTierLegend(score, 'en').map((tier) => (
-                <div
-                  key={tier.index}
-                  className={`rounded-lg border px-3 py-2 ${
-                    tier.active
-                      ? 'border-indigo-400/50 bg-indigo-500/15'
-                      : 'border-slate-700/80 bg-slate-900/40'
-                  }`}
-                >
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className={`text-xs font-bold ${tier.visual.color}`}>
-                      {tier.name}
-                      {tier.active ? ' · You' : ''}
-                    </p>
-                    <span className="text-[10px] font-semibold text-slate-500 tabular-nums shrink-0">
-                      {tier.scoreRange}
-                    </span>
-                  </div>
-                  <p className="text-[11px] font-semibold text-slate-300 mt-0.5">{tier.label}</p>
-                  <p className="text-[11px] text-slate-500 mt-1 leading-snug line-clamp-2">
-                    {tier.description}
-                  </p>
-                </div>
-              ))}
+              {getBeagleTierLegend(score, 'en').map((tier) => {
+                const open = expandedBeagleTier === tier.index;
+                return (
+                  <button
+                    key={tier.index}
+                    type="button"
+                    aria-expanded={open}
+                    onMouseEnter={() => setExpandedBeagleTier(tier.index)}
+                    onMouseLeave={() =>
+                      setExpandedBeagleTier((cur) => (cur === tier.index ? null : cur))
+                    }
+                    onFocus={() => setExpandedBeagleTier(tier.index)}
+                    onBlur={() =>
+                      setExpandedBeagleTier((cur) => (cur === tier.index ? null : cur))
+                    }
+                    onClick={() =>
+                      setExpandedBeagleTier(open ? null : tier.index)
+                    }
+                    className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${
+                      tier.active
+                        ? 'border-indigo-400/50 bg-indigo-500/15'
+                        : 'border-slate-700/80 bg-slate-900/40 hover:bg-slate-900/70'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className={`text-xs font-bold ${tier.visual.color}`}>
+                            {tier.name}
+                            {tier.active ? ' · You' : ''}
+                          </p>
+                          <span className="text-[10px] font-semibold text-slate-500 tabular-nums shrink-0">
+                            {tier.scoreRange}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-semibold text-slate-300 mt-0.5">
+                          {tier.label}
+                        </p>
+                      </div>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5 transition-transform duration-200 ${
+                          open ? 'rotate-180' : ''
+                        }`}
+                        aria-hidden
+                      />
+                    </div>
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                        open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="text-[11px] text-slate-500 mt-1.5 leading-snug pb-0.5">
+                          {tier.description}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
