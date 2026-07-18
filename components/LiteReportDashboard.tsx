@@ -10,7 +10,6 @@ import {
   RotateCcw,
   Building2,
   Briefcase,
-  ChevronDown,
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
@@ -38,7 +37,8 @@ export default function LiteReportDashboard({
   const score = report.fit_score?.score ?? report.match_score ?? 0;
   const scoreInfo = getScoreInfo(score, 'en');
   const scoreData = [{ name: 'Score', value: score, fill: scoreInfo.fill }];
-  const [expandedBeagleTier, setExpandedBeagleTier] = React.useState<number | null>(null);
+  const [showBeagleScale, setShowBeagleScale] = React.useState(false);
+  const beagleTiers = getBeagleTierLegend(score, 'en');
 
   const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 4);
   const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
@@ -125,64 +125,58 @@ export default function LiteReportDashboard({
                   spotColor={scoreInfo.spotColor}
                 />
               </div>
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadialBarChart
-                    innerRadius="70%"
-                    outerRadius="100%"
-                    barSize={10}
-                    data={scoreData}
-                    startAngle={90}
-                    endAngle={-270}
-                  >
-                    <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                    <RadialBar background dataKey="value" cornerRadius={30} />
-                  </RadialBarChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex items-center justify-center flex-col">
-                  <span className={`text-3xl font-black ${scoreInfo.color}`}>{score}</span>
-                </div>
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className={`text-lg sm:text-xl font-black leading-tight ${scoreInfo.color}`}>
-                  {scoreInfo.level}
-                </p>
-                <p className="text-sm font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed line-clamp-3">
-                  {scoreInfo.description}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
-                Beagle Scale — what each level means
-              </p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {getBeagleTierLegend(score, 'en').map((tier) => {
-                  const open = expandedBeagleTier === tier.index;
-                  return (
-                    <button
-                      key={tier.index}
-                      type="button"
-                      aria-expanded={open}
-                      onMouseEnter={() => setExpandedBeagleTier(tier.index)}
-                      onMouseLeave={() =>
-                        setExpandedBeagleTier((cur) => (cur === tier.index ? null : cur))
-                      }
-                      onFocus={() => setExpandedBeagleTier(tier.index)}
-                      onBlur={() =>
-                        setExpandedBeagleTier((cur) => (cur === tier.index ? null : cur))
-                      }
-                      onClick={() => setExpandedBeagleTier(open ? null : tier.index)}
-                      className={`w-full text-left rounded-md border px-2.5 py-1.5 transition-colors ${
-                        tier.active
-                          ? 'border-indigo-400/50 bg-indigo-500/15'
-                          : 'border-slate-700/60 bg-slate-950/40 hover:bg-slate-950/70'
-                      }`}
+              <div
+                className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0"
+                onMouseEnter={() => setShowBeagleScale(true)}
+                onMouseLeave={() => setShowBeagleScale(false)}
+              >
+                <button
+                  type="button"
+                  aria-expanded={showBeagleScale}
+                  aria-controls="beagle-scale-popover"
+                  aria-label={`Fit score ${score}. Hover or focus for Beagle Scale.`}
+                  onFocus={() => setShowBeagleScale(true)}
+                  onBlur={() => setShowBeagleScale(false)}
+                  onClick={() => setShowBeagleScale((open) => !open)}
+                  className="relative w-full h-full flex items-center justify-center rounded-full outline-none ring-offset-2 ring-offset-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-400/80 cursor-help"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadialBarChart
+                      innerRadius="70%"
+                      outerRadius="100%"
+                      barSize={10}
+                      data={scoreData}
+                      startAngle={90}
+                      endAngle={-270}
                     >
-                      <div className="flex items-start justify-between gap-1">
-                        <div className="min-w-0 flex-1">
+                      <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
+                      <RadialBar background dataKey="value" cornerRadius={30} />
+                    </RadialBarChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
+                    <span className={`text-3xl font-black ${scoreInfo.color}`}>{score}</span>
+                  </div>
+                </button>
+
+                {showBeagleScale && (
+                  <div
+                    id="beagle-scale-popover"
+                    role="tooltip"
+                    className="absolute left-1/2 top-[calc(100%+0.5rem)] z-30 w-[min(20rem,calc(100vw-2.5rem))] -translate-x-1/2 rounded-xl border border-slate-600/90 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-md animate-fade-in"
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+                      Beagle Scale — what each level means
+                    </p>
+                    <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                      {beagleTiers.map((tier) => (
+                        <li
+                          key={tier.index}
+                          className={`rounded-md border px-2.5 py-1.5 ${
+                            tier.active
+                              ? 'border-indigo-400/50 bg-indigo-500/15'
+                              : 'border-slate-700/60 bg-slate-900/50'
+                          }`}
+                        >
                           <div className="flex items-baseline justify-between gap-1">
                             <p className={`text-[11px] font-bold ${tier.visual.color}`}>
                               {tier.name}
@@ -195,28 +189,23 @@ export default function LiteReportDashboard({
                           <p className="text-[10px] font-semibold text-slate-300 mt-0.5">
                             {tier.label}
                           </p>
-                        </div>
-                        <ChevronDown
-                          className={`w-3 h-3 text-slate-500 shrink-0 mt-0.5 transition-transform duration-200 ${
-                            open ? 'rotate-180' : ''
-                          }`}
-                          aria-hidden
-                        />
-                      </div>
-                      <div
-                        className={`grid transition-[grid-template-rows] duration-200 ease-out ${
-                          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                        }`}
-                      >
-                        <div className="overflow-hidden">
-                          <p className="text-[10px] text-slate-500 mt-1 leading-snug pb-0.5">
+                          <p className="text-[10px] text-slate-500 mt-1 leading-snug">
                             {tier.description}
                           </p>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className={`text-lg sm:text-xl font-black leading-tight ${scoreInfo.color}`}>
+                  {scoreInfo.level}
+                </p>
+                <p className="text-sm font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
+                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed line-clamp-3">
+                  {scoreInfo.description}
+                </p>
               </div>
             </div>
 
