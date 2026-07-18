@@ -12,11 +12,12 @@ Rules:
 - Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
 - Suggest score breakdown weights as guidance for your assessment (backend may recompute): hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain experience 15%, proven impact 10%.
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Use Blocked ONLY for explicit conflicts (e.g. must be onsite NYC but candidate is remote-only with no relocation). Missing data → Unknown or Risk, not Blocked.
-- expected_offer.evidence_tier:
-  A = JD/employer posted range
-  B = highly matching public role-level data you can cite as a short note in sources[]
-  C = reputable market benchmark with region (state uncertainty)
-  D = insufficient → set p25/p50/p75/posted_range to null and explain in target_gap
+- expected_offer is a product hero — always fill it thoughtfully:
+  A = JD/employer posted range (copy into posted_range AND derive p25/p50/p75 from it when possible)
+  B = highly matching public role-level data you can cite in sources[]
+  C = reputable US market benchmark for this title/level/region (state uncertainty in target_gap) — USE THIS when the JD has no pay but the role is clear. Still output p25/p50/p75 as dollar strings (e.g. "$140K").
+  D = only when title/level/region are too vague to estimate → null numbers + explain in target_gap
+- Prefer tier C over empty D whenever job title + level + US region are identifiable.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
 - apply_decision.label must be one of: Apply now | Apply after fixes | Clarify first | Skip
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps (no web). Label them as predicted in prose if needed; do not invent "reported" questions.

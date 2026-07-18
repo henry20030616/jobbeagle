@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { decodePayloadParamForPreFlight } from '@/lib/payload';
 import { canAffordUserProfile } from '@/lib/profiles';
 import { startCheckout } from '@/lib/checkout-client';
-import type { LiteReport, FullReport, ReportType, ResumeInput, UserProfile } from '@/types';
+import type { LiteReport, ReportType, ResumeInput, UserProfile } from '@/types';
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
 import { FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS } from '@/constants/credits';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
@@ -16,14 +16,13 @@ import {
   getAnalysisProgressAtTime,
   getAnalysisStageLabel,
 } from '@/lib/analysis-progress';
-import LiteReportDashboard from '@/components/LiteReportDashboard';
-import FullReportDashboard from '@/components/FullReportDashboard';
 import DogLoading from '@/components/DogLoading';
 import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import ResumeInputPanel from '@/components/ResumeInputPanel';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import BrandLogo from '@/components/BrandLogo';
+import { saveReportSession } from '@/lib/report-session';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import {
   CONFIRM_PAGE,
@@ -74,6 +73,7 @@ const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
 
 export default function PreFlightPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const sidParam = searchParams.get('sid');
   const payloadParam = searchParams.get('payload');
   const scrapeErrorKey = searchParams.get('error');
@@ -89,8 +89,6 @@ export default function PreFlightPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
-  const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
-  const [fullReport, setFullReport] = useState<FullReport | null>(null);
   const [checkoutBusy, setCheckoutBusy] = useState<CheckoutPlanType | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisElapsed, setAnalysisElapsed] = useState(0);
@@ -218,8 +216,6 @@ export default function PreFlightPage() {
 
     setAnalyzing(true);
     setError(null);
-    setLiteReport(null);
-    setFullReport(null);
     startProgressSimulation();
 
     try {
@@ -263,12 +259,20 @@ export default function PreFlightPage() {
         );
       }
 
-      if (normalizeReportType(data.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
-        setFullReport(normalizeFullReport(data.report));
-      } else {
-        setLiteReport(normalizeLiteReport(data.report as LiteReport));
-      }
+      const normalizedType = normalizeReportType(data.report_type);
+      const report =
+        normalizedType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+          ? normalizeFullReport(data.report)
+          : normalizeLiteReport(data.report as LiteReport);
+
+      saveReportSession({
+        report,
+        report_type: normalizedType,
+        report_id: typeof data.report_id === 'string' ? data.report_id : null,
+      });
       await loadSession();
+      router.push('/report');
+      return;
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Analysis failed');
     } finally {
@@ -520,27 +524,6 @@ export default function PreFlightPage() {
             ))}
           </div>
         </div>
-        )}
-
-        {liteReport && (
-          <LiteReportDashboard
-            report={liteReport}
-            onNewAnalysis={() => {
-              setLiteReport(null);
-              setFullReport(null);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        )}
-        {fullReport && (
-          <FullReportDashboard
-            report={normalizeFullReport(fullReport)}
-            onNewAnalysis={() => {
-              setLiteReport(null);
-              setFullReport(null);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
         )}
       </main>
     </div>

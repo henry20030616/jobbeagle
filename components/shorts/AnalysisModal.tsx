@@ -442,9 +442,9 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           {step === 'result' && (liteReport || fullReport) && (
             <div>
               {liteReport && (
-                <LiteReportDashboard report={liteReport} language={language} embedded />
+                <LiteReportDashboard report={liteReport} language="en" embedded />
               )}
-              {fullReport && <FullReportDashboard report={fullReport} embedded />}
+              {fullReport && <FullReportDashboard report={fullReport} language="en" embedded />}
               <div className="mt-4 mb-2 space-y-2">
                 {canApply && analyzedResumeId && onApplyWithResume && (
                   <button

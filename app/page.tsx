@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import InputForm from '@/components/InputForm';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
 import DogLoading from '@/components/DogLoading';
@@ -11,14 +12,13 @@ import BrandLogo from '@/components/BrandLogo';
 import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, LiteReport, FullReport, UserInputs, ReportType } from '@/types';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
-import LiteReportDashboard from '@/components/LiteReportDashboard';
-import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import { normalizeLiteReport, isLiteReport, isFullReport, normalizeFullReport } from '@/lib/normalize-lite-report';
+import { saveReportSession, clearReportSession } from '@/lib/report-session';
 import ReferralCard from '@/components/ReferralCard';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import type { UserProfile } from '@/types';
@@ -125,12 +125,11 @@ function getStageLabel(progress: number, lang: AppLanguage): string {
 }
 
 export default function Home() {
+  const router = useRouter();
   const { language: appLanguage } = useLanguage();
   const language = appLanguage;
 
   const [report, setReport] = useState<InterviewReport | null>(null);
-  const [liteReport, setLiteReport] = useState<LiteReport | null>(null);
-  const [fullReport, setFullReport] = useState<FullReport | null>(null);
   const [reportType, setReportType] = useState<ReportType>(REPORT_CODES.JOB_FIT_SNAPSHOT);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -298,11 +297,10 @@ export default function Home() {
 
   const handleResetToForm = () => {
     setReport(null);
-    setLiteReport(null);
-    setFullReport(null);
     setError(null);
     setErrorCode(null);
     sessionStorage.removeItem('jb_last_report_id');
+    clearReportSession();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -322,8 +320,6 @@ export default function Home() {
     setLoading(true);
     setError(null);
     setErrorCode(null);
-    setLiteReport(null);
-    setFullReport(null);
     setReport(null);
     startProgressSimulation(language);
     try {
@@ -335,7 +331,7 @@ export default function Home() {
           report_type: reportType,
           jobDescription: inputs.jobDescription,
           resume: inputs.resume,
-          language: appLanguage,
+          language: 'en',
           device_fingerprint: fingerprint,
         }),
       });
@@ -363,27 +359,32 @@ export default function Home() {
         return;
       }
 
-      if (normalizeReportType(result.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
-        setFullReport(normalizeFullReport(result.report));
-        setLiteReport(null);
-        setReport(null);
-      } else if (
-        normalizeReportType(result.report_type) === REPORT_CODES.JOB_FIT_SNAPSHOT
-        && (result.report?.match_score != null
-          || (result.report as LiteReport)?.fit_score?.score != null)
+      const normalizedType = normalizeReportType(result.report_type);
+      if (
+        normalizedType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+        || normalizedType === REPORT_CODES.JOB_FIT_SNAPSHOT
+        || isLiteReport(result.report)
+        || isFullReport(result.report)
       ) {
-        setLiteReport(normalizeLiteReport(result.report as LiteReport));
-        setFullReport(null);
-        setReport(null);
-      } else if (isLiteReport(result.report)) {
-        setLiteReport(normalizeLiteReport(result.report));
-        setFullReport(null);
-        setReport(null);
-      } else {
-        setReport(result.report as InterviewReport);
-        setLiteReport(null);
-        setFullReport(null);
+        const reportPayload =
+          normalizedType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE || isFullReport(result.report)
+            ? normalizeFullReport(result.report)
+            : normalizeLiteReport(result.report as LiteReport);
+        saveReportSession({
+          report: reportPayload,
+          report_type: normalizedType,
+          report_id: typeof result.report_id === 'string' ? result.report_id : null,
+        });
+        if (result.report_id) {
+          setLastReportId(result.report_id);
+          sessionStorage.setItem('jb_last_report_id', result.report_id);
+        }
+        await loadProfile();
+        router.push('/report');
+        return;
       }
+
+      setReport(result.report as InterviewReport);
       if (result.report_id) {
         setLastReportId(result.report_id);
         sessionStorage.setItem('jb_last_report_id', result.report_id);
@@ -437,7 +438,7 @@ export default function Home() {
           <AccountDeactivatedBanner language={language} />
         )}
 
-        {isHomepageShortsBannerEnabled() && isShortsEnabled() && !report && !liteReport && !fullReport && (
+        {isHomepageShortsBannerEnabled() && isShortsEnabled() && !report && (
           <Link
             href="/shorts"
             className="mb-8 flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
@@ -499,17 +500,27 @@ export default function Home() {
                             normalizeReportType(item.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                             || isFullReport(payload)
                           ) {
-                            setFullReport(payload as FullReport);
-                            setLiteReport(null);
-                            setReport(null);
-                          } else if (isLiteReport(payload)) {
-                            setLiteReport(normalizeLiteReport(payload));
-                            setFullReport(null);
-                            setReport(null);
-                          } else if (payload) {
+                            saveReportSession({
+                              report: normalizeFullReport(payload as FullReport),
+                              report_type: REPORT_CODES.INTERVIEW_STRATEGY_GUIDE,
+                              report_id: item.id,
+                            });
+                            setShowHistory(false);
+                            router.push('/report');
+                            return;
+                          }
+                          if (isLiteReport(payload)) {
+                            saveReportSession({
+                              report: normalizeLiteReport(payload),
+                              report_type: REPORT_CODES.JOB_FIT_SNAPSHOT,
+                              report_id: item.id,
+                            });
+                            setShowHistory(false);
+                            router.push('/report');
+                            return;
+                          }
+                          if (payload) {
                             setReport(payload as InterviewReport);
-                            setLiteReport(null);
-                            setFullReport(null);
                           }
                           setShowHistory(false);
                         }}
@@ -597,7 +608,7 @@ export default function Home() {
           </div>
         )}
 
-        {!report && !liteReport && !fullReport ? (
+        {!report ? (
           <div className="max-w-[90rem] mx-auto">
             <InputForm
               onSubmit={handleGenerate} 
@@ -618,41 +629,14 @@ export default function Home() {
           </div>
         ) : (
           <div className="animate-fade-in max-w-[90rem] mx-auto">
-            {liteReport ? (
-              <LiteReportDashboard
-                report={liteReport}
-                language={language}
-                onNewAnalysis={handleResetToForm}
-              />
-            ) : fullReport ? (
-              <div className="space-y-6">
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <button
-                    type="button"
-                    onClick={handleResetToForm}
-                    className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors"
-                  >
-                    {t.backToHome}
-                  </button>
-                </div>
-                <FullReportDashboard
-                  report={normalizeFullReport(fullReport)}
-                  language={language}
-                  onNewAnalysis={handleResetToForm}
-                />
-              </div>
-            ) : report ? (
-              <>
-                <button
-                  onClick={handleResetToForm}
-                  className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
-                >
-                  <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
-                  {t.backToHome}
-                </button>
-                <AnalysisDashboard data={report} language={language} />
-              </>
-            ) : null}
+            <button
+              onClick={handleResetToForm}
+              className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
+              {t.backToHome}
+            </button>
+            <AnalysisDashboard data={report} language={language} />
           </div>
         )}
       </main>

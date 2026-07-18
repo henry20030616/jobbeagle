@@ -313,7 +313,10 @@ export function isEnrichedLiteReport(raw: unknown): boolean {
   const r = raw as LiteReport;
   const strengths = r.proof_map?.strengths?.length ?? r.matching_strengths?.length ?? 0;
   const gaps = r.proof_map?.gaps?.length ?? r.critical_gaps?.length ?? 0;
-  return strengths > 0 && gaps > 0 && typeof (r.fit_score?.score ?? r.match_score) === 'number';
+  const hasFit = typeof (r.fit_score?.score ?? r.match_score) === 'number';
+  // Spec v3 Snapshot must include expected_offer so salary hero is not blank from legacy cache.
+  const hasOffer = Boolean(r.expected_offer?.evidence_tier || r.radford_2026_compensation_matrix);
+  return strengths > 0 && gaps > 0 && hasFit && hasOffer;
 }
 
 export function isFullReport(value: unknown): value is FullReport {

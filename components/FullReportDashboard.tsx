@@ -46,7 +46,7 @@ export default function FullReportDashboard({
         </div>
         <LiteReportDashboard
           report={report}
-          language={language}
+          language="en"
           embedded
           onNewAnalysis={onNewAnalysis}
         />
