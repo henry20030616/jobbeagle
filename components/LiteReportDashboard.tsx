@@ -15,7 +15,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
-import { getScoreInfo } from '@/components/AnalysisDashboard';
+import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { startCheckout } from '@/lib/checkout-client';
 
 interface LiteReportDashboardProps {
@@ -24,6 +24,20 @@ interface LiteReportDashboardProps {
   language?: 'en';
   onNewAnalysis?: () => void;
   embedded?: boolean;
+}
+
+function beagleSpotForScore(score: number): string {
+  if (score >= 90) return '#0e7490';
+  if (score >= 75) return '#b45309';
+  if (score >= 60) return '#475569';
+  return '#9a3412';
+}
+
+function beagleGlowForScore(score: number): string {
+  if (score >= 90) return 'drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]';
+  if (score >= 75) return 'drop-shadow-[0_0_18px_rgba(251,191,36,0.55)]';
+  if (score >= 60) return 'drop-shadow-[0_0_14px_rgba(203,213,225,0.35)]';
+  return 'drop-shadow-[0_0_14px_rgba(251,146,60,0.4)]';
 }
 
 function displayMoney(v: string | null | undefined): string {
@@ -134,7 +148,14 @@ export default function LiteReportDashboard({
           <p className="text-[11px] font-bold uppercase tracking-widest text-yellow-400/90 mb-3">
             Candidate Fit Score
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex flex-col items-center shrink-0">
+              <BeagleIcon
+                className={`w-20 h-20 sm:w-24 sm:h-24 ${beagleGlowForScore(score)}`}
+                color={scoreInfo.fill}
+                spotColor={beagleSpotForScore(score)}
+              />
+            </div>
             <div className="relative w-28 h-28 shrink-0 flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <RadialBarChart
