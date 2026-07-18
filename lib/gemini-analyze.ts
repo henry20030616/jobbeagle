@@ -310,6 +310,29 @@ const FULL_INTEL_RESPONSE_SCHEMA = {
             required: ['question'],
           },
         },
+        star_templates: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              for_question: { type: Type.STRING },
+              situation: { type: Type.STRING },
+              task: { type: Type.STRING },
+              action: { type: Type.STRING },
+              result: { type: Type.STRING },
+              resume_anchor: { type: Type.STRING },
+            },
+            required: [
+              'title',
+              'situation',
+              'task',
+              'action',
+              'result',
+              'resume_anchor',
+            ],
+          },
+        },
         star_outlines: { type: Type.ARRAY, items: { type: Type.STRING } },
         reverse_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
         validate_before_join: { type: Type.ARRAY, items: { type: Type.STRING } },
@@ -317,7 +340,7 @@ const FULL_INTEL_RESPONSE_SCHEMA = {
       required: [
         'reported',
         'predicted',
-        'star_outlines',
+        'star_templates',
         'reverse_questions',
         'validate_before_join',
       ],
@@ -485,6 +508,15 @@ Use public web sources only when citing hiring_context insights or reported inte
         predicted: snap.interview_starters.map((question) => ({
           question,
           predicted: true,
+        })),
+        star_templates: snap.interview_starters.slice(0, 4).map((q, i) => ({
+          title: `Practice story ${i + 1}`,
+          for_question: q,
+          situation: 'Use a real role/project from your resume (do not invent).',
+          task: 'State the concrete goal tied to this question.',
+          action: 'List 2–3 actions you personally took (tools/decisions from resume).',
+          result: 'Add a verified outcome or metric from your resume; if none, say so honestly.',
+          resume_anchor: snap.proof_map.strengths[i]?.point || 'Resume evidence required',
         })),
         star_outlines: snap.interview_starters.map((q) => `STAR outline for: ${q}`),
         reverse_questions: [

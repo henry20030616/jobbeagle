@@ -22,6 +22,7 @@ import type {
   ProofMap,
   RoleRead,
   SalaryEvidenceTier,
+  StarTemplate,
   StrategyFitSalary,
   StrategyIntelFields,
 } from '@/types';
@@ -336,10 +337,92 @@ function emptyPlaybook(): InterviewPlaybook {
   return {
     reported: [],
     predicted: [],
+    star_templates: [],
     star_outlines: [],
     reverse_questions: [],
     validate_before_join: [],
   };
+}
+
+function formatStarOutline(t: StarTemplate): string {
+  const parts = [
+    t.title,
+    t.situation ? `S: ${t.situation}` : '',
+    t.task ? `T: ${t.task}` : '',
+    t.action ? `A: ${t.action}` : '',
+    t.result ? `R: ${t.result}` : '',
+  ].filter(Boolean);
+  return parts.join('\n');
+}
+
+function coerceStarTemplate(item: unknown): StarTemplate | null {
+  if (typeof item === 'string' && item.trim()) {
+    const text = item.trim();
+    return {
+      title: text.slice(0, 80),
+      situation: text,
+      task: '',
+      action: '',
+      result: '',
+      resume_anchor: '',
+    };
+  }
+  if (!item || typeof item !== 'object') return null;
+  const o = item as Record<string, unknown>;
+  const title = asString(o.title) || asString(o.for_question);
+  const situation = asString(o.situation);
+  const task = asString(o.task);
+  const action = asString(o.action);
+  const result = asString(o.result);
+  if (!title && !situation && !action) return null;
+  return {
+    title: title || 'STAR practice template',
+    for_question: asString(o.for_question) || undefined,
+    situation,
+    task,
+    action,
+    result,
+    resume_anchor: asString(o.resume_anchor),
+  };
+}
+
+function normalizeStarTemplates(
+  playbook: Partial<InterviewPlaybook> | undefined,
+  legacyBank: unknown,
+  starters: string[],
+  strengths: { point: string }[],
+): StarTemplate[] {
+  const collected: StarTemplate[] = [];
+  const push = (item: unknown) => {
+    const t = coerceStarTemplate(item);
+    if (t) collected.push(t);
+  };
+
+  if (Array.isArray(playbook?.star_templates)) {
+    for (const item of playbook!.star_templates) push(item);
+  }
+  if (collected.length === 0 && Array.isArray(playbook?.star_outlines)) {
+    for (const item of playbook!.star_outlines) push(item);
+  }
+  if (collected.length === 0 && Array.isArray(legacyBank)) {
+    for (const item of legacyBank) push(item);
+  }
+
+  let i = 0;
+  while (collected.length < 3 && starters[i]) {
+    collected.push({
+      title: `Practice story ${collected.length + 1}`,
+      for_question: starters[i],
+      situation: 'Anchor to a real role/project on your resume.',
+      task: 'State the concrete goal this question is probing.',
+      action: 'Describe 2–3 actions you personally took (resume-verified).',
+      result: 'Add a verified outcome or metric; if none exists, say so honestly.',
+      resume_anchor: strengths[i]?.point || 'Resume evidence required',
+    });
+    i += 1;
+  }
+
+  return collected.slice(0, 4);
 }
 
 function emptyOffer(): OfferStrategy {
@@ -424,11 +507,21 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
         predicted: Array.isArray(raw.interview_playbook.predicted)
           ? raw.interview_playbook.predicted.filter((q) => q?.question)
           : [],
+        star_templates: [],
         star_outlines: asStringArray(raw.interview_playbook.star_outlines),
         reverse_questions: asStringArray(raw.interview_playbook.reverse_questions),
         validate_before_join: asStringArray(raw.interview_playbook.validate_before_join),
       }
     : emptyPlaybook();
+
+  interview_playbook.star_templates = normalizeStarTemplates(
+    raw.interview_playbook,
+    raw.custom_star_interview_bank,
+    snapshot.interview_starters,
+    snapshot.proof_map.strengths,
+  );
+  interview_playbook.star_outlines =
+    interview_playbook.star_templates.map(formatStarOutline);
 
   if (
     interview_playbook.predicted.length === 0
@@ -440,9 +533,6 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
         .filter((q) => typeof q === 'string' && q.trim())
         .slice(0, 10)
         .map((question) => ({ question, predicted: true })),
-      star_outlines: raw.custom_star_interview_bank.filter(
-        (q): q is string => typeof q === 'string' && q.trim().length > 0,
-      ).slice(0, 10),
     };
   }
 
@@ -501,8 +591,8 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
 
   // Legacy mirrors for older UI / cache consumers
   const starBank =
-    interview_playbook.star_outlines.length > 0
-      ? interview_playbook.star_outlines
+    interview_playbook.star_templates.length > 0
+      ? interview_playbook.star_templates.map((t) => t.title || formatStarOutline(t))
       : interview_playbook.predicted.map((q) => q.question);
   while (starBank.length < 3 && snapshot.interview_starters[starBank.length]) {
     starBank.push(snapshot.interview_starters[starBank.length]);

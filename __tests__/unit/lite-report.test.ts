@@ -255,6 +255,17 @@ describe('FullReport Spec v3', () => {
       interview_playbook: {
         reported: [],
         predicted: [{ question: 'Tell me about a product tradeoff', predicted: true }],
+        star_templates: [
+          {
+            title: 'Product tradeoff',
+            for_question: 'Tell me about a product tradeoff',
+            situation: 'Exchange ops backlog',
+            task: 'Prioritize shipping vs risk',
+            action: 'Ran a scoring rubric with eng + compliance',
+            result: 'Cut 2 high-risk items; shipped on time',
+            resume_anchor: 'Crypto exchange ops',
+          },
+        ],
         star_outlines: ['STAR: product tradeoff'],
         reverse_questions: ['What does 90-day success look like?'],
         validate_before_join: ['Team stability'],
@@ -272,12 +283,14 @@ describe('FullReport Spec v3', () => {
     expect(full.fit_score.score).toBe(70);
     expect(full.concerns_defenses).toHaveLength(3);
     expect(full.interview_playbook.predicted[0].question).toContain('tradeoff');
+    expect(full.interview_playbook.star_templates.length).toBeGreaterThanOrEqual(1);
+    expect(full.interview_playbook.star_templates[0].situation).toContain('Exchange');
     expect(full.custom_star_interview_bank?.length).toBeGreaterThan(0);
     expect(full.offer_strategy.script).toContain('discovery');
     expect(isFullReport(full)).toBe(true);
   });
 
-  it('upgrades legacy Full intel into v3 shapes', () => {
+  it('coerces legacy string STAR bank into structured templates', () => {
     const full = normalizeFullReport({
       match_score: 70,
       job_title: 'PM',
@@ -294,6 +307,8 @@ describe('FullReport Spec v3', () => {
     expect(full.match_score).toBe(70);
     expect(full.concerns_defenses).toHaveLength(3);
     expect(full.interview_playbook.predicted.length).toBeGreaterThan(0);
+    expect(full.interview_playbook.star_templates.length).toBeGreaterThanOrEqual(2);
+    expect(full.interview_playbook.star_templates[0].title).toContain('STAR');
     expect(full.offer_strategy.script).toContain('mid-band');
     expect(isFullReport(full)).toBe(true);
   });

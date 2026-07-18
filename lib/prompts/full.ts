@@ -11,9 +11,9 @@ Produce strategy that turns the two hero numbers into actionable interview/offer
 
 3) concerns_defenses — EXACTLY 3 recruiter concerns for THIS candidate vs THIS JD. Each: concern, why, resume evidence, missing_proof, answer_guide, do_not_claim. Direct and respectful — no humiliation; never invent experience.
 
-4) interview_playbook — SEPARATE reported questions (citation required: source_url, source_date) from predicted questions (predicted=true). STAR outlines only from supplied resume facts. Include reverse_questions and validate_before_join hypotheses (not culture "truth scores"). If no citable reported questions, reported=[].
+4) interview_playbook — SEPARATE reported questions (citation required: source_url, source_date) from predicted questions (predicted=true). Include EXACTLY 3–4 star_templates: each is a copy-ready practice template with title, for_question, situation, task, action, result, and resume_anchor. STAR content ONLY from supplied resume facts — never invent projects, metrics, or titles. Also put a one-line star_outline on each predicted/reported question. Include reverse_questions and validate_before_join hypotheses (not culture "truth scores"). If no citable reported questions, reported=[].
 
-5) offer_strategy — target / acceptable / walk_away aligned to any career context provided; levers; script. If expected_offer.evidence_tier is D or weak, prioritize discovery_questions over aggressive anchoring. Never invent compensation numbers.
+5) offer_strategy — target / acceptable / walk_away aligned to any career context provided; levers; a reusable negotiation script template the candidate can copy. If expected_offer.evidence_tier is D or weak, prioritize discovery_questions over aggressive anchoring. Never invent compensation numbers.
 
 Output valid JSON only. No markdown fences.`;
 
@@ -105,6 +105,31 @@ export const FULL_INTEL_JSON_SCHEMA = {
             required: ['question'],
           },
         },
+        star_templates: {
+          type: 'array',
+          minItems: 3,
+          maxItems: 4,
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              for_question: { type: 'string' },
+              situation: { type: 'string' },
+              task: { type: 'string' },
+              action: { type: 'string' },
+              result: { type: 'string' },
+              resume_anchor: { type: 'string' },
+            },
+            required: [
+              'title',
+              'situation',
+              'task',
+              'action',
+              'result',
+              'resume_anchor',
+            ],
+          },
+        },
         star_outlines: { type: 'array', items: { type: 'string' } },
         reverse_questions: { type: 'array', items: { type: 'string' } },
         validate_before_join: { type: 'array', items: { type: 'string' } },
@@ -112,7 +137,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
       required: [
         'reported',
         'predicted',
-        'star_outlines',
+        'star_templates',
         'reverse_questions',
         'validate_before_join',
       ],

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import type { FullReport } from '@/types';
+import type { FullReport, StarTemplate } from '@/types';
 import {
   AlertTriangle,
   MessageSquare,
@@ -17,6 +17,8 @@ import {
   FileText,
   ChevronDown,
   ExternalLink,
+  Copy,
+  Check,
 } from 'lucide-react';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
@@ -44,13 +46,13 @@ const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }
     id: 'interview',
     label: 'Interview',
     icon: <MessageSquare className="w-4 h-4" />,
-    blurb: 'Concerns, defenses, and the interview playbook.',
+    blurb: 'Answer templates, concerns, and the interview playbook.',
   },
   {
     id: 'salary',
     label: 'Salary',
     icon: <HandCoins className="w-4 h-4" />,
-    blurb: 'Expected offer range and negotiation posture.',
+    blurb: 'Expected offer range and negotiation script templates.',
   },
   {
     id: 'provenance',
@@ -80,6 +82,86 @@ function Card({
         ) : null}
       </div>
       {children}
+    </div>
+  );
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          setCopied(true);
+          window.setTimeout(() => setCopied(false), 1600);
+        } catch {
+          /* ignore */
+        }
+      }}
+      className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-300 hover:text-indigo-200 transition-colors"
+    >
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? 'Copied' : 'Copy template'}
+    </button>
+  );
+}
+
+function starTemplateText(t: StarTemplate): string {
+  return [
+    t.title,
+    t.for_question ? `Question: ${t.for_question}` : '',
+    t.situation ? `Situation: ${t.situation}` : '',
+    t.task ? `Task: ${t.task}` : '',
+    t.action ? `Action: ${t.action}` : '',
+    t.result ? `Result: ${t.result}` : '',
+    t.resume_anchor ? `Resume anchor: ${t.resume_anchor}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+function StarTemplateCard({ template, index }: { template: StarTemplate; index: number }) {
+  const rows = [
+    { key: 'S', label: 'Situation', value: template.situation },
+    { key: 'T', label: 'Task', value: template.task },
+    { key: 'A', label: 'Action', value: template.action },
+    { key: 'R', label: 'Result', value: template.result },
+  ].filter((r) => r.value?.trim());
+
+  return (
+    <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/5 p-4">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 mb-1">
+            Template {index + 1}
+          </p>
+          <p className="text-sm font-semibold text-white">{template.title}</p>
+          {template.for_question ? (
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed">{template.for_question}</p>
+          ) : null}
+        </div>
+        <CopyButton text={starTemplateText(template)} />
+      </div>
+      <div className="space-y-2">
+        {rows.map((r) => (
+          <div key={r.key} className="flex gap-2.5 text-sm">
+            <span className="shrink-0 w-6 h-6 rounded-md bg-indigo-500/20 text-indigo-200 text-[11px] font-bold flex items-center justify-center">
+              {r.key}
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{r.label}</p>
+              <p className="text-slate-200 leading-relaxed">{r.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {template.resume_anchor ? (
+        <p className="text-[11px] text-slate-500 mt-3 pt-3 border-t border-slate-700/80">
+          Resume anchor: {template.resume_anchor}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -363,6 +445,30 @@ export default function FullReportDashboard({
 
               {tab === 'interview' && (
                 <>
+                  <Card
+                    title="STAR Answer Templates"
+                    badge={`${Math.min(playbook?.star_templates?.length || 0, 4) || '3-4'}`}
+                  >
+                    <p className="text-xs text-slate-500 mb-4 leading-relaxed">
+                      Copy-ready practice scripts built only from your resume facts. Rehearse out loud before the interview.
+                    </p>
+                    <div className="space-y-3">
+                      {(playbook?.star_templates?.length
+                        ? playbook.star_templates
+                        : []
+                      )
+                        .slice(0, 4)
+                        .map((t, i) => (
+                          <StarTemplateCard key={i} template={t} index={i} />
+                        ))}
+                      {(playbook?.star_templates?.length ?? 0) === 0 && (
+                        <p className="text-sm text-slate-400">
+                          Templates will appear after a fresh Strategy Guide run.
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+
                   <Card title="Concerns & Defenses" badge="3">
                     <div className="space-y-3">
                       {concerns.map((c, i) => (
@@ -387,9 +493,15 @@ export default function FullReportDashboard({
                               {c.missing_proof}
                             </p>
                           )}
-                          <p className="text-sm text-slate-200 mt-2 leading-relaxed">
-                            {c.answer_guide}
-                          </p>
+                          <div className="mt-3 rounded-lg border border-violet-500/20 bg-black/20 p-3">
+                            <div className="flex items-center justify-between gap-2 mb-1.5">
+                              <p className="text-[10px] font-bold uppercase tracking-wide text-violet-300">
+                                Answer template
+                              </p>
+                              {c.answer_guide ? <CopyButton text={c.answer_guide} /> : null}
+                            </div>
+                            <p className="text-sm text-slate-200 leading-relaxed">{c.answer_guide}</p>
+                          </div>
                           {c.do_not_claim && (
                             <p className="text-xs text-red-300/90 mt-2">
                               Do not claim: {c.do_not_claim}
@@ -429,7 +541,12 @@ export default function FullReportDashboard({
                                 </p>
                               )}
                               {q.star_outline && (
-                                <p className="text-xs text-slate-500 mt-2">{q.star_outline}</p>
+                                <div className="mt-2 rounded-lg border border-slate-700 bg-slate-900/50 p-2.5">
+                                  <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                                    Answer outline
+                                  </p>
+                                  <p className="text-xs text-slate-400 whitespace-pre-wrap">{q.star_outline}</p>
+                                </div>
                               )}
                             </li>
                           ))}
@@ -458,7 +575,12 @@ export default function FullReportDashboard({
                             </span>
                             {q.question}
                             {'star_outline' in q && q.star_outline ? (
-                              <p className="text-xs text-slate-500 mt-2">{q.star_outline}</p>
+                              <div className="mt-2 rounded-lg border border-slate-700 bg-slate-900/50 p-2.5">
+                                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                                  Answer outline
+                                </p>
+                                <p className="text-xs text-slate-400 whitespace-pre-wrap">{q.star_outline}</p>
+                              </div>
                             ) : null}
                           </li>
                         ))}
@@ -564,9 +686,17 @@ export default function FullReportDashboard({
                         </p>
                       )}
                       {offer.script && (
-                        <p className="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap mb-3">
-                          {offer.script}
-                        </p>
+                        <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/5 p-4 mb-3">
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-indigo-300">
+                              Negotiation script template
+                            </p>
+                            <CopyButton text={offer.script} />
+                          </div>
+                          <p className="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap">
+                            {offer.script}
+                          </p>
+                        </div>
                       )}
                       {(offer.discovery_questions?.length ?? 0) > 0 && (
                         <ul className="space-y-1">

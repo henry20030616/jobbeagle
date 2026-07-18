@@ -285,9 +285,25 @@ export interface InterviewQuestionCard {
   missing_facts?: string;
 }
 
+/** Practice-ready STAR answer template (Strategy Guide differentiator). */
+export interface StarTemplate {
+  title: string;
+  /** Optional interview question this template prepares for */
+  for_question?: string;
+  situation: string;
+  task: string;
+  action: string;
+  result: string;
+  /** Which resume fact this template is anchored to — never invent */
+  resume_anchor: string;
+}
+
 export interface InterviewPlaybook {
   reported: InterviewQuestionCard[];
   predicted: InterviewQuestionCard[];
+  /** 3–4 copy-ready STAR practice templates */
+  star_templates: StarTemplate[];
+  /** @deprecated flat strings; prefer star_templates */
   star_outlines: string[];
   reverse_questions: string[];
   validate_before_join: string[];

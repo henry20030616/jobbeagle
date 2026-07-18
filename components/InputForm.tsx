@@ -28,6 +28,16 @@ interface InputFormProps {
   onReportTypeChange?: (type: ReportType) => void;
   /** When set, credits pill shows remaining Snapshot / Strategy counts */
   userProfile?: UserProfile | null;
+  /**
+   * When opened from Chrome extension (/confirm): show capture badge,
+   * hide “Grab JD” CTA, and label the job step as already filled.
+   */
+  extensionCapture?: {
+    company_name: string;
+    job_title: string;
+  } | null;
+  /** Side panel / narrow: slightly tighter chrome */
+  compactChrome?: boolean;
 }
 
 const InputForm: React.FC<InputFormProps> = ({
@@ -39,6 +49,8 @@ const InputForm: React.FC<InputFormProps> = ({
   reportType = REPORT_CODES.JOB_FIT_SNAPSHOT,
   onReportTypeChange,
   userProfile = null,
+  extensionCapture = null,
+  compactChrome = false,
 }) => {
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(language);
   const [jobDescription, setJobDescription] = useState('');
@@ -494,16 +506,24 @@ const InputForm: React.FC<InputFormProps> = ({
     : 'Remaining credits: Snapshot / Strategy Guide (buy more or manage account)';
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="text-center space-y-3 py-4">
-        <BrandLogo size="hero" as="h1" className="justify-center" />
-        <p className="text-slate-400 text-lg md:text-xl max-w-3xl mx-auto font-medium leading-relaxed">
+    <div className={`flex flex-col ${compactChrome ? 'gap-6' : 'gap-10'}`}>
+      <div className={`text-center space-y-3 ${compactChrome ? 'py-1' : 'py-4'}`}>
+        <BrandLogo size={compactChrome ? 'nav' : 'hero'} as="h1" className="justify-center" />
+        <p className={`text-slate-400 max-w-3xl mx-auto font-medium leading-relaxed ${compactChrome ? 'text-sm md:text-base' : 'text-lg md:text-xl'}`}>
           {t.description}
         </p>
-
+        {extensionCapture && (
+          <p className="inline-flex items-center gap-2 text-sm text-emerald-300/90 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-3 py-1.5">
+            <Puzzle className="w-4 h-4 shrink-0" />
+            <span className="font-semibold">
+              {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
+            </span>
+          </p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        {!compactChrome && (
         <div className="bg-slate-800/80 border border-slate-700 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden relative group">
            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity duration-500">
               <Sparkles className="w-64 h-64 text-indigo-500" />
@@ -590,6 +610,7 @@ const InputForm: React.FC<InputFormProps> = ({
                </div>
            </div>
         </div>
+        )}
 
         <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
           {/*
@@ -605,9 +626,26 @@ const InputForm: React.FC<InputFormProps> = ({
               </h2>
               <div className="pb-3 flex flex-col gap-1.5 justify-end">
                 <p className="text-sm text-slate-400 leading-snug pl-[1.125rem]">
-                  {t.jobStepHint}
+                  {extensionCapture
+                    ? (zh
+                        ? '請確認外掛抓取的職缺內容，必要時可微調後再分析。'
+                        : 'Review the captured job — edit if needed, then continue.')
+                    : t.jobStepHint}
                 </p>
                 <div className="min-h-[2.125rem] flex items-center">
+                  {extensionCapture ? (
+                    <div className="inline-flex flex-col gap-1 max-w-full">
+                      <span className="inline-flex items-center gap-1.5 text-sm text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/25 whitespace-nowrap">
+                        <Puzzle className="w-4 h-4 shrink-0" />
+                        <span className="font-bold">
+                          {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
+                        </span>
+                      </span>
+                      <span className="text-xs text-slate-400 pl-1 truncate max-w-[16rem]" title={`${extensionCapture.company_name} · ${extensionCapture.job_title}`}>
+                        {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || '—'}
+                      </span>
+                    </div>
+                  ) : (
                   <Link
                     href="/extension"
                     className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
@@ -624,6 +662,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         : 'Grab JD with Chrome extension →'}
                     </span>
                   </Link>
+                  )}
                 </div>
               </div>
               <div className="min-h-[220px] h-full flex flex-col">

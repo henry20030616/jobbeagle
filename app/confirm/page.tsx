@@ -1,16 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { decodePayloadParamForPreFlight } from '@/lib/payload';
-import { canAffordUserProfile } from '@/lib/profiles';
-import { startCheckout } from '@/lib/checkout-client';
-import type { LiteReport, ReportType, ResumeInput, UserProfile } from '@/types';
-import type { CheckoutPlanType } from '@/constants/checkout-plans';
-import { FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS } from '@/constants/credits';
+import type { LiteReport, ReportType, UserInputs, UserProfile } from '@/types';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import {
   getAnalysisProgressAtTime,
@@ -19,27 +15,16 @@ import {
 import DogLoading from '@/components/DogLoading';
 import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
-import ResumeInputPanel from '@/components/ResumeInputPanel';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import BrandLogo from '@/components/BrandLogo';
+import InputForm from '@/components/InputForm';
+import ReferralCard from '@/components/ReferralCard';
+import FooterSection from '@/components/FooterSection';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { saveReportSession } from '@/lib/report-session';
-import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
-import {
-  CONFIRM_PAGE,
-  REPORT_CODES,
-  normalizeReportType,
-  reportBlurb,
-  reportLabel,
-} from '@/constants/report-products';
-import {
-  Rocket,
-  Building2,
-  Briefcase,
-  FileText,
-  ChevronRight,
-  AlertTriangle,
-  Loader2,
-} from 'lucide-react';
+import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
+import { AlertTriangle } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
 
 interface JobDisplayData {
   company_name: string;
@@ -71,9 +56,24 @@ const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
   },
 };
 
-export default function PreFlightPage() {
+function formatCapturedJd(job: JobDisplayData): string {
+  const header = [
+    job.company_name ? `Company: ${job.company_name}` : '',
+    job.job_title ? `Title: ${job.job_title}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+  if (!header) return job.raw_jd;
+  if (job.raw_jd.includes(job.company_name) || job.raw_jd.includes(job.job_title)) {
+    return job.raw_jd;
+  }
+  return `${header}\n\n${job.raw_jd}`;
+}
+
+export default function ConfirmPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { language } = useLanguage();
   const sidParam = searchParams.get('sid');
   const payloadParam = searchParams.get('payload');
   const scrapeErrorKey = searchParams.get('error');
@@ -84,12 +84,10 @@ export default function PreFlightPage() {
   const [jobData, setJobData] = useState<JobDisplayData | null>(null);
   const [handoffSid, setHandoffSid] = useState<string | null>(null);
   const [loadingJob, setLoadingJob] = useState(false);
-  const [resume, setResume] = useState<ResumeInput | null>(null);
   const [reportType, setReportType] = useState<ReportType>(REPORT_CODES.JOB_FIT_SNAPSHOT);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
-  const [checkoutBusy, setCheckoutBusy] = useState<CheckoutPlanType | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisElapsed, setAnalysisElapsed] = useState(0);
   const [analysisStage, setAnalysisStage] = useState('Running headhunter triage...');
@@ -182,7 +180,7 @@ export default function PreFlightPage() {
 
     loadJob();
     if (scrapeErrorKey && SCRAPE_ERRORS[scrapeErrorKey]) {
-      setError(SCRAPE_ERRORS[scrapeErrorKey]['zh-TW']);
+      setError(SCRAPE_ERRORS[scrapeErrorKey].en);
     }
     loadSession();
 
@@ -191,31 +189,43 @@ export default function PreFlightPage() {
     };
   }, [sidParam, payloadParam, scrapeErrorKey, loadSession]);
 
-  const creditsExhausted =
-    !!profile && !!user && !canAffordUserProfile(profile, reportType);
-
   useEffect(() => {
     if (searchParams.get('checkout') === 'success') {
       loadSession();
     }
   }, [searchParams, loadSession]);
 
-  const handleLaunch = async () => {
+  const initialJobDescription = useMemo(
+    () => (jobData ? formatCapturedJd(jobData) : ''),
+    [jobData],
+  );
+
+  const jdTooShort = jobData != null && jobData.char_count < 40;
+
+  const handleSubmit = async (inputs: UserInputs) => {
     if (!user) {
       setError('Please sign in with Google to launch analysis.');
+      setErrorCode('AUTH_REQUIRED');
       return;
     }
-    if (!jobData) {
+    if (!jobData && !(inputs.jobDescription || '').trim()) {
       setError('Missing job data. Use the Chrome extension or paste a JD on the homepage.');
       return;
     }
-    if (!resume || (!(resume.content || '').trim() && resume.type !== 'file')) {
+    if (!inputs.resume || (!(inputs.resume.content || '').trim() && inputs.resume.type !== 'file')) {
       setError('Please upload your resume file before launching.');
+      return;
+    }
+    if (jdTooShort) {
+      setError(
+        `Job content is too short (${jobData?.char_count} chars). Re-capture from the full job detail page, or paste the full JD.`,
+      );
       return;
     }
 
     setAnalyzing(true);
     setError(null);
+    setErrorCode(null);
     startProgressSimulation();
 
     try {
@@ -223,17 +233,17 @@ export default function PreFlightPage() {
 
       const body: Record<string, unknown> = {
         report_type: reportType,
-        resume,
+        resume: inputs.resume,
         device_fingerprint: fingerprint,
-        language: 'en',
+        language: inputs.language || language || 'en',
       };
 
       if (handoffSid) {
         body.handoff_sid = handoffSid;
       } else if (payloadParam) {
         body.payload = payloadParam;
-      } else if (jobData) {
-        body.jobDescription = jobData.raw_jd;
+      } else {
+        body.jobDescription = inputs.jobDescription;
       }
 
       const res = await fetch('/api/analyze', {
@@ -243,6 +253,12 @@ export default function PreFlightPage() {
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+        setError(data.error || 'Please sign in to continue.');
+        setErrorCode('AUTH_REQUIRED');
+        return;
+      }
 
       if (res.status === 402) {
         setError(data.error || 'Insufficient credits.');
@@ -272,7 +288,6 @@ export default function PreFlightPage() {
       });
       await loadSession();
       router.push('/report');
-      return;
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Analysis failed');
     } finally {
@@ -281,250 +296,127 @@ export default function PreFlightPage() {
     }
   };
 
-  const jdTooShort = jobData != null && jobData.char_count < 40;
-
-  const handleCheckout = async (plan: CheckoutPlanType) => {
-    setCheckoutBusy(plan);
-    const result = await startCheckout(plan);
-    if (!result.ok) {
-      setError(result.error);
-      setErrorCode(null);
-    }
-    setCheckoutBusy(null);
-  };
-
   if (analyzing || loadingJob) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <DogLoading
           progress={loadingJob ? Math.max(analysisProgress, 20) : analysisProgress}
           elapsed={loadingJob ? 0 : analysisElapsed}
-          stageLabel={
-            loadingJob ? 'Loading job capture...' : analysisStage
-          }
+          stageLabel={loadingJob ? 'Loading job capture...' : analysisStage}
           language="en"
         />
       </div>
     );
   }
 
+  const loginRedirect = `/confirm?${new URLSearchParams({
+    ...(sidParam ? { sid: sidParam } : {}),
+    ...(embedded ? { embedded: '1' } : {}),
+  }).toString()}`;
+
   return (
-    <div className={`min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white ${embedded ? 'text-sm' : ''}`}>
-      {!embedded && (
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <BrandLogo size="inline" />
-        {user ? (
-          <span className="text-sm text-slate-400">{user.email}</span>
-        ) : (
-          <LoginButton redirectTo="/confirm" />
-        )}
-      </header>
-      )}
-
-      <main className={`max-w-3xl mx-auto px-4 space-y-8 ${embedded ? 'py-6' : 'py-10'}`}>
-        {profile?.deactivated_at && <AccountDeactivatedBanner language="en" />}
-        <div>
-          <h1 className={`font-bold mb-2 ${embedded ? 'text-xl' : 'text-2xl'}`}>
-            {CONFIRM_PAGE.titleEn}
-          </h1>
-          <p className="text-slate-400 text-sm">
-            {CONFIRM_PAGE.subtitleEn}
-          </p>
-          {embedded && (
-            <p className="text-xs text-indigo-300/80 mt-2">Opened in Chrome Side Panel — you can stay on LinkedIn.</p>
-          )}
-        </div>
-
-        {embedded && !user && (
-          <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-3">
-            <LoginButton redirectTo={`/confirm?sid=${encodeURIComponent(sidParam || '')}&embedded=1`} />
-          </div>
-        )}
-
-        {error && errorCode === 'PAYMENT_REQUIRED' && (
-          <QuotaPaywallCard
-            language="zh-TW"
-            message={error}
-            isLoggedIn={!!user}
-            onDismiss={() => { setError(null); setErrorCode(null); }}
-          />
-        )}
-        {error && errorCode !== 'PAYMENT_REQUIRED' && (
-          <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-200 text-sm">
-            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {jdTooShort && (
-          <div className="flex items-start gap-3 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-200 text-sm">
-            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-            <span>
-              職缺內容太短（{jobData?.char_count} 字），無法分析。請在 LinkedIn 單一職缺詳情頁重新點外掛，或到首頁手動貼完整 JD。
-            </span>
-          </div>
-        )}
-
-        {/* 1. Job info */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center">
-            <span className="w-1.5 h-6 bg-indigo-500 rounded-full mr-3" />
-            1. Job Information
-          </h2>
-        <div className="grid gap-4">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex items-start gap-4">
-            <Building2 className="w-6 h-6 text-blue-400 shrink-0" />
-            <div>
-              <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Company</p>
-              <p className="font-semibold">{jobData?.company_name ?? '—'}</p>
+    <div className="min-h-screen bg-slate-950 text-slate-200">
+      <main className={`max-w-[90rem] mx-auto px-4 sm:px-6 ${embedded ? 'py-4 sm:py-6' : 'py-8 sm:py-10'}`}>
+        {!embedded && (
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <BrandLogo size="nav" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LanguageSwitcher variant="dark" />
+              <Link
+                href="/"
+                className="hidden sm:inline text-sm text-slate-400 hover:text-white transition-colors"
+              >
+                Home
+              </Link>
+              <LoginButton redirectTo={loginRedirect} />
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex items-start gap-4">
-            <Briefcase className="w-6 h-6 text-violet-400 shrink-0" />
-            <div>
-              <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Role</p>
-              <p className="font-semibold">{jobData?.job_title ?? '—'}</p>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex items-start gap-4">
-            <FileText className="w-6 h-6 text-emerald-400 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">JD Summary</p>
-              <div className="max-h-48 overflow-y-auto rounded-lg border border-white/5 bg-black/20 p-3 text-sm text-slate-300 whitespace-pre-wrap">
-                {jobData?.raw_jd || 'No extension payload — paste JD on homepage.'}
-              </div>
-              {jobData && (
-                <p className="text-xs text-slate-500 mt-2">{jobData.char_count.toLocaleString()} characters</p>
-              )}
-            </div>
-          </div>
-        </div>
-        </div>
+        )}
 
-        {/* 2. Resume */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-bold text-white flex items-center">
-            <span className="w-1.5 h-6 bg-violet-500 rounded-full mr-3" />
-            2. My Resume
-          </h2>
-          <ResumeInputPanel
-            value={resume}
-            onChange={setResume}
-            language="en"
-            libraryLimit={RESUME_LIBRARY_LIMIT}
-          />
-        </div>
-
-        {/* 3. Report type */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-bold text-white flex items-center">
-            <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3" />
-            3. Report type
-          </h2>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-              className={`flex-1 rounded-xl border-2 p-4 text-left transition ${
-                reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                  ? 'border-solid border-violet-500 bg-violet-500/10'
-                  : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-              }`}
-            >
-              <p className="font-semibold">{reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)}</p>
-              <p className="text-xs text-slate-400 mt-1">{reportBlurb(REPORT_CODES.JOB_FIT_SNAPSHOT)}</p>
-            </button>
-            <button
-              type="button"
-              onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-              className={`flex-1 rounded-xl border-2 p-4 text-left transition ${
-                reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                  ? 'border-solid border-violet-500 bg-violet-500/10'
-                  : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-              }`}
-            >
-              <p className="font-semibold">
-                {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-              </p>
-              <p className="text-xs text-slate-400 mt-1">{reportBlurb(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Credits */}
-        {profile && (
-          <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm space-y-1">
-            <div className="flex justify-between gap-3 flex-wrap">
-              <span className="text-slate-400">Your credits</span>
-              <span>
-                {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)}:{' '}
-                <strong>{profile.available_job_fit_snapshot_credits ?? profile.available_lite_credits}</strong> ·{' '}
-                {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}:{' '}
-                <strong>
-                  {profile.available_interview_strategy_guide_credits ?? profile.available_full_credits}
-                </strong>
-                {profile.membership_tier !== 'free' && (
-                  <span className="ml-2 text-emerald-400 capitalize">({profile.membership_tier.replace('_', ' ')})</span>
-                )}
-              </span>
-            </div>
-            {profile.membership_tier === 'free' && (
-              <p className="text-xs text-slate-500">
-                Free accounts include {FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS} lifetime{' '}
-                {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)} credits; they do not reset monthly.
-              </p>
+        {embedded && (
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <BrandLogo size="inline" />
+            {user ? (
+              <span className="text-xs text-slate-500 truncate max-w-[10rem]">{user.email}</span>
+            ) : (
+              <LoginButton redirectTo={`${loginRedirect}&embedded=1`} />
             )}
           </div>
         )}
 
-        {creditsExhausted && user && (
-          <QuotaPaywallCard
-            language="en"
-            isLoggedIn
-            onDismiss={() => {}}
-          />
-        )}
+        {profile?.deactivated_at && <AccountDeactivatedBanner language={language} />}
 
-        <button
-          type="button"
-          onClick={handleLaunch}
-          disabled={!resume || creditsExhausted || jdTooShort || !jobData}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 py-4 font-semibold transition"
-        >
-          <Rocket className="w-5 h-5" />
-          {creditsExhausted ? 'Out of credits — unlock to continue' : 'Launch AI Analysis'}
-          <ChevronRight className="w-5 h-5" />
-        </button>
-
-        {!creditsExhausted && (
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
-          <p className="text-sm font-medium text-slate-300">Need more credits?</p>
-          <p className="text-xs text-slate-500">
-            Free accounts include {FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS} lifetime Job Fit Snapshot credits. Buy more below.
+        {embedded && (
+          <p className="text-xs text-indigo-300/80 mb-4">
+            Opened in Chrome Side Panel — you can stay on LinkedIn.
           </p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {(
-              [
-                ['single_job_fit_snapshot', 'Job Fit Snapshot · $3'],
-                ['single_interview_strategy_guide', 'Interview Strategy Guide · $9.99'],
-                ['standard_subscription', 'Standard · $19.99/mo'],
-                ['advanced_subscription', 'Advanced · $39.99/mo'],
-              ] as [CheckoutPlanType, string][]
-            ).map(([plan, label]) => (
-              <button
-                key={plan}
-                type="button"
-                disabled={checkoutBusy === plan || !user}
-                onClick={() => handleCheckout(plan)}
-                className="rounded-lg border border-white/10 px-4 py-2.5 text-sm hover:bg-white/10 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {checkoutBusy === plan && <Loader2 className="w-4 h-4 animate-spin" />}
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
         )}
+
+        {error && (errorCode === 'PAYMENT_REQUIRED' || errorCode === 'AUTH_REQUIRED') && (
+          <div className="mb-6">
+            <QuotaPaywallCard
+              language={language === 'zh-TW' || language === 'zh-CN' ? language : 'en'}
+              message={error}
+              isLoggedIn={!!user}
+              onDismiss={() => {
+                setError(null);
+                setErrorCode(null);
+              }}
+            />
+          </div>
+        )}
+        {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'AUTH_REQUIRED' && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-200 text-sm">
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+            <span className="flex-1">{error}</span>
+            <button
+              type="button"
+              className="text-amber-300/80 hover:text-amber-100"
+              onClick={() => setError(null)}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {jdTooShort && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-200 text-sm">
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+            <span>
+              Job content is too short ({jobData?.char_count} chars). Re-capture from the full job
+              detail page, or paste the complete JD below.
+            </span>
+          </div>
+        )}
+
+        <div className="max-w-[90rem] mx-auto">
+          <InputForm
+            onSubmit={handleSubmit}
+            isLoading={analyzing}
+            language={language}
+            initialJobDescription={initialJobDescription}
+            reportType={reportType}
+            onReportTypeChange={setReportType}
+            userProfile={profile}
+            extensionCapture={
+              jobData
+                ? {
+                    company_name: jobData.company_name,
+                    job_title: jobData.job_title,
+                  }
+                : null
+            }
+            compactChrome={embedded}
+          />
+
+          {user && profile?.referral_code && !embedded && (
+            <div className="mt-6 mb-2">
+              <ReferralCard referralCode={profile.referral_code} language={language} />
+            </div>
+          )}
+
+          {!embedded && <FooterSection language={language} />}
+        </div>
       </main>
     </div>
   );
