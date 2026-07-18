@@ -3,9 +3,9 @@ export const REPORT_ACTION_BTN =
   'inline-flex items-center gap-2 rounded-lg border border-blue-950 bg-slate-900/80 px-3 py-2 text-sm font-semibold text-slate-100 hover:bg-slate-800 hover:border-blue-900 transition-colors';
 
 /**
- * Snapshot / Guide large frames — brighter blue (never white / grey).
+ * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
  */
-export const REPORT_FRAME_BORDER = 'border-2 border-sky-400';
+export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 
 /** Sample notice — thin dark-blue frame, bright blue fill */
 export const SAMPLE_NOTICE_SURFACE =
