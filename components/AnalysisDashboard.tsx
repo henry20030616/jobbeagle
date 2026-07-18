@@ -8,6 +8,13 @@ import {
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { AppLanguage } from '@/lib/language-context';
+import {
+  BEAGLE_TIER_COPY,
+  BEAGLE_TIER_VISUALS,
+  getBeagleTierCopy,
+  getBeagleTierVisual,
+  beagleTierIndex,
+} from '@/lib/beagle-tiers';
 
 interface DashboardProps {
   data: InterviewReport;
@@ -100,23 +107,31 @@ const getBeagleIconSvg = (color: string, spotColor: string, bellyColor: string =
   </svg>`;
 };
 
-const SCORE_TIERS: Record<AppLanguage, [string, string, string][]> = {
-  'zh-TW': [['鑽石米格魯','頂級契合：具備即戰力','您的技能與經驗幾乎完美契合職位需求。'],['黃金米格魯','高度契合：具備核心潛力','您具備大部分核心技能，只需稍作準備。'],['白銀米格魯','中度契合：部分技能重疊','您具備相關基礎，但需強調潛力。'],['青銅米格魯','低度契合：建議重新評估','目前履歷與職位需求差異較大。']],
-  'zh-CN': [['钻石猎犬','顶级契合：具备即战力','您的技能与经验几乎完美契合职位需求。'],['黄金猎犬','高度契合：具备核心潜力','您具备大部分核心技能，只需稍作准备。'],['白银猎犬','中度契合：部分技能重叠','您具备相关基础，但需强调潜力。'],['青铜猎犬','低度契合：建议重新评估','目前简历与职位需求差异较大。']],
-  en: [['Diamond Beagle','Top Match: Ready to Execute','Your skills and experience almost perfectly match the job requirements.'],['Platinum Beagle','High Match: Core Potential','You have most of the core skills and only need slight preparation.'],['Gold Beagle','Moderate Match: Partial Skill Overlap','You have relevant foundations but need to emphasize potential.'],['Silver Beagle','Low Match: Re-evaluation Recommended','There is a significant gap between your resume and job requirements.']],
-  es: [['Beagle Diamante','Coincidencia Máxima: Listo para Actuar','Tus habilidades y experiencia casi perfectamente coinciden con los requisitos.'],['Beagle Dorado','Alta Coincidencia: Potencial Sólido','Tienes la mayoría de las habilidades clave y solo necesitas pequeña preparación.'],['Beagle Plateado','Coincidencia Moderada: Habilidades Parciales','Tienes bases relevantes pero debes enfatizar tu potencial.'],['Beagle Bronce','Baja Coincidencia: Se Recomienda Re-evaluación','Hay una brecha significativa entre tu CV y los requisitos.']],
-  hi: [['डायमंड बीगल','शीर्ष मिलान: तैयार','आपके कौशल और अनुभव लगभग पूरी तरह से नौकरी की आवश्यकताओं से मेल खाते हैं।'],['गोल्ड बीगल','उच्च मिलान: मूल क्षमता','आपके पास अधिकांश मुख्य कौशल हैं और थोड़ी तैयारी की जरूरत है।'],['सिल्वर बीगल','मध्यम मिलान: आंशिक कौशल','आपके पास प्रासंगिक आधार है लेकिन क्षमता पर जोर देना होगा।'],['ब्रॉन्ज़ बीगल','कम मिलान: पुनः मूल्यांकन की सलाह','आपके CV और नौकरी की आवश्यकताओं के बीच महत्वपूर्ण अंतर है।']],
-  ar: [['بيغل ماسي','توافق ممتاز: جاهز للتنفيذ','مهاراتك وخبرتك تتطابقان تقريبًا بشكل مثالي مع متطلبات الوظيفة.'],['بيغل ذهبي','توافق عالٍ: إمكانات قوية','لديك معظم المهارات الأساسية وتحتاج فقط إلى استعداد بسيط.'],['بيغل فضي','توافق متوسط: تداخل جزئي في المهارات','لديك أساس مناسب لكن عليك إبراز إمكاناتك بشكل أفضل.'],['بيغل برونزي','توافق منخفض: يُنصح بإعادة التقييم','هناك فجوة واضحة بين سيرتك الذاتية ومتطلبات الوظيفة.']],
-};
+const SCORE_TIERS = BEAGLE_TIER_COPY;
 
 export const getScoreInfo = (score: number, language: AppLanguage = 'en') => {
-  const tiers = SCORE_TIERS[language] ?? SCORE_TIERS['en'];
-  const [level, label, description] = score >= 90 ? tiers[0] : score >= 75 ? tiers[1] : score >= 60 ? tiers[2] : tiers[3];
-  const colorMap = { 0: { color: 'text-cyan-400', fill: '#22d3ee', spotColor: '#0e7490', glow: 'rgba(34,211,238,0.6)' }, 1: { color: 'text-amber-400', fill: '#fbbf24', spotColor: '#b45309', glow: 'rgba(251,191,36,0.6)' }, 2: { color: 'text-slate-300', fill: '#cbd5e1', spotColor: '#475569', glow: 'rgba(203,213,225,0.4)' }, 3: { color: 'text-orange-400', fill: '#fb923c', spotColor: '#9a3412', glow: 'rgba(251,146,60,0.4)' } } as const;
-  const ci = score >= 90 ? 0 : score >= 75 ? 1 : score >= 60 ? 2 : 3;
-  const { color, fill, spotColor, glow } = colorMap[ci];
-  const icon = <BeagleIcon className={`w-32 h-32 drop-shadow-[0_0_${ci < 2 ? '20' : '15'}px_${glow}]`} color={fill} spotColor={spotColor} />;
-  return { level, label, description, color, fill, icon };
+  const [level, label, description] = getBeagleTierCopy(score, language);
+  const visual = getBeagleTierVisual(score);
+  const ci = beagleTierIndex(score);
+  const icon = (
+    <BeagleIcon
+      className={`w-32 h-32 ${visual.glowClass}`}
+      color={visual.fill}
+      spotColor={visual.spotColor}
+    />
+  );
+  return {
+    level,
+    label,
+    description,
+    color: visual.color,
+    fill: visual.fill,
+    spotColor: visual.spotColor,
+    glow: visual.glow,
+    glowClass: visual.glowClass,
+    tierIndex: ci,
+    icon,
+  };
 };
 
 // ----------------------------------------------------------------------
@@ -197,22 +212,30 @@ const AnalysisDashboard: React.FC<DashboardProps> = ({ data, language = 'en' }) 
                     <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-widest">{t.scoreStandard}</p>
                     <div className="text-xs text-slate-400 space-y-1 text-left px-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-cyan-400">90+ {SCORE_TIERS[language]?.[0]?.[0] ?? 'Diamond Beagle'}</span>
+                        <span className={BEAGLE_TIER_VISUALS[0].color}>
+                          90+ {(SCORE_TIERS[language] ?? SCORE_TIERS.en)[0][0]}
+                        </span>
                         <span className="text-slate-600">{t.topMatch}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-amber-400">75+ {SCORE_TIERS[language]?.[1]?.[0] ?? 'Gold Beagle'}</span>
+                        <span className={BEAGLE_TIER_VISUALS[1].color}>
+                          75+ {(SCORE_TIERS[language] ?? SCORE_TIERS.en)[1][0]}
+                        </span>
                         <span className="text-slate-600">{t.highMatch}</span>
-            </div>
+                      </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-300">60+ {SCORE_TIERS[language]?.[2]?.[0] ?? 'Silver Beagle'}</span>
+                        <span className={BEAGLE_TIER_VISUALS[2].color}>
+                          60+ {(SCORE_TIERS[language] ?? SCORE_TIERS.en)[2][0]}
+                        </span>
                         <span className="text-slate-600">{t.moderateMatch}</span>
-                  </div>
+                      </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-orange-400">&lt;60 {SCORE_TIERS[language]?.[3]?.[0] ?? 'Bronze Beagle'}</span>
+                        <span className={BEAGLE_TIER_VISUALS[3].color}>
+                          &lt;60 {(SCORE_TIERS[language] ?? SCORE_TIERS.en)[3][0]}
+                        </span>
                         <span className="text-slate-600">{t.lowMatch}</span>
-                  </div>
-                  </div>
+                      </div>
+                    </div>
                </div>
             </div>
           </div>
