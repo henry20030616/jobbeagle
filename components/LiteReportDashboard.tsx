@@ -128,7 +128,7 @@ export default function LiteReportDashboard({
       )}
 
       {/* Header */}
-      <div className="rounded-2xl border border-slate-700 bg-slate-800/80 px-5 py-4">
+      <div className="rounded-2xl border border-slate-700 bg-slate-800/80 px-5 py-4 shadow-xl backdrop-blur-sm">
         <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-1">
           Job Fit Snapshot
         </p>
@@ -144,8 +144,8 @@ export default function LiteReportDashboard({
 
       {/* Dual heroes — Fit + Offer */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 flex flex-col">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-yellow-400/90 mb-3">
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 flex flex-col shadow-xl backdrop-blur-sm">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-3">
             Candidate Fit Score
           </p>
           <div className="flex items-center gap-3 sm:gap-4">
@@ -195,7 +195,7 @@ export default function LiteReportDashboard({
           </p>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 flex flex-col">
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 flex flex-col shadow-xl backdrop-blur-sm">
           <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-400/90 mb-1 flex items-center gap-1">
             <DollarSign className="w-4 h-4" />
             Expected Offer Range
@@ -228,11 +228,11 @@ export default function LiteReportDashboard({
               </div>
             </div>
           ) : (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 mb-3">
-              <p className="text-sm font-semibold text-amber-100">
+            <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
+              <p className="text-sm font-semibold text-indigo-100">
                 No reliable offer band yet
               </p>
-              <p className="text-xs text-amber-100/80 mt-1 leading-relaxed">
+              <p className="text-xs text-indigo-100/80 mt-1 leading-relaxed">
                 Ask the recruiter for the approved cash range before you invest interview time.
               </p>
             </div>
@@ -273,7 +273,7 @@ export default function LiteReportDashboard({
 
       {/* Strengths / Gaps — compact */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-4 shadow-xl">
           <h3 className="text-xs font-bold text-emerald-400 mb-3 flex items-center uppercase tracking-wide">
             <CheckCircle2 className="w-4 h-4 mr-1.5" />
             Top Strengths
@@ -287,8 +287,8 @@ export default function LiteReportDashboard({
             ))}
           </ul>
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
-          <h3 className="text-xs font-bold text-amber-400 mb-3 flex items-center uppercase tracking-wide">
+        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-4 shadow-xl">
+          <h3 className="text-xs font-bold text-violet-300 mb-3 flex items-center uppercase tracking-wide">
             <AlertTriangle className="w-4 h-4 mr-1.5" />
             Critical Gaps
           </h3>
@@ -304,7 +304,7 @@ export default function LiteReportDashboard({
       </div>
 
       {!embedded && (
-        <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/80 to-indigo-950/60 px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/80 to-indigo-950/60 px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xl">
           <div>
             <p className="font-bold text-white flex items-center gap-2 text-sm">
               <Sparkles className="w-4 h-4 text-violet-400" />
@@ -318,7 +318,7 @@ export default function LiteReportDashboard({
             type="button"
             disabled={checkoutBusy}
             onClick={handleUpgrade}
-            className="shrink-0 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-4 py-2.5 text-sm font-bold text-white"
+            className="shrink-0 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 px-4 py-2.5 text-sm font-bold text-white ring-1 ring-white/10"
           >
             {checkoutBusy ? '…' : 'Interview Strategy Guide · $9.99'}
           </button>

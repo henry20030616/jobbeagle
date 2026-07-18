@@ -74,11 +74,11 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#12151c] p-5 sm:p-6">
+    <div className="rounded-2xl border border-slate-700 bg-slate-800/80 p-5 sm:p-6">
       <div className="flex items-start justify-between gap-3 mb-4">
         <h3 className="text-base font-semibold text-white">{title}</h3>
         {badge ? (
-          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-white/15 text-slate-300 bg-white/5">
+          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-slate-600 text-slate-300 bg-white/5">
             {badge}
           </span>
         ) : null}
@@ -147,23 +147,23 @@ export default function FullReportDashboard({
 
   return (
     <div
-      className={`rounded-2xl border border-white/10 bg-[#0b0d12] overflow-hidden ${
+      className={`rounded-2xl border border-slate-700 bg-slate-950 overflow-hidden ${
         embedded ? '' : 'shadow-2xl shadow-black/40'
       }`}
     >
       {/* Top bar — Snapshot LITE / Guide DEEP */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
           <p className="text-sm font-bold text-white tracking-tight">JobBeagle</p>
           <p className="text-[11px] text-slate-500">Evidence-based job intelligence</p>
         </div>
-        <div className="flex items-center rounded-full border border-white/10 bg-black/30 p-1">
+        <div className="flex items-center rounded-full border border-slate-700 bg-black/30 p-1">
           <button
             type="button"
             onClick={() => setMode('snapshot')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors ${
               mode === 'snapshot'
-                ? 'bg-amber-500 text-slate-950'
+                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -174,7 +174,7 @@ export default function FullReportDashboard({
             onClick={() => setMode('guide')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors ${
               mode === 'guide'
-                ? 'bg-amber-500 text-slate-950'
+                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -184,7 +184,7 @@ export default function FullReportDashboard({
       </div>
 
       {/* Job meta strip */}
-      <div className="px-4 sm:px-6 py-3 border-b border-white/10 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+      <div className="px-4 sm:px-6 py-3 border-b border-slate-700 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
         <span className="font-semibold text-white flex items-center gap-1.5 min-w-0">
           <Briefcase className="w-3.5 h-3.5 text-slate-500 shrink-0" />
           <span className="truncate">{report.job_title || 'Unknown Role'}</span>
@@ -203,7 +203,7 @@ export default function FullReportDashboard({
             <button
               type="button"
               onClick={handleBack}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1.5 text-[11px] font-semibold text-slate-300 hover:bg-white/5"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1.5 text-[11px] font-semibold text-slate-300 hover:bg-white/5"
             >
               <Home className="w-3.5 h-3.5" />
               Home
@@ -211,7 +211,7 @@ export default function FullReportDashboard({
             <button
               type="button"
               onClick={handleBack}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-amber-200 hover:bg-amber-500/20"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-200 hover:bg-indigo-500/20"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               New
@@ -227,7 +227,7 @@ export default function FullReportDashboard({
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] min-h-[28rem]">
           {/* Sidebar */}
-          <aside className="border-b lg:border-b-0 lg:border-r border-white/10 p-4 space-y-3 bg-[#0e1016]">
+          <aside className="border-b lg:border-b-0 lg:border-r border-slate-700 p-4 space-y-3 bg-slate-900/60">
             <p className="text-[11px] text-slate-500 leading-relaxed px-1">
               Guide · Deep — the full playbook from context to closing the offer.
             </p>
@@ -241,11 +241,11 @@ export default function FullReportDashboard({
                     onClick={() => setTab(item.id)}
                     className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors border ${
                       active
-                        ? 'border-amber-500/70 bg-amber-500/10 text-amber-100'
+                        ? 'border-violet-500 bg-violet-500/10 text-violet-100'
                         : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
                     }`}
                   >
-                    <span className={active ? 'text-amber-400' : 'text-slate-500'}>{item.icon}</span>
+                    <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
                     {item.label}
                   </button>
                 );
@@ -254,9 +254,9 @@ export default function FullReportDashboard({
           </aside>
 
           {/* Content panel */}
-          <section className="p-4 sm:p-6 space-y-4 bg-[#0b0d12]">
+          <section className="p-4 sm:p-6 space-y-4 bg-slate-950">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-amber-500/90 mb-1">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-400 mb-1">
                 {activeNav.label}
               </p>
               <p className="text-xs text-slate-500">{activeNav.blurb}</p>
@@ -291,14 +291,14 @@ export default function FullReportDashboard({
                         {hiring!.insights.map((ins, i) => (
                           <li
                             key={i}
-                            className="rounded-xl border border-white/8 bg-black/20 p-4"
+                            className="rounded-xl border border-slate-700/80 bg-black/20 p-4"
                           >
                             <p className="text-sm font-semibold text-slate-100">{ins.claim}</p>
                             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                               {ins.why_it_matters}
                             </p>
                             {(ins.source_url || ins.date) && (
-                              <p className="text-[11px] text-amber-300/80 mt-2 flex items-center gap-1">
+                              <p className="text-[11px] text-indigo-300/80 mt-2 flex items-center gap-1">
                                 {ins.date ? <span>{ins.date}</span> : null}
                                 {ins.source_url ? (
                                   <a
@@ -316,7 +316,7 @@ export default function FullReportDashboard({
                         ))}
                       </ul>
                     ) : (
-                      <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 px-4 py-3 text-sm text-amber-100 flex gap-2">
+                      <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/20 px-4 py-3 text-sm text-indigo-100 flex gap-2">
                         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                         Limited public hiring-context signals — use validation questions below.
                       </div>
@@ -333,7 +333,7 @@ export default function FullReportDashboard({
                     )}
 
                     {(hiring?.validation_questions?.length ?? 0) > 0 && (
-                      <div className="mt-4 pt-4 border-t border-white/10">
+                      <div className="mt-4 pt-4 border-t border-slate-700">
                         <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-2">
                           Validate with recruiter
                         </p>
@@ -357,9 +357,9 @@ export default function FullReportDashboard({
                       {concerns.map((c, i) => (
                         <div
                           key={i}
-                          className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4"
+                          className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4"
                         >
-                          <p className="text-sm font-bold text-amber-100 mb-1 flex items-center gap-2">
+                          <p className="text-sm font-bold text-violet-100 mb-1 flex items-center gap-2">
                             <ShieldAlert className="w-4 h-4 shrink-0" />
                             {i + 1}. {c.concern}
                           </p>
@@ -427,7 +427,7 @@ export default function FullReportDashboard({
                     )}
 
                     <div className="mb-5">
-                      <p className="text-[11px] font-bold uppercase tracking-wide text-amber-300/90 mb-2">
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-violet-300/90 mb-2">
                         Predicted
                       </p>
                       <ol className="space-y-3">
@@ -440,9 +440,9 @@ export default function FullReportDashboard({
                         ).map((q, i) => (
                           <li
                             key={i}
-                            className="text-sm rounded-xl bg-black/25 border border-white/10 px-4 py-3 text-slate-300 leading-relaxed"
+                            className="text-sm rounded-xl bg-black/25 border border-slate-700 px-4 py-3 text-slate-300 leading-relaxed"
                           >
-                            <span className="text-amber-400 font-mono text-xs font-bold mr-2">
+                            <span className="text-violet-400 font-mono text-xs font-bold mr-2">
                               P{i + 1}
                             </span>
                             {q.question}
@@ -505,7 +505,7 @@ export default function FullReportDashboard({
                     )}
                     {hasOfferNumbers && (p25 || p50 || p75) ? (
                       <div className="mb-4">
-                        <p className="text-3xl font-black text-amber-400 tracking-tight">
+                        <p className="text-3xl font-black text-indigo-300 tracking-tight">
                           {p50 || p25 || p75}
                         </p>
                         <p className="text-xs text-slate-500 mt-1 mb-4">
@@ -516,8 +516,8 @@ export default function FullReportDashboard({
                             <p className="text-[10px] text-slate-500 mb-1 uppercase">P25</p>
                             <p className="font-semibold text-white">{p25 || '—'}</p>
                           </div>
-                          <div className="rounded-xl bg-amber-500/10 border border-amber-500/25 p-3">
-                            <p className="text-[10px] text-amber-300 mb-1 font-bold uppercase">P50</p>
+                          <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 p-3">
+                            <p className="text-[10px] text-indigo-300 mb-1 font-bold uppercase">P50</p>
                             <p className="font-bold text-white">{p50 || '—'}</p>
                           </div>
                           <div className="rounded-xl bg-white/5 p-3">
@@ -527,11 +527,11 @@ export default function FullReportDashboard({
                         </div>
                       </div>
                     ) : (
-                      <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 mb-3">
-                        <p className="text-sm font-semibold text-amber-100">
+                      <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
+                        <p className="text-sm font-semibold text-indigo-100">
                           No reliable offer band yet
                         </p>
-                        <p className="text-xs text-amber-100/80 mt-1">
+                        <p className="text-xs text-indigo-100/80 mt-1">
                           Ask the recruiter for the approved cash range before anchoring.
                         </p>
                       </div>
@@ -545,7 +545,7 @@ export default function FullReportDashboard({
                       <p className="text-xs text-slate-500 leading-relaxed">{expected.target_gap}</p>
                     )}
                     {fitSalary?.offer_implications && (
-                      <p className="text-sm text-slate-300 leading-relaxed mt-4 pt-4 border-t border-white/10">
+                      <p className="text-sm text-slate-300 leading-relaxed mt-4 pt-4 border-t border-slate-700">
                         {fitSalary.offer_implications}
                       </p>
                     )}
@@ -554,15 +554,15 @@ export default function FullReportDashboard({
                   {offer && (
                     <Card title="Offer Strategy">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-sm">
-                        <div className="rounded-xl bg-black/25 border border-white/10 p-3">
+                        <div className="rounded-xl bg-black/25 border border-slate-700 p-3">
                           <p className="text-[11px] text-slate-500 mb-1">Target</p>
                           <p className="text-slate-100 font-medium">{offer.target || '—'}</p>
                         </div>
-                        <div className="rounded-xl bg-black/25 border border-white/10 p-3">
+                        <div className="rounded-xl bg-black/25 border border-slate-700 p-3">
                           <p className="text-[11px] text-slate-500 mb-1">Acceptable</p>
                           <p className="text-slate-100 font-medium">{offer.acceptable || '—'}</p>
                         </div>
-                        <div className="rounded-xl bg-black/25 border border-white/10 p-3">
+                        <div className="rounded-xl bg-black/25 border border-slate-700 p-3">
                           <p className="text-[11px] text-slate-500 mb-1">Walk away</p>
                           <p className="text-slate-100 font-medium">{offer.walk_away || '—'}</p>
                         </div>
@@ -580,7 +580,7 @@ export default function FullReportDashboard({
                       {(offer.discovery_questions?.length ?? 0) > 0 && (
                         <ul className="space-y-1">
                           {offer.discovery_questions.map((q, i) => (
-                            <li key={i} className="text-sm text-amber-100/80">
+                            <li key={i} className="text-sm text-indigo-100/80">
                               · {q}
                             </li>
                           ))}
@@ -611,10 +611,10 @@ export default function FullReportDashboard({
                       {sources.map((s, i) => (
                         <li
                           key={i}
-                          className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-slate-300"
+                          className="rounded-xl border border-slate-700 bg-black/20 px-4 py-3 text-sm text-slate-300"
                         >
                           <div className="flex items-start gap-2">
-                            <FileText className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                            <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
                             <div className="min-w-0">
                               <p className="leading-relaxed">{s.label}</p>
                               <p className="text-[11px] text-slate-500 mt-1">
@@ -624,7 +624,7 @@ export default function FullReportDashboard({
                                     href={s.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-amber-300/90 underline underline-offset-2"
+                                    className="text-violet-300/90 underline underline-offset-2"
                                   >
                                     open source
                                   </a>
@@ -639,7 +639,7 @@ export default function FullReportDashboard({
                     </ul>
                   )}
                   {(hiring?.limitations?.length ?? 0) > 0 && (
-                    <div className="mt-4 pt-4 border-t border-white/10">
+                    <div className="mt-4 pt-4 border-t border-slate-700">
                       <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-2">
                         Limitations
                       </p>
@@ -661,10 +661,10 @@ export default function FullReportDashboard({
               <button
                 type="button"
                 onClick={() => setProvenanceOpen((v) => !v)}
-                className="w-full flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-left hover:bg-black/40 transition-colors"
+                className="w-full flex items-center justify-between gap-3 rounded-xl border border-slate-700 bg-black/30 px-4 py-3 text-left hover:bg-black/40 transition-colors"
               >
                 <span className="text-xs text-slate-400 flex items-center gap-2 min-w-0">
-                  <Layers className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <Layers className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                   <span className="truncate">
                     Provenance Log · {sources.length} sources
                     {sources[0]?.date ? ` · latest: ${sources[0].date}` : ''}
@@ -678,7 +678,7 @@ export default function FullReportDashboard({
               </button>
             )}
             {provenanceOpen && tab !== 'provenance' && (
-              <div className="rounded-xl border border-white/10 bg-[#12151c] p-4 space-y-2">
+              <div className="rounded-xl border border-slate-700 bg-slate-800/80 p-4 space-y-2">
                 {sources.length === 0 ? (
                   <p className="text-xs text-slate-500">No sources listed for this panel.</p>
                 ) : (
@@ -691,7 +691,7 @@ export default function FullReportDashboard({
                 <button
                   type="button"
                   onClick={() => setTab('provenance')}
-                  className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 mt-1"
+                  className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 mt-1"
                 >
                   Open full provenance →
                 </button>

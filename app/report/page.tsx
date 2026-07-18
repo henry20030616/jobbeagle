@@ -59,8 +59,8 @@ export default function ReportPage() {
   const strategy = isStrategyReport(payload.report_type);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-slate-950 text-slate-200">
+      <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
         <BrandLogo size="inline" />
         <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
