@@ -20,6 +20,8 @@ Rules:
 - Prefer tier C over empty D whenever job title + level + US region are identifiable.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
 - apply_decision.label must be one of: Apply now | Apply after fixes | Clarify first | Skip
+- proof_map.strengths: return 3 or 4 strongest, evidence-backed match points (never fewer than 3).
+- proof_map.gaps: return 3 or 4 most important mismatches / missing proofs (never fewer than 3).
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps (no web). Label them as predicted in prose if needed; do not invent "reported" questions.
 - Tone: direct, evidence-based, respectful. No humiliation.
 
@@ -86,6 +88,8 @@ export const LITE_JSON_SCHEMA = {
       properties: {
         strengths: {
           type: 'array',
+          minItems: 3,
+          maxItems: 4,
           items: {
             type: 'object',
             properties: {
@@ -97,6 +101,8 @@ export const LITE_JSON_SCHEMA = {
         },
         gaps: {
           type: 'array',
+          minItems: 3,
+          maxItems: 4,
           items: {
             type: 'object',
             properties: {

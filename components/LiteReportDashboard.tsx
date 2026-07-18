@@ -80,8 +80,8 @@ export default function LiteReportDashboard({
   const scoreData = [{ name: 'Score', value: score, fill: scoreInfo.fill }];
   const [checkoutBusy, setCheckoutBusy] = React.useState(false);
 
-  const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 3);
-  const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 3);
+  const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 4);
+  const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
   const offer = report.expected_offer;
   const p25 = displayMoney(offer?.p25);
   const p50 = displayMoney(offer?.p50);

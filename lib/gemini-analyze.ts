@@ -151,8 +151,8 @@ const LITE_RESPONSE_SCHEMA = {
     proof_map: {
       type: Type.OBJECT,
       properties: {
-        strengths: { type: Type.ARRAY, items: pointDescItem },
-        gaps: { type: Type.ARRAY, items: gapDescItem },
+        strengths: { type: Type.ARRAY, minItems: 3, maxItems: 4, items: pointDescItem },
+        gaps: { type: Type.ARRAY, minItems: 3, maxItems: 4, items: gapDescItem },
         resume_actions: { type: Type.ARRAY, items: { type: Type.STRING } },
         screenability_note: { type: Type.STRING },
       },
