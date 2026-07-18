@@ -40,31 +40,31 @@ const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }
   {
     id: 'snapshot',
     label: 'Snapshot',
-    icon: <ScanSearch className="w-4 h-4" />,
+    icon: <ScanSearch className="w-5 h-5" />,
     blurb: 'One-page fit score, offer range, strengths and gaps.',
   },
   {
     id: 'hiring',
     label: 'Hiring Context',
-    icon: <Globe className="w-4 h-4" />,
+    icon: <Globe className="w-5 h-5" />,
     blurb: 'Why they may be hiring — public signals only.',
   },
   {
     id: 'interview',
     label: 'Interview',
-    icon: <MessageSquare className="w-4 h-4" />,
+    icon: <MessageSquare className="w-5 h-5" />,
     blurb: 'Answer templates, concerns, and the interview playbook.',
   },
   {
     id: 'salary',
     label: 'Salary',
-    icon: <HandCoins className="w-4 h-4" />,
+    icon: <HandCoins className="w-5 h-5" />,
     blurb: 'Expected offer range and negotiation script templates.',
   },
   {
     id: 'provenance',
     label: 'Provenance',
-    icon: <Layers className="w-4 h-4" />,
+    icon: <Layers className="w-5 h-5" />,
     blurb: 'Sources and confidence limits for this guide.',
   },
 ];
@@ -251,15 +251,17 @@ export default function FullReportDashboard({
       {/* Title bar inside slide */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
-          <p className="text-sm font-bold text-white tracking-tight">Interview Strategy Guide</p>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+            Interview Strategy Guide
+          </p>
+          <p className="text-sm text-slate-400 mt-1.5">
             Snapshot + playbook — switch pages from the top nav
           </p>
         </div>
       </div>
 
       {/* Page nav — horizontal under title */}
-      <nav className="px-4 sm:px-6 py-2.5 border-b border-slate-700 bg-slate-900/60 flex gap-2 overflow-x-auto no-scrollbar">
+      <nav className="px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex gap-2 overflow-x-auto no-scrollbar">
         {NAV.map((item) => {
           const active = tab === item.id;
           return (
@@ -267,7 +269,7 @@ export default function FullReportDashboard({
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors border ${
+              className={`shrink-0 flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xl sm:text-2xl font-black transition-colors border ${
                 active
                   ? 'border-violet-500 bg-violet-500/10 text-violet-100'
                   : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
