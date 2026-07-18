@@ -12,6 +12,7 @@ import {
 } from '@/lib/sample-reports';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import { SAMPLE_NOTICE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
+import { SampleMark } from '@/components/SampleMark';
 import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
 
 export default function SampleReportClient() {
@@ -84,13 +85,13 @@ export default function SampleReportClient() {
               </div>
 
               <div className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5`}>
+                <SampleMark className="text-white/35" />
                 <div className="flex items-start gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
                     <Sparkles className="w-5 h-5 text-white" />
                   </span>
                   <div className="min-w-0">
                     <p className="text-base sm:text-lg font-bold text-white leading-snug">
-                      Sample{' '}
                       {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
                     </p>
                     <p className="text-sm text-blue-50/95 mt-2 leading-relaxed">
@@ -110,9 +111,21 @@ export default function SampleReportClient() {
 
             <div className="min-w-0 flex-1">
               {isGuide ? (
-                <FullReportDashboard report={guide} language="en" embedded onNewAnalysis={goHome} />
+                <FullReportDashboard
+                  report={guide}
+                  language="en"
+                  embedded
+                  isSample
+                  onNewAnalysis={goHome}
+                />
               ) : (
-                <LiteReportDashboard report={snapshot} language="en" embedded onNewAnalysis={goHome} />
+                <LiteReportDashboard
+                  report={snapshot}
+                  language="en"
+                  embedded
+                  isSample
+                  onNewAnalysis={goHome}
+                />
               )}
             </div>
           </div>

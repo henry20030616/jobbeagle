@@ -16,6 +16,7 @@ import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { getBeagleTierLegend } from '@/lib/beagle-tiers';
 import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
+import { SampleMark } from '@/components/SampleMark';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
@@ -23,6 +24,8 @@ interface LiteReportDashboardProps {
   language?: 'en';
   onNewAnalysis?: () => void;
   embedded?: boolean;
+  /** Show large SAMPLE mark at top of the slide (sample preview pages) */
+  isSample?: boolean;
 }
 
 /**
@@ -34,6 +37,7 @@ export default function LiteReportDashboard({
   report,
   onNewAnalysis,
   embedded = false,
+  isSample = false,
 }: LiteReportDashboardProps) {
   const score = report.fit_score?.score ?? report.match_score ?? 0;
   const scoreInfo = getScoreInfo(score, 'en');
@@ -86,6 +90,11 @@ export default function LiteReportDashboard({
       <article
         className={`overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
       >
+        {isSample && (
+          <div className="pt-4 pb-1 px-5 sm:px-6 border-b border-slate-800/80">
+            <SampleMark />
+          </div>
+        )}
         {/* Slide header */}
         <header className="border-b border-slate-700/90 px-5 py-4 sm:px-6 sm:py-5">
           <div className="flex flex-wrap items-start justify-between gap-3">

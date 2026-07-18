@@ -23,6 +23,7 @@ import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
 import { formatOfferRange } from '@/lib/offer-display';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
+import { SampleMark } from '@/components/SampleMark';
 
 type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
 
@@ -31,6 +32,8 @@ interface FullReportDashboardProps {
   embedded?: boolean;
   language?: AppLanguage;
   onNewAnalysis?: () => void;
+  /** Show large SAMPLE mark at top of the Guide frame (sample preview pages) */
+  isSample?: boolean;
 }
 
 const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }[] = [
@@ -174,6 +177,7 @@ export default function FullReportDashboard({
   report,
   embedded = false,
   onNewAnalysis,
+  isSample = false,
 }: FullReportDashboardProps) {
   const [tab, setTab] = useState<GuideTab>('snapshot');
   const [provenanceOpen, setProvenanceOpen] = useState(false);
@@ -239,6 +243,11 @@ export default function FullReportDashboard({
       )}
 
       <div className={`overflow-hidden ${REPORT_SLIDE_SURFACE}`}>
+      {isSample && (
+        <div className="pt-4 pb-1 px-4 sm:px-6 border-b border-slate-800/80">
+          <SampleMark />
+        </div>
+      )}
       {/* Title bar inside slide */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
