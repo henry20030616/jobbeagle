@@ -8,7 +8,6 @@ import {
   DollarSign,
   Home,
   RotateCcw,
-  Sparkles,
   Building2,
   Briefcase,
   ChevronDown,
@@ -16,7 +15,6 @@ import {
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { getBeagleTierLegend } from '@/lib/beagle-tiers';
-import { startCheckout } from '@/lib/checkout-client';
 import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
 
 interface LiteReportDashboardProps {
@@ -40,7 +38,6 @@ export default function LiteReportDashboard({
   const score = report.fit_score?.score ?? report.match_score ?? 0;
   const scoreInfo = getScoreInfo(score, 'en');
   const scoreData = [{ name: 'Score', value: score, fill: scoreInfo.fill }];
-  const [checkoutBusy, setCheckoutBusy] = React.useState(false);
   const [expandedBeagleTier, setExpandedBeagleTier] = React.useState<number | null>(null);
 
   const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 4);
@@ -55,12 +52,6 @@ export default function LiteReportDashboard({
       return;
     }
     window.location.href = '/';
-  };
-
-  const handleUpgrade = async () => {
-    setCheckoutBusy(true);
-    await startCheckout('single_interview_strategy_guide');
-    setCheckoutBusy(false);
   };
 
   return (
@@ -327,28 +318,6 @@ export default function LiteReportDashboard({
           </section>
         </div>
       </article>
-
-      {!embedded && (
-        <div className="no-print max-w-5xl rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/80 to-indigo-950/60 px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xl">
-          <div>
-            <p className="font-bold text-white flex items-center gap-2 text-sm">
-              <Sparkles className="w-4 h-4 text-violet-400" />
-              Need interview strategy?
-            </p>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Upgrade for hiring context, concerns & defenses, interview playbook, and offer strategy.
-            </p>
-          </div>
-          <button
-            type="button"
-            disabled={checkoutBusy}
-            onClick={handleUpgrade}
-            className="shrink-0 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 px-4 py-2.5 text-sm font-bold text-white ring-1 ring-white/10"
-          >
-            {checkoutBusy ? '…' : 'Interview Strategy Guide · $9.99'}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
