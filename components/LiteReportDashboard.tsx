@@ -82,7 +82,7 @@ export default function LiteReportDashboard({
       )}
 
       {/* One-page slide frame — brighter outer border (was on upgrade CTA) */}
-      <article className="overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.55)]">
+      <article className="overflow-hidden rounded-2xl border-2 border-indigo-300/70 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)]">
         {/* Slide header */}
         <header className="border-b border-slate-700/90 px-5 py-4 sm:px-6 sm:py-5">
           <div className="flex flex-wrap items-start justify-between gap-3">

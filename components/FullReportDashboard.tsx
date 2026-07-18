@@ -240,8 +240,8 @@ export default function FullReportDashboard({
       )}
 
       <div
-        className={`rounded-2xl border border-violet-500/30 bg-slate-950 overflow-hidden ${
-          embedded ? '' : 'shadow-2xl shadow-black/40'
+        className={`rounded-2xl border-2 border-indigo-300/70 bg-slate-950 overflow-hidden shadow-[0_0_40px_-10px_rgba(129,140,248,0.65)] ${
+          embedded ? '' : ''
         }`}
       >
       {/* Title bar inside slide */}
