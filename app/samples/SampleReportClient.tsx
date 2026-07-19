@@ -78,9 +78,9 @@ export default function SampleReportClient() {
             One row: left chrome box (SAMPLE + tabs + Compare) | right report box
           */}
           <main className="flex-1 w-full max-w-full px-4 py-4 overflow-x-clip">
-            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] gap-4 items-stretch w-full max-w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] gap-4 items-start w-full max-w-full">
               <aside
-                className={`rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 sm:p-4 flex flex-col gap-3 min-w-0`}
+                className={`rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 sm:p-4 flex flex-col gap-3 min-w-0 h-fit self-start`}
               >
                 <div
                   className={`${SAMPLE_NOTICE_SURFACE} w-full px-4 py-3 flex flex-col gap-2`}
