@@ -23,7 +23,7 @@ export const SAMPLE_LINK_BTN =
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
  * Keep in sync across all four boxes.
  */
-export const SAMPLE_RAIL_TEXT = 'text-sm font-bold leading-snug tracking-tight';
+export const SAMPLE_RAIL_TEXT = 'text-base font-bold leading-snug tracking-tight';
 export const SAMPLE_RAIL_ICON = 'w-4 h-4 shrink-0';
 export const SAMPLE_HEADER_TEXT = SAMPLE_RAIL_TEXT;
 export const SAMPLE_HEADER_ICON = SAMPLE_RAIL_ICON;

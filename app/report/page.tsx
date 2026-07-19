@@ -82,7 +82,7 @@ export default function ReportPage() {
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
         </span>
       </header>
-      <main className="flex-1 min-h-0 w-full px-2 sm:px-4 py-4 flex flex-col items-stretch">
+      <main className="flex-1 min-h-0 w-full min-w-0 overflow-auto p-6 flex flex-col items-stretch">
         <ReportFitStage className="w-full flex-1 min-h-0">
           {strategy ? (
             <FullReportDashboard
