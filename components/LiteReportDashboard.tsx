@@ -317,20 +317,28 @@ export default function LiteReportDashboard({
           </div>
         </div>
 
-        {/* Strengths | Gaps — shared outer frame */}
+        {/* Strengths | Gaps — one shared frame, bullet lists */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="w-full rounded-lg border border-slate-500/45 bg-slate-950/40 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-700/90">
+          <div className="w-full rounded-lg border border-slate-400/50 bg-slate-950/50 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-600/80">
               <section className="p-3.5 sm:p-4">
                 <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
                   <CheckCircle2 className="w-4 h-4 mr-1.5" />
                   Top Strengths
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5">
                   {strengths.map((item, idx) => (
-                    <li key={idx} className="border-l-2 border-emerald-500/40 pl-3">
-                      <p className="text-lg font-semibold text-slate-200">{item.point}</p>
-                      <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
+                    <li key={idx} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                      <span
+                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400/90"
+                        aria-hidden
+                      />
+                      <span>
+                        <span className="font-semibold text-slate-100">{item.point}</span>
+                        {item.description ? (
+                          <span className="text-slate-400">: {item.description}</span>
+                        ) : null}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -340,11 +348,19 @@ export default function LiteReportDashboard({
                   <AlertTriangle className="w-4 h-4 mr-1.5" />
                   Critical Gaps
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5">
                   {gaps.map((item, idx) => (
-                    <li key={idx} className="border-l-2 border-violet-400/40 pl-3">
-                      <p className="text-lg font-semibold text-slate-200">{item.gap}</p>
-                      <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
+                    <li key={idx} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                      <span
+                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-300/90"
+                        aria-hidden
+                      />
+                      <span>
+                        <span className="font-semibold text-slate-100">{item.gap}</span>
+                        {item.description ? (
+                          <span className="text-slate-400">: {item.description}</span>
+                        ) : null}
+                      </span>
                     </li>
                   ))}
                 </ul>
