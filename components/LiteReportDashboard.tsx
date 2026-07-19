@@ -181,16 +181,16 @@ export default function LiteReportDashboard({
             <p className={`${SECTION_TITLE} text-indigo-400 mb-2 min-h-[1.25rem]`}>
               Candidate Fit Score
             </p>
-            <div className="flex flex-1 items-center gap-3 sm:gap-4 min-h-[7.5rem]">
+            <div className="flex flex-1 items-center gap-3 sm:gap-5 min-h-[9.5rem] sm:min-h-[11rem]">
               <div className="flex flex-col items-center shrink-0">
                 <BeagleIcon
-                  className={`w-16 h-16 sm:w-20 sm:h-20 ${scoreInfo.glowClass}`}
+                  className={`w-24 h-24 sm:w-32 sm:h-32 ${scoreInfo.glowClass}`}
                   color={scoreInfo.fill}
                   spotColor={scoreInfo.spotColor}
                 />
               </div>
               <div
-                className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0"
+                className="relative w-32 h-32 sm:w-40 sm:h-40 shrink-0"
                 onMouseEnter={() => setShowBeagleScale(true)}
                 onMouseLeave={() => setShowBeagleScale(false)}
               >
@@ -206,9 +206,9 @@ export default function LiteReportDashboard({
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <RadialBarChart
-                      innerRadius="70%"
+                      innerRadius="68%"
                       outerRadius="100%"
-                      barSize={10}
+                      barSize={14}
                       data={scoreData}
                       startAngle={90}
                       endAngle={-270}
@@ -218,7 +218,9 @@ export default function LiteReportDashboard({
                     </RadialBarChart>
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
-                    <span className={`text-5xl font-black ${scoreInfo.color}`}>{score}</span>
+                    <span className={`text-6xl sm:text-7xl font-black tabular-nums leading-none ${scoreInfo.color}`}>
+                      {score}
+                    </span>
                   </div>
                 </button>
 
