@@ -15,9 +15,10 @@ import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import {
   SAMPLE_NOTICE_SURFACE,
   SAMPLE_HEADER_BTN,
-  SAMPLE_HEADER_ICON,
   HOME_DESIGN_WIDTH,
   REPORT_FRAME_BORDER,
+  REPORT_ACTION_BTN,
+  REPORT_ACTION_ICON,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 import ReportCompareModal from '@/components/ReportCompareModal';
@@ -52,23 +53,16 @@ export default function SampleReportClient() {
         className="w-full"
       >
         <div className="w-full max-w-full flex flex-col min-h-[100vh] overflow-x-clip">
-          <header className="border-b border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-            <BrandLogo size="nav" showIcon />
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={goHome}
-                className={`${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 whitespace-nowrap`}
-              >
-                <Home className={SAMPLE_HEADER_ICON} aria-hidden />
+          <header className="border-b border-slate-800 px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            {/* Same BrandLogo size as /report top-left (inline = text-xl) */}
+            <BrandLogo size="inline" />
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
+                <Home className={REPORT_ACTION_ICON} aria-hidden />
                 Back to Home
               </button>
-              <button
-                type="button"
-                onClick={goHome}
-                className={`${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 whitespace-nowrap`}
-              >
-                <RotateCcw className={SAMPLE_HEADER_ICON} aria-hidden />
+              <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
+                <RotateCcw className={REPORT_ACTION_ICON} aria-hidden />
                 New Analysis
               </button>
             </div>

@@ -1,21 +1,21 @@
-/** Shared label size — Back to Home / Jobbeagle / sample tabs / compare */
-export const REPORT_ACTION_TEXT = 'text-xl font-semibold';
+/**
+ * Match BrandLogo `size="inline"` on /report (text-xl).
+ * Back to Home / New Analysis / sample chrome use this scale.
+ */
+export const REPORT_ACTION_TEXT = 'text-xl font-bold tracking-tight';
 
 /** Shared icon size inside report action controls */
-export const REPORT_ACTION_ICON = 'w-6 h-6 shrink-0';
+export const REPORT_ACTION_ICON = 'w-5 h-5 shrink-0';
 
-/** Action buttons — thin light-grey frame; side-by-side in sample column */
+/** Action buttons — same text size as report-page Jobbeagle wordmark */
 export const REPORT_ACTION_BTN =
-  `inline-flex items-center gap-2.5 rounded-lg border border-slate-400 bg-slate-900/80 px-4 py-3 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3 py-1.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
-/**
- * Samples page chrome — match BrandLogo `size="nav"`
- * (text-2xl sm:text-3xl font-black + icon ~3–3.5rem tall).
- */
-export const SAMPLE_HEADER_TEXT = 'text-2xl sm:text-3xl font-black tracking-tight';
-export const SAMPLE_HEADER_ICON = 'w-7 h-7 sm:w-8 sm:h-8 shrink-0';
+/** Samples left-rail tabs — slightly compact; still readable */
+export const SAMPLE_HEADER_TEXT = 'text-base sm:text-lg font-bold tracking-tight';
+export const SAMPLE_HEADER_ICON = 'w-5 h-5 shrink-0';
 export const SAMPLE_HEADER_BTN =
-  `inline-flex items-center gap-2.5 sm:gap-3 rounded-xl border-2 px-5 py-2.5 sm:px-6 sm:py-3 min-h-[3.25rem] sm:min-h-[3.5rem] ${SAMPLE_HEADER_TEXT} transition-colors`;
+  `inline-flex items-center gap-2 rounded-lg border px-3 py-2 ${SAMPLE_HEADER_TEXT} transition-colors`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
