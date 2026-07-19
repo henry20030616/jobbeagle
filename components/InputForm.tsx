@@ -12,6 +12,7 @@ import BrandLogo from '@/components/BrandLogo';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel } from '@/constants/report-products';
+import ReportCompareModal from '@/components/ReportCompareModal';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -579,7 +580,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => {
                           setExpandedFeature(open ? null : item.id);
                         }}
-                        className="w-full text-left flex items-start gap-3 p-4 sm:p-5 hover:bg-slate-700/30 transition-colors border-b lg:border-b-0 border-slate-700/60 last:border-b-0"
+                        className="w-full text-left flex items-center gap-3 p-4 sm:p-5 hover:bg-slate-700/30 transition-colors border-b lg:border-b-0 border-slate-700/60 last:border-b-0"
                       >
                         <div
                           className={`shrink-0 rounded-xl p-3 bg-gradient-to-br ring-1 shadow-inner ${item.iconWrap}`}
@@ -587,10 +588,10 @@ const InputForm: React.FC<InputFormProps> = ({
                           <Icon className={`w-6 h-6 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center justify-between gap-2">
                             <span className="text-base font-bold text-slate-200 leading-snug">{item.title}</span>
                             <ChevronDown
-                              className={`w-4 h-4 text-slate-500 shrink-0 mt-0.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                              className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                               aria-hidden
                             />
                           </div>
@@ -833,57 +834,60 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
               {onReportTypeChange ? (
-                <div className="min-h-[220px] h-full grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
-                  <div
-                    className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
-                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                        ? 'border-solid border-violet-500 bg-violet-500/10'
-                        : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                      className="text-left w-full"
+                <div className="min-h-[220px] h-full flex flex-col gap-2">
+                  <div className="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
+                    <div
+                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
+                        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                          ? 'border-solid border-violet-500 bg-violet-500/10'
+                          : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
+                      }`}
                     >
-                      <p className="font-semibold text-white text-base">Job Fit Snapshot</p>
-                      <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
-                    </button>
-                    <Link
-                      href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-300 hover:text-indigo-200"
-                      onClick={(e) => e.stopPropagation()}
+                      <button
+                        type="button"
+                        onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                        className="text-left w-full"
+                      >
+                        <p className="font-semibold text-white text-base">Job Fit Snapshot</p>
+                        <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
+                      </button>
+                      <Link
+                        href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-300 hover:text-indigo-200"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View sample →
+                      </Link>
+                    </div>
+                    <div
+                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
+                        reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                          ? 'border-solid border-violet-500 bg-violet-500/10'
+                          : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
+                      }`}
                     >
-                      View sample →
-                    </Link>
+                      <button
+                        type="button"
+                        onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                        className="text-left w-full"
+                      >
+                        <p className="font-semibold text-white text-base">Interview Strategy Guide</p>
+                        <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
+                      </button>
+                      <Link
+                        href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-300 hover:text-indigo-200"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View sample →
+                      </Link>
+                    </div>
                   </div>
-                  <div
-                    className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
-                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                        ? 'border-solid border-violet-500 bg-violet-500/10'
-                        : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                      className="text-left w-full"
-                    >
-                      <p className="font-semibold text-white text-base">Interview Strategy Guide</p>
-                      <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
-                    </button>
-                    <Link
-                      href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-300 hover:text-indigo-200"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      View sample →
-                    </Link>
-                  </div>
+                  <ReportCompareModal language={currentLanguage} className="self-start" />
                 </div>
               ) : (
                 <div className="min-h-[220px] text-sm text-slate-500">—</div>
