@@ -30,7 +30,7 @@ Rules:
 - When evidence_tier is A/B/C, fill expected_offer.tc_breakdown with an estimated salary mix for THIS seat: base, bonus, equity, total (USD strings like "$150K"). Unknown component → null; still return the object with at least base + total when estimable. Tier D → omit or all-null.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
 - apply_decision.label must be one of: Apply now | Apply after fixes | Clarify first | Skip
-- apply_decision.reason: a COMPLETE 2–3 sentence recruiter brief for the decision — cover fit strengths, the main risk/gap, and why this label (not a one-liner). Competitiveness and risk only. Do NOT teach resume rewriting, bullet edits, page layout, or “put X on page one”.
+- apply_decision.reason: EXACTLY 2–3 short sentences (each ends with . ! or ?). UI renders them as bullets — one idea per sentence: (1) why the seat is still worth pursuing, (2) main competitiveness risk/gap, (3) why this label. Competitiveness and risk only. Do NOT teach resume rewriting, bullet edits, page layout, or “put X on page one”.
 - apply_decision.next_best_action: ONE next decision step (apply, clarify with recruiter, validate a hard requirement, or skip). Never coach how to rewrite or reformat a resume.
 - proof_map.strengths: return 3 or 4 strongest, evidence-backed match points (never fewer than 3).
 - proof_map.gaps: return 3 or 4 most important mismatches / missing proofs (never fewer than 3).

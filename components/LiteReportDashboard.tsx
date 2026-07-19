@@ -29,6 +29,7 @@ import {
   REPORT_ACTION_ICON,
   REPORT_SHELL_WIDTH,
 } from '@/constants/report-frame';
+import { splitDecisionBrief } from '@/lib/decision-brief';
 import { SampleMark } from '@/components/SampleMark';
 import PredictedLandSquircle from '@/components/PredictedLandSquircle';
 
@@ -479,19 +480,35 @@ export default function LiteReportDashboard({
                   {apply?.label || 'Apply decision'}
                 </p>
                 {apply?.reason ? (
-                  <p className="text-lg text-slate-200 leading-relaxed flex-1">
-                    {apply.reason}
-                  </p>
+                  <ul className="space-y-1.5 flex-1">
+                    {splitDecisionBrief(apply.reason).map((point, i) => (
+                      <li key={i} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                        <span
+                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-300/90"
+                          aria-hidden
+                        />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
                   <p className="text-base text-slate-500 flex-1">
                     Decision brief unavailable for this run.
                   </p>
                 )}
                 {apply?.next_best_action ? (
-                  <p className="text-lg text-slate-300 leading-relaxed mt-3 pt-3 border-t border-sky-400/25">
-                    <span className="font-semibold text-violet-200">Next: </span>
-                    {apply.next_best_action}
-                  </p>
+                  <ul className="mt-3 pt-3 border-t border-sky-400/25 space-y-1.5">
+                    <li className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                      <span
+                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-200"
+                        aria-hidden
+                      />
+                      <span>
+                        <span className="font-semibold text-violet-200">Next: </span>
+                        {apply.next_best_action}
+                      </span>
+                    </li>
+                  </ul>
                 ) : null}
               </section>
             </div>
