@@ -1,9 +1,12 @@
-/** Shared label size — Back to Home / Jobbeagle / sample tabs */
-export const REPORT_ACTION_TEXT = 'text-base font-semibold';
+/** Shared label size — Back to Home / Jobbeagle / sample tabs / compare */
+export const REPORT_ACTION_TEXT = 'text-lg font-semibold';
+
+/** Shared icon size inside report action controls */
+export const REPORT_ACTION_ICON = 'w-5 h-5 shrink-0';
 
 /** Action buttons — thin light-grey frame; side-by-side in sample column */
 export const REPORT_ACTION_BTN =
-  `inline-flex items-center gap-1.5 rounded-lg border border-slate-400 bg-slate-900/80 px-2.5 py-2 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3.5 py-2.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).

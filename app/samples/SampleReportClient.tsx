@@ -16,6 +16,7 @@ import {
   SAMPLE_NOTICE_SURFACE,
   REPORT_ACTION_BTN,
   REPORT_ACTION_TEXT,
+  REPORT_ACTION_ICON,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 import ReportCompareModal from '@/components/ReportCompareModal';
@@ -37,26 +38,26 @@ export default function SampleReportClient() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-        <BrandLogo size="sm" />
-        <div className="flex flex-wrap items-center gap-2">
-          <ReportCompareModal language="en" />
+      <header className="border-b border-slate-800 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+        <BrandLogo size="sm" showIcon />
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          <ReportCompareModal language="en" variant="button" />
           <Link
             href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-            className={`rounded-full px-3.5 py-1.5 ${REPORT_ACTION_TEXT} border transition-colors ${
+            className={`inline-flex items-center rounded-lg px-3.5 py-2.5 ${REPORT_ACTION_TEXT} border transition-colors ${
               !isGuide
                 ? 'border-violet-500 bg-violet-500/15 text-violet-100'
-                : 'border-slate-700 text-slate-400 hover:text-slate-200'
+                : 'border-slate-400 text-slate-200 hover:bg-slate-800 hover:border-slate-300'
             }`}
           >
             Snapshot sample
           </Link>
           <Link
             href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-            className={`rounded-full px-3.5 py-1.5 ${REPORT_ACTION_TEXT} border transition-colors ${
+            className={`inline-flex items-center rounded-lg px-3.5 py-2.5 ${REPORT_ACTION_TEXT} border transition-colors ${
               isGuide
                 ? 'border-violet-500 bg-violet-500/15 text-violet-100'
-                : 'border-slate-700 text-slate-400 hover:text-slate-200'
+                : 'border-slate-400 text-slate-200 hover:bg-slate-800 hover:border-slate-300'
             }`}
           >
             Guide sample
@@ -90,7 +91,7 @@ export default function SampleReportClient() {
                 onClick={goHome}
                 className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
               >
-                <Home className="w-3.5 h-3.5 shrink-0" />
+                <Home className={REPORT_ACTION_ICON} />
                 Back to Home
               </button>
               <button
@@ -98,7 +99,7 @@ export default function SampleReportClient() {
                 onClick={goHome}
                 className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
               >
-                <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+                <RotateCcw className={REPORT_ACTION_ICON} />
                 New Analysis
               </button>
             </div>

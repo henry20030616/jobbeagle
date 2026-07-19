@@ -20,6 +20,7 @@ import {
   type ReportCompareRow,
   type ReportCompareSection,
 } from '@/constants/report-compare';
+import { REPORT_ACTION_TEXT, REPORT_ACTION_ICON } from '@/constants/report-frame';
 
 const SECTION_ORDER: ReportCompareSection[] = [
   'best_for',
@@ -146,8 +147,8 @@ export default function ReportCompareModal({
 
   const triggerClass =
     variant === 'button'
-      ? `inline-flex items-center gap-1.5 rounded-lg border border-slate-400 bg-slate-900/80 px-2.5 py-2 text-base font-semibold text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors ${className}`
-      : `inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
+      ? `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3.5 py-2.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors ${className}`
+      : `inline-flex items-center gap-2 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
 
   const dialog =
     open && mounted
@@ -341,7 +342,7 @@ export default function ReportCompareModal({
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={triggerClass}>
-        <GitCompareArrows className="w-4 h-4 shrink-0" aria-hidden />
+        <GitCompareArrows className={REPORT_ACTION_ICON} aria-hidden />
         {REPORT_COMPARE_TRIGGER[lang]}
       </button>
       {dialog}

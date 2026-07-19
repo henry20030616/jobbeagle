@@ -27,7 +27,12 @@ import {
   formatOfferRange,
   formatPredictedOffer,
 } from '@/lib/offer-display';
-import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
+import {
+  REPORT_SLIDE_SURFACE,
+  REPORT_ACTION_BTN,
+  REPORT_ACTION_ICON,
+  REPORT_SHELL_WIDTH,
+} from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
 type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
@@ -253,11 +258,11 @@ export default function FullReportDashboard({
       {!embedded && (
         <div className="no-print flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleBack} className={REPORT_ACTION_BTN}>
-            <Home className="w-4 h-4" />
+            <Home className={REPORT_ACTION_ICON} />
             Back to Home
           </button>
           <button type="button" onClick={handleBack} className={REPORT_ACTION_BTN}>
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className={REPORT_ACTION_ICON} />
             New Analysis
           </button>
         </div>

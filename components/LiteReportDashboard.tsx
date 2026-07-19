@@ -23,7 +23,12 @@ import {
 } from '@/lib/offer-display';
 import { scoreSummaryPoints, splitScoreSummaryPoint } from '@/lib/score-summary';
 import { formatJobSourceDate } from '@/lib/job-source';
-import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
+import {
+  REPORT_SLIDE_SURFACE,
+  REPORT_ACTION_BTN,
+  REPORT_ACTION_ICON,
+  REPORT_SHELL_WIDTH,
+} from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 import PredictedLandSquircle from '@/components/PredictedLandSquircle';
 
@@ -105,7 +110,7 @@ export default function LiteReportDashboard({
             onClick={handleBack}
             className={REPORT_ACTION_BTN}
           >
-            <Home className="w-4 h-4" />
+            <Home className={REPORT_ACTION_ICON} />
             Back to Home
           </button>
           <button
@@ -113,7 +118,7 @@ export default function LiteReportDashboard({
             onClick={handleBack}
             className={REPORT_ACTION_BTN}
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className={REPORT_ACTION_ICON} />
             New Analysis
           </button>
         </div>
