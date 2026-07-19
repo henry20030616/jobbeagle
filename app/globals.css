@@ -142,6 +142,31 @@ main input {
   max-width: 100% !important;
 }
 
+/*
+  Homepage dashboard shell — !important so stale Tailwind utilities cannot
+  leave a floating “island”. Verify live CSS contains this selector.
+*/
+.jb-home-shell {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  box-sizing: border-box !important;
+}
+
+.jb-home-operator {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
 /* Homepage steps 1–4: one horizontal row, never wider than the page */
 .jb-home-steps > * {
   min-width: 0;
@@ -151,7 +176,7 @@ main input {
 @media (min-width: 1024px) {
   .jb-home-steps {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: minmax(32rem, 1fr);
+    grid-template-rows: minmax(36rem, 1fr);
     align-items: stretch;
   }
 }

@@ -525,11 +525,11 @@ const InputForm: React.FC<InputFormProps> = ({
     (!publicAts && !resume);
 
   return (
-    <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
+    <div className="jb-home-operator flex flex-col gap-4">
       {/* Tagline only — logo lives in page header */}
       <div className="w-full min-w-0 space-y-2 px-2 text-center">
         <h1 className="sr-only">Jobbeagle</h1>
-        <p className="mx-auto w-full max-w-7xl font-medium leading-snug text-base text-slate-400 break-words sm:text-lg">
+        <p className="w-full font-medium leading-snug text-base text-slate-400 break-words sm:text-lg md:text-xl">
           {t.description}
         </p>
         {extensionCapture && (
@@ -542,10 +542,10 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex w-full min-w-0 flex-1 flex-col">
+      <form onSubmit={handleSubmit} className="jb-home-operator flex flex-col">
         {/* Steps 1→4 left-to-right on lg+; each column minmax(0,1fr) so the row never exceeds 100%. */}
-        <div className="flex w-full min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl">
-          <div className="jb-home-steps grid w-full min-w-0 flex-1 grid-cols-1 lg:min-h-[32rem]">
+        <div className="jb-home-operator flex flex-col overflow-hidden rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl">
+          <div className="jb-home-steps grid w-full min-w-0 flex-1 grid-cols-1 lg:min-h-[36rem]">
             {/* 1. Job */}
             <section className="flex flex-col gap-3 p-5 sm:p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2.5 min-w-0">

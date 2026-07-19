@@ -415,12 +415,8 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen w-full flex-col overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
-      {/*
-        Dashboard shell: ~95% viewport width (capped), centered, flex-1 so the
-        operator fills vertical space instead of floating as a small card.
-        Never use max-w-[100vw] — scrollbar gutter inflates past the viewport.
-      */}
-      <main className="mx-auto flex w-[95%] max-w-[1920px] min-h-0 min-w-0 flex-1 flex-col px-4 sm:px-6 lg:px-8 py-5">
+      {/* jb-home-shell in globals.css forces full-bleed width (no max-w island). */}
+      <main className="jb-home-shell py-5">
         <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
@@ -614,7 +610,7 @@ export default function Home() {
         )}
 
         {!report ? (
-          <div className="flex w-full min-w-0 flex-1 flex-col">
+          <div className="jb-home-operator flex flex-col">
             <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
