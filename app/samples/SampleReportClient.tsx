@@ -61,64 +61,85 @@ export default function SampleReportClient() {
       <main className="px-2 sm:px-4 py-4 sm:py-5">
         <ReportFitStage className="mx-auto w-full max-w-[98vw]">
           {/*
-            Left column: actions (same width as Sample) + Sample box
-            Right column: report — tops of actions & report aligned
+            Desktop 2×2:
+              [ actions ] [ SAMPLE mark above frame ]
+              [ notice  ] [ report frame            ]  ← equal height
           */}
-          <div className="flex flex-col sm:flex-row sm:items-start gap-4 lg:gap-5">
-            <aside className="w-full sm:w-72 lg:w-80 shrink-0 flex flex-col gap-3">
-              <div className="grid grid-cols-2 gap-2 w-full">
-                <button
-                  type="button"
-                  onClick={goHome}
-                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
-                >
-                  <Home className="w-3.5 h-3.5 shrink-0" />
-                  Back to Home
-                </button>
-                <button
-                  type="button"
-                  onClick={goHome}
-                  className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
-                >
-                  <RotateCcw className="w-3.5 h-3.5 shrink-0" />
-                  New Analysis
-                </button>
-              </div>
-
-              <div
-                className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5 overflow-visible`}
+          <div
+            className="flex flex-col gap-3 sm:grid sm:gap-x-5 sm:gap-y-2 sm:items-stretch"
+            style={{
+              gridTemplateColumns: 'minmax(16rem,20rem) minmax(0,1fr)',
+              gridTemplateRows: 'auto 1fr',
+              gridTemplateAreas: `
+                "actions mark"
+                "notice report"
+              `,
+            }}
+          >
+            <div
+              className="grid grid-cols-2 gap-2 w-full sm:w-auto"
+              style={{ gridArea: 'actions' }}
+            >
+              <button
+                type="button"
+                onClick={goHome}
+                className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
               >
-                <SampleMark variant="notice" />
-                <div className="flex items-start gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-base sm:text-lg font-bold text-white leading-snug">
-                      {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
-                    </p>
-                    <p className="text-sm text-blue-50/95 mt-2 leading-relaxed">
-                      Fictional candidate & role for product preview — not saved, no credits used.
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  href="/"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-blue-50"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to analyze
-                </Link>
-              </div>
-            </aside>
+                <Home className="w-3.5 h-3.5 shrink-0" />
+                Back to Home
+              </button>
+              <button
+                type="button"
+                onClick={goHome}
+                className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
+              >
+                <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+                New Analysis
+              </button>
+            </div>
 
-            <div className="min-w-0 flex-1">
+            <div
+              className="hidden sm:flex items-end justify-center pb-0.5"
+              style={{ gridArea: 'mark' }}
+            >
+              <SampleMark />
+            </div>
+
+            <div
+              className={`${SAMPLE_NOTICE_SURFACE} w-full h-full min-h-[12rem] px-5 py-5 flex flex-col gap-3.5`}
+              style={{ gridArea: 'notice' }}
+            >
+              <SampleMark variant="notice" />
+              <div className="flex items-start gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-base sm:text-lg font-bold text-white leading-snug">
+                    {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
+                  </p>
+                  <p className="text-sm text-blue-50/95 mt-2 leading-relaxed">
+                    Fictional candidate & role for product preview — not saved, no credits used.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/"
+                className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-blue-50"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to analyze
+              </Link>
+            </div>
+
+            <div className="min-w-0 w-full h-full" style={{ gridArea: 'report' }}>
+              {/* isSample=false: SAMPLE mark is rendered in the grid above the frame */}
               {isGuide ? (
                 <FullReportDashboard
                   report={guide}
                   language="en"
                   embedded
-                  isSample
+                  isSample={false}
                   onNewAnalysis={goHome}
                 />
               ) : (
@@ -126,7 +147,7 @@ export default function SampleReportClient() {
                   report={snapshot}
                   language="en"
                   embedded
-                  isSample
+                  isSample={false}
                   onNewAnalysis={goHome}
                 />
               )}
