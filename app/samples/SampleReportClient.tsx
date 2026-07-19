@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import BrandLogo from '@/components/BrandLogo';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
+import { ReportFitStage } from '@/components/ReportFitStage';
 import {
   getSampleSnapshotReport,
   getSampleStrategyGuideReport,
@@ -64,11 +65,10 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[98vw] min-w-0 px-2 sm:px-4 py-4 sm:py-5 overflow-x-auto">
+      <main className="mx-auto w-full max-w-[98vw] min-w-0 px-2 sm:px-4 py-4 sm:py-5 overflow-x-hidden">
         {/*
-          Narrow: stack (actions → notice → report).
-          Wide (xl+): 2×2 side-by-side so report keeps enough width.
-          No CSS zoom — slide proportions stay fixed across viewport sizes.
+          Chrome (actions / notice) can reflow; the blue slide is scaled uniformly
+          inside ReportFitStage so its internal proportions never change.
         */}
         <div
           className="flex flex-col gap-3 xl:grid xl:gap-x-5 xl:gap-y-2 xl:items-start min-w-0"
@@ -142,23 +142,25 @@ export default function SampleReportClient() {
           </div>
 
           <div className="min-w-0 w-full" style={{ gridArea: 'report' }}>
-            {isGuide ? (
-              <FullReportDashboard
-                report={guide}
-                language="en"
-                embedded
-                isSample={false}
-                onNewAnalysis={goHome}
-              />
-            ) : (
-              <LiteReportDashboard
-                report={snapshot}
-                language="en"
-                embedded
-                isSample={false}
-                onNewAnalysis={goHome}
-              />
-            )}
+            <ReportFitStage>
+              {isGuide ? (
+                <FullReportDashboard
+                  report={guide}
+                  language="en"
+                  embedded
+                  isSample={false}
+                  onNewAnalysis={goHome}
+                />
+              ) : (
+                <LiteReportDashboard
+                  report={snapshot}
+                  language="en"
+                  embedded
+                  isSample={false}
+                  onNewAnalysis={goHome}
+                />
+              )}
+            </ReportFitStage>
           </div>
         </div>
       </main>

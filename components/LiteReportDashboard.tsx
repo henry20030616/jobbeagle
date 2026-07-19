@@ -33,8 +33,8 @@ import { SampleMark } from '@/components/SampleMark';
 import PredictedLandSquircle from '@/components/PredictedLandSquircle';
 
 /** Primary section labels (Job Fit Snapshot, Candidate Fit Score, …) */
-const SECTION_TITLE =
-  'text-sm sm:text-base font-bold uppercase tracking-[0.14em]';
+/** Fixed slide type — no viewport breakpoints (scale stage handles size). */
+const SECTION_TITLE = 'text-base font-bold uppercase tracking-[0.14em]';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
@@ -130,18 +130,18 @@ export default function LiteReportDashboard({
         </div>
       )}
 
-      {/* One-page slide — desktop dual-column (fig.2); stacks below lg */}
+      {/* One-page slide — fixed desktop proportions; outer ReportFitStage scales uniformly */}
       <article
-        className={`min-w-0 overflow-x-auto bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
+        className={`w-full min-w-0 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
       >
         {/* Slide header */}
-        <header className="border-b border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="flex flex-wrap items-start justify-between gap-2">
+        <header className="border-b border-slate-700/90 px-5 py-3.5">
+          <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className={`${SECTION_TITLE} text-indigo-400 mb-1`}>
                 Job Fit Snapshot
               </p>
-              <h1 className="text-3xl sm:text-4xl font-black text-white flex items-center gap-2 flex-wrap leading-tight">
+              <h1 className="text-4xl font-black text-white flex items-center gap-2 flex-wrap leading-tight">
                 <Briefcase className="w-5 h-5 text-slate-400 shrink-0" />
                 {report.job_title || 'Unknown Role'}
               </h1>
@@ -181,21 +181,21 @@ export default function LiteReportDashboard({
         </header>
 
         {/* Heroes: Fit | Offer — same title row + circle row so gauges align */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-stretch divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
-          <section className="flex flex-col p-3.5 sm:p-4 min-w-0">
+        <div className="grid grid-cols-2 items-stretch divide-x divide-slate-700/90">
+          <section className="flex flex-col p-4 min-w-0">
             <p className={`${SECTION_TITLE} text-indigo-400 mb-2 min-h-[1.25rem]`}>
               Candidate Fit Score
             </p>
-            <div className="flex flex-1 items-center gap-3 sm:gap-5 min-h-[9.5rem] sm:min-h-[11rem]">
+            <div className="flex flex-1 items-center gap-5 min-h-[11rem]">
               <div className="flex flex-col items-center shrink-0">
                 <BeagleIcon
-                  className={`w-24 h-24 sm:w-32 sm:h-32 ${scoreInfo.glowClass}`}
+                  className={`w-32 h-32 ${scoreInfo.glowClass}`}
                   color={scoreInfo.fill}
                   spotColor={scoreInfo.spotColor}
                 />
               </div>
               <div
-                className="relative w-32 h-32 sm:w-40 sm:h-40 shrink-0"
+                className="relative w-40 h-40 shrink-0"
                 onMouseEnter={() => setShowBeagleScale(true)}
                 onMouseLeave={() => setShowBeagleScale(false)}
               >
@@ -223,7 +223,7 @@ export default function LiteReportDashboard({
                     </RadialBarChart>
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
-                    <span className={`text-6xl sm:text-7xl font-black tabular-nums leading-none ${scoreInfo.color}`}>
+                    <span className={`text-7xl font-black tabular-nums leading-none ${scoreInfo.color}`}>
                       {score}
                     </span>
                   </div>
@@ -233,12 +233,12 @@ export default function LiteReportDashboard({
                   <div
                     id="beagle-scale-popover"
                     role="tooltip"
-                    className="absolute left-1/2 top-[calc(100%+0.5rem)] z-30 w-[min(20rem,calc(100vw-2.5rem))] -translate-x-1/2 rounded-xl border border-slate-600/90 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-md animate-fade-in"
+                    className="absolute left-1/2 top-[calc(100%+0.5rem)] z-30 w-80 -translate-x-1/2 rounded-xl border border-slate-600/90 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-md animate-fade-in"
                   >
                     <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
                       Beagle Scale — what each level means
                     </p>
-                    <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                    <ul className="grid grid-cols-2 gap-1.5">
                       {beagleTiers.map((tier) => (
                         <li
                           key={tier.index}
@@ -270,7 +270,7 @@ export default function LiteReportDashboard({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className={`text-2xl sm:text-3xl font-black leading-tight ${scoreInfo.color}`}>
+                <p className={`text-3xl font-black leading-tight ${scoreInfo.color}`}>
                   {scoreInfo.level}
                 </p>
                 <p className="text-lg font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
@@ -281,21 +281,21 @@ export default function LiteReportDashboard({
             </div>
           </section>
 
-          <section className="flex flex-col p-3.5 sm:p-4 border-t border-slate-700/90 lg:border-t-0 min-w-0">
+          <section className="flex flex-col p-4 min-w-0">
             <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2 min-h-[1.25rem] flex items-center gap-1.5`}>
               <DollarSign className="w-4 h-4 shrink-0" />
               Expected Offer Range
             </p>
 
-            <div className="flex flex-1 items-center gap-3 sm:gap-4 min-w-0 min-h-[7.5rem]">
+            <div className="flex flex-1 items-center gap-4 min-w-0 min-h-[7.5rem]">
               <div className="min-w-0 flex-1">
-                <p className="text-sm sm:text-base text-slate-400 mb-1.5 break-words leading-snug">
+                <p className="text-base text-slate-400 mb-1.5 break-words leading-snug">
                   {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
                   {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
                 </p>
                 {offerRange ? (
                   <>
-                    <p className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-none break-words">
+                    <p className="text-5xl font-black text-white tracking-tight leading-none break-words">
                       {offerRange}
                     </p>
                     {offer?.candidate_position_label && (
@@ -322,9 +322,9 @@ export default function LiteReportDashboard({
         </div>
 
         {/* Score breakdown | Range Evaluation */}
-        <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:items-stretch">
-            <div className="h-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
+        <div className="border-t border-slate-700/90 px-5 py-3.5">
+          <div className="grid grid-cols-2 gap-3 items-stretch">
+            <div className="h-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
               <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
                 Score breakdown
               </p>
@@ -356,7 +356,7 @@ export default function LiteReportDashboard({
               )}
             </div>
 
-            <div className="h-full min-w-0 rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
+            <div className="h-full min-w-0 rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3 flex flex-col">
               <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
                 Range Evaluation
               </p>
@@ -365,7 +365,7 @@ export default function LiteReportDashboard({
                   <p className="text-xs font-bold uppercase tracking-wider text-emerald-200/80 mb-1.5">
                     Est. salary mix
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {tcRows.map(([label, value]) => (
                       <div
                         key={label}
@@ -381,7 +381,7 @@ export default function LiteReportDashboard({
                 </div>
               ) : null}
               <p className="text-lg font-bold text-emerald-100 mb-1 break-words">{offerEval.headline}</p>
-              <p className="text-base sm:text-lg text-slate-200 leading-relaxed flex-1 break-words">{offerEval.body}</p>
+              <p className="text-lg text-slate-200 leading-relaxed flex-1 break-words">{offerEval.body}</p>
               {offerEval.note ? (
                 <p className="text-base text-slate-400 mt-1.5 leading-relaxed break-words">{offerEval.note}</p>
               ) : null}
@@ -390,10 +390,10 @@ export default function LiteReportDashboard({
         </div>
 
         {/* Strengths | Gaps — one shared frame, bullet lists */}
-        <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
+        <div className="border-t border-slate-700/90 px-5 py-3.5">
           <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10">
-            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-sky-400/25">
-              <section className="p-3.5 sm:p-4 min-w-0">
+            <div className="grid grid-cols-2 divide-x divide-sky-400/25">
+              <section className="p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
                   <CheckCircle2 className="w-4 h-4 mr-1.5" />
                   Top Strengths
@@ -415,7 +415,7 @@ export default function LiteReportDashboard({
                   ))}
                 </ul>
               </section>
-              <section className="p-3.5 sm:p-4 min-w-0">
+              <section className="p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
                   <AlertTriangle className="w-4 h-4 mr-1.5" />
                   Critical Gaps
@@ -442,10 +442,10 @@ export default function LiteReportDashboard({
         </div>
 
         {/* Score Summary | Apply decision — parallel to Strengths | Gaps */}
-        <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
+        <div className="border-t border-slate-700/90 px-5 py-3.5">
           <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10">
-            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-sky-400/25 md:items-stretch">
-              <section className="p-3.5 sm:p-4 min-w-0 flex flex-col">
+            <div className="grid grid-cols-2 divide-x divide-sky-400/25 items-stretch">
+              <section className="p-4 min-w-0 flex flex-col">
                 <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
                   Score Summary
                 </p>
@@ -474,12 +474,12 @@ export default function LiteReportDashboard({
                 </ul>
               </section>
 
-              <section className="p-3.5 sm:p-4 min-w-0 flex flex-col">
+              <section className="p-4 min-w-0 flex flex-col">
                 <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>
                   {apply?.label || 'Apply decision'}
                 </p>
                 {apply?.reason ? (
-                  <p className="text-base sm:text-lg text-slate-200 leading-relaxed flex-1">
+                  <p className="text-lg text-slate-200 leading-relaxed flex-1">
                     {apply.reason}
                   </p>
                 ) : (
@@ -488,7 +488,7 @@ export default function LiteReportDashboard({
                   </p>
                 )}
                 {apply?.next_best_action ? (
-                  <p className="text-base sm:text-lg text-slate-300 leading-relaxed mt-3 pt-3 border-t border-sky-400/25">
+                  <p className="text-lg text-slate-300 leading-relaxed mt-3 pt-3 border-t border-sky-400/25">
                     <span className="font-semibold text-violet-200">Next: </span>
                     {apply.next_best_action}
                   </p>

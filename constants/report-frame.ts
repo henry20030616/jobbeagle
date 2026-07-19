@@ -29,3 +29,9 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
  * or large monitors show a centered “island” with huge empty margins.
  */
 export const REPORT_SHELL_WIDTH = 'w-full max-w-[98vw]';
+
+/**
+ * Fixed presentation canvas width (px). ReportFitStage lays out the slide at
+ * this width, then scales uniformly — internal proportions stay constant.
+ */
+export const REPORT_SLIDE_DESIGN_WIDTH = 1280;
