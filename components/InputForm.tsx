@@ -523,13 +523,6 @@ const InputForm: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        {/* Cake-style: trigger opens right drawer with Snapshot vs Guide compare */}
-        {!compactChrome && (
-          <div className="flex justify-center">
-            <ReportCompareModal language={currentLanguage} variant="button" />
-          </div>
-        )}
-
         <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
           {/*
             Desktop: CSS subgrid shares title / controls / content row heights across cols 1–3
@@ -751,7 +744,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
               {onReportTypeChange ? (
-                <div className="min-h-[18rem] lg:min-h-0 h-full flex flex-col gap-2">
+                <div className="min-h-[18rem] lg:min-h-0 h-full flex flex-col gap-2.5">
                   <div className="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
                     <div
                       className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
@@ -804,6 +797,13 @@ const InputForm: React.FC<InputFormProps> = ({
                       </Link>
                     </div>
                   </div>
+                  {!compactChrome && (
+                    <ReportCompareModal
+                      language={currentLanguage}
+                      variant="button"
+                      className="w-full justify-center !gap-2 !px-3 !py-2.5 text-sm sm:text-base"
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="min-h-[18rem] lg:min-h-0 text-base text-slate-500">—</div>
