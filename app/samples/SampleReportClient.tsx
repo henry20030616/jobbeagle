@@ -52,7 +52,7 @@ export default function SampleReportClient() {
       >
         <div className="w-full flex flex-col min-h-[100vh]">
           {/* Top: logo left · Back to Home / New Analysis top-right */}
-          <header className="border-b border-slate-800 px-6 py-5 flex flex-wrap items-center justify-between gap-4">
+          <header className="border-b border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
             <BrandLogo size="nav" showIcon />
             <div className="flex flex-wrap items-center gap-3">
               <button
@@ -60,7 +60,7 @@ export default function SampleReportClient() {
                 onClick={goHome}
                 className={`${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 whitespace-nowrap`}
               >
-                <Home className={SAMPLE_HEADER_ICON} />
+                <Home className={SAMPLE_HEADER_ICON} aria-hidden />
                 Back to Home
               </button>
               <button
@@ -68,7 +68,7 @@ export default function SampleReportClient() {
                 onClick={goHome}
                 className={`${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 whitespace-nowrap`}
               >
-                <RotateCcw className={SAMPLE_HEADER_ICON} />
+                <RotateCcw className={SAMPLE_HEADER_ICON} aria-hidden />
                 New Analysis
               </button>
             </div>
