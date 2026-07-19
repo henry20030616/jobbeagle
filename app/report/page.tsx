@@ -63,9 +63,9 @@ export default function ReportPage() {
   const strategy = isStrategyReport(payload.report_type);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col">
       {/* Absolute top — above logo / report */}
-      <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3">
+      <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3 shrink-0">
         <div className="mx-auto w-full max-w-[98vw] flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
             <Home className="w-4 h-4" />
@@ -78,14 +78,14 @@ export default function ReportPage() {
         </div>
       </div>
 
-      <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
         <BrandLogo size="inline" />
         <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
         </span>
       </header>
-      <main className="w-full min-w-0 px-2 sm:px-4 py-5 sm:py-6 overflow-x-auto">
-        <ReportFitStage className="mx-auto w-full max-w-[98vw] min-w-0">
+      <main className="flex-1 min-h-[calc(100vh-8rem)] w-full px-3 sm:px-6 py-6 flex flex-col items-center justify-center">
+        <ReportFitStage className="w-full max-w-[1280px]">
           {strategy ? (
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}

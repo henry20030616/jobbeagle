@@ -37,10 +37,10 @@ export default function SampleReportClient() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-4 sm:px-6 py-5 flex flex-wrap items-center justify-between gap-4">
+    <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col">
+      <header className="border-b border-slate-800 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3 shrink-0">
         <BrandLogo size="sm" showIcon />
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <ReportCompareModal language="en" variant="button" />
           <Link
             href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
@@ -65,104 +65,72 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[98vw] min-w-0 px-2 sm:px-4 py-4 sm:py-5 overflow-x-hidden">
-        {/*
-          Chrome (actions / notice) can reflow; the blue slide is scaled uniformly
-          inside ReportFitStage so its internal proportions never change.
-        */}
-        <div
-          className="flex flex-col gap-3 xl:grid xl:gap-x-5 xl:gap-y-2 xl:items-start min-w-0"
-          style={{
-            gridTemplateColumns: 'minmax(0,16rem) minmax(0,1fr)',
-            gridTemplateRows: 'auto auto',
-            gridTemplateAreas: `
-                "actions mark"
-                "notice report"
-              `,
-          }}
-        >
-          <div
-            className="grid grid-cols-2 gap-2 w-full sm:w-auto"
-            style={{ gridArea: 'actions' }}
+      {/* Report stage — centered in remaining viewport; slide stays design-size */}
+      <main className="flex-1 min-h-0 w-full px-3 sm:px-6 py-5 flex flex-col items-center justify-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={goHome}
+            className={`${REPORT_ACTION_BTN} whitespace-nowrap`}
           >
-            <button
-              type="button"
-              onClick={goHome}
-              className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
-            >
-              <Home className={REPORT_ACTION_ICON} />
-              Back to Home
-            </button>
-            <button
-              type="button"
-              onClick={goHome}
-              className={`${REPORT_ACTION_BTN} w-full justify-center whitespace-nowrap`}
-            >
-              <RotateCcw className={REPORT_ACTION_ICON} />
-              New Analysis
-            </button>
-          </div>
-
-          <div
-            className="hidden xl:flex items-end justify-center pb-0.5 min-w-0"
-            style={{ gridArea: 'mark' }}
+            <Home className={REPORT_ACTION_ICON} />
+            Back to Home
+          </button>
+          <button
+            type="button"
+            onClick={goHome}
+            className={`${REPORT_ACTION_BTN} whitespace-nowrap`}
           >
-            <SampleMark />
-          </div>
-
-          <div
-            className={`${SAMPLE_NOTICE_SURFACE} w-full min-w-0 px-5 py-5 flex flex-col gap-3.5`}
-            style={{ gridArea: 'notice' }}
-          >
-            <SampleMark variant="notice" />
-            <div className="flex items-start gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
-                <Sparkles className="w-5 h-5 text-white" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-base sm:text-lg font-bold text-white leading-snug">
-                  {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
-                </p>
-                <p className="text-sm text-blue-50/95 mt-2 leading-relaxed">
-                  Fictional candidate & role for product preview — not saved, no credits used.
-                </p>
-                <ReportCompareModal
-                  language="en"
-                  className="mt-2.5 text-white hover:text-blue-50"
-                />
-              </div>
-            </div>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-blue-50"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to analyze
-            </Link>
-          </div>
-
-          <div className="min-w-0 w-full" style={{ gridArea: 'report' }}>
-            <ReportFitStage>
-              {isGuide ? (
-                <FullReportDashboard
-                  report={guide}
-                  language="en"
-                  embedded
-                  isSample={false}
-                  onNewAnalysis={goHome}
-                />
-              ) : (
-                <LiteReportDashboard
-                  report={snapshot}
-                  language="en"
-                  embedded
-                  isSample={false}
-                  onNewAnalysis={goHome}
-                />
-              )}
-            </ReportFitStage>
-          </div>
+            <RotateCcw className={REPORT_ACTION_ICON} />
+            New Analysis
+          </button>
         </div>
+
+        <div
+          className={`${SAMPLE_NOTICE_SURFACE} w-full max-w-xl px-4 py-3 flex flex-wrap items-center gap-3 justify-center`}
+        >
+          <SampleMark variant="notice" />
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
+              <Sparkles className="w-4 h-4 text-white" />
+            </span>
+            <div className="min-w-0 text-center sm:text-left">
+              <p className="text-sm font-bold text-white leading-snug">
+                {isGuide ? 'Interview Strategy Guide' : 'Job Fit Snapshot'} · sample
+              </p>
+              <p className="text-xs text-blue-50/90 leading-snug">
+                Preview only — not saved, no credits used.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-white hover:text-blue-50"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back to analyze
+          </Link>
+        </div>
+
+        <ReportFitStage className="w-full max-w-[1280px]">
+          {isGuide ? (
+            <FullReportDashboard
+              report={guide}
+              language="en"
+              embedded
+              isSample={false}
+              onNewAnalysis={goHome}
+            />
+          ) : (
+            <LiteReportDashboard
+              report={snapshot}
+              language="en"
+              embedded
+              isSample={false}
+              onNewAnalysis={goHome}
+            />
+          )}
+        </ReportFitStage>
       </main>
     </div>
   );

@@ -8,17 +8,24 @@ type ReportFitStageProps = {
   className?: string;
   /** Fixed slide canvas width (px). Internal layout always lays out at this width. */
   designWidth?: number;
+  /**
+   * Never scale the slide larger than this (default 1 = design size).
+   * Window resize may shrink to fit, but never stretches the presentation.
+   */
+  maxScale?: number;
 };
 
 /**
- * One-page presentation stage: children lay out at a fixed design width, then
- * the whole slide is scaled uniformly to the container. Proportions never reflow
- * when the browser window or page zoom changes — only the outer scale factor does.
+ * Fixed-proportion presentation stage.
+ * - Lays out at a constant design width (no responsive reflow inside the slide)
+ * - Scales down only to fit the container; never scales up past design size
+ * - Centers the slide horizontally (and vertically when the stage has height)
  */
 export function ReportFitStage({
   children,
   className = '',
   designWidth = REPORT_SLIDE_DESIGN_WIDTH,
+  maxScale = 1,
 }: ReportFitStageProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -33,7 +40,8 @@ export function ReportFitStage({
     const update = () => {
       const available = outer.clientWidth;
       if (available <= 0) return;
-      const nextScale = available / designWidth;
+      const fit = available / designWidth;
+      const nextScale = Math.min(maxScale, fit);
       setScale(Number(nextScale.toFixed(4)));
       setContentHeight(inner.scrollHeight);
     };
@@ -47,20 +55,30 @@ export function ReportFitStage({
       ro.disconnect();
       window.removeEventListener('resize', update);
     };
-  }, [designWidth]);
+  }, [designWidth, maxScale]);
+
+  const scaledHeight = contentHeight > 0 ? contentHeight * scale : undefined;
+  const scaledWidth = designWidth * scale;
 
   return (
-    <div ref={outerRef} className={`w-full min-w-0 overflow-x-hidden ${className}`}>
+    <div
+      ref={outerRef}
+      className={`w-full min-w-0 flex justify-center items-center ${className}`}
+    >
       <div
-        className="relative w-full"
-        style={{ height: contentHeight > 0 ? contentHeight * scale : undefined }}
+        className="relative shrink-0"
+        style={{
+          width: scaledWidth,
+          height: scaledHeight,
+        }}
       >
         <div
           ref={innerRef}
-          className="origin-top-left will-change-transform"
+          className="absolute top-0 left-1/2 will-change-transform"
           style={{
             width: designWidth,
-            transform: `scale(${scale})`,
+            transform: `translateX(-50%) scale(${scale})`,
+            transformOrigin: 'top center',
           }}
         >
           {children}
