@@ -37,3 +37,6 @@ export const REPORT_SHELL_WIDTH = 'w-full max-w-[98vw]';
  * then scales uniformly to fill the stage width — proportions stay fixed.
  */
 export const REPORT_SLIDE_DESIGN_WIDTH = 1280;
+
+/** Homepage operator canvas — same uniform-scale approach as reports. */
+export const HOME_DESIGN_WIDTH = 1440;
