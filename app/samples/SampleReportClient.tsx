@@ -45,8 +45,8 @@ export default function SampleReportClient() {
   const sampleTabClass = (active: boolean) =>
     `${SAMPLE_HEADER_BTN} w-full justify-center text-center leading-snug whitespace-normal ${
       active
-        ? 'border-violet-500 bg-violet-500/15 text-violet-100'
-        : 'border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300'
+        ? 'border-solid border-violet-500 bg-violet-500/20 text-violet-100'
+        : 'border-dashed border-slate-500 bg-slate-900/60 text-slate-100 hover:bg-slate-800/80 hover:border-slate-400'
     }`;
 
   const snapshotLabel = reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT);
