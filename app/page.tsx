@@ -414,9 +414,9 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <main className="w-full max-w-[98vw] mx-auto px-4 sm:px-8 py-6 sm:py-8">
-        <div className="flex items-center justify-between gap-4 mb-6">
+    <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col">
+      <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 py-5 sm:py-6 flex-1 flex flex-col">
+        <div className="flex items-center justify-between gap-4 mb-4 shrink-0">
           <BrandLogo size="nav" />
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher variant="dark" />
@@ -609,7 +609,7 @@ export default function Home() {
         )}
 
         {!report ? (
-          <div className="w-full">
+          <div className="w-full flex-1 flex flex-col min-h-0">
             <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
@@ -621,7 +621,7 @@ export default function Home() {
               userProfile={userProfile}
             />
             {currentUser && userProfile && (
-              <div className="mt-4 mb-1">
+              <div className="mt-4 mb-1 shrink-0">
                 <ReferralCard
                   referralCode={userProfile.referral_code}
                   language={language}

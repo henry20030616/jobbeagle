@@ -111,6 +111,32 @@ body {
   overflow: hidden !important;
 }
 
+/* Homepage operator panel — plain CSS (Tailwind nested min() arbitrary values break). */
+.jb-operator-grid {
+  min-height: 22rem;
+  height: 100%;
+}
+
+@media (min-width: 1024px) {
+  .jb-operator-grid {
+    min-height: min(62vh, 40rem);
+    grid-template-rows: auto auto minmax(16rem, 1fr);
+  }
+}
+
+.jb-operator-body {
+  min-height: 14rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .jb-operator-body {
+    min-height: 0;
+  }
+}
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

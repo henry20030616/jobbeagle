@@ -506,10 +506,10 @@ const InputForm: React.FC<InputFormProps> = ({
     : 'Remaining credits: Snapshot / Strategy Guide (buy more or manage account)';
 
   return (
-    <div className={`flex flex-col ${compactChrome ? 'gap-6' : 'gap-8'}`}>
-      <div className={`text-center space-y-3 ${compactChrome ? 'py-1' : 'py-2'}`}>
+    <div className={`flex flex-col flex-1 min-h-0 ${compactChrome ? 'gap-5' : 'gap-6'}`}>
+      <div className={`text-center space-y-2 shrink-0 ${compactChrome ? 'py-1' : 'py-1'}`}>
         <BrandLogo size={compactChrome ? 'nav' : 'hero'} as="h1" className="justify-center" />
-        <p className={`text-slate-400 max-w-4xl mx-auto font-medium leading-relaxed ${compactChrome ? 'text-sm md:text-base' : 'text-xl md:text-2xl'}`}>
+        <p className={`text-slate-400 max-w-4xl mx-auto font-medium leading-relaxed ${compactChrome ? 'text-sm md:text-base' : 'text-lg md:text-xl'}`}>
           {t.description}
         </p>
         {extensionCapture && (
@@ -522,22 +522,22 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 gap-4">
         {/* Cake-style: trigger opens right drawer with Snapshot vs Guide compare */}
         {!compactChrome && (
-          <div className="flex justify-center">
+          <div className="flex justify-center shrink-0">
             <ReportCompareModal language={currentLanguage} variant="button" />
           </div>
         )}
 
-        <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
+        <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden flex-1 min-h-0 flex flex-col">
           {/*
             Desktop: CSS subgrid shares title / controls / content row heights across cols 1–3
             so Job Fit Snapshot top aligns with Job + Resume boxes.
           */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_auto_minmax(min(52vh,28rem),1fr)] lg:min-h-[min(62vh,36rem)]">
+          <div className="jb-operator-grid grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-0">
             {/* 1. Job */}
-            <div className="relative lg:col-span-4 lg:row-span-3 grid grid-rows-[auto_auto_minmax(min(52vh,28rem),1fr)] lg:grid-rows-subgrid p-5 sm:p-7 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-4 lg:row-span-3 grid grid-rows-[auto_auto_minmax(14rem,1fr)] lg:grid-rows-subgrid p-5 sm:p-7 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
@@ -583,7 +583,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   )}
                 </div>
               </div>
-              <div className="min-h-[min(52vh,28rem)] h-full flex flex-col">
+              <div className="jb-operator-body flex flex-col">
                 <SmartInputArea
                   value={jobDescription}
                   onChange={(next) => {
@@ -623,7 +623,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 2. Resume */}
-            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(min(52vh,28rem),1fr)] lg:grid-rows-subgrid p-5 sm:p-7 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(14rem,1fr)] lg:grid-rows-subgrid p-5 sm:p-7 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
                 <span className="whitespace-nowrap">{t.resume}</span>
@@ -668,7 +668,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 )}
               </div>
 
-              <div className="min-h-[min(52vh,28rem)] h-full flex flex-col">
+              <div className="jb-operator-body flex flex-col">
                 {!resume ? (
                   <div className="w-full flex-1 h-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
@@ -731,7 +731,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 3. Report type */}
-            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(min(52vh,28rem),1fr)] lg:grid-rows-subgrid p-5 sm:p-7 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(14rem,1fr)] lg:grid-rows-subgrid p-5 sm:p-7 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.reportTypeStep}</span>
@@ -751,7 +751,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
               {onReportTypeChange ? (
-                <div className="min-h-[min(52vh,28rem)] h-full flex flex-col gap-2">
+                <div className="jb-operator-body flex flex-col gap-2">
                   <div className="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
                     <div
                       className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
@@ -806,7 +806,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="min-h-[min(52vh,28rem)] text-sm text-slate-500">—</div>
+                <div className="jb-operator-body text-sm text-slate-500">—</div>
               )}
               <div
                 className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md col-start-1 row-start-1 row-span-3 pointer-events-none"
