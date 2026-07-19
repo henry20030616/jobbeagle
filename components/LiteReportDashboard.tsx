@@ -447,18 +447,31 @@ export default function LiteReportDashboard({
             <p className={`${SECTION_TITLE} text-indigo-300 mb-1`}>
               Score Summary
             </p>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-1">
+            <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 mb-1">
               <p className={`text-lg font-bold ${scoreInfo.color} min-w-0`}>
                 {score}/100 · {scoreInfo.level}
                 {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
               </p>
               {apply?.label ? (
-                <p className={`text-lg font-bold ${scoreInfo.color} shrink-0`}>
-                  {apply.label}
-                </p>
+                <div className="min-w-0 max-w-full sm:max-w-[min(100%,22rem)] sm:text-right">
+                  <p className={`text-lg font-bold ${scoreInfo.color}`}>
+                    {apply.label}
+                  </p>
+                  {apply.reason ? (
+                    <p className="text-base text-slate-300 leading-snug mt-1">
+                      {apply.reason}
+                    </p>
+                  ) : null}
+                  {apply.next_best_action ? (
+                    <p className="text-base text-slate-400 mt-1 leading-snug">
+                      <span className="font-semibold text-slate-300">Next: </span>
+                      {apply.next_best_action}
+                    </p>
+                  ) : null}
+                </div>
               ) : null}
             </div>
-            <ul className="mt-1.5 space-y-1.5">
+            <ul className="mt-2 space-y-1.5">
               {summaryPoints.map((point, i) => {
                 const { label, detail } = splitScoreSummaryPoint(point);
                 return (
@@ -477,19 +490,6 @@ export default function LiteReportDashboard({
                 );
               })}
             </ul>
-            {(apply?.reason || apply?.next_best_action) ? (
-              <div className="mt-3 pt-3 border-t border-sky-400/30">
-                {apply.reason ? (
-                  <p className="text-base text-slate-300 leading-snug">{apply.reason}</p>
-                ) : null}
-                {apply.next_best_action ? (
-                  <p className="text-base text-slate-400 mt-1.5 leading-snug">
-                    <span className="font-semibold text-slate-300">Next: </span>
-                    {apply.next_best_action}
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
           </div>
         </div>
       </article>
