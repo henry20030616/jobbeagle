@@ -387,6 +387,8 @@ export interface StrategyFitSalary {
 export interface LiteReport {
   job_title: string;
   company_name: string;
+  /** Posting / listing date from JD when available (e.g. "2026-06-12" or "2 weeks ago") */
+  job_posted_date: string;
   data_completeness: DataCompleteness;
   hard_filter: HardFilter;
   fit_score: FitScoreBlock;

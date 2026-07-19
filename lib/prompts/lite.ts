@@ -7,6 +7,7 @@ Your job is to support TWO hero decisions only:
 
 Rules:
 - Extract facts from the JD and resume only. Never invent experience, visas, or compensation from model memory.
+- Always fill company_name from the JD/employer name. Fill job_posted_date when the JD shows a posting/listed date (ISO YYYY-MM-DD preferred, or relative like "2 weeks ago"); if unknown, use "".
 - Do NOT output FLSA classification.
 - Do NOT include culture-fit inside the numeric score.
 - Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
@@ -40,6 +41,7 @@ export const LITE_JSON_SCHEMA = {
   properties: {
     job_title: { type: 'string' },
     company_name: { type: 'string' },
+    job_posted_date: { type: 'string' },
     data_completeness: {
       type: 'object',
       properties: {
@@ -195,6 +197,7 @@ export const LITE_JSON_SCHEMA = {
   required: [
     'job_title',
     'company_name',
+    'job_posted_date',
     'data_completeness',
     'hard_filter',
     'fit_score',

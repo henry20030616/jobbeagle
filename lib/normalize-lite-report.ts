@@ -338,6 +338,7 @@ export function normalizeLiteReport(
   const report: LiteReport = {
     job_title: asString(raw.job_title, 'Unknown Role'),
     company_name: asString(raw.company_name, 'Unknown Company'),
+    job_posted_date: asString(raw.job_posted_date),
     data_completeness,
     hard_filter,
     fit_score,

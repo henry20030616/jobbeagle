@@ -12,6 +12,19 @@ export function parallelizeVerdictPoint(point: string): string {
   return dashed;
 }
 
+/** Split "Label: detail" for UI (bold label + muted detail). */
+export function splitScoreSummaryPoint(point: string): { label: string; detail: string } {
+  const trimmed = parallelizeVerdictPoint(point);
+  const idx = trimmed.indexOf(': ');
+  if (idx > 0 && idx < 48) {
+    return {
+      label: trimmed.slice(0, idx).trim(),
+      detail: trimmed.slice(idx + 2).trim(),
+    };
+  }
+  return { label: trimmed, detail: '' };
+}
+
 /** Prefer model bullets; else split prose into scannable Score Summary points. */
 export function scoreSummaryPoints(
   sharpVerdict: string | undefined | null,

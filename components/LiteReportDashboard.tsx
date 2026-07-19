@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Building2,
   Briefcase,
+  CalendarDays,
 } from 'lucide-react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
@@ -19,7 +20,7 @@ import {
   formatOfferRange,
   offerEvaluationSummary,
 } from '@/lib/offer-display';
-import { scoreSummaryPoints } from '@/lib/score-summary';
+import { scoreSummaryPoints, splitScoreSummaryPoint } from '@/lib/score-summary';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
@@ -125,10 +126,30 @@ export default function LiteReportDashboard({
                 <Briefcase className="w-5 h-5 text-slate-400 shrink-0" />
                 {report.job_title || 'Unknown Role'}
               </h1>
-              <p className="text-slate-400 mt-1 flex items-center gap-2 text-lg">
-                <Building2 className="w-4 h-4 shrink-0" />
-                {report.company_name || 'Unknown Company'}
-              </p>
+              <dl className="mt-2 space-y-1 text-lg">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Building2 className="w-4 h-4 shrink-0 text-slate-500" aria-hidden />
+                  <dt className="sr-only">Company</dt>
+                  <dd>
+                    <span className="text-slate-500 text-sm font-semibold uppercase tracking-wide mr-2">
+                      Company
+                    </span>
+                    {report.company_name || 'Unknown Company'}
+                  </dd>
+                </div>
+                <div className="flex items-center gap-2 text-slate-300">
+                  <CalendarDays className="w-4 h-4 shrink-0 text-slate-500" aria-hidden />
+                  <dt className="sr-only">Posted</dt>
+                  <dd>
+                    <span className="text-slate-500 text-sm font-semibold uppercase tracking-wide mr-2">
+                      Posted
+                    </span>
+                    {report.job_posted_date?.trim()
+                      ? report.job_posted_date.trim()
+                      : 'Date not listed on JD'}
+                  </dd>
+                </div>
+              </dl>
             </div>
             <div
               className="shrink-0 rounded-lg border border-sky-400/70 bg-slate-950/60 px-3 py-1.5 text-center"
@@ -386,12 +407,23 @@ export default function LiteReportDashboard({
               {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
             </p>
             <ul className="mt-1.5 space-y-1.5">
-              {summaryPoints.map((point, i) => (
-                <li key={i} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                  <span>{point}</span>
-                </li>
-              ))}
+              {summaryPoints.map((point, i) => {
+                const { label, detail } = splitScoreSummaryPoint(point);
+                return (
+                  <li key={i} className="flex gap-2.5 text-lg leading-snug">
+                    <span
+                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90"
+                      aria-hidden
+                    />
+                    <span>
+                      <span className="font-semibold text-slate-100">{label}</span>
+                      {detail ? (
+                        <span className="text-slate-400">: {detail}</span>
+                      ) : null}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
             {apply?.label ? (
               <div className="mt-3 pt-3 border-t border-sky-400/30">

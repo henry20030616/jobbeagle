@@ -106,6 +106,7 @@ const LITE_RESPONSE_SCHEMA = {
   properties: {
     job_title: { type: Type.STRING },
     company_name: { type: Type.STRING },
+    job_posted_date: { type: Type.STRING },
     data_completeness: {
       type: Type.OBJECT,
       properties: {
@@ -244,6 +245,7 @@ const LITE_RESPONSE_SCHEMA = {
   required: [
     'job_title',
     'company_name',
+    'job_posted_date',
     'data_completeness',
     'hard_filter',
     'fit_score',

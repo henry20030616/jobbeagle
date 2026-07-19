@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { parallelizeVerdictPoint, scoreSummaryPoints } from '@/lib/score-summary';
+import {
+  parallelizeVerdictPoint,
+  scoreSummaryPoints,
+  splitScoreSummaryPoint,
+} from '@/lib/score-summary';
 
 describe('scoreSummaryPoints', () => {
   it('prefers explicit bullets', () => {
@@ -14,6 +18,13 @@ describe('scoreSummaryPoints', () => {
     );
     expect(points).toHaveLength(3);
     expect(points[0]).toContain('Strong BA');
+  });
+
+  it('splits label and detail for muted body copy', () => {
+    expect(splitScoreSummaryPoint('Main gap: ACH depth is thin.')).toEqual({
+      label: 'Main gap',
+      detail: 'ACH depth is thin.',
+    });
   });
 
   it('normalizes dash separators to colon for parallel labels', () => {
