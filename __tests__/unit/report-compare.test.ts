@@ -36,6 +36,8 @@ describe('report-compare', () => {
 
     for (const row of REPORT_COMPARE_ROWS) {
       expect(row.feature.en.length).toBeGreaterThan(0);
+      expect(row.help.en.length).toBeGreaterThan(20);
+      expect(row.help['zh-TW'].length).toBeGreaterThan(10);
       expect(row.snapshot.text.en.length).toBeGreaterThan(0);
       expect(row.guide.text.en.length).toBeGreaterThan(0);
       if (row.section === 'shared') {

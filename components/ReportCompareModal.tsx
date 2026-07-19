@@ -2,10 +2,12 @@
 
 import React, { useEffect, useId, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, GitCompareArrows, Star, X } from 'lucide-react';
+import { Check, CircleHelp, GitCompareArrows, Star, X } from 'lucide-react';
 import {
   REPORT_COMPARE_CLOSE,
   REPORT_COMPARE_COL,
+  REPORT_COMPARE_FIELD_HELP_ARIA,
+  REPORT_COMPARE_FIELD_HELP_HINT,
   REPORT_COMPARE_ROWS,
   REPORT_COMPARE_SECTION_HINT,
   REPORT_COMPARE_SECTION_LABEL,
@@ -87,6 +89,55 @@ function CompareCell({
   return <span className="text-slate-300">{text}</span>;
 }
 
+function FeatureHelpLabel({
+  label,
+  help,
+  lang,
+  rowKey,
+  openKey,
+  onToggle,
+}: {
+  label: string;
+  help: string;
+  lang: ReportCompareLang;
+  rowKey: string;
+  openKey: string | null;
+  onToggle: (key: string | null) => void;
+}) {
+  const open = openKey === rowKey;
+  const tipId = `compare-help-${rowKey}`;
+
+  return (
+    <div className="relative min-w-0">
+      <button
+        type="button"
+        className="group inline-flex items-start gap-1.5 text-left font-medium text-slate-200 hover:text-white transition-colors max-w-full"
+        aria-expanded={open}
+        aria-controls={tipId}
+        onClick={() => onToggle(open ? null : rowKey)}
+      >
+        <span className="underline decoration-slate-600 decoration-dotted underline-offset-2 group-hover:decoration-slate-400">
+          {label}
+        </span>
+        <CircleHelp
+          className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 group-hover:text-indigo-300 shrink-0 mt-0.5"
+          aria-hidden
+        />
+        <span className="sr-only">{REPORT_COMPARE_FIELD_HELP_ARIA[lang]}</span>
+      </button>
+      {open ? (
+        <div
+          id={tipId}
+          role="note"
+          className="absolute z-30 left-0 top-full mt-1.5 w-[min(20rem,calc(100vw-3rem))] rounded-lg border border-indigo-400/40 bg-slate-900 px-3 py-2.5 text-sm text-slate-200 leading-snug shadow-xl"
+        >
+          {help}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 type ReportCompareModalProps = {
   language?: string;
   className?: string;
@@ -100,6 +151,7 @@ export default function ReportCompareModal({
 }: ReportCompareModalProps) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [helpKey, setHelpKey] = useState<string | null>(null);
   const titleId = useId();
   const lang: ReportCompareLang = resolveCompareLang(language);
 
@@ -116,9 +168,17 @@ export default function ReportCompareModal({
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setHelpKey(null);
+      return;
+    }
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key !== 'Escape') return;
+      if (helpKey) {
+        setHelpKey(null);
+        return;
+      }
+      setOpen(false);
     };
     document.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
@@ -127,7 +187,7 @@ export default function ReportCompareModal({
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [open, helpKey]);
 
   const triggerClass =
     variant === 'button'
@@ -205,7 +265,10 @@ export default function ReportCompareModal({
                   <thead className="sticky top-0 bg-slate-950 z-10">
                     <tr className="border-b border-slate-700">
                       <th className="py-2.5 px-2 sm:px-3 font-semibold text-slate-400 w-[28%]">
-                        {REPORT_COMPARE_COL.feature[lang]}
+                        <span className="block">{REPORT_COMPARE_COL.feature[lang]}</span>
+                        <span className="mt-0.5 block text-[11px] font-medium normal-case tracking-normal text-slate-500">
+                          {REPORT_COMPARE_FIELD_HELP_HINT[lang]}
+                        </span>
                       </th>
                       <th className="py-2.5 px-2 sm:px-3 font-semibold text-violet-300 w-[36%]">
                         {REPORT_COMPARE_COL.snapshot[lang]}
@@ -244,8 +307,15 @@ export default function ReportCompareModal({
                             key={row.feature.en}
                             className="border-b border-slate-800/80 align-top"
                           >
-                            <td className="py-2.5 px-2 sm:px-3 font-medium text-slate-200">
-                              {row.feature[lang]}
+                            <td className="py-2.5 px-2 sm:px-3">
+                              <FeatureHelpLabel
+                                label={row.feature[lang]}
+                                help={row.help[lang]}
+                                lang={lang}
+                                rowKey={row.feature.en}
+                                openKey={helpKey}
+                                onToggle={setHelpKey}
+                              />
                             </td>
                             <td className="py-2.5 px-2 sm:px-3">
                               <CompareCell cell={row.snapshot} lang={lang} />

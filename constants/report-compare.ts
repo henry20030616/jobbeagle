@@ -22,8 +22,14 @@ export interface ReportCompareCell {
 export interface ReportCompareRow {
   section: ReportCompareSection;
   feature: Record<ReportCompareLang, string>;
+  /** Plain-language definition shown when the feature label is opened */
+  help: Record<ReportCompareLang, string>;
   snapshot: ReportCompareCell;
   guide: ReportCompareCell;
+}
+
+function help(en: string, zhTW: string, zhCN: string): Record<ReportCompareLang, string> {
+  return { en, 'zh-TW': zhTW, 'zh-CN': zhCN };
 }
 
 function t(
@@ -114,6 +120,18 @@ export const REPORT_COMPARE_CLOSE: Record<ReportCompareLang, string> = {
   'zh-CN': '关闭',
 };
 
+export const REPORT_COMPARE_FIELD_HELP_HINT: Record<ReportCompareLang, string> = {
+  en: 'Tap a field name for a short definition',
+  'zh-TW': '點項目名稱可看簡短說明',
+  'zh-CN': '点项目名称可看简短说明',
+};
+
+export const REPORT_COMPARE_FIELD_HELP_ARIA: Record<ReportCompareLang, string> = {
+  en: 'What this field means',
+  'zh-TW': '這個欄位是什麼意思',
+  'zh-CN': '这个栏位是什么意思',
+};
+
 export const REPORT_COMPARE_SECTION_LABEL: Record<
   ReportCompareSection,
   Record<ReportCompareLang, string>
@@ -171,6 +189,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '最適用',
       'zh-CN': '最适用',
     },
+    help: help(
+      'Who should buy which report: Snapshot for a fast apply / skip call; Guide when you will interview and negotiate this seat.',
+      '誰該買哪一種：Snapshot 適合快速決定投不投；Guide 適合這席你真的會面試、談薪。',
+      '谁该买哪一种：Snapshot 适合快速决定投不投；Guide 适合这席你真的会面试、谈薪。',
+    ),
     snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
     guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
   },
@@ -182,6 +205,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '匹配分數 + 投遞決策',
       'zh-CN': '匹配分数 + 投递决策',
     },
+    help: help(
+      'A 0–100 candidate fit score for THIS JD, plus a clear apply call (Apply now / after fixes / clarify / skip) with a short why.',
+      '針對這份 JD 的 0–100 匹配分數，加上清楚投遞決策（現在投／修好再投／先釐清／跳過）與簡短理由。',
+      '针对这份 JD 的 0–100 匹配分数，加上清楚投递决策（现在投／修好再投／先澄清／跳过）与简短理由。',
+    ),
     snapshot: t('Core fit + apply call', '核心匹配 + 投遞決策', '核心匹配 + 投递决策', 4),
     guide: t('Full Snapshot + score implications', '完整 Snapshot + 分數意涵', '完整 Snapshot + 分数意涵', 5),
   },
@@ -192,6 +220,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '薪酬區間 + 個人落點',
       'zh-CN': '薪酬区间 + 个人落点',
     },
+    help: help(
+      'Seat cash band (with evidence tier) plus where YOU are likely to land inside that band, given resume↔JD fit/gaps. Guide also ties this into negotiation.',
+      '職缺現金薪酬帶（含證據等級），再加上依履歷↔JD 落差估計「你」可能落在哪；Guide 會接到談薪策略。',
+      '职位现金薪酬带（含证据等级），再加上依简历↔JD 落差估计「你」可能落在哪；Guide 会接到谈薪策略。',
+    ),
     snapshot: t('Range + predicted land', '區間 + 預測落點', '区间 + 预测落点', 3),
     guide: t('Range + land + negotiation levers', '區間 + 落點 + 談判槓桿', '区间 + 落点 + 谈判杠杆', 5),
   },
@@ -202,6 +235,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '面試準備 / STAR',
       'zh-CN': '面试准备 / STAR',
     },
+    help: help(
+      'Predicted interview angles from your gaps. Snapshot gives 3 starters; Guide expands into a full playbook with STAR outlines grounded in YOUR resume.',
+      '依履歷缺口預測面試切入點。Snapshot 給 3 題開場；Guide 擴成完整題庫與依「你」履歷的 STAR 大綱。',
+      '依简历缺口预测面试切入点。Snapshot 给 3 题开场；Guide 扩成完整题库与依「你」简历的 STAR 大纲。',
+    ),
     snapshot: t('3 predicted starters', '僅 3 題預測開場', '仅 3 题预测开场', 2),
     guide: t('Full playbook + STAR outlines', '完整題庫 + STAR 大綱', '完整题库 + STAR 大纲', 5),
   },
@@ -212,6 +250,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': 'AI 模型 — 代表什麼',
       'zh-CN': 'AI 模型 — 代表什么',
     },
+    help: help(
+      'Which model class runs the report. Flash-Lite = fast closed-book triage from JD + resume. Pro = deeper reasoning and live web when available.',
+      '報告用哪一級模型。Flash-Lite＝快速、只讀 JD＋履歷；Pro＝更深推理，並在可取得時做即時網搜。',
+      '报告用哪一级模型。Flash-Lite＝快速、只读 JD＋简历；Pro＝更深推理，并在可取得时做即时网搜。',
+    ),
     snapshot: t(
       'Flash-Lite: fast triage, closed-book from JD + resume',
       'Flash-Lite：快速分流，只讀 JD＋履歷（無網搜）',
@@ -233,6 +276,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '即時網搜',
       'zh-CN': '即时网搜',
     },
+    help: help(
+      'Guide can ground claims in public web sources (URL + date when available) instead of model memory alone. Snapshot does not search the web.',
+      'Guide 可用公開網頁來源（盡量附網址＋日期）核對情報，不只靠模型記憶。Snapshot 不做網搜。',
+      'Guide 可用公开网页来源（尽量附网址＋日期）核对情报，不只靠模型记忆。Snapshot 不做网搜。',
+    ),
     snapshot: t('—', '—', '—'),
     guide: t(
       'Yes — public sources with URL + date when available',
@@ -247,6 +295,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '招募與公司情報',
       'zh-CN': '招募与公司情报',
     },
+    help: help(
+      'Why this seat may be open, what the team/market signal looks like, and what to validate with the recruiter — Guide-only, often search-backed.',
+      '這席為何可能開缺、團隊／市場訊號、該跟招募確認什麼——僅 Guide，常搭配網搜。',
+      '这席为何可能开缺、团队／市场信号、该跟招募确认什么——仅 Guide，常搭配网搜。',
+    ),
     snapshot: t('—', '—', '—'),
     guide: t(
       'Yes — why this seat is open / what market is doing',
@@ -261,6 +314,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '疑慮與答辯',
       'zh-CN': '疑虑与答辩',
     },
+    help: help(
+      'The top recruiter doubts about YOUR fit for THIS JD, plus how to answer without inventing experience.',
+      '招募對「你做這席」最可能的疑慮，以及怎麼答——不捏造經歷。',
+      '招募对「你做这席」最可能的疑虑，以及怎么答——不捏造经历。',
+    ),
     snapshot: t('—', '—', '—'),
     guide: t(
       'Yes — 3 recruiter doubts + how to answer (no invention)',
@@ -275,6 +333,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '談薪腳本',
       'zh-CN': '谈薪脚本',
     },
+    help: help(
+      'Target / acceptable / walk-away framing, levers (sign-on, equity, etc.), and copy-ready lines you can say in a comp conversation.',
+      '目標／可接受／底線、談判槓桿（簽約金、股權等），以及談薪時可直接講的台詞。',
+      '目标／可接受／底线、谈判杠杆（签约金、股权等），以及谈薪时可直接讲的台词。',
+    ),
     snapshot: t('—', '—', '—'),
     guide: t(
       'Yes — target / walk-away / levers / copy-ready lines',
@@ -289,6 +352,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '錄取論點（Candidate Case）',
       'zh-CN': '录取论点（Candidate Case）',
     },
+    help: help(
+      'A short “why hire YOU for THIS seat” thesis in recruiter language — your proof points packaged as a hire case.',
+      '用招募聽得懂的話，寫出「為何該錄取你做這席」——把證據收成錄取論點。',
+      '用招募听得懂的话，写出「为何该录取你做这席」——把证据收成录取论点。',
+    ),
     snapshot: t('—', '—', '—'),
     guide: t(
       'Yes — why hire YOU for THIS seat, in recruiter language',
@@ -304,6 +372,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '單次報告價格',
       'zh-CN': '单次报告价格',
     },
+    help: help(
+      'One-time checkout price for a single report of that type. Credits / packs (if any) are separate from this row.',
+      '該類型報告的單次結帳價格。若有額度／組合包，不在這一列說明。',
+      '该类型报告的单次结账价格。若有额度／组合包，不在这一列说明。',
+    ),
     snapshot: t('$3', '$3', '$3'),
     guide: t('$9.99', '$9.99', '$9.99'),
   },
