@@ -65,7 +65,7 @@ export default function ReportPage() {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       {/* Absolute top — above logo / report */}
       <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3">
-        <div className="mx-auto w-full max-w-7xl flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="mx-auto w-full max-w-[min(100rem,94vw)] flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
             <Home className="w-4 h-4" />
             Back to Home
@@ -84,7 +84,7 @@ export default function ReportPage() {
         </span>
       </header>
       <main className="w-full px-4 py-8 flex justify-center">
-        <div className="w-full max-w-7xl">
+        <div className="w-full max-w-[min(100rem,94vw)]">
           {strategy ? (
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}

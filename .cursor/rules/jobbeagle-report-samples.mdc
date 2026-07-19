@@ -31,5 +31,6 @@ When adjusting **either** report product UI or content rules, **always update bo
 - Strategy Guide uses **top horizontal nav** pages: Snapshot · Hiring Context · Interview · Salary · Provenance (no left sidebar; Snapshot is the first page).
 - Strategy Guide sample opens on Snapshot page by default; same Snapshot slide frame as standalone.
 - All report surfaces (Snapshot, Guide, `/samples`, `/report`) center as a column; **sample pages** place an independent Sample notice card on the **left**, top-aligned with the report frame (`sm:items-start`).
-- Frame borders use bright `sky-400` blue (never near-white).
+- Sample notice **SAMPLE** uses `SampleMark variant="notice"` (narrow-card sizing). Report frames use default `variant="report"`. Do not override size/tracking via className — Tailwind utility conflicts will clip to “SAMP”.
+- Frame borders use bright blue (`border-blue-500`). Shell width: `REPORT_SHELL_WIDTH` ≈ `min(100rem, 94vw)` so samples/report fill most of the desktop viewport.
 

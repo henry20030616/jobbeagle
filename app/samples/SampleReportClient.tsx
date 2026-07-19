@@ -57,14 +57,14 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <main className="px-4 py-6 sm:py-8">
-        <div className="mx-auto w-full max-w-[96rem]">
+      <main className="px-3 sm:px-5 py-5 sm:py-7">
+        <div className="mx-auto w-full max-w-[min(100rem,96vw)]">
           {/*
             Left column: actions (same width as Sample) + Sample box
             Right column: report — tops of actions & report aligned
           */}
-          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-            <aside className="w-full sm:w-72 lg:w-80 shrink-0 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4 lg:gap-5">
+            <aside className="w-full sm:w-80 lg:w-96 shrink-0 flex flex-col gap-3">
               {/* Two buttons side-by-side; combined width = Sample box width */}
               <div className="grid grid-cols-2 gap-2 w-full">
                 <button
@@ -85,8 +85,8 @@ export default function SampleReportClient() {
                 </button>
               </div>
 
-              <div className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5`}>
-                <SampleMark className="text-3xl sm:text-4xl tracking-[0.2em] text-white/45 whitespace-nowrap" />
+              <div className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5 overflow-visible`}>
+                <SampleMark variant="notice" />
                 <div className="flex items-start gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
                     <Sparkles className="w-5 h-5 text-white" />
