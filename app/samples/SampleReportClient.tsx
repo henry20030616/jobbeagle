@@ -21,7 +21,6 @@ import {
   SAMPLE_HEADER_BTN,
   SAMPLE_RAIL_TEXT,
   SAMPLE_RAIL_ICON,
-  REPORT_FRAME_BORDER,
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
   REPORT_SLIDE_DESIGN_WIDTH,
@@ -78,7 +77,7 @@ export default function SampleReportClient() {
         <main className="flex-1 w-full max-w-full px-4 py-4 overflow-x-clip">
           <div className="flex flex-col lg:flex-row lg:items-start gap-4 w-full max-w-full">
             <aside
-              className={`w-full lg:w-72 lg:shrink-0 rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 flex flex-col gap-2.5 min-w-0`}
+              className="w-full lg:w-72 lg:shrink-0 flex flex-col gap-2.5 min-w-0 p-0"
               style={{ height: 'fit-content', alignSelf: 'flex-start' }}
             >
               <div
