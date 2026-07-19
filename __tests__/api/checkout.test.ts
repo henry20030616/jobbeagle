@@ -32,9 +32,9 @@ describe('checkout plans (Unified Master Spec 2026)', () => {
 
   it('subscription plans grant snapshot and strategy credits', () => {
     expect(CHECKOUT_PLANS.standard_subscription.jobFitSnapshotCredits).toBe(100);
-    expect(CHECKOUT_PLANS.standard_subscription.interviewStrategyGuideCredits).toBe(10);
+    expect(CHECKOUT_PLANS.standard_subscription.interviewStrategyGuideCredits).toBe(5);
     expect(CHECKOUT_PLANS.advanced_subscription.jobFitSnapshotCredits).toBe(300);
-    expect(CHECKOUT_PLANS.advanced_subscription.interviewStrategyGuideCredits).toBe(30);
+    expect(CHECKOUT_PLANS.advanced_subscription.interviewStrategyGuideCredits).toBe(15);
   });
 });
 

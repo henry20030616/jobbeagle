@@ -130,8 +130,8 @@
 |------|------|------|
 | Single Snapshot | $3 | +1 Snapshot |
 | Single Strategy Guide | $9.99 | +1 Strategy Guide |
-| Standard 訂閱 | $19.99/月 | 100 Snapshot + 10 Strategy Guide |
-| Advanced 訂閱 | $39.99/月 | 300 Snapshot + 30 Strategy Guide |
+| Standard 訂閱 | $19.99/月 | 100 Snapshot + 5 Strategy Guide |
+| Advanced 訂閱 | $39.99/月 | 300 Snapshot + 15 Strategy Guide |
 
 推薦裂變：`?ref=` 推薦碼；好友完成條件後發放獎勵。
 

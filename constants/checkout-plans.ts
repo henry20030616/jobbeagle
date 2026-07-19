@@ -75,20 +75,20 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanType, CheckoutPlan> = {
   standard_subscription: withCreditAliases({
     type: 'standard_subscription',
     amountCents: 1999,
-    labelEn: 'Standard — $19.99/mo (100 Job Fit Snapshot + 10 Interview Strategy Guide)',
-    labelZhTW: '標準版 — $19.99/月（100 Job Fit Snapshot + 10 Interview Strategy Guide）',
+    labelEn: 'Standard — $19.99/mo (100 Job Fit Snapshot + 5 Interview Strategy Guide)',
+    labelZhTW: '標準版 — $19.99/月（100 Job Fit Snapshot + 5 Interview Strategy Guide）',
     jobFitSnapshotCredits: 100,
-    interviewStrategyGuideCredits: 10,
+    interviewStrategyGuideCredits: 5,
     membershipTier: 'standard_sub',
     isSubscription: true,
   }),
   advanced_subscription: withCreditAliases({
     type: 'advanced_subscription',
     amountCents: 3999,
-    labelEn: 'Advanced — $39.99/mo (300 Job Fit Snapshot + 30 Interview Strategy Guide)',
-    labelZhTW: '高級版 — $39.99/月（300 Job Fit Snapshot + 30 Interview Strategy Guide）',
+    labelEn: 'Advanced — $39.99/mo (300 Job Fit Snapshot + 15 Interview Strategy Guide)',
+    labelZhTW: '高級版 — $39.99/月（300 Job Fit Snapshot + 15 Interview Strategy Guide）',
     jobFitSnapshotCredits: 300,
-    interviewStrategyGuideCredits: 30,
+    interviewStrategyGuideCredits: 15,
     membershipTier: 'advanced_sub',
     isSubscription: true,
   }),
@@ -139,6 +139,6 @@ export function isCheckoutPlanType(value: string): value is CheckoutPlanType {
 }
 
 export const SUBSCRIPTION_ALLOWANCES = {
-  standard_sub: { job_fit_snapshot: 100, interview_strategy_guide: 10 },
-  advanced_sub: { job_fit_snapshot: 300, interview_strategy_guide: 30 },
+  standard_sub: { job_fit_snapshot: 100, interview_strategy_guide: 5 },
+  advanced_sub: { job_fit_snapshot: 300, interview_strategy_guide: 15 },
 } as const;

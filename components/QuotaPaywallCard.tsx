@@ -31,7 +31,7 @@ type PaywallCopy = {
 const copy: Record<AppLanguage, PaywallCopy> = {
   'zh-TW': {
     thanks: '感謝您使用 JobBeagle！',
-    subtitle: '您的終身 3 次 Job Fit Snapshot 額度已用完。訂閱可解鎖每月 100 Snapshot + 10 Interview Strategy Guide。',
+    subtitle: '您的終身 3 次 Job Fit Snapshot 額度已用完。訂閱可解鎖每月 100 Snapshot + 5 Interview Strategy Guide。',
     loginHint: '請先 Google 登入 — 註冊即送 3 次 Job Fit Snapshot。',
     loginBtn: 'Google 登入',
     singleLite: 'Job Fit Snapshot · $3',
@@ -44,7 +44,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   },
   'zh-CN': {
     thanks: '感谢您使用 JobBeagle！',
-    subtitle: '您的终身 3 次 Job Fit Snapshot 额度已用完。订阅可解锁每月 100 Snapshot + 10 Interview Strategy Guide。',
+    subtitle: '您的终身 3 次 Job Fit Snapshot 额度已用完。订阅可解锁每月 100 Snapshot + 5 Interview Strategy Guide。',
     loginHint: '请先 Google 登录 — 注册即送 3 次 Job Fit Snapshot。',
     loginBtn: 'Google 登录',
     singleLite: 'Job Fit Snapshot · $3',
@@ -57,7 +57,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   },
   en: {
     thanks: 'Thanks for using JobBeagle!',
-    subtitle: 'Your lifetime 3 Job Fit Snapshot credits are used up. Subscribe for 100 Snapshot + 10 Interview Strategy Guide reports per month.',
+    subtitle: 'Your lifetime 3 Job Fit Snapshot credits are used up. Subscribe for 100 Snapshot + 5 Interview Strategy Guide reports per month.',
     loginHint: 'Sign in with Google — 3 free Job Fit Snapshot analyses on signup.',
     loginBtn: 'Sign in with Google',
     singleLite: 'Job Fit Snapshot · $3',
@@ -70,7 +70,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   },
   es: {
     thanks: '¡Gracias por usar JobBeagle!',
-    subtitle: 'Has agotado tus 3 créditos Job Fit Snapshot de por vida. Suscríbete para 100 Snapshot + 10 Strategy Guide al mes.',
+    subtitle: 'Has agotado tus 3 créditos Job Fit Snapshot de por vida. Suscríbete para 100 Snapshot + 5 Strategy Guide al mes.',
     loginHint: 'Inicia sesión con Google — 3 análisis Job Fit Snapshot gratis al registrarte.',
     loginBtn: 'Iniciar sesión con Google',
     singleLite: 'Job Fit Snapshot · $3',
