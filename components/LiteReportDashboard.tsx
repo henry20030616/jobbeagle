@@ -414,10 +414,17 @@ export default function LiteReportDashboard({
             <p className={`${SECTION_TITLE} text-indigo-300 mb-1`}>
               Score Summary
             </p>
-            <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
-              {score}/100 · {scoreInfo.level}
-              {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
-            </p>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-1">
+              <p className={`text-lg font-bold ${scoreInfo.color} min-w-0`}>
+                {score}/100 · {scoreInfo.level}
+                {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+              </p>
+              {apply?.label ? (
+                <p className={`text-lg font-bold ${scoreInfo.color} shrink-0`}>
+                  {apply.label}
+                </p>
+              ) : null}
+            </div>
             <ul className="mt-1.5 space-y-1.5">
               {summaryPoints.map((point, i) => {
                 const { label, detail } = splitScoreSummaryPoint(point);
@@ -437,13 +444,10 @@ export default function LiteReportDashboard({
                 );
               })}
             </ul>
-            {apply?.label ? (
+            {(apply?.reason || apply?.next_best_action) ? (
               <div className="mt-3 pt-3 border-t border-sky-400/30">
-                <p className={`text-lg font-bold ${scoreInfo.color}`}>
-                  {apply.label}
-                </p>
                 {apply.reason ? (
-                  <p className="text-base text-slate-300 mt-1 leading-snug">{apply.reason}</p>
+                  <p className="text-base text-slate-300 leading-snug">{apply.reason}</p>
                 ) : null}
                 {apply.next_best_action ? (
                   <p className="text-base text-slate-400 mt-1.5 leading-snug">
