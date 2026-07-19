@@ -22,8 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {/* Never use max-w-[100vw] — scrollbar gutter inflates width past the viewport */}
       <body className="min-h-screen w-full overflow-x-hidden antialiased" suppressHydrationWarning>
         <LanguageProvider>
-          {/* DEBUG: red = root layout wrapper — remove after layout audit */}
-          <div className="flex min-h-screen w-full flex-col items-center border-4 border-red-500">
+          <div className="flex min-h-screen w-full flex-col items-center">
             {children}
           </div>
         </LanguageProvider>

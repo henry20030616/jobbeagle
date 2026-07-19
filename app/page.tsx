@@ -414,14 +414,9 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    /*
-      DEBUG borders (temporary):
-      - outer red = page shell
-      - inner blue = main content column (width lock lives here)
-      Never use max-w-[100vw] — scrollbar gutter + overflow-x-hidden clips left.
-    */
-    <div className="flex min-h-screen w-full flex-col items-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200 border-4 border-red-500">
-      <main className="w-full max-w-[1200px] mx-auto min-w-0 px-4 sm:px-6 lg:px-8 py-4 border-4 border-blue-500">
+    <div className="flex min-h-screen w-full flex-col items-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
+      {/* Wide operator canvas — fills large monitors; avoid max-w-[100vw] (scrollbar bug). */}
+      <main className="mx-auto w-full min-w-0 max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10 py-5">
         <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">

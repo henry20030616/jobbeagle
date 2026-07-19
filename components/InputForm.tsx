@@ -529,7 +529,7 @@ const InputForm: React.FC<InputFormProps> = ({
       {/* Tagline only — logo lives in page header */}
       <div className="text-center space-y-2 px-2 min-w-0 w-full">
         <h1 className="sr-only">Jobbeagle</h1>
-        <p className="text-slate-400 w-full max-w-3xl mx-auto font-medium leading-snug text-sm sm:text-base break-words">
+        <p className="text-slate-400 w-full max-w-5xl mx-auto font-medium leading-snug text-base sm:text-lg break-words">
           {t.description}
         </p>
         {extensionCapture && (
@@ -547,9 +547,9 @@ const InputForm: React.FC<InputFormProps> = ({
         <div className="w-full min-w-0 rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl overflow-hidden">
           <div className="jb-home-steps grid w-full min-w-0 grid-cols-1">
             {/* 1. Job */}
-            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
-                <span className="w-1.5 h-6 bg-indigo-500 rounded-full shrink-0" />
+            <section className="flex flex-col gap-3 p-5 sm:p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2.5 min-w-0">
+                <span className="w-1.5 h-7 bg-indigo-500 rounded-full shrink-0" />
                 <span className="leading-snug truncate">{t.jobData}</span>
               </h2>
               <div className="flex flex-col gap-1.5 min-w-0">
@@ -615,9 +615,9 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 2. Resume */}
-            <section className="relative flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
-                <span className="w-1.5 h-6 bg-violet-500 rounded-full shrink-0" />
+            <section className="relative flex flex-col gap-3 p-5 sm:p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2.5 min-w-0">
+                <span className="w-1.5 h-7 bg-violet-500 rounded-full shrink-0" />
                 <span className="truncate">{t.resume}</span>
               </h2>
               <div className="relative min-w-0">
@@ -711,9 +711,9 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 3. Report type */}
-            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
-                <span className="w-1.5 h-6 bg-emerald-500 rounded-full shrink-0" />
+            <section className="flex flex-col gap-3 p-5 sm:p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2.5 min-w-0">
+                <span className="w-1.5 h-7 bg-emerald-500 rounded-full shrink-0" />
                 <span className="leading-snug truncate">{t.reportTypeStep}</span>
               </h2>
               {onReportTypeChange ? (
@@ -741,8 +741,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                         className="text-left w-full min-w-0"
                       >
-                        <p className="font-semibold text-white text-base leading-snug">Job Fit Snapshot</p>
-                        <p className="text-sm text-slate-400 mt-1 leading-snug">{t.snapshotBlurb}</p>
+                        <p className="font-semibold text-white text-lg leading-snug">Job Fit Snapshot</p>
+                        <p className="text-base text-slate-400 mt-1 leading-snug">{t.snapshotBlurb}</p>
                       </button>
                       <Link
                         href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
@@ -766,8 +766,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                         className="text-left w-full min-w-0"
                       >
-                        <p className="font-semibold text-white text-base leading-snug">Interview Strategy Guide</p>
-                        <p className="text-sm text-slate-400 mt-1 leading-snug">{t.strategyBlurb}</p>
+                        <p className="font-semibold text-white text-lg leading-snug">Interview Strategy Guide</p>
+                        <p className="text-base text-slate-400 mt-1 leading-snug">{t.strategyBlurb}</p>
                       </button>
                       <Link
                         href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
@@ -790,11 +790,11 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 4. Launch */}
-            <section className="flex flex-col p-4 sm:p-5 min-w-0 max-w-full bg-slate-900/50">
+            <section className="flex flex-col p-5 sm:p-6 min-w-0 max-w-full bg-slate-900/50">
               <button
                 type="submit"
                 disabled={submitDisabled}
-                className={`w-full h-full min-h-[10rem] lg:min-h-0 flex-1 min-w-0 px-3 py-5 rounded-xl font-black text-base sm:text-lg text-white shadow-lg transition-all flex flex-col justify-center items-center gap-2.5 text-center ${
+                className={`w-full h-full min-h-[10rem] lg:min-h-0 flex-1 min-w-0 px-4 py-6 rounded-xl font-black text-lg sm:text-xl text-white shadow-lg transition-all flex flex-col justify-center items-center gap-2.5 text-center ${
                   submitDisabled
                     ? 'bg-slate-700 cursor-not-allowed text-slate-500'
                     : publicAts
