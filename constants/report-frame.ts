@@ -1,19 +1,20 @@
 /**
- * Match BrandLogo `size="inline"` on /report (text-xl).
- * Back to Home / New Analysis / sample chrome use this scale.
+ * Exact same type scale as BrandLogo `size="inline"`:
+ *   text-xl font-bold tracking-tight
+ * Buttons stay compact (h-9) so they don't read larger than the wordmark.
  */
-export const REPORT_ACTION_TEXT = 'text-xl font-bold tracking-tight';
+export const REPORT_ACTION_TEXT = 'text-xl font-bold tracking-tight leading-none';
 
-/** Shared icon size inside report action controls */
-export const REPORT_ACTION_ICON = 'w-5 h-5 shrink-0';
+/** Icons sized to sit inside the same h-9 row as BrandLogo inline */
+export const REPORT_ACTION_ICON = 'w-4 h-4 shrink-0';
 
-/** Action buttons — same text size as report-page Jobbeagle wordmark */
+/** Back to Home / New Analysis — same font as Jobbeagle inline, tight chrome */
 export const REPORT_ACTION_BTN =
-  `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3 py-1.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex h-9 items-center gap-1.5 rounded-md border border-slate-400 bg-slate-900/70 px-2.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
-/** Compact “View sample” chip — same text-xl scale as Jobbeagle / REPORT_ACTION */
+/** Compact “View sample” chip — same text-xl as Jobbeagle */
 export const SAMPLE_LINK_BTN =
-  `inline-flex w-fit items-center gap-1 rounded-lg border border-indigo-400/50 bg-indigo-500/15 px-2.5 py-1 ${REPORT_ACTION_TEXT} text-indigo-200 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
+  `inline-flex h-9 w-fit items-center gap-1 rounded-md border border-indigo-400/50 bg-indigo-500/15 px-2.5 ${REPORT_ACTION_TEXT} text-indigo-200 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
 
 /**
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.

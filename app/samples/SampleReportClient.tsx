@@ -57,7 +57,8 @@ export default function SampleReportClient() {
     <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200">
       <div className="w-full max-w-full flex flex-col min-h-[100vh] overflow-x-clip">
         <header className="border-b border-slate-800 px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-          <BrandLogo size="inline" />
+          {/* Jobbeagle inline = text-xl; Back/New use REPORT_ACTION_BTN (same text-xl, h-9) */}
+          <BrandLogo size="inline" showIcon />
           <div className="flex flex-wrap items-center gap-2">
             <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
               <Home className={REPORT_ACTION_ICON} aria-hidden />
