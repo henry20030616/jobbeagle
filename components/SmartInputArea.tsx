@@ -64,8 +64,8 @@ export default function SmartInputArea({
   const resolvedPlaceholder = placeholder ?? (zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN);
 
   return (
-    <div className={`min-w-0 max-w-full ${compact ? 'flex flex-col gap-2' : 'space-y-0'}`}>
-      <div className={`relative min-w-0 max-w-full ${compact ? 'flex flex-col' : ''}`}>
+    <div className={`min-w-0 max-w-full ${compact ? 'flex h-full min-h-0 flex-1 flex-col gap-2' : 'space-y-0'}`}>
+      <div className={`relative min-w-0 max-w-full ${compact ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
         {classification.kind === 'public_ats' && (
           <div className={`${compact ? 'mb-1.5' : 'mb-3'} flex justify-end`}>
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/50 border border-emerald-500/30 rounded-full px-2.5 py-1 transition-all">
@@ -110,7 +110,7 @@ export default function SmartInputArea({
         <textarea
           required
           disabled={disabled || parsing}
-          className={`w-full max-w-full min-w-0 ${compact ? 'min-h-[11rem]' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-4 text-sm leading-relaxed' : 'p-5 text-base leading-relaxed'} text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:border-solid transition-all ${compact ? 'resize-y' : 'resize-y'} disabled:opacity-60 ${borderClass}`}
+          className={`w-full max-w-full min-w-0 ${compact ? 'min-h-[11rem] flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-4 text-sm leading-relaxed' : 'p-5 text-base leading-relaxed'} text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={resolvedPlaceholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}

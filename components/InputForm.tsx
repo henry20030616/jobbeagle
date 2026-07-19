@@ -24,9 +24,11 @@ const TYPE_META = 'text-sm text-zinc-400 leading-relaxed';
 const TYPE_PILL =
   'inline-flex items-center gap-1.5 text-sm font-medium text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-2 rounded-full border border-indigo-500/20 transition-all max-w-full';
 const STEP_SECTION =
-  'flex h-auto flex-col gap-4 p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80';
+  'flex h-full min-h-0 flex-col gap-4 p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80';
+const STEP_BODY =
+  'flex min-h-0 min-w-0 flex-1 flex-col';
 const TYPE_LAUNCH =
-  'w-full min-w-0 rounded-xl px-5 py-4 text-lg font-medium text-zinc-100 shadow-lg transition-all inline-flex flex-col justify-center items-center gap-2 text-center leading-relaxed';
+  'w-full min-h-0 flex-1 min-w-0 rounded-xl px-5 py-5 text-lg font-medium text-zinc-100 shadow-lg transition-all flex flex-col justify-center items-center gap-2 text-center leading-relaxed';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -595,7 +597,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   </Link>
                 )}
               </div>
-              <div className="flex min-w-0 flex-col">
+              <div className={`${STEP_BODY}`}>
                 <SmartInputArea
                   value={jobDescription}
                   onChange={(next) => {
@@ -668,12 +670,12 @@ const InputForm: React.FC<InputFormProps> = ({
                   </>
                 )}
               </div>
-              <div className="flex min-w-0 flex-col">
+              <div className={STEP_BODY}>
                 {!resume ? (
-                  <div className="relative min-w-0 w-full rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30">
+                  <div className="relative flex min-h-0 w-full flex-1 flex-col rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30">
                     <label
                       htmlFor="resume-file-input"
-                      className="group flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-xl px-4 py-8 hover:bg-slate-700/30"
+                      className="group flex h-full min-h-[11rem] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-xl px-4 py-8 hover:bg-slate-700/30"
                     >
                       <div className="p-3 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
                         <Upload className="w-6 h-6 text-zinc-400 group-hover:text-indigo-400" />
@@ -694,7 +696,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                   </div>
                 ) : (
-                  <div className="flex w-full min-w-0 animate-fade-in flex-col gap-3 rounded-xl border border-indigo-500/50 bg-indigo-900/20 p-4">
+                  <div className="flex min-h-[11rem] w-full min-w-0 flex-1 animate-fade-in flex-col justify-center gap-3 rounded-xl border border-indigo-500/50 bg-indigo-900/20 p-4">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0"><FileText className="w-4 h-4 text-white" /></div>
                       <div className="min-w-0 text-left space-y-1">
@@ -738,10 +740,10 @@ const InputForm: React.FC<InputFormProps> = ({
                 </Link>
               ) : null}
               {onReportTypeChange ? (
-                <div className="flex min-w-0 flex-col gap-4">
-                  <div className="flex flex-col gap-4">
+                <div className={`${STEP_BODY} gap-4`}>
+                  <div className="grid min-h-0 flex-1 grid-rows-2 gap-4">
                     <div
-                      className={`w-full rounded-xl border-2 px-4 py-4 text-left transition flex flex-col gap-2 ${
+                      className={`flex min-h-0 w-full flex-col justify-center gap-2 rounded-xl border-2 px-4 py-4 text-left transition ${
                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -766,7 +768,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       </Link>
                     </div>
                     <div
-                      className={`w-full rounded-xl border-2 px-4 py-4 text-left transition flex flex-col gap-2 ${
+                      className={`flex min-h-0 w-full flex-col justify-center gap-2 rounded-xl border-2 px-4 py-4 text-left transition ${
                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -792,18 +794,18 @@ const InputForm: React.FC<InputFormProps> = ({
                     </div>
                   </div>
                   {!compactChrome && (
-                    <div className="pt-1">
+                    <div className="shrink-0 pt-1">
                       <ReportCompareModal language={currentLanguage} variant="panel" />
                     </div>
                   )}
                 </div>
               ) : (
-                <div className={TYPE_META}>—</div>
+                <div className={`${STEP_BODY} ${TYPE_META}`}>—</div>
               )}
             </section>
 
             {/* 4. Launch */}
-            <section className="flex h-auto flex-col gap-4 p-6 min-w-0 max-w-full bg-slate-900/50 lg:justify-center">
+            <section className="flex h-full min-h-0 flex-col gap-4 p-6 min-w-0 max-w-full bg-slate-900/50">
               <button
                 type="submit"
                 disabled={submitDisabled}

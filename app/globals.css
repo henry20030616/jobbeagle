@@ -151,8 +151,13 @@ main input {
 @media (min-width: 1024px) {
   .jb-home-steps {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    /* Equal column shells; inner content no longer uses flex-1 so it won’t stretch. */
     align-items: stretch;
+  }
+
+  .jb-home-steps > * {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
   }
 }
 
