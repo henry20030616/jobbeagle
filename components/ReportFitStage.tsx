@@ -13,9 +13,9 @@ type ReportFitStageProps = {
 };
 
 /**
- * Fixed-proportion presentation stage.
- * Children lay out at a constant design width (no reflow), then the whole
- * slide scales to nearly fill the stage width and stays centered.
+ * Fixed-proportion stage: lay out at designWidth, then enlarge with CSS `zoom`
+ * (not transform:scale). Zoom keeps text/vectors crisp; transform:scale rasterizes
+ * and looks blurry when scale > 1.
  */
 export function ReportFitStage({
   children,
@@ -24,30 +24,23 @@ export function ReportFitStage({
   maxScale = 2.4,
 }: ReportFitStageProps) {
   const outerRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
-  const [contentHeight, setContentHeight] = useState(0);
 
   useEffect(() => {
     const outer = outerRef.current;
-    const inner = innerRef.current;
-    if (!outer || !inner) return;
+    if (!outer) return;
 
     const update = () => {
-      // Always use the stage’s laid-out width (must be stretch/full — never
-      // shrink-wrap to the slide, or scale sticks at ~1× forever).
-      const available = outer.getBoundingClientRect().width;
+      const available = outer.clientWidth;
       if (available <= 0) return;
       const fit = available / designWidth;
       const nextScale = Math.min(maxScale, Math.max(fit, 0.5));
       setScale(Number(nextScale.toFixed(4)));
-      setContentHeight(inner.scrollHeight);
     };
 
     update();
     const ro = new ResizeObserver(update);
     ro.observe(outer);
-    ro.observe(inner);
     window.addEventListener('resize', update);
     return () => {
       ro.disconnect();
@@ -55,32 +48,21 @@ export function ReportFitStage({
     };
   }, [designWidth, maxScale]);
 
-  const scaledHeight = contentHeight > 0 ? contentHeight * scale : undefined;
-  const scaledWidth = designWidth * scale;
-
   return (
     <div
       ref={outerRef}
       className={`w-full min-w-0 self-stretch flex justify-center ${className}`}
     >
       <div
-        className="relative shrink-0"
+        className="shrink-0"
         style={{
-          width: scaledWidth,
-          height: scaledHeight,
+          width: designWidth,
+          // Chromium/Safari: zoom scales layout + paint without blurry upscaling.
+          // Firefox 126+ also supports zoom; older FF falls back to 1× width.
+          zoom: scale,
         }}
       >
-        <div
-          ref={innerRef}
-          className="absolute top-0 left-1/2 will-change-transform"
-          style={{
-            width: designWidth,
-            transform: `translateX(-50%) scale(${scale})`,
-            transformOrigin: 'top center',
-          }}
-        >
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
