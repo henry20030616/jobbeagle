@@ -9,8 +9,6 @@ import DogLoading from '@/components/DogLoading';
 import FooterSection from '@/components/FooterSection';
 import LoginButton from '@/components/LoginButton';
 import BrandLogo from '@/components/BrandLogo';
-import { ReportFitStage } from '@/components/ReportFitStage';
-import { HOME_DESIGN_WIDTH } from '@/constants/report-frame';
 import { createClient } from '@/lib/supabase/browser';
 import { InterviewReport, LiteReport, FullReport, UserInputs, ReportType } from '@/types';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
@@ -417,18 +415,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      {/*
-        Uniform scale only — do not reflow homepage grids on large monitors.
-        Layout is designed at HOME_DESIGN_WIDTH, then enlarged to fill the viewport.
-      */}
-      <ReportFitStage
-        designWidth={HOME_DESIGN_WIDTH}
-        maxScale={1.85}
-        className="w-full px-2 sm:px-3 py-4"
-      >
-      <main className="w-full px-4 sm:px-6 py-6 sm:py-8">
+      {/* ~75–92vw content band (bank-style occupancy), not a 1440px zoom island */}
+      <main className="w-[min(92vw,110rem)] mx-auto px-4 sm:px-8 py-6 sm:py-8">
         <div className="flex items-center justify-between gap-4 mb-6">
-          <BrandLogo size="nav" />
+          <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher variant="dark" />
             {currentUser && (
@@ -655,7 +645,6 @@ export default function Home() {
           </div>
         )}
       </main>
-      </ReportFitStage>
     </div>
   );
 }
