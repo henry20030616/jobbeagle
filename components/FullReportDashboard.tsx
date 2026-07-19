@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
-import { formatOfferRange } from '@/lib/offer-display';
+import { evidenceTierLabel, formatOfferRange } from '@/lib/offer-display';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
@@ -613,7 +613,11 @@ export default function FullReportDashboard({
                 <>
                   <Card
                     title="Expected Offer Range"
-                    badge={expected?.evidence_tier ? `Tier ${expected.evidence_tier}` : undefined}
+                    badge={
+                      expected?.evidence_tier
+                        ? evidenceTierLabel(expected.evidence_tier)
+                        : undefined
+                    }
                   >
                     <p className="text-sm text-slate-500 mb-3">
                       {[expected?.region, expected?.currency].filter(Boolean).join(' · ') || 'USD'}

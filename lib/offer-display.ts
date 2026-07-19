@@ -1,8 +1,24 @@
-import type { ExpectedOfferRange } from '@/types';
+import type { ExpectedOfferRange, SalaryEvidenceTier } from '@/types';
 
 function cleanMoney(v: string | null | undefined): string {
   if (!v || !v.trim() || v.trim() === '—') return '';
   return v.trim();
+}
+
+/** Plain-English label for evidence_tier (never show bare "Tier C" in UI). */
+export function evidenceTierLabel(tier: SalaryEvidenceTier | string | null | undefined): string {
+  switch (tier) {
+    case 'A':
+      return 'From the job posting';
+    case 'B':
+      return 'From comparable public roles';
+    case 'C':
+      return 'Market estimate (not a company offer)';
+    case 'D':
+      return 'Pay data too thin';
+    default:
+      return 'Pay evidence unclear';
+  }
 }
 
 /**

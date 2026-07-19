@@ -14,7 +14,11 @@ import {
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { getBeagleTierLegend } from '@/lib/beagle-tiers';
-import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
+import {
+  evidenceTierLabel,
+  formatOfferRange,
+  offerEvaluationSummary,
+} from '@/lib/offer-display';
 import { scoreSummaryPoints } from '@/lib/score-summary';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
@@ -244,7 +248,7 @@ export default function LiteReportDashboard({
             </p>
             <p className="text-sm text-slate-500 mb-2">
               {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
-              {offer?.evidence_tier ? ` · Tier ${offer.evidence_tier}` : ''}
+              {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
             </p>
 
             <div className="flex-1 flex flex-col justify-center">

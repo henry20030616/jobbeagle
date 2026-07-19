@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { formatOfferRange, hasOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
+import {
+  evidenceTierLabel,
+  formatOfferRange,
+  hasOfferRange,
+  offerEvaluationSummary,
+} from '@/lib/offer-display';
+
+describe('evidenceTierLabel', () => {
+  it('maps tiers to plain English', () => {
+    expect(evidenceTierLabel('A')).toMatch(/job posting/i);
+    expect(evidenceTierLabel('B')).toMatch(/comparable/i);
+    expect(evidenceTierLabel('C')).toMatch(/Market estimate/i);
+    expect(evidenceTierLabel('D')).toMatch(/too thin/i);
+  });
+});
 
 describe('formatOfferRange', () => {
   it('prefers posted range', () => {
