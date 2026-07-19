@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import BrandLogo from '@/components/BrandLogo';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
+import { ReportFitStage } from '@/components/ReportFitStage';
 import {
   getSampleSnapshotReport,
   getSampleStrategyGuideReport,
@@ -31,7 +32,7 @@ export default function SampleReportClient() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+      <header className="border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
         <BrandLogo size="inline" />
         <div className="flex items-center gap-2">
           <Link
@@ -57,15 +58,14 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <main className="px-3 sm:px-5 py-5 sm:py-7">
-        <div className="mx-auto w-full max-w-[min(100rem,96vw)]">
+      <main className="px-2 sm:px-4 py-4 sm:py-5">
+        <ReportFitStage className="mx-auto w-full max-w-[98vw]">
           {/*
             Left column: actions (same width as Sample) + Sample box
             Right column: report — tops of actions & report aligned
           */}
           <div className="flex flex-col sm:flex-row sm:items-start gap-4 lg:gap-5">
-            <aside className="w-full sm:w-80 lg:w-96 shrink-0 flex flex-col gap-3">
-              {/* Two buttons side-by-side; combined width = Sample box width */}
+            <aside className="w-full sm:w-72 lg:w-80 shrink-0 flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-2 w-full">
                 <button
                   type="button"
@@ -85,7 +85,9 @@ export default function SampleReportClient() {
                 </button>
               </div>
 
-              <div className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5 overflow-visible`}>
+              <div
+                className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5 overflow-visible`}
+              >
                 <SampleMark variant="notice" />
                 <div className="flex items-start gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
@@ -130,7 +132,7 @@ export default function SampleReportClient() {
               )}
             </div>
           </div>
-        </div>
+        </ReportFitStage>
       </main>
     </div>
   );

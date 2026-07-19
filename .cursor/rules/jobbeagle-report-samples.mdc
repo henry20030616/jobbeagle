@@ -32,5 +32,7 @@ When adjusting **either** report product UI or content rules, **always update bo
 - Strategy Guide sample opens on Snapshot page by default; same Snapshot slide frame as standalone.
 - All report surfaces (Snapshot, Guide, `/samples`, `/report`) center as a column; **sample pages** place an independent Sample notice card on the **left**, top-aligned with the report frame (`sm:items-start`).
 - Sample notice **SAMPLE** uses `SampleMark variant="notice"` (narrow-card sizing). Report frames use default `variant="report"`. Do not override size/tracking via className — Tailwind utility conflicts will clip to “SAMP”.
-- Frame borders use bright blue (`border-blue-500`). Shell width: `REPORT_SHELL_WIDTH` ≈ `min(100rem, 94vw)` so samples/report fill most of the desktop viewport.
+- Frame borders use bright blue (`border-blue-500`). Shell width: `REPORT_SHELL_WIDTH` = `max-w-[98vw]` — **never rem-cap** (e.g. 100rem≈1600px creates a centered island on large monitors).
+- Samples + `/report` wrap content in `ReportFitStage` (CSS `zoom` up to 1.5 from a 1280px baseline) so the slide scales up on large displays.
+- Tailwind `content` must include `./constants/**` so shell width utilities in `report-frame.ts` are generated.
 

@@ -14,6 +14,7 @@ import { normalizeFullReport, normalizeLiteReport } from '@/lib/normalize-lite-r
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import BrandLogo from '@/components/BrandLogo';
+import { ReportFitStage } from '@/components/ReportFitStage';
 import { Loader2, Home, RotateCcw } from 'lucide-react';
 
 const actionBtnClass =
@@ -65,7 +66,7 @@ export default function ReportPage() {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       {/* Absolute top — above logo / report */}
       <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3">
-        <div className="mx-auto w-full max-w-[min(100rem,94vw)] flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="mx-auto w-full max-w-[98vw] flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
             <Home className="w-4 h-4" />
             Back to Home
@@ -83,8 +84,8 @@ export default function ReportPage() {
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
         </span>
       </header>
-      <main className="w-full px-4 py-8 flex justify-center">
-        <div className="w-full max-w-[min(100rem,94vw)]">
+      <main className="w-full px-2 sm:px-4 py-5 sm:py-6">
+        <ReportFitStage className="mx-auto w-full max-w-[98vw]">
           {strategy ? (
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}
@@ -100,7 +101,7 @@ export default function ReportPage() {
               onNewAnalysis={handleNewAnalysis}
             />
           )}
-        </div>
+        </ReportFitStage>
       </main>
     </div>
   );

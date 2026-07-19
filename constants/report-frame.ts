@@ -14,7 +14,8 @@ export const SAMPLE_NOTICE_SURFACE =
 export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950`;
 
 /**
- * Shared Snapshot / Guide shell width — near full desktop viewport so
- * samples/report don’t sit as a narrow island on large screens.
+ * Shared Snapshot / Guide shell width.
+ * Use viewport width only — do NOT cap with rem (e.g. 100rem ≈ 1600px),
+ * or large monitors show a centered “island” with huge empty margins.
  */
-export const REPORT_SHELL_WIDTH = 'w-full max-w-[min(100rem,94vw)]';
+export const REPORT_SHELL_WIDTH = 'w-full max-w-[98vw]';
