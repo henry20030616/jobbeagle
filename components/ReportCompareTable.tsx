@@ -94,7 +94,7 @@ type ReportCompareTableProps = {
   showHeader?: boolean;
 };
 
-/** Inline Snapshot vs Strategy Guide comparison — homepage top, not a modal. */
+/** Snapshot vs Strategy Guide comparison table — used inside the right drawer. */
 export default function ReportCompareTable({
   language = 'en',
   className = '',

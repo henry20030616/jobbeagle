@@ -9,7 +9,7 @@ import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
 import BrandLogo from '@/components/BrandLogo';
-import ReportCompareTable from '@/components/ReportCompareTable';
+import ReportCompareModal from '@/components/ReportCompareModal';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel } from '@/constants/report-products';
@@ -523,9 +523,11 @@ const InputForm: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        {/* Always-visible compare — top of homepage operator flow (not a modal) */}
+        {/* Cake-style: trigger opens right drawer with Snapshot vs Guide compare */}
         {!compactChrome && (
-          <ReportCompareTable language={currentLanguage} />
+          <div className="flex justify-center">
+            <ReportCompareModal language={currentLanguage} variant="button" />
+          </div>
         )}
 
         <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
