@@ -170,13 +170,13 @@ export default function LiteReportDashboard({
           </div>
         </header>
 
-        {/* Heroes: Fit | Offer */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
+        {/* Heroes: Fit | Offer — same title row + circle row so gauges align */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-stretch divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
           <section className="flex flex-col p-3.5 sm:p-4 min-w-0">
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2 min-h-[1.25rem]`}>
               Candidate Fit Score
             </p>
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex flex-1 items-center gap-3 sm:gap-4 min-h-[7.5rem]">
               <div className="flex flex-col items-center shrink-0">
                 <BeagleIcon
                   className={`w-16 h-16 sm:w-20 sm:h-20 ${scoreInfo.glowClass}`}
@@ -270,24 +270,24 @@ export default function LiteReportDashboard({
           </section>
 
           <section className="flex flex-col p-3.5 sm:p-4 border-t border-slate-700/90 lg:border-t-0 min-w-0">
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-1 flex items-center gap-1.5`}>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2 min-h-[1.25rem] flex items-center gap-1.5`}>
               <DollarSign className="w-4 h-4 shrink-0" />
               Expected Offer Range
             </p>
-            <p className="text-base sm:text-lg text-slate-300 mb-2 break-words">
-              {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
-              {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
-            </p>
 
-            <div className="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
+            <div className="flex flex-1 items-center gap-3 sm:gap-4 min-w-0 min-h-[7.5rem]">
               <div className="min-w-0 flex-1">
+                <p className="text-sm sm:text-base text-slate-400 mb-1.5 break-words leading-snug">
+                  {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
+                  {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
+                </p>
                 {offerRange ? (
                   <>
-                    <p className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-none break-words">
+                    <p className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-none break-words">
                       {offerRange}
                     </p>
                     {offer?.candidate_position_label && (
-                      <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2 break-words">
+                      <p className="text-base text-emerald-100/90 leading-relaxed mt-2 break-words line-clamp-3">
                         {offer.candidate_position_label}
                       </p>
                     )}
@@ -303,10 +303,7 @@ export default function LiteReportDashboard({
               </div>
 
               {predictedOffer ? (
-                <div className="flex flex-col items-center shrink-0">
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-1.5 text-center whitespace-nowrap">
-                    Your predicted land
-                  </p>
+                <div className="flex flex-col items-center justify-center shrink-0 self-center">
                   <div
                     className="relative w-24 h-24 sm:w-28 sm:h-28"
                     aria-label={`Your predicted land ${predictedOffer}`}
@@ -335,6 +332,9 @@ export default function LiteReportDashboard({
                       </span>
                     </div>
                   </div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-1.5 text-center whitespace-nowrap">
+                    Your predicted land
+                  </p>
                 </div>
               ) : null}
             </div>
