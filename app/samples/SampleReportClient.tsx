@@ -18,6 +18,7 @@ import {
   REPORT_ACTION_TEXT,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
+import ReportCompareModal from '@/components/ReportCompareModal';
 import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
 
 export default function SampleReportClient() {
@@ -38,7 +39,8 @@ export default function SampleReportClient() {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <header className="border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
         <BrandLogo size="sm" />
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <ReportCompareModal language="en" />
           <Link
             href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
             className={`rounded-full px-3.5 py-1.5 ${REPORT_ACTION_TEXT} border transition-colors ${
@@ -126,6 +128,10 @@ export default function SampleReportClient() {
                   <p className="text-sm text-blue-50/95 mt-2 leading-relaxed">
                     Fictional candidate & role for product preview — not saved, no credits used.
                   </p>
+                  <ReportCompareModal
+                    language="en"
+                    className="mt-2.5 text-white hover:text-blue-50"
+                  />
                 </div>
               </div>
               <Link
