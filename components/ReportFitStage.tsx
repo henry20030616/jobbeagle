@@ -32,6 +32,7 @@ export function ReportFitStage({
     const update = () => {
       const width = el.clientWidth || window.innerWidth;
       const byWidth = width / baselinePx;
+      // Scale up on large monitors; never shrink below 1 (layout stacks instead).
       const next = Math.min(Math.max(byWidth, 1), maxZoom);
       setZoom(Number(next.toFixed(3)));
     };
@@ -47,8 +48,8 @@ export function ReportFitStage({
   }, [baselinePx, maxZoom]);
 
   return (
-    <div ref={ref} className={`w-full ${className}`}>
-      <div className="w-full origin-top" style={{ zoom }}>
+    <div ref={ref} className={`w-full min-w-0 ${className}`}>
+      <div className="w-full min-w-0 origin-top" style={{ zoom }}>
         {children}
       </div>
     </div>

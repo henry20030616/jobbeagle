@@ -84,8 +84,8 @@ export default function ReportPage() {
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
         </span>
       </header>
-      <main className="w-full px-2 sm:px-4 py-5 sm:py-6">
-        <ReportFitStage className="mx-auto w-full max-w-[98vw]">
+      <main className="w-full min-w-0 px-2 sm:px-4 py-5 sm:py-6 overflow-x-auto">
+        <ReportFitStage className="mx-auto w-full max-w-[98vw] min-w-0">
           {strategy ? (
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}

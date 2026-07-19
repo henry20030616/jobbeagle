@@ -64,18 +64,16 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <main className="px-2 sm:px-4 py-4 sm:py-5">
-        <ReportFitStage className="mx-auto w-full max-w-[98vw]">
+      <main className="px-2 sm:px-4 py-4 sm:py-5 min-w-0 overflow-x-auto">
+        <ReportFitStage className="mx-auto w-full max-w-[98vw] min-w-0">
           {/*
-            Desktop 2×2:
-              [ actions ] [ SAMPLE mark above frame ]
-              [ notice  ] [ report frame            ]
-            Top-align notice with report; notice height = content only.
+            Narrow: stack (actions → notice → report).
+            Wide (xl+): 2×2 side-by-side so report keeps enough width.
           */}
           <div
-            className="flex flex-col gap-3 sm:grid sm:gap-x-5 sm:gap-y-2 sm:items-start"
+            className="flex flex-col gap-3 xl:grid xl:gap-x-5 xl:gap-y-2 xl:items-start min-w-0"
             style={{
-              gridTemplateColumns: 'minmax(16rem,20rem) minmax(0,1fr)',
+              gridTemplateColumns: 'minmax(0,16rem) minmax(0,1fr)',
               gridTemplateRows: 'auto auto',
               gridTemplateAreas: `
                 "actions mark"
@@ -106,14 +104,14 @@ export default function SampleReportClient() {
             </div>
 
             <div
-              className="hidden sm:flex items-end justify-center pb-0.5"
+              className="hidden xl:flex items-end justify-center pb-0.5 min-w-0"
               style={{ gridArea: 'mark' }}
             >
               <SampleMark />
             </div>
 
             <div
-              className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5`}
+              className={`${SAMPLE_NOTICE_SURFACE} w-full min-w-0 px-5 py-5 flex flex-col gap-3.5`}
               style={{ gridArea: 'notice' }}
             >
               <SampleMark variant="notice" />

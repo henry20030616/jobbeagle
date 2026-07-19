@@ -245,7 +245,7 @@ export default function FullReportDashboard({
 
   return (
     <div
-      className={`w-full mx-auto ${
+      className={`w-full min-w-0 mx-auto ${
         embedded ? '' : `${REPORT_SHELL_WIDTH} space-y-4`
       }`}
     >
@@ -268,7 +268,7 @@ export default function FullReportDashboard({
         </div>
       )}
 
-      <div className={`overflow-hidden ${REPORT_SLIDE_SURFACE}`}>
+      <div className={`@container/report min-w-0 overflow-x-auto ${REPORT_SLIDE_SURFACE}`}>
       {/* Title bar inside slide */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">

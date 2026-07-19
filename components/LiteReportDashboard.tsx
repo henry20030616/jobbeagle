@@ -84,7 +84,7 @@ export default function LiteReportDashboard({
 
   return (
     <div
-      className={`animate-fade-in w-full mx-auto ${
+      className={`animate-fade-in w-full min-w-0 mx-auto ${
         embedded ? '' : `${REPORT_SHELL_WIDTH} space-y-4`
       }`}
     >
@@ -115,9 +115,9 @@ export default function LiteReportDashboard({
         </div>
       )}
 
-      {/* One-page slide frame — SAMPLE sits above this border */}
+      {/* One-page slide — columns follow container width, not viewport */}
       <article
-        className={`overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
+        className={`@container/report min-w-0 overflow-x-auto bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
       >
         {/* Slide header */}
         <header className="border-b border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
@@ -165,9 +165,9 @@ export default function LiteReportDashboard({
           </div>
         </header>
 
-        {/* Heroes: Fit | Offer */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
-          <section className="flex flex-col p-3.5 sm:p-4">
+        {/* Heroes: Fit | Offer — dual column only when slide is wide enough */}
+        <div className="grid grid-cols-1 @[42rem]:grid-cols-2 divide-y @[42rem]:divide-y-0 @[42rem]:divide-x divide-slate-700/90">
+          <section className="flex flex-col p-3.5 sm:p-4 min-w-0">
             <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
               Candidate Fit Score
             </p>
@@ -264,23 +264,23 @@ export default function LiteReportDashboard({
             </div>
           </section>
 
-          <section className="flex flex-col p-3.5 sm:p-4 border-t border-slate-700/90 lg:border-t-0">
+          <section className="flex flex-col p-3.5 sm:p-4 border-t border-slate-700/90 @[42rem]:border-t-0 min-w-0">
             <p className={`${SECTION_TITLE} text-emerald-400/90 mb-1 flex items-center gap-1.5`}>
-              <DollarSign className="w-4 h-4" />
+              <DollarSign className="w-4 h-4 shrink-0" />
               Expected Offer Range
             </p>
-            <p className="text-lg text-slate-300 mb-2">
+            <p className="text-base sm:text-lg text-slate-300 mb-2 break-words">
               {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
               {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
             </p>
 
-            <div className="flex-1 flex flex-col justify-center">
+            <div className="flex-1 flex flex-col justify-center min-w-0">
               {offerRange ? (
                 <>
                   <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1.5">
                     Seat range
                   </p>
-                  <p className="text-5xl sm:text-6xl font-black text-white tracking-tight leading-none">
+                  <p className="text-3xl sm:text-4xl @[42rem]:text-5xl @[48rem]:text-6xl font-black text-white tracking-tight leading-none break-words">
                     {offerRange}
                   </p>
                   {predictedOffer && (
@@ -288,13 +288,13 @@ export default function LiteReportDashboard({
                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1">
                         Your predicted land
                       </p>
-                      <p className="text-3xl sm:text-4xl font-black text-emerald-100 tracking-tight leading-none">
+                      <p className="text-2xl sm:text-3xl @[42rem]:text-4xl font-black text-emerald-100 tracking-tight leading-none break-words">
                         {predictedOffer}
                       </p>
                     </div>
                   )}
                   {offer?.candidate_position_label && (
-                    <p className="text-lg text-emerald-100/90 leading-relaxed mt-2">
+                    <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2 break-words">
                       {offer.candidate_position_label}
                     </p>
                   )}
@@ -311,10 +311,10 @@ export default function LiteReportDashboard({
           </section>
         </div>
 
-        {/* Score breakdown (left) | Range Evaluation (right) */}
+        {/* Score breakdown | Range Evaluation */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:items-stretch">
-            <div className="h-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
+          <div className="grid grid-cols-1 @[42rem]:grid-cols-2 gap-3 @[42rem]:items-stretch">
+            <div className="h-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
               <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
                 Score breakdown
               </p>
@@ -346,14 +346,14 @@ export default function LiteReportDashboard({
               )}
             </div>
 
-            <div className="h-full rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
+            <div className="h-full min-w-0 rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
               <p className={`${SECTION_TITLE} text-emerald-300 mb-1`}>
                 Range Evaluation
               </p>
-              <p className="text-lg font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
-              <p className="text-lg text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
+              <p className="text-lg font-bold text-emerald-100 mb-1 break-words">{offerEval.headline}</p>
+              <p className="text-base sm:text-lg text-slate-200 leading-relaxed flex-1 break-words">{offerEval.body}</p>
               {offerEval.note ? (
-                <p className="text-base text-slate-400 mt-1.5 leading-relaxed">{offerEval.note}</p>
+                <p className="text-base text-slate-400 mt-1.5 leading-relaxed break-words">{offerEval.note}</p>
               ) : null}
             </div>
           </div>
@@ -361,9 +361,9 @@ export default function LiteReportDashboard({
 
         {/* Strengths | Gaps — one shared frame, bullet lists */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="w-full rounded-lg border border-sky-400/50 bg-indigo-500/10 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-sky-400/25">
-              <section className="p-3.5 sm:p-4">
+          <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10">
+            <div className="grid grid-cols-1 @[36rem]:grid-cols-2 @[36rem]:divide-x divide-y @[36rem]:divide-y-0 divide-sky-400/25">
+              <section className="p-3.5 sm:p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
                   <CheckCircle2 className="w-4 h-4 mr-1.5" />
                   Top Strengths
@@ -385,7 +385,7 @@ export default function LiteReportDashboard({
                   ))}
                 </ul>
               </section>
-              <section className="p-3.5 sm:p-4">
+              <section className="p-3.5 sm:p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
                   <AlertTriangle className="w-4 h-4 mr-1.5" />
                   Critical Gaps
