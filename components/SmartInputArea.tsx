@@ -29,7 +29,7 @@ export interface SmartInputAreaProps {
 const PLACEHOLDER_ZH =
   '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。勿只貼網址或片段…';
 const PLACEHOLDER_EN =
-  'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…). Don’t paste only a URL or a short excerpt…';
+  'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…). Do not paste only a URL or a short excerpt…';
 
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
