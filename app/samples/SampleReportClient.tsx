@@ -11,7 +11,11 @@ import {
   getSampleSnapshotReport,
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
-import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
+import {
+  REPORT_CODES,
+  normalizeReportType,
+  reportLabel,
+} from '@/constants/report-products';
 import {
   SAMPLE_NOTICE_SURFACE,
   SAMPLE_HEADER_BTN,
@@ -39,11 +43,14 @@ export default function SampleReportClient() {
   };
 
   const sampleTabClass = (active: boolean) =>
-    `${SAMPLE_HEADER_BTN} w-full justify-center text-center ${
+    `${SAMPLE_HEADER_BTN} w-full justify-center text-center leading-snug whitespace-normal ${
       active
         ? 'border-violet-500 bg-violet-500/15 text-violet-100'
         : 'border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300'
     }`;
+
+  const snapshotLabel = reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT);
+  const guideLabel = reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE);
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200">
@@ -72,7 +79,7 @@ export default function SampleReportClient() {
             One row: left chrome box (SAMPLE + tabs + Compare) | right report box
           */}
           <main className="flex-1 w-full max-w-full px-4 py-4 overflow-x-clip">
-            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] gap-4 items-start w-full max-w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] gap-4 items-start w-full max-w-full">
               <aside
                 className={`rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 sm:p-4 flex flex-col gap-3 min-w-0 h-fit self-start`}
               >
@@ -85,12 +92,12 @@ export default function SampleReportClient() {
                       <Sparkles className="w-4 h-4 text-white" />
                     </span>
                   </div>
-                  <p className="text-lg font-bold text-white leading-snug">
-                    {isGuide ? 'Guide' : 'Snapshot'} sample · no credits
+                  <p className="text-base font-bold text-white leading-snug">
+                    {isGuide ? guideLabel : snapshotLabel} sample · no credits
                   </p>
                   <Link
                     href="/"
-                    className="inline-flex items-center gap-1.5 text-lg font-bold text-white hover:text-blue-50"
+                    className="inline-flex items-center gap-1.5 text-base font-bold text-white hover:text-blue-50"
                   >
                     <ArrowLeft className="w-5 h-5 shrink-0" />
                     Analyze
@@ -101,13 +108,13 @@ export default function SampleReportClient() {
                   href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
                   className={sampleTabClass(!isGuide)}
                 >
-                  Job Fit Snapshot sample
+                  {snapshotLabel}
                 </Link>
                 <Link
                   href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
                   className={sampleTabClass(isGuide)}
                 >
-                  Interview Strategy Guide sample
+                  {guideLabel}
                 </Link>
                 <ReportCompareModal
                   language="en"
