@@ -414,9 +414,9 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen w-full max-w-[100%] overflow-x-hidden bg-slate-950 text-slate-200">
-      {/* Near full-bleed content — minimal side gutters, no narrow centered island */}
-      <main className="w-full max-w-[100%] px-3 sm:px-5 lg:px-6 py-5 sm:py-6">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200">
+      {/* Full-width shell; overflow clipped so the page never pans horizontally */}
+      <main className="w-full max-w-full min-w-0 overflow-x-clip px-3 sm:px-5 lg:px-6 py-5 sm:py-6">
         <div className="flex items-center justify-between gap-4 mb-5">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3">

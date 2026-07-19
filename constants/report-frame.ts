@@ -33,7 +33,7 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
  * Use viewport width only — do NOT cap with rem (e.g. 100rem ≈ 1600px),
  * or large monitors show a centered “island” with huge empty margins.
  */
-export const REPORT_SHELL_WIDTH = 'w-full max-w-[98vw]';
+export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,

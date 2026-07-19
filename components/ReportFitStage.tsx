@@ -16,6 +16,8 @@ type ReportFitStageProps = {
  * Fixed-proportion stage: lay out at designWidth, then enlarge with CSS `zoom`
  * (not transform:scale). Zoom keeps text/vectors crisp; transform:scale rasterizes
  * and looks blurry when scale > 1.
+ *
+ * Outer always clips — never contributes to page horizontal scroll.
  */
 export function ReportFitStage({
   children,
@@ -25,6 +27,7 @@ export function ReportFitStage({
 }: ReportFitStageProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const outer = outerRef.current;
@@ -36,6 +39,7 @@ export function ReportFitStage({
       const fit = available / designWidth;
       const nextScale = Math.min(maxScale, Math.max(fit, 0.5));
       setScale(Number(nextScale.toFixed(4)));
+      setReady(true);
     };
 
     update();
@@ -51,15 +55,14 @@ export function ReportFitStage({
   return (
     <div
       ref={outerRef}
-      className={`w-full min-w-0 self-stretch flex justify-center ${className}`}
+      className={`w-full max-w-full min-w-0 overflow-x-clip self-stretch flex justify-center ${className}`}
     >
       <div
-        className="shrink-0"
+        className="shrink-0 max-w-full"
         style={{
           width: designWidth,
-          // Chromium/Safari: zoom scales layout + paint without blurry upscaling.
-          // Firefox 126+ also supports zoom; older FF falls back to 1× width.
           zoom: scale,
+          visibility: ready ? 'visible' : 'hidden',
         }}
       >
         {children}

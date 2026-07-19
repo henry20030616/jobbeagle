@@ -11,7 +11,7 @@
 }
 
 html {
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
 }
 
@@ -19,8 +19,9 @@ body {
   color: var(--foreground);
   background: var(--background);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
+  overscroll-behavior-x: none;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
@@ -110,7 +111,7 @@ body {
   display: grid !important;
   place-items: center !important;
   margin: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: 100dvh !important;
   max-height: 100dvh !important;
   box-sizing: border-box !important;
@@ -118,16 +119,25 @@ body {
   overflow: hidden !important;
 }
 
-/* Homepage operator — wide strip that owns most of the viewport */
+/* Homepage operator — fill width without forcing page-wide scroll */
 .jb-home-operator {
-  min-height: 26rem;
+  min-height: 22rem;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.jb-home-operator > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 @media (min-width: 1024px) {
   .jb-home-operator {
-    min-height: min(68vh, 48rem);
-    grid-template-rows: auto auto minmax(22rem, 1fr);
+    min-height: min(58vh, 40rem);
+    /* minmax(0,1fr) prevents nowrap content from blowing past the viewport */
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: auto auto minmax(16rem, 1fr);
   }
 }
 

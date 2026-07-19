@@ -63,10 +63,10 @@ export default function ReportPage() {
   const strategy = isStrategyReport(payload.report_type);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200 flex flex-col">
       {/* Absolute top — above logo / report */}
       <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3 shrink-0">
-        <div className="mx-auto w-full max-w-[98vw] flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="mx-auto w-full max-w-full flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
             <Home className="w-4 h-4" />
             Back to Home
