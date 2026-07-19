@@ -414,9 +414,9 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="flex min-h-screen w-full flex-col overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
-      {/* jb-home-shell in globals.css forces full-bleed width (no max-w island). */}
-      <main className="jb-home-shell py-5">
+    <div className="flex min-h-screen w-full flex-col items-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
+      {/* Stable centered canvas — cancelled force full-bleed / jb-home-shell. */}
+      <main className="mx-auto w-full min-w-0 max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10 py-5">
         <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
@@ -610,7 +610,7 @@ export default function Home() {
         )}
 
         {!report ? (
-          <div className="jb-home-operator flex flex-col">
+          <div className="w-full min-w-0">
             <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
@@ -630,9 +630,7 @@ export default function Home() {
                 />
               </div>
             )}
-            <div className="mt-auto w-full">
-              <FooterSection language={language} />
-            </div>
+            <FooterSection language={language} />
           </div>
         ) : (
           <div className="animate-fade-in w-full">
