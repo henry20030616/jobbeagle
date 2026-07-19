@@ -26,6 +26,7 @@ import { scoreSummaryPoints, splitScoreSummaryPoint } from '@/lib/score-summary'
 import { formatJobSourceDate } from '@/lib/job-source';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
+import PredictedLandSquircle from '@/components/PredictedLandSquircle';
 
 /** Primary section labels (Job Fit Snapshot, Candidate Fit Score, …) */
 const SECTION_TITLE =
@@ -65,9 +66,6 @@ export default function LiteReportDashboard({
   const offerRange = formatOfferRange(offer);
   const predictedOffer = formatPredictedOffer(offer);
   const predictedGauge = predictedLandGaugeValue(offer);
-  const predictedData = [
-    { name: 'Land', value: predictedGauge, fill: '#34d399' },
-  ];
   const offerEval = offerEvaluationSummary(offer);
   const tc = offer?.tc_breakdown;
   const tcRows = (
@@ -312,39 +310,7 @@ export default function LiteReportDashboard({
               </div>
 
               {predictedOffer ? (
-                <div className="flex flex-col items-center justify-center shrink-0 self-center">
-                  <div
-                    className="relative w-24 h-24 sm:w-28 sm:h-28"
-                    aria-label={`Your predicted land ${predictedOffer}`}
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadialBarChart
-                        innerRadius="70%"
-                        outerRadius="100%"
-                        barSize={10}
-                        data={predictedData}
-                        startAngle={90}
-                        endAngle={-270}
-                      >
-                        <PolarAngleAxis
-                          type="number"
-                          domain={[0, 100]}
-                          angleAxisId={0}
-                          tick={false}
-                        />
-                        <RadialBar background dataKey="value" cornerRadius={30} />
-                      </RadialBarChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-1">
-                      <span className="text-xl sm:text-2xl font-black text-emerald-100 tabular-nums leading-none text-center">
-                        {predictedOffer}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-1.5 text-center whitespace-nowrap">
-                    Your predicted land
-                  </p>
-                </div>
+                <PredictedLandSquircle value={predictedOffer} gauge={predictedGauge} />
               ) : null}
             </div>
           </section>
