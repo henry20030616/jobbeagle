@@ -1,45 +1,25 @@
 'use client';
 
-import React, { useEffect, useId, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, GitCompareArrows, Star, X } from 'lucide-react';
+import { Check, GitCompareArrows, X } from 'lucide-react';
 import {
   REPORT_COMPARE_CLOSE,
   REPORT_COMPARE_COL,
   REPORT_COMPARE_ROWS,
-  REPORT_COMPARE_STAR_MAX,
+  REPORT_COMPARE_SECTION_LABEL,
   REPORT_COMPARE_SUBTITLE,
   REPORT_COMPARE_TITLE,
   REPORT_COMPARE_TRIGGER,
   resolveCompareLang,
   type ReportCompareCell,
   type ReportCompareLang,
+  type ReportCompareSection,
 } from '@/constants/report-compare';
 
-function StarRating({ value, max = REPORT_COMPARE_STAR_MAX }: { value: number; max?: number }) {
-  const filled = Math.max(0, Math.min(max, Math.round(value)));
-  return (
-    <span
-      className="inline-flex items-center gap-0.5"
-      aria-label={`${filled} of ${max} stars`}
-    >
-      {Array.from({ length: max }, (_, i) => (
-        <Star
-          key={i}
-          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
-            i < filled
-              ? 'fill-amber-400 text-amber-400'
-              : 'fill-transparent text-slate-600'
-          }`}
-          strokeWidth={1.75}
-          aria-hidden
-        />
-      ))}
-    </span>
-  );
-}
+const SECTION_ORDER: ReportCompareSection[] = ['shared', 'guide_only', 'meta'];
 
-/** Stars for shared depth; green check for Guide-only Yes; plain text otherwise. */
+/** Green check for Yes/有; plain text otherwise (incl. —). */
 function CompareCell({
   cell,
   lang,
@@ -48,16 +28,6 @@ function CompareCell({
   lang: ReportCompareLang;
 }) {
   const text = cell.text[lang];
-
-  if (typeof cell.stars === 'number') {
-    return (
-      <span className="inline-flex flex-col gap-1 min-w-0">
-        <StarRating value={cell.stars} />
-        <span className="text-slate-400 text-sm leading-snug">{text}</span>
-      </span>
-    );
-  }
-
   const match = /^(Yes|有)\s*(.*)$/i.exec(text.trim());
   if (match) {
     const suffix = match[2].trim();
@@ -69,19 +39,16 @@ function CompareCell({
           aria-hidden
         />
         <span className="sr-only">Yes</span>
-        {suffix ? <span>{suffix}</span> : null}
+        {suffix ? <span className="text-slate-300">{suffix}</span> : null}
       </span>
     );
   }
-
-  return <>{text}</>;
+  return <span className="text-slate-300">{text}</span>;
 }
 
 type ReportCompareModalProps = {
   language?: string;
-  /** Extra classes on the trigger button */
   className?: string;
-  /** Visual density for samples header vs homepage */
   variant?: 'link' | 'button';
 };
 
@@ -94,6 +61,14 @@ export default function ReportCompareModal({
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
   const lang: ReportCompareLang = resolveCompareLang(language);
+
+  const sections = useMemo(() => {
+    return SECTION_ORDER.map((id) => ({
+      id,
+      label: REPORT_COMPARE_SECTION_LABEL[id][lang],
+      rows: REPORT_COMPARE_ROWS.filter((r) => r.section === id),
+    })).filter((s) => s.rows.length > 0);
+  }, [lang]);
 
   useEffect(() => {
     setMounted(true);
@@ -156,7 +131,7 @@ export default function ReportCompareModal({
 
               <div className="overflow-auto px-2 sm:px-4 py-3">
                 <table className="w-full text-left text-sm sm:text-base border-collapse">
-                  <thead>
+                  <thead className="sticky top-0 bg-slate-950 z-10">
                     <tr className="border-b border-slate-700">
                       <th className="py-2.5 px-2 sm:px-3 font-semibold text-slate-400 w-[28%]">
                         {REPORT_COMPARE_COL.feature[lang]}
@@ -170,21 +145,39 @@ export default function ReportCompareModal({
                     </tr>
                   </thead>
                   <tbody>
-                    {REPORT_COMPARE_ROWS.map((row) => (
-                      <tr
-                        key={row.feature.en}
-                        className="border-b border-slate-800/80 align-top"
-                      >
-                        <td className="py-2.5 px-2 sm:px-3 font-medium text-slate-200">
-                          {row.feature[lang]}
-                        </td>
-                        <td className="py-2.5 px-2 sm:px-3 text-slate-300">
-                          <CompareCell cell={row.snapshot} lang={lang} />
-                        </td>
-                        <td className="py-2.5 px-2 sm:px-3 text-slate-300">
-                          <CompareCell cell={row.guide} lang={lang} />
-                        </td>
-                      </tr>
+                    {sections.map((section) => (
+                      <React.Fragment key={section.id}>
+                        <tr>
+                          <td
+                            colSpan={3}
+                            className={`pt-4 pb-1.5 px-2 sm:px-3 text-xs font-bold uppercase tracking-wider ${
+                              section.id === 'guide_only'
+                                ? 'text-emerald-400'
+                                : section.id === 'shared'
+                                  ? 'text-violet-300'
+                                  : 'text-slate-500'
+                            }`}
+                          >
+                            {section.label}
+                          </td>
+                        </tr>
+                        {section.rows.map((row) => (
+                          <tr
+                            key={row.feature.en}
+                            className="border-b border-slate-800/80 align-top"
+                          >
+                            <td className="py-2.5 px-2 sm:px-3 font-medium text-slate-200">
+                              {row.feature[lang]}
+                            </td>
+                            <td className="py-2.5 px-2 sm:px-3">
+                              <CompareCell cell={row.snapshot} lang={lang} />
+                            </td>
+                            <td className="py-2.5 px-2 sm:px-3">
+                              <CompareCell cell={row.guide} lang={lang} />
+                            </td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>

@@ -1,37 +1,25 @@
 /**
  * Snapshot vs Strategy Guide — comparison rows for homepage + samples modal.
+ * Structure: shared (depth notes) → Guide-only → meta (best for / price).
  */
 
 export type ReportCompareLang = 'en' | 'zh-TW' | 'zh-CN';
 
-/** Max stars shown for depth gaps on shared features. */
-export const REPORT_COMPARE_STAR_MAX = 5;
+export type ReportCompareSection = 'shared' | 'guide_only' | 'meta';
 
 export interface ReportCompareCell {
   text: Record<ReportCompareLang, string>;
-  /**
-   * 1–5 depth rating when both products have the feature.
-   * Omit for Guide-only (✓) / Snapshot missing (—) / meta rows.
-   */
-  stars?: number;
 }
 
 export interface ReportCompareRow {
+  section: ReportCompareSection;
   feature: Record<ReportCompareLang, string>;
   snapshot: ReportCompareCell;
   guide: ReportCompareCell;
 }
 
-function t(
-  en: string,
-  zhTW: string,
-  zhCN: string,
-  stars?: number,
-): ReportCompareCell {
-  return {
-    text: { en, 'zh-TW': zhTW, 'zh-CN': zhCN },
-    ...(stars != null ? { stars } : {}),
-  };
+function t(en: string, zhTW: string, zhCN: string): ReportCompareCell {
+  return { text: { en, 'zh-TW': zhTW, 'zh-CN': zhCN } };
 }
 
 export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
@@ -41,9 +29,9 @@ export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
 };
 
 export const REPORT_COMPARE_SUBTITLE: Record<ReportCompareLang, string> = {
-  en: 'Same JD + resume in → two different depths of output. Stars = depth when both include the item.',
-  'zh-TW': '同樣的職缺與履歷，兩種不同深度。兩者都有的項目用星星標示程度差距。',
-  'zh-CN': '同样的职位与简历，两种不同深度。两者都有的项目用星星标示程度差距。',
+  en: 'Snapshot: decide whether to apply. Guide: win the process & negotiate — includes full Snapshot.',
+  'zh-TW': 'Snapshot：決定要不要投。Guide：怎麼打贏、怎麼談錢——含完整 Snapshot。',
+  'zh-CN': 'Snapshot：决定要不要投。Guide：怎么打赢、怎么谈钱——含完整 Snapshot。',
 };
 
 export const REPORT_COMPARE_TRIGGER: Record<ReportCompareLang, string> = {
@@ -56,6 +44,27 @@ export const REPORT_COMPARE_CLOSE: Record<ReportCompareLang, string> = {
   en: 'Close',
   'zh-TW': '關閉',
   'zh-CN': '关闭',
+};
+
+export const REPORT_COMPARE_SECTION_LABEL: Record<
+  ReportCompareSection,
+  Record<ReportCompareLang, string>
+> = {
+  shared: {
+    en: 'Included in both (depth differs)',
+    'zh-TW': '兩者都有（深度不同）',
+    'zh-CN': '两者都有（深度不同）',
+  },
+  guide_only: {
+    en: 'Strategy Guide only — professional add-ons',
+    'zh-TW': '僅 Strategy Guide — 專業版加值',
+    'zh-CN': '仅 Strategy Guide — 专业版加值',
+  },
+  meta: {
+    en: 'Who it’s for & price',
+    'zh-TW': '適合對象與價格',
+    'zh-CN': '适合对象与价格',
+  },
 };
 
 export const REPORT_COMPARE_COL: {
@@ -80,48 +89,51 @@ export const REPORT_COMPARE_COL: {
   },
 };
 
-/**
- * Shared (star depth) first → Guide-only (✓ / —) → meta.
- * Stars out of 5: higher = deeper / more complete for that product.
- */
 export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
+  // ── A. Shared ──
   {
+    section: 'shared',
     feature: {
       en: 'Fit score + apply decision',
       'zh-TW': '匹配分數 + 投遞決策',
       'zh-CN': '匹配分数 + 投递决策',
     },
-    snapshot: t('Core fit + apply call', '核心匹配 + 投遞決策', '核心匹配 + 投递决策', 4),
-    guide: t('Full Snapshot + score implications', '完整 Snapshot + 分數意涵', '完整 Snapshot + 分数意涵', 5),
+    snapshot: t('Yes (core decision)', '有（核心決策）', '有（核心决策）'),
+    guide: t('Yes (full Snapshot + implications)', '有（完整 Snapshot + 意涵）', '有（完整 Snapshot + 意涵）'),
   },
   {
+    section: 'shared',
     feature: {
       en: 'Expected offer range + your land',
       'zh-TW': '薪酬區間 + 個人落點',
       'zh-CN': '薪酬区间 + 个人落点',
     },
-    snapshot: t('Range + predicted land', '區間 + 預測落點', '区间 + 预测落点', 3),
-    guide: t('Range + land + negotiation levers', '區間 + 落點 + 談判槓桿', '区间 + 落点 + 谈判杠杆', 5),
+    snapshot: t('Yes (estimate)', '有（估計）', '有（估计）'),
+    guide: t('Yes (estimate + negotiation)', '有（估計 + 談判）', '有（估计 + 谈判）'),
   },
   {
+    section: 'shared',
     feature: {
       en: 'Interview prep / STAR',
       'zh-TW': '面試準備 / STAR',
       'zh-CN': '面试准备 / STAR',
     },
-    snapshot: t('3 predicted starters', '僅 3 題預測開場', '仅 3 题预测开场', 2),
-    guide: t('Full playbook + STAR outlines', '完整題庫 + STAR 大綱', '完整题库 + STAR 大纲', 5),
+    snapshot: t('Yes (3 starters only)', '有（僅 3 題開場）', '有（仅 3 题开场）'),
+    guide: t('Yes (full playbook + STAR)', '有（完整題庫 + STAR）', '有（完整题库 + STAR）'),
   },
   {
+    section: 'shared',
     feature: {
-      en: 'AI model depth',
-      'zh-TW': 'AI 模型深度',
-      'zh-CN': 'AI 模型深度',
+      en: 'AI model',
+      'zh-TW': 'AI 模型',
+      'zh-CN': 'AI 模型',
     },
-    snapshot: t('Flash-Lite (fast)', 'Flash-Lite（快）', 'Flash-Lite（快）', 3),
-    guide: t('Latest Pro-class model', '最新 Pro 級模型', '最新 Pro 级模型', 5),
+    snapshot: t('Flash-Lite (fast)', 'Flash-Lite（快）', 'Flash-Lite（快）'),
+    guide: t('Latest Pro-class model', '最新 Pro 級模型', '最新 Pro 级模型'),
   },
+  // ── B. Guide only ──
   {
+    section: 'guide_only',
     feature: {
       en: 'Live web search',
       'zh-TW': '即時網搜',
@@ -131,6 +143,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     guide: t('Yes (Google Search)', '有（Google Search）', '有（Google Search）'),
   },
   {
+    section: 'guide_only',
     feature: {
       en: 'Hiring context / company intel',
       'zh-TW': '招募與公司情報',
@@ -140,6 +153,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     guide: t('Yes (grounded when available)', '有（可 grounding）', '有（可 grounding）'),
   },
   {
+    section: 'guide_only',
     feature: {
       en: 'Concerns & defenses',
       'zh-TW': '疑慮與答辯',
@@ -149,6 +163,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     guide: t('Yes', '有', '有'),
   },
   {
+    section: 'guide_only',
     feature: {
       en: 'Offer negotiation script',
       'zh-TW': '談薪腳本',
@@ -157,7 +172,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     snapshot: t('—', '—', '—'),
     guide: t('Yes', '有', '有'),
   },
+  // ── C. Meta ──
   {
+    section: 'meta',
     feature: {
       en: 'Best for',
       'zh-TW': '最適用',
@@ -167,15 +184,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
   },
   {
-    feature: {
-      en: 'Credit pool',
-      'zh-TW': '額度池',
-      'zh-CN': '额度池',
-    },
-    snapshot: t('Snapshot credits', 'Snapshot 額度', 'Snapshot 额度'),
-    guide: t('Strategy Guide credits (separate)', 'Strategy Guide 額度（分開）', 'Strategy Guide 额度（分开）'),
-  },
-  {
+    section: 'meta',
     feature: {
       en: 'Single report price',
       'zh-TW': '單次報告價格',

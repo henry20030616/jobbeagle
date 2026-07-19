@@ -12,23 +12,26 @@ describe('report-compare', () => {
     expect(resolveCompareLang('es')).toBe('en');
   });
 
-  it('has bilingual rows and star depth on shared features', () => {
-    expect(REPORT_COMPARE_ROWS.length).toBeGreaterThanOrEqual(8);
+  it('groups shared → guide-only → meta without star ratings', () => {
     expect(REPORT_COMPARE_TRIGGER.en).toMatch(/Compare/i);
 
-    const starred = REPORT_COMPARE_ROWS.filter(
-      (row) => row.snapshot.stars != null && row.guide.stars != null,
-    );
-    expect(starred.length).toBeGreaterThanOrEqual(3);
+    const sections = REPORT_COMPARE_ROWS.map((r) => r.section);
+    expect(sections.filter((s) => s === 'shared').length).toBeGreaterThanOrEqual(3);
+    expect(sections.filter((s) => s === 'guide_only').length).toBeGreaterThanOrEqual(3);
+    expect(sections.filter((s) => s === 'meta').length).toBeGreaterThanOrEqual(2);
+
+    // Shared comes before guide-only; guide-only before meta
+    const firstGuide = sections.indexOf('guide_only');
+    const firstMeta = sections.indexOf('meta');
+    const lastShared = sections.lastIndexOf('shared');
+    expect(lastShared).toBeLessThan(firstGuide);
+    expect(firstGuide).toBeLessThan(firstMeta);
 
     for (const row of REPORT_COMPARE_ROWS) {
       expect(row.feature.en.length).toBeGreaterThan(0);
       expect(row.snapshot.text.en.length).toBeGreaterThan(0);
       expect(row.guide.text.en.length).toBeGreaterThan(0);
-    }
-
-    for (const row of starred) {
-      expect(row.guide.stars!).toBeGreaterThan(row.snapshot.stars!);
+      expect(row).not.toHaveProperty('stars');
     }
   });
 });
