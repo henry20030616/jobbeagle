@@ -41,7 +41,7 @@ import { normalizeLiteReport, isEnrichedLiteReport, normalizeFullReport } from '
 import { resolveResumeForAnalysis } from '@/lib/resume-parser';
 import { rateLimitAnalyze } from '@/lib/rate-limit';
 import { tryActivateReferralMilestone } from '@/lib/referrals';
-import { upsertResumeForUser } from '@/lib/resumes';
+import { contentFingerprint, upsertResumeForUser } from '@/lib/resumes';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import {
@@ -258,36 +258,66 @@ export async function POST(request: NextRequest) {
       return paymentRequiredResponse(profile);
     }
 
-    const cached = await findCachedReport(
-      admin,
-      user.id,
-      input.linkedin_job_id,
-      reportType,
-    );
-    if (cached?.report_json) {
-      const fullCached = cached.report_json as FullReport;
-      const strategyReady =
-        (Array.isArray(fullCached?.concerns_defenses)
-          && fullCached.concerns_defenses.length >= 3)
-        || (Array.isArray(fullCached?.custom_star_interview_bank)
-          && fullCached.custom_star_interview_bank.length >= 5)
-        || Boolean(fullCached?.interview_playbook?.predicted?.length);
-      const useCache =
-        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-          ? isEnrichedLiteReport(cached.report_json)
-          : isEnrichedLiteReport(cached.report_json) && strategyReady;
-      if (useCache) {
-        const cachedReport =
+    // Persist resume first so cache can key on resume_id (different resume ≠ cache hit).
+    let resumeId: string | null = null;
+    try {
+      const resumeTextForStore = input.pdf_inline
+        ? input.pdf_inline.data
+        : input.resume_text;
+      const hashMaterial = input.pdf_inline
+        ? `pdf:${input.pdf_inline.data.slice(0, 64)}:${input.pdf_inline.data.length}`
+        : resumeTextForStore;
+      const upserted = await upsertResumeForUser(admin, user.id, {
+        contentText: resumeTextForStore,
+        hashMaterial,
+        fileName: body.resume?.fileName ?? null,
+        mimeType: body.resume?.mimeType ?? input.pdf_inline?.mimeType ?? null,
+        type: body.resume?.type === 'file' || input.pdf_inline ? 'file' : 'text',
+        source: 'analyze',
+      });
+      resumeId = upserted.id;
+    } catch (resumeErr) {
+      console.warn(
+        '[Analyze] Resume upsert failed (cache skipped; report will still save):',
+        resumeErr instanceof Error ? resumeErr.message : resumeErr,
+      );
+    }
+
+    const jdFingerprint = contentFingerprint(input.raw_jd);
+    if (resumeId) {
+      const cached = await findCachedReport(
+        admin,
+        user.id,
+        input.linkedin_job_id,
+        reportType,
+        { resumeId, jdFingerprint },
+      );
+      if (cached?.report_json) {
+        const fullCached = cached.report_json as FullReport;
+        const strategyReady =
+          (Array.isArray(fullCached?.concerns_defenses)
+            && fullCached.concerns_defenses.length >= 3)
+          || (Array.isArray(fullCached?.custom_star_interview_bank)
+            && fullCached.custom_star_interview_bank.length >= 5)
+          || Boolean(fullCached?.interview_playbook?.predicted?.length);
+        const useCache =
           reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-            ? normalizeLiteReport(cached.report_json as LiteReport)
-            : normalizeFullReport(cached.report_json as FullReport);
-        return NextResponse.json({
-          report: cachedReport,
-          report_type: reportType,
-          report_id: cached.id,
-          cached: true,
-          model_used: 'cache',
-        });
+            ? isEnrichedLiteReport(cached.report_json)
+            : isEnrichedLiteReport(cached.report_json) && strategyReady;
+        if (useCache) {
+          const cachedReport =
+            reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+              ? normalizeLiteReport(cached.report_json as LiteReport)
+              : normalizeFullReport(cached.report_json as FullReport);
+          return NextResponse.json({
+            report: cachedReport,
+            report_type: reportType,
+            report_id: cached.id,
+            resume_id: resumeId,
+            cached: true,
+            model_used: 'cache',
+          });
+        }
       }
     }
 
@@ -347,31 +377,6 @@ export async function POST(request: NextRequest) {
         : typeof (report as LiteReport).match_score === 'number'
           ? (report as LiteReport).match_score
           : null;
-
-    let resumeId: string | null = null;
-    try {
-      // Persist real PDF base64 so "Saved Resumes" can re-run analysis.
-      const resumeTextForStore = input.pdf_inline
-        ? input.pdf_inline.data
-        : input.resume_text;
-      const hashMaterial = input.pdf_inline
-        ? `pdf:${input.pdf_inline.data.slice(0, 64)}:${input.pdf_inline.data.length}`
-        : resumeTextForStore;
-      const upserted = await upsertResumeForUser(admin, user.id, {
-        contentText: resumeTextForStore,
-        hashMaterial,
-        fileName: body.resume?.fileName ?? null,
-        mimeType: body.resume?.mimeType ?? input.pdf_inline?.mimeType ?? null,
-        type: body.resume?.type === 'file' || input.pdf_inline ? 'file' : 'text',
-        source: 'analyze',
-      });
-      resumeId = upserted.id;
-    } catch (resumeErr) {
-      console.warn(
-        '[Analyze] Resume upsert failed (report will still save):',
-        resumeErr instanceof Error ? resumeErr.message : resumeErr,
-      );
-    }
 
     const { data: inserted, error: dbError } = await admin
       .from('analysis_reports')

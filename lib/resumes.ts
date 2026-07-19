@@ -31,6 +31,13 @@ export function hashResumeContent(userId: string, material: string): string {
     .digest('hex');
 }
 
+/** Content-only fingerprint (no user id) — used to verify JD/cache identity. */
+export function contentFingerprint(material: string): string {
+  return createHash('sha256')
+    .update(normalizeResumeText(material || ''), 'utf8')
+    .digest('hex');
+}
+
 /**
  * Upsert a resume version for the user (dedupe by content_hash).
  * Clears soft-delete and refreshes last_used_at when reusing.

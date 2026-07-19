@@ -8,6 +8,7 @@ import {
   normalizeReportType,
 } from '@/constants/report-products';
 import { normalizeCareerContext } from '@/lib/career-context';
+import { contentFingerprint } from '@/lib/resumes';
 
 export interface ProfileRow {
   id: string;
@@ -231,12 +232,22 @@ export async function refundCredit(
   if (error) throw new Error(`Credit refund failed: ${error.message}`);
 }
 
+/**
+ * 24h cache hit only when job + resume + JD text all match.
+ * Different resume (or edited JD) must re-run and spend a credit.
+ */
 export async function findCachedReport(
   admin: SupabaseClient,
   userId: string,
   linkedinJobId: string,
   reportType: ReportType | string,
+  opts: {
+    resumeId: string;
+    jdFingerprint: string;
+  },
 ): Promise<{ id: string; report_json: unknown } | null> {
+  if (!opts.resumeId || !linkedinJobId || !opts.jdFingerprint) return null;
+
   const type = normalizeReportType(reportType);
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const types =
@@ -246,16 +257,23 @@ export async function findCachedReport(
 
   const { data } = await admin
     .from('analysis_reports')
-    .select('id, report_json')
+    .select('id, report_json, raw_jd_text')
     .eq('linkedin_job_id', linkedinJobId)
     .eq('user_id', userId)
+    .eq('resume_id', opts.resumeId)
     .in('report_type', types)
     .gt('created_at', since)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
-  return data ?? null;
+  if (!data?.report_json) return null;
+
+  // Same job id can still carry a different pasted/updated JD — reject mismatch.
+  const storedJd = contentFingerprint(data.raw_jd_text || '');
+  if (storedJd !== opts.jdFingerprint) return null;
+
+  return { id: data.id, report_json: data.report_json };
 }
 
 export function canAffordUserProfile(
