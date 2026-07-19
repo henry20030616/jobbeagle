@@ -1,0 +1,13 @@
+---
+description: Execute user commands fully; only ask when something was not specified
+alwaysApply: true
+---
+
+# Agent：依指令直接做完，勿多餘詢問
+
+## 原則
+
+- 使用者已下達的命令／任務：**直接做完**（改碼、驗證、commit、push、部署腳本），**不要**為「要不要做」「要不要 push」再問一次。
+- **只有**使用者沒交代、且會影響結果的抉擇（例如兩種產品方向、會刪資料、改付費／權限邊界）才需要簡短確認。
+- 系統／沙箱若跳出權限卡：在任務範圍內申請並繼續，勿停下來叫使用者「確認要不要做」。
+- 與 `agent-runs-ops.mdc`、`git-github-vercel-always.mdc` 一致：能代跑的一律代跑，結束前交付「你要做」清單即可。
