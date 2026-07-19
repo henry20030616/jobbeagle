@@ -1,14 +1,22 @@
 /**
  * Snapshot vs Strategy Guide — comparison rows for homepage + samples modal.
- * Structure: Best for → shared (depth notes) → Guide-only → price.
+ * Structure: Best for → shared (star depth) → Guide-only → price.
  */
 
 export type ReportCompareLang = 'en' | 'zh-TW' | 'zh-CN';
 
 export type ReportCompareSection = 'best_for' | 'shared' | 'guide_only' | 'meta';
 
+/** Max stars shown for depth gaps on shared features. */
+export const REPORT_COMPARE_STAR_MAX = 5;
+
 export interface ReportCompareCell {
   text: Record<ReportCompareLang, string>;
+  /**
+   * 1–5 depth rating when both products include the feature.
+   * Omit for Guide-only (✓) / Snapshot missing (—) / meta rows.
+   */
+  stars?: number;
 }
 
 export interface ReportCompareRow {
@@ -18,8 +26,16 @@ export interface ReportCompareRow {
   guide: ReportCompareCell;
 }
 
-function t(en: string, zhTW: string, zhCN: string): ReportCompareCell {
-  return { text: { en, 'zh-TW': zhTW, 'zh-CN': zhCN } };
+function t(
+  en: string,
+  zhTW: string,
+  zhCN: string,
+  stars?: number,
+): ReportCompareCell {
+  return {
+    text: { en, 'zh-TW': zhTW, 'zh-CN': zhCN },
+    ...(stars != null ? { stars } : {}),
+  };
 }
 
 export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
@@ -74,9 +90,9 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
 > = {
   best_for: null,
   shared: {
-    en: 'Same building blocks — Guide runs them on a deeper model and expands what you can act on.',
-    'zh-TW': '積木相同——Guide 用更深模型跑，並擴成你能照著做的內容。',
-    'zh-CN': '积木相同——Guide 用更深模型跑，并扩成你能照着做的内容。',
+    en: 'Stars = depth (out of 5). Same building blocks — Guide goes deeper and more actionable.',
+    'zh-TW': '星星＝深度（滿分 5）。積木相同——Guide 更深、更可照做。',
+    'zh-CN': '星星＝深度（满分 5）。积木相同——Guide 更深、更可照做。',
   },
   guide_only: {
     en: 'These only exist in Guide: evidence-backed intel + interview/offer playbooks.',
@@ -158,7 +174,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
     guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
   },
-  // ── A. Shared ──
+  // ── A. Shared (stars = depth) ──
   {
     section: 'shared',
     feature: {
@@ -166,8 +182,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '匹配分數 + 投遞決策',
       'zh-CN': '匹配分数 + 投递决策',
     },
-    snapshot: t('Yes (core decision)', '有（核心決策）', '有（核心决策）'),
-    guide: t('Yes (full Snapshot + implications)', '有（完整 Snapshot + 意涵）', '有（完整 Snapshot + 意涵）'),
+    snapshot: t('Core fit + apply call', '核心匹配 + 投遞決策', '核心匹配 + 投递决策', 4),
+    guide: t('Full Snapshot + score implications', '完整 Snapshot + 分數意涵', '完整 Snapshot + 分数意涵', 5),
   },
   {
     section: 'shared',
@@ -176,8 +192,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '薪酬區間 + 個人落點',
       'zh-CN': '薪酬区间 + 个人落点',
     },
-    snapshot: t('Yes (estimate)', '有（估計）', '有（估计）'),
-    guide: t('Yes (estimate + negotiation)', '有（估計 + 談判）', '有（估计 + 谈判）'),
+    snapshot: t('Range + predicted land', '區間 + 預測落點', '区间 + 预测落点', 3),
+    guide: t('Range + land + negotiation levers', '區間 + 落點 + 談判槓桿', '区间 + 落点 + 谈判杠杆', 5),
   },
   {
     section: 'shared',
@@ -186,8 +202,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '面試準備 / STAR',
       'zh-CN': '面试准备 / STAR',
     },
-    snapshot: t('Yes (3 starters only)', '有（僅 3 題開場）', '有（仅 3 题开场）'),
-    guide: t('Yes (full playbook + STAR)', '有（完整題庫 + STAR）', '有（完整题库 + STAR）'),
+    snapshot: t('3 predicted starters', '僅 3 題預測開場', '仅 3 题预测开场', 2),
+    guide: t('Full playbook + STAR outlines', '完整題庫 + STAR 大綱', '完整题库 + STAR 大纲', 5),
   },
   {
     section: 'shared',
@@ -200,11 +216,13 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'Flash-Lite: fast triage, closed-book from JD + resume',
       'Flash-Lite：快速分流，只讀 JD＋履歷（無網搜）',
       'Flash-Lite：快速分流，只读 JD＋简历（无网搜）',
+      3,
     ),
     guide: t(
       'Pro: deeper reasoning + live web — fewer thin answers, more checkable strategy',
       'Pro：更深推理＋即時網搜——少薄答案、策略可核對',
       'Pro：更深推理＋即时网搜——少薄答案、策略可核对',
+      5,
     ),
   },
   // ── B. Guide only ──

@@ -2,13 +2,14 @@
 
 import React, { useEffect, useId, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, GitCompareArrows, X } from 'lucide-react';
+import { Check, GitCompareArrows, Star, X } from 'lucide-react';
 import {
   REPORT_COMPARE_CLOSE,
   REPORT_COMPARE_COL,
   REPORT_COMPARE_ROWS,
   REPORT_COMPARE_SECTION_HINT,
   REPORT_COMPARE_SECTION_LABEL,
+  REPORT_COMPARE_STAR_MAX,
   REPORT_COMPARE_SUBTITLE,
   REPORT_COMPARE_TITLE,
   REPORT_COMPARE_TRIGGER,
@@ -26,7 +27,30 @@ const SECTION_ORDER: ReportCompareSection[] = [
   'meta',
 ];
 
-/** Green check for Yes/有; plain text otherwise (incl. —). */
+function StarRating({ value, max = REPORT_COMPARE_STAR_MAX }: { value: number; max?: number }) {
+  const filled = Math.max(0, Math.min(max, Math.round(value)));
+  return (
+    <span
+      className="inline-flex items-center gap-0.5"
+      aria-label={`${filled} of ${max} stars`}
+    >
+      {Array.from({ length: max }, (_, i) => (
+        <Star
+          key={i}
+          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
+            i < filled
+              ? 'fill-amber-400 text-amber-400'
+              : 'fill-transparent text-slate-600'
+          }`}
+          strokeWidth={1.75}
+          aria-hidden
+        />
+      ))}
+    </span>
+  );
+}
+
+/** Stars for shared depth; green check for Guide-only Yes; plain text otherwise. */
 function CompareCell({
   cell,
   lang,
@@ -35,6 +59,16 @@ function CompareCell({
   lang: ReportCompareLang;
 }) {
   const text = cell.text[lang];
+
+  if (typeof cell.stars === 'number') {
+    return (
+      <span className="inline-flex flex-col gap-1 min-w-0">
+        <StarRating value={cell.stars} />
+        <span className="text-slate-400 text-sm leading-snug">{text}</span>
+      </span>
+    );
+  }
+
   const match = /^(Yes|有)\s*(.*)$/i.exec(text.trim());
   if (match) {
     const suffix = match[2].trim();
