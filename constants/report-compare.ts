@@ -56,58 +56,8 @@ export const REPORT_COMPARE_COL: {
   },
 };
 
+/** Snapshot ✓ rows first, then Guide-only (—), then meta — so exclusives read as upgrades. */
 export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
-  {
-    feature: {
-      en: 'Best for',
-      'zh-TW': '最適用',
-      'zh-CN': '最适用',
-    },
-    snapshot: {
-      en: 'Decide whether to apply',
-      'zh-TW': '決定要不要投',
-      'zh-CN': '决定要不要投',
-    },
-    guide: {
-      en: 'Prepare interviews & negotiate',
-      'zh-TW': '面試準備與談薪',
-      'zh-CN': '面试准备与谈薪',
-    },
-  },
-  {
-    feature: {
-      en: 'Model',
-      'zh-TW': '模型',
-      'zh-CN': '模型',
-    },
-    snapshot: {
-      en: 'Flash-Lite (fast)',
-      'zh-TW': 'Flash-Lite（快）',
-      'zh-CN': 'Flash-Lite（快）',
-    },
-    guide: {
-      en: 'Pro (deeper)',
-      'zh-TW': 'Pro（更深）',
-      'zh-CN': 'Pro（更深）',
-    },
-  },
-  {
-    feature: {
-      en: 'Live web search',
-      'zh-TW': '即時網搜',
-      'zh-CN': '即时网搜',
-    },
-    snapshot: {
-      en: '—',
-      'zh-TW': '—',
-      'zh-CN': '—',
-    },
-    guide: {
-      en: 'Yes (Google Search)',
-      'zh-TW': '有（Google Search）',
-      'zh-CN': '有（Google Search）',
-    },
-  },
   {
     feature: {
       en: 'Fit score + apply decision',
@@ -140,6 +90,23 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       en: 'Yes + negotiation levers',
       'zh-TW': '有 + 談判槓桿',
       'zh-CN': '有 + 谈判杠杆',
+    },
+  },
+  {
+    feature: {
+      en: 'Live web search',
+      'zh-TW': '即時網搜',
+      'zh-CN': '即时网搜',
+    },
+    snapshot: {
+      en: '—',
+      'zh-TW': '—',
+      'zh-CN': '—',
+    },
+    guide: {
+      en: 'Yes (Google Search)',
+      'zh-TW': '有（Google Search）',
+      'zh-CN': '有（Google Search）',
     },
   },
   {
@@ -208,6 +175,40 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       en: 'Yes',
       'zh-TW': '有',
       'zh-CN': '有',
+    },
+  },
+  {
+    feature: {
+      en: 'Best for',
+      'zh-TW': '最適用',
+      'zh-CN': '最适用',
+    },
+    snapshot: {
+      en: 'Decide whether to apply',
+      'zh-TW': '決定要不要投',
+      'zh-CN': '决定要不要投',
+    },
+    guide: {
+      en: 'Prepare interviews & negotiate',
+      'zh-TW': '面試準備與談薪',
+      'zh-CN': '面试准备与谈薪',
+    },
+  },
+  {
+    feature: {
+      en: 'Model',
+      'zh-TW': '模型',
+      'zh-CN': '模型',
+    },
+    snapshot: {
+      en: 'Flash-Lite (fast)',
+      'zh-TW': 'Flash-Lite（快）',
+      'zh-CN': 'Flash-Lite（快）',
+    },
+    guide: {
+      en: 'Pro (deeper)',
+      'zh-TW': 'Pro（更深）',
+      'zh-CN': 'Pro（更深）',
     },
   },
   {
