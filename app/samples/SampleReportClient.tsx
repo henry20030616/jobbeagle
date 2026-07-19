@@ -76,30 +76,31 @@ export default function SampleReportClient() {
           </header>
 
           {/*
-            One row: left chrome box (SAMPLE + tabs + Compare) | right report box
+            Tops align; left chrome height = content only (never stretch to report height).
           */}
           <main className="flex-1 w-full max-w-full px-4 py-4 overflow-x-clip">
-            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] gap-4 items-start w-full max-w-full">
+            <div className="flex flex-col lg:flex-row lg:items-start gap-4 w-full max-w-full">
               <aside
-                className={`rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 sm:p-4 flex flex-col gap-3 min-w-0 h-fit self-start`}
+                className={`w-full lg:w-64 lg:shrink-0 rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 flex flex-col gap-2.5 min-w-0`}
+                style={{ height: 'fit-content', alignSelf: 'flex-start' }}
               >
                 <div
-                  className={`${SAMPLE_NOTICE_SURFACE} w-full px-4 py-3 flex flex-col gap-2`}
+                  className={`${SAMPLE_NOTICE_SURFACE} w-full px-3 py-2.5 flex flex-col gap-1.5`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0">
                     <SampleMark variant="notice" />
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
                       <Sparkles className="w-4 h-4 text-white" />
                     </span>
                   </div>
-                  <p className="text-base font-bold text-white leading-snug">
+                  <p className="text-sm font-bold text-white leading-snug">
                     {isGuide ? guideLabel : snapshotLabel} sample · no credits
                   </p>
                   <Link
                     href="/"
-                    className="inline-flex items-center gap-1.5 text-base font-bold text-white hover:text-blue-50"
+                    className="inline-flex items-center gap-1 text-sm font-bold text-white hover:text-blue-50"
                   >
-                    <ArrowLeft className="w-5 h-5 shrink-0" />
+                    <ArrowLeft className="w-4 h-4 shrink-0" />
                     Analyze
                   </Link>
                 </div>
@@ -119,11 +120,11 @@ export default function SampleReportClient() {
                 <ReportCompareModal
                   language="en"
                   variant="panel"
-                  className="w-full"
+                  className="w-full shrink-0"
                 />
               </aside>
 
-              <div className="min-w-0 max-w-full overflow-x-clip">
+              <div className="min-w-0 flex-1 max-w-full overflow-x-clip">
                 {isGuide ? (
                   <FullReportDashboard
                     report={guide}

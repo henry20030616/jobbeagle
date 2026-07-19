@@ -16,7 +16,7 @@ export const SAMPLE_HEADER_TEXT = 'text-base sm:text-lg font-bold tracking-tight
 export const SAMPLE_HEADER_ICON = 'w-5 h-5 shrink-0';
 /** Base shell only — active/inactive border style set by caller (solid vs dashed) */
 export const SAMPLE_HEADER_BTN =
-  `inline-flex items-center gap-2 rounded-xl border-2 px-3 py-2.5 ${SAMPLE_HEADER_TEXT} transition-colors`;
+  `inline-flex items-center gap-2 rounded-xl border-2 px-3 py-2 ${SAMPLE_HEADER_TEXT} transition-colors shrink-0`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
