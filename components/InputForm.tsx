@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, Puzzle, CreditCard } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, ArrowRight, Save, Puzzle, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -505,11 +505,31 @@ const InputForm: React.FC<InputFormProps> = ({
     ? '剩餘額度：匹配快照 / 面試策略（點此加購或管理帳戶）'
     : 'Remaining credits: Snapshot / Strategy Guide (buy more or manage account)';
 
+  const blocked = jobInputKind.kind === 'blocked_board';
+  const publicAts = jobInputKind.kind === 'public_ats';
+  const submitLabel = publicAts
+    ? resume
+      ? zh
+        ? '立即解析並分析'
+        : 'Parse & analyze'
+      : zh
+        ? '解析網址'
+        : 'Parse URL'
+    : t.generate;
+  const submitDisabled =
+    isLoading ||
+    isParsingUrl ||
+    isSaving ||
+    !jobDescription ||
+    blocked ||
+    (!publicAts && !resume);
+
   return (
-    <div className={`flex flex-col w-full max-w-full min-w-0 overflow-x-clip ${compactChrome ? 'gap-5' : 'gap-6'}`}>
-      <div className={`text-center space-y-3 px-1 ${compactChrome ? 'py-1' : 'py-2'}`}>
-        <BrandLogo size={compactChrome ? 'nav' : 'hero'} as="h1" className="justify-center max-w-full" />
-        <p className={`text-slate-400 max-w-4xl mx-auto font-medium leading-relaxed ${compactChrome ? 'text-sm md:text-base' : 'text-lg md:text-xl'}`}>
+    <div className="flex flex-col w-full max-w-full min-w-0 overflow-x-clip gap-4">
+      {/* Compact brand band — samples-style: at a glance, no giant hero eating space */}
+      <div className="text-center space-y-2 px-1">
+        <BrandLogo size="nav" showIcon as="h1" className="justify-center max-w-full" />
+        <p className="text-slate-400 max-w-3xl mx-auto font-medium leading-relaxed text-sm sm:text-base">
           {t.description}
         </p>
         {extensionCapture && (
@@ -522,61 +542,52 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full max-w-full min-w-0 overflow-x-clip">
-        <div className="w-full max-w-full rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
-          {/*
-            Desktop: CSS subgrid shares title / controls / content row heights across cols 1–3
-            so Job Fit Snapshot top aligns with Job + Resume boxes.
-          */}
-          <div className="jb-home-operator grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_auto_minmax(220px,1fr)]">
+      <form onSubmit={handleSubmit} className="w-full max-w-full min-w-0 overflow-x-clip">
+        {/*
+          One frame, four columns always in view (lg+).
+          No subgrid, no carousel chevrons, no horizontal pan.
+        */}
+        <div className="w-full max-w-full rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl overflow-x-clip overflow-y-visible">
+          <div className="jb-home-operator">
             {/* 1. Job */}
-            <div className="relative lg:col-span-4 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
-                <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
-                <span className="leading-snug">{t.jobData}</span>
+            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
+                <span className="w-1.5 h-6 bg-indigo-500 rounded-full shrink-0" />
+                <span className="leading-snug truncate">{t.jobData}</span>
               </h2>
-              <div className="pb-3 flex flex-col gap-1.5 justify-end">
-                <p className="text-sm text-slate-400 leading-snug pl-[1.125rem]">
+              <div className="flex flex-col gap-1.5 min-w-0">
+                <p className="text-sm text-slate-400 leading-snug">
                   {extensionCapture
                     ? (zh
                         ? '請確認外掛抓取的職缺內容，必要時可微調後再分析。'
                         : 'Review the captured job — edit if needed, then continue.')
                     : t.jobStepHint}
                 </p>
-                <div className="min-h-[2.125rem] flex items-center">
-                  {extensionCapture ? (
-                    <div className="inline-flex flex-col gap-1 max-w-full">
-                      <span className="inline-flex items-center gap-1.5 text-sm text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/25 whitespace-nowrap">
-                        <Puzzle className="w-4 h-4 shrink-0" />
-                        <span className="font-bold">
-                          {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
-                        </span>
+                {extensionCapture ? (
+                  <div className="inline-flex flex-col gap-1 max-w-full min-w-0">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/25 w-fit max-w-full">
+                      <Puzzle className="w-4 h-4 shrink-0" />
+                      <span className="font-bold truncate">
+                        {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
                       </span>
-                      <span className="text-xs text-slate-400 pl-1 truncate max-w-[16rem]" title={`${extensionCapture.company_name} · ${extensionCapture.job_title}`}>
-                        {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || '—'}
-                      </span>
-                    </div>
-                  ) : (
+                    </span>
+                    <span className="text-xs text-slate-400 truncate" title={`${extensionCapture.company_name} · ${extensionCapture.job_title}`}>
+                      {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || '—'}
+                    </span>
+                  </div>
+                ) : (
                   <Link
                     href="/extension"
-                    className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
-                    title={
-                      currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
-                        ? '職缺頁可一鍵抓 JD，免手動貼上'
-                        : 'On a job page? Grab the JD in one click — no paste'
-                    }
+                    className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all w-fit max-w-full"
                   >
                     <Puzzle className="w-4 h-4 shrink-0" />
-                    <span className="font-bold">
-                      {currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
-                        ? 'Chrome 外掛一鍵抓職缺 →'
-                        : 'Grab JD with Chrome extension →'}
+                    <span className="font-bold truncate">
+                      {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with extension →'}
                     </span>
                   </Link>
-                  )}
-                </div>
+                )}
               </div>
-              <div className="min-h-[16rem] lg:min-h-0 h-full flex flex-col min-w-0">
+              <div className="flex-1 min-h-[14rem] flex flex-col min-w-0">
                 <SmartInputArea
                   value={jobDescription}
                   onChange={(next) => {
@@ -604,39 +615,28 @@ const InputForm: React.FC<InputFormProps> = ({
                   }}
                 />
               </div>
-              <div
-                className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none"
-                aria-hidden
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </div>
-              <div className="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-slate-500 pointer-events-none" aria-hidden>
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </div>
+            </section>
 
             {/* 2. Resume */}
-            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
-                <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
+            <section className="relative flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
+                <span className="w-1.5 h-6 bg-violet-500 rounded-full shrink-0" />
                 <span className="truncate">{t.resume}</span>
               </h2>
-              <div className="relative pb-3 flex flex-col justify-end">
-                <div className="min-h-[2.125rem] flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-                    className="flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap"
-                  >
-                    <History className="w-4 h-4" />
-                    <span className="font-bold">{t.resumeLibrary}</span>
-                    {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
-                  </button>
-                </div>
+              <div className="relative min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
+                  className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all max-w-full"
+                >
+                  <History className="w-4 h-4 shrink-0" />
+                  <span className="font-bold truncate">{t.resumeLibrary}</span>
+                  {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
+                </button>
                 {showHistoryDropdown && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
-                    <div className="absolute left-0 top-full mt-1 w-80 max-w-[calc(100vw-2rem)] bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
+                    <div className="absolute left-0 top-full mt-1 w-full max-w-sm bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
                       <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-xs font-bold text-slate-500 uppercase tracking-widest">
                         {t.recentlyUploaded}
                       </div>
@@ -648,9 +648,9 @@ const InputForm: React.FC<InputFormProps> = ({
                         resumeHistory.map((historyItem) => (
                           <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-3 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all">
                             <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5 mr-2" />
-                            <div className="flex-1 overflow-hidden text-left">
+                            <div className="flex-1 overflow-hidden text-left min-w-0">
                               <p className="text-sm text-slate-200 font-bold truncate">{historyItem.fileName}</p>
-                              <p className="text-xs text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1" />{formatDateTime(historyItem.timestamp)}</p>
+                              <p className="text-xs text-slate-500 flex items-center mt-1"><Clock className="w-3.5 h-3.5 mr-1 shrink-0" />{formatDateTime(historyItem.timestamp)}</p>
                             </div>
                             <button type="button" onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-1.5 text-slate-600 hover:text-red-400 rounded"><X className="w-3.5 h-3.5" /></button>
                           </div>
@@ -660,20 +660,19 @@ const InputForm: React.FC<InputFormProps> = ({
                   </>
                 )}
               </div>
-
-              <div className="min-h-[16rem] lg:min-h-0 h-full flex flex-col min-w-0">
+              <div className="flex-1 min-h-[14rem] flex flex-col min-w-0">
                 {!resume ? (
-                  <div className="w-full flex-1 h-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
+                  <div className="w-full flex-1 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 relative min-w-0">
                     <label
                       htmlFor="resume-file-input"
-                      className="flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-slate-700/30 w-full h-full px-3 py-4 rounded-xl group relative z-10"
+                      className="flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-700/30 w-full h-full px-3 py-4 rounded-xl group"
                     >
-                      <div className="p-3 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
-                        <Upload className="w-8 h-8 text-slate-400 group-hover:text-indigo-400" />
+                      <div className="p-2.5 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
+                        <Upload className="w-6 h-6 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="text-center min-w-0">
-                        <p className="text-xl text-slate-300 font-bold">{t.upload}</p>
-                        <p className="text-base text-slate-500 mt-1 font-medium leading-snug">{t.uploadSupport}</p>
+                        <p className="text-base text-slate-300 font-bold">{t.upload}</p>
+                        <p className="text-xs text-slate-500 mt-1 font-medium leading-snug">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input
@@ -687,11 +686,11 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                   </div>
                 ) : (
-                  <div className="w-full flex-1 h-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col justify-center gap-2 p-3 animate-fade-in">
+                  <div className="w-full flex-1 bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col justify-center gap-2 p-3 animate-fade-in min-w-0">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0"><FileText className="w-4 h-4 text-white" /></div>
                       <div className="min-w-0 text-left">
-                        <p className="text-base font-bold text-white truncate">{resume.fileName}</p>
+                        <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
                         <p className="text-xs text-indigo-300">Ready for Analysis</p>
                       </div>
                       <button type="button" onClick={clearFile} className="p-1.5 hover:bg-white/10 rounded-full text-slate-400 ml-auto shrink-0"><X className="w-4 h-4" /></button>
@@ -712,42 +711,29 @@ const InputForm: React.FC<InputFormProps> = ({
                   </div>
                 )}
               </div>
-              <div
-                className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none"
-                aria-hidden
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </div>
-              <div className="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-slate-500 pointer-events-none" aria-hidden>
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </div>
+            </section>
 
             {/* 3. Report type */}
-            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
-                <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
+            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
+                <span className="w-1.5 h-6 bg-emerald-500 rounded-full shrink-0" />
                 <span className="leading-snug truncate">{t.reportTypeStep}</span>
               </h2>
-              <div className="pb-3 flex flex-col justify-end">
-                <div className="min-h-[2.125rem] flex items-center">
-                  {onReportTypeChange ? (
-                    <Link
-                      href="/account"
-                      className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all max-w-full"
-                      title={creditsPillTitle}
-                    >
-                      <CreditCard className="w-4 h-4 shrink-0" />
-                      <span className="font-bold leading-snug">{creditsPillLabel}</span>
-                    </Link>
-                  ) : null}
-                </div>
-              </div>
               {onReportTypeChange ? (
-                <div className="min-h-[16rem] lg:min-h-0 h-full flex flex-col gap-2.5 min-w-0">
-                  <div className="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
+                <Link
+                  href="/account"
+                  className="inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all w-fit max-w-full"
+                  title={creditsPillTitle}
+                >
+                  <CreditCard className="w-4 h-4 shrink-0" />
+                  <span className="font-bold leading-snug truncate">{creditsPillLabel}</span>
+                </Link>
+              ) : null}
+              {onReportTypeChange ? (
+                <div className="flex-1 min-h-[14rem] flex flex-col gap-2.5 min-w-0">
+                  <div className="flex-1 min-h-0 grid grid-rows-2 gap-2">
                     <div
-                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
+                      className={`w-full min-h-0 rounded-xl border-2 px-3 py-2.5 text-left transition flex flex-col justify-center gap-1.5 ${
                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -758,8 +744,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                         className="text-left w-full min-w-0"
                       >
-                        <p className="font-semibold text-white text-lg leading-snug">Job Fit Snapshot</p>
-                        <p className="text-base text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
+                        <p className="font-semibold text-white text-base leading-snug">Job Fit Snapshot</p>
+                        <p className="text-sm text-slate-400 mt-1 leading-snug">{t.snapshotBlurb}</p>
                       </button>
                       <Link
                         href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
@@ -772,7 +758,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       </Link>
                     </div>
                     <div
-                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
+                      className={`w-full min-h-0 rounded-xl border-2 px-3 py-2.5 text-left transition flex flex-col justify-center gap-1.5 ${
                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -783,8 +769,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                         className="text-left w-full min-w-0"
                       >
-                        <p className="font-semibold text-white text-lg leading-snug">Interview Strategy Guide</p>
-                        <p className="text-base text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
+                        <p className="font-semibold text-white text-base leading-snug">Interview Strategy Guide</p>
+                        <p className="text-sm text-slate-400 mt-1 leading-snug">{t.strategyBlurb}</p>
                       </button>
                       <Link
                         href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
@@ -802,79 +788,47 @@ const InputForm: React.FC<InputFormProps> = ({
                   )}
                 </div>
               ) : (
-                <div className="min-h-[16rem] lg:min-h-0 text-base text-slate-500">—</div>
+                <div className="flex-1 min-h-[14rem] text-base text-slate-500">—</div>
               )}
-              <div
-                className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none"
-                aria-hidden
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </div>
-              <div className="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-slate-500 pointer-events-none" aria-hidden>
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </div>
+            </section>
 
-            {/* Launch — spans all three shared rows */}
-            <div className="lg:col-span-2 lg:row-span-3 p-5 sm:p-6 flex flex-col min-w-0 min-h-0 overflow-hidden bg-slate-700/30">
-              {(() => {
-                const blocked = jobInputKind.kind === 'blocked_board';
-                const publicAts = jobInputKind.kind === 'public_ats';
-                const zh = currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN';
-                const submitLabel = publicAts
-                  ? resume
-                    ? zh
-                      ? '立即解析並分析'
-                      : 'Parse & analyze'
-                    : zh
-                      ? '解析網址'
-                      : 'Parse URL'
-                  : t.generate;
-                const disabled =
-                  isLoading ||
-                  isParsingUrl ||
-                  isSaving ||
-                  !jobDescription ||
-                  blocked ||
-                  (!publicAts && !resume);
-                return (
-                  <button
-                    type="submit"
-                    disabled={disabled}
-                    className={`w-full h-full min-h-[140px] lg:min-h-0 min-w-0 px-3 py-5 rounded-xl font-black text-base sm:text-lg text-white shadow-lg transition-all transform flex flex-col justify-center items-center gap-2.5 text-center ${
-                      disabled
-                        ? 'bg-slate-700 cursor-not-allowed text-slate-500'
-                        : publicAts
-                          ? 'bg-gradient-to-b from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 ring-1 ring-white/10'
-                          : jdError
-                            ? 'bg-gradient-to-b from-red-700 to-red-600 ring-1 ring-red-500/30'
-                            : 'bg-gradient-to-b from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 ring-1 ring-white/10'
-                    }`}
-                  >
-                    {isLoading || isParsingUrl ? (
-                      <>
-                        <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="animate-pulse text-xs leading-snug">
-                          {isParsingUrl
-                            ? (zh ? '解析中…' : 'Parsing…')
-                            : t.generating}
-                        </span>
-                      </>
-                    ) : isSaving ? (
-                      <span className="text-slate-500 text-xs">{t.waitingSave}</span>
-                    ) : (
-                      <>
-                        <span className="leading-snug px-1">{submitLabel}</span>
-                        <ArrowRight className="w-6 h-6 shrink-0" />
-                      </>
-                    )}
-                  </button>
-                );
-              })()}
-            </div>
+            {/* 4. Launch */}
+            <section className="flex flex-col p-4 sm:p-5 min-w-0 bg-slate-900/50">
+              <button
+                type="submit"
+                disabled={submitDisabled}
+                className={`w-full h-full min-h-[10rem] lg:min-h-0 flex-1 min-w-0 px-3 py-5 rounded-xl font-black text-base sm:text-lg text-white shadow-lg transition-all flex flex-col justify-center items-center gap-2.5 text-center ${
+                  submitDisabled
+                    ? 'bg-slate-700 cursor-not-allowed text-slate-500'
+                    : publicAts
+                      ? 'bg-gradient-to-b from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 ring-1 ring-white/10'
+                      : jdError
+                        ? 'bg-gradient-to-b from-red-700 to-red-600 ring-1 ring-red-500/30'
+                        : 'bg-gradient-to-b from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 ring-1 ring-white/10'
+                }`}
+              >
+                {isLoading || isParsingUrl ? (
+                  <>
+                    <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span className="animate-pulse text-xs leading-snug">
+                      {isParsingUrl
+                        ? (zh ? '解析中…' : 'Parsing…')
+                        : t.generating}
+                    </span>
+                  </>
+                ) : isSaving ? (
+                  <span className="text-slate-500 text-xs">{t.waitingSave}</span>
+                ) : (
+                  <>
+                    <span className="leading-snug px-1">{submitLabel}</span>
+                    <ArrowRight className="w-6 h-6 shrink-0" />
+                  </>
+                )}
+              </button>
+            </section>
           </div>
         </div>
       </form>

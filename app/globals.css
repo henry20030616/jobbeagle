@@ -119,12 +119,14 @@ body {
   overflow: hidden !important;
 }
 
-/* Homepage operator — fill width without forcing page-wide scroll */
+/* Homepage operator — 4 columns always in view; never wider than the page */
 .jb-home-operator {
-  min-height: 22rem;
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
 }
 
 .jb-home-operator > * {
@@ -134,10 +136,12 @@ body {
 
 @media (min-width: 1024px) {
   .jb-home-operator {
-    min-height: min(58vh, 40rem);
-    /* minmax(0,1fr) prevents nowrap content from blowing past the viewport */
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-rows: auto auto minmax(16rem, 1fr);
+    grid-template-columns:
+      minmax(0, 1.25fr)
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      minmax(0, 0.72fr);
+    min-height: min(52vh, 36rem);
   }
 }
 
