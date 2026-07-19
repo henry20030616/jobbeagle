@@ -234,21 +234,49 @@ export default function LiteReportDashboard({
           </section>
 
           <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 lg:col-start-1 lg:row-start-2">
-            <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
-                Score Summary
-              </p>
-              <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
-                {score}/100 · {scoreInfo.level}
-                {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
-              </p>
-              <p className="text-lg text-slate-200 leading-relaxed flex-1">
-                {report.fit_score?.sharp_verdict
-                  || report.recruiter_verdict
-                  || report.one_sentence_sharp_critique
-                  || scoreInfo.description}
-              </p>
-            </div>
+            {breakdown.length > 0 ? (
+              <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
+                <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-2">
+                  Score breakdown
+                </p>
+                <ul className="space-y-2 flex-1">
+                  {breakdown.map((b, i) => (
+                    <li key={i} className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-base font-semibold text-slate-200">
+                          {b.dimension}
+                          <span className="ml-2 text-xs font-medium text-slate-500">
+                            {b.weight_pct}%
+                          </span>
+                        </p>
+                        {b.note ? (
+                          <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
+                        ) : null}
+                      </div>
+                      <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
+                        {Math.round(b.score)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
+                <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
+                  Score Summary
+                </p>
+                <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
+                  {score}/100 · {scoreInfo.level}
+                  {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+                </p>
+                <p className="text-lg text-slate-200 leading-relaxed flex-1">
+                  {report.fit_score?.sharp_verdict
+                    || report.recruiter_verdict
+                    || report.one_sentence_sharp_critique
+                    || scoreInfo.description}
+                </p>
+              </div>
+            )}
           </div>
 
           <section className="flex flex-col p-5 sm:p-6 lg:col-start-2 lg:row-start-1 border-t border-slate-700/90 lg:border-t-0">
@@ -302,29 +330,21 @@ export default function LiteReportDashboard({
           <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90 border-t border-slate-700/90">
             {breakdown.length > 0 && (
               <section className="p-5 sm:px-6 sm:py-5">
-                <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-300 mb-3">
-                  Score breakdown
-                </h3>
-                <ul className="space-y-2.5">
-                  {breakdown.map((b, i) => (
-                    <li key={i} className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-base font-semibold text-slate-200">
-                          {b.dimension}
-                          <span className="ml-2 text-xs font-medium text-slate-500">
-                            {b.weight_pct}%
-                          </span>
-                        </p>
-                        {b.note ? (
-                          <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
-                        ) : null}
-                      </div>
-                      <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
-                        {Math.round(b.score)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
+                  <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
+                    Score Summary
+                  </p>
+                  <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
+                    {score}/100 · {scoreInfo.level}
+                    {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+                  </p>
+                  <p className="text-lg text-slate-200 leading-relaxed flex-1">
+                    {report.fit_score?.sharp_verdict
+                      || report.recruiter_verdict
+                      || report.one_sentence_sharp_critique
+                      || scoreInfo.description}
+                  </p>
+                </div>
               </section>
             )}
             {apply?.label && (
