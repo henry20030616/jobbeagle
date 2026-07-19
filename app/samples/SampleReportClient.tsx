@@ -63,13 +63,14 @@ export default function SampleReportClient() {
           {/*
             Desktop 2×2:
               [ actions ] [ SAMPLE mark above frame ]
-              [ notice  ] [ report frame            ]  ← equal height
+              [ notice  ] [ report frame            ]
+            Top-align notice with report; notice height = content only.
           */}
           <div
-            className="flex flex-col gap-3 sm:grid sm:gap-x-5 sm:gap-y-2 sm:items-stretch"
+            className="flex flex-col gap-3 sm:grid sm:gap-x-5 sm:gap-y-2 sm:items-start"
             style={{
               gridTemplateColumns: 'minmax(16rem,20rem) minmax(0,1fr)',
-              gridTemplateRows: 'auto 1fr',
+              gridTemplateRows: 'auto auto',
               gridTemplateAreas: `
                 "actions mark"
                 "notice report"
@@ -106,7 +107,7 @@ export default function SampleReportClient() {
             </div>
 
             <div
-              className={`${SAMPLE_NOTICE_SURFACE} w-full h-full min-h-[12rem] px-5 py-5 flex flex-col gap-3.5`}
+              className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-5 flex flex-col gap-3.5`}
               style={{ gridArea: 'notice' }}
             >
               <SampleMark variant="notice" />
@@ -125,14 +126,14 @@ export default function SampleReportClient() {
               </div>
               <Link
                 href="/"
-                className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-blue-50"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-blue-50"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to analyze
               </Link>
             </div>
 
-            <div className="min-w-0 w-full h-full" style={{ gridArea: 'report' }}>
+            <div className="min-w-0 w-full" style={{ gridArea: 'report' }}>
               {/* isSample=false: SAMPLE mark is rendered in the grid above the frame */}
               {isGuide ? (
                 <FullReportDashboard
