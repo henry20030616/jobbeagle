@@ -33,11 +33,11 @@ export default function SampleReportClient() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <header className="border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-        <BrandLogo size="inline" />
+        <BrandLogo size="sm" />
         <div className="flex items-center gap-2">
           <Link
             href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-            className={`rounded-full px-3 py-1.5 text-xs font-bold border transition-colors ${
+            className={`rounded-full px-3 py-1.5 text-sm font-semibold border transition-colors ${
               !isGuide
                 ? 'border-violet-500 bg-violet-500/15 text-violet-100'
                 : 'border-slate-700 text-slate-400 hover:text-slate-200'
@@ -47,7 +47,7 @@ export default function SampleReportClient() {
           </Link>
           <Link
             href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-            className={`rounded-full px-3 py-1.5 text-xs font-bold border transition-colors ${
+            className={`rounded-full px-3 py-1.5 text-sm font-semibold border transition-colors ${
               isGuide
                 ? 'border-violet-500 bg-violet-500/15 text-violet-100'
                 : 'border-slate-700 text-slate-400 hover:text-slate-200'

@@ -9,9 +9,9 @@ export const BRAND_BEAGLE_CLASS = 'text-blue-500';
 
 type BrandLogoProps = {
   href?: string | null;
-  /** nav = header; hero = homepage main visual; inline = text-only mid-size */
-  size?: 'nav' | 'hero' | 'inline';
-  /** Show beagle icon (hero default on; nav/inline default off) */
+  /** nav = header; hero = homepage; inline = mid-size; sm = match report action btn */
+  size?: 'nav' | 'hero' | 'inline' | 'sm';
+  /** Show beagle icon (hero default on; nav/inline/sm default off) */
   showIcon?: boolean;
   className?: string;
   as?: 'span' | 'h1';
@@ -20,6 +20,8 @@ type BrandLogoProps = {
 const sizeClasses = {
   nav: 'text-2xl sm:text-3xl font-black tracking-tight',
   inline: 'text-xl font-bold tracking-tight',
+  /** Matches REPORT_ACTION_BTN (e.g. Back to Home) */
+  sm: 'text-sm font-semibold tracking-tight',
   hero: 'text-5xl md:text-7xl font-black tracking-tight',
 } as const;
 
