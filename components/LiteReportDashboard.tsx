@@ -20,7 +20,6 @@ import {
   formatOfferRange,
   formatPredictedOffer,
   offerEvaluationSummary,
-  predictedLandGaugeValue,
 } from '@/lib/offer-display';
 import { scoreSummaryPoints, splitScoreSummaryPoint } from '@/lib/score-summary';
 import { formatJobSourceDate } from '@/lib/job-source';
@@ -65,7 +64,6 @@ export default function LiteReportDashboard({
   const offer = report.expected_offer;
   const offerRange = formatOfferRange(offer);
   const predictedOffer = formatPredictedOffer(offer);
-  const predictedGauge = predictedLandGaugeValue(offer);
   const offerEval = offerEvaluationSummary(offer);
   const tc = offer?.tc_breakdown;
   const tcRows = (
@@ -310,7 +308,7 @@ export default function LiteReportDashboard({
               </div>
 
               {predictedOffer ? (
-                <PredictedLandSquircle value={predictedOffer} gauge={predictedGauge} />
+                <PredictedLandSquircle value={predictedOffer} />
               ) : null}
             </div>
           </section>

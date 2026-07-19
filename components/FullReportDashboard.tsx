@@ -26,7 +26,6 @@ import {
   evidenceTierLabel,
   formatOfferRange,
   formatPredictedOffer,
-  predictedLandGaugeValue,
 } from '@/lib/offer-display';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
@@ -196,7 +195,6 @@ export default function FullReportDashboard({
   const expected = report.expected_offer;
   const offerRange = formatOfferRange(expected);
   const predictedOffer = formatPredictedOffer(expected);
-  const predictedGauge = predictedLandGaugeValue(expected);
 
   const sources = useMemo(() => {
     if (report.provenance?.entries?.length) {
@@ -643,11 +641,7 @@ export default function FullReportDashboard({
                             </p>
                           </div>
                           {predictedOffer ? (
-                            <PredictedLandSquircle
-                              value={predictedOffer}
-                              gauge={predictedGauge}
-                              labelPosition="above"
-                            />
+                            <PredictedLandSquircle value={predictedOffer} />
                           ) : null}
                         </div>
                       </div>
