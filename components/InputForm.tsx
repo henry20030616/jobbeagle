@@ -506,10 +506,10 @@ const InputForm: React.FC<InputFormProps> = ({
     : 'Remaining credits: Snapshot / Strategy Guide (buy more or manage account)';
 
   return (
-    <div className={`flex flex-col ${compactChrome ? 'gap-6' : 'gap-10'}`}>
-      <div className={`text-center space-y-3 ${compactChrome ? 'py-1' : 'py-4'}`}>
+    <div className={`flex flex-col w-full ${compactChrome ? 'gap-5' : 'gap-6'}`}>
+      <div className={`text-center space-y-3 ${compactChrome ? 'py-1' : 'py-2'}`}>
         <BrandLogo size={compactChrome ? 'nav' : 'hero'} as="h1" className="justify-center" />
-        <p className={`text-slate-400 max-w-3xl mx-auto font-medium leading-relaxed ${compactChrome ? 'text-sm md:text-base' : 'text-lg md:text-xl'}`}>
+        <p className={`text-slate-400 max-w-4xl mx-auto font-medium leading-relaxed ${compactChrome ? 'text-sm md:text-base' : 'text-lg md:text-xl'}`}>
           {t.description}
         </p>
         {extensionCapture && (
@@ -522,16 +522,16 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
+        <div className="w-full rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
           {/*
             Desktop: CSS subgrid shares title / controls / content row heights across cols 1–3
             so Job Fit Snapshot top aligns with Job + Resume boxes.
           */}
           <div className="jb-home-operator grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_auto_minmax(220px,1fr)]">
             {/* 1. Job */}
-            <div className="relative lg:col-span-4 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
+            <div className="relative lg:col-span-4 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-6 sm:p-8 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
@@ -576,7 +576,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   )}
                 </div>
               </div>
-              <div className="min-h-[18rem] lg:min-h-0 h-full flex flex-col">
+              <div className="min-h-[22rem] lg:min-h-0 h-full flex flex-col">
                 <SmartInputArea
                   value={jobDescription}
                   onChange={(next) => {
@@ -616,8 +616,8 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 2. Resume */}
-            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-6 sm:p-8 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
                 <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
@@ -661,7 +661,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 )}
               </div>
 
-              <div className="min-h-[18rem] lg:min-h-0 h-full flex flex-col">
+              <div className="min-h-[22rem] lg:min-h-0 h-full flex flex-col">
                 {!resume ? (
                   <div className="w-full flex-1 h-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
@@ -669,11 +669,11 @@ const InputForm: React.FC<InputFormProps> = ({
                       className="flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-slate-700/30 w-full h-full px-3 py-4 rounded-xl group relative z-10"
                     >
                       <div className="p-3 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
-                        <Upload className="w-7 h-7 text-slate-400 group-hover:text-indigo-400" />
+                        <Upload className="w-8 h-8 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="text-center min-w-0">
-                        <p className="text-lg text-slate-300 font-bold">{t.upload}</p>
-                        <p className="text-sm text-slate-500 mt-1 font-medium leading-snug">{t.uploadSupport}</p>
+                        <p className="text-xl text-slate-300 font-bold">{t.upload}</p>
+                        <p className="text-base text-slate-500 mt-1 font-medium leading-snug">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input
@@ -724,8 +724,8 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 3. Report type */}
-            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
-              <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-6 sm:p-8 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
                 <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
                 <span className="leading-snug">{t.reportTypeStep}</span>
               </h2>
@@ -744,10 +744,10 @@ const InputForm: React.FC<InputFormProps> = ({
                 </div>
               </div>
               {onReportTypeChange ? (
-                <div className="min-h-[18rem] lg:min-h-0 h-full flex flex-col gap-2.5">
-                  <div className="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
+                <div className="min-h-[22rem] lg:min-h-0 h-full flex flex-col gap-2.5">
+                  <div className="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                     <div
-                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
+                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-4 py-3.5 text-left transition flex flex-col justify-center gap-2 ${
                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -758,7 +758,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                         className="text-left w-full"
                       >
-                        <p className="font-semibold text-white text-lg">Job Fit Snapshot</p>
+                        <p className="font-semibold text-white text-xl">Job Fit Snapshot</p>
                         <p className="text-base text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
                       </button>
                       <Link
@@ -772,7 +772,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       </Link>
                     </div>
                     <div
-                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-2 ${
+                      className={`w-full min-h-0 self-stretch rounded-xl border-2 px-4 py-3.5 text-left transition flex flex-col justify-center gap-2 ${
                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                           ? 'border-solid border-violet-500 bg-violet-500/10'
                           : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
@@ -783,7 +783,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                         className="text-left w-full"
                       >
-                        <p className="font-semibold text-white text-lg">Interview Strategy Guide</p>
+                        <p className="font-semibold text-white text-xl">Interview Strategy Guide</p>
                         <p className="text-base text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
                       </button>
                       <Link
@@ -802,7 +802,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   )}
                 </div>
               ) : (
-                <div className="min-h-[18rem] lg:min-h-0 text-base text-slate-500">—</div>
+                <div className="min-h-[22rem] lg:min-h-0 text-base text-slate-500">—</div>
               )}
               <div
                 className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md col-start-1 row-start-1 row-span-3 pointer-events-none"
@@ -816,7 +816,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* Launch — spans all three shared rows */}
-            <div className="lg:col-span-2 lg:row-span-3 p-5 sm:p-6 flex flex-col min-h-0 bg-slate-700/30">
+            <div className="lg:col-span-2 lg:row-span-3 p-6 sm:p-8 flex flex-col min-h-0 bg-slate-700/30">
               {(() => {
                 const blocked = jobInputKind.kind === 'blocked_board';
                 const publicAts = jobInputKind.kind === 'public_ats';
@@ -841,7 +841,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   <button
                     type="submit"
                     disabled={disabled}
-                    className={`w-full h-full min-h-[140px] lg:min-h-0 px-4 py-5 rounded-xl font-black text-base sm:text-lg text-white shadow-lg transition-all transform flex flex-col justify-center items-center gap-2.5 text-center ${
+                    className={`w-full h-full min-h-[160px] lg:min-h-0 px-4 py-6 rounded-xl font-black text-lg sm:text-xl text-white shadow-lg transition-all transform flex flex-col justify-center items-center gap-2.5 text-center ${
                       disabled
                         ? 'bg-slate-700 cursor-not-allowed text-slate-500'
                         : publicAts

@@ -414,10 +414,10 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      {/* ~75–92vw content band (bank-style occupancy), not a 1440px zoom island */}
-      <main className="w-[min(92vw,110rem)] mx-auto px-4 sm:px-8 py-6 sm:py-8">
-        <div className="flex items-center justify-between gap-4 mb-6">
+    <div className="min-h-screen w-full max-w-[100%] overflow-x-hidden bg-slate-950 text-slate-200">
+      {/* Near full-bleed content — minimal side gutters, no narrow centered island */}
+      <main className="w-full max-w-[100%] px-3 sm:px-5 lg:px-6 py-5 sm:py-6">
+        <div className="flex items-center justify-between gap-4 mb-5">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher variant="dark" />

@@ -10,10 +10,17 @@
   --scrollbar-thumb-hover: #475569;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
   min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100%;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
@@ -111,15 +118,16 @@ body {
   overflow: hidden !important;
 }
 
-/* Homepage operator — tall enough to own the viewport like a bank rates board */
+/* Homepage operator — wide strip that owns most of the viewport */
 .jb-home-operator {
-  min-height: 22rem;
+  min-height: 26rem;
+  width: 100%;
 }
 
 @media (min-width: 1024px) {
   .jb-home-operator {
-    min-height: min(56vh, 42rem);
-    grid-template-rows: auto auto minmax(18rem, 1fr);
+    min-height: min(68vh, 48rem);
+    grid-template-rows: auto auto minmax(22rem, 1fr);
   }
 }
 
