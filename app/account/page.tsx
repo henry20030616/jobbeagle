@@ -80,6 +80,10 @@ const copy: Record<
     subscriptionNote: string;
     buy: string;
     buying: string;
+    syncSub: string;
+    syncing: string;
+    syncOk: string;
+    syncNone: string;
     billing: string;
     billingEmpty: string;
     date: string;
@@ -119,6 +123,10 @@ const copy: Record<
       'Buy or upgrade below. To cancel a Lemon Squeezy subscription, use the link in your order receipt email until a customer portal is available.',
     buy: 'Buy',
     buying: 'Redirecting…',
+    syncSub: 'Sync subscription credits',
+    syncing: 'Syncing…',
+    syncOk: 'Subscription synced — monthly credits refreshed.',
+    syncNone: 'No active Standard/Advanced subscription found for this email.',
     billing: 'Billing history',
     billingEmpty: 'No orders yet.',
     date: 'Date',
@@ -158,6 +166,10 @@ const copy: Record<
       '可在下方購買或升級。若需取消 Lemon Squeezy 訂閱，請先使用訂單確認信中的連結；客戶入口稍後會開放。',
     buy: '購買',
     buying: '跳轉中…',
+    syncSub: '同步訂閱額度',
+    syncing: '同步中…',
+    syncOk: '已同步訂閱，月額度已刷新。',
+    syncNone: '此信箱沒有進行中的 Standard／Advanced 訂閱。',
     billing: '帳單紀錄',
     billingEmpty: '尚無訂單。',
     date: '日期',
@@ -196,6 +208,10 @@ const copy: Record<
       '可在下方购买或升级。取消 Lemon Squeezy 订阅请先使用订单确认信中的链接。',
     buy: '购买',
     buying: '跳转中…',
+    syncSub: '同步订阅额度',
+    syncing: '同步中…',
+    syncOk: '已同步订阅，月额度已刷新。',
+    syncNone: '此邮箱没有进行中的 Standard／Advanced 订阅。',
     billing: '账单记录',
     billingEmpty: '暂无订单。',
     date: '日期',
@@ -234,6 +250,10 @@ const copy: Record<
       'Compra o mejora abajo. Para cancelar en Lemon Squeezy, usa el enlace del email del pedido.',
     buy: 'Comprar',
     buying: 'Redirigiendo…',
+    syncSub: 'Sincronizar créditos de suscripción',
+    syncing: 'Sincronizando…',
+    syncOk: 'Suscripción sincronizada — créditos mensuales actualizados.',
+    syncNone: 'No hay suscripción Standard/Advanced activa para este email.',
     billing: 'Historial de facturación',
     billingEmpty: 'Sin pedidos aún.',
     date: 'Fecha',
@@ -272,6 +292,10 @@ const copy: Record<
       'नीचे खरीदें या अपग्रेड करें। Lemon Squeezy रद्द करने के लिए ऑर्डर ईमेल लिंक उपयोग करें।',
     buy: 'खरीदें',
     buying: 'रीडायरेक्ट…',
+    syncSub: 'सदस्यता क्रेडिट सिंक करें',
+    syncing: 'सिंक हो रहा है…',
+    syncOk: 'सदस्यता सिंक हो गई — मासिक क्रेडिट रिफ्रेश।',
+    syncNone: 'इस ईमेल पर सक्रिय Standard/Advanced सदस्यता नहीं मिली।',
     billing: 'बिलिंग इतिहास',
     billingEmpty: 'अभी कोई ऑर्डर नहीं।',
     date: 'तारीख',
@@ -310,6 +334,10 @@ const copy: Record<
       'اشترِ أو رقِّ أدناه. لإلغاء Lemon Squeezy استخدم رابط رسالة الطلب.',
     buy: 'شراء',
     buying: 'جارٍ التحويل…',
+    syncSub: 'مزامنة رصيد الاشتراك',
+    syncing: 'جارٍ المزامنة…',
+    syncOk: 'تمت مزامنة الاشتراك — تم تحديث الرصيد الشهري.',
+    syncNone: 'لا يوجد اشتراك Standard/Advanced نشط لهذا البريد.',
     billing: 'سجل الفوترة',
     billingEmpty: 'لا طلبات بعد.',
     date: 'التاريخ',
@@ -375,6 +403,8 @@ export default function AccountPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyPlan, setBusyPlan] = useState<CheckoutPlanType | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
+  const [syncBusy, setSyncBusy] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -418,6 +448,30 @@ export default function AccountPage() {
     const result = await startCheckout(plan);
     if (!result.ok) setError(result.error);
     setBusyPlan(null);
+  };
+
+  const handleSyncSubscription = async () => {
+    setSyncBusy(true);
+    setError(null);
+    setSyncMessage(null);
+    try {
+      const res = await fetch('/api/account/sync-subscription', { method: 'POST' });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(typeof body.error === 'string' ? body.error : t.actionError);
+        return;
+      }
+      if (body.synced) {
+        setSyncMessage(t.syncOk);
+        await load();
+      } else {
+        setSyncMessage(t.syncNone);
+      }
+    } catch {
+      setError(t.actionError);
+    } finally {
+      setSyncBusy(false);
+    }
   };
 
   const handleDeactivate = async () => {
@@ -558,6 +612,19 @@ export default function AccountPage() {
                   </h2>
                   <p className="text-xs text-slate-500 mt-1">{t.subscriptionNote}</p>
                 </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={syncBusy || deactivated}
+                  onClick={() => void handleSyncSubscription()}
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg border border-indigo-400/50 bg-indigo-500/15 text-indigo-100 hover:bg-indigo-500/25 disabled:opacity-50 transition-colors"
+                >
+                  {syncBusy ? t.syncing : t.syncSub}
+                </button>
+                {syncMessage ? (
+                  <p className="text-xs text-slate-400">{syncMessage}</p>
+                ) : null}
               </div>
               <ul className="space-y-2">
                 {ACTIVE_CHECKOUT_PLAN_TYPES.map((planType) => {

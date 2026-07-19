@@ -27,7 +27,6 @@ import {
   canAffordReport,
   deductCredit,
   refundCredit,
-  findCachedReport,
   hasSubscriptionCredits,
   type ProfileRow,
 } from '@/lib/profiles';
@@ -37,11 +36,11 @@ import {
   executeLiteAnalysis,
   executeFullAnalysis,
 } from '@/lib/gemini-analyze';
-import { normalizeLiteReport, isEnrichedLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
+import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import { resolveResumeForAnalysis } from '@/lib/resume-parser';
-import { rateLimitAnalyze } from '@/lib/rate-limit';
+import { clientIpFromRequest, rateLimit, rateLimitAnalyze } from '@/lib/rate-limit';
 import { tryActivateReferralMilestone } from '@/lib/referrals';
-import { contentFingerprint, upsertResumeForUser } from '@/lib/resumes';
+import { upsertResumeForUser } from '@/lib/resumes';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import {
@@ -195,6 +194,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const clientIp = clientIpFromRequest(request);
     const sybil = await checkDeviceSybil(
       admin,
       user.id,
@@ -207,6 +207,26 @@ export async function POST(request: NextRequest) {
 
     if (body.device_fingerprint) {
       await bindDeviceFingerprint(admin, user.id, body.device_fingerprint);
+    }
+
+    // Dual anti-abuse for free tier: device fingerprint + IP rate limit.
+    // Missing fingerprint → much tighter IP cap (still allowed, not free-open).
+    if (profile.membership_tier === 'free') {
+      const ipLimit = sybil.mode === 'fingerprinted' ? 20 : 3;
+      const ipWindowSec = sybil.mode === 'fingerprinted' ? 3600 : 86400;
+      const ipRl = await rateLimit('analyze-ip', clientIp, ipLimit, ipWindowSec);
+      if (!ipRl.allowed) {
+        return NextResponse.json(
+          {
+            error:
+              sybil.mode === 'no_fingerprint'
+                ? 'Too many free analyses from this network without a device check. Sign in on a normal browser, or buy credits.'
+                : 'Too many free analyses from this network. Try again later or buy credits.',
+            code: 'RATE_LIMIT',
+          },
+          { status: 429 },
+        );
+      }
     }
 
     const rl = await rateLimitAnalyze(user.id, 30, 3600);
@@ -253,12 +273,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Credits must be checked before cache — free users at 0 cannot replay cached reports
+    // No analyze cache — every run spends a credit; users reopen reports from History.
     if (!canAffordReport(profile, reportType)) {
       return paymentRequiredResponse(profile);
     }
 
-    // Persist resume first so cache can key on resume_id (different resume ≠ cache hit).
     let resumeId: string | null = null;
     try {
       const resumeTextForStore = input.pdf_inline
@@ -278,47 +297,9 @@ export async function POST(request: NextRequest) {
       resumeId = upserted.id;
     } catch (resumeErr) {
       console.warn(
-        '[Analyze] Resume upsert failed (cache skipped; report will still save):',
+        '[Analyze] Resume upsert failed (report will still save):',
         resumeErr instanceof Error ? resumeErr.message : resumeErr,
       );
-    }
-
-    const jdFingerprint = contentFingerprint(input.raw_jd);
-    if (resumeId) {
-      const cached = await findCachedReport(
-        admin,
-        user.id,
-        input.linkedin_job_id,
-        reportType,
-        { resumeId, jdFingerprint },
-      );
-      if (cached?.report_json) {
-        const fullCached = cached.report_json as FullReport;
-        const strategyReady =
-          (Array.isArray(fullCached?.concerns_defenses)
-            && fullCached.concerns_defenses.length >= 3)
-          || (Array.isArray(fullCached?.custom_star_interview_bank)
-            && fullCached.custom_star_interview_bank.length >= 5)
-          || Boolean(fullCached?.interview_playbook?.predicted?.length);
-        const useCache =
-          reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-            ? isEnrichedLiteReport(cached.report_json)
-            : isEnrichedLiteReport(cached.report_json) && strategyReady;
-        if (useCache) {
-          const cachedReport =
-            reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-              ? normalizeLiteReport(cached.report_json as LiteReport)
-              : normalizeFullReport(cached.report_json as FullReport);
-          return NextResponse.json({
-            report: cachedReport,
-            report_type: reportType,
-            report_id: cached.id,
-            resume_id: resumeId,
-            cached: true,
-            model_used: 'cache',
-          });
-        }
-      }
     }
 
     // Deduct before AI call so concurrent requests cannot overspend

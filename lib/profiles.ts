@@ -8,7 +8,6 @@ import {
   normalizeReportType,
 } from '@/constants/report-products';
 import { normalizeCareerContext } from '@/lib/career-context';
-import { contentFingerprint } from '@/lib/resumes';
 
 export interface ProfileRow {
   id: string;
@@ -113,14 +112,30 @@ function generateReferralCode(): string {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
 }
 
+export type SybilCheckResult = {
+  allowed: boolean;
+  /** free + fingerprint OK | free without fingerprint | paid/sub (no sybil gate) */
+  mode: 'fingerprinted' | 'no_fingerprint' | 'paid';
+  reason?: string;
+};
+
+/**
+ * Device Sybil check for free tier.
+ * - Conflicting fingerprint → block
+ * - Missing fingerprint → allow but callers must tighten IP limits (dual defense)
+ */
 export async function checkDeviceSybil(
   admin: SupabaseClient,
   userId: string,
   fingerprint: string | undefined,
   membershipTier: MembershipTier,
-): Promise<{ allowed: boolean; reason?: string }> {
-  if (!fingerprint || membershipTier !== 'free') {
-    return { allowed: true };
+): Promise<SybilCheckResult> {
+  if (membershipTier !== 'free') {
+    return { allowed: true, mode: 'paid' };
+  }
+
+  if (!fingerprint?.trim()) {
+    return { allowed: true, mode: 'no_fingerprint' };
   }
 
   const { data: conflicts } = await admin
@@ -133,11 +148,12 @@ export async function checkDeviceSybil(
   if (conflicts && conflicts.length > 0) {
     return {
       allowed: false,
+      mode: 'fingerprinted',
       reason: 'Device Limit Exceeded. Malicious Sybil Activity Blocked.',
     };
   }
 
-  return { allowed: true };
+  return { allowed: true, mode: 'fingerprinted' };
 }
 
 export async function bindDeviceFingerprint(
@@ -230,50 +246,6 @@ export async function refundCredit(
   }
 
   if (error) throw new Error(`Credit refund failed: ${error.message}`);
-}
-
-/**
- * 24h cache hit only when job + resume + JD text all match.
- * Different resume (or edited JD) must re-run and spend a credit.
- */
-export async function findCachedReport(
-  admin: SupabaseClient,
-  userId: string,
-  linkedinJobId: string,
-  reportType: ReportType | string,
-  opts: {
-    resumeId: string;
-    jdFingerprint: string;
-  },
-): Promise<{ id: string; report_json: unknown } | null> {
-  if (!opts.resumeId || !linkedinJobId || !opts.jdFingerprint) return null;
-
-  const type = normalizeReportType(reportType);
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const types =
-    type === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-      ? ['interview_strategy_guide', 'full']
-      : ['job_fit_snapshot', 'lite'];
-
-  const { data } = await admin
-    .from('analysis_reports')
-    .select('id, report_json, raw_jd_text')
-    .eq('linkedin_job_id', linkedinJobId)
-    .eq('user_id', userId)
-    .eq('resume_id', opts.resumeId)
-    .in('report_type', types)
-    .gt('created_at', since)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (!data?.report_json) return null;
-
-  // Same job id can still carry a different pasted/updated JD — reject mismatch.
-  const storedJd = contentFingerprint(data.raw_jd_text || '');
-  if (storedJd !== opts.jdFingerprint) return null;
-
-  return { id: data.id, report_json: data.report_json };
 }
 
 export function canAffordUserProfile(
