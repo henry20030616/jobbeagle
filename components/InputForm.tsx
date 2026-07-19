@@ -8,7 +8,6 @@ import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
-import BrandLogo from '@/components/BrandLogo';
 import ReportCompareModal from '@/components/ReportCompareModal';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
@@ -525,32 +524,32 @@ const InputForm: React.FC<InputFormProps> = ({
     (!publicAts && !resume);
 
   return (
-    <div className="flex flex-col w-full max-w-full min-w-0 overflow-x-clip gap-4">
-      {/* Compact brand band — samples-style: at a glance, no giant hero eating space */}
-      <div className="text-center space-y-2 px-1">
-        <BrandLogo size="nav" showIcon as="h1" className="justify-center max-w-full" />
-        <p className="text-slate-400 max-w-3xl mx-auto font-medium leading-relaxed text-sm sm:text-base">
+    <div className="flex flex-col w-full max-w-full min-w-0 overflow-x-hidden gap-3">
+      {/* Tagline only — logo lives in page header (avoids a second wide brand row) */}
+      <div className="text-center space-y-2 px-2 min-w-0">
+        <h1 className="sr-only">Jobbeagle</h1>
+        <p className="text-slate-400 max-w-2xl mx-auto font-medium leading-snug text-sm sm:text-base break-words">
           {t.description}
         </p>
         {extensionCapture && (
-          <p className="inline-flex items-center gap-2 text-sm text-emerald-300/90 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-3 py-1.5">
+          <p className="inline-flex items-center gap-2 text-sm text-emerald-300/90 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-3 py-1.5 max-w-full">
             <Puzzle className="w-4 h-4 shrink-0" />
-            <span className="font-semibold">
+            <span className="font-semibold truncate">
               {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
             </span>
           </p>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-full min-w-0 overflow-x-clip">
+      <form onSubmit={handleSubmit} className="w-full max-w-full min-w-0 overflow-x-hidden">
         {/*
-          One frame, four columns always in view (lg+).
-          No subgrid, no carousel chevrons, no horizontal pan.
+          2×2 frame (Job | Resume / Report | Launch) — always fits the viewport.
+          Do NOT use 4-across: long JD placeholder was expanding past 100vw.
         */}
-        <div className="w-full max-w-full rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl overflow-x-clip overflow-y-visible">
+        <div className="w-full max-w-full rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl overflow-hidden">
           <div className="jb-home-operator">
             {/* 1. Job */}
-            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b md:border-r border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
                 <span className="w-1.5 h-6 bg-indigo-500 rounded-full shrink-0" />
                 <span className="leading-snug truncate">{t.jobData}</span>
@@ -618,7 +617,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 2. Resume */}
-            <section className="relative flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <section className="relative flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
                 <span className="w-1.5 h-6 bg-violet-500 rounded-full shrink-0" />
                 <span className="truncate">{t.resume}</span>
@@ -714,7 +713,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 3. Report type */}
-            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 border-b md:border-b-0 md:border-r border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
                 <span className="w-1.5 h-6 bg-emerald-500 rounded-full shrink-0" />
                 <span className="leading-snug truncate">{t.reportTypeStep}</span>

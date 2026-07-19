@@ -10,17 +10,25 @@
   --scrollbar-thumb-hover: #475569;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
-  overflow-x: clip;
+  width: 100%;
   max-width: 100%;
+  overflow-x: hidden !important;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   min-height: 100vh;
-  overflow-x: clip;
+  width: 100%;
   max-width: 100%;
+  overflow-x: hidden !important;
   overscroll-behavior-x: none;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
@@ -119,29 +127,36 @@ body {
   overflow: hidden !important;
 }
 
-/* Homepage operator — 4 columns always in view; never wider than the page */
+/*
+  Homepage operator — 2×2 so all four steps stay inside the viewport.
+  Never 4-across (that + long textarea placeholder was blowing past 100vw).
+*/
 .jb-home-operator {
+  display: grid;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0;
 }
 
 .jb-home-operator > * {
-  min-width: 0;
+  min-width: 0 !important;
   max-width: 100%;
+  overflow: hidden;
 }
 
-@media (min-width: 1024px) {
+.jb-home-operator textarea,
+.jb-home-operator input,
+.jb-home-operator select {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+@media (min-width: 768px) {
   .jb-home-operator {
-    grid-template-columns:
-      minmax(0, 1.25fr)
-      minmax(0, 1fr)
-      minmax(0, 1fr)
-      minmax(0, 0.72fr);
-    min-height: min(52vh, 36rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: min(56vh, 34rem);
   }
 }
 

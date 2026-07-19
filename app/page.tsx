@@ -414,12 +414,12 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-clip overscroll-x-none bg-slate-950 text-slate-200">
-      {/* Samples-style shell: everything in view, no horizontal pan */}
-      <main className="w-full max-w-full min-w-0 overflow-x-clip px-3 sm:px-4 lg:px-5 py-4 sm:py-5">
-        <div className="flex items-center justify-between gap-4 mb-4 min-w-0">
+    <div className="min-h-screen w-full max-w-[100%] overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
+      {/* Hard cap: never wider than the window; 2×2 operator shows all steps */}
+      <main className="w-full max-w-[100%] min-w-0 overflow-x-hidden px-3 sm:px-4 py-4">
+        <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
             <LanguageSwitcher variant="dark" />
             {currentUser && (
               <button

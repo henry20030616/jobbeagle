@@ -27,9 +27,9 @@ export interface SmartInputAreaProps {
 }
 
 const PLACEHOLDER_ZH =
-  '請貼上：公司名稱、職缺名稱，以及完整職缺內文（條件、職責等）。勿只貼職責段落或網址…';
+  '請貼上公司、職缺名稱與完整職缺內文（勿只貼網址）…';
 const PLACEHOLDER_EN =
-  'Paste company name, job title, and the full posting (requirements, responsibilities…). Don’t paste only the body text or a URL…';
+  'Paste company, title, and full JD text (not just a URL)…';
 
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
@@ -64,8 +64,8 @@ export default function SmartInputArea({
   const resolvedPlaceholder = placeholder ?? (zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN);
 
   return (
-    <div className={compact ? 'flex flex-col flex-1 h-full min-h-0 gap-2' : 'space-y-0'}>
-      <div className={`relative ${compact ? 'flex flex-col flex-1 min-h-0 h-full' : ''}`}>
+    <div className={`min-w-0 max-w-full ${compact ? 'flex flex-col flex-1 h-full min-h-0 gap-2' : 'space-y-0'}`}>
+      <div className={`relative min-w-0 max-w-full ${compact ? 'flex flex-col flex-1 min-h-0 h-full' : ''}`}>
         {classification.kind === 'public_ats' && (
           <div className={`${compact ? 'mb-1.5' : 'mb-3'} flex justify-end`}>
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/50 border border-emerald-500/30 rounded-full px-2.5 py-1 transition-all">
