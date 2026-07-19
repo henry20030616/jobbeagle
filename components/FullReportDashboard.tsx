@@ -646,7 +646,6 @@ export default function FullReportDashboard({
                             <PredictedLandSquircle
                               value={predictedOffer}
                               gauge={predictedGauge}
-                              labelPosition="above"
                             />
                           ) : null}
                         </div>
