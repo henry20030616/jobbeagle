@@ -414,9 +414,15 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen w-full max-w-[100%] overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
-      {/* Hard cap: never wider than the window; 2×2 operator shows all steps */}
-      <main className="w-full max-w-[100%] min-w-0 overflow-x-hidden px-3 sm:px-4 py-4">
+    <div
+      className="min-h-screen w-full overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200"
+      style={{ maxWidth: '100vw' }}
+    >
+      {/* Hard cap to viewport — 2×2 operator; no horizontal pan required */}
+      <main
+        className="w-full min-w-0 overflow-x-hidden px-3 sm:px-4 py-4 mx-auto"
+        style={{ maxWidth: 'min(100vw, 72rem)' }}
+      >
         <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">

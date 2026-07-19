@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased" suppressHydrationWarning>
+      <body className="antialiased overflow-x-hidden max-w-[100vw]" suppressHydrationWarning>
         <LanguageProvider>{children}</LanguageProvider>
         {GA_MEASUREMENT_ID ? (
           <>
