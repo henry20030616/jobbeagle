@@ -2,17 +2,17 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, Sparkles, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, Puzzle, CreditCard } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, ArrowRight, Save, ChevronDown, ChevronRight, Puzzle, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
 import BrandLogo from '@/components/BrandLogo';
+import ReportCompareTable from '@/components/ReportCompareTable';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel } from '@/constants/report-products';
-import ReportCompareModal from '@/components/ReportCompareModal';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -62,7 +62,6 @@ const InputForm: React.FC<InputFormProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [jdError, setJdError] = useState<string | null>(null);
   const [isParsingUrl, setIsParsingUrl] = useState(false);
-  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -524,93 +523,9 @@ const InputForm: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        {/* Always-visible compare — top of homepage operator flow (not a modal) */}
         {!compactChrome && (
-        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden relative group">
-           <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity duration-500">
-              <Sparkles className="w-64 h-64 text-indigo-500" />
-           </div>
-
-           <div className="relative">
-               <div className="grid grid-cols-1 lg:grid-cols-4 lg:divide-x divide-slate-700/80">
-                  {([
-                    {
-                      id: 'fit',
-                      icon: ScanSearch,
-                      iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
-                      iconColor: 'text-amber-300',
-                      title: t.matchAnalysis,
-                      desc: t.matchAnalysisDesc,
-                    },
-                    {
-                      id: 'offer',
-                      icon: BadgeDollarSign,
-                      iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
-                      iconColor: 'text-emerald-300',
-                      title: t.salaryResearch,
-                      desc: t.salaryResearchDesc,
-                    },
-                    {
-                      id: 'defenses',
-                      icon: ShieldAlert,
-                      iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
-                      iconColor: 'text-sky-300',
-                      title: t.industryAnalysis,
-                      desc: t.industryAnalysisDesc,
-                    },
-                    {
-                      id: 'playbook',
-                      icon: MessageSquare,
-                      iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
-                      iconColor: 'text-violet-300',
-                      title: t.interviewPrep,
-                      desc: t.interviewPrepDesc,
-                    },
-                  ] as const).map((item) => {
-                    const open = expandedFeature === item.id;
-                    const Icon = item.icon;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        aria-expanded={open}
-                        onMouseEnter={() => setExpandedFeature(item.id)}
-                        onMouseLeave={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
-                        onFocus={() => setExpandedFeature(item.id)}
-                        onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
-                        onClick={() => {
-                          setExpandedFeature(open ? null : item.id);
-                        }}
-                        className="w-full text-left flex items-center gap-3 p-4 sm:p-5 hover:bg-slate-700/30 transition-colors border-b lg:border-b-0 border-slate-700/60 last:border-b-0"
-                      >
-                        <div
-                          className={`shrink-0 rounded-xl p-3 bg-gradient-to-br ring-1 shadow-inner ${item.iconWrap}`}
-                        >
-                          <Icon className={`w-6 h-6 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-base font-bold text-slate-200 leading-snug">{item.title}</span>
-                            <ChevronDown
-                              className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-                              aria-hidden
-                            />
-                          </div>
-                          <div
-                            className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
-                          >
-                            <div className="overflow-hidden">
-                              <p className="text-sm text-slate-400 leading-normal pt-1.5 pb-0.5">
-                                {item.desc}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-               </div>
-           </div>
-        </div>
+          <ReportCompareTable language={currentLanguage} />
         )}
 
         <div className="rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl overflow-hidden">
@@ -887,7 +802,6 @@ const InputForm: React.FC<InputFormProps> = ({
                       </Link>
                     </div>
                   </div>
-                  <ReportCompareModal language={currentLanguage} className="self-start" />
                 </div>
               ) : (
                 <div className="min-h-[220px] text-sm text-slate-500">—</div>
