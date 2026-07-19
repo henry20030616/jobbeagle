@@ -112,7 +112,7 @@ export default function SampleReportClient() {
           </Link>
         </div>
 
-        <ReportFitStage className="w-full max-w-[1280px]">
+        <ReportFitStage className="w-full max-w-[96vw]">
           {isGuide ? (
             <FullReportDashboard
               report={guide}

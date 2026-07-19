@@ -85,7 +85,7 @@ export default function ReportPage() {
         </span>
       </header>
       <main className="flex-1 min-h-[calc(100vh-8rem)] w-full px-3 sm:px-6 py-6 flex flex-col items-center justify-center">
-        <ReportFitStage className="w-full max-w-[1280px]">
+        <ReportFitStage className="w-full max-w-[96vw]">
           {strategy ? (
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}

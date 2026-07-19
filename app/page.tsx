@@ -415,7 +415,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      <main className="max-w-[90rem] mx-auto px-4 sm:px-6 py-8 sm:py-10">
+      <main className="w-full max-w-[98vw] mx-auto px-4 sm:px-8 py-6 sm:py-8">
         <div className="flex items-center justify-between gap-4 mb-6">
           <BrandLogo size="nav" />
           <div className="flex items-center gap-2 sm:gap-3">
@@ -609,7 +609,7 @@ export default function Home() {
         )}
 
         {!report ? (
-          <div className="max-w-[90rem] mx-auto">
+          <div className="w-full">
             <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
@@ -632,7 +632,7 @@ export default function Home() {
             <FooterSection language={language} />
           </div>
         ) : (
-          <div className="animate-fade-in max-w-[90rem] mx-auto">
+          <div className="animate-fade-in w-full">
             <button
               onClick={handleResetToForm}
               className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"

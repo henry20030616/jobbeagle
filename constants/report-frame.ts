@@ -31,7 +31,7 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
 export const REPORT_SHELL_WIDTH = 'w-full max-w-[98vw]';
 
 /**
- * Fixed presentation canvas width (px). ReportFitStage lays out at this width
- * and never scales above 1× — wide windows keep a centered design-size slide.
+ * Fixed presentation canvas width (px). ReportFitStage lays out at this width,
+ * then scales uniformly (up to ~1.45×) to fill the stage — proportions stay fixed.
  */
 export const REPORT_SLIDE_DESIGN_WIDTH = 1280;

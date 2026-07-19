@@ -8,24 +8,20 @@ type ReportFitStageProps = {
   className?: string;
   /** Fixed slide canvas width (px). Internal layout always lays out at this width. */
   designWidth?: number;
-  /**
-   * Never scale the slide larger than this (default 1 = design size).
-   * Window resize may shrink to fit, but never stretches the presentation.
-   */
+  /** Cap so ultrawide monitors don’t over-magnify (default 1.45). */
   maxScale?: number;
 };
 
 /**
  * Fixed-proportion presentation stage.
- * - Lays out at a constant design width (no responsive reflow inside the slide)
- * - Scales down only to fit the container; never scales up past design size
- * - Centers the slide horizontally (and vertically when the stage has height)
+ * Lays out at a constant design width (no internal reflow), then scales
+ * uniformly to fill the container width and stays centered.
  */
 export function ReportFitStage({
   children,
   className = '',
   designWidth = REPORT_SLIDE_DESIGN_WIDTH,
-  maxScale = 1,
+  maxScale = 1.45,
 }: ReportFitStageProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -41,7 +37,7 @@ export function ReportFitStage({
       const available = outer.clientWidth;
       if (available <= 0) return;
       const fit = available / designWidth;
-      const nextScale = Math.min(maxScale, fit);
+      const nextScale = Math.min(maxScale, Math.max(fit, 0.55));
       setScale(Number(nextScale.toFixed(4)));
       setContentHeight(inner.scrollHeight);
     };
