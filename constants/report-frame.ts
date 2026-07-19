@@ -12,9 +12,12 @@ export const REPORT_ACTION_ICON = 'w-4 h-4 shrink-0';
 export const REPORT_ACTION_BTN =
   `inline-flex h-9 items-center gap-1.5 rounded-md border border-slate-400 bg-slate-900/70 px-2.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
-/** Compact “View sample” chip — same text-xl as Jobbeagle */
+/**
+ * Compact “View sample” chip for the homepage 4-col grid.
+ * text-sm (not text-xl) so columns stay within 100% and don’t shove the page right.
+ */
 export const SAMPLE_LINK_BTN =
-  `inline-flex h-9 w-fit items-center gap-1 rounded-md border border-indigo-400/50 bg-indigo-500/15 px-2.5 ${REPORT_ACTION_TEXT} text-indigo-200 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
+  `inline-flex w-fit max-w-full items-center gap-1 rounded-md border border-indigo-400/50 bg-indigo-500/15 px-2.5 py-1 text-sm font-bold text-indigo-200 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
 
 /**
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.

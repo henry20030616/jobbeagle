@@ -414,9 +414,12 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
-      {/* Full-bleed homepage — steps 1–4 in one horizontal row */}
-      <main className="w-full max-w-[100vw] min-w-0 overflow-x-hidden px-3 sm:px-5 lg:px-6 py-4">
+    <div className="min-h-screen w-full overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
+      {/*
+        Full-width shell, content centered with a wide max so it fills the monitor
+        without 100vw scrollbar bugs that shove the UI to the right.
+      */}
+      <main className="mx-auto w-full min-w-0 max-w-[1400px] px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
@@ -610,7 +613,7 @@ export default function Home() {
         )}
 
         {!report ? (
-          <div className="w-full">
+          <div className="w-full min-w-0">
             <InputForm
               onSubmit={handleGenerate} 
               isLoading={loading}
@@ -622,7 +625,7 @@ export default function Home() {
               userProfile={userProfile}
             />
             {currentUser && userProfile && (
-              <div className="mt-4 mb-1">
+              <div className="mt-4 mb-1 w-full min-w-0">
                 <ReferralCard
                   referralCode={userProfile.referral_code}
                   language={language}
