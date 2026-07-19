@@ -27,9 +27,9 @@ export interface SmartInputAreaProps {
 }
 
 const PLACEHOLDER_ZH =
-  '請貼上公司、職缺名稱與完整職缺內文（勿只貼網址）…';
+  '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。勿只貼網址或片段…';
 const PLACEHOLDER_EN =
-  'Paste company, title, and full JD text (not just a URL)…';
+  'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…). Don’t paste only a URL or a short excerpt…';
 
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
@@ -110,7 +110,7 @@ export default function SmartInputArea({
         <textarea
           required
           disabled={disabled || parsing}
-          className={`w-full max-w-full min-w-0 ${compact ? 'min-h-[220px] flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-4 text-sm font-medium leading-relaxed' : 'p-5 text-base leading-relaxed'} text-zinc-100 placeholder:text-zinc-400 placeholder:font-medium focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+          className={`w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-4 text-sm font-medium leading-relaxed' : 'p-5 text-base leading-relaxed'} text-zinc-100 placeholder:text-zinc-400 placeholder:font-medium focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={resolvedPlaceholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
