@@ -159,6 +159,15 @@ export const LITE_JSON_SCHEMA = {
         sources: { type: 'array', items: { type: 'string' } },
         candidate_predicted_offer: { type: ['string', 'null'] },
         candidate_position_label: { type: 'string' },
+        tc_breakdown: {
+          type: 'object',
+          properties: {
+            base: { type: ['string', 'null'] },
+            bonus: { type: ['string', 'null'] },
+            equity: { type: ['string', 'null'] },
+            total: { type: ['string', 'null'] },
+          },
+        },
       },
       required: [
         'posted_range',
