@@ -115,9 +115,9 @@ export default function LiteReportDashboard({
         </div>
       )}
 
-      {/* One-page slide — columns follow container width, not viewport */}
+      {/* One-page slide — desktop dual-column (fig.2); stacks below lg */}
       <article
-        className={`@container/report min-w-0 overflow-x-auto bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
+        className={`min-w-0 overflow-x-auto bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
       >
         {/* Slide header */}
         <header className="border-b border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
@@ -165,8 +165,8 @@ export default function LiteReportDashboard({
           </div>
         </header>
 
-        {/* Heroes: Fit | Offer — dual column only when slide is wide enough */}
-        <div className="grid grid-cols-1 @[42rem]:grid-cols-2 divide-y @[42rem]:divide-y-0 @[42rem]:divide-x divide-slate-700/90">
+        {/* Heroes: Fit | Offer */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
           <section className="flex flex-col p-3.5 sm:p-4 min-w-0">
             <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
               Candidate Fit Score
@@ -264,7 +264,7 @@ export default function LiteReportDashboard({
             </div>
           </section>
 
-          <section className="flex flex-col p-3.5 sm:p-4 border-t border-slate-700/90 @[42rem]:border-t-0 min-w-0">
+          <section className="flex flex-col p-3.5 sm:p-4 border-t border-slate-700/90 lg:border-t-0 min-w-0">
             <p className={`${SECTION_TITLE} text-emerald-400/90 mb-1 flex items-center gap-1.5`}>
               <DollarSign className="w-4 h-4 shrink-0" />
               Expected Offer Range
@@ -277,34 +277,21 @@ export default function LiteReportDashboard({
             <div className="flex-1 flex flex-col justify-center min-w-0">
               {offerRange ? (
                 <>
-                  <div
-                    className={
-                      predictedOffer
-                        ? 'grid grid-cols-1 @[28rem]:grid-cols-2 gap-3 @[28rem]:gap-4'
-                        : ''
-                    }
-                  >
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1.5">
-                        Seat range
+                  <p className="text-5xl sm:text-6xl font-black text-white tracking-tight leading-none break-words">
+                    {offerRange}
+                  </p>
+                  {predictedOffer && (
+                    <div className="mt-3">
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1">
+                        Your predicted land
                       </p>
-                      <p className="text-3xl sm:text-4xl @[42rem]:text-5xl font-black text-white tracking-tight leading-none break-words">
-                        {offerRange}
+                      <p className="text-2xl sm:text-3xl font-black text-emerald-100 tracking-tight leading-none break-words">
+                        {predictedOffer}
                       </p>
                     </div>
-                    {predictedOffer && (
-                      <div className="min-w-0 @[28rem]:border-l @[28rem]:border-emerald-500/25 @[28rem]:pl-4 pt-3 @[28rem]:pt-0 border-t @[28rem]:border-t-0 border-emerald-500/25">
-                        <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1.5">
-                          Your predicted land
-                        </p>
-                        <p className="text-3xl sm:text-4xl @[42rem]:text-5xl font-black text-emerald-100 tracking-tight leading-none break-words">
-                          {predictedOffer}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                  )}
                   {offer?.candidate_position_label && (
-                    <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2.5 break-words">
+                    <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2 break-words">
                       {offer.candidate_position_label}
                     </p>
                   )}
@@ -323,7 +310,7 @@ export default function LiteReportDashboard({
 
         {/* Score breakdown | Range Evaluation */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="grid grid-cols-1 @[42rem]:grid-cols-2 gap-3 @[42rem]:items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:items-stretch">
             <div className="h-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
               <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
                 Score breakdown
@@ -372,7 +359,7 @@ export default function LiteReportDashboard({
         {/* Strengths | Gaps — one shared frame, bullet lists */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
           <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10">
-            <div className="grid grid-cols-1 @[36rem]:grid-cols-2 @[36rem]:divide-x divide-y @[36rem]:divide-y-0 divide-sky-400/25">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-sky-400/25">
               <section className="p-3.5 sm:p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
                   <CheckCircle2 className="w-4 h-4 mr-1.5" />
