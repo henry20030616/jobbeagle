@@ -134,7 +134,7 @@ export default function LiteReportDashboard({
           </div>
         </header>
 
-        {/* Heroes: Fit | Offer + Range Evaluation */}
+        {/* Heroes: Fit | Offer */}
         <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
           <section className="flex flex-col p-5 sm:p-6">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 mb-3">
@@ -264,18 +264,53 @@ export default function LiteReportDashboard({
                 </>
               )}
             </div>
+          </section>
+        </div>
 
-            <div className="mt-5 rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3">
+        {/* Score breakdown (left) | Range Evaluation (right) */}
+        <div className="border-t border-slate-700/90 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 lg:items-stretch">
+            <div className="h-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 sm:px-4 sm:py-4 flex flex-col">
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-3">
+                Score breakdown
+              </p>
+              {breakdown.length > 0 ? (
+                <ul className="space-y-2.5 flex-1">
+                  {breakdown.map((b, i) => (
+                    <li key={i} className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-base font-semibold text-slate-200">
+                          {b.dimension}
+                          <span className="ml-2 text-xs font-medium text-slate-500">
+                            {b.weight_pct}%
+                          </span>
+                        </p>
+                        {b.note ? (
+                          <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
+                        ) : null}
+                      </div>
+                      <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
+                        {Math.round(b.score)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-base text-slate-500">Breakdown unavailable for this run.</p>
+              )}
+            </div>
+
+            <div className="h-full rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3 sm:px-4 sm:py-4 flex flex-col">
               <p className="text-xs font-bold uppercase tracking-widest text-emerald-300 mb-1">
                 Range Evaluation
               </p>
               <p className="text-lg font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
-              <p className="text-lg text-slate-200 leading-relaxed">{offerEval.body}</p>
+              <p className="text-lg text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
               {offerEval.note ? (
                 <p className="text-base text-slate-400 mt-2 leading-relaxed">{offerEval.note}</p>
               ) : null}
             </div>
-          </section>
+          </div>
         </div>
 
         {/* Full-width Score Summary — Apply Decision at bottom */}
@@ -322,34 +357,6 @@ export default function LiteReportDashboard({
             ) : null}
           </div>
         </div>
-
-        {breakdown.length > 0 && (
-          <section className="p-5 sm:px-6 sm:py-5 border-t border-slate-700/90">
-            <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-300 mb-3">
-              Score breakdown
-            </h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
-              {breakdown.map((b, i) => (
-                <li key={i} className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-base font-semibold text-slate-200">
-                      {b.dimension}
-                      <span className="ml-2 text-xs font-medium text-slate-500">
-                        {b.weight_pct}%
-                      </span>
-                    </p>
-                    {b.note ? (
-                      <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
-                    ) : null}
-                  </div>
-                  <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
-                    {Math.round(b.score)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
 
         {/* Strengths | Gaps — shared outer frame */}
         <div className="border-t border-slate-700/90 px-5 py-5 sm:px-6 sm:py-6">
