@@ -12,6 +12,7 @@ describe('sample reports', () => {
     expect(report.job_title).toContain('Business Analyst');
     expect(report.fit_score.score).toBeGreaterThan(0);
     expect(report.expected_offer.evidence_tier).toBe('C');
+    expect(report.expected_offer.candidate_predicted_offer).toBe('$155K');
   });
 
   it('builds a valid Strategy Guide sample with STAR templates', () => {

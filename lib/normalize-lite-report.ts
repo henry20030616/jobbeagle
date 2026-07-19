@@ -235,6 +235,9 @@ function normalizeExpectedOffer(
       ),
       evidence_tier: tier,
       sources: asStringArray(raw.expected_offer.sources),
+      candidate_predicted_offer: blankNums
+        ? null
+        : asString(raw.expected_offer.candidate_predicted_offer) || null,
       candidate_position_label: asString(raw.expected_offer.candidate_position_label) || undefined,
       tc_breakdown: normalizeTcBreakdown(raw.expected_offer.tc_breakdown),
     };
@@ -242,10 +245,11 @@ function normalizeExpectedOffer(
 
   const m = raw.radford_2026_compensation_matrix;
   if (m) {
+    const mid = asString(m.tier_50th_mid) || null;
     return {
       posted_range: null,
       p25: asString(m.tier_25th_low) || null,
-      p50: asString(m.tier_50th_mid) || null,
+      p50: mid,
       p75: asString(m.tier_75th_high) || null,
       currency: 'USD',
       region: asString(m.market_region, 'US'),
@@ -255,6 +259,7 @@ function normalizeExpectedOffer(
       ),
       evidence_tier: 'C',
       sources: ['Legacy compensation estimate (pre–Spec v3)'],
+      candidate_predicted_offer: mid,
       candidate_position_label: asString(m.candidate_position_label) || undefined,
     };
   }
@@ -272,6 +277,7 @@ function normalizeExpectedOffer(
     ),
     evidence_tier: 'D',
     sources: [],
+    candidate_predicted_offer: null,
   };
 }
 

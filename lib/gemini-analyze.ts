@@ -207,6 +207,7 @@ const LITE_RESPONSE_SCHEMA = {
         target_gap: { type: Type.STRING },
         evidence_tier: { type: Type.STRING, enum: ['A', 'B', 'C', 'D'] },
         sources: { type: Type.ARRAY, items: { type: Type.STRING } },
+        candidate_predicted_offer: { type: Type.STRING, nullable: true },
         candidate_position_label: { type: Type.STRING },
         tc_breakdown: {
           type: Type.OBJECT,
@@ -228,6 +229,7 @@ const LITE_RESPONSE_SCHEMA = {
         'target_gap',
         'evidence_tier',
         'sources',
+        'candidate_predicted_offer',
       ],
     },
     apply_decision: {

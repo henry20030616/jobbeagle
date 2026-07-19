@@ -21,7 +21,11 @@ import {
 } from 'lucide-react';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
-import { evidenceTierLabel, formatOfferRange } from '@/lib/offer-display';
+import {
+  evidenceTierLabel,
+  formatOfferRange,
+  formatPredictedOffer,
+} from '@/lib/offer-display';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
@@ -189,6 +193,7 @@ export default function FullReportDashboard({
   const fitSalary = report.strategy_fit_salary;
   const expected = report.expected_offer;
   const offerRange = formatOfferRange(expected);
+  const predictedOffer = formatPredictedOffer(expected);
 
   const sources = useMemo(() => {
     if (report.provenance?.entries?.length) {
@@ -626,11 +631,21 @@ export default function FullReportDashboard({
                     {offerRange ? (
                       <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 px-4 py-5 mb-4 text-center">
                         <p className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">
-                          Expected range
+                          Seat range
                         </p>
                         <p className="text-4xl sm:text-5xl font-black text-white tracking-tight">
                           {offerRange}
                         </p>
+                        {predictedOffer && (
+                          <div className="mt-4 pt-4 border-t border-indigo-400/30">
+                            <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-1.5">
+                              Your predicted land
+                            </p>
+                            <p className="text-3xl sm:text-4xl font-black text-emerald-100 tracking-tight">
+                              {predictedOffer}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">

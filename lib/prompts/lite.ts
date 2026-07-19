@@ -24,6 +24,8 @@ Rules:
   C = reputable US market benchmark for this title/level/region (state uncertainty in target_gap) — USE THIS when the JD has no pay but the role is clear. Set p25 = low end, p75 = high end, p50 = midpoint as dollar strings (e.g. "$140K"). UI shows a single range (low–high), not percentile labels.
   D = only when title/level/region are too vague to estimate → null numbers + explain in target_gap
 - Prefer tier C over empty D whenever job title + level + US region are identifiable.
+- Always set expected_offer.candidate_predicted_offer when tier is A/B/C: a SINGLE dollar string (e.g. "$155K") for where THIS candidate is most likely to land given resume↔JD fit/gaps. This is NOT the same as p50 (p50 = seat/market midpoint; predicted = this person’s likely offer point inside the band). Stronger fit → toward p75; thin domain proof → toward p25. Tier D → null.
+- candidate_position_label: one short sentence explaining WHY that predicted land (fit/gap driven). No resume rewrite coaching.
 - If CANDIDATE CAREER CONTEXT includes target_tc or walk_away_tc, target_gap MUST compare the offer band to those personal floors.
 - Optionally fill expected_offer.tc_breakdown (base/bonus/equity/total) when estimable; else omit or null fields.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
@@ -155,6 +157,7 @@ export const LITE_JSON_SCHEMA = {
         target_gap: { type: 'string' },
         evidence_tier: { type: 'string', enum: ['A', 'B', 'C', 'D'] },
         sources: { type: 'array', items: { type: 'string' } },
+        candidate_predicted_offer: { type: ['string', 'null'] },
         candidate_position_label: { type: 'string' },
       },
       required: [
@@ -167,6 +170,7 @@ export const LITE_JSON_SCHEMA = {
         'target_gap',
         'evidence_tier',
         'sources',
+        'candidate_predicted_offer',
       ],
     },
     apply_decision: {

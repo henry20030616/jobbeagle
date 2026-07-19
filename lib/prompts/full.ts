@@ -21,6 +21,7 @@ Use google search / public web sources when citing hiring_context insights or re
   B = highly matching public role-level data you can cite in sources[]
   C = reputable US market benchmark for title/level/region (state uncertainty in target_gap). Prefer C over empty D when role is clear. Dollar strings like "$140K".
   D = title/level/region too vague → null numbers + explain in target_gap
+- When tier A/B/C: set candidate_predicted_offer to a SINGLE dollar string for where THIS candidate is most likely to land (fit/gap driven). Distinct from p50 (seat midpoint). Tier D → null. Explain in candidate_position_label.
 - Never claim proprietary vendor bands as a company offer.
 - apply_decision.label: Apply now | Apply after fixes | Clarify first | Skip
 - apply_decision.reason / next_best_action: competitiveness and decision steps only — never resume rewrite coaching.

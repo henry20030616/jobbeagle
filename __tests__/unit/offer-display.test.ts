@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   evidenceTierLabel,
   formatOfferRange,
+  formatPredictedOffer,
   hasOfferRange,
   offerEvaluationSummary,
 } from '@/lib/offer-display';
@@ -57,6 +58,42 @@ describe('formatOfferRange', () => {
       evidence_tier: 'D',
       sources: [],
     })).toBe(false);
+  });
+});
+
+describe('formatPredictedOffer', () => {
+  it('returns the candidate land point', () => {
+    expect(
+      formatPredictedOffer({
+        posted_range: null,
+        p25: '$145K',
+        p50: '$165K',
+        p75: '$190K',
+        currency: 'USD',
+        region: 'US',
+        target_gap: '',
+        evidence_tier: 'C',
+        sources: [],
+        candidate_predicted_offer: '$155K',
+      }),
+    ).toBe('$155K');
+  });
+
+  it('returns null when missing', () => {
+    expect(
+      formatPredictedOffer({
+        posted_range: null,
+        p25: null,
+        p50: null,
+        p75: null,
+        currency: 'USD',
+        region: 'US',
+        target_gap: '',
+        evidence_tier: 'D',
+        sources: [],
+        candidate_predicted_offer: null,
+      }),
+    ).toBeNull();
   });
 });
 

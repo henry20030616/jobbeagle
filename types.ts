@@ -254,7 +254,13 @@ export interface ExpectedOfferRange {
   target_gap: string;
   evidence_tier: SalaryEvidenceTier;
   sources: string[];
-  /** Short positioning line for Snapshot */
+  /**
+   * Model’s single-point prediction for where THIS candidate is most likely
+   * to land inside the seat band (e.g. "$155K"). Null when tier D / unknown.
+   * Distinct from p50 (market midpoint of the seat).
+   */
+  candidate_predicted_offer?: string | null;
+  /** Short why for the predicted land point */
   candidate_position_label?: string;
   /** Base / bonus / equity / total when estimable */
   tc_breakdown?: OfferTcBreakdown;

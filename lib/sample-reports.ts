@@ -126,8 +126,9 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
       'For Senior BA fintech-ops seats in the US remote market, comparable cash typically lands in this band; confirm the employer’s approved range before negotiating.',
     evidence_tier: 'C',
     sources: ['Market benchmark for Senior BA / fintech ops (US)'],
+    candidate_predicted_offer: '$155K',
     candidate_position_label:
-      'This seat’s market value sits mid-band when payments domain proof is credible; lower mid-band without it.',
+      'Lower mid-band: core BA proof is solid, but thin ACH/payments ownership likely caps cash below the seat midpoint.',
     tc_breakdown: {
       base: '$150K',
       bonus: '$15K',

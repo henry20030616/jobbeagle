@@ -44,6 +44,14 @@ export function hasOfferRange(offer: ExpectedOfferRange | null | undefined): boo
   return Boolean(formatOfferRange(offer));
 }
 
+/** Single-point prediction for this candidate inside the seat band. */
+export function formatPredictedOffer(
+  offer: ExpectedOfferRange | null | undefined,
+): string | null {
+  if (!offer) return null;
+  return cleanMoney(offer.candidate_predicted_offer) || null;
+}
+
 /**
  * Plain-language market value of this role for Snapshot “Range Evaluation”.
  * Not a glossary of evidence tiers.

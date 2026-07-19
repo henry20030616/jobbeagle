@@ -18,6 +18,7 @@ import { getBeagleTierLegend } from '@/lib/beagle-tiers';
 import {
   evidenceTierLabel,
   formatOfferRange,
+  formatPredictedOffer,
   offerEvaluationSummary,
 } from '@/lib/offer-display';
 import { scoreSummaryPoints, splitScoreSummaryPoint } from '@/lib/score-summary';
@@ -61,6 +62,7 @@ export default function LiteReportDashboard({
   const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
   const offer = report.expected_offer;
   const offerRange = formatOfferRange(offer);
+  const predictedOffer = formatPredictedOffer(offer);
   const offerEval = offerEvaluationSummary(offer);
   const breakdown = (report.fit_score?.breakdown ?? []).slice(0, 5);
   const apply = report.apply_decision;
@@ -275,9 +277,22 @@ export default function LiteReportDashboard({
             <div className="flex-1 flex flex-col justify-center">
               {offerRange ? (
                 <>
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1.5">
+                    Seat range
+                  </p>
                   <p className="text-5xl sm:text-6xl font-black text-white tracking-tight leading-none">
                     {offerRange}
                   </p>
+                  {predictedOffer && (
+                    <div className="mt-3 pt-3 border-t border-emerald-500/25">
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1">
+                        Your predicted land
+                      </p>
+                      <p className="text-3xl sm:text-4xl font-black text-emerald-100 tracking-tight leading-none">
+                        {predictedOffer}
+                      </p>
+                    </div>
+                  )}
                   {offer?.candidate_position_label && (
                     <p className="text-lg text-emerald-100/90 leading-relaxed mt-2">
                       {offer.candidate_position_label}
