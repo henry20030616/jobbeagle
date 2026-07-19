@@ -73,9 +73,9 @@ export const REPORT_COMPARE_WHY_PRO: {
       'zh-CN': '更强模型：少空话，能把 JD、简历与市场脉络串成连贯的录取／谈薪故事。',
     },
     {
-      en: 'Live search: claims can cite public sources (URL + date), not only model memory — so intel is checkable.',
-      'zh-TW': '即時網搜：情報可掛公開來源（網址＋日期），不是只靠模型記憶——你能核對。',
-      'zh-CN': '即时网搜：情报可挂公开来源（网址＋日期），不是只靠模型记忆——你能核对。',
+      en: 'Live search: real company/role reviews, interview Qs, salary posts, market signals, industry & HR reports — cited with URL + date when available (Snapshot cannot see the web).',
+      'zh-TW': '即時網搜：公司／職位評價、真實面試題、薪資貼文、市場現況、產業與人資報告——盡量附網址＋日期（Snapshot 看不到網路）。',
+      'zh-CN': '即时网搜：公司／职位评价、真实面试题、薪资贴文、市场现况、产业与人资报告——尽量附网址＋日期（Snapshot 看不到网络）。',
     },
     {
       en: 'Depth = usable scripts: recruiter concerns + defenses, STAR outlines from YOUR resume, and a copy-ready negotiation path.',
@@ -101,9 +101,9 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
     'zh-CN': '星星＝深度（满分 5）。积木相同——Guide 更深、更可照做。',
   },
   guide_only: {
-    en: 'These only exist in Guide: evidence-backed intel + interview/offer playbooks.',
-    'zh-TW': '以下僅 Guide 有：有出處的情報＋面試／談薪作戰手冊。',
-    'zh-CN': '以下仅 Guide 有：有出处的情报＋面试／谈薪作战手册。',
+    en: 'Guide-only: live web intel (reviews, interview Qs, salary, market, industry/HR reports) + interview/offer playbooks.',
+    'zh-TW': '僅 Guide：即時網搜情報（評價、面試題、薪資、市場、產業／人資報告）＋面試／談薪手冊。',
+    'zh-CN': '仅 Guide：即时网搜情报（评价、面试题、薪资、市场、产业／人资报告）＋面试／谈薪手册。',
   },
   meta: null,
 };
@@ -277,15 +277,19 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '即时网搜',
     },
     help: help(
-      'Guide can ground claims in public web sources (URL + date when available) instead of model memory alone. Snapshot does not search the web.',
-      'Guide 可用公開網頁來源（盡量附網址＋日期）核對情報，不只靠模型記憶。Snapshot 不做網搜。',
-      'Guide 可用公开网页来源（尽量附网址＋日期）核对情报，不只靠模型记忆。Snapshot 不做网搜。',
+      'Biggest gap vs Snapshot: Guide can pull live public web data for THIS company and role — employee/Glassdoor-style reviews, reported interview questions, real salary posts, market/hiring signals, third-party industry reports, and professional HR/comp commentary — then cite URL + date when available. Snapshot is closed-book (JD + resume only); it cannot see the live web.',
+      '對 Snapshot 最大的差距：Guide 能即時搜這間公司／這席的公開網路資料——含公司與職位評價、真實面試題、真實薪資貼文、市場／招募現況、第三方產業報告、專業人資／薪酬諮詢觀點——並盡量附網址＋日期。Snapshot 只讀 JD＋履歷，看不到即時網路。',
+      '对 Snapshot 最大的差距：Guide 能即时搜这家公司／这席的公开网络资料——含公司与职位评价、真实面试题、真实薪资贴文、市场／招募现况、第三方产业报告、专业人资／薪酬咨询观点——并尽量附网址＋日期。Snapshot 只读 JD＋简历，看不到即时网络。',
     ),
-    snapshot: t('—', '—', '—'),
+    snapshot: t(
+      '— No live web (JD + resume only)',
+      '— 無網搜（只讀 JD＋履歷）',
+      '— 无网搜（只读 JD＋简历）',
+    ),
     guide: t(
-      'Yes — public sources with URL + date when available',
-      '有 — 公開來源盡量附網址＋日期',
-      '有 — 公开来源尽量附网址＋日期',
+      'Yes — live company/role reviews, real interview Qs, real salary posts, market signals, industry & HR reports (cite URL + date)',
+      '有 — 即時公司／職位評價、真實面試題、真實薪資、市場現況、產業與人資報告（附網址＋日期）',
+      '有 — 即时公司／职位评价、真实面试题、真实薪资、市场现况、产业与人资报告（附网址＋日期）',
     ),
   },
   {
