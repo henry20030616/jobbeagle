@@ -24,9 +24,9 @@ JobBeagle 告訴使用者兩件最重要的事：
 
 | 工作 | 責任 |
 |------|------|
-| 履歷／JD 事實提取、Snapshot 文案 | `gemini-3.1-flash-lite` + Structured Output |
-| 硬條件判定、算分、薪資數字鎖定、引用驗證 | **後端** |
-| Strategy 判斷（公司／攻防／STAR／談判） | `gemini-3.1-pro-preview`（+ Search grounding 視需要） |
+| Job Fit Snapshot（整份） | `gemini-3.1-flash-lite` + Structured Output |
+| Interview Strategy Guide（整份：Snapshot 層 + Strategy 層） | **單次** `gemini-3.1-pro-preview` + Search grounding（**不**先跑 Flash-Lite） |
+| 硬條件／分數正規化、引用清理 | **後端** `normalizeFullReport` / `normalizeLiteReport` |
 
 ## 刻意不做
 

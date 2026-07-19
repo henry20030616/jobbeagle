@@ -1,7 +1,7 @@
 /**
  * Gemini model configuration — keep IDs in sync with Google AI Studio availability.
- * Lite: fast reasoning, no grounding
- * Full: pro-tier + Google Search grounding for live intel
+ * Snapshot: flash-lite, no grounding
+ * Guide: single-pass pro-tier + Google Search (does NOT call Lite first)
  *
  * Note (2026-07): gemini-2.5-pro returns 404 for new API keys ("no longer available to new users").
  */
@@ -9,7 +9,7 @@
 /** Job Fit Snapshot — flash-lite (pure reasoning, no web search) */
 export const GEMINI_LITE_MODEL = 'gemini-3.1-flash-lite';
 
-/** Interview Strategy Guide — pro with targeted grounding */
+/** Interview Strategy Guide — full report in one Pro pass (+ Search) */
 export const GEMINI_FULL_MODEL = 'gemini-3.1-pro-preview';
 
 /** Token count gate model */

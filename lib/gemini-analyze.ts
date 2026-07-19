@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from '@google/genai';
-import type { LiteReport, FullReport, StrategyIntelFields } from '@/types';
+import type { LiteReport, FullReport } from '@/types';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import { parseJsonResponse } from '@/lib/parse-gemini-json';
 import {
@@ -224,148 +224,156 @@ const LITE_RESPONSE_SCHEMA = {
   ],
 };
 
-const FULL_INTEL_RESPONSE_SCHEMA = {
-  type: Type.OBJECT,
-  properties: {
-    strategy_fit_salary: {
+/** Strategy-layer properties merged into the single-pass Guide schema */
+const FULL_STRATEGY_PROPERTIES = {
+  strategy_fit_salary: {
+    type: Type.OBJECT,
+    properties: {
+      score_implications: { type: Type.STRING },
+      offer_implications: { type: Type.STRING },
+      validate_with_recruiter: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: ['score_implications', 'offer_implications', 'validate_with_recruiter'],
+  },
+  hiring_context: {
+    type: Type.OBJECT,
+    properties: {
+      insights: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            claim: { type: Type.STRING },
+            why_it_matters: { type: Type.STRING },
+            source_url: { type: Type.STRING },
+            date: { type: Type.STRING },
+          },
+          required: ['claim', 'why_it_matters', 'source_url', 'date'],
+        },
+      },
+      limitations: { type: Type.ARRAY, items: { type: Type.STRING } },
+      validation_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: ['insights', 'limitations', 'validation_questions'],
+  },
+  concerns_defenses: {
+    type: Type.ARRAY,
+    items: {
       type: Type.OBJECT,
       properties: {
-        score_implications: { type: Type.STRING },
-        offer_implications: { type: Type.STRING },
-        validate_with_recruiter: { type: Type.ARRAY, items: { type: Type.STRING } },
-      },
-      required: ['score_implications', 'offer_implications', 'validate_with_recruiter'],
-    },
-    hiring_context: {
-      type: Type.OBJECT,
-      properties: {
-        insights: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              claim: { type: Type.STRING },
-              why_it_matters: { type: Type.STRING },
-              source_url: { type: Type.STRING },
-              date: { type: Type.STRING },
-            },
-            required: ['claim', 'why_it_matters', 'source_url', 'date'],
-          },
-        },
-        limitations: { type: Type.ARRAY, items: { type: Type.STRING } },
-        validation_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
-      },
-      required: ['insights', 'limitations', 'validation_questions'],
-    },
-    concerns_defenses: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          concern: { type: Type.STRING },
-          why: { type: Type.STRING },
-          evidence: { type: Type.STRING },
-          missing_proof: { type: Type.STRING },
-          answer_guide: { type: Type.STRING },
-          do_not_claim: { type: Type.STRING },
-        },
-        required: [
-          'concern',
-          'why',
-          'evidence',
-          'missing_proof',
-          'answer_guide',
-          'do_not_claim',
-        ],
-      },
-    },
-    interview_playbook: {
-      type: Type.OBJECT,
-      properties: {
-        reported: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              question: { type: Type.STRING },
-              source_url: { type: Type.STRING },
-              source_date: { type: Type.STRING },
-              evidence: { type: Type.STRING },
-              star_outline: { type: Type.STRING },
-            },
-            required: ['question'],
-          },
-        },
-        predicted: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              question: { type: Type.STRING },
-              predicted: { type: Type.BOOLEAN },
-              evidence: { type: Type.STRING },
-              star_outline: { type: Type.STRING },
-              missing_facts: { type: Type.STRING },
-            },
-            required: ['question'],
-          },
-        },
-        star_templates: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              title: { type: Type.STRING },
-              for_question: { type: Type.STRING },
-              situation: { type: Type.STRING },
-              task: { type: Type.STRING },
-              action: { type: Type.STRING },
-              result: { type: Type.STRING },
-              resume_anchor: { type: Type.STRING },
-            },
-            required: [
-              'title',
-              'situation',
-              'task',
-              'action',
-              'result',
-              'resume_anchor',
-            ],
-          },
-        },
-        star_outlines: { type: Type.ARRAY, items: { type: Type.STRING } },
-        reverse_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
-        validate_before_join: { type: Type.ARRAY, items: { type: Type.STRING } },
+        concern: { type: Type.STRING },
+        why: { type: Type.STRING },
+        evidence: { type: Type.STRING },
+        missing_proof: { type: Type.STRING },
+        answer_guide: { type: Type.STRING },
+        do_not_claim: { type: Type.STRING },
       },
       required: [
-        'reported',
-        'predicted',
-        'star_templates',
-        'reverse_questions',
-        'validate_before_join',
-      ],
-    },
-    offer_strategy: {
-      type: Type.OBJECT,
-      properties: {
-        target: { type: Type.STRING },
-        acceptable: { type: Type.STRING },
-        walk_away: { type: Type.STRING },
-        levers: { type: Type.ARRAY, items: { type: Type.STRING } },
-        script: { type: Type.STRING },
-        discovery_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
-      },
-      required: [
-        'target',
-        'acceptable',
-        'walk_away',
-        'levers',
-        'script',
-        'discovery_questions',
+        'concern',
+        'why',
+        'evidence',
+        'missing_proof',
+        'answer_guide',
+        'do_not_claim',
       ],
     },
   },
+  interview_playbook: {
+    type: Type.OBJECT,
+    properties: {
+      reported: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            question: { type: Type.STRING },
+            source_url: { type: Type.STRING },
+            source_date: { type: Type.STRING },
+            evidence: { type: Type.STRING },
+            star_outline: { type: Type.STRING },
+          },
+          required: ['question'],
+        },
+      },
+      predicted: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            question: { type: Type.STRING },
+            predicted: { type: Type.BOOLEAN },
+            evidence: { type: Type.STRING },
+            star_outline: { type: Type.STRING },
+            missing_facts: { type: Type.STRING },
+          },
+          required: ['question'],
+        },
+      },
+      star_templates: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            for_question: { type: Type.STRING },
+            situation: { type: Type.STRING },
+            task: { type: Type.STRING },
+            action: { type: Type.STRING },
+            result: { type: Type.STRING },
+            resume_anchor: { type: Type.STRING },
+          },
+          required: [
+            'title',
+            'situation',
+            'task',
+            'action',
+            'result',
+            'resume_anchor',
+          ],
+        },
+      },
+      star_outlines: { type: Type.ARRAY, items: { type: Type.STRING } },
+      reverse_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      validate_before_join: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: [
+      'reported',
+      'predicted',
+      'star_templates',
+      'reverse_questions',
+      'validate_before_join',
+    ],
+  },
+  offer_strategy: {
+    type: Type.OBJECT,
+    properties: {
+      target: { type: Type.STRING },
+      acceptable: { type: Type.STRING },
+      walk_away: { type: Type.STRING },
+      levers: { type: Type.ARRAY, items: { type: Type.STRING } },
+      script: { type: Type.STRING },
+      discovery_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: [
+      'target',
+      'acceptable',
+      'walk_away',
+      'levers',
+      'script',
+      'discovery_questions',
+    ],
+  },
+};
+
+/** Single-pass Guide: Snapshot fields + strategy intel (Pro only) */
+const FULL_REPORT_RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    ...LITE_RESPONSE_SCHEMA.properties,
+    ...FULL_STRATEGY_PROPERTIES,
+  },
   required: [
+    ...LITE_RESPONSE_SCHEMA.required,
     'strategy_fit_salary',
     'hiring_context',
     'concerns_defenses',
@@ -428,128 +436,68 @@ export async function executeFullAnalysis(
   jobTitle: string,
   pdfInline?: PdfInlineAttachment,
 ): Promise<{ report: FullReport; model: string }> {
-  const snapshotResult = await executeLiteAnalysis(resumeText, rawJd, pdfInline);
-  const snap = snapshotResult.report;
-
   const ai = getAI();
   const model = GEMINI_FULL_MODEL;
 
-  const intro = `Target Company: ${companyName || snap.company_name}
-Job Title: ${jobTitle || snap.job_title}
-
-LOCKED SNAPSHOT (do not change scores or offer percentiles):
-- Fit score: ${snap.fit_score.score}/100 (${snap.fit_score.band}), evidence ${snap.fit_score.evidence_coverage}
-- Hard filter: ${snap.hard_filter.status}
-- Sharp verdict: ${snap.fit_score.sharp_verdict}
-- Expected offer tier ${snap.expected_offer.evidence_tier}: P25=${snap.expected_offer.p25 ?? 'null'} P50=${snap.expected_offer.p50 ?? 'null'} P75=${snap.expected_offer.p75 ?? 'null'} region=${snap.expected_offer.region}
-- Strengths: ${snap.proof_map.strengths.map((s) => s.point).join('; ')}
-- Gaps: ${snap.proof_map.gaps.map((g) => g.gap).join('; ')}
-- Apply decision: ${snap.apply_decision.label}
-
-Use public web sources only when citing hiring_context insights or reported interview questions. Prefer IR, trusted news, company blogs, Glassdoor/Blind/Reddit when accessible. If sources are thin, return limitations + validation_questions — that is success, not failure.`;
+  const intro = [
+    companyName ? `Target Company hint: ${companyName}` : null,
+    jobTitle ? `Job Title hint: ${jobTitle}` : null,
+    'Produce the complete Interview Strategy Guide (Snapshot layer + strategy layer) in one JSON object.',
+    'Use public web sources when citing hiring_context or reported interview questions.',
+    'If public sources are thin, return limitations + validation_questions — that is success, not failure.',
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   const parts = buildUserParts(rawJd, resumeText, pdfInline);
   parts[0] = {
     text: `${intro}\n\n${(parts[0] as { text: string }).text}`,
   };
 
-  let intel: StrategyIntelFields;
-  try {
+  const run = async (withSearch: boolean, systemExtra = '') => {
     const response = await ai.models.generateContent({
       model,
       contents: [{ parts }],
       config: {
-        systemInstruction: FULL_SYSTEM_PROMPT,
-        temperature: 0.4,
-        maxOutputTokens: 8192,
+        systemInstruction: systemExtra
+          ? `${FULL_SYSTEM_PROMPT}\n\n${systemExtra}`
+          : FULL_SYSTEM_PROMPT,
+        temperature: 0.35,
+        maxOutputTokens: 16384,
         responseMimeType: 'application/json',
-        tools: [{ googleSearch: {} }],
-        responseSchema: FULL_INTEL_RESPONSE_SCHEMA,
+        ...(withSearch ? { tools: [{ googleSearch: {} }] } : {}),
+        responseSchema: FULL_REPORT_RESPONSE_SCHEMA,
       },
     });
-
     const text = response.text;
-    if (!text) throw new Error('Strategy intel returned empty response');
-    intel = parseJsonResponse<StrategyIntelFields>(text);
-  } catch (intelErr) {
+    if (!text) throw new Error('Interview Strategy Guide returned empty response');
+    return normalizeFullReport(parseJsonResponse<FullReport>(text));
+  };
+
+  let report: FullReport;
+  try {
+    report = await run(true);
+  } catch (firstErr) {
     console.warn(
-      '[Full] Intel pass failed, returning Snapshot with fallback strategy:',
-      intelErr instanceof Error ? intelErr.message : intelErr,
+      '[Full] Single-pass Pro+Search failed, retrying:',
+      firstErr instanceof Error ? firstErr.message : firstErr,
     );
-    intel = {
-      strategy_fit_salary: {
-        score_implications: `Fit ${snap.fit_score.score} (${snap.fit_score.band}) — treat interview odds accordingly.`,
-        offer_implications: `Evidence tier ${snap.expected_offer.evidence_tier}; prefer discovery before hard anchors.`,
-        validate_with_recruiter: [
-          'Confirm leveling and must-haves for this req.',
-          'Ask for the approved compensation band.',
-        ],
-      },
-      hiring_context: {
-        insights: [],
-        limitations: [
-          'Live web grounding was unavailable for this run. Re-run Interview Strategy Guide shortly.',
-        ],
-        validation_questions: [
-          'Why is this role open now?',
-          'What does success look like in 90 days?',
-        ],
-      },
-      concerns_defenses: snap.proof_map.gaps.slice(0, 3).map((g) => ({
-        concern: g.gap,
-        why: g.description,
-        evidence: '',
-        missing_proof: g.description,
-        answer_guide: 'Use one verified resume fact; acknowledge the gap without inventing experience.',
-        do_not_claim: 'Do not invent tools, years, or outcomes absent from the resume.',
-      })),
-      interview_playbook: {
-        reported: [],
-        predicted: snap.interview_starters.map((question) => ({
-          question,
-          predicted: true,
-        })),
-        star_templates: snap.interview_starters.slice(0, 4).map((q, i) => ({
-          title: `Practice story ${i + 1}`,
-          for_question: q,
-          situation: 'Use a real role/project from your resume (do not invent).',
-          task: 'State the concrete goal tied to this question.',
-          action: 'List 2–3 actions you personally took (tools/decisions from resume).',
-          result: 'Add a verified outcome or metric from your resume; if none, say so honestly.',
-          resume_anchor: snap.proof_map.strengths[i]?.point || 'Resume evidence required',
-        })),
-        star_outlines: snap.interview_starters.map((q) => `STAR outline for: ${q}`),
-        reverse_questions: [
-          'What problem is this hire meant to solve in the next two quarters?',
-          'How will success be measured in the first 90 days?',
-        ],
-        validate_before_join: [
-          'Validate team stability and scope before accepting an offer.',
-        ],
-      },
-      offer_strategy: {
-        target: snap.expected_offer.p50 ?? 'Confirm band with recruiter',
-        acceptable: snap.expected_offer.p25 ?? 'Confirm floor with recruiter',
-        walk_away: 'Walk away if cash + scope fall below your documented floor.',
-        levers: ['Scope', 'Sign-on', 'Remote flexibility'],
-        script:
-          snap.expected_offer.candidate_position_label
-          || 'Lead with discovery questions if evidence is weak; then anchor to verified mid-band.',
-        discovery_questions: [
-          'What is the approved band for this level in this location?',
-          'How does total compensation split between cash, bonus, and equity?',
-        ],
-      },
-    };
+    try {
+      report = await run(
+        true,
+        'CRITICAL: Return COMPLETE valid JSON only covering Snapshot + strategy fields. Keep strings concise. Do not truncate.',
+      );
+    } catch (secondErr) {
+      console.warn(
+        '[Full] Search retry failed, retrying Pro without Search tools:',
+        secondErr instanceof Error ? secondErr.message : secondErr,
+      );
+      report = await run(
+        false,
+        'CRITICAL: Return COMPLETE valid JSON only. Search tools unavailable — set hiring_context.insights=[] and explain in limitations + validation_questions. Do not invent citations.',
+      );
+    }
   }
 
-  const report = normalizeFullReport({
-    ...snap,
-    ...intel,
-  });
-
-  return {
-    report,
-    model: `${snapshotResult.model}+${model}`,
-  };
+  return { report, model };
 }

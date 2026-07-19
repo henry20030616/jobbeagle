@@ -8,7 +8,7 @@ alwaysApply: true
 - **Product**: US-market AI job triage / headhunter-level JD analysis SaaS.
 - **Stack**: Next.js 15 App Router, React 19, TypeScript 5, Tailwind.
 - **Backend**: Supabase (Postgres + Auth Google OAuth + Storage + RLS).
-- **AI**: Gemini via `@google/genai` — Lite `gemini-3.1-flash-lite`, Full `gemini-3.1-pro-preview` (+ Search). Models live in `constants/models.ts`.
+- **AI**: Gemini via `@google/genai` — Snapshot `gemini-3.1-flash-lite`; Guide single-pass `gemini-3.1-pro-preview` (+ Search, no Lite pre-pass). Models in `constants/models.ts`.
 - **Payments**: **Lemon Squeezy only**. Never call Stripe / `lib/stripe.ts` (dead code — remove when touching billing).
 - **Extension**: Chrome MV3 under `browser-extension/` (v1.3.0+). Boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs, 104.
 - **Domain**: https://www.jobbeagle.com

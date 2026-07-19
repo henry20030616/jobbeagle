@@ -78,9 +78,9 @@
 
 | | **Job Fit Snapshot** | **Interview Strategy Guide** |
 |--|----------------------|------------------------------|
-| 模型 | `gemini-3.1-flash-lite` | `gemini-3.1-pro-preview` |
+| 模型 | `gemini-3.1-flash-lite` | `gemini-3.1-pro-preview`（單次完整產出，**不**先跑 Lite） |
 | 網搜 | 無 | Google Search grounding |
-| 內容 | 匹配分數、硬性條件、優劣勢／缺口、薪酬定位、簡短面試準備 | 含 Snapshot 級分析 + 即時情報、STAR 題庫、談判腳本等 |
+| 內容 | 匹配分數、硬性條件、優劣勢／缺口、薪酬定位、簡短面試準備 | Snapshot 層 + 即時情報、STAR 題庫、談判腳本等（同一 Pro 回應） |
 | 額度池 | Snapshot credits | Strategy Guide credits（分開扣） |
 | 單次價 | $3 | $9.99 |
 
