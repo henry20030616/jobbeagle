@@ -414,11 +414,12 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
-      {/*
-        Full-width shell, content centered with a wide max so it fills the monitor
-        without 100vw scrollbar bugs that shove the UI to the right.
-      */}
+    /*
+      Isolation shell: flex + items-center forces the page column to the viewport
+      center. Never use max-w-[100vw] here — it includes the scrollbar and, with
+      overflow-x-hidden, clips the left side so the UI looks shoved right.
+    */
+    <div className="flex min-h-screen w-full flex-col items-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
       <main className="mx-auto w-full min-w-0 max-w-[1400px] px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />

@@ -19,9 +19,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full w-full overflow-x-hidden" suppressHydrationWarning>
-      {/* Never use max-w-[100vw] — 100vw includes scrollbar and widens the document */}
-      <body className="antialiased min-h-screen w-full overflow-x-hidden" suppressHydrationWarning>
-        <LanguageProvider>{children}</LanguageProvider>
+      {/* Never use max-w-[100vw] — scrollbar gutter inflates width past the viewport */}
+      <body className="min-h-screen w-full overflow-x-hidden antialiased" suppressHydrationWarning>
+        <LanguageProvider>
+          <div className="flex min-h-screen w-full flex-col items-center">
+            {children}
+          </div>
+        </LanguageProvider>
         {GA_MEASUREMENT_ID ? (
           <>
             <Script
