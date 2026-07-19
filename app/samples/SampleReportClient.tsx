@@ -107,13 +107,13 @@ export default function SampleReportClient() {
                   href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
                   className={sampleTabClass(!isGuide)}
                 >
-                  Snapshot sample
+                  Job Fit Snapshot sample
                 </Link>
                 <Link
                   href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
                   className={sampleTabClass(isGuide)}
                 >
-                  Guide sample
+                  Interview Strategy Guide sample
                 </Link>
                 <ReportCompareModal
                   language="en"
