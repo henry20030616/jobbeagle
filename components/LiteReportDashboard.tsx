@@ -267,7 +267,7 @@ export default function LiteReportDashboard({
               <DollarSign className="w-4 h-4" />
               Expected Offer Range
             </p>
-            <p className="text-sm text-slate-500 mb-2">
+            <p className="text-lg text-slate-300 mb-2">
               {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
               {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
             </p>

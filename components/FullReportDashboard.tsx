@@ -620,7 +620,7 @@ export default function FullReportDashboard({
                         : undefined
                     }
                   >
-                    <p className="text-sm text-slate-500 mb-3">
+                    <p className="text-lg text-slate-300 mb-3">
                       {[expected?.region, expected?.currency].filter(Boolean).join(' · ') || 'USD'}
                     </p>
                     {offerRange ? (
