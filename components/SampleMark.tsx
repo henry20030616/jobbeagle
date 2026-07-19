@@ -9,15 +9,15 @@ export function SampleMark({
 }) {
   const variantClass =
     variant === 'notice'
-      ? 'text-2xl font-black uppercase tracking-[0.12em] text-white/50'
-      : 'text-6xl sm:text-7xl font-black uppercase tracking-[0.35em] text-slate-300';
+      ? 'text-2xl font-black uppercase tracking-[0.08em] text-white/50'
+      : 'text-6xl sm:text-7xl font-black uppercase tracking-[0.22em] text-slate-300';
 
   return (
     <p
       className={`text-center select-none leading-none ${variantClass} ${className}`}
       aria-hidden
     >
-      SAMPLE
+      (SAMPLE)
     </p>
   );
 }
