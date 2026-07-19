@@ -7,10 +7,12 @@ import {
   REPORT_COMPARE_CLOSE,
   REPORT_COMPARE_COL,
   REPORT_COMPARE_ROWS,
+  REPORT_COMPARE_SECTION_HINT,
   REPORT_COMPARE_SECTION_LABEL,
   REPORT_COMPARE_SUBTITLE,
   REPORT_COMPARE_TITLE,
   REPORT_COMPARE_TRIGGER,
+  REPORT_COMPARE_WHY_PRO,
   resolveCompareLang,
   type ReportCompareCell,
   type ReportCompareLang,
@@ -129,7 +131,27 @@ export default function ReportCompareModal({
                 </button>
               </div>
 
-              <div className="overflow-auto px-2 sm:px-4 py-3">
+              <div className="overflow-auto px-2 sm:px-4 py-3 space-y-3">
+                <div className="mx-2 sm:mx-3 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-3">
+                  <p className="text-sm font-bold text-emerald-200">
+                    {REPORT_COMPARE_WHY_PRO.title[lang]}
+                  </p>
+                  <ul className="mt-2 space-y-1.5">
+                    {REPORT_COMPARE_WHY_PRO.bullets.map((b) => (
+                      <li
+                        key={b.en}
+                        className="flex gap-2 text-sm text-slate-300 leading-snug"
+                      >
+                        <span
+                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"
+                          aria-hidden
+                        />
+                        <span>{b[lang]}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
                 <table className="w-full text-left text-sm sm:text-base border-collapse">
                   <thead className="sticky top-0 bg-slate-950 z-10">
                     <tr className="border-b border-slate-700">
@@ -150,7 +172,7 @@ export default function ReportCompareModal({
                         <tr>
                           <td
                             colSpan={3}
-                            className={`pt-4 pb-1.5 px-2 sm:px-3 text-xs font-bold uppercase tracking-wider ${
+                            className={`pt-4 pb-1 px-2 sm:px-3 text-xs font-bold uppercase tracking-wider ${
                               section.id === 'guide_only'
                                 ? 'text-emerald-400'
                                 : section.id === 'shared'
@@ -159,6 +181,11 @@ export default function ReportCompareModal({
                             }`}
                           >
                             {section.label}
+                            {REPORT_COMPARE_SECTION_HINT[section.id] ? (
+                              <span className="block mt-1 normal-case tracking-normal font-medium text-slate-500 text-[13px] leading-snug">
+                                {REPORT_COMPARE_SECTION_HINT[section.id]![lang]}
+                              </span>
+                            ) : null}
                           </td>
                         </tr>
                         {section.rows.map((row) => (

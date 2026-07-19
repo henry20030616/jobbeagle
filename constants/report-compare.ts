@@ -29,9 +29,60 @@ export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
 };
 
 export const REPORT_COMPARE_SUBTITLE: Record<ReportCompareLang, string> = {
-  en: 'Snapshot: decide whether to apply. Guide: win the process & negotiate — includes full Snapshot.',
-  'zh-TW': 'Snapshot：決定要不要投。Guide：怎麼打贏、怎麼談錢——含完整 Snapshot。',
-  'zh-CN': 'Snapshot：决定要不要投。Guide：怎么打赢、怎么谈钱——含完整 Snapshot。',
+  en: 'Snapshot: decide whether to apply. Guide: win interviews & negotiate — includes full Snapshot.',
+  'zh-TW': 'Snapshot：決定要不要投。Guide：怎麼打贏面試、怎麼談錢——含完整 Snapshot。',
+  'zh-CN': 'Snapshot：决定要不要投。Guide：怎么打赢面试、怎么谈钱——含完整 Snapshot。',
+};
+
+/** Callout under the title — what Pro model + deep report means in practice. */
+export const REPORT_COMPARE_WHY_PRO: {
+  title: Record<ReportCompareLang, string>;
+  bullets: Record<ReportCompareLang, string>[];
+} = {
+  title: {
+    en: 'Why Strategy Guide feels “professional”',
+    'zh-TW': '專業級強在哪？',
+    'zh-CN': '专业级强在哪？',
+  },
+  bullets: [
+    {
+      en: 'Stronger model: fewer shallow takes — it connects JD + resume + market context into a coherent hire/negotiate story.',
+      'zh-TW': '更強模型：少空話，能把 JD、履歷與市場脈絡串成連貫的錄取／談薪故事。',
+      'zh-CN': '更强模型：少空话，能把 JD、简历与市场脉络串成连贯的录取／谈薪故事。',
+    },
+    {
+      en: 'Live search: claims can cite public sources (URL + date), not only model memory — so intel is checkable.',
+      'zh-TW': '即時網搜：情報可掛公開來源（網址＋日期），不是只靠模型記憶——你能核對。',
+      'zh-CN': '即时网搜：情报可挂公开来源（网址＋日期），不是只靠模型记忆——你能核对。',
+    },
+    {
+      en: 'Depth = usable scripts: recruiter concerns + defenses, STAR outlines from YOUR resume, and a copy-ready negotiation path.',
+      'zh-TW': '深度＝可照做：招募疑慮＋答辯、依你履歷的 STAR 大綱、可直接用的談薪路徑。',
+      'zh-CN': '深度＝可照做：招募疑虑＋答辩、依你简历的 STAR 大纲、可直接用的谈薪路径。',
+    },
+    {
+      en: 'Snapshot is triage speed; Guide is CHRO-level prep when this role is worth the fight.',
+      'zh-TW': 'Snapshot 是快速分流；Guide 是這間值得拚時的 CHRO 級備戰。',
+      'zh-CN': 'Snapshot 是快速分流；Guide 是这家值得拼时的 CHRO 级备战。',
+    },
+  ],
+};
+
+export const REPORT_COMPARE_SECTION_HINT: Record<
+  ReportCompareSection,
+  Record<ReportCompareLang, string> | null
+> = {
+  shared: {
+    en: 'Same building blocks — Guide runs them on a deeper model and expands what you can act on.',
+    'zh-TW': '積木相同——Guide 用更深模型跑，並擴成你能照著做的內容。',
+    'zh-CN': '积木相同——Guide 用更深模型跑，并扩成你能照着做的内容。',
+  },
+  guide_only: {
+    en: 'These only exist in Guide: evidence-backed intel + interview/offer playbooks.',
+    'zh-TW': '以下僅 Guide 有：有出處的情報＋面試／談薪作戰手冊。',
+    'zh-CN': '以下仅 Guide 有：有出处的情报＋面试／谈薪作战手册。',
+  },
+  meta: null,
 };
 
 export const REPORT_COMPARE_TRIGGER: Record<ReportCompareLang, string> = {
@@ -124,12 +175,20 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     section: 'shared',
     feature: {
-      en: 'AI model',
-      'zh-TW': 'AI 模型',
-      'zh-CN': 'AI 模型',
+      en: 'AI model — what it means',
+      'zh-TW': 'AI 模型 — 代表什麼',
+      'zh-CN': 'AI 模型 — 代表什么',
     },
-    snapshot: t('Flash-Lite (fast)', 'Flash-Lite（快）', 'Flash-Lite（快）'),
-    guide: t('Latest Pro-class model', '最新 Pro 級模型', '最新 Pro 级模型'),
+    snapshot: t(
+      'Flash-Lite: fast triage, closed-book from JD + resume',
+      'Flash-Lite：快速分流，只讀 JD＋履歷（無網搜）',
+      'Flash-Lite：快速分流，只读 JD＋简历（无网搜）',
+    ),
+    guide: t(
+      'Pro: deeper reasoning + live web — fewer thin answers, more checkable strategy',
+      'Pro：更深推理＋即時網搜——少薄答案、策略可核對',
+      'Pro：更深推理＋即时网搜——少薄答案、策略可核对',
+    ),
   },
   // ── B. Guide only ──
   {
@@ -140,7 +199,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '即时网搜',
     },
     snapshot: t('—', '—', '—'),
-    guide: t('Yes (Google Search)', '有（Google Search）', '有（Google Search）'),
+    guide: t(
+      'Yes — public sources with URL + date when available',
+      '有 — 公開來源盡量附網址＋日期',
+      '有 — 公开来源尽量附网址＋日期',
+    ),
   },
   {
     section: 'guide_only',
@@ -150,7 +213,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '招募与公司情报',
     },
     snapshot: t('—', '—', '—'),
-    guide: t('Yes (grounded when available)', '有（可 grounding）', '有（可 grounding）'),
+    guide: t(
+      'Yes — why this seat is open / what market is doing',
+      '有 — 這席為何開缺／市場在發生什麼',
+      '有 — 这席为何开缺／市场在发生什么',
+    ),
   },
   {
     section: 'guide_only',
@@ -160,7 +227,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '疑虑与答辩',
     },
     snapshot: t('—', '—', '—'),
-    guide: t('Yes', '有', '有'),
+    guide: t(
+      'Yes — 3 recruiter doubts + how to answer (no invention)',
+      '有 — 3 個招募質疑＋怎麼答（不捏造經歷）',
+      '有 — 3 个招募质疑＋怎么答（不捏造经历）',
+    ),
   },
   {
     section: 'guide_only',
@@ -170,7 +241,25 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '谈薪脚本',
     },
     snapshot: t('—', '—', '—'),
-    guide: t('Yes', '有', '有'),
+    guide: t(
+      'Yes — target / walk-away / levers / copy-ready lines',
+      '有 — 目標／底線／槓桿／可直接講的台詞',
+      '有 — 目标／底线／杠杆／可直接讲的台词',
+    ),
+  },
+  {
+    section: 'guide_only',
+    feature: {
+      en: 'Hire thesis (candidate case)',
+      'zh-TW': '錄取論點（Candidate Case）',
+      'zh-CN': '录取论点（Candidate Case）',
+    },
+    snapshot: t('—', '—', '—'),
+    guide: t(
+      'Yes — why hire YOU for THIS seat, in recruiter language',
+      '有 — 為何該錄取「你」做「這席」，用招募聽得懂的話',
+      '有 — 为何该录取「你」做「这席」，用招募听得懂的话',
+    ),
   },
   // ── C. Meta ──
   {

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   REPORT_COMPARE_ROWS,
   REPORT_COMPARE_TRIGGER,
+  REPORT_COMPARE_WHY_PRO,
   resolveCompareLang,
 } from '@/constants/report-compare';
 
@@ -10,6 +11,11 @@ describe('report-compare', () => {
     expect(resolveCompareLang('en')).toBe('en');
     expect(resolveCompareLang('zh-TW')).toBe('zh-TW');
     expect(resolveCompareLang('es')).toBe('en');
+  });
+
+  it('explains why Pro / deep report matters', () => {
+    expect(REPORT_COMPARE_WHY_PRO.bullets.length).toBeGreaterThanOrEqual(3);
+    expect(REPORT_COMPARE_WHY_PRO.title.en).toMatch(/professional/i);
   });
 
   it('groups shared → guide-only → meta without star ratings', () => {
