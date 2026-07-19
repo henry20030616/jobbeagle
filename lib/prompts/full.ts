@@ -9,7 +9,7 @@ Use google search / public web sources when citing hiring_context insights or re
 
 === Snapshot layer rules ===
 - Extract facts from the JD and resume only. Never invent experience, visas, or compensation from model memory.
-- Always fill company_name. Fill job_posted_date from the JD when a posting/listed date appears; else "".
+- Always fill company_name. Fill job_source (LinkedIn / Indeed / …) when known. Fill job_posted_date from the JD when a posting/listed date appears; else "".
 - Do NOT output FLSA classification. Do NOT include culture-fit inside the numeric score.
 - Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
 - fit_score.sharp_verdict_points: EXACTLY 3 short bullets in parallel form "Short label: detail" (colon + space only; no em/en dash separators). Fit-only; no resume coaching.

@@ -11,6 +11,7 @@ import {
 import { LITE_SYSTEM_PROMPT } from '@/lib/prompts/lite';
 import { FULL_SYSTEM_PROMPT } from '@/lib/prompts/full';
 import { formatCareerContextForPrompt } from '@/lib/career-context';
+import { jobSourceFromUrl } from '@/lib/job-source';
 
 function getApiKey(): string {
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
@@ -55,12 +56,24 @@ function buildUserParts(
   resumeText: string,
   pdfInline?: PdfInlineAttachment,
   careerContext?: CareerContext | null,
+  pageUrl?: string | null,
 ): Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> {
   const careerBlock = formatCareerContextForPrompt(careerContext);
+  const sourceHint = jobSourceFromUrl(pageUrl);
+  const sourceBlock = pageUrl?.trim()
+    ? [
+        '=== JOB PAGE URL ===',
+        pageUrl.trim(),
+        sourceHint
+          ? `Prefer job_source="${sourceHint}" unless the JD clearly names a different board.`
+          : 'Set job_source from this URL host when possible.',
+      ].join('\n')
+    : '';
   const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [
     {
       text: [
         careerBlock,
+        sourceBlock,
         `=== JOB DESCRIPTION ===\n${rawJd}`,
         `=== RESUME ===\n${
           pdfInline
@@ -107,6 +120,7 @@ const LITE_RESPONSE_SCHEMA = {
     job_title: { type: Type.STRING },
     company_name: { type: Type.STRING },
     job_posted_date: { type: Type.STRING },
+    job_source: { type: Type.STRING },
     data_completeness: {
       type: Type.OBJECT,
       properties: {
@@ -246,6 +260,7 @@ const LITE_RESPONSE_SCHEMA = {
     'job_title',
     'company_name',
     'job_posted_date',
+    'job_source',
     'data_completeness',
     'hard_filter',
     'fit_score',
@@ -444,11 +459,21 @@ const FULL_REPORT_RESPONSE_SCHEMA = {
   ],
 };
 
+function applyJobSourceFallback(
+  report: LiteReport,
+  pageUrl?: string | null,
+): LiteReport {
+  if (report.job_source?.trim()) return report;
+  const fromUrl = jobSourceFromUrl(pageUrl);
+  return fromUrl ? { ...report, job_source: fromUrl } : report;
+}
+
 export async function executeLiteAnalysis(
   resumeText: string,
   rawJd: string,
   pdfInline?: PdfInlineAttachment,
   careerContext?: CareerContext | null,
+  pageUrl?: string | null,
 ): Promise<{ report: LiteReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_LITE_MODEL;
@@ -456,7 +481,7 @@ export async function executeLiteAnalysis(
 
   const response = await ai.models.generateContent({
     model,
-    contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext) }],
+    contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl) }],
     config: {
       systemInstruction: LITE_SYSTEM_PROMPT,
       temperature: 0.3,
@@ -471,11 +496,14 @@ export async function executeLiteAnalysis(
 
   let report: LiteReport;
   try {
-    report = normalizeLiteReport(parseJsonResponse<LiteReport>(text), opts);
+    report = applyJobSourceFallback(
+      normalizeLiteReport(parseJsonResponse<LiteReport>(text), opts),
+      pageUrl,
+    );
   } catch (firstErr) {
     const retry = await ai.models.generateContent({
       model,
-      contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext) }],
+      contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl) }],
       config: {
         systemInstruction:
           `${LITE_SYSTEM_PROMPT}\n\nCRITICAL: Return COMPLETE valid JSON only. Keep string fields concise (1–2 sentences each). Do not truncate. Tier D → null salary numbers.`,
@@ -487,7 +515,10 @@ export async function executeLiteAnalysis(
     });
     const retryText = retry.text;
     if (!retryText) throw firstErr;
-    report = normalizeLiteReport(parseJsonResponse<LiteReport>(retryText), opts);
+    report = applyJobSourceFallback(
+      normalizeLiteReport(parseJsonResponse<LiteReport>(retryText), opts),
+      pageUrl,
+    );
   }
 
   return { report, model };
@@ -500,6 +531,7 @@ export async function executeFullAnalysis(
   jobTitle: string,
   pdfInline?: PdfInlineAttachment,
   careerContext?: CareerContext | null,
+  pageUrl?: string | null,
 ): Promise<{ report: FullReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_FULL_MODEL;
@@ -516,7 +548,7 @@ export async function executeFullAnalysis(
     .filter(Boolean)
     .join('\n');
 
-  const parts = buildUserParts(rawJd, resumeText, pdfInline, careerContext);
+  const parts = buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl);
   parts[0] = {
     text: `${intro}\n\n${(parts[0] as { text: string }).text}`,
   };
@@ -538,7 +570,10 @@ export async function executeFullAnalysis(
     });
     const text = response.text;
     if (!text) throw new Error('Interview Strategy Guide returned empty response');
-    return normalizeFullReport(parseJsonResponse<FullReport>(text), opts);
+    return applyJobSourceFallback(
+      normalizeFullReport(parseJsonResponse<FullReport>(text), opts),
+      pageUrl,
+    ) as FullReport;
   };
 
   let report: FullReport;

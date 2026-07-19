@@ -21,6 +21,7 @@ import {
   offerEvaluationSummary,
 } from '@/lib/offer-display';
 import { scoreSummaryPoints, splitScoreSummaryPoint } from '@/lib/score-summary';
+import { formatJobSourceDate } from '@/lib/job-source';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
@@ -145,9 +146,7 @@ export default function LiteReportDashboard({
                     <span className="text-slate-500 text-sm font-semibold uppercase tracking-wide mr-2">
                       Posted
                     </span>
-                    {report.job_posted_date?.trim()
-                      ? report.job_posted_date.trim()
-                      : 'Date not listed on JD'}
+                    {formatJobSourceDate(report.job_source, report.job_posted_date)}
                   </dd>
                 </div>
               </dl>

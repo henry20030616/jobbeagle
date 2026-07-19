@@ -389,6 +389,8 @@ export interface LiteReport {
   company_name: string;
   /** Posting / listing date from JD when available (e.g. "2026-06-12" or "2 weeks ago") */
   job_posted_date: string;
+  /** Board / URL source label, e.g. LinkedIn, Indeed */
+  job_source: string;
   data_completeness: DataCompleteness;
   hard_filter: HardFilter;
   fit_score: FitScoreBlock;

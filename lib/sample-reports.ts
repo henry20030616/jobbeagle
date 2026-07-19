@@ -6,6 +6,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
   job_title: 'Senior Business Analyst',
   company_name: 'Northstar Payments',
   job_posted_date: '2026-06-18',
+  job_source: 'LinkedIn',
   data_completeness: {
     level: 'High',
     missing_inputs: [],

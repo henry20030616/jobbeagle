@@ -339,6 +339,7 @@ export function normalizeLiteReport(
     job_title: asString(raw.job_title, 'Unknown Role'),
     company_name: asString(raw.company_name, 'Unknown Company'),
     job_posted_date: asString(raw.job_posted_date),
+    job_source: asString(raw.job_source),
     data_completeness,
     hard_filter,
     fit_score,

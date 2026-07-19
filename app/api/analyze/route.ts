@@ -78,6 +78,7 @@ interface ResolvedInput {
   raw_jd: string;
   linkedin_job_id: string;
   resume_text: string;
+  page_url?: string;
   pdf_inline?: { data: string; mimeType: string };
 }
 
@@ -101,6 +102,7 @@ async function resolveInput(
       resume_text: resolved?.pdfInline
         ? '[PDF resume attached]'
         : truncateText(resolved?.text || '', MAX_RESUME_CHARS),
+      page_url: pf.page_url,
       pdf_inline: resolved?.pdfInline,
     };
   }
@@ -117,6 +119,7 @@ async function resolveInput(
         raw_jd: truncateText(pf.raw_jd, MAX_JD_CHARS),
         linkedin_job_id: deriveJobId(pf.linkedin_job_id, pf.raw_jd, pf.company_name),
         resume_text: truncateText(resumeText, MAX_RESUME_CHARS),
+        page_url: pf.page_url,
         pdf_inline: resolved.pdfInline,
       };
     }
@@ -126,6 +129,7 @@ async function resolveInput(
       raw_jd: truncateText(pf.raw_jd, MAX_JD_CHARS),
       linkedin_job_id: deriveJobId(pf.linkedin_job_id, pf.raw_jd, pf.company_name),
       resume_text: truncateText(resumeText, MAX_RESUME_CHARS),
+      page_url: pf.page_url,
     };
   }
 
@@ -307,6 +311,7 @@ export async function POST(request: NextRequest) {
           input.raw_jd,
           input.pdf_inline,
           careerContext,
+          input.page_url,
         );
         report = result.report;
         modelUsed = result.model;
@@ -318,6 +323,7 @@ export async function POST(request: NextRequest) {
           input.job_title,
           input.pdf_inline,
           careerContext,
+          input.page_url,
         );
         report = normalizeFullReport(result.report, { careerContext });
         modelUsed = result.model;
