@@ -27,8 +27,9 @@ type ReportCompareModalProps = {
 };
 
 /**
- * Cake-style right drawer: trigger opens Snapshot vs Guide comparison
- * sliding in from the right over the current page.
+ * Large overlay for Snapshot vs Guide compare.
+ * Covers most of the viewport (OK to cover the homepage) so the table stays readable
+ * even when the homepage itself is CSS-zoomed.
  */
 export default function ReportCompareModal({
   language = 'en',
@@ -66,13 +67,10 @@ export default function ReportCompareModal({
   const drawer =
     open && mounted
       ? createPortal(
-          <div
-            className="fixed inset-0 z-[9999]"
-            role="presentation"
-          >
+          <div className="fixed inset-0 z-[9999]" role="presentation">
             <button
               type="button"
-              className="absolute inset-0 bg-black/55"
+              className="absolute inset-0 bg-black/70"
               aria-label={REPORT_COMPARE_CLOSE[lang]}
               onClick={() => setOpen(false)}
             />
@@ -80,37 +78,40 @@ export default function ReportCompareModal({
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
-              className="absolute inset-y-0 right-0 z-10 flex w-full max-w-[min(48rem,92vw)] flex-col border-l border-slate-600 bg-slate-950 shadow-2xl animate-slide-in-right"
+              className="absolute inset-2 sm:inset-4 z-10 flex w-auto max-w-none flex-col rounded-2xl border border-slate-500 bg-slate-950 shadow-2xl animate-slide-in-right overflow-hidden"
             >
-              <header className="flex items-start justify-between gap-3 border-b border-slate-800 px-4 py-3.5 sm:px-5 shrink-0">
+              <header className="flex items-start justify-between gap-4 border-b border-slate-800 px-5 py-4 sm:px-8 sm:py-5 shrink-0">
                 <div className="min-w-0">
-                  <BrandLogo size="sm" showIcon href={null} className="mb-2" />
-                  <h2 id={titleId} className="text-xl sm:text-2xl font-bold text-white leading-tight">
+                  <BrandLogo size="nav" showIcon href={null} className="mb-2" />
+                  <h2
+                    id={titleId}
+                    className="text-2xl sm:text-3xl font-bold text-white leading-tight"
+                  >
                     {REPORT_COMPARE_TITLE[lang]}
                   </h2>
-                  <p className="text-sm text-slate-400 mt-1 leading-snug">
+                  <p className="text-base sm:text-lg text-slate-400 mt-1.5 leading-snug">
                     {REPORT_COMPARE_SUBTITLE[lang]}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="shrink-0 rounded-lg p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="shrink-0 rounded-xl p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                   aria-label={REPORT_COMPARE_CLOSE[lang]}
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-7 h-7" />
                 </button>
               </header>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3 sm:px-4 sm:py-4">
-                <ReportCompareTable language={language} showHeader={false} />
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-5">
+                <ReportCompareTable language={language} showHeader={false} size="lg" />
               </div>
 
-              <footer className="shrink-0 border-t border-slate-800 px-4 py-3 sm:px-5 flex justify-end">
+              <footer className="shrink-0 border-t border-slate-800 px-5 py-4 sm:px-8 flex justify-end">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-lg border border-slate-500 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-100 hover:bg-slate-800 transition-colors"
+                  className="rounded-xl border border-slate-500 bg-slate-900 px-6 py-3 text-lg font-semibold text-slate-100 hover:bg-slate-800 transition-colors"
                 >
                   {REPORT_COMPARE_CLOSE[lang]}
                 </button>
