@@ -151,6 +151,8 @@ main input {
 @media (min-width: 1024px) {
   .jb-home-steps {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: minmax(32rem, 1fr);
+    align-items: stretch;
   }
 }
 

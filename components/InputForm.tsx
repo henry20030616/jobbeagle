@@ -525,11 +525,11 @@ const InputForm: React.FC<InputFormProps> = ({
     (!publicAts && !resume);
 
   return (
-    <div className="flex flex-col w-full min-w-0 gap-3">
+    <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
       {/* Tagline only — logo lives in page header */}
-      <div className="text-center space-y-2 px-2 min-w-0 w-full">
+      <div className="w-full min-w-0 space-y-2 px-2 text-center">
         <h1 className="sr-only">Jobbeagle</h1>
-        <p className="text-slate-400 w-full max-w-5xl mx-auto font-medium leading-snug text-base sm:text-lg break-words">
+        <p className="mx-auto w-full max-w-7xl font-medium leading-snug text-base text-slate-400 break-words sm:text-lg">
           {t.description}
         </p>
         {extensionCapture && (
@@ -542,10 +542,10 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full min-w-0">
+      <form onSubmit={handleSubmit} className="flex w-full min-w-0 flex-1 flex-col">
         {/* Steps 1→4 left-to-right on lg+; each column minmax(0,1fr) so the row never exceeds 100%. */}
-        <div className="w-full min-w-0 rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl overflow-hidden">
-          <div className="jb-home-steps grid w-full min-w-0 grid-cols-1">
+        <div className="flex w-full min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl">
+          <div className="jb-home-steps grid w-full min-w-0 flex-1 grid-cols-1 lg:min-h-[32rem]">
             {/* 1. Job */}
             <section className="flex flex-col gap-3 p-5 sm:p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2.5 min-w-0">
@@ -584,7 +584,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   </Link>
                 )}
               </div>
-              <div className="flex-1 min-h-[14rem] flex flex-col min-w-0">
+              <div className="flex min-h-[16rem] min-w-0 flex-1 flex-col lg:min-h-0">
                 <SmartInputArea
                   value={jobDescription}
                   onChange={(next) => {
