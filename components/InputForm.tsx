@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, ArrowRight, Save, Puzzle, CreditCard } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, ArrowRight, Save, Puzzle, CreditCard, Sparkles, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -24,11 +24,13 @@ const TYPE_META = 'text-sm text-zinc-400 leading-relaxed';
 const TYPE_PILL =
   'inline-flex items-center gap-1.5 text-sm font-medium text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-2 rounded-full border border-indigo-500/20 transition-all max-w-full';
 const STEP_SECTION =
-  'flex h-full min-h-0 flex-col gap-4 p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80';
+  'jb-home-step flex h-full min-h-0 flex-col gap-4 p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80';
+const STEP_CHROME =
+  'flex min-h-[4.5rem] shrink-0 flex-col justify-start gap-2.5 min-w-0';
 const STEP_BODY =
-  'flex min-h-0 min-w-0 flex-1 flex-col';
+  'jb-home-step-body flex min-h-[16rem] min-w-0 flex-1 flex-col';
 const TYPE_LAUNCH =
-  'w-full min-h-0 flex-1 min-w-0 rounded-xl px-5 py-5 text-lg font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all transition-transform flex flex-col justify-center items-center gap-2 text-center leading-relaxed';
+  'w-full min-h-[16rem] flex-1 min-w-0 rounded-xl px-5 py-5 text-lg font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all transition-transform flex flex-col justify-center items-center gap-2 text-center leading-relaxed';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -78,6 +80,7 @@ const InputForm: React.FC<InputFormProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [jdError, setJdError] = useState<string | null>(null);
   const [isParsingUrl, setIsParsingUrl] = useState(false);
+  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -558,17 +561,97 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full min-w-0">
-        {/* Steps 1→4 left-to-right on lg+; each column minmax(0,1fr) so the row never exceeds 100%. */}
+      <form onSubmit={handleSubmit} className="flex w-full min-w-0 flex-col gap-4">
+        {!compactChrome && (
+          <div className="relative overflow-hidden rounded-2xl border border-slate-700 bg-slate-800/80 shadow-xl backdrop-blur-sm">
+            <div className="pointer-events-none absolute top-0 right-0 p-12 opacity-5">
+              <Sparkles className="h-64 w-64 text-indigo-500" />
+            </div>
+            <div className="relative grid grid-cols-1 divide-y divide-slate-700/80 lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+              {([
+                {
+                  id: 'fit',
+                  icon: ScanSearch,
+                  iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
+                  iconColor: 'text-amber-300',
+                  title: t.matchAnalysis,
+                  desc: t.matchAnalysisDesc,
+                },
+                {
+                  id: 'offer',
+                  icon: BadgeDollarSign,
+                  iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
+                  iconColor: 'text-emerald-300',
+                  title: t.salaryResearch,
+                  desc: t.salaryResearchDesc,
+                },
+                {
+                  id: 'defenses',
+                  icon: ShieldAlert,
+                  iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
+                  iconColor: 'text-sky-300',
+                  title: t.industryAnalysis,
+                  desc: t.industryAnalysisDesc,
+                },
+                {
+                  id: 'playbook',
+                  icon: MessageSquare,
+                  iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
+                  iconColor: 'text-violet-300',
+                  title: t.interviewPrep,
+                  desc: t.interviewPrepDesc,
+                },
+              ] as const).map((item) => {
+                const open = expandedFeature === item.id;
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-expanded={open}
+                    onMouseEnter={() => setExpandedFeature(item.id)}
+                    onMouseLeave={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
+                    onFocus={() => setExpandedFeature(item.id)}
+                    onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
+                    onClick={() => setExpandedFeature(open ? null : item.id)}
+                    className="flex w-full items-start gap-3 border-b border-slate-700/60 p-4 text-left transition-colors last:border-b-0 hover:bg-slate-700/30 sm:p-5 lg:border-b-0"
+                  >
+                    <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 shadow-inner ring-1 ${item.iconWrap}`}>
+                      <Icon className={`h-6 w-6 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-base font-bold leading-snug text-slate-200">{item.title}</span>
+                        <ChevronDown
+                          className={`mt-0.5 h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          aria-hidden
+                        />
+                      </div>
+                      <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                        <div className="overflow-hidden">
+                          <p className="pb-0.5 pt-1.5 text-sm leading-normal text-slate-400">
+                            {item.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Steps 1→4 left-to-right on lg+; shared min-height content boxes */}
         <div className="w-full min-w-0 overflow-hidden rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl">
           <div className="jb-home-steps grid w-full min-w-0 grid-cols-1">
             {/* 1. Job */}
             <section className={STEP_SECTION}>
-              <h2 className={`${TYPE_STEP} flex items-center gap-2.5 min-w-0`}>
-                <span className="w-1.5 h-5 bg-indigo-500 rounded-full shrink-0" />
+              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0`}>
+                <span className="h-5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
                 <span className="truncate">{t.jobData}</span>
               </h2>
-              <div className="flex flex-col gap-2.5 min-w-0">
+              <div className={STEP_CHROME}>
                 <p className={TYPE_BODY}>
                   {extensionCapture
                     ? (zh
@@ -577,9 +660,9 @@ const InputForm: React.FC<InputFormProps> = ({
                     : t.jobStepHint}
                 </p>
                 {extensionCapture ? (
-                  <div className="inline-flex flex-col gap-1.5 max-w-full min-w-0">
-                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-300 bg-emerald-500/10 px-3 py-2 rounded-full border border-emerald-500/25 w-fit max-w-full">
-                      <Puzzle className="w-4 h-4 shrink-0" />
+                  <div className="inline-flex max-w-full min-w-0 flex-col gap-1.5">
+                    <span className="inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300">
+                      <Puzzle className="h-4 w-4 shrink-0" />
                       <span className="truncate">
                         {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
                       </span>
@@ -590,14 +673,14 @@ const InputForm: React.FC<InputFormProps> = ({
                   </div>
                 ) : (
                   <Link href="/extension" className={`${TYPE_PILL} w-fit`}>
-                    <Puzzle className="w-4 h-4 shrink-0" />
+                    <Puzzle className="h-4 w-4 shrink-0" />
                     <span className="truncate">
                       {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with extension →'}
                     </span>
                   </Link>
                 )}
               </div>
-              <div className={`${STEP_BODY}`}>
+              <div className={STEP_BODY}>
                 <SmartInputArea
                   value={jobDescription}
                   onChange={(next) => {
@@ -629,11 +712,11 @@ const InputForm: React.FC<InputFormProps> = ({
 
             {/* 2. Resume */}
             <section className={`relative ${STEP_SECTION}`}>
-              <h2 className={`${TYPE_STEP} flex items-center gap-2.5 min-w-0`}>
-                <span className="w-1.5 h-5 bg-violet-500 rounded-full shrink-0" />
+              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0`}>
+                <span className="h-5 w-1.5 shrink-0 rounded-full bg-violet-500" />
                 <span className="truncate">{t.resume}</span>
               </h2>
-              <div className="relative min-w-0 py-1">
+              <div className={`relative ${STEP_CHROME}`}>
                 <button
                   type="button"
                   onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
@@ -725,20 +808,24 @@ const InputForm: React.FC<InputFormProps> = ({
 
             {/* 3. Report type */}
             <section className={STEP_SECTION}>
-              <h2 className={`${TYPE_STEP} flex items-center gap-2.5 min-w-0`}>
-                <span className="w-1.5 h-5 bg-emerald-500 rounded-full shrink-0" />
+              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0`}>
+                <span className="h-5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
                 <span className="truncate">{t.reportTypeStep}</span>
               </h2>
-              {onReportTypeChange ? (
-                <Link
-                  href="/account"
-                  className={`${TYPE_PILL} w-fit`}
-                  title={creditsPillTitle}
-                >
-                  <CreditCard className="w-4 h-4 shrink-0" />
-                  <span className="leading-relaxed truncate">{creditsPillLabel}</span>
-                </Link>
-              ) : null}
+              <div className={STEP_CHROME}>
+                {onReportTypeChange ? (
+                  <Link
+                    href="/account"
+                    className={`${TYPE_PILL} w-fit`}
+                    title={creditsPillTitle}
+                  >
+                    <CreditCard className="h-4 w-4 shrink-0" />
+                    <span className="truncate leading-relaxed">{creditsPillLabel}</span>
+                  </Link>
+                ) : (
+                  <span className={TYPE_META}>—</span>
+                )}
+              </div>
               {onReportTypeChange ? (
                 <div className={`${STEP_BODY} gap-4`}>
                   <div className="grid min-h-0 flex-1 grid-rows-2 gap-4">
@@ -805,7 +892,12 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 4. Launch */}
-            <section className="flex h-full min-h-0 flex-col gap-4 p-6 min-w-0 max-w-full bg-slate-900/50">
+            <section className={`${STEP_SECTION} border-r-0 bg-slate-900/50`}>
+              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0 opacity-0`} aria-hidden>
+                <span className="h-5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
+                <span>Launch</span>
+              </h2>
+              <div className={STEP_CHROME} aria-hidden />
               <button
                 type="submit"
                 disabled={submitDisabled}

@@ -17,7 +17,7 @@ export const REPORT_ACTION_BTN =
  * text-sm (not text-xl) so columns stay within 100% and don’t shove the page right.
  */
 export const SAMPLE_LINK_BTN =
-  `inline-flex w-fit max-w-full items-center gap-1 rounded-md border border-indigo-400/50 bg-indigo-500/15 px-2.5 py-1.5 text-xs font-semibold text-indigo-200 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
+  `inline-flex w-fit max-w-full items-center gap-1 rounded-md border border-indigo-400/50 bg-indigo-500/15 px-2.5 py-1.5 text-sm font-semibold text-indigo-200 underline underline-offset-2 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
 
 /**
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.

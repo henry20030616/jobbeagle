@@ -154,10 +154,16 @@ main input {
     align-items: stretch;
   }
 
-  .jb-home-steps > * {
+  .jb-home-steps > .jb-home-step {
     display: flex;
     flex-direction: column;
     min-height: 100%;
+  }
+
+  /* Keep the dashed/solid content shells the same height across steps */
+  .jb-home-steps .jb-home-step-body {
+    min-height: 16rem;
+    flex: 1 1 auto;
   }
 }
 
