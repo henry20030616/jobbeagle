@@ -197,7 +197,32 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
     guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
   },
-  // ── A. Shared (stars = depth) ──
+  // ── A. Shared (stars = depth) — AI model first ──
+  {
+    section: 'shared',
+    feature: {
+      en: 'AI model — what it means',
+      'zh-TW': 'AI 模型 — 代表什麼',
+      'zh-CN': 'AI 模型 — 代表什么',
+    },
+    help: help(
+      'Which model class runs the report. Flash-Lite = fast closed-book triage from JD + resume. Pro = deeper reasoning and live web when available.',
+      '報告用哪一級模型。Flash-Lite＝快速、只讀 JD＋履歷；Pro＝更深推理，並在可取得時做即時網搜。',
+      '报告用哪一级模型。Flash-Lite＝快速、只读 JD＋简历；Pro＝更深推理，并在可取得时做即时网搜。',
+    ),
+    snapshot: t(
+      'Flash-Lite: fast triage, closed-book from JD + resume',
+      'Flash-Lite：快速分流，只讀 JD＋履歷（無網搜）',
+      'Flash-Lite：快速分流，只读 JD＋简历（无网搜）',
+      3,
+    ),
+    guide: t(
+      'Pro: deeper reasoning + live web — fewer thin answers, more checkable strategy',
+      'Pro：更深推理＋即時網搜——少薄答案、策略可核對',
+      'Pro：更深推理＋即时网搜——少薄答案、策略可核对',
+      5,
+    ),
+  },
   {
     section: 'shared',
     feature: {
@@ -242,31 +267,6 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     ),
     snapshot: t('3 predicted starters', '僅 3 題預測開場', '仅 3 题预测开场', 2),
     guide: t('Full playbook + STAR outlines', '完整題庫 + STAR 大綱', '完整题库 + STAR 大纲', 5),
-  },
-  {
-    section: 'shared',
-    feature: {
-      en: 'AI model — what it means',
-      'zh-TW': 'AI 模型 — 代表什麼',
-      'zh-CN': 'AI 模型 — 代表什么',
-    },
-    help: help(
-      'Which model class runs the report. Flash-Lite = fast closed-book triage from JD + resume. Pro = deeper reasoning and live web when available.',
-      '報告用哪一級模型。Flash-Lite＝快速、只讀 JD＋履歷；Pro＝更深推理，並在可取得時做即時網搜。',
-      '报告用哪一级模型。Flash-Lite＝快速、只读 JD＋简历；Pro＝更深推理，并在可取得时做即时网搜。',
-    ),
-    snapshot: t(
-      'Flash-Lite: fast triage, closed-book from JD + resume',
-      'Flash-Lite：快速分流，只讀 JD＋履歷（無網搜）',
-      'Flash-Lite：快速分流，只读 JD＋简历（无网搜）',
-      3,
-    ),
-    guide: t(
-      'Pro: deeper reasoning + live web — fewer thin answers, more checkable strategy',
-      'Pro：更深推理＋即時網搜——少薄答案、策略可核對',
-      'Pro：更深推理＋即时网搜——少薄答案、策略可核对',
-      5,
-    ),
   },
   // ── B. Guide only ──
   {

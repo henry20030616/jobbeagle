@@ -24,6 +24,8 @@ describe('report-compare', () => {
     const sections = REPORT_COMPARE_ROWS.map((r) => r.section);
     expect(REPORT_COMPARE_ROWS[0]?.feature.en).toBe('Best for');
     expect(sections[0]).toBe('best_for');
+    const firstShared = REPORT_COMPARE_ROWS.find((r) => r.section === 'shared');
+    expect(firstShared?.feature.en).toMatch(/AI model/i);
     expect(sections.filter((s) => s === 'shared').length).toBeGreaterThanOrEqual(3);
     expect(sections.filter((s) => s === 'guide_only').length).toBeGreaterThanOrEqual(3);
     expect(sections.filter((s) => s === 'meta').length).toBeGreaterThanOrEqual(1);
