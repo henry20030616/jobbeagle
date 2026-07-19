@@ -317,43 +317,6 @@ export default function LiteReportDashboard({
           </div>
         </div>
 
-        {/* Full-width Score Summary — Apply Decision at bottom */}
-        <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="w-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 sm:px-4 sm:py-3.5 flex flex-col">
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-1`}>
-              Score Summary
-            </p>
-            <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
-              {score}/100 · {scoreInfo.level}
-              {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
-            </p>
-            <ul className="mt-1.5 space-y-1.5">
-              {summaryPoints.map((point, i) => (
-                <li key={i} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-            {apply?.label ? (
-              <div className="mt-3 pt-3 border-t border-sky-400/30">
-                <p className={`text-lg font-bold ${scoreInfo.color}`}>
-                  {apply.label}
-                </p>
-                {apply.reason ? (
-                  <p className="text-base text-slate-300 mt-1 leading-snug">{apply.reason}</p>
-                ) : null}
-                {apply.next_best_action ? (
-                  <p className="text-base text-slate-400 mt-1.5 leading-snug">
-                    <span className="font-semibold text-slate-300">Next: </span>
-                    {apply.next_best_action}
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-        </div>
-
         {/* Strengths | Gaps — shared outer frame */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
           <div className="w-full rounded-lg border border-slate-500/45 bg-slate-950/40 overflow-hidden">
@@ -387,6 +350,43 @@ export default function LiteReportDashboard({
                 </ul>
               </section>
             </div>
+          </div>
+        </div>
+
+        {/* Score Summary last — Apply Decision footer */}
+        <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
+          <div className="w-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 sm:px-4 sm:py-3.5 flex flex-col">
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-1`}>
+              Score Summary
+            </p>
+            <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
+              {score}/100 · {scoreInfo.level}
+              {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+            </p>
+            <ul className="mt-1.5 space-y-1.5">
+              {summaryPoints.map((point, i) => (
+                <li key={i} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+            {apply?.label ? (
+              <div className="mt-3 pt-3 border-t border-sky-400/30">
+                <p className={`text-lg font-bold ${scoreInfo.color}`}>
+                  {apply.label}
+                </p>
+                {apply.reason ? (
+                  <p className="text-base text-slate-300 mt-1 leading-snug">{apply.reason}</p>
+                ) : null}
+                {apply.next_best_action ? (
+                  <p className="text-base text-slate-400 mt-1.5 leading-snug">
+                    <span className="font-semibold text-slate-300">Next: </span>
+                    {apply.next_best_action}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </article>
