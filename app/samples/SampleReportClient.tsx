@@ -121,7 +121,7 @@ export default function SampleReportClient() {
                 report={guide}
                 language="en"
                 embedded
-                isSample={false}
+                isSample
                 onNewAnalysis={goHome}
               />
             ) : (
@@ -129,7 +129,7 @@ export default function SampleReportClient() {
                 report={snapshot}
                 language="en"
                 embedded
-                isSample={false}
+                isSample
                 onNewAnalysis={goHome}
               />
             )}

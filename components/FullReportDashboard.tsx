@@ -268,15 +268,9 @@ export default function FullReportDashboard({
         </div>
       )}
 
-      {isSample && (
-        <div className="pb-2 sm:pb-2.5">
-          <SampleMark />
-        </div>
-      )}
-
-      <div className={`@container/report min-w-0 overflow-x-auto ${REPORT_SLIDE_SURFACE}`}>
+      <div className={`@container/report relative min-w-0 overflow-x-auto ${REPORT_SLIDE_SURFACE}`}>
       {/* Title bar inside slide */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
+      <div className="flex flex-wrap items-start justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
           <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
             Interview Strategy Guide
@@ -285,6 +279,11 @@ export default function FullReportDashboard({
             Snapshot + playbook — switch pages from the top nav
           </p>
         </div>
+        {isSample ? (
+          <div className="shrink-0 self-start">
+            <SampleMark />
+          </div>
+        ) : null}
       </div>
 
       {/* Page nav — wrap so no tab is clipped */}

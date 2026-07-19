@@ -4,19 +4,18 @@ export function SampleMark({
   variant = 'report',
 }: {
   className?: string;
-  /** `report` = large mark on Snapshot/Guide; `notice` = fits the narrow sample card */
+  /** `report` = large mark on Snapshot/Guide top-right; `notice` = left-rail chip */
   variant?: 'report' | 'notice';
 }) {
   const variantClass =
     variant === 'notice'
-      ? // Match SAMPLE_RAIL_TEXT size used by the other three left-rail boxes
-        'text-sm font-bold uppercase tracking-wide text-white'
-      : 'text-5xl sm:text-6xl font-black uppercase tracking-[0.22em] text-slate-400';
+      ? 'text-sm font-bold uppercase tracking-wide text-white text-center'
+      : 'text-5xl sm:text-6xl font-black uppercase tracking-[0.2em] text-amber-400/90 text-right';
 
   return (
     <p
-      className={`text-center select-none leading-none ${variantClass} ${className}`}
-      aria-hidden
+      className={`select-none leading-none ${variantClass} ${className}`}
+      aria-label="Sample report"
     >
       SAMPLE
     </p>
