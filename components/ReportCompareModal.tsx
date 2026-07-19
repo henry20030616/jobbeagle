@@ -2,36 +2,79 @@
 
 import React, { useEffect, useId, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, GitCompareArrows, X } from 'lucide-react';
+import { Check, GitCompareArrows, Star, X } from 'lucide-react';
 import {
   REPORT_COMPARE_CLOSE,
   REPORT_COMPARE_COL,
   REPORT_COMPARE_ROWS,
+  REPORT_COMPARE_STAR_MAX,
   REPORT_COMPARE_SUBTITLE,
   REPORT_COMPARE_TITLE,
   REPORT_COMPARE_TRIGGER,
   resolveCompareLang,
+  type ReportCompareCell,
   type ReportCompareLang,
 } from '@/constants/report-compare';
 
-/** Turn leading Yes / 有 into a green check; keep any suffix note. */
-function CompareCell({ text }: { text: string }) {
-  const match = /^(Yes|有)\s*(.*)$/i.exec(text.trim());
-  if (!match) return <>{text}</>;
-
-  const suffix = match[2].trim();
-
+function StarRating({ value, max = REPORT_COMPARE_STAR_MAX }: { value: number; max?: number }) {
+  const filled = Math.max(0, Math.min(max, Math.round(value)));
   return (
-    <span className="inline-flex items-start gap-1.5">
-      <Check
-        className="w-4 h-4 sm:w-[1.125rem] sm:h-[1.125rem] text-emerald-400 shrink-0 mt-0.5"
-        strokeWidth={2.75}
-        aria-hidden
-      />
-      <span className="sr-only">Yes</span>
-      {suffix ? <span>{suffix}</span> : null}
+    <span
+      className="inline-flex items-center gap-0.5"
+      aria-label={`${filled} of ${max} stars`}
+    >
+      {Array.from({ length: max }, (_, i) => (
+        <Star
+          key={i}
+          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
+            i < filled
+              ? 'fill-amber-400 text-amber-400'
+              : 'fill-transparent text-slate-600'
+          }`}
+          strokeWidth={1.75}
+          aria-hidden
+        />
+      ))}
     </span>
   );
+}
+
+/** Stars for shared depth; green check for Guide-only Yes; plain text otherwise. */
+function CompareCell({
+  cell,
+  lang,
+}: {
+  cell: ReportCompareCell;
+  lang: ReportCompareLang;
+}) {
+  const text = cell.text[lang];
+
+  if (typeof cell.stars === 'number') {
+    return (
+      <span className="inline-flex flex-col gap-1 min-w-0">
+        <StarRating value={cell.stars} />
+        <span className="text-slate-400 text-sm leading-snug">{text}</span>
+      </span>
+    );
+  }
+
+  const match = /^(Yes|有)\s*(.*)$/i.exec(text.trim());
+  if (match) {
+    const suffix = match[2].trim();
+    return (
+      <span className="inline-flex items-start gap-1.5">
+        <Check
+          className="w-4 h-4 sm:w-[1.125rem] sm:h-[1.125rem] text-emerald-400 shrink-0 mt-0.5"
+          strokeWidth={2.75}
+          aria-hidden
+        />
+        <span className="sr-only">Yes</span>
+        {suffix ? <span>{suffix}</span> : null}
+      </span>
+    );
+  }
+
+  return <>{text}</>;
 }
 
 type ReportCompareModalProps = {
@@ -136,10 +179,10 @@ export default function ReportCompareModal({
                           {row.feature[lang]}
                         </td>
                         <td className="py-2.5 px-2 sm:px-3 text-slate-300">
-                          <CompareCell text={row.snapshot[lang]} />
+                          <CompareCell cell={row.snapshot} lang={lang} />
                         </td>
                         <td className="py-2.5 px-2 sm:px-3 text-slate-300">
-                          <CompareCell text={row.guide[lang]} />
+                          <CompareCell cell={row.guide} lang={lang} />
                         </td>
                       </tr>
                     ))}

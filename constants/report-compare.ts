@@ -4,10 +4,34 @@
 
 export type ReportCompareLang = 'en' | 'zh-TW' | 'zh-CN';
 
+/** Max stars shown for depth gaps on shared features. */
+export const REPORT_COMPARE_STAR_MAX = 5;
+
+export interface ReportCompareCell {
+  text: Record<ReportCompareLang, string>;
+  /**
+   * 1–5 depth rating when both products have the feature.
+   * Omit for Guide-only (✓) / Snapshot missing (—) / meta rows.
+   */
+  stars?: number;
+}
+
 export interface ReportCompareRow {
   feature: Record<ReportCompareLang, string>;
-  snapshot: Record<ReportCompareLang, string>;
-  guide: Record<ReportCompareLang, string>;
+  snapshot: ReportCompareCell;
+  guide: ReportCompareCell;
+}
+
+function t(
+  en: string,
+  zhTW: string,
+  zhCN: string,
+  stars?: number,
+): ReportCompareCell {
+  return {
+    text: { en, 'zh-TW': zhTW, 'zh-CN': zhCN },
+    ...(stars != null ? { stars } : {}),
+  };
 }
 
 export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
@@ -17,9 +41,9 @@ export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
 };
 
 export const REPORT_COMPARE_SUBTITLE: Record<ReportCompareLang, string> = {
-  en: 'Same JD + resume in → two different depths of output.',
-  'zh-TW': '同樣的職缺與履歷，兩種不同深度的報告。',
-  'zh-CN': '同样的职位与简历，两种不同深度的报告。',
+  en: 'Same JD + resume in → two different depths of output. Stars = depth when both include the item.',
+  'zh-TW': '同樣的職缺與履歷，兩種不同深度。兩者都有的項目用星星標示程度差距。',
+  'zh-CN': '同样的职位与简历，两种不同深度。两者都有的项目用星星标示程度差距。',
 };
 
 export const REPORT_COMPARE_TRIGGER: Record<ReportCompareLang, string> = {
@@ -56,7 +80,10 @@ export const REPORT_COMPARE_COL: {
   },
 };
 
-/** Snapshot ✓ rows first, then Guide-only (—), then meta — so exclusives read as upgrades. */
+/**
+ * Shared (star depth) first → Guide-only (✓ / —) → meta.
+ * Stars out of 5: higher = deeper / more complete for that product.
+ */
 export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     feature: {
@@ -64,16 +91,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '匹配分數 + 投遞決策',
       'zh-CN': '匹配分数 + 投递决策',
     },
-    snapshot: {
-      en: 'Yes',
-      'zh-TW': '有',
-      'zh-CN': '有',
-    },
-    guide: {
-      en: 'Yes (includes Snapshot)',
-      'zh-TW': '有（含完整 Snapshot）',
-      'zh-CN': '有（含完整 Snapshot）',
-    },
+    snapshot: t('Core fit + apply call', '核心匹配 + 投遞決策', '核心匹配 + 投递决策', 4),
+    guide: t('Full Snapshot + score implications', '完整 Snapshot + 分數意涵', '完整 Snapshot + 分数意涵', 5),
   },
   {
     feature: {
@@ -81,16 +100,26 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '薪酬區間 + 個人落點',
       'zh-CN': '薪酬区间 + 个人落点',
     },
-    snapshot: {
-      en: 'Yes (market estimate when JD has no pay)',
-      'zh-TW': '有（JD 未標薪時為市場估計）',
-      'zh-CN': '有（JD 未标薪时为市场估计）',
+    snapshot: t('Range + predicted land', '區間 + 預測落點', '区间 + 预测落点', 3),
+    guide: t('Range + land + negotiation levers', '區間 + 落點 + 談判槓桿', '区间 + 落点 + 谈判杠杆', 5),
+  },
+  {
+    feature: {
+      en: 'Interview prep / STAR',
+      'zh-TW': '面試準備 / STAR',
+      'zh-CN': '面试准备 / STAR',
     },
-    guide: {
-      en: 'Yes + negotiation levers',
-      'zh-TW': '有 + 談判槓桿',
-      'zh-CN': '有 + 谈判杠杆',
+    snapshot: t('3 predicted starters', '僅 3 題預測開場', '仅 3 题预测开场', 2),
+    guide: t('Full playbook + STAR outlines', '完整題庫 + STAR 大綱', '完整题库 + STAR 大纲', 5),
+  },
+  {
+    feature: {
+      en: 'AI model depth',
+      'zh-TW': 'AI 模型深度',
+      'zh-CN': 'AI 模型深度',
     },
+    snapshot: t('Flash-Lite (fast)', 'Flash-Lite（快）', 'Flash-Lite（快）', 3),
+    guide: t('Latest Pro-class model', '最新 Pro 級模型', '最新 Pro 级模型', 5),
   },
   {
     feature: {
@@ -98,16 +127,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '即時網搜',
       'zh-CN': '即时网搜',
     },
-    snapshot: {
-      en: '—',
-      'zh-TW': '—',
-      'zh-CN': '—',
-    },
-    guide: {
-      en: 'Yes (Google Search)',
-      'zh-TW': '有（Google Search）',
-      'zh-CN': '有（Google Search）',
-    },
+    snapshot: t('—', '—', '—'),
+    guide: t('Yes (Google Search)', '有（Google Search）', '有（Google Search）'),
   },
   {
     feature: {
@@ -115,16 +136,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '招募與公司情報',
       'zh-CN': '招募与公司情报',
     },
-    snapshot: {
-      en: '—',
-      'zh-TW': '—',
-      'zh-CN': '—',
-    },
-    guide: {
-      en: 'Yes (grounded when available)',
-      'zh-TW': '有（可 grounding）',
-      'zh-CN': '有（可 grounding）',
-    },
+    snapshot: t('—', '—', '—'),
+    guide: t('Yes (grounded when available)', '有（可 grounding）', '有（可 grounding）'),
   },
   {
     feature: {
@@ -132,33 +145,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '疑慮與答辯',
       'zh-CN': '疑虑与答辩',
     },
-    snapshot: {
-      en: '—',
-      'zh-TW': '—',
-      'zh-CN': '—',
-    },
-    guide: {
-      en: 'Yes',
-      'zh-TW': '有',
-      'zh-CN': '有',
-    },
-  },
-  {
-    feature: {
-      en: 'STAR interview bank',
-      'zh-TW': 'STAR 面試題庫',
-      'zh-CN': 'STAR 面试题库',
-    },
-    snapshot: {
-      en: '3 predicted starters only',
-      'zh-TW': '僅 3 題預測開場',
-      'zh-CN': '仅 3 题预测开场',
-    },
-    guide: {
-      en: 'Full playbook + STAR outlines',
-      'zh-TW': '完整題庫 + STAR 大綱',
-      'zh-CN': '完整题库 + STAR 大纲',
-    },
+    snapshot: t('—', '—', '—'),
+    guide: t('Yes', '有', '有'),
   },
   {
     feature: {
@@ -166,16 +154,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '談薪腳本',
       'zh-CN': '谈薪脚本',
     },
-    snapshot: {
-      en: '—',
-      'zh-TW': '—',
-      'zh-CN': '—',
-    },
-    guide: {
-      en: 'Yes',
-      'zh-TW': '有',
-      'zh-CN': '有',
-    },
+    snapshot: t('—', '—', '—'),
+    guide: t('Yes', '有', '有'),
   },
   {
     feature: {
@@ -183,33 +163,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '最適用',
       'zh-CN': '最适用',
     },
-    snapshot: {
-      en: 'Decide whether to apply',
-      'zh-TW': '決定要不要投',
-      'zh-CN': '决定要不要投',
-    },
-    guide: {
-      en: 'Prepare interviews & negotiate',
-      'zh-TW': '面試準備與談薪',
-      'zh-CN': '面试准备与谈薪',
-    },
-  },
-  {
-    feature: {
-      en: 'Model',
-      'zh-TW': '模型',
-      'zh-CN': '模型',
-    },
-    snapshot: {
-      en: 'Flash-Lite (fast)',
-      'zh-TW': 'Flash-Lite（快）',
-      'zh-CN': 'Flash-Lite（快）',
-    },
-    guide: {
-      en: 'Pro (deeper)',
-      'zh-TW': 'Pro（更深）',
-      'zh-CN': 'Pro（更深）',
-    },
+    snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
+    guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
   },
   {
     feature: {
@@ -217,16 +172,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '額度池',
       'zh-CN': '额度池',
     },
-    snapshot: {
-      en: 'Snapshot credits',
-      'zh-TW': 'Snapshot 額度',
-      'zh-CN': 'Snapshot 额度',
-    },
-    guide: {
-      en: 'Strategy Guide credits (separate)',
-      'zh-TW': 'Strategy Guide 額度（分開）',
-      'zh-CN': 'Strategy Guide 额度（分开）',
-    },
+    snapshot: t('Snapshot credits', 'Snapshot 額度', 'Snapshot 额度'),
+    guide: t('Strategy Guide credits (separate)', 'Strategy Guide 額度（分開）', 'Strategy Guide 额度（分开）'),
   },
   {
     feature: {
@@ -234,16 +181,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-TW': '單次報告價格',
       'zh-CN': '单次报告价格',
     },
-    snapshot: {
-      en: '$3',
-      'zh-TW': '$3',
-      'zh-CN': '$3',
-    },
-    guide: {
-      en: '$9.99',
-      'zh-TW': '$9.99',
-      'zh-CN': '$9.99',
-    },
+    snapshot: t('$3', '$3', '$3'),
+    guide: t('$9.99', '$9.99', '$9.99'),
   },
 ];
 

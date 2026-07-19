@@ -12,13 +12,23 @@ describe('report-compare', () => {
     expect(resolveCompareLang('es')).toBe('en');
   });
 
-  it('has bilingual rows for Snapshot vs Guide', () => {
+  it('has bilingual rows and star depth on shared features', () => {
     expect(REPORT_COMPARE_ROWS.length).toBeGreaterThanOrEqual(8);
     expect(REPORT_COMPARE_TRIGGER.en).toMatch(/Compare/i);
+
+    const starred = REPORT_COMPARE_ROWS.filter(
+      (row) => row.snapshot.stars != null && row.guide.stars != null,
+    );
+    expect(starred.length).toBeGreaterThanOrEqual(3);
+
     for (const row of REPORT_COMPARE_ROWS) {
       expect(row.feature.en.length).toBeGreaterThan(0);
-      expect(row.snapshot.en.length).toBeGreaterThan(0);
-      expect(row.guide.en.length).toBeGreaterThan(0);
+      expect(row.snapshot.text.en.length).toBeGreaterThan(0);
+      expect(row.guide.text.en.length).toBeGreaterThan(0);
+    }
+
+    for (const row of starred) {
+      expect(row.guide.stars!).toBeGreaterThan(row.snapshot.stars!);
     }
   });
 });
