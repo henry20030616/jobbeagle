@@ -54,52 +54,11 @@ export default function SampleReportClient() {
   const guideLabel = reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE);
 
   return (
-    <div className="flex h-screen w-full min-w-0 overflow-hidden bg-slate-950 text-slate-200">
-      {/* Left rail — fixed 240px, never shrink */}
-      <aside className="flex h-full w-[240px] flex-shrink-0 flex-col gap-2.5 overflow-y-auto border-r border-slate-800 p-4">
+    <div className="flex h-screen w-full min-w-0 flex-col overflow-hidden bg-slate-950 text-slate-200">
+      {/* Shared top bar — logo + actions; body columns start at the same Y */}
+      <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-3 sm:px-6">
         <BrandLogo size="inline" showIcon />
-
-        <div
-          className={`${SAMPLE_NOTICE_SURFACE} w-full px-3 py-2.5 flex flex-col gap-1.5 rounded-xl`}
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <SampleMark variant="notice" />
-            <Sparkles className={`${SAMPLE_RAIL_ICON} text-white`} aria-hidden />
-          </div>
-          <p className={`${SAMPLE_RAIL_TEXT} text-white`}>
-            {isGuide ? guideLabel : snapshotLabel}
-          </p>
-          <Link
-            href="/"
-            className={`inline-flex items-center gap-1 ${SAMPLE_RAIL_TEXT} text-white hover:text-blue-50`}
-          >
-            <ArrowLeft className={SAMPLE_RAIL_ICON} />
-            Analyze
-          </Link>
-        </div>
-
-        <ReportCompareModal
-          language="en"
-          variant="panel"
-          className="w-full shrink-0"
-        />
-        <Link
-          href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-          className={sampleTabClass(!isGuide)}
-        >
-          {snapshotLabel}
-        </Link>
-        <Link
-          href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-          className={sampleTabClass(isGuide)}
-        >
-          {guideLabel}
-        </Link>
-      </aside>
-
-      {/* Right — takes all remaining width */}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-b border-slate-800 px-6 py-3">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
             Back to Home
@@ -108,7 +67,49 @@ export default function SampleReportClient() {
             <RotateCcw className={REPORT_ACTION_ICON} aria-hidden />
             New Analysis
           </button>
-        </header>
+        </div>
+      </header>
+
+      <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
+        {/* Left rail — SAMPLE top aligns with report card top (shared p-6) */}
+        <aside className="flex h-full w-[240px] flex-shrink-0 flex-col gap-2.5 overflow-y-auto border-r border-slate-800 p-6">
+          <div
+            className={`${SAMPLE_NOTICE_SURFACE} w-full px-3 py-2.5 flex flex-col gap-1.5 rounded-xl`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <SampleMark variant="notice" />
+              <Sparkles className={`${SAMPLE_RAIL_ICON} text-white`} aria-hidden />
+            </div>
+            <p className={`${SAMPLE_RAIL_TEXT} text-white`}>
+              {isGuide ? guideLabel : snapshotLabel}
+            </p>
+            <Link
+              href="/"
+              className={`inline-flex items-center gap-1 ${SAMPLE_RAIL_TEXT} text-white hover:text-blue-50`}
+            >
+              <ArrowLeft className={SAMPLE_RAIL_ICON} />
+              Analyze
+            </Link>
+          </div>
+
+          <ReportCompareModal
+            language="en"
+            variant="panel"
+            className="w-full shrink-0"
+          />
+          <Link
+            href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
+            className={sampleTabClass(!isGuide)}
+          >
+            {snapshotLabel}
+          </Link>
+          <Link
+            href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
+            className={sampleTabClass(isGuide)}
+          >
+            {guideLabel}
+          </Link>
+        </aside>
 
         <main className="min-h-0 min-w-0 flex-1 overflow-auto p-6">
           <ReportFitStage
