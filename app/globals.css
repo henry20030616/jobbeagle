@@ -108,6 +108,7 @@ body {
   max-height: 100dvh !important;
   box-sizing: border-box !important;
   pointer-events: auto;
+  overflow: hidden !important;
 }
 
 .no-scrollbar {

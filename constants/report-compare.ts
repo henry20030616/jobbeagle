@@ -147,9 +147,9 @@ export const REPORT_COMPARE_SECTION_LABEL: Record<
     'zh-CN': '两者都有（深度不同）',
   },
   guide_only: {
-    en: 'Strategy Guide only — professional add-ons',
-    'zh-TW': '僅 Strategy Guide — 專業版加值',
-    'zh-CN': '仅 Strategy Guide — 专业版加值',
+    en: 'Strategy Guide only',
+    'zh-TW': '僅 Strategy Guide',
+    'zh-CN': '仅 Strategy Guide',
   },
   meta: {
     en: 'Price',
@@ -210,18 +210,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '報告用哪一級模型。Flash-Lite＝快速、只讀 JD＋履歷；Pro＝更深推理，並在可取得時做即時網搜。',
       '报告用哪一级模型。Flash-Lite＝快速、只读 JD＋简历；Pro＝更深推理，并在可取得时做即时网搜。',
     ),
-    snapshot: t(
-      'Flash-Lite: fast triage, closed-book from JD + resume',
-      'Flash-Lite：快速分流，只讀 JD＋履歷（無網搜）',
-      'Flash-Lite：快速分流，只读 JD＋简历（无网搜）',
-      3,
-    ),
-    guide: t(
-      'Pro: deeper reasoning + live web — fewer thin answers, more checkable strategy',
-      'Pro：更深推理＋即時網搜——少薄答案、策略可核對',
-      'Pro：更深推理＋即时网搜——少薄答案、策略可核对',
-      5,
-    ),
+    snapshot: t('Flash-Lite (fast, no web)', 'Flash-Lite（快、無網搜）', 'Flash-Lite（快、无网搜）', 3),
+    guide: t('Pro + live web', 'Pro＋即時網搜', 'Pro＋即时网搜', 5),
   },
   {
     section: 'shared',
@@ -281,15 +271,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '對 Snapshot 最大的差距：Guide 能即時搜這間公司／這席的公開網路資料——含公司與職位評價、真實面試題、真實薪資貼文、市場／招募現況、第三方產業報告、專業人資／薪酬諮詢觀點——並盡量附網址＋日期。Snapshot 只讀 JD＋履歷，看不到即時網路。',
       '对 Snapshot 最大的差距：Guide 能即时搜这家公司／这席的公开网络资料——含公司与职位评价、真实面试题、真实薪资贴文、市场／招募现况、第三方产业报告、专业人资／薪酬咨询观点——并尽量附网址＋日期。Snapshot 只读 JD＋简历，看不到即时网络。',
     ),
-    snapshot: t(
-      '— No live web (JD + resume only)',
-      '— 無網搜（只讀 JD＋履歷）',
-      '— 无网搜（只读 JD＋简历）',
-    ),
+    snapshot: t('— JD + resume only', '— 只讀 JD＋履歷', '— 只读 JD＋简历'),
     guide: t(
-      'Yes — live company/role reviews, real interview Qs, real salary posts, market signals, industry & HR reports (cite URL + date)',
-      '有 — 即時公司／職位評價、真實面試題、真實薪資、市場現況、產業與人資報告（附網址＋日期）',
-      '有 — 即时公司／职位评价、真实面试题、真实薪资、市场现况、产业与人资报告（附网址＋日期）',
+      'Yes — reviews, interview Qs, salary, market, industry/HR reports',
+      '有 — 評價、面試題、薪資、市場、產業／人資報告',
+      '有 — 评价、面试题、薪资、市场、产业／人资报告',
     ),
   },
   {
@@ -305,11 +291,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '这席为何可能开缺、团队／市场信号、该跟招募确认什么——仅 Guide，常搭配网搜。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t(
-      'Yes — why this seat is open / what market is doing',
-      '有 — 這席為何開缺／市場在發生什麼',
-      '有 — 这席为何开缺／市场在发生什么',
-    ),
+    guide: t('Yes — seat / market signals', '有 — 開缺／市場訊號', '有 — 开缺／市场信号'),
   },
   {
     section: 'guide_only',
@@ -324,11 +306,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '招募对「你做这席」最可能的疑虑，以及怎么答——不捏造经历。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t(
-      'Yes — 3 recruiter doubts + how to answer (no invention)',
-      '有 — 3 個招募質疑＋怎麼答（不捏造經歷）',
-      '有 — 3 个招募质疑＋怎么答（不捏造经历）',
-    ),
+    guide: t('Yes — 3 doubts + answers', '有 — 3 疑慮＋答辯', '有 — 3 疑虑＋答辩'),
   },
   {
     section: 'guide_only',
@@ -343,11 +321,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '目标／可接受／底线、谈判杠杆（签约金、股权等），以及谈薪时可直接讲的台词。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t(
-      'Yes — target / walk-away / levers / copy-ready lines',
-      '有 — 目標／底線／槓桿／可直接講的台詞',
-      '有 — 目标／底线／杠杆／可直接讲的台词',
-    ),
+    guide: t('Yes — target / walk-away / script', '有 — 目標／底線／台詞', '有 — 目标／底线／台词'),
   },
   {
     section: 'guide_only',
@@ -362,11 +336,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '用招募听得懂的话，写出「为何该录取你做这席」——把证据收成录取论点。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t(
-      'Yes — why hire YOU for THIS seat, in recruiter language',
-      '有 — 為何該錄取「你」做「這席」，用招募聽得懂的話',
-      '有 — 为何该录取「你」做「这席」，用招募听得懂的话',
-    ),
+    guide: t('Yes — why hire you', '有 — 為何錄取你', '有 — 为何录取你'),
   },
   // ── C. Price ──
   {
