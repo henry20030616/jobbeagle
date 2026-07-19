@@ -142,31 +142,6 @@ main input {
   max-width: 100% !important;
 }
 
-/* Homepage steps 1–4: one horizontal row, never wider than the page */
-.jb-home-steps > * {
-  min-width: 0;
-  max-width: 100%;
-}
-
-@media (min-width: 1024px) {
-  .jb-home-steps {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    align-items: stretch;
-  }
-
-  .jb-home-steps > .jb-home-step {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-  }
-
-  /* Keep the dashed/solid content shells the same height across steps */
-  .jb-home-steps .jb-home-step-body {
-    min-height: 16rem;
-    flex: 1 1 auto;
-  }
-}
-
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

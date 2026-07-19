@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, ArrowRight, Save, Puzzle, CreditCard, Sparkles, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, ArrowRight, Save, Puzzle, CreditCard, Sparkles, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -12,26 +12,16 @@ import ReportCompareModal from '@/components/ReportCompareModal';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel } from '@/constants/report-products';
-import { SAMPLE_LINK_BTN } from '@/constants/report-frame';
 import BrandLogo from '@/components/BrandLogo';
 
-/** Homepage type scale — Stripe/Linear-like hierarchy */
-const TYPE_TAGLINE = 'text-base sm:text-lg text-zinc-400 leading-relaxed';
-const TYPE_STEP = 'text-xl font-semibold text-white leading-snug';
-const TYPE_CARD = 'text-base font-semibold text-white leading-snug';
-const TYPE_BODY = 'text-sm text-zinc-400 leading-relaxed';
-const TYPE_BODY_STRONG = 'text-sm font-medium text-zinc-100 leading-relaxed';
-const TYPE_META = 'text-sm text-zinc-400 leading-relaxed';
-const TYPE_PILL =
-  'inline-flex items-center gap-1.5 text-sm font-medium text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-2 rounded-full border border-indigo-500/20 transition-all max-w-full';
-const STEP_SECTION =
-  'jb-home-step flex h-full min-h-0 flex-col gap-4 p-6 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80';
-const STEP_CHROME =
-  'flex min-h-[4.5rem] shrink-0 flex-col justify-start gap-2.5 min-w-0';
-const STEP_BODY =
-  'jb-home-step-body flex min-h-[16rem] min-w-0 flex-1 flex-col';
-const TYPE_LAUNCH =
-  'w-full min-h-[16rem] flex-1 min-w-0 rounded-xl px-5 py-5 text-lg font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all transition-transform flex flex-col justify-center items-center gap-2 text-center leading-relaxed';
+const PILL =
+  'inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
+const STEP_CONNECTOR =
+  'hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none';
+const REPORT_CARD_IDLE =
+  'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50';
+const REPORT_CARD_ACTIVE =
+  'border-solid border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -652,45 +642,45 @@ const InputForm: React.FC<InputFormProps> = ({
           </div>
         )}
 
-        {/* Steps 1→4 left-to-right on lg+; shared min-height content boxes */}
-        <div className="w-full min-w-0 overflow-hidden rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl">
-          <div className="jb-home-steps grid w-full min-w-0 grid-cols-1">
+        {/* Classic 1→4 operator: 12-col strip with circular connectors */}
+        <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_auto_minmax(220px,1fr)]">
             {/* 1. Job */}
-            <section className={STEP_SECTION}>
-              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0`}>
-                <span className="h-5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
-                <span className="truncate">{t.jobData}</span>
+            <div className="relative lg:col-span-4 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
+                <span className="w-1.5 h-7 bg-indigo-500 rounded-full mr-3 shrink-0" />
+                <span className="leading-snug">{t.jobData}</span>
               </h2>
-              <div className={STEP_CHROME}>
-                <p className={TYPE_BODY}>
-                  {extensionCapture
-                    ? (zh
-                        ? '請確認外掛抓取的職缺內容，必要時可微調後再分析。'
-                        : 'Review the captured job — edit if needed, then continue.')
-                    : t.jobStepHint}
-                </p>
-                {extensionCapture ? (
-                  <div className="inline-flex max-w-full min-w-0 flex-col gap-1.5">
-                    <span className="inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300">
-                      <Puzzle className="h-4 w-4 shrink-0" />
-                      <span className="truncate">
-                        {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
+              <div className="pb-3 flex flex-col justify-end">
+                <div className="min-h-[2.125rem] flex items-center">
+                  {extensionCapture ? (
+                    <div className="inline-flex flex-col gap-1 max-w-full">
+                      <span className="inline-flex items-center gap-1.5 text-sm text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/25 whitespace-nowrap">
+                        <Puzzle className="w-4 h-4 shrink-0" />
+                        <span className="font-bold">{zh ? '外掛已抓取 ✓' : 'Captured ✓'}</span>
                       </span>
-                    </span>
-                    <span className={`${TYPE_META} truncate`} title={`${extensionCapture.company_name} · ${extensionCapture.job_title}`}>
-                      {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || '—'}
-                    </span>
-                  </div>
-                ) : (
-                  <Link href="/extension" className={`${TYPE_PILL} w-fit`}>
-                    <Puzzle className="h-4 w-4 shrink-0" />
-                    <span className="truncate">
-                      {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with extension →'}
-                    </span>
-                  </Link>
-                )}
+                      <span
+                        className="text-xs text-slate-400 pl-1 truncate max-w-[16rem]"
+                        title={`${extensionCapture.company_name} · ${extensionCapture.job_title}`}
+                      >
+                        {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || '—'}
+                      </span>
+                    </div>
+                  ) : (
+                    <Link
+                      href="/extension"
+                      className={PILL}
+                      title={zh ? '職缺頁可一鍵抓 JD，免手動貼上' : 'On a job page? Grab the JD in one click — no paste'}
+                    >
+                      <Puzzle className="w-4 h-4 shrink-0" />
+                      <span className="font-bold">
+                        {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
+                      </span>
+                    </Link>
+                  )}
+                </div>
               </div>
-              <div className={STEP_BODY}>
+              <div className="min-h-[220px] h-full flex flex-col">
                 <SmartInputArea
                   value={jobDescription}
                   onChange={(next) => {
@@ -718,44 +708,65 @@ const InputForm: React.FC<InputFormProps> = ({
                   }}
                 />
               </div>
-            </section>
+              <div className={STEP_CONNECTOR} aria-hidden>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </div>
 
             {/* 2. Resume */}
-            <section className={`relative ${STEP_SECTION}`}>
-              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0`}>
-                <span className="h-5 w-1.5 shrink-0 rounded-full bg-violet-500" />
-                <span className="truncate">{t.resume}</span>
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
+                <span className="w-1.5 h-7 bg-violet-500 rounded-full mr-3 shrink-0" />
+                <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
-              <div className={`relative ${STEP_CHROME}`}>
-                <button
-                  type="button"
-                  onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-                  className={TYPE_PILL}
-                >
-                  <History className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{t.resumeLibrary}</span>
-                  {resumeHistory.length > 0 && <span>({resumeHistory.length})</span>}
-                </button>
+              <div className="relative pb-3 flex flex-col justify-end">
+                <div className="min-h-[2.125rem] flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
+                    className={PILL}
+                  >
+                    <History className="w-4 h-4 shrink-0" />
+                    <span className="font-bold">{t.resumeLibrary}</span>
+                    {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
+                  </button>
+                </div>
                 {showHistoryDropdown && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
-                    <div className="absolute left-0 top-full mt-2 w-full max-w-sm bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
-                      <div className={`p-3 bg-slate-900/80 border-b border-slate-700 ${TYPE_META} font-semibold uppercase tracking-widest`}>
+                    <div className="absolute left-0 top-full mt-1 w-80 max-w-[calc(100vw-2rem)] bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-20 animate-fade-in overflow-hidden">
+                      <div className="p-3 bg-slate-900/80 border-b border-slate-700 text-xs font-bold text-slate-500 uppercase tracking-widest">
                         {t.recentlyUploaded}
                       </div>
                       {resumeHistory.length === 0 ? (
-                        <div className={`p-6 text-center ${TYPE_BODY}`}>
+                        <div className="p-6 text-center text-slate-500 text-sm">
                           <p>{t.noResume}</p>
                         </div>
                       ) : (
                         resumeHistory.map((historyItem) => (
-                          <div key={historyItem.id} onClick={() => handleSelectResume(historyItem)} className="p-3.5 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all">
+                          <div
+                            key={historyItem.id}
+                            onClick={() => handleSelectResume(historyItem)}
+                            className="p-3 hover:bg-slate-700 cursor-pointer border-b border-slate-700/50 last:border-0 group relative flex items-start transition-all"
+                          >
                             <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5 mr-2" />
-                            <div className="flex-1 overflow-hidden text-left min-w-0">
-                              <p className={`${TYPE_BODY_STRONG} truncate`}>{historyItem.fileName}</p>
-                              <p className={`${TYPE_META} flex items-center mt-1.5`}><Clock className="w-3.5 h-3.5 mr-1 shrink-0" />{formatDateTime(historyItem.timestamp)}</p>
+                            <div className="flex-1 overflow-hidden text-left">
+                              <p className="text-sm text-slate-200 font-bold truncate">{historyItem.fileName}</p>
+                              <p className="text-xs text-slate-500 flex items-center mt-1">
+                                <Clock className="w-3.5 h-3.5 mr-1" />
+                                {formatDateTime(historyItem.timestamp)}
+                              </p>
                             </div>
-                            <button type="button" onClick={(e) => handleDeleteResume(e, historyItem.id)} className="p-1.5 text-zinc-500 hover:text-red-400 rounded"><X className="w-3.5 h-3.5" /></button>
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteResume(e, historyItem.id)}
+                              className="p-1.5 text-slate-600 hover:text-red-400 rounded"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         ))
                       )}
@@ -763,19 +774,19 @@ const InputForm: React.FC<InputFormProps> = ({
                   </>
                 )}
               </div>
-              <div className={STEP_BODY}>
+              <div className="min-h-[220px] h-full flex flex-col">
                 {!resume ? (
-                  <div className="relative flex min-h-0 w-full flex-1 flex-col rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30">
+                  <div className="w-full flex-1 h-full border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-900/30 transition-all relative">
                     <label
                       htmlFor="resume-file-input"
-                      className="group flex h-full min-h-[11rem] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-xl px-4 py-8 hover:bg-slate-700/30"
+                      className="flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-700/30 w-full h-full px-3 py-4 rounded-xl group relative z-10"
                     >
-                      <div className="p-3 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
-                        <Upload className="w-6 h-6 text-zinc-400 group-hover:text-indigo-400" />
+                      <div className="p-2.5 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors border border-slate-700 group-hover:border-indigo-500/30">
+                        <Upload className="w-6 h-6 text-slate-400 group-hover:text-indigo-400" />
                       </div>
-                      <div className="text-center min-w-0 space-y-1.5">
-                        <p className={TYPE_BODY_STRONG}>{t.upload}</p>
-                        <p className={TYPE_META}>{t.uploadSupport}</p>
+                      <div className="text-center min-w-0">
+                        <p className="text-base text-slate-300 font-bold">{t.upload}</p>
+                        <p className="text-xs text-slate-500 mt-1 font-medium leading-snug">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input
@@ -789,20 +800,28 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                   </div>
                 ) : (
-                  <div className="flex min-h-[11rem] w-full min-w-0 flex-1 animate-fade-in flex-col justify-center gap-3 rounded-xl border border-indigo-500/50 bg-indigo-900/20 p-4">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0"><FileText className="w-4 h-4 text-white" /></div>
-                      <div className="min-w-0 text-left space-y-1">
-                        <p className={`${TYPE_BODY_STRONG} truncate`}>{resume.fileName}</p>
-                        <p className={TYPE_META}>Ready for Analysis</p>
+                  <div className="w-full flex-1 h-full bg-indigo-900/20 border border-indigo-500/50 rounded-xl flex flex-col justify-center gap-2 p-3 animate-fade-in">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="bg-indigo-500 p-1.5 rounded-lg shrink-0">
+                        <FileText className="w-4 h-4 text-white" />
                       </div>
-                      <button type="button" onClick={clearFile} className="p-1.5 hover:bg-white/10 rounded-full text-zinc-400 ml-auto shrink-0"><X className="w-4 h-4" /></button>
+                      <div className="min-w-0 text-left">
+                        <p className="text-base font-bold text-white truncate">{resume.fileName}</p>
+                        <p className="text-xs text-indigo-300">Ready for Analysis</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={clearFile}
+                        className="p-1.5 hover:bg-white/10 rounded-full text-slate-400 ml-auto shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
                     <button
                       type="button"
                       onClick={handleManualSave}
                       disabled={isSaving}
-                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${
+                      className={`inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
                         isSaving
                           ? 'bg-emerald-500/5 text-emerald-400/50 border-emerald-500/10'
                           : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/20'
@@ -814,137 +833,110 @@ const InputForm: React.FC<InputFormProps> = ({
                   </div>
                 )}
               </div>
-            </section>
+              <div className={STEP_CONNECTOR} aria-hidden>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </div>
 
             {/* 3. Report type */}
-            <section className={STEP_SECTION}>
-              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0`}>
-                <span className="h-5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                <span className="truncate">{t.reportTypeStep}</span>
+            <div className="relative lg:col-span-3 lg:row-span-3 grid grid-rows-[auto_auto_minmax(220px,1fr)] lg:grid-rows-subgrid p-5 sm:p-6 min-w-0 min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700/80">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center pb-1.5 min-h-[2.75rem]">
+                <span className="w-1.5 h-7 bg-emerald-500 rounded-full mr-3 shrink-0" />
+                <span className="leading-snug">{t.reportTypeStep}</span>
               </h2>
-              <div className={STEP_CHROME}>
-                {onReportTypeChange ? (
-                  <Link
-                    href="/account"
-                    className={`${TYPE_PILL} w-fit`}
-                    title={creditsPillTitle}
-                  >
-                    <CreditCard className="h-4 w-4 shrink-0" />
-                    <span className="truncate leading-relaxed">{creditsPillLabel}</span>
-                  </Link>
-                ) : (
-                  <span className={TYPE_META}>—</span>
-                )}
+              <div className="pb-3 flex flex-col justify-end">
+                <div className="min-h-[2.125rem] flex items-center">
+                  {onReportTypeChange ? (
+                    <Link href="/account" className={PILL} title={creditsPillTitle}>
+                      <CreditCard className="w-4 h-4 shrink-0" />
+                      <span className="font-bold leading-snug truncate">{creditsPillLabel}</span>
+                    </Link>
+                  ) : null}
+                </div>
               </div>
               {onReportTypeChange ? (
-                <div className={`${STEP_BODY} gap-4`}>
-                  <div className="grid min-h-0 flex-1 grid-rows-2 gap-4">
-                    <div
-                      className={`flex min-h-0 w-full flex-col justify-center gap-2 rounded-xl border-2 px-4 py-4 text-left transition ${
-                        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                          ? 'border-solid border-violet-500 bg-violet-500/10'
-                          : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-                      }`}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                        className="text-left w-full min-w-0 space-y-1.5"
-                      >
-                        <p className={TYPE_CARD}>Job Fit Snapshot</p>
-                        <p className={TYPE_BODY}>{t.snapshotBlurb}</p>
-                      </button>
-                      <Link
-                        href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={SAMPLE_LINK_BTN}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View sample →
-                      </Link>
-                    </div>
-                    <div
-                      className={`flex min-h-0 w-full flex-col justify-center gap-2 rounded-xl border-2 px-4 py-4 text-left transition ${
-                        reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                          ? 'border-solid border-violet-500 bg-violet-500/10'
-                          : 'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50'
-                      }`}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                        className="text-left w-full min-w-0 space-y-1.5"
-                      >
-                        <p className={TYPE_CARD}>Interview Strategy Guide</p>
-                        <p className={TYPE_BODY}>{t.strategyBlurb}</p>
-                      </button>
-                      <Link
-                        href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={SAMPLE_LINK_BTN}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View sample →
-                      </Link>
-                    </div>
-                  </div>
-                  {!compactChrome && (
-                    <div className="shrink-0 pt-1">
-                      <ReportCompareModal language={currentLanguage} variant="panel" />
-                    </div>
-                  )}
+                <div className="min-h-[220px] h-full grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                    className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
+                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? REPORT_CARD_ACTIVE : REPORT_CARD_IDLE
+                    }`}
+                  >
+                    <p className="font-semibold text-white text-base">Job Fit Snapshot</p>
+                    <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.snapshotBlurb}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                    className={`w-full min-h-0 self-stretch rounded-xl border-2 px-3.5 py-3.5 text-left transition flex flex-col justify-center ${
+                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? REPORT_CARD_ACTIVE : REPORT_CARD_IDLE
+                    }`}
+                  >
+                    <p className="font-semibold text-white text-base flex items-center gap-1.5 flex-wrap">
+                      Interview Strategy Guide
+                      <Sparkles className="w-4 h-4 text-violet-400 shrink-0" />
+                    </p>
+                    <p className="text-sm text-slate-400 mt-1.5 leading-snug">{t.strategyBlurb}</p>
+                  </button>
                 </div>
               ) : (
-                <div className={`${STEP_BODY} ${TYPE_META}`}>—</div>
+                <div className="min-h-[220px] text-sm text-slate-500">—</div>
               )}
-            </section>
+              <div className={STEP_CONNECTOR} aria-hidden>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </div>
+              <div className="lg:hidden flex justify-center pt-3 -mb-1 text-slate-500" aria-hidden>
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </div>
 
             {/* 4. Launch */}
-            <section className={`${STEP_SECTION} border-r-0 bg-slate-900/50`}>
-              <h2 className={`${TYPE_STEP} flex shrink-0 items-center gap-2.5 min-w-0 opacity-0`} aria-hidden>
-                <span className="h-5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
-                <span>Launch</span>
-              </h2>
-              <div className={STEP_CHROME} aria-hidden />
+            <div className="lg:col-span-2 lg:row-span-3 p-5 sm:p-6 flex flex-col min-h-0 bg-slate-700/30">
               <button
                 type="submit"
                 disabled={submitDisabled}
-                className={`${TYPE_LAUNCH} ${
+                className={`w-full h-full min-h-[140px] lg:min-h-0 px-4 py-5 rounded-xl font-black text-base sm:text-lg text-white shadow-lg transition-all transform flex flex-col justify-center items-center gap-2.5 text-center ${
                   submitDisabled
-                    ? 'bg-indigo-600/35 text-white/55 cursor-not-allowed shadow-none'
+                    ? 'bg-slate-700 cursor-not-allowed text-slate-500'
                     : publicAts
-                      ? 'bg-emerald-600 hover:bg-emerald-500 hover:-translate-y-1 active:bg-emerald-700 active:translate-y-0 shadow-emerald-500/30'
+                      ? 'bg-gradient-to-b from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 ring-1 ring-white/10'
                       : jdError
-                        ? 'bg-red-600 hover:bg-red-500 hover:-translate-y-1 active:bg-red-700 active:translate-y-0 shadow-red-500/30'
-                        : 'bg-indigo-600 hover:bg-indigo-500 hover:-translate-y-1 active:bg-indigo-700 active:translate-y-0'
+                        ? 'bg-gradient-to-b from-red-700 to-red-600 ring-1 ring-red-500/30'
+                        : 'bg-gradient-to-b from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 ring-1 ring-white/10'
                 }`}
               >
                 {isLoading || isParsingUrl ? (
                   <>
-                    <svg className="animate-spin h-6 w-6 text-zinc-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span className={`animate-pulse ${TYPE_META}`}>
-                      {isParsingUrl
-                        ? (zh ? '解析中…' : 'Parsing…')
-                        : t.generating}
+                    <span className="animate-pulse text-xs leading-snug">
+                      {isParsingUrl ? (zh ? '解析中…' : 'Parsing…') : t.generating}
                     </span>
                   </>
                 ) : isSaving ? (
-                  <span className={TYPE_META}>{t.waitingSave}</span>
+                  <span className="text-slate-500 text-xs">{t.waitingSave}</span>
                 ) : (
                   <>
-                    <span className="px-1">{submitLabel}</span>
-                    <ArrowRight className="w-5 h-5 shrink-0" />
+                    <span className="leading-snug px-1">{submitLabel}</span>
+                    <ArrowRight className="w-6 h-6 shrink-0" />
                   </>
                 )}
               </button>
-            </section>
+            </div>
           </div>
         </div>
+
+        {!compactChrome && (
+          <div className="mt-2">
+            <ReportCompareModal language={currentLanguage} variant="panel" />
+          </div>
+        )}
       </form>
     </div>
   );
