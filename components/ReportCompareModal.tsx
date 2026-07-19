@@ -99,8 +99,17 @@ export default function ReportCompareModal({
     open && mounted
       ? createPortal(
           <div
-            className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4"
+            className="jb-compare-overlay"
             role="presentation"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              display: 'grid',
+              placeItems: 'center',
+              padding: '1rem',
+              boxSizing: 'border-box',
+            }}
           >
             <button
               type="button"
@@ -112,7 +121,8 @@ export default function ReportCompareModal({
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
-              className="relative z-10 w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-600 bg-slate-950 shadow-2xl flex flex-col"
+              className="relative z-10 w-full max-w-3xl max-h-[min(90dvh,52rem)] overflow-hidden rounded-2xl border border-slate-600 bg-slate-950 shadow-2xl flex flex-col"
+              style={{ margin: 0 }}
             >
               <div className="flex items-start justify-between gap-3 px-4 sm:px-5 py-4 border-b border-slate-800">
                 <div className="min-w-0">

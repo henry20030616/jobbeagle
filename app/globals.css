@@ -95,6 +95,21 @@ body {
   }
 }
 
+/* Compare modal: always viewport-centered (escape parent transforms via portal + fixed). */
+.jb-compare-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  box-sizing: border-box !important;
+  pointer-events: auto;
+}
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
