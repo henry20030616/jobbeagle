@@ -23,7 +23,8 @@ import BrandLogo from '@/components/BrandLogo';
 type ReportCompareModalProps = {
   language?: string;
   className?: string;
-  variant?: 'link' | 'button';
+  /** link = text; button = samples chrome size; panel = full-width under Guide card */
+  variant?: 'link' | 'button' | 'panel';
 };
 
 /**
@@ -62,7 +63,16 @@ export default function ReportCompareModal({
   const triggerClass =
     variant === 'button'
       ? `${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 ${className}`
-      : `inline-flex items-center gap-2.5 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
+      : variant === 'panel'
+        ? `inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-400 bg-slate-900/80 px-3 py-2.5 text-sm sm:text-base font-semibold text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors ${className}`
+        : `inline-flex items-center gap-2.5 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
+
+  const iconClass =
+    variant === 'button'
+      ? SAMPLE_HEADER_ICON
+      : variant === 'panel'
+        ? 'w-4 h-4 shrink-0'
+        : REPORT_ACTION_ICON;
 
   const drawer =
     open && mounted
@@ -125,10 +135,7 @@ export default function ReportCompareModal({
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={triggerClass}>
-        <GitCompareArrows
-          className={variant === 'button' ? SAMPLE_HEADER_ICON : REPORT_ACTION_ICON}
-          aria-hidden
-        />
+        <GitCompareArrows className={iconClass} aria-hidden />
         {REPORT_COMPARE_TRIGGER[lang]}
       </button>
       {drawer}

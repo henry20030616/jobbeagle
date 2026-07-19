@@ -798,11 +798,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     </div>
                   </div>
                   {!compactChrome && (
-                    <ReportCompareModal
-                      language={currentLanguage}
-                      variant="button"
-                      className="w-full justify-center !gap-2 !px-3 !py-2.5 text-sm sm:text-base"
-                    />
+                    <ReportCompareModal language={currentLanguage} variant="panel" />
                   )}
                 </div>
               ) : (
