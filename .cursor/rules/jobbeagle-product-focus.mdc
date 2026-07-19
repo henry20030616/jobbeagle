@@ -21,6 +21,7 @@ alwaysApply: true
 - **Stripe:** removed from code; do not reintroduce.
 
 ## Conversion UX
-- Pre-Flight → `QuotaPaywallCard` funnel must stay clear for $3 / $9.99 / $19.99 / $39.99 plans.
+- Pre-Flight → `QuotaPaywallCard` funnel must stay clear for $3 / $9.99 / $19.99 (100 Snapshot + 5 Guide) / $39.99 (300 Snapshot + 15 Guide).
+- Dual-track cost rules (Snapshot offline / Guide online) override any urge to “just add Search” to free Snapshot.
 
 Role triggers: `@FrontendExpert` (funnel), `@ExtensionExpert` (store review).

@@ -1,0 +1,42 @@
+---
+description: Dual-track Snapshot vs Guide — unit economics, closed-book vs open-book, zero hallucination
+alwaysApply: true
+---
+
+# JobBeagle — Dual-Track Architecture (highest product priority)
+
+Canonical detail: repo root **`.cursorrules`**. On conflict with older “call APIs freely” habits, **this dual-track wins**.
+
+## Unit economics
+
+- **Snapshot** = closed-book, Flash-Lite, **no** Google Search / web tools / scrape APIs.
+- **Guide** = open-book, Pro (+ Search). Do not burn Pro/Search on Snapshot or free paths.
+- Models: `constants/models.ts`. Analyze: `lib/gemini-analyze.ts`.
+
+## Zero hallucination
+
+- No invented experience, visas, employer offers, or uncitable “reported” interview Qs.
+- Missing intel → `null` / limitations / validation questions — not fabricated facts.
+- STAR / defenses: resume facts only.
+
+## Track matrix (short)
+
+| | Snapshot | Guide |
+|--|----------|-------|
+| Input | CV + JD | CV + JD + retrieval |
+| Network | Forbidden | Grounding / Search OK |
+| Offer band | Closed-book estimate only | Open-book compensation + Tier labels |
+| Provenance | N/A | Required for cited web claims |
+
+## Guide retrieval intents (order)
+
+1. Business context (company / 12-mo facts)  
+2. Interview intel (de-noise Glassdoor/Blind/public index)  
+3. Market compensation (else Tier 3 baseline label)
+
+May be one Pro+Search call today; semantics must stay.
+
+## UI
+
+- EvidenceBadge Tier 1 / 2 / 3; DefenseCard risk↔evidence; paywall for Guide depth.
+- Report samples: always sync both products (see `jobbeagle-report-samples.mdc`).

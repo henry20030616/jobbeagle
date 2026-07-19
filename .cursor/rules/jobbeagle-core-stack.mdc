@@ -5,13 +5,13 @@ alwaysApply: true
 
 # JobBeagle — Core Stack Facts
 
-- **Product**: US-market AI job triage / headhunter-level JD analysis SaaS.
-- **Stack**: Next.js 15 App Router, React 19, TypeScript 5, Tailwind.
+- **Product**: US-market job **decision support** (triage / Interview Strategy) — see `.cursorrules` + `jobbeagle-dual-track.mdc`.
+- **Stack**: Next.js 15 App Router, React 19, TypeScript 5, Tailwind. (Preserve; do not swap frameworks casually.)
 - **Backend**: Supabase (Postgres + Auth Google OAuth + Storage + RLS).
-- **AI**: Gemini via `@google/genai` — Snapshot `gemini-3.1-flash-lite`; Guide single-pass `gemini-3.1-pro-preview` (+ Search, no Lite pre-pass). Models in `constants/models.ts`.
-- **Payments**: **Lemon Squeezy only**. Never call Stripe / `lib/stripe.ts` (dead code — remove when touching billing).
+- **AI**: Gemini `@google/genai` — Snapshot `gemini-3.1-flash-lite` (**closed-book, no Search**); Guide `gemini-3.1-pro-preview` (**open-book + Search**, single pass). Models: `constants/models.ts`.
+- **Payments**: **Lemon Squeezy only**. Never call Stripe / `lib/stripe.ts`.
 - **Extension**: Chrome MV3 under `browser-extension/` (v1.3.0+). Boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs, 104.
 - **Domain**: https://www.jobbeagle.com
-- **Credits**: Free = 3 lifetime Lite (`constants/credits.ts`); Full starts at 0. Plans in `constants/checkout-plans.ts`.
-- **Env secrets**: Never expose `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `LEMONSQUEEZY_*` secrets to client. Only `NEXT_PUBLIC_*` in browser.
-- **Docs**: `PRODUCT_OVERVIEW.md`, `ENTERPRISE_ARCHITECTURE.md`
+- **Credits**: Free = 3 lifetime Snapshot (`constants/credits.ts`); Guide starts at 0. Subs: Standard **100 Snapshot + 5 Guide** / Advanced **300 Snapshot + 15 Guide** (`constants/checkout-plans.ts`). Singles: $3 / $9.99.
+- **Env secrets**: Never expose `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `LEMONSQUEEZY_*` to client. Only `NEXT_PUBLIC_*` in browser.
+- **Docs**: `PRODUCT_OVERVIEW.md`, `ENTERPRISE_ARCHITECTURE.md`, root `.cursorrules`
