@@ -52,6 +52,7 @@ export async function GET() {
         row.available_interview_strategy_guide_credits,
       referral_code: row.referral_code,
       deactivated_at: row.deactivated_at,
+      career_context: row.career_context,
     },
     orders: orders ?? [],
     referrals: (referrals ?? []).map((r) => ({

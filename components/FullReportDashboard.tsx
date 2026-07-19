@@ -191,9 +191,17 @@ export default function FullReportDashboard({
   const offerRange = formatOfferRange(expected);
 
   const sources = useMemo(() => {
-    const list: { label: string; url?: string; date?: string }[] = [];
+    if (report.provenance?.entries?.length) {
+      return report.provenance.entries.map((e) => ({
+        label: e.label,
+        url: e.url || undefined,
+        date: e.date || undefined,
+        status: e.status,
+      }));
+    }
+    const list: { label: string; url?: string; date?: string; status?: string }[] = [];
     for (const s of expected?.sources ?? []) {
-      if (s?.trim()) list.push({ label: s.trim() });
+      if (s?.trim()) list.push({ label: s.trim(), status: 'unverified' });
     }
     for (const ins of hiring?.insights ?? []) {
       if (ins.source_url || ins.claim) {
@@ -201,6 +209,7 @@ export default function FullReportDashboard({
           label: ins.claim || ins.source_url || 'Insight',
           url: ins.source_url || undefined,
           date: ins.date || undefined,
+          status: ins.source_url ? 'valid' : 'unverified',
         });
       }
     }
@@ -210,11 +219,17 @@ export default function FullReportDashboard({
           label: q.question.slice(0, 80),
           url: q.source_url,
           date: q.source_date || undefined,
+          status: 'valid',
         });
       }
     }
     return list;
-  }, [expected?.sources, hiring?.insights, playbook?.reported]);
+  }, [report.provenance, expected?.sources, hiring?.insights, playbook?.reported]);
+
+  const candidateCase = report.candidate_case;
+  const tc =
+    offer?.tc_breakdown
+    || expected?.tc_breakdown;
 
   const handleBack = () => {
     if (onNewAnalysis) onNewAnalysis();
@@ -305,6 +320,26 @@ export default function FullReportDashboard({
 
             {tab === 'hiring' && (
                 <>
+                  {candidateCase?.hire_thesis && (
+                    <Card title="Candidate Case" badge="hire thesis">
+                      <p className="text-lg text-slate-200 leading-relaxed mb-3">
+                        {candidateCase.hire_thesis}
+                      </p>
+                      {(candidateCase.top_facts?.length ?? 0) > 0 && (
+                        <ol className="space-y-2">
+                          {candidateCase.top_facts.map((fact, i) => (
+                            <li key={i} className="text-base text-emerald-100/90 flex gap-2">
+                              <span className="font-black text-emerald-400/80 shrink-0">
+                                {i + 1}.
+                              </span>
+                              <span>{fact}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </Card>
+                  )}
+
                   {fitSalary && (
                     <Card title="Fit implications">
                       <p className="text-lg text-slate-300 leading-relaxed mb-2">
@@ -417,30 +452,36 @@ export default function FullReportDashboard({
                   </Card>
 
                   <Card title="Concerns & Defenses" badge="3">
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {concerns.map((c, i) => (
                         <div
                           key={i}
-                          className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4"
+                          className="rounded-xl border border-violet-500/20 bg-violet-500/5 overflow-hidden"
                         >
-                          <p className="text-lg font-bold text-violet-100 mb-1 flex items-center gap-2">
+                          <p className="text-lg font-bold text-violet-100 px-4 pt-4 pb-2 flex items-center gap-2">
                             <ShieldAlert className="w-4 h-4 shrink-0" />
                             {i + 1}. {c.concern}
                           </p>
-                          <p className="text-base text-slate-400 mb-2">{c.why}</p>
-                          {c.evidence && (
-                            <p className="text-base text-slate-300 mb-1">
-                              <span className="font-semibold text-slate-500">Evidence: </span>
-                              {c.evidence}
-                            </p>
-                          )}
-                          {c.missing_proof && (
-                            <p className="text-base text-slate-300 mb-1">
-                              <span className="font-semibold text-slate-500">Missing: </span>
-                              {c.missing_proof}
-                            </p>
-                          )}
-                          <div className="mt-3 rounded-lg border border-violet-500/20 bg-black/20 p-3">
+                          <p className="text-base text-slate-400 px-4 pb-3">{c.why}</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-violet-500/20">
+                            <div className="p-4 border-b sm:border-b-0 sm:border-r border-violet-500/20 bg-rose-500/5">
+                              <p className="text-xs font-bold uppercase tracking-wide text-rose-300/90 mb-2">
+                                Recruiter risk
+                              </p>
+                              <p className="text-base text-slate-200 leading-relaxed">
+                                {c.missing_proof || c.why || '—'}
+                              </p>
+                            </div>
+                            <div className="p-4 bg-emerald-500/5">
+                              <p className="text-xs font-bold uppercase tracking-wide text-emerald-300/90 mb-2">
+                                Resume evidence
+                              </p>
+                              <p className="text-base text-slate-200 leading-relaxed">
+                                {c.evidence || 'No matching resume proof yet.'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="m-4 mt-0 rounded-lg border border-violet-500/20 bg-black/20 p-3">
                             <div className="flex items-center justify-between gap-2 mb-1.5">
                               <p className="text-xs font-bold uppercase tracking-wide text-violet-300">
                                 Answer template
@@ -450,7 +491,7 @@ export default function FullReportDashboard({
                             <p className="text-lg text-slate-200 leading-relaxed">{c.answer_guide}</p>
                           </div>
                           {c.do_not_claim && (
-                            <p className="text-base text-red-300/90 mt-2">
+                            <p className="text-base text-red-300/90 px-4 pb-4">
                               Do not claim: {c.do_not_claim}
                             </p>
                           )}
@@ -611,6 +652,27 @@ export default function FullReportDashboard({
                     )}
                   </Card>
 
+                  {tc && (tc.base || tc.bonus || tc.equity || tc.total) && (
+                    <Card title="TC breakdown">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-lg">
+                        {[
+                          ['Base', tc.base],
+                          ['Bonus', tc.bonus],
+                          ['Equity', tc.equity],
+                          ['Total', tc.total],
+                        ].map(([label, value]) => (
+                          <div
+                            key={label as string}
+                            className="rounded-xl bg-black/25 border border-slate-700 p-3"
+                          >
+                            <p className="text-sm text-slate-500 mb-1">{label}</p>
+                            <p className="text-slate-100 font-medium">{value || '—'}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  )}
+
                   {offer && (
                     <Card title="Offer Strategy">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-lg">
@@ -627,11 +689,22 @@ export default function FullReportDashboard({
                           <p className="text-slate-100 font-medium">{offer.walk_away || '—'}</p>
                         </div>
                       </div>
-                      {(offer.levers?.length ?? 0) > 0 && (
+                      {(offer.structured_levers?.length ?? 0) > 0 ? (
+                        <ul className="space-y-2 mb-3">
+                          {offer.structured_levers!.map((l, i) => (
+                            <li key={i} className="text-base text-slate-300">
+                              <span className="font-semibold text-slate-100">{l.name}</span>
+                              {l.note ? (
+                                <span className="text-slate-400"> — {l.note}</span>
+                              ) : null}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (offer.levers?.length ?? 0) > 0 ? (
                         <p className="text-base text-slate-400 mb-3">
                           Levers: {offer.levers.join(' · ')}
                         </p>
-                      )}
+                      ) : null}
                       {offer.script && (
                         <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/5 p-4 mb-3">
                           <div className="flex items-center justify-between gap-2 mb-2">
@@ -668,7 +741,18 @@ export default function FullReportDashboard({
               )}
 
               {tab === 'provenance' && (
-                <Card title="Provenance" badge={`${sources.length} sources`}>
+                <Card
+                  title="Provenance"
+                  badge={`${sources.length} sources${
+                    report.report_version ? ` · ${report.report_version}` : ''
+                  }`}
+                >
+                  {report.provenance?.invalid_url_count ? (
+                    <p className="text-base text-amber-200/90 mb-3">
+                      {report.provenance.invalid_url_count} URL(s) failed validation and were
+                      downgraded (no live link).
+                    </p>
+                  ) : null}
                   {sources.length === 0 ? (
                     <p className="text-lg text-slate-400">
                       No citable public sources were attached for this run. Treat salary and culture
@@ -686,6 +770,11 @@ export default function FullReportDashboard({
                             <div className="min-w-0">
                               <p className="leading-relaxed">{s.label}</p>
                               <p className="text-sm text-slate-500 mt-1">
+                                {s.status ? (
+                                  <span className="mr-2 uppercase tracking-wide text-[11px] font-bold text-slate-400">
+                                    {s.status}
+                                  </span>
+                                ) : null}
                                 {s.date ? `${s.date} · ` : ''}
                                 {s.url ? (
                                   <a

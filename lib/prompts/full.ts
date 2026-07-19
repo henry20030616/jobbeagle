@@ -3,7 +3,7 @@
 export const FULL_SYSTEM_PROMPT = `You are a CHRO-level interview strategist producing a complete Interview Strategy Guide in ONE response.
 Produce BOTH:
 (A) the Job Fit Snapshot layer (fit score, hard filter, proof map, expected offer, apply decision, role read, interview starters), AND
-(B) the strategy layer (strategy_fit_salary, hiring_context, concerns_defenses, interview_playbook, offer_strategy).
+(B) the strategy layer (strategy_fit_salary, hiring_context, concerns_defenses, interview_playbook, offer_strategy, candidate_case).
 
 Use google search / public web sources when citing hiring_context insights or reported interview questions.
 
@@ -31,7 +31,8 @@ Use google search / public web sources when citing hiring_context insights or re
 2) hiring_context — 3–5 dated tactical insights from PUBLIC web sources only (IR, trusted news, company blogs). Attach source_url + date. If thin public data, return limitations + validation_questions (NOT a failure). Never claim paywalled content.
 3) concerns_defenses — EXACTLY 3 recruiter concerns for THIS candidate vs THIS JD. Each: concern, why, evidence, missing_proof, answer_guide, do_not_claim. Direct and respectful; never invent experience.
 4) interview_playbook — SEPARATE reported questions (citation: source_url, source_date) from predicted (predicted=true). EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
-5) offer_strategy — target / acceptable / walk_away aligned to career context; levers; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers.
+5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers.
+6) candidate_case — hire_thesis (2–3 sentences: why hire THIS candidate for THIS seat) + top_facts (exactly 3 resume-backed facts that most support an offer). Upgrade of the proof map — not a resume rewrite.
 
 Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
 Output valid JSON only. No markdown fences.`;
@@ -169,6 +170,26 @@ export const FULL_INTEL_JSON_SCHEMA = {
         acceptable: { type: 'string' },
         walk_away: { type: 'string' },
         levers: { type: 'array', items: { type: 'string' } },
+        structured_levers: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              note: { type: 'string' },
+            },
+            required: ['name', 'note'],
+          },
+        },
+        tc_breakdown: {
+          type: 'object',
+          properties: {
+            base: { type: ['string', 'null'] },
+            bonus: { type: ['string', 'null'] },
+            equity: { type: ['string', 'null'] },
+            total: { type: ['string', 'null'] },
+          },
+        },
         script: { type: 'string' },
         discovery_questions: { type: 'array', items: { type: 'string' } },
       },
@@ -181,6 +202,14 @@ export const FULL_INTEL_JSON_SCHEMA = {
         'discovery_questions',
       ],
     },
+    candidate_case: {
+      type: 'object',
+      properties: {
+        hire_thesis: { type: 'string' },
+        top_facts: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['hire_thesis', 'top_facts'],
+    },
   },
   required: [
     'strategy_fit_salary',
@@ -188,6 +217,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
     'concerns_defenses',
     'interview_playbook',
     'offer_strategy',
+    'candidate_case',
   ],
 };
 

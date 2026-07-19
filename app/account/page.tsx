@@ -25,7 +25,8 @@ import {
   CHECKOUT_PLANS,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
-import type { MembershipTier, UserProfile } from '@/types';
+import type { CareerContext, MembershipTier, UserProfile } from '@/types';
+import CareerContextForm from '@/components/CareerContextForm';
 
 type AccountOrder = {
   id: string;
@@ -53,6 +54,7 @@ type AccountPayload = {
     available_interview_strategy_guide_credits: number;
     referral_code: string | null;
     deactivated_at: string | null;
+    career_context?: CareerContext | null;
   };
   orders: AccountOrder[];
   referrals: AccountReferral[];
@@ -544,6 +546,8 @@ export default function AccountPage() {
                 </div>
               </dl>
             </section>
+
+            <CareerContextForm initial={data.profile.career_context} />
 
             <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-5 space-y-4">
               <div className="flex items-start gap-2">

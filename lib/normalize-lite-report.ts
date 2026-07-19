@@ -1,5 +1,7 @@
 import type {
   ApplyDecision,
+  CandidateCase,
+  CareerContext,
   CompletenessLevel,
   DataCompleteness,
   EvidenceCoverage,
@@ -18,7 +20,9 @@ import type {
   LiteMatchPoint,
   LiteReport,
   LiteSkillGap,
+  OfferLever,
   OfferStrategy,
+  OfferTcBreakdown,
   ProofMap,
   RoleRead,
   SalaryEvidenceTier,
@@ -27,6 +31,8 @@ import type {
   StrategyIntelFields,
 } from '@/types';
 import { fitBandFromScore, resolveApplyDecision } from '@/lib/report-rules';
+import { enrichTargetGapWithCareerContext } from '@/lib/career-context';
+import { buildProvenanceRecord, scrubInsightUrls } from '@/lib/provenance';
 
 const HARD_STATUSES: HardFilterStatus[] = ['Pass', 'Risk', 'Blocked', 'Unknown'];
 const FIT_BANDS: FitBand[] = ['Strong', 'Viable', 'Stretch', 'Mismatch'];
@@ -167,7 +173,33 @@ function normalizeProofMap(raw: Partial<LiteReport>): ProofMap {
   };
 }
 
-function normalizeExpectedOffer(raw: Partial<LiteReport>): ExpectedOfferRange {
+function normalizeTcBreakdown(raw: unknown): OfferTcBreakdown | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const o = raw as Record<string, unknown>;
+  const base = asString(o.base) || null;
+  const bonus = asString(o.bonus) || null;
+  const equity = asString(o.equity) || null;
+  const total = asString(o.total) || null;
+  if (!base && !bonus && !equity && !total) return undefined;
+  return { base, bonus, equity, total };
+}
+
+function normalizeStructuredLevers(raw: unknown): OfferLever[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((x): x is Record<string, unknown> => Boolean(x) && typeof x === 'object')
+    .map((x) => ({
+      name: asString(x.name),
+      note: asString(x.note),
+    }))
+    .filter((x) => x.name)
+    .slice(0, 8);
+}
+
+function normalizeExpectedOffer(
+  raw: Partial<LiteReport>,
+  careerContext?: CareerContext | null,
+): ExpectedOfferRange {
   if (raw.expected_offer) {
     const tier = TIERS.includes(raw.expected_offer.evidence_tier)
       ? raw.expected_offer.evidence_tier
@@ -180,10 +212,14 @@ function normalizeExpectedOffer(raw: Partial<LiteReport>): ExpectedOfferRange {
       p75: blankNums ? null : (raw.expected_offer.p75 ?? null),
       currency: asString(raw.expected_offer.currency, 'USD'),
       region: asString(raw.expected_offer.region, 'US'),
-      target_gap: asString(raw.expected_offer.target_gap),
+      target_gap: enrichTargetGapWithCareerContext(
+        asString(raw.expected_offer.target_gap),
+        careerContext,
+      ),
       evidence_tier: tier,
       sources: asStringArray(raw.expected_offer.sources),
       candidate_position_label: asString(raw.expected_offer.candidate_position_label) || undefined,
+      tc_breakdown: normalizeTcBreakdown(raw.expected_offer.tc_breakdown),
     };
   }
 
@@ -196,7 +232,10 @@ function normalizeExpectedOffer(raw: Partial<LiteReport>): ExpectedOfferRange {
       p75: asString(m.tier_75th_high) || null,
       currency: 'USD',
       region: asString(m.market_region, 'US'),
-      target_gap: asString(m.compensation_rationale),
+      target_gap: enrichTargetGapWithCareerContext(
+        asString(m.compensation_rationale),
+        careerContext,
+      ),
       evidence_tier: 'C',
       sources: ['Legacy compensation estimate (pre–Spec v3)'],
       candidate_position_label: asString(m.candidate_position_label) || undefined,
@@ -210,7 +249,10 @@ function normalizeExpectedOffer(raw: Partial<LiteReport>): ExpectedOfferRange {
     p75: null,
     currency: 'USD',
     region: 'US',
-    target_gap: 'Insufficient salary evidence — do not invent a band.',
+    target_gap: enrichTargetGapWithCareerContext(
+      'Insufficient salary evidence — do not invent a band.',
+      careerContext,
+    ),
     evidence_tier: 'D',
     sources: [],
   };
@@ -254,11 +296,12 @@ export function isLiteReport(value: unknown): value is LiteReport {
 /** Backfill Spec v3 fields; map legacy Snapshot/Strategy payloads. */
 export function normalizeLiteReport(
   raw: Partial<LiteReport> & { match_score?: number },
+  options?: { careerContext?: CareerContext | null },
 ): LiteReport {
   const hard_filter = normalizeHardFilter(raw);
   const fit_score = normalizeFitScore(raw);
   const proof_map = normalizeProofMap(raw);
-  const expected_offer = normalizeExpectedOffer(raw);
+  const expected_offer = normalizeExpectedOffer(raw, options?.careerContext);
   const data_completeness = normalizeDataCompleteness(raw);
   const role_read = normalizeRoleRead(raw);
 
@@ -447,16 +490,18 @@ function emptyStrategyFit(): StrategyFitSalary {
 function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: LiteReport): StrategyIntelFields {
   const hiring_context: HiringContext = raw.hiring_context
     ? {
-        insights: Array.isArray(raw.hiring_context.insights)
-          ? raw.hiring_context.insights
-              .filter((i) => i?.claim)
-              .map((i) => ({
-                claim: asString(i.claim),
-                why_it_matters: asString(i.why_it_matters),
-                source_url: asString(i.source_url),
-                date: asString(i.date),
-              }))
-          : [],
+        insights: scrubInsightUrls(
+          Array.isArray(raw.hiring_context.insights)
+            ? raw.hiring_context.insights
+                .filter((i) => i?.claim)
+                .map((i) => ({
+                  claim: asString(i.claim),
+                  why_it_matters: asString(i.why_it_matters),
+                  source_url: asString(i.source_url),
+                  date: asString(i.date),
+                }))
+            : [],
+        ),
         limitations: asStringArray(raw.hiring_context.limitations),
         validation_questions: asStringArray(raw.hiring_context.validation_questions),
       }
@@ -502,7 +547,28 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
   let interview_playbook: InterviewPlaybook = raw.interview_playbook
     ? {
         reported: Array.isArray(raw.interview_playbook.reported)
-          ? raw.interview_playbook.reported.filter((q) => q?.question)
+          ? scrubInsightUrls(
+              raw.interview_playbook.reported
+                .filter((q) => q?.question)
+                .map((q) => ({
+                  question: asString(q.question),
+                  predicted: q.predicted,
+                  source_url: asString(q.source_url),
+                  source_date: asString(q.source_date),
+                  evidence: asString(q.evidence),
+                  star_outline: asString(q.star_outline),
+                  missing_facts: asString(q.missing_facts),
+                  date: asString(q.source_date),
+                })),
+            ).map(({ date, ...q }) => ({
+              question: q.question,
+              predicted: q.predicted,
+              source_url: q.source_url,
+              source_date: q.source_date || date,
+              evidence: q.evidence || undefined,
+              star_outline: q.star_outline || undefined,
+              missing_facts: q.missing_facts || undefined,
+            }))
           : [],
         predicted: Array.isArray(raw.interview_playbook.predicted)
           ? raw.interview_playbook.predicted.filter((q) => q?.question)
@@ -549,17 +615,30 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
     ];
   }
 
+  const structured_levers = normalizeStructuredLevers(
+    (raw.offer_strategy as OfferStrategy | undefined)?.structured_levers,
+  );
+  const offerTc =
+    normalizeTcBreakdown((raw.offer_strategy as OfferStrategy | undefined)?.tc_breakdown)
+    || snapshot.expected_offer.tc_breakdown;
+
   const offer_strategy: OfferStrategy = raw.offer_strategy
     ? {
         target: asString(raw.offer_strategy.target),
         acceptable: asString(raw.offer_strategy.acceptable),
         walk_away: asString(raw.offer_strategy.walk_away),
-        levers: asStringArray(raw.offer_strategy.levers),
+        levers:
+          asStringArray(raw.offer_strategy.levers).length > 0
+            ? asStringArray(raw.offer_strategy.levers)
+            : structured_levers.map((l) => l.name),
+        structured_levers: structured_levers.length > 0 ? structured_levers : undefined,
+        tc_breakdown: offerTc,
         script: asString(raw.offer_strategy.script),
         discovery_questions: asStringArray(raw.offer_strategy.discovery_questions),
       }
     : {
         ...emptyOffer(),
+        tc_breakdown: offerTc,
         script:
           asString(raw.salary_negotiation_script)
           || asString(snapshot.expected_offer.candidate_position_label)
@@ -572,6 +651,36 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
               ]
             : [],
       };
+
+  let candidate_case: CandidateCase | undefined;
+  const rawCase = (raw as Partial<FullReport>).candidate_case;
+  if (rawCase && typeof rawCase === 'object') {
+    const hire_thesis = asString(rawCase.hire_thesis);
+    const top_facts = asStringArray(rawCase.top_facts, 3);
+    if (hire_thesis || top_facts.length > 0) {
+      candidate_case = {
+        hire_thesis:
+          hire_thesis
+          || snapshot.proof_map.strengths
+            .slice(0, 3)
+            .map((s) => s.point)
+            .join('; '),
+        top_facts:
+          top_facts.length > 0
+            ? top_facts
+            : snapshot.proof_map.strengths.slice(0, 3).map((s) => s.point),
+      };
+    }
+  }
+  if (!candidate_case && snapshot.proof_map.strengths.length > 0) {
+    candidate_case = {
+      hire_thesis: `Hire case rests on: ${snapshot.proof_map.strengths
+        .slice(0, 3)
+        .map((s) => s.point)
+        .join('; ')}.`,
+      top_facts: snapshot.proof_map.strengths.slice(0, 3).map((s) => s.point),
+    };
+  }
 
   const strategy_fit_salary: StrategyFitSalary = raw.strategy_fit_salary
     ? {
@@ -598,13 +707,30 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
     starBank.push(snapshot.interview_starters[starBank.length]);
   }
 
+  const report_version = asString(raw.report_version, 'v3') || 'v3';
+  const provenance = buildProvenanceRecord({
+    reportVersion: report_version,
+    offerSources: snapshot.expected_offer.sources,
+    insights: hiring_context.insights,
+    reportedQuestions: interview_playbook.reported,
+  });
+
+  if (provenance.invalid_url_count > 0) {
+    hiring_context.limitations = [
+      ...hiring_context.limitations,
+      `${provenance.invalid_url_count} citation URL(s) failed validation and were downgraded.`,
+    ].slice(0, 8);
+  }
+
   return {
     strategy_fit_salary,
     hiring_context,
     concerns_defenses,
     interview_playbook,
     offer_strategy,
-    report_version: asString(raw.report_version, 'v3') || 'v3',
+    candidate_case,
+    provenance,
+    report_version,
     online_intel_warning: asString(raw.online_intel_warning),
     corporate_culture_blackbox:
       asString(raw.corporate_culture_blackbox)
@@ -618,8 +744,9 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
 /** Normalize merged Strategy Guide (Snapshot fields + strategy layer). */
 export function normalizeFullReport(
   raw: Partial<FullReport> & { match_score?: number },
+  options?: { careerContext?: CareerContext | null },
 ): FullReport {
-  const snapshot = normalizeLiteReport(raw);
+  const snapshot = normalizeLiteReport(raw, options);
   const intel = normalizeStrategyIntel(raw, snapshot);
   return { ...snapshot, ...intel };
 }

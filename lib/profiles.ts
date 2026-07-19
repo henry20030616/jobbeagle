@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { MembershipTier, ReportType, UserProfile } from '@/types';
+import type { CareerContext, MembershipTier, ReportType, UserProfile } from '@/types';
 import { SUBSCRIPTION_ALLOWANCES } from '@/constants/checkout-plans';
 import { FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS } from '@/constants/credits';
 import {
@@ -7,6 +7,7 @@ import {
   isInterviewStrategyGuide,
   normalizeReportType,
 } from '@/constants/report-products';
+import { normalizeCareerContext } from '@/lib/career-context';
 
 export interface ProfileRow {
   id: string;
@@ -20,6 +21,7 @@ export interface ProfileRow {
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   deactivated_at: string | null;
+  career_context: CareerContext;
 }
 
 /** Normalize DB row that may still use legacy lite/full column names. */
@@ -49,6 +51,7 @@ export function coerceProfileRow(raw: Record<string, unknown>): ProfileRow {
     stripe_customer_id: (raw.stripe_customer_id as string | null) ?? null,
     stripe_subscription_id: (raw.stripe_subscription_id as string | null) ?? null,
     deactivated_at: (raw.deactivated_at as string | null) ?? null,
+    career_context: normalizeCareerContext(raw.career_context),
   };
 }
 
@@ -297,6 +300,7 @@ export function canAffordUserProfile(
       stripe_customer_id: null,
       stripe_subscription_id: null,
       deactivated_at: null,
+      career_context: normalizeCareerContext(null),
     },
     reportType,
   );
@@ -315,8 +319,26 @@ export function profileToUserProfile(row: ProfileRow): UserProfile {
     available_lite_credits: row.available_job_fit_snapshot_credits,
     /** @deprecated alias */
     available_full_credits: row.available_interview_strategy_guide_credits,
+    career_context: row.career_context,
     referral_code: row.referral_code,
     device_fingerprint: row.device_fingerprint,
     deactivated_at: row.deactivated_at,
   };
+}
+
+export async function updateCareerContext(
+  admin: SupabaseClient,
+  userId: string,
+  careerContext: CareerContext,
+): Promise<CareerContext> {
+  const normalized = normalizeCareerContext(careerContext);
+  const { data, error } = await admin
+    .from('profiles')
+    .update({ career_context: normalized })
+    .eq('id', userId)
+    .select('career_context')
+    .single();
+
+  if (error) throw new Error(`Failed to save career context: ${error.message}`);
+  return normalizeCareerContext(data?.career_context);
 }

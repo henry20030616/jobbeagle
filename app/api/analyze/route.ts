@@ -3,11 +3,16 @@ import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import type {
   AnalyzeRequestBody,
+  CareerContext,
   LiteReport,
   FullReport,
   ReportType,
   ResumeInput,
 } from '@/types';
+import {
+  careerContextHasSignal,
+  normalizeCareerContext,
+} from '@/lib/career-context';
 import {
   decodeExtensionPayload,
   payloadToPreFlightData,
@@ -291,12 +296,17 @@ export async function POST(request: NextRequest) {
     let report: LiteReport | FullReport;
     let modelUsed: string;
 
+    const careerContext: CareerContext = careerContextHasSignal(body.career_context)
+      ? normalizeCareerContext(body.career_context)
+      : normalizeCareerContext(profile.career_context);
+
     try {
       if (reportType === REPORT_CODES.JOB_FIT_SNAPSHOT) {
         const result = await executeLiteAnalysis(
           input.resume_text,
           input.raw_jd,
           input.pdf_inline,
+          careerContext,
         );
         report = result.report;
         modelUsed = result.model;
@@ -307,8 +317,9 @@ export async function POST(request: NextRequest) {
           input.company_name,
           input.job_title,
           input.pdf_inline,
+          careerContext,
         );
-        report = normalizeFullReport(result.report);
+        report = normalizeFullReport(result.report, { careerContext });
         modelUsed = result.model;
       }
     } catch (analysisErr) {

@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from '@google/genai';
-import type { LiteReport, FullReport } from '@/types';
+import type { CareerContext, LiteReport, FullReport } from '@/types';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import { parseJsonResponse } from '@/lib/parse-gemini-json';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/constants/models';
 import { LITE_SYSTEM_PROMPT } from '@/lib/prompts/lite';
 import { FULL_SYSTEM_PROMPT } from '@/lib/prompts/full';
+import { formatCareerContextForPrompt } from '@/lib/career-context';
 
 function getApiKey(): string {
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
@@ -53,14 +54,22 @@ function buildUserParts(
   rawJd: string,
   resumeText: string,
   pdfInline?: PdfInlineAttachment,
+  careerContext?: CareerContext | null,
 ): Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> {
+  const careerBlock = formatCareerContextForPrompt(careerContext);
   const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [
     {
-      text: `=== JOB DESCRIPTION ===\n${rawJd}\n\n=== RESUME ===\n${
-        pdfInline
-          ? 'The candidate resume is attached as a PDF document below. Read it fully before scoring.'
-          : resumeText
-      }`,
+      text: [
+        careerBlock,
+        `=== JOB DESCRIPTION ===\n${rawJd}`,
+        `=== RESUME ===\n${
+          pdfInline
+            ? 'The candidate resume is attached as a PDF document below. Read it fully before scoring.'
+            : resumeText
+        }`,
+      ]
+        .filter(Boolean)
+        .join('\n\n'),
     },
   ];
   if (pdfInline) {
@@ -171,6 +180,15 @@ const LITE_RESPONSE_SCHEMA = {
         evidence_tier: { type: Type.STRING, enum: ['A', 'B', 'C', 'D'] },
         sources: { type: Type.ARRAY, items: { type: Type.STRING } },
         candidate_position_label: { type: Type.STRING },
+        tc_breakdown: {
+          type: Type.OBJECT,
+          properties: {
+            base: { type: Type.STRING, nullable: true },
+            bonus: { type: Type.STRING, nullable: true },
+            equity: { type: Type.STRING, nullable: true },
+            total: { type: Type.STRING, nullable: true },
+          },
+        },
       },
       required: [
         'posted_range',
@@ -351,6 +369,26 @@ const FULL_STRATEGY_PROPERTIES = {
       acceptable: { type: Type.STRING },
       walk_away: { type: Type.STRING },
       levers: { type: Type.ARRAY, items: { type: Type.STRING } },
+      structured_levers: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING },
+            note: { type: Type.STRING },
+          },
+          required: ['name', 'note'],
+        },
+      },
+      tc_breakdown: {
+        type: Type.OBJECT,
+        properties: {
+          base: { type: Type.STRING, nullable: true },
+          bonus: { type: Type.STRING, nullable: true },
+          equity: { type: Type.STRING, nullable: true },
+          total: { type: Type.STRING, nullable: true },
+        },
+      },
       script: { type: Type.STRING },
       discovery_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
     },
@@ -362,6 +400,14 @@ const FULL_STRATEGY_PROPERTIES = {
       'script',
       'discovery_questions',
     ],
+  },
+  candidate_case: {
+    type: Type.OBJECT,
+    properties: {
+      hire_thesis: { type: Type.STRING },
+      top_facts: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: ['hire_thesis', 'top_facts'],
   },
 };
 
@@ -379,6 +425,7 @@ const FULL_REPORT_RESPONSE_SCHEMA = {
     'concerns_defenses',
     'interview_playbook',
     'offer_strategy',
+    'candidate_case',
   ],
 };
 
@@ -386,13 +433,15 @@ export async function executeLiteAnalysis(
   resumeText: string,
   rawJd: string,
   pdfInline?: PdfInlineAttachment,
+  careerContext?: CareerContext | null,
 ): Promise<{ report: LiteReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_LITE_MODEL;
+  const opts = { careerContext };
 
   const response = await ai.models.generateContent({
     model,
-    contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline) }],
+    contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext) }],
     config: {
       systemInstruction: LITE_SYSTEM_PROMPT,
       temperature: 0.3,
@@ -407,11 +456,11 @@ export async function executeLiteAnalysis(
 
   let report: LiteReport;
   try {
-    report = normalizeLiteReport(parseJsonResponse<LiteReport>(text));
+    report = normalizeLiteReport(parseJsonResponse<LiteReport>(text), opts);
   } catch (firstErr) {
     const retry = await ai.models.generateContent({
       model,
-      contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline) }],
+      contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext) }],
       config: {
         systemInstruction:
           `${LITE_SYSTEM_PROMPT}\n\nCRITICAL: Return COMPLETE valid JSON only. Keep string fields concise (1–2 sentences each). Do not truncate. Tier D → null salary numbers.`,
@@ -423,7 +472,7 @@ export async function executeLiteAnalysis(
     });
     const retryText = retry.text;
     if (!retryText) throw firstErr;
-    report = normalizeLiteReport(parseJsonResponse<LiteReport>(retryText));
+    report = normalizeLiteReport(parseJsonResponse<LiteReport>(retryText), opts);
   }
 
   return { report, model };
@@ -435,9 +484,11 @@ export async function executeFullAnalysis(
   companyName: string,
   jobTitle: string,
   pdfInline?: PdfInlineAttachment,
+  careerContext?: CareerContext | null,
 ): Promise<{ report: FullReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_FULL_MODEL;
+  const opts = { careerContext };
 
   const intro = [
     companyName ? `Target Company hint: ${companyName}` : null,
@@ -445,11 +496,12 @@ export async function executeFullAnalysis(
     'Produce the complete Interview Strategy Guide (Snapshot layer + strategy layer) in one JSON object.',
     'Use public web sources when citing hiring_context or reported interview questions.',
     'If public sources are thin, return limitations + validation_questions — that is success, not failure.',
+    'Include candidate_case (hire_thesis + top_facts) and offer_strategy.tc_breakdown when estimable.',
   ]
     .filter(Boolean)
     .join('\n');
 
-  const parts = buildUserParts(rawJd, resumeText, pdfInline);
+  const parts = buildUserParts(rawJd, resumeText, pdfInline, careerContext);
   parts[0] = {
     text: `${intro}\n\n${(parts[0] as { text: string }).text}`,
   };
@@ -471,7 +523,7 @@ export async function executeFullAnalysis(
     });
     const text = response.text;
     if (!text) throw new Error('Interview Strategy Guide returned empty response');
-    return normalizeFullReport(parseJsonResponse<FullReport>(text));
+    return normalizeFullReport(parseJsonResponse<FullReport>(text), opts);
   };
 
   let report: FullReport;

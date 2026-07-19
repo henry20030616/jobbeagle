@@ -19,7 +19,10 @@ Rules:
   C = reputable US market benchmark for this title/level/region (state uncertainty in target_gap) — USE THIS when the JD has no pay but the role is clear. Set p25 = low end, p75 = high end, p50 = midpoint as dollar strings (e.g. "$140K"). UI shows a single range (low–high), not percentile labels.
   D = only when title/level/region are too vague to estimate → null numbers + explain in target_gap
 - Prefer tier C over empty D whenever job title + level + US region are identifiable.
+- If CANDIDATE CAREER CONTEXT includes target_tc or walk_away_tc, target_gap MUST compare the offer band to those personal floors.
+- Optionally fill expected_offer.tc_breakdown (base/bonus/equity/total) when estimable; else omit or null fields.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
+- fit_score.breakdown: exactly 5 dimensions with weights 30/25/20/15/10.
 - apply_decision.label must be one of: Apply now | Apply after fixes | Clarify first | Skip
 - apply_decision.reason: recruiter-facing why this decision — competitiveness and risk only. Do NOT teach resume rewriting, bullet edits, page layout, or “put X on page one”.
 - apply_decision.next_best_action: ONE next decision step (apply, clarify with recruiter, validate a hard requirement, or skip). Never coach how to rewrite or reformat a resume.

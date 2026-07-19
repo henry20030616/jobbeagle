@@ -38,5 +38,9 @@ May be one Pro+Search call today; semantics must stay.
 
 ## UI
 
-- EvidenceBadge Tier 1 / 2 / 3; DefenseCard risk↔evidence; paywall for Guide depth.
+- DefenseCard: risk | resume evidence side-by-side (required). EvidenceBadge Tier chips optional / deferred.
+- Snapshot shows Apply Decision + 5-dim breakdown; keeps Beagle Scale; omits Evidence Coverage / Hard Filter panels by product decision.
+- Career Context on `/account` injects floors into analyze; honor in `target_gap` + offer strategy.
+- Provenance: backend URL validation + `report_version` on Guide.
 - Report samples: always sync both products (see `jobbeagle-report-samples.mdc`).
+- Canonical product decisions: `docs/REPORT_CONTENT_SPEC_V3.md`.

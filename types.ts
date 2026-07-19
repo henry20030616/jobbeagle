@@ -227,6 +227,20 @@ export interface ProofMap {
   screenability_note: string;
 }
 
+/** Optional TC split for Offer Strategy / Expected Offer (D24). */
+export interface OfferTcBreakdown {
+  base: string | null;
+  bonus: string | null;
+  equity: string | null;
+  /** All-in TC or total cash when equity unknown */
+  total: string | null;
+}
+
+export interface OfferLever {
+  name: string;
+  note: string;
+}
+
 export interface ExpectedOfferRange {
   posted_range: string | null;
   p25: string | null;
@@ -239,6 +253,42 @@ export interface ExpectedOfferRange {
   sources: string[];
   /** Short positioning line for Snapshot */
   candidate_position_label?: string;
+  /** Base / bonus / equity / total when estimable */
+  tc_breakdown?: OfferTcBreakdown;
+}
+
+/** Account Career Context — floors injected into every analysis (B7/B8). */
+export interface CareerContext {
+  target_level: string;
+  location_or_remote: string;
+  work_auth: string;
+  target_tc: string;
+  walk_away_tc: string;
+  non_negotiables: string;
+  signature_strengths: string;
+}
+
+/** Guide-only: upgrade of proof map into a hire case (D23). */
+export interface CandidateCase {
+  hire_thesis: string;
+  top_facts: string[];
+}
+
+export type ProvenanceStatus = 'valid' | 'invalid' | 'unverified';
+
+export interface ProvenanceEntry {
+  label: string;
+  url: string;
+  date: string;
+  status: ProvenanceStatus;
+  kind: 'offer' | 'hiring' | 'interview';
+}
+
+export interface ProvenanceRecord {
+  report_version: string;
+  validated_at: string;
+  entries: ProvenanceEntry[];
+  invalid_url_count: number;
 }
 
 export interface ApplyDecision {
@@ -314,6 +364,9 @@ export interface OfferStrategy {
   acceptable: string;
   walk_away: string;
   levers: string[];
+  /** Structured levers when present (D24); UI prefers these over levers[] */
+  structured_levers?: OfferLever[];
+  tc_breakdown?: OfferTcBreakdown;
   script: string;
   discovery_questions: string[];
 }
@@ -368,6 +421,10 @@ export interface StrategyIntelFields {
   concerns_defenses: ConcernDefense[];
   interview_playbook: InterviewPlaybook;
   offer_strategy: OfferStrategy;
+  /** Why hire this candidate — Proof Map upgrade (D23) */
+  candidate_case?: CandidateCase;
+  /** Backend-validated citations (A5) */
+  provenance?: ProvenanceRecord;
   report_version?: string;
 
   /** @deprecated mapped into hiring_context / validate_before_join */
@@ -396,6 +453,7 @@ export interface UserProfile {
   available_lite_credits?: number;
   /** @deprecated use available_interview_strategy_guide_credits */
   available_full_credits?: number;
+  career_context?: CareerContext | null;
   referral_code: string | null;
   device_fingerprint: string | null;
   deactivated_at?: string | null;
@@ -433,6 +491,8 @@ export interface AnalyzeRequestBody {
   device_fingerprint?: string;
   /** Mark as single-drop purchase snapshot */
   is_single_drop?: boolean;
+  /** Optional override; otherwise loaded from profiles.career_context */
+  career_context?: CareerContext;
 }
 
 export interface AnalyzeResponseBody {

@@ -121,6 +121,12 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     sources: ['Market benchmark for Senior BA / fintech ops (US)'],
     candidate_position_label:
       'This seat’s market value sits mid-band when payments domain proof is credible; lower mid-band without it.',
+    tc_breakdown: {
+      base: '$150K',
+      bonus: '$15K',
+      equity: '$20K / yr est.',
+      total: '~$185K TC',
+    },
   },
   apply_decision: {
     label: 'Apply after fixes',
@@ -275,11 +281,32 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
       'Ask how often product roadmap slips affect settlement SLAs.',
     ],
   },
+  candidate_case: {
+    hire_thesis:
+      'Hire for ops analytics ownership that already ships: SQL/Looker rituals, quantified cycle-time wins, and executive-ready facilitation — then close the ACH gap with a structured 60-day ramp.',
+    top_facts: [
+      'Cut reconciliation cycle time 28% with SQL + Looker',
+      'Ran weekly eng/risk/CX triage for 18 months',
+      'Executive status packs used in monthly business reviews',
+    ],
+  },
   offer_strategy: {
     target: 'Mid-band of the approved cash range once confirmed',
     acceptable: 'Low-mid if equity / remote flexibility is strong',
     walk_away: 'Below documented floor after discovery, or scope below Senior BA',
     levers: ['Scope', 'Sign-on', 'Remote flexibility', 'Title leveling'],
+    structured_levers: [
+      { name: 'Scope', note: 'Confirm Senior BA ownership vs ticket triage' },
+      { name: 'Sign-on', note: 'Bridge if cash lands low-mid while equity ramps' },
+      { name: 'Remote flexibility', note: 'Trade vs onsite if location is flexible' },
+      { name: 'Title leveling', note: 'Lock level before anchoring TC' },
+    ],
+    tc_breakdown: {
+      base: '$150K',
+      bonus: '$15K',
+      equity: '$20K / yr est.',
+      total: '~$185K TC',
+    },
     script:
       'Thanks — before I share a number, what is the approved cash band for this level in this location? Based on similar Senior BA fintech ops roles and my cycle-time / KPI ownership, I am targeting the mid-band once we confirm scope.',
     discovery_questions: [

@@ -101,8 +101,10 @@ Implementation note: today these may be satisfied via Gemini `googleSearch` + st
 
 ## 5. Frontend / UX directives
 
-- **EvidenceBadge:** Tier 1 green (verified CV/JD) · Tier 2 amber (insight) · Tier 3 grey (baseline only).
-- **DefenseCard:** HR risk vs mapped resume evidence side-by-side.
+- **DefenseCard:** HR risk vs mapped resume evidence side-by-side (required).
+- **EvidenceBadge:** deferred (product decision); Provenance tab + URL validation cover citations.
+- **Career Context:** account floors injected into analyze; honor in offer target_gap / strategy.
+- Spec decisions: `docs/REPORT_CONTENT_SPEC_V3.md`.
 - **Paywall:** Clear funnel for $3 Snapshot / $9.99 Guide / Standard $19.99 / Advanced $39.99; lock Guide-depth behind credits.
 - **Report UI:** Follow `.cursor/rules/jobbeagle-report-samples.mdc` — Snapshot & Guide samples always updated together; `ReportFitStage` + `max-w-[98vw]`; no rem width caps that island the UI.
 - **Stack UI patterns:** Dark slate existing system; no Stripe; Shorts frozen unless explicitly requested.

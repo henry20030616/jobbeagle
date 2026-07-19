@@ -31,7 +31,8 @@ interface LiteReportDashboardProps {
 /**
  * Job Fit Snapshot — one-page slide frame.
  * Dual heroes: Fit Score (named Beagle tier) + Expected Offer.
- * No Evidence Coverage. No role-read / interview starters / long checklists.
+ * Shows: Score Summary, breakdown, Apply Decision, strengths/gaps.
+ * Hidden by product decision: Evidence Coverage, Hard Filter panel, Role Read, starters.
  */
 export default function LiteReportDashboard({
   report,
@@ -50,6 +51,16 @@ export default function LiteReportDashboard({
   const offer = report.expected_offer;
   const offerRange = formatOfferRange(offer);
   const offerEval = offerEvaluationSummary(offer);
+  const breakdown = (report.fit_score?.breakdown ?? []).slice(0, 5);
+  const apply = report.apply_decision;
+  const applyStyles: Record<string, string> = {
+    'Apply now': 'border-emerald-400/50 bg-emerald-500/10 text-emerald-200',
+    'Apply after fixes': 'border-amber-400/50 bg-amber-500/10 text-amber-100',
+    'Clarify first': 'border-sky-400/50 bg-sky-500/10 text-sky-100',
+    Skip: 'border-rose-400/50 bg-rose-500/10 text-rose-100',
+  };
+  const applyClass =
+    applyStyles[apply?.label ?? ''] ?? 'border-slate-600 bg-slate-800/60 text-slate-200';
 
   const handleBack = () => {
     if (onNewAnalysis) {
@@ -286,6 +297,57 @@ export default function LiteReportDashboard({
             </div>
           </div>
         </div>
+
+        {(breakdown.length > 0 || apply?.label) && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90 border-t border-slate-700/90">
+            {breakdown.length > 0 && (
+              <section className="p-5 sm:px-6 sm:py-5">
+                <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-300 mb-3">
+                  Score breakdown
+                </h3>
+                <ul className="space-y-2.5">
+                  {breakdown.map((b, i) => (
+                    <li key={i} className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-base font-semibold text-slate-200">
+                          {b.dimension}
+                          <span className="ml-2 text-xs font-medium text-slate-500">
+                            {b.weight_pct}%
+                          </span>
+                        </p>
+                        {b.note ? (
+                          <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
+                        ) : null}
+                      </div>
+                      <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
+                        {Math.round(b.score)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            {apply?.label && (
+              <section className="p-5 sm:px-6 sm:py-5">
+                <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400 mb-3">
+                  Apply Decision
+                </h3>
+                <div className={`rounded-xl border px-4 py-3 ${applyClass}`}>
+                  <p className="text-2xl font-black leading-tight">{apply.label}</p>
+                  {apply.reason ? (
+                    <p className="text-base mt-2 leading-relaxed opacity-90">{apply.reason}</p>
+                  ) : null}
+                  {apply.next_best_action ? (
+                    <p className="text-base mt-3 pt-3 border-t border-white/10 leading-relaxed">
+                      <span className="font-semibold">Next: </span>
+                      {apply.next_best_action}
+                    </p>
+                  ) : null}
+                </div>
+              </section>
+            )}
+          </div>
+        )}
 
         {/* Strengths | Gaps — bottom of same slide */}
         <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-700/90 border-t border-slate-700/90">
