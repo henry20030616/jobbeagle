@@ -38,9 +38,9 @@ export default function SampleReportClient() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col">
-      <header className="border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <BrandLogo size="sm" showIcon />
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+      <header className="border-b border-slate-800 px-4 sm:px-8 py-5 flex flex-wrap items-center justify-between gap-4 shrink-0">
+        <BrandLogo size="nav" showIcon />
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <ReportCompareModal language="en" variant="button" />
           <Link
             href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}

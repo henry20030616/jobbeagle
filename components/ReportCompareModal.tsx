@@ -11,7 +11,12 @@ import {
   resolveCompareLang,
   type ReportCompareLang,
 } from '@/constants/report-compare';
-import { REPORT_ACTION_TEXT, REPORT_ACTION_ICON } from '@/constants/report-frame';
+import {
+  REPORT_ACTION_TEXT,
+  REPORT_ACTION_ICON,
+  SAMPLE_HEADER_BTN,
+  SAMPLE_HEADER_ICON,
+} from '@/constants/report-frame';
 import ReportCompareTable from '@/components/ReportCompareTable';
 import BrandLogo from '@/components/BrandLogo';
 
@@ -55,7 +60,7 @@ export default function ReportCompareModal({
 
   const triggerClass =
     variant === 'button'
-      ? `inline-flex items-center gap-2.5 rounded-lg border border-slate-400 bg-slate-900/80 px-5 py-3.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors ${className}`
+      ? `${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 ${className}`
       : `inline-flex items-center gap-2.5 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
 
   const drawer =
@@ -119,7 +124,10 @@ export default function ReportCompareModal({
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={triggerClass}>
-        <GitCompareArrows className={REPORT_ACTION_ICON} aria-hidden />
+        <GitCompareArrows
+          className={variant === 'button' ? SAMPLE_HEADER_ICON : REPORT_ACTION_ICON}
+          aria-hidden
+        />
         {REPORT_COMPARE_TRIGGER[lang]}
       </button>
       {drawer}
