@@ -17,7 +17,7 @@ export function SampleMark({
       className={`text-center select-none leading-none ${variantClass} ${className}`}
       aria-hidden
     >
-      (SAMPLE)
+      SAMPLE
     </p>
   );
 }
