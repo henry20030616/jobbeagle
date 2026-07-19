@@ -277,24 +277,34 @@ export default function LiteReportDashboard({
             <div className="flex-1 flex flex-col justify-center min-w-0">
               {offerRange ? (
                 <>
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1.5">
-                    Seat range
-                  </p>
-                  <p className="text-3xl sm:text-4xl @[42rem]:text-5xl @[48rem]:text-6xl font-black text-white tracking-tight leading-none break-words">
-                    {offerRange}
-                  </p>
-                  {predictedOffer && (
-                    <div className="mt-3 pt-3 border-t border-emerald-500/25">
-                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1">
-                        Your predicted land
+                  <div
+                    className={
+                      predictedOffer
+                        ? 'grid grid-cols-1 @[28rem]:grid-cols-2 gap-3 @[28rem]:gap-4'
+                        : ''
+                    }
+                  >
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1.5">
+                        Seat range
                       </p>
-                      <p className="text-2xl sm:text-3xl @[42rem]:text-4xl font-black text-emerald-100 tracking-tight leading-none break-words">
-                        {predictedOffer}
+                      <p className="text-3xl sm:text-4xl @[42rem]:text-5xl font-black text-white tracking-tight leading-none break-words">
+                        {offerRange}
                       </p>
                     </div>
-                  )}
+                    {predictedOffer && (
+                      <div className="min-w-0 @[28rem]:border-l @[28rem]:border-emerald-500/25 @[28rem]:pl-4 pt-3 @[28rem]:pt-0 border-t @[28rem]:border-t-0 border-emerald-500/25">
+                        <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1.5">
+                          Your predicted land
+                        </p>
+                        <p className="text-3xl sm:text-4xl @[42rem]:text-5xl font-black text-emerald-100 tracking-tight leading-none break-words">
+                          {predictedOffer}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                   {offer?.candidate_position_label && (
-                    <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2 break-words">
+                    <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2.5 break-words">
                       {offer.candidate_position_label}
                     </p>
                   )}

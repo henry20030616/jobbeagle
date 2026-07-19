@@ -629,23 +629,33 @@ export default function FullReportDashboard({
                       {[expected?.region, expected?.currency].filter(Boolean).join(' · ') || 'USD'}
                     </p>
                     {offerRange ? (
-                      <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 px-4 py-5 mb-4 text-center">
-                        <p className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">
-                          Seat range
-                        </p>
-                        <p className="text-4xl sm:text-5xl font-black text-white tracking-tight">
-                          {offerRange}
-                        </p>
-                        {predictedOffer && (
-                          <div className="mt-4 pt-4 border-t border-indigo-400/30">
-                            <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-1.5">
-                              Your predicted land
+                      <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 px-4 py-5 mb-4">
+                        <div
+                          className={
+                            predictedOffer
+                              ? 'grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left'
+                              : 'text-center'
+                          }
+                        >
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">
+                              Seat range
                             </p>
-                            <p className="text-3xl sm:text-4xl font-black text-emerald-100 tracking-tight">
-                              {predictedOffer}
+                            <p className="text-3xl sm:text-4xl font-black text-white tracking-tight break-words">
+                              {offerRange}
                             </p>
                           </div>
-                        )}
+                          {predictedOffer && (
+                            <div className="min-w-0 sm:border-l sm:border-indigo-400/30 sm:pl-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-indigo-400/30">
+                              <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-2">
+                                Your predicted land
+                              </p>
+                              <p className="text-3xl sm:text-4xl font-black text-emerald-100 tracking-tight break-words">
+                                {predictedOffer}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ) : (
                       <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
