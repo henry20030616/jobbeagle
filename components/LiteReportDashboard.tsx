@@ -321,8 +321,8 @@ export default function LiteReportDashboard({
 
         {/* Strengths | Gaps — one shared frame, bullet lists */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="w-full rounded-lg border border-slate-400/50 bg-slate-950/50 overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-600/80">
+          <div className="w-full rounded-lg border border-sky-400/50 bg-indigo-500/10 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-sky-400/25">
               <section className="p-3.5 sm:p-4">
                 <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
                   <CheckCircle2 className="w-4 h-4 mr-1.5" />
