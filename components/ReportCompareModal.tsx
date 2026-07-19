@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useId, useState } from 'react';
-import { GitCompareArrows, X } from 'lucide-react';
+import { Check, GitCompareArrows, X } from 'lucide-react';
 import {
   REPORT_COMPARE_CLOSE,
   REPORT_COMPARE_COL,
@@ -12,6 +12,26 @@ import {
   resolveCompareLang,
   type ReportCompareLang,
 } from '@/constants/report-compare';
+
+/** Turn leading Yes / 有 into a green check; keep any suffix note. */
+function CompareCell({ text }: { text: string }) {
+  const match = /^(Yes|有)\s*(.*)$/i.exec(text.trim());
+  if (!match) return <>{text}</>;
+
+  const suffix = match[2].trim();
+
+  return (
+    <span className="inline-flex items-start gap-1.5">
+      <Check
+        className="w-4 h-4 sm:w-[1.125rem] sm:h-[1.125rem] text-emerald-400 shrink-0 mt-0.5"
+        strokeWidth={2.75}
+        aria-hidden
+      />
+      <span className="sr-only">Yes</span>
+      {suffix ? <span>{suffix}</span> : null}
+    </span>
+  );
+}
 
 type ReportCompareModalProps = {
   language?: string;
@@ -115,10 +135,10 @@ export default function ReportCompareModal({
                         {row.feature[lang]}
                       </td>
                       <td className="py-2.5 px-2 sm:px-3 text-slate-300">
-                        {row.snapshot[lang]}
+                        <CompareCell text={row.snapshot[lang]} />
                       </td>
                       <td className="py-2.5 px-2 sm:px-3 text-slate-300">
-                        {row.guide[lang]}
+                        <CompareCell text={row.guide[lang]} />
                       </td>
                     </tr>
                   ))}
