@@ -10,7 +10,7 @@ Rules:
 - Do NOT output FLSA classification.
 - Do NOT include culture-fit inside the numeric score.
 - Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
-- fit_score.sharp_verdict_points: EXACTLY 3 short bullets (one idea each) for Score Summary UI — (1) why this score / core fit, (2) main strength vs JD, (3) main gap vs JD. Fit-only; no apply checklist; no resume rewrite advice.
+- fit_score.sharp_verdict_points: EXACTLY 3 short bullets for Score Summary UI. Parallel form only: "Short label: one-sentence detail" (use a colon + space; never em/en dashes as the separator). Suggested labels: "Core fit:", "Level/tenure:", "Main gap:". Fit-only; no apply checklist; no resume rewrite advice.
 - fit_score.sharp_verdict: join those 3 bullets into one short prose string (fallback).
 - Suggest score breakdown weights as guidance for your assessment (backend may recompute): hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain experience 15%, proven impact 10%.
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Use Blocked ONLY for explicit conflicts (e.g. must be onsite NYC but candidate is remote-only with no relocation). Missing data → Unknown or Risk, not Blocked.

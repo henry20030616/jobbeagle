@@ -38,7 +38,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
       'Strong analytical and stakeholder story for this Senior BA seat. Level and tenure line up for senior ownership. Main gap is ACH/settlement depth versus adjacent banking ops.',
     sharp_verdict_points: [
       'Strong BA fit: SQL/Looker ownership, quantified ops wins, and cross-functional facilitation map to this JD’s core scope.',
-      'Level/tenure align — six years of fintech ops is a natural step into senior ownership, not a stretch title.',
+      'Level/tenure align: six years of fintech ops is a natural step into senior ownership, not a stretch title.',
       'Main gap: payments ACH/settlement depth; resume is adjacent banking ops, so screeners may probe returns and rails fluency.',
     ],
     breakdown: [

@@ -11,7 +11,7 @@ Use google search / public web sources when citing hiring_context insights or re
 - Extract facts from the JD and resume only. Never invent experience, visas, or compensation from model memory.
 - Do NOT output FLSA classification. Do NOT include culture-fit inside the numeric score.
 - Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
-- fit_score.sharp_verdict_points: EXACTLY 3 short bullets for Score Summary — why this score, main strength vs JD, main gap vs JD. Fit-only; no resume coaching.
+- fit_score.sharp_verdict_points: EXACTLY 3 short bullets in parallel form "Short label: detail" (colon + space only; no em/en dash separators). Fit-only; no resume coaching.
 - fit_score.sharp_verdict: join those bullets into one short prose fallback.
 - Suggest score breakdown weights: hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain 15%, proven impact 10%.
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Blocked ONLY for explicit conflicts. Missing data → Unknown or Risk.

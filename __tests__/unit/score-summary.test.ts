@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scoreSummaryPoints } from '@/lib/score-summary';
+import { parallelizeVerdictPoint, scoreSummaryPoints } from '@/lib/score-summary';
 
 describe('scoreSummaryPoints', () => {
   it('prefers explicit bullets', () => {
@@ -14,5 +14,22 @@ describe('scoreSummaryPoints', () => {
     );
     expect(points).toHaveLength(3);
     expect(points[0]).toContain('Strong BA');
+  });
+
+  it('normalizes dash separators to colon for parallel labels', () => {
+    expect(parallelizeVerdictPoint('Level/tenure align — six years of fintech ops')).toBe(
+      'Level/tenure align: six years of fintech ops',
+    );
+    expect(
+      scoreSummaryPoints('', [
+        'Strong BA fit: SQL ownership.',
+        'Level/tenure align — six years of fintech ops.',
+        'Main gap: ACH depth.',
+      ]),
+    ).toEqual([
+      'Strong BA fit: SQL ownership.',
+      'Level/tenure align: six years of fintech ops.',
+      'Main gap: ACH depth.',
+    ]);
   });
 });
