@@ -139,9 +139,9 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
   apply_decision: {
     label: 'Apply after fixes',
     reason:
-      'Strong core BA fit, with ACH/payments depth as the main mismatch versus this JD.',
+      'You clear the senior BA bar on requirements ownership, quantified ops impact, and stakeholder facilitation, so this seat is worth pursuing. The main competitiveness risk is thin ACH/payments-rails proof versus a JD that treats payment operations depth as core. Apply after you confirm how hard that domain requirement is — otherwise screeners may park you below stronger payments-native peers.',
     next_best_action:
-      'Clarify with the recruiter whether ACH/returns ownership is required or preferred.',
+      'Clarify with the recruiter whether ACH/returns ownership is required or preferred before investing a full application cycle.',
   },
   role_read: {
     mission: 'Own requirements and analytics for payments operations improvements.',

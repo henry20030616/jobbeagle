@@ -470,55 +470,60 @@ export default function LiteReportDashboard({
           </div>
         </div>
 
-        {/* Score Summary last — Apply Decision footer */}
+        {/* Score Summary | Apply decision — parallel to Strengths | Gaps */}
         <div className="border-t border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
-          <div className="w-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 sm:px-4 sm:py-3.5 flex flex-col">
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-1`}>
-              Score Summary
-            </p>
-            <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 mb-1">
-              <p className={`text-lg font-bold ${scoreInfo.color} min-w-0`}>
-                {score}/100 · {scoreInfo.level}
-                {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
-              </p>
-              {apply?.label ? (
-                <div className="min-w-0 max-w-full sm:max-w-[min(100%,22rem)] sm:text-right">
-                  <p className={`text-lg font-bold ${scoreInfo.color}`}>
-                    {apply.label}
+          <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-sky-400/25 md:items-stretch">
+              <section className="p-3.5 sm:p-4 min-w-0 flex flex-col">
+                <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
+                  Score Summary
+                </p>
+                <p className={`text-lg font-bold ${scoreInfo.color} mb-2`}>
+                  {score}/100 · {scoreInfo.level}
+                  {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+                </p>
+                <ul className="space-y-1.5 flex-1">
+                  {summaryPoints.map((point, i) => {
+                    const { label, detail } = splitScoreSummaryPoint(point);
+                    return (
+                      <li key={i} className="flex gap-2.5 text-lg leading-snug">
+                        <span
+                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90"
+                          aria-hidden
+                        />
+                        <span>
+                          <span className="font-semibold text-slate-100">{label}</span>
+                          {detail ? (
+                            <span className="text-slate-400">: {detail}</span>
+                          ) : null}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+
+              <section className="p-3.5 sm:p-4 min-w-0 flex flex-col">
+                <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>
+                  {apply?.label || 'Apply decision'}
+                </p>
+                {apply?.reason ? (
+                  <p className="text-base sm:text-lg text-slate-200 leading-relaxed flex-1">
+                    {apply.reason}
                   </p>
-                  {apply.reason ? (
-                    <p className="text-base text-slate-300 leading-snug mt-1">
-                      {apply.reason}
-                    </p>
-                  ) : null}
-                  {apply.next_best_action ? (
-                    <p className="text-base text-slate-400 mt-1 leading-snug">
-                      <span className="font-semibold text-slate-300">Next: </span>
-                      {apply.next_best_action}
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
+                ) : (
+                  <p className="text-base text-slate-500 flex-1">
+                    Decision brief unavailable for this run.
+                  </p>
+                )}
+                {apply?.next_best_action ? (
+                  <p className="text-base sm:text-lg text-slate-300 leading-relaxed mt-3 pt-3 border-t border-sky-400/25">
+                    <span className="font-semibold text-violet-200">Next: </span>
+                    {apply.next_best_action}
+                  </p>
+                ) : null}
+              </section>
             </div>
-            <ul className="mt-2 space-y-1.5">
-              {summaryPoints.map((point, i) => {
-                const { label, detail } = splitScoreSummaryPoint(point);
-                return (
-                  <li key={i} className="flex gap-2.5 text-lg leading-snug">
-                    <span
-                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90"
-                      aria-hidden
-                    />
-                    <span>
-                      <span className="font-semibold text-slate-100">{label}</span>
-                      {detail ? (
-                        <span className="text-slate-400">: {detail}</span>
-                      ) : null}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
           </div>
         </div>
       </article>
