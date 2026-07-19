@@ -84,8 +84,8 @@ export default function ReportPage() {
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
         </span>
       </header>
-      <main className="flex-1 min-h-[calc(100vh-8rem)] w-full px-3 sm:px-6 py-6 flex flex-col items-center justify-center">
-        <ReportFitStage className="w-full max-w-[96vw]">
+      <main className="flex-1 min-h-0 w-full px-2 sm:px-4 py-4 flex flex-col items-stretch">
+        <ReportFitStage className="w-full flex-1 min-h-0">
           {strategy ? (
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}

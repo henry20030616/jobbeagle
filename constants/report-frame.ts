@@ -32,6 +32,6 @@ export const REPORT_SHELL_WIDTH = 'w-full max-w-[98vw]';
 
 /**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,
- * then scales uniformly (up to ~1.45×) to fill the stage — proportions stay fixed.
+ * then scales uniformly to fill the stage width — proportions stay fixed.
  */
 export const REPORT_SLIDE_DESIGN_WIDTH = 1280;

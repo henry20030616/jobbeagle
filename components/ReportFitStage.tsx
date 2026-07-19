@@ -8,20 +8,20 @@ type ReportFitStageProps = {
   className?: string;
   /** Fixed slide canvas width (px). Internal layout always lays out at this width. */
   designWidth?: number;
-  /** Cap so ultrawide monitors don’t over-magnify (default 1.45). */
+  /** Upper bound so extreme ultrawides don’t become unreadably huge. */
   maxScale?: number;
 };
 
 /**
  * Fixed-proportion presentation stage.
- * Lays out at a constant design width (no internal reflow), then scales
- * uniformly to fill the container width and stays centered.
+ * Children lay out at a constant design width (no reflow), then the whole
+ * slide scales to nearly fill the stage width and stays centered.
  */
 export function ReportFitStage({
   children,
   className = '',
   designWidth = REPORT_SLIDE_DESIGN_WIDTH,
-  maxScale = 1.45,
+  maxScale = 2.4,
 }: ReportFitStageProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -34,10 +34,12 @@ export function ReportFitStage({
     if (!outer || !inner) return;
 
     const update = () => {
-      const available = outer.clientWidth;
+      // Always use the stage’s laid-out width (must be stretch/full — never
+      // shrink-wrap to the slide, or scale sticks at ~1× forever).
+      const available = outer.getBoundingClientRect().width;
       if (available <= 0) return;
       const fit = available / designWidth;
-      const nextScale = Math.min(maxScale, Math.max(fit, 0.55));
+      const nextScale = Math.min(maxScale, Math.max(fit, 0.5));
       setScale(Number(nextScale.toFixed(4)));
       setContentHeight(inner.scrollHeight);
     };
@@ -59,7 +61,7 @@ export function ReportFitStage({
   return (
     <div
       ref={outerRef}
-      className={`w-full min-w-0 flex justify-center items-center ${className}`}
+      className={`w-full min-w-0 self-stretch flex justify-center ${className}`}
     >
       <div
         className="relative shrink-0"
