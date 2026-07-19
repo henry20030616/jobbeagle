@@ -8,11 +8,11 @@ export const REPORT_ACTION_ICON = 'w-6 h-6 shrink-0';
 export const REPORT_ACTION_BTN =
   `inline-flex items-center gap-2.5 rounded-lg border border-slate-400 bg-slate-900/80 px-4 py-3 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
-/** Samples page top bar — intentionally larger than in-page actions */
-export const SAMPLE_HEADER_TEXT = 'text-2xl font-bold';
-export const SAMPLE_HEADER_ICON = 'w-7 h-7 shrink-0';
+/** Samples page chrome — large at design size; whole page then zooms together */
+export const SAMPLE_HEADER_TEXT = 'text-3xl font-bold';
+export const SAMPLE_HEADER_ICON = 'w-8 h-8 shrink-0';
 export const SAMPLE_HEADER_BTN =
-  `inline-flex items-center gap-3 rounded-xl border-2 px-6 py-4 ${SAMPLE_HEADER_TEXT} transition-colors`;
+  `inline-flex items-center gap-3 rounded-xl border-2 px-7 py-4 ${SAMPLE_HEADER_TEXT} transition-colors`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
