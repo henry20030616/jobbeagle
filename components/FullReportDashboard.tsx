@@ -21,10 +21,12 @@ import {
 } from 'lucide-react';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import type { AppLanguage } from '@/lib/language-context';
+import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import {
   evidenceTierLabel,
   formatOfferRange,
   formatPredictedOffer,
+  predictedLandGaugeValue,
 } from '@/lib/offer-display';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
@@ -194,6 +196,10 @@ export default function FullReportDashboard({
   const expected = report.expected_offer;
   const offerRange = formatOfferRange(expected);
   const predictedOffer = formatPredictedOffer(expected);
+  const predictedGauge = predictedLandGaugeValue(expected);
+  const predictedData = [
+    { name: 'Land', value: predictedGauge, fill: '#34d399' },
+  ];
 
   const sources = useMemo(() => {
     if (report.provenance?.entries?.length) {
@@ -630,14 +636,8 @@ export default function FullReportDashboard({
                     </p>
                     {offerRange ? (
                       <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 px-4 py-5 mb-4">
-                        <div
-                          className={
-                            predictedOffer
-                              ? 'grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left'
-                              : 'text-center'
-                          }
-                        >
-                          <div className="min-w-0">
+                        <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4">
+                          <div className="min-w-0 text-center sm:text-left flex-1">
                             <p className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">
                               Seat range
                             </p>
@@ -645,16 +645,41 @@ export default function FullReportDashboard({
                               {offerRange}
                             </p>
                           </div>
-                          {predictedOffer && (
-                            <div className="min-w-0 sm:border-l sm:border-indigo-400/30 sm:pl-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-indigo-400/30">
-                              <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-2">
+                          {predictedOffer ? (
+                            <div className="flex flex-col items-center shrink-0">
+                              <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-1.5 text-center">
                                 Your predicted land
                               </p>
-                              <p className="text-3xl sm:text-4xl font-black text-emerald-100 tracking-tight break-words">
-                                {predictedOffer}
-                              </p>
+                              <div
+                                className="relative w-24 h-24 sm:w-28 sm:h-28"
+                                aria-label={`Your predicted land ${predictedOffer}`}
+                              >
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <RadialBarChart
+                                    innerRadius="70%"
+                                    outerRadius="100%"
+                                    barSize={10}
+                                    data={predictedData}
+                                    startAngle={90}
+                                    endAngle={-270}
+                                  >
+                                    <PolarAngleAxis
+                                      type="number"
+                                      domain={[0, 100]}
+                                      angleAxisId={0}
+                                      tick={false}
+                                    />
+                                    <RadialBar background dataKey="value" cornerRadius={30} />
+                                  </RadialBarChart>
+                                </ResponsiveContainer>
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-1">
+                                  <span className="text-xl sm:text-2xl font-black text-emerald-100 tabular-nums leading-none text-center">
+                                    {predictedOffer}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     ) : (

@@ -20,6 +20,7 @@ import {
   formatOfferRange,
   formatPredictedOffer,
   offerEvaluationSummary,
+  predictedLandGaugeValue,
 } from '@/lib/offer-display';
 import { scoreSummaryPoints, splitScoreSummaryPoint } from '@/lib/score-summary';
 import { formatJobSourceDate } from '@/lib/job-source';
@@ -63,6 +64,10 @@ export default function LiteReportDashboard({
   const offer = report.expected_offer;
   const offerRange = formatOfferRange(offer);
   const predictedOffer = formatPredictedOffer(offer);
+  const predictedGauge = predictedLandGaugeValue(offer);
+  const predictedData = [
+    { name: 'Land', value: predictedGauge, fill: '#34d399' },
+  ];
   const offerEval = offerEvaluationSummary(offer);
   const breakdown = (report.fit_score?.breakdown ?? []).slice(0, 5);
   const apply = report.apply_decision;
@@ -274,36 +279,64 @@ export default function LiteReportDashboard({
               {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
             </p>
 
-            <div className="flex-1 flex flex-col justify-center min-w-0">
-              {offerRange ? (
-                <>
-                  <p className="text-5xl sm:text-6xl font-black text-white tracking-tight leading-none break-words">
-                    {offerRange}
-                  </p>
-                  {predictedOffer && (
-                    <div className="mt-3">
-                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-1">
-                        Your predicted land
-                      </p>
-                      <p className="text-2xl sm:text-3xl font-black text-emerald-100 tracking-tight leading-none break-words">
-                        {predictedOffer}
-                      </p>
-                    </div>
-                  )}
-                  {offer?.candidate_position_label && (
-                    <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2 break-words">
-                      {offer.candidate_position_label}
+            <div className="flex-1 flex items-center gap-3 sm:gap-4 min-w-0">
+              <div className="min-w-0 flex-1">
+                {offerRange ? (
+                  <>
+                    <p className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-none break-words">
+                      {offerRange}
                     </p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <p className="text-2xl font-bold text-slate-200">No reliable offer band yet</p>
-                  <p className="text-lg text-slate-400 mt-1 leading-relaxed">
-                    Ask the recruiter for the approved cash range before you invest interview time.
+                    {offer?.candidate_position_label && (
+                      <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mt-2 break-words">
+                        {offer.candidate_position_label}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold text-slate-200">No reliable offer band yet</p>
+                    <p className="text-lg text-slate-400 mt-1 leading-relaxed">
+                      Ask the recruiter for the approved cash range before you invest interview time.
+                    </p>
+                  </>
+                )}
+              </div>
+
+              {predictedOffer ? (
+                <div className="flex flex-col items-center shrink-0">
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-1.5 text-center whitespace-nowrap">
+                    Your predicted land
                   </p>
-                </>
-              )}
+                  <div
+                    className="relative w-24 h-24 sm:w-28 sm:h-28"
+                    aria-label={`Your predicted land ${predictedOffer}`}
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadialBarChart
+                        innerRadius="70%"
+                        outerRadius="100%"
+                        barSize={10}
+                        data={predictedData}
+                        startAngle={90}
+                        endAngle={-270}
+                      >
+                        <PolarAngleAxis
+                          type="number"
+                          domain={[0, 100]}
+                          angleAxisId={0}
+                          tick={false}
+                        />
+                        <RadialBar background dataKey="value" cornerRadius={30} />
+                      </RadialBarChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-1">
+                      <span className="text-xl sm:text-2xl font-black text-emerald-100 tabular-nums leading-none text-center">
+                        {predictedOffer}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </section>
         </div>

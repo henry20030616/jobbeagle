@@ -5,6 +5,8 @@ import {
   formatPredictedOffer,
   hasOfferRange,
   offerEvaluationSummary,
+  parseMoneyAmount,
+  predictedLandGaugeValue,
 } from '@/lib/offer-display';
 
 describe('evidenceTierLabel', () => {
@@ -58,6 +60,26 @@ describe('formatOfferRange', () => {
       evidence_tier: 'D',
       sources: [],
     })).toBe(false);
+  });
+});
+
+describe('predictedLandGaugeValue', () => {
+  it('maps land inside the band to 0–100', () => {
+    expect(parseMoneyAmount('$155K')).toBe(155000);
+    expect(
+      predictedLandGaugeValue({
+        posted_range: null,
+        p25: '$145K',
+        p50: '$165K',
+        p75: '$190K',
+        currency: 'USD',
+        region: 'US',
+        target_gap: '',
+        evidence_tier: 'C',
+        sources: [],
+        candidate_predicted_offer: '$155K',
+      }),
+    ).toBe(22); // (155-145)/(190-145) ≈ 22%
   });
 });
 

@@ -52,6 +52,37 @@ export function formatPredictedOffer(
   return cleanMoney(offer.candidate_predicted_offer) || null;
 }
 
+/** Parse "$155K" / "$155,000" into a number for gauge positioning. */
+export function parseMoneyAmount(v: string | null | undefined): number | null {
+  const s = cleanMoney(v);
+  if (!s) return null;
+  const k = s.match(/([\d,]+(?:\.\d+)?)\s*[Kk]\b/);
+  if (k) return parseFloat(k[1].replace(/,/g, '')) * 1000;
+  const n = s.match(/([\d,]+(?:\.\d+)?)/);
+  if (!n) return null;
+  const raw = parseFloat(n[1].replace(/,/g, ''));
+  return Number.isFinite(raw) ? raw : null;
+}
+
+/**
+ * 0–100 fill for the predicted-land circle: where the land sits in the seat band.
+ * Falls back to 55 when the band cannot be parsed.
+ */
+export function predictedLandGaugeValue(
+  offer: ExpectedOfferRange | null | undefined,
+): number {
+  const land = parseMoneyAmount(offer?.candidate_predicted_offer);
+  const low =
+    parseMoneyAmount(offer?.p25)
+    || parseMoneyAmount(offer?.posted_range?.split(/[–—-]/)[0]);
+  const high =
+    parseMoneyAmount(offer?.p75)
+    || parseMoneyAmount(offer?.posted_range?.split(/[–—-]/).pop());
+  if (land == null || low == null || high == null || high <= low) return 55;
+  const pct = ((land - low) / (high - low)) * 100;
+  return Math.max(8, Math.min(100, Math.round(pct)));
+}
+
 /**
  * Plain-language market value of this role for Snapshot “Range Evaluation”.
  * Not a glossary of evidence tiers.
