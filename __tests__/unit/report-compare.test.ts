@@ -18,15 +18,16 @@ describe('report-compare', () => {
     expect(REPORT_COMPARE_WHY_PRO.title.en).toMatch(/professional/i);
   });
 
-  it('groups shared → guide-only → meta without star ratings', () => {
+  it('puts Best for first, then shared → guide-only → price', () => {
     expect(REPORT_COMPARE_TRIGGER.en).toMatch(/Compare/i);
 
     const sections = REPORT_COMPARE_ROWS.map((r) => r.section);
+    expect(REPORT_COMPARE_ROWS[0]?.feature.en).toBe('Best for');
+    expect(sections[0]).toBe('best_for');
     expect(sections.filter((s) => s === 'shared').length).toBeGreaterThanOrEqual(3);
     expect(sections.filter((s) => s === 'guide_only').length).toBeGreaterThanOrEqual(3);
-    expect(sections.filter((s) => s === 'meta').length).toBeGreaterThanOrEqual(2);
+    expect(sections.filter((s) => s === 'meta').length).toBeGreaterThanOrEqual(1);
 
-    // Shared comes before guide-only; guide-only before meta
     const firstGuide = sections.indexOf('guide_only');
     const firstMeta = sections.indexOf('meta');
     const lastShared = sections.lastIndexOf('shared');

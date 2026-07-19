@@ -1,11 +1,11 @@
 /**
  * Snapshot vs Strategy Guide — comparison rows for homepage + samples modal.
- * Structure: shared (depth notes) → Guide-only → meta (best for / price).
+ * Structure: Best for → shared (depth notes) → Guide-only → price.
  */
 
 export type ReportCompareLang = 'en' | 'zh-TW' | 'zh-CN';
 
-export type ReportCompareSection = 'shared' | 'guide_only' | 'meta';
+export type ReportCompareSection = 'best_for' | 'shared' | 'guide_only' | 'meta';
 
 export interface ReportCompareCell {
   text: Record<ReportCompareLang, string>;
@@ -72,6 +72,7 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
   ReportCompareSection,
   Record<ReportCompareLang, string> | null
 > = {
+  best_for: null,
   shared: {
     en: 'Same building blocks — Guide runs them on a deeper model and expands what you can act on.',
     'zh-TW': '積木相同——Guide 用更深模型跑，並擴成你能照著做的內容。',
@@ -101,6 +102,11 @@ export const REPORT_COMPARE_SECTION_LABEL: Record<
   ReportCompareSection,
   Record<ReportCompareLang, string>
 > = {
+  best_for: {
+    en: '',
+    'zh-TW': '',
+    'zh-CN': '',
+  },
   shared: {
     en: 'Included in both (depth differs)',
     'zh-TW': '兩者都有（深度不同）',
@@ -112,9 +118,9 @@ export const REPORT_COMPARE_SECTION_LABEL: Record<
     'zh-CN': '仅 Strategy Guide — 专业版加值',
   },
   meta: {
-    en: 'Who it’s for & price',
-    'zh-TW': '適合對象與價格',
-    'zh-CN': '适合对象与价格',
+    en: 'Price',
+    'zh-TW': '價格',
+    'zh-CN': '价格',
   },
 };
 
@@ -141,6 +147,17 @@ export const REPORT_COMPARE_COL: {
 };
 
 export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
+  // ── Top: Best for ──
+  {
+    section: 'best_for',
+    feature: {
+      en: 'Best for',
+      'zh-TW': '最適用',
+      'zh-CN': '最适用',
+    },
+    snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
+    guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
+  },
   // ── A. Shared ──
   {
     section: 'shared',
@@ -261,17 +278,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '有 — 为何该录取「你」做「这席」，用招募听得懂的话',
     ),
   },
-  // ── C. Meta ──
-  {
-    section: 'meta',
-    feature: {
-      en: 'Best for',
-      'zh-TW': '最適用',
-      'zh-CN': '最适用',
-    },
-    snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
-    guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
-  },
+  // ── C. Price ──
   {
     section: 'meta',
     feature: {

@@ -19,7 +19,12 @@ import {
   type ReportCompareSection,
 } from '@/constants/report-compare';
 
-const SECTION_ORDER: ReportCompareSection[] = ['shared', 'guide_only', 'meta'];
+const SECTION_ORDER: ReportCompareSection[] = [
+  'best_for',
+  'shared',
+  'guide_only',
+  'meta',
+];
 
 /** Green check for Yes/有; plain text otherwise (incl. —). */
 function CompareCell({
@@ -179,25 +184,27 @@ export default function ReportCompareModal({
                   <tbody>
                     {sections.map((section) => (
                       <React.Fragment key={section.id}>
-                        <tr>
-                          <td
-                            colSpan={3}
-                            className={`pt-4 pb-1 px-2 sm:px-3 text-xs font-bold uppercase tracking-wider ${
-                              section.id === 'guide_only'
-                                ? 'text-emerald-400'
-                                : section.id === 'shared'
-                                  ? 'text-violet-300'
-                                  : 'text-slate-500'
-                            }`}
-                          >
-                            {section.label}
-                            {REPORT_COMPARE_SECTION_HINT[section.id] ? (
-                              <span className="block mt-1 normal-case tracking-normal font-medium text-slate-500 text-[13px] leading-snug">
-                                {REPORT_COMPARE_SECTION_HINT[section.id]![lang]}
-                              </span>
-                            ) : null}
-                          </td>
-                        </tr>
+                        {section.label.trim() ? (
+                          <tr>
+                            <td
+                              colSpan={3}
+                              className={`pt-4 pb-1 px-2 sm:px-3 text-xs font-bold uppercase tracking-wider ${
+                                section.id === 'guide_only'
+                                  ? 'text-emerald-400'
+                                  : section.id === 'shared'
+                                    ? 'text-violet-300'
+                                    : 'text-slate-500'
+                              }`}
+                            >
+                              {section.label}
+                              {REPORT_COMPARE_SECTION_HINT[section.id] ? (
+                                <span className="block mt-1 normal-case tracking-normal font-medium text-slate-500 text-[13px] leading-snug">
+                                  {REPORT_COMPARE_SECTION_HINT[section.id]![lang]}
+                                </span>
+                              ) : null}
+                            </td>
+                          </tr>
+                        ) : null}
                         {section.rows.map((row) => (
                           <tr
                             key={row.feature.en}
