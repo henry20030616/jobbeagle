@@ -1,6 +1,9 @@
+/** Shared label size — Back to Home / Jobbeagle / sample tabs */
+export const REPORT_ACTION_TEXT = 'text-base font-semibold';
+
 /** Action buttons — thin light-grey frame; side-by-side in sample column */
 export const REPORT_ACTION_BTN =
-  'inline-flex items-center gap-1.5 rounded-lg border border-slate-400 bg-slate-900/80 px-2.5 py-2 text-sm font-semibold text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors';
+  `inline-flex items-center gap-1.5 rounded-lg border border-slate-400 bg-slate-900/80 px-2.5 py-2 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).

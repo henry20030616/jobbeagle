@@ -20,8 +20,8 @@ type BrandLogoProps = {
 const sizeClasses = {
   nav: 'text-2xl sm:text-3xl font-black tracking-tight',
   inline: 'text-xl font-bold tracking-tight',
-  /** Matches REPORT_ACTION_BTN (e.g. Back to Home) */
-  sm: 'text-sm font-semibold tracking-tight',
+  /** Matches REPORT_ACTION_TEXT / Back to Home */
+  sm: 'text-base font-semibold tracking-tight',
   hero: 'text-5xl md:text-7xl font-black tracking-tight',
 } as const;
 

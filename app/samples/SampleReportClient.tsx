@@ -12,7 +12,11 @@ import {
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
-import { SAMPLE_NOTICE_SURFACE, REPORT_ACTION_BTN } from '@/constants/report-frame';
+import {
+  SAMPLE_NOTICE_SURFACE,
+  REPORT_ACTION_BTN,
+  REPORT_ACTION_TEXT,
+} from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
 
@@ -37,7 +41,7 @@ export default function SampleReportClient() {
         <div className="flex items-center gap-2">
           <Link
             href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-            className={`rounded-full px-3 py-1.5 text-sm font-semibold border transition-colors ${
+            className={`rounded-full px-3.5 py-1.5 ${REPORT_ACTION_TEXT} border transition-colors ${
               !isGuide
                 ? 'border-violet-500 bg-violet-500/15 text-violet-100'
                 : 'border-slate-700 text-slate-400 hover:text-slate-200'
@@ -47,7 +51,7 @@ export default function SampleReportClient() {
           </Link>
           <Link
             href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-            className={`rounded-full px-3 py-1.5 text-sm font-semibold border transition-colors ${
+            className={`rounded-full px-3.5 py-1.5 ${REPORT_ACTION_TEXT} border transition-colors ${
               isGuide
                 ? 'border-violet-500 bg-violet-500/15 text-violet-100'
                 : 'border-slate-700 text-slate-400 hover:text-slate-200'
