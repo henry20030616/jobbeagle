@@ -333,15 +333,7 @@ export default function LiteReportDashboard({
             </ul>
             {apply?.label ? (
               <div className="mt-4 pt-4 border-t border-sky-400/30">
-                <p className={`text-xl sm:text-2xl font-black leading-tight ${
-                  apply.label === 'Apply now'
-                    ? 'text-emerald-300'
-                    : apply.label === 'Skip'
-                      ? 'text-rose-300'
-                      : apply.label === 'Clarify first'
-                        ? 'text-sky-300'
-                        : 'text-amber-200'
-                }`}>
+                <p className={`text-lg font-bold ${scoreInfo.color}`}>
                   {apply.label}
                 </p>
                 {apply.reason ? (
