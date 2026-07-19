@@ -341,36 +341,40 @@ export default function LiteReportDashboard({
           </section>
         )}
 
-        {/* Strengths | Gaps — bottom of same slide */}
-        <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-700/90 border-t border-slate-700/90">
-          <section className="p-5 sm:px-6 sm:py-5">
-            <h3 className="text-xs font-bold text-emerald-400 mb-3 flex items-center uppercase tracking-[0.18em]">
-              <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-              Top Strengths
-            </h3>
-            <ul className="space-y-2.5">
-              {strengths.map((item, idx) => (
-                <li key={idx} className="border-l-2 border-emerald-500/40 pl-3">
-                  <p className="text-lg font-semibold text-slate-200">{item.point}</p>
-                  <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section className="p-5 sm:px-6 sm:py-5">
-            <h3 className="text-xs font-bold text-violet-300 mb-3 flex items-center uppercase tracking-[0.18em]">
-              <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
-              Critical Gaps
-            </h3>
-            <ul className="space-y-2.5">
-              {gaps.map((item, idx) => (
-                <li key={idx} className="border-l-2 border-violet-400/40 pl-3">
-                  <p className="text-lg font-semibold text-slate-200">{item.gap}</p>
-                  <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
+        {/* Strengths | Gaps — shared outer frame */}
+        <div className="border-t border-slate-700/90 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="w-full rounded-lg border border-slate-500/45 bg-slate-950/40 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-700/90">
+              <section className="p-4 sm:p-5">
+                <h3 className="text-xs font-bold text-emerald-400 mb-3 flex items-center uppercase tracking-[0.18em]">
+                  <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                  Top Strengths
+                </h3>
+                <ul className="space-y-2.5">
+                  {strengths.map((item, idx) => (
+                    <li key={idx} className="border-l-2 border-emerald-500/40 pl-3">
+                      <p className="text-lg font-semibold text-slate-200">{item.point}</p>
+                      <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              <section className="p-4 sm:p-5">
+                <h3 className="text-xs font-bold text-violet-300 mb-3 flex items-center uppercase tracking-[0.18em]">
+                  <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
+                  Critical Gaps
+                </h3>
+                <ul className="space-y-2.5">
+                  {gaps.map((item, idx) => (
+                    <li key={idx} className="border-l-2 border-violet-400/40 pl-3">
+                      <p className="text-lg font-semibold text-slate-200">{item.gap}</p>
+                      <p className="text-base text-slate-500 line-clamp-2 mt-0.5">{item.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+          </div>
         </div>
       </article>
     </div>
