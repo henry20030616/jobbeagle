@@ -131,7 +131,7 @@ export default function LiteReportDashboard({
               </p>
             </div>
             <div
-              className="shrink-0 rounded-lg border border-sky-400/70 bg-slate-950/60 px-3 py-1.5 text-right"
+              className="shrink-0 rounded-lg border border-sky-400/70 bg-slate-950/60 px-3 py-1.5 text-center"
               style={{ borderColor: `${scoreInfo.fill}66` }}
             >
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Fit</p>
