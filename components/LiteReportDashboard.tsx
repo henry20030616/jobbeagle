@@ -33,9 +33,12 @@ import { splitDecisionBrief } from '@/lib/decision-brief';
 import { SampleMark } from '@/components/SampleMark';
 import PredictedLandSquircle from '@/components/PredictedLandSquircle';
 
-/** Primary section labels (Job Fit Snapshot, Candidate Fit Score, …) */
 /** Fixed slide type — no viewport breakpoints (scale stage handles size). */
-const SECTION_TITLE = 'text-base font-bold uppercase tracking-[0.14em]';
+const SECTION_TITLE = 'text-lg font-bold uppercase tracking-[0.14em]';
+/** Body copy inside the slide — keep ≥ text-lg so it stays readable when zoomed. */
+const BODY = 'text-lg';
+const BODY_MUTED = 'text-lg text-slate-400';
+const META = 'text-base';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
@@ -146,22 +149,22 @@ export default function LiteReportDashboard({
                 <Briefcase className="w-5 h-5 text-slate-400 shrink-0" />
                 {report.job_title || 'Unknown Role'}
               </h1>
-              <dl className="mt-2 space-y-1 text-lg">
+              <dl className={`mt-2 space-y-1 ${BODY}`}>
                 <div className="flex items-center gap-2 text-slate-300">
-                  <Building2 className="w-4 h-4 shrink-0 text-slate-500" aria-hidden />
+                  <Building2 className="w-5 h-5 shrink-0 text-slate-500" aria-hidden />
                   <dt className="sr-only">Company</dt>
                   <dd>
-                    <span className="text-slate-500 text-sm font-semibold uppercase tracking-wide mr-2">
+                    <span className="text-slate-500 text-base font-semibold uppercase tracking-wide mr-2">
                       Company
                     </span>
                     {report.company_name || 'Unknown Company'}
                   </dd>
                 </div>
                 <div className="flex items-center gap-2 text-slate-300">
-                  <CalendarDays className="w-4 h-4 shrink-0 text-slate-500" aria-hidden />
+                  <CalendarDays className="w-5 h-5 shrink-0 text-slate-500" aria-hidden />
                   <dt className="sr-only">Posted</dt>
                   <dd>
-                    <span className="text-slate-500 text-sm font-semibold uppercase tracking-wide mr-2">
+                    <span className="text-slate-500 text-base font-semibold uppercase tracking-wide mr-2">
                       Posted
                     </span>
                     {formatJobSourceDate(report.job_source, report.job_posted_date)}
@@ -170,11 +173,11 @@ export default function LiteReportDashboard({
               </dl>
             </div>
             <div
-              className="shrink-0 rounded-lg border border-sky-400/70 bg-slate-950/60 px-3 py-1.5 text-center"
+              className="shrink-0 rounded-lg border border-sky-400/70 bg-slate-950/60 px-3.5 py-2 text-center"
               style={{ borderColor: `${scoreInfo.fill}66` }}
             >
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Fit</p>
-              <p className={`text-2xl font-black tabular-nums leading-none ${scoreInfo.color}`}>
+              <p className="text-sm font-bold uppercase tracking-wider text-slate-400">Fit</p>
+              <p className={`text-3xl font-black tabular-nums leading-none ${scoreInfo.color}`}>
                 {score}
               </p>
             </div>
@@ -274,8 +277,8 @@ export default function LiteReportDashboard({
                 <p className={`text-3xl font-black leading-tight ${scoreInfo.color}`}>
                   {scoreInfo.level}
                 </p>
-                <p className="text-lg font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
-                <p className="text-base text-slate-400 mt-1.5 leading-relaxed line-clamp-3">
+                <p className="text-xl font-semibold text-slate-200 mt-1">{scoreInfo.label}</p>
+                <p className={`${BODY_MUTED} mt-1.5 leading-relaxed line-clamp-3`}>
                   {scoreInfo.description}
                 </p>
               </div>
@@ -290,7 +293,7 @@ export default function LiteReportDashboard({
 
             <div className="flex flex-1 items-center gap-4 min-w-0 min-h-[7.5rem]">
               <div className="min-w-0 flex-1">
-                <p className="text-base text-slate-400 mb-1.5 break-words leading-snug">
+                <p className={`${BODY_MUTED} mb-1.5 break-words leading-snug`}>
                   {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
                   {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
                 </p>
@@ -300,7 +303,7 @@ export default function LiteReportDashboard({
                       {offerRange}
                     </p>
                     {offer?.candidate_position_label && (
-                      <p className="text-base text-emerald-100/90 leading-relaxed mt-2 break-words line-clamp-3">
+                      <p className={`${BODY} text-emerald-100/90 leading-relaxed mt-2 break-words line-clamp-3`}>
                         {offer.candidate_position_label}
                       </p>
                     )}
@@ -308,7 +311,7 @@ export default function LiteReportDashboard({
                 ) : (
                   <>
                     <p className="text-2xl font-bold text-slate-200">No reliable offer band yet</p>
-                    <p className="text-lg text-slate-400 mt-1 leading-relaxed">
+                    <p className={`${BODY_MUTED} mt-1 leading-relaxed`}>
                       Ask the recruiter for the approved cash range before you invest interview time.
                     </p>
                   </>
@@ -330,30 +333,30 @@ export default function LiteReportDashboard({
                 Score breakdown
               </p>
               {breakdown.length > 0 ? (
-                <ul className="space-y-2 flex-1">
+                <ul className="space-y-2.5 flex-1">
                   {breakdown.map((b, i) => (
                     <li key={i} className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-base font-semibold text-slate-200">
+                        <p className={`${BODY} font-semibold text-slate-200`}>
                           {b.dimension}
-                          <span className="ml-2 text-xs font-medium text-slate-500">
+                          <span className="ml-2 text-sm font-medium text-slate-500">
                             {b.weight_pct}%
                           </span>
                         </p>
                         {b.note ? (
-                          <p className="text-sm text-slate-400 mt-0.5 leading-snug line-clamp-3">
+                          <p className={`${BODY_MUTED} mt-1 leading-snug line-clamp-3`}>
                             {b.note}
                           </p>
                         ) : null}
                       </div>
-                      <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
+                      <span className="text-xl font-black tabular-nums text-indigo-200 shrink-0">
                         {Math.round(b.score)}
                       </span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-base text-slate-500">Breakdown unavailable for this run.</p>
+                <p className={`${BODY} text-slate-500`}>Breakdown unavailable for this run.</p>
               )}
             </div>
 
@@ -363,7 +366,7 @@ export default function LiteReportDashboard({
               </p>
               {tcRows.length > 0 ? (
                 <div className="mb-2.5">
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-200/80 mb-1.5">
+                  <p className={`${META} font-bold uppercase tracking-wider text-emerald-200/80 mb-1.5`}>
                     Est. salary mix
                   </p>
                   <div className="grid grid-cols-4 gap-2">
@@ -372,8 +375,8 @@ export default function LiteReportDashboard({
                         key={label}
                         className="rounded-md border border-emerald-400/25 bg-black/20 px-2.5 py-2 min-w-0"
                       >
-                        <p className="text-xs text-slate-400 mb-0.5">{label}</p>
-                        <p className="text-base font-semibold text-emerald-50 tabular-nums break-words leading-tight">
+                        <p className={`${META} text-slate-400 mb-0.5`}>{label}</p>
+                        <p className={`${BODY} font-semibold text-emerald-50 tabular-nums break-words leading-tight`}>
                           {value}
                         </p>
                       </div>
@@ -381,10 +384,10 @@ export default function LiteReportDashboard({
                   </div>
                 </div>
               ) : null}
-              <p className="text-lg font-bold text-emerald-100 mb-1 break-words">{offerEval.headline}</p>
-              <p className="text-lg text-slate-200 leading-relaxed flex-1 break-words">{offerEval.body}</p>
+              <p className="text-xl font-bold text-emerald-100 mb-1 break-words">{offerEval.headline}</p>
+              <p className={`${BODY} text-slate-200 leading-relaxed flex-1 break-words`}>{offerEval.body}</p>
               {offerEval.note ? (
-                <p className="text-base text-slate-400 mt-1.5 leading-relaxed break-words">{offerEval.note}</p>
+                <p className={`${BODY_MUTED} mt-1.5 leading-relaxed break-words`}>{offerEval.note}</p>
               ) : null}
             </div>
           </div>
@@ -396,14 +399,14 @@ export default function LiteReportDashboard({
             <div className="grid grid-cols-2 divide-x divide-sky-400/25">
               <section className="p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
-                  <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                  <CheckCircle2 className="w-5 h-5 mr-1.5" />
                   Top Strengths
                 </h3>
                 <ul className="space-y-1.5">
                   {strengths.map((item, idx) => (
-                    <li key={idx} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                    <li key={idx} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
                       <span
-                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400/90"
+                        className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-400/90"
                         aria-hidden
                       />
                       <span>
@@ -418,14 +421,14 @@ export default function LiteReportDashboard({
               </section>
               <section className="p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
-                  <AlertTriangle className="w-4 h-4 mr-1.5" />
+                  <AlertTriangle className="w-5 h-5 mr-1.5" />
                   Critical Gaps
                 </h3>
                 <ul className="space-y-1.5">
                   {gaps.map((item, idx) => (
-                    <li key={idx} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                    <li key={idx} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
                       <span
-                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-300/90"
+                        className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-violet-300/90"
                         aria-hidden
                       />
                       <span>
@@ -450,7 +453,7 @@ export default function LiteReportDashboard({
                 <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
                   Score Summary
                 </p>
-                <p className={`text-lg font-bold ${scoreInfo.color} mb-2`}>
+                <p className={`text-xl font-bold ${scoreInfo.color} mb-2`}>
                   {score}/100 · {scoreInfo.level}
                   {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
                 </p>
@@ -458,9 +461,9 @@ export default function LiteReportDashboard({
                   {summaryPoints.map((point, i) => {
                     const { label, detail } = splitScoreSummaryPoint(point);
                     return (
-                      <li key={i} className="flex gap-2.5 text-lg leading-snug">
+                      <li key={i} className={`flex gap-2.5 ${BODY} leading-snug`}>
                         <span
-                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90"
+                          className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90"
                           aria-hidden
                         />
                         <span>
@@ -482,9 +485,9 @@ export default function LiteReportDashboard({
                 {apply?.reason ? (
                   <ul className="space-y-1.5 flex-1">
                     {splitDecisionBrief(apply.reason).map((point, i) => (
-                      <li key={i} className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                      <li key={i} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
                         <span
-                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-300/90"
+                          className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-violet-300/90"
                           aria-hidden
                         />
                         <span>{point}</span>
@@ -492,15 +495,15 @@ export default function LiteReportDashboard({
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-base text-slate-500 flex-1">
+                  <p className={`${BODY} text-slate-500 flex-1`}>
                     Decision brief unavailable for this run.
                   </p>
                 )}
                 {apply?.next_best_action ? (
                   <ul className="mt-3 pt-3 border-t border-sky-400/25 space-y-1.5">
-                    <li className="flex gap-2.5 text-lg text-slate-200 leading-snug">
+                    <li className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
                       <span
-                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-200"
+                        className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-violet-200"
                         aria-hidden
                       />
                       <span>
