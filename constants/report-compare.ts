@@ -98,9 +98,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '即时网搜',
     },
     snapshot: {
-      en: 'No',
-      'zh-TW': '無',
-      'zh-CN': '无',
+      en: '—',
+      'zh-TW': '—',
+      'zh-CN': '—',
     },
     guide: {
       en: 'Yes (Google Search)',
