@@ -19,6 +19,10 @@ import { scoreSummaryPoints } from '@/lib/score-summary';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
+/** Primary section labels (Job Fit Snapshot, Candidate Fit Score, …) */
+const SECTION_TITLE =
+  'text-sm sm:text-base font-bold uppercase tracking-[0.14em]';
+
 interface LiteReportDashboardProps {
   report: LiteReport;
   /** Snapshot UI is English-only per product direction */
@@ -110,7 +114,7 @@ export default function LiteReportDashboard({
         <header className="border-b border-slate-700/90 px-5 py-4 sm:px-6 sm:py-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 mb-1.5">
+              <p className={`${SECTION_TITLE} text-indigo-400 mb-1.5`}>
                 Job Fit Snapshot
               </p>
               <h1 className="text-3xl sm:text-4xl font-black text-white flex items-center gap-2 flex-wrap leading-tight">
@@ -137,7 +141,7 @@ export default function LiteReportDashboard({
         {/* Heroes: Fit | Offer */}
         <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
           <section className="flex flex-col p-5 sm:p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 mb-3">
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-3`}>
               Candidate Fit Score
             </p>
             <div className="flex items-center gap-3 sm:gap-4">
@@ -234,8 +238,8 @@ export default function LiteReportDashboard({
           </section>
 
           <section className="flex flex-col p-5 sm:p-6 border-t border-slate-700/90 lg:border-t-0">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-400/90 mb-1 flex items-center gap-1">
-              <DollarSign className="w-3.5 h-3.5" />
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-1 flex items-center gap-1.5`}>
+              <DollarSign className="w-4 h-4" />
               Expected Offer Range
             </p>
             <p className="text-sm text-slate-500 mb-4">
@@ -271,7 +275,7 @@ export default function LiteReportDashboard({
         <div className="border-t border-slate-700/90 px-5 py-5 sm:px-6 sm:py-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 lg:items-stretch">
             <div className="h-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 sm:px-4 sm:py-4 flex flex-col">
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-3">
+              <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>
                 Score breakdown
               </p>
               {breakdown.length > 0 ? (
@@ -301,7 +305,7 @@ export default function LiteReportDashboard({
             </div>
 
             <div className="h-full rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3 sm:px-4 sm:py-4 flex flex-col">
-              <p className="text-xs font-bold uppercase tracking-widest text-emerald-300 mb-1">
+              <p className={`${SECTION_TITLE} text-emerald-300 mb-1`}>
                 Range Evaluation
               </p>
               <p className="text-lg font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
@@ -316,7 +320,7 @@ export default function LiteReportDashboard({
         {/* Full-width Score Summary — Apply Decision at bottom */}
         <div className="border-t border-slate-700/90 px-5 py-5 sm:px-6 sm:py-6">
           <div className="w-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-4 py-4 sm:px-5 sm:py-5 flex flex-col">
-            <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-1`}>
               Score Summary
             </p>
             <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
@@ -355,8 +359,8 @@ export default function LiteReportDashboard({
           <div className="w-full rounded-lg border border-slate-500/45 bg-slate-950/40 overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-y md:divide-y-0 divide-slate-700/90">
               <section className="p-4 sm:p-5">
-                <h3 className="text-xs font-bold text-emerald-400 mb-3 flex items-center uppercase tracking-[0.18em]">
-                  <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                <h3 className={`${SECTION_TITLE} text-emerald-400 mb-3 flex items-center`}>
+                  <CheckCircle2 className="w-4 h-4 mr-1.5" />
                   Top Strengths
                 </h3>
                 <ul className="space-y-2.5">
@@ -369,8 +373,8 @@ export default function LiteReportDashboard({
                 </ul>
               </section>
               <section className="p-4 sm:p-5">
-                <h3 className="text-xs font-bold text-violet-300 mb-3 flex items-center uppercase tracking-[0.18em]">
-                  <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
+                <h3 className={`${SECTION_TITLE} text-violet-300 mb-3 flex items-center`}>
+                  <AlertTriangle className="w-4 h-4 mr-1.5" />
                   Critical Gaps
                 </h3>
                 <ul className="space-y-2.5">
