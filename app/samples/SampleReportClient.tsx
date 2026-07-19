@@ -44,7 +44,7 @@ export default function SampleReportClient() {
   };
 
   const sampleTabClass = (active: boolean) =>
-    `${SAMPLE_HEADER_BTN} w-full justify-center text-center leading-snug whitespace-normal ${
+    `${SAMPLE_HEADER_BTN} h-full w-full justify-center text-center leading-snug whitespace-normal ${
       active
         ? 'border-solid border-violet-500 bg-violet-500/20 text-violet-100'
         : 'border-dashed border-slate-500 bg-slate-900/60 text-slate-100 hover:bg-slate-800/80 hover:border-slate-400'
@@ -92,23 +92,22 @@ export default function SampleReportClient() {
             </Link>
           </div>
 
-          <ReportCompareModal
-            language="en"
-            variant="panel"
-            className="w-full shrink-0"
-          />
-          <Link
-            href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-            className={sampleTabClass(!isGuide)}
-          >
-            {snapshotLabel}
-          </Link>
-          <Link
-            href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-            className={sampleTabClass(isGuide)}
-          >
-            {guideLabel}
-          </Link>
+          {/* Same order + equal height as homepage step 3: Snapshot → Guide → Compare */}
+          <div className="grid w-full gap-2.5 [grid-template-rows:repeat(3,minmax(5rem,auto))]">
+            <Link
+              href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
+              className={sampleTabClass(!isGuide)}
+            >
+              {snapshotLabel}
+            </Link>
+            <Link
+              href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
+              className={sampleTabClass(isGuide)}
+            >
+              {guideLabel}
+            </Link>
+            <ReportCompareModal language="en" variant="panel" className="w-full min-h-[5rem]" />
+          </div>
         </aside>
 
         <main className="min-h-0 min-w-0 flex-1 overflow-auto p-6">

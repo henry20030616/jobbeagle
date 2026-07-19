@@ -30,7 +30,7 @@ const REPORT_CARD_IDLE =
 const REPORT_CARD_ACTIVE =
   'border-solid border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
 const REPORT_CARD =
-  'w-full min-h-0 flex-1 rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center';
+  'w-full min-h-0 h-full rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -861,7 +861,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 ) : null}
               </div>
               {onReportTypeChange ? (
-                <div className={`${STEP_BODY} gap-2.5`}>
+                <div className={`${STEP_BODY} grid grid-rows-3 gap-2.5`}>
                   <button
                     type="button"
                     onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
@@ -885,8 +885,10 @@ const InputForm: React.FC<InputFormProps> = ({
                     </p>
                     <p className="mt-1 text-sm leading-snug text-slate-400">{t.strategyBlurb}</p>
                   </button>
-                  {!compactChrome && (
-                    <ReportCompareModal language={currentLanguage} variant="panel" className="shrink-0" />
+                  {!compactChrome ? (
+                    <ReportCompareModal language={currentLanguage} variant="panel" className="min-h-0" />
+                  ) : (
+                    <div className="min-h-0" aria-hidden />
                   )}
                 </div>
               ) : (
