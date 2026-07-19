@@ -15,6 +15,7 @@ import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from '
 import { getScoreInfo, BeagleIcon } from '@/components/AnalysisDashboard';
 import { getBeagleTierLegend } from '@/lib/beagle-tiers';
 import { formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
+import { scoreSummaryPoints } from '@/lib/score-summary';
 import { REPORT_SLIDE_SURFACE, REPORT_ACTION_BTN, REPORT_SHELL_WIDTH } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
@@ -53,6 +54,13 @@ export default function LiteReportDashboard({
   const offerEval = offerEvaluationSummary(offer);
   const breakdown = (report.fit_score?.breakdown ?? []).slice(0, 5);
   const apply = report.apply_decision;
+  const summaryPoints = scoreSummaryPoints(
+    report.fit_score?.sharp_verdict
+      || report.recruiter_verdict
+      || report.one_sentence_sharp_critique
+      || scoreInfo.description,
+    report.fit_score?.sharp_verdict_points,
+  );
 
   const handleBack = () => {
     if (onNewAnalysis) {
@@ -280,12 +288,14 @@ export default function LiteReportDashboard({
               {score}/100 · {scoreInfo.level}
               {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
             </p>
-            <p className="text-lg text-slate-200 leading-relaxed">
-              {report.fit_score?.sharp_verdict
-                || report.recruiter_verdict
-                || report.one_sentence_sharp_critique
-                || scoreInfo.description}
-            </p>
+            <ul className="mt-2 space-y-2">
+              {summaryPoints.map((point, i) => (
+                <li key={i} className="flex gap-2.5 text-lg text-slate-200 leading-relaxed">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
             {apply?.label ? (
               <div className="mt-4 pt-4 border-t border-sky-400/30">
                 <p className={`text-xl sm:text-2xl font-black leading-tight ${

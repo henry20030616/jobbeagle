@@ -10,7 +10,8 @@ Rules:
 - Do NOT output FLSA classification.
 - Do NOT include culture-fit inside the numeric score.
 - Fit score is a real 0–100 (no artificial floor at 50). Most candidates land 40–75; 85+ is rare.
-- fit_score.sharp_verdict: 2–3 sentences that ONLY evaluate candidate↔role fit — why this score, what makes them a strong or weak match for THIS JD, and the main strength vs gap tradeoff. No apply checklist. No resume rewrite advice. This is the Score Summary under the Beagle rating.
+- fit_score.sharp_verdict_points: EXACTLY 3 short bullets (one idea each) for Score Summary UI — (1) why this score / core fit, (2) main strength vs JD, (3) main gap vs JD. Fit-only; no apply checklist; no resume rewrite advice.
+- fit_score.sharp_verdict: join those 3 bullets into one short prose string (fallback).
 - Suggest score breakdown weights as guidance for your assessment (backend may recompute): hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain experience 15%, proven impact 10%.
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Use Blocked ONLY for explicit conflicts (e.g. must be onsite NYC but candidate is remote-only with no relocation). Missing data → Unknown or Risk, not Blocked.
 - expected_offer is a product hero — always fill it thoughtfully:
@@ -74,6 +75,12 @@ export const LITE_JSON_SCHEMA = {
         band: { type: 'string', enum: ['Strong', 'Viable', 'Stretch', 'Mismatch'] },
         evidence_coverage: { type: 'string', enum: ['High', 'Medium', 'Low'] },
         sharp_verdict: { type: 'string' },
+        sharp_verdict_points: {
+          type: 'array',
+          minItems: 3,
+          maxItems: 3,
+          items: { type: 'string' },
+        },
         breakdown: {
           type: 'array',
           items: {
@@ -88,7 +95,14 @@ export const LITE_JSON_SCHEMA = {
           },
         },
       },
-      required: ['score', 'band', 'evidence_coverage', 'sharp_verdict', 'breakdown'],
+      required: [
+        'score',
+        'band',
+        'evidence_coverage',
+        'sharp_verdict',
+        'sharp_verdict_points',
+        'breakdown',
+      ],
     },
     proof_map: {
       type: 'object',

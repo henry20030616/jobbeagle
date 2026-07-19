@@ -141,6 +141,12 @@ const LITE_RESPONSE_SCHEMA = {
         band: { type: Type.STRING, enum: ['Strong', 'Viable', 'Stretch', 'Mismatch'] },
         evidence_coverage: { type: Type.STRING, enum: ['High', 'Medium', 'Low'] },
         sharp_verdict: { type: Type.STRING },
+        sharp_verdict_points: {
+          type: Type.ARRAY,
+          minItems: 3,
+          maxItems: 3,
+          items: { type: Type.STRING },
+        },
         breakdown: {
           type: Type.ARRAY,
           items: {
@@ -155,7 +161,14 @@ const LITE_RESPONSE_SCHEMA = {
           },
         },
       },
-      required: ['score', 'band', 'evidence_coverage', 'sharp_verdict', 'breakdown'],
+      required: [
+        'score',
+        'band',
+        'evidence_coverage',
+        'sharp_verdict',
+        'sharp_verdict_points',
+        'breakdown',
+      ],
     },
     proof_map: {
       type: Type.OBJECT,

@@ -33,6 +33,7 @@ import type {
 import { fitBandFromScore, resolveApplyDecision } from '@/lib/report-rules';
 import { enrichTargetGapWithCareerContext } from '@/lib/career-context';
 import { buildProvenanceRecord, scrubInsightUrls } from '@/lib/provenance';
+import { scoreSummaryPoints } from '@/lib/score-summary';
 
 const HARD_STATUSES: HardFilterStatus[] = ['Pass', 'Risk', 'Blocked', 'Unknown'];
 const FIT_BANDS: FitBand[] = ['Strong', 'Viable', 'Stretch', 'Mismatch'];
@@ -125,6 +126,12 @@ function normalizeFitScore(raw: Partial<LiteReport>): FitScoreBlock {
     || asString(raw.one_sentence_sharp_critique)
     || asString(raw.recruiter_verdict)
     || 'Fit assessment based on available JD and resume evidence.';
+  const sharp_verdict_points = scoreSummaryPoints(
+    sharp_verdict,
+    Array.isArray(raw.fit_score?.sharp_verdict_points)
+      ? raw.fit_score!.sharp_verdict_points
+      : undefined,
+  );
   const breakdown =
     Array.isArray(raw.fit_score?.breakdown) && raw.fit_score!.breakdown.length > 0
       ? raw.fit_score!.breakdown.map((b) => ({
@@ -135,7 +142,17 @@ function normalizeFitScore(raw: Partial<LiteReport>): FitScoreBlock {
         }))
       : defaultBreakdown(score);
 
-  return { score, band, evidence_coverage, sharp_verdict, breakdown };
+  return {
+    score,
+    band,
+    evidence_coverage,
+    sharp_verdict:
+      sharp_verdict_points.length > 0
+        ? sharp_verdict_points.join(' ')
+        : sharp_verdict,
+    sharp_verdict_points,
+    breakdown,
+  };
 }
 
 function normalizeProofMap(raw: Partial<LiteReport>): ProofMap {

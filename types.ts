@@ -216,7 +216,10 @@ export interface FitScoreBlock {
   score: number;
   band: FitBand;
   evidence_coverage: EvidenceCoverage;
+  /** Prose fallback / joined form of sharp_verdict_points */
   sharp_verdict: string;
+  /** Score Summary bullets (preferred in UI) */
+  sharp_verdict_points?: string[];
   breakdown: FitScoreBreakdownItem[];
 }
 
