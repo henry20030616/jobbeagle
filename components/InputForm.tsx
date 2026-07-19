@@ -28,7 +28,7 @@ const STEP_SECTION =
 const STEP_BODY =
   'flex min-h-0 min-w-0 flex-1 flex-col';
 const TYPE_LAUNCH =
-  'w-full min-h-0 flex-1 min-w-0 rounded-xl px-5 py-5 text-lg font-medium text-zinc-100 shadow-lg transition-all flex flex-col justify-center items-center gap-2 text-center leading-relaxed';
+  'w-full min-h-0 flex-1 min-w-0 rounded-xl px-5 py-5 text-lg font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all transition-transform flex flex-col justify-center items-center gap-2 text-center leading-relaxed';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -811,12 +811,12 @@ const InputForm: React.FC<InputFormProps> = ({
                 disabled={submitDisabled}
                 className={`${TYPE_LAUNCH} ${
                   submitDisabled
-                    ? 'bg-slate-700 cursor-not-allowed text-zinc-500'
+                    ? 'bg-indigo-600/35 text-white/55 cursor-not-allowed shadow-none'
                     : publicAts
-                      ? 'bg-gradient-to-b from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 ring-1 ring-white/10'
+                      ? 'bg-emerald-600 hover:bg-emerald-500 hover:-translate-y-1 active:bg-emerald-700 active:translate-y-0 shadow-emerald-500/30'
                       : jdError
-                        ? 'bg-gradient-to-b from-red-700 to-red-600 ring-1 ring-red-500/30'
-                        : 'bg-gradient-to-b from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 ring-1 ring-white/10'
+                        ? 'bg-red-600 hover:bg-red-500 hover:-translate-y-1 active:bg-red-700 active:translate-y-0 shadow-red-500/30'
+                        : 'bg-indigo-600 hover:bg-indigo-500 hover:-translate-y-1 active:bg-indigo-700 active:translate-y-0'
                 }`}
               >
                 {isLoading || isParsingUrl ? (
