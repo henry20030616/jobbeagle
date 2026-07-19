@@ -10,7 +10,7 @@ export function SampleMark({
   const variantClass =
     variant === 'notice'
       ? 'text-2xl font-black uppercase tracking-[0.08em] text-white/50'
-      : 'text-6xl sm:text-7xl font-black uppercase tracking-[0.22em] text-slate-300';
+      : 'text-5xl sm:text-6xl font-black uppercase tracking-[0.22em] text-slate-400';
 
   return (
     <p

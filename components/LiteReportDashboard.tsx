@@ -106,15 +106,16 @@ export default function LiteReportDashboard({
         </div>
       )}
 
-      {/* One-page slide frame — brighter outer border (was on upgrade CTA) */}
+      {isSample && (
+        <div className="pb-2 sm:pb-2.5">
+          <SampleMark />
+        </div>
+      )}
+
+      {/* One-page slide frame — SAMPLE sits above this border */}
       <article
         className={`overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 ${REPORT_SLIDE_SURFACE}`}
       >
-        {isSample && (
-          <div className="pt-2.5 pb-0.5 px-4 sm:px-5 border-b border-slate-800/80">
-            <SampleMark />
-          </div>
-        )}
         {/* Slide header */}
         <header className="border-b border-slate-700/90 px-4 py-3 sm:px-5 sm:py-3.5">
           <div className="flex flex-wrap items-start justify-between gap-2">

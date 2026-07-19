@@ -257,12 +257,13 @@ export default function FullReportDashboard({
         </div>
       )}
 
-      <div className={`overflow-hidden ${REPORT_SLIDE_SURFACE}`}>
       {isSample && (
-        <div className="pt-4 pb-1 px-4 sm:px-6 border-b border-slate-800/80">
+        <div className="pb-2 sm:pb-2.5">
           <SampleMark />
         </div>
       )}
+
+      <div className={`overflow-hidden ${REPORT_SLIDE_SURFACE}`}>
       {/* Title bar inside slide */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
         <div className="min-w-0">
