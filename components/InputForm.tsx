@@ -542,13 +542,11 @@ const InputForm: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-full min-w-0 overflow-x-hidden">
-        {/*
-          Tailwind 2×2 (not 4-across). Long placeholders used to expand past 100vw.
-        */}
+        {/* Steps 1→4 left-to-right on lg+; stack on small screens. minmax(0,1fr) prevents overflow. */}
         <div className="w-full max-w-full rounded-2xl border-2 border-blue-500 bg-slate-950 shadow-xl overflow-x-hidden">
-          <div className="grid w-full max-w-full min-w-0 grid-cols-1 md:grid-cols-2">
+          <div className="jb-home-steps grid w-full max-w-full min-w-0 grid-cols-1">
             {/* 1. Job */}
-            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b md:border-r border-slate-700/80">
+            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
                 <span className="w-1.5 h-6 bg-indigo-500 rounded-full shrink-0" />
                 <span className="leading-snug truncate">{t.jobData}</span>
@@ -616,7 +614,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 2. Resume */}
-            <section className="relative flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b border-slate-700/80">
+            <section className="relative flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
                 <span className="w-1.5 h-6 bg-violet-500 rounded-full shrink-0" />
                 <span className="truncate">{t.resume}</span>
@@ -712,7 +710,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </section>
 
             {/* 3. Report type */}
-            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b md:border-b-0 md:border-r border-slate-700/80">
+            <section className="flex flex-col gap-3 p-4 sm:p-5 min-w-0 max-w-full border-b lg:border-b-0 lg:border-r border-slate-700/80">
               <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5 min-w-0">
                 <span className="w-1.5 h-6 bg-emerald-500 rounded-full shrink-0" />
                 <span className="leading-snug truncate">{t.reportTypeStep}</span>

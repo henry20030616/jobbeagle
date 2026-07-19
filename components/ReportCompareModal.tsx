@@ -64,15 +64,13 @@ export default function ReportCompareModal({
     variant === 'button'
       ? `${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 ${className}`
       : variant === 'panel'
-        ? `inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-400 bg-slate-900/80 px-3 py-2.5 text-sm sm:text-base font-semibold text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors ${className}`
+        ? `${SAMPLE_HEADER_BTN} w-full border-solid border-slate-500 bg-slate-900/70 text-slate-100 hover:bg-slate-800 hover:border-slate-400 ${className}`
         : `inline-flex items-center gap-2.5 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
 
   const iconClass =
-    variant === 'button'
+    variant === 'button' || variant === 'panel'
       ? SAMPLE_HEADER_ICON
-      : variant === 'panel'
-        ? 'w-4 h-4 shrink-0'
-        : REPORT_ACTION_ICON;
+      : REPORT_ACTION_ICON;
 
   const drawer =
     open && mounted

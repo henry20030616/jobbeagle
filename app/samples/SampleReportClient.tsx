@@ -19,10 +19,12 @@ import {
 import {
   SAMPLE_NOTICE_SURFACE,
   SAMPLE_HEADER_BTN,
-  HOME_DESIGN_WIDTH,
+  SAMPLE_RAIL_TEXT,
+  SAMPLE_RAIL_ICON,
   REPORT_FRAME_BORDER,
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
+  REPORT_SLIDE_DESIGN_WIDTH,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 import ReportCompareModal from '@/components/ReportCompareModal';
@@ -54,77 +56,75 @@ export default function SampleReportClient() {
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200">
-      <ReportFitStage
-        designWidth={HOME_DESIGN_WIDTH}
-        maxScale={1.6}
-        className="w-full"
-      >
-        <div className="w-full max-w-full flex flex-col min-h-[100vh] overflow-x-clip">
-          <header className="border-b border-slate-800 px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-            {/* Same BrandLogo size as /report top-left (inline = text-xl) */}
-            <BrandLogo size="inline" />
-            <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
-                <Home className={REPORT_ACTION_ICON} aria-hidden />
-                Back to Home
-              </button>
-              <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
-                <RotateCcw className={REPORT_ACTION_ICON} aria-hidden />
-                New Analysis
-              </button>
-            </div>
-          </header>
+      <div className="w-full max-w-full flex flex-col min-h-[100vh] overflow-x-clip">
+        <header className="border-b border-slate-800 px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+          <BrandLogo size="inline" />
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
+              <Home className={REPORT_ACTION_ICON} aria-hidden />
+              Back to Home
+            </button>
+            <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
+              <RotateCcw className={REPORT_ACTION_ICON} aria-hidden />
+              New Analysis
+            </button>
+          </div>
+        </header>
 
-          {/*
-            Tops align; left chrome height = content only (never stretch to report height).
-          */}
-          <main className="flex-1 w-full max-w-full px-4 py-4 overflow-x-clip">
-            <div className="flex flex-col lg:flex-row lg:items-start gap-4 w-full max-w-full">
-              <aside
-                className={`w-full lg:w-64 lg:shrink-0 rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 flex flex-col gap-2.5 min-w-0`}
-                style={{ height: 'fit-content', alignSelf: 'flex-start' }}
+        {/*
+          Left chrome: natural size (not CSS-zoomed) so all 4 boxes share one text size.
+          Report: ReportFitStage scales the slide only.
+        */}
+        <main className="flex-1 w-full max-w-full px-4 py-4 overflow-x-clip">
+          <div className="flex flex-col lg:flex-row lg:items-start gap-4 w-full max-w-full">
+            <aside
+              className={`w-full lg:w-72 lg:shrink-0 rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950 p-3 flex flex-col gap-2.5 min-w-0`}
+              style={{ height: 'fit-content', alignSelf: 'flex-start' }}
+            >
+              <div
+                className={`${SAMPLE_NOTICE_SURFACE} w-full px-3 py-2.5 flex flex-col gap-1.5 rounded-xl`}
               >
-                <div
-                  className={`${SAMPLE_NOTICE_SURFACE} w-full px-3 py-2.5 flex flex-col gap-1.5`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <SampleMark variant="notice" />
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 border border-blue-950/40">
-                      <Sparkles className="w-4 h-4 text-white" />
-                    </span>
-                  </div>
-                  <p className="text-sm font-bold text-white leading-snug">
-                    {isGuide ? guideLabel : snapshotLabel} sample · no credits
-                  </p>
-                  <Link
-                    href="/"
-                    className="inline-flex items-center gap-1 text-sm font-bold text-white hover:text-blue-50"
-                  >
-                    <ArrowLeft className="w-4 h-4 shrink-0" />
-                    Analyze
-                  </Link>
+                <div className="flex items-center gap-2 min-w-0">
+                  <SampleMark variant="notice" />
+                  <Sparkles className={`${SAMPLE_RAIL_ICON} text-white`} aria-hidden />
                 </div>
-
+                <p className={`${SAMPLE_RAIL_TEXT} text-white`}>
+                  {isGuide ? guideLabel : snapshotLabel} · no credits
+                </p>
                 <Link
-                  href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-                  className={sampleTabClass(!isGuide)}
+                  href="/"
+                  className={`inline-flex items-center gap-1 ${SAMPLE_RAIL_TEXT} text-white hover:text-blue-50`}
                 >
-                  {snapshotLabel}
+                  <ArrowLeft className={SAMPLE_RAIL_ICON} />
+                  Analyze
                 </Link>
-                <Link
-                  href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-                  className={sampleTabClass(isGuide)}
-                >
-                  {guideLabel}
-                </Link>
-                <ReportCompareModal
-                  language="en"
-                  variant="panel"
-                  className="w-full shrink-0"
-                />
-              </aside>
+              </div>
 
-              <div className="min-w-0 flex-1 max-w-full overflow-x-clip">
+              <Link
+                href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
+                className={sampleTabClass(!isGuide)}
+              >
+                {snapshotLabel}
+              </Link>
+              <Link
+                href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
+                className={sampleTabClass(isGuide)}
+              >
+                {guideLabel}
+              </Link>
+              <ReportCompareModal
+                language="en"
+                variant="panel"
+                className="w-full shrink-0"
+              />
+            </aside>
+
+            <div className="min-w-0 flex-1 max-w-full overflow-x-clip">
+              <ReportFitStage
+                designWidth={REPORT_SLIDE_DESIGN_WIDTH}
+                maxScale={2.2}
+                className="w-full"
+              >
                 {isGuide ? (
                   <FullReportDashboard
                     report={guide}
@@ -142,11 +142,11 @@ export default function SampleReportClient() {
                     onNewAnalysis={goHome}
                   />
                 )}
-              </div>
+              </ReportFitStage>
             </div>
-          </main>
-        </div>
-      </ReportFitStage>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

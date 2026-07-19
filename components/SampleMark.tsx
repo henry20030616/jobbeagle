@@ -9,7 +9,8 @@ export function SampleMark({
 }) {
   const variantClass =
     variant === 'notice'
-      ? 'text-2xl font-black uppercase tracking-[0.08em] text-white/50'
+      ? // Match SAMPLE_RAIL_TEXT size used by the other three left-rail boxes
+        'text-sm font-bold uppercase tracking-wide text-white'
       : 'text-5xl sm:text-6xl font-black uppercase tracking-[0.22em] text-slate-400';
 
   return (

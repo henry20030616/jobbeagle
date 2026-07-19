@@ -11,12 +11,17 @@ export const REPORT_ACTION_ICON = 'w-5 h-5 shrink-0';
 export const REPORT_ACTION_BTN =
   `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3 py-1.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
-/** Samples left-rail tabs — slightly compact; still readable */
-export const SAMPLE_HEADER_TEXT = 'text-base sm:text-lg font-bold tracking-tight';
-export const SAMPLE_HEADER_ICON = 'w-5 h-5 shrink-0';
+/**
+ * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
+ * Keep in sync across all four boxes.
+ */
+export const SAMPLE_RAIL_TEXT = 'text-sm font-bold leading-snug tracking-tight';
+export const SAMPLE_RAIL_ICON = 'w-4 h-4 shrink-0';
+export const SAMPLE_HEADER_TEXT = SAMPLE_RAIL_TEXT;
+export const SAMPLE_HEADER_ICON = SAMPLE_RAIL_ICON;
 /** Base shell only — active/inactive border style set by caller (solid vs dashed) */
 export const SAMPLE_HEADER_BTN =
-  `inline-flex items-center gap-2 rounded-xl border-2 px-3 py-2 ${SAMPLE_HEADER_TEXT} transition-colors shrink-0`;
+  `inline-flex items-center justify-center gap-2 rounded-xl border-2 px-3 py-2.5 ${SAMPLE_RAIL_TEXT} transition-colors shrink-0`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
@@ -39,8 +44,9 @@ export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 /**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,
  * then scales uniformly to fill the stage width — proportions stay fixed.
+ * Wider canvas = less empty side margin on desktop monitors.
  */
-export const REPORT_SLIDE_DESIGN_WIDTH = 1280;
+export const REPORT_SLIDE_DESIGN_WIDTH = 1680;
 
-/** Homepage operator canvas — same uniform-scale approach as reports. */
-export const HOME_DESIGN_WIDTH = 1440;
+/** Samples page chrome design width (header + left rail + report row). */
+export const HOME_DESIGN_WIDTH = 1680;
