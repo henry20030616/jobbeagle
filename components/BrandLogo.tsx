@@ -6,7 +6,6 @@ import { BeagleIcon } from '@/components/AnalysisDashboard';
 /** Canonical wordmark: Job (white) + beagle (blue) — matches homepage hero. */
 export const BRAND_JOB_CLASS = 'text-white';
 export const BRAND_BEAGLE_CLASS = 'text-blue-500';
-
 type BrandLogoProps = {
   href?: string | null;
   /** nav = header; hero = homepage; inline = mid-size; sm = match report action btn */

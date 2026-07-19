@@ -193,6 +193,7 @@ export default function LiteReportDashboard({
                   className={`w-32 h-32 ${scoreInfo.glowClass}`}
                   color={scoreInfo.fill}
                   spotColor={scoreInfo.spotColor}
+                  glassesColor={scoreInfo.fill}
                 />
               </div>
               <div
