@@ -13,6 +13,8 @@ describe('sample reports', () => {
     expect(report.fit_score.score).toBeGreaterThan(0);
     expect(report.expected_offer.evidence_tier).toBe('C');
     expect(report.expected_offer.candidate_predicted_offer).toBe('$155K');
+    expect(report.expected_offer.tc_breakdown?.base).toBe('$150K');
+    expect(report.expected_offer.tc_breakdown?.total).toContain('$185K');
   });
 
   it('builds a valid Strategy Guide sample with STAR templates', () => {

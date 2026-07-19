@@ -69,6 +69,15 @@ export default function LiteReportDashboard({
     { name: 'Land', value: predictedGauge, fill: '#34d399' },
   ];
   const offerEval = offerEvaluationSummary(offer);
+  const tc = offer?.tc_breakdown;
+  const tcRows = (
+    [
+      ['Base', tc?.base],
+      ['Bonus', tc?.bonus],
+      ['Equity', tc?.equity],
+      ['Total', tc?.total],
+    ] as const
+  ).filter(([, v]) => Boolean(v?.trim()));
   const breakdown = (report.fit_score?.breakdown ?? []).slice(0, 5);
   const apply = report.apply_decision;
   const summaryPoints = scoreSummaryPoints(
@@ -377,9 +386,29 @@ export default function LiteReportDashboard({
             </div>
 
             <div className="h-full min-w-0 rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col">
-              <p className={`${SECTION_TITLE} text-emerald-300 mb-1`}>
+              <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
                 Range Evaluation
               </p>
+              {tcRows.length > 0 ? (
+                <div className="mb-2.5">
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-200/80 mb-1.5">
+                    Est. salary mix
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {tcRows.map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="rounded-md border border-emerald-400/25 bg-black/20 px-2.5 py-2 min-w-0"
+                      >
+                        <p className="text-xs text-slate-400 mb-0.5">{label}</p>
+                        <p className="text-base font-semibold text-emerald-50 tabular-nums break-words leading-tight">
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
               <p className="text-lg font-bold text-emerald-100 mb-1 break-words">{offerEval.headline}</p>
               <p className="text-base sm:text-lg text-slate-200 leading-relaxed flex-1 break-words">{offerEval.body}</p>
               {offerEval.note ? (
