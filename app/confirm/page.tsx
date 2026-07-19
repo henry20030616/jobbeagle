@@ -319,7 +319,7 @@ export default function ConfirmPage() {
       <main className={`max-w-[90rem] mx-auto px-4 sm:px-6 ${embedded ? 'py-4 sm:py-6' : 'py-8 sm:py-10'}`}>
         {!embedded && (
           <div className="flex items-center justify-between gap-4 mb-6">
-            <BrandLogo size="nav" />
+            <BrandLogo size="nav" showIcon />
             <div className="flex items-center gap-2 sm:gap-3">
               <LanguageSwitcher variant="dark" />
               <Link
@@ -335,7 +335,7 @@ export default function ConfirmPage() {
 
         {embedded && (
           <div className="flex items-center justify-between gap-3 mb-4">
-            <BrandLogo size="inline" />
+            <BrandLogo size="nav" showIcon />
             {user ? (
               <span className="text-xs text-slate-500 truncate max-w-[10rem]">{user.email}</span>
             ) : (

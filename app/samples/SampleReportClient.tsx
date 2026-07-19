@@ -57,7 +57,7 @@ export default function SampleReportClient() {
     <div className="flex h-screen w-full min-w-0 flex-col overflow-hidden bg-slate-950 text-slate-200">
       {/* Shared top bar — logo + actions; body columns start at the same Y */}
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-3 sm:px-6">
-        <BrandLogo size="inline" showIcon />
+        <BrandLogo size="nav" showIcon />
         <div className="flex flex-wrap items-center justify-end gap-2">
           <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />

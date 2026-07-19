@@ -45,7 +45,7 @@ export default function ReportPage() {
   if (!payload) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center gap-4 px-4">
-        <BrandLogo size="inline" />
+        <BrandLogo size="nav" showIcon />
         <p className="text-slate-300 text-center">No report in this session.</p>
         <button
           type="button"
@@ -77,7 +77,7 @@ export default function ReportPage() {
       </div>
 
       <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
-        <BrandLogo size="inline" />
+        <BrandLogo size="nav" showIcon />
         <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
           {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
         </span>

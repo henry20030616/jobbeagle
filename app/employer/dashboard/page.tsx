@@ -12,7 +12,7 @@ import {
 import { detectVideoSourceType, sourceTypeLabel, toYouTubeEmbedUrl } from '@/lib/video-embed';
 import { useLanguage } from '@/lib/language-context';
 import type { VideoSourceType } from '@/types';
-import { BrandWordmark } from '@/components/BrandLogo';
+import BrandLogo from '@/components/BrandLogo';
 
 const ED = {
   en:     { hub: 'Employer Hub', logout: 'Logout', myVideos: 'My Job Videos', postNew: 'Post New Job', applicants: 'Applicants', published: 'Published', draft: 'Draft', views: 'views', likes: 'likes', applications: 'applications', publish: 'Publish', unpublish: 'Unpublish', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete this video?', noVideos: 'No job videos yet', noVideosHint: 'Click "Post New Job" to upload your first recruitment video.', deleteSuccess: 'Video deleted', publishSuccess: 'Video published', unpublishSuccess: 'Video unpublished', applicantsTitle: 'Applicants & Resumes', applicantsDesc: 'View applicants and download resumes from the Shorts employer panel — the same account you use here.', viewApplicants: 'View Applicants', manageInShorts: 'Manage in Shorts', legacyHint: 'Video editing only — applicants are managed in Shorts.', errLoad: 'Failed to load', errDelete: 'Delete failed', errOp: 'Operation failed', saveSuccess: 'Changes saved' },
@@ -242,15 +242,13 @@ export default function EmployerDashboard() {
       <header className="bg-slate-800/50 backdrop-blur-xl border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Building2 className="w-8 h-8 text-blue-400" />
-              <div>
-                <Link href="/" className="block">
-                  <h1 className="text-xl font-bold hover:opacity-90 transition-opacity cursor-pointer">
-                    <BrandWordmark /> <span className="text-white">{td.hub}</span>
-                  </h1>
-                </Link>
-                <p className="text-slate-400 text-sm">{company?.company_name}</p>
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <BrandLogo size="nav" showIcon />
+                  <span className="text-white text-lg font-bold">{td.hub}</span>
+                </div>
+                <p className="text-slate-400 text-sm mt-0.5">{company?.company_name}</p>
               </div>
             </div>
             <button

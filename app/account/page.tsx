@@ -515,7 +515,7 @@ export default function AccountPage() {
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div className="flex items-center justify-between gap-4">
-          <BrandLogo size="nav" />
+          <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2">
             <LanguageSwitcher variant="dark" />
             <LoginButton redirectTo="/account" />

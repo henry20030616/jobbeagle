@@ -11,7 +11,7 @@ type BrandLogoProps = {
   href?: string | null;
   /** nav = header; hero = homepage; inline = mid-size; sm = match report action btn */
   size?: 'nav' | 'hero' | 'inline' | 'sm';
-  /** Show beagle icon (hero default on; nav/inline/sm default off) */
+  /** Show beagle icon (hero + nav default on; inline/sm default off) */
   showIcon?: boolean;
   className?: string;
   as?: 'span' | 'h1';
@@ -49,7 +49,7 @@ export default function BrandLogo({
   className = '',
   as: Tag = 'span',
 }: BrandLogoProps) {
-  const withIcon = showIcon ?? size === 'hero';
+  const withIcon = showIcon ?? (size === 'hero' || size === 'nav');
 
   const inner = (
     <Tag
