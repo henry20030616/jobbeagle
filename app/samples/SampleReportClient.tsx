@@ -14,8 +14,8 @@ import {
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import {
   SAMPLE_NOTICE_SURFACE,
+  SAMPLE_HEADER_BTN,
   REPORT_ACTION_BTN,
-  REPORT_ACTION_TEXT,
   REPORT_ACTION_ICON,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
@@ -38,35 +38,39 @@ export default function SampleReportClient() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
-        <BrandLogo size="sm" showIcon />
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-          <ReportCompareModal language="en" variant="button" />
-          <Link
-            href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-            className={`inline-flex items-center rounded-lg px-3.5 py-2.5 ${REPORT_ACTION_TEXT} border transition-colors ${
-              !isGuide
-                ? 'border-violet-500 bg-violet-500/15 text-violet-100'
-                : 'border-slate-400 text-slate-200 hover:bg-slate-800 hover:border-slate-300'
-            }`}
-          >
-            Snapshot sample
-          </Link>
-          <Link
-            href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-            className={`inline-flex items-center rounded-lg px-3.5 py-2.5 ${REPORT_ACTION_TEXT} border transition-colors ${
-              isGuide
-                ? 'border-violet-500 bg-violet-500/15 text-violet-100'
-                : 'border-slate-400 text-slate-200 hover:bg-slate-800 hover:border-slate-300'
-            }`}
-          >
-            Guide sample
-          </Link>
-        </div>
-      </header>
+      {/*
+        Header must sit inside ReportFitStage — otherwise Back to Home (zoomed)
+        looks large while Jobbeagle / Compare / sample tabs stay optically tiny.
+      */}
+      <ReportFitStage className="mx-auto w-full max-w-[98vw] min-w-0">
+        <header className="border-b border-slate-800 px-4 sm:px-6 py-5 flex flex-wrap items-center justify-between gap-4">
+          <BrandLogo size="sm" showIcon />
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <ReportCompareModal language="en" variant="button" />
+            <Link
+              href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
+              className={`${SAMPLE_HEADER_BTN} ${
+                !isGuide
+                  ? 'border-violet-500 bg-violet-500/15 text-violet-100'
+                  : 'border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300'
+              }`}
+            >
+              Snapshot sample
+            </Link>
+            <Link
+              href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
+              className={`${SAMPLE_HEADER_BTN} ${
+                isGuide
+                  ? 'border-violet-500 bg-violet-500/15 text-violet-100'
+                  : 'border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300'
+              }`}
+            >
+              Guide sample
+            </Link>
+          </div>
+        </header>
 
-      <main className="px-2 sm:px-4 py-4 sm:py-5 min-w-0 overflow-x-auto">
-        <ReportFitStage className="mx-auto w-full max-w-[98vw] min-w-0">
+        <main className="px-2 sm:px-4 py-4 sm:py-5 min-w-0 overflow-x-auto">
           {/*
             Narrow: stack (actions → notice → report).
             Wide (xl+): 2×2 side-by-side so report keeps enough width.
@@ -163,8 +167,8 @@ export default function SampleReportClient() {
               )}
             </div>
           </div>
-        </ReportFitStage>
-      </main>
+        </main>
+      </ReportFitStage>
     </div>
   );
 }

@@ -147,8 +147,8 @@ export default function ReportCompareModal({
 
   const triggerClass =
     variant === 'button'
-      ? `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3.5 py-2.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors ${className}`
-      : `inline-flex items-center gap-2 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
+      ? `inline-flex items-center gap-2.5 rounded-lg border border-slate-400 bg-slate-900/80 px-5 py-3.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors ${className}`
+      : `inline-flex items-center gap-2.5 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
 
   const dialog =
     open && mounted

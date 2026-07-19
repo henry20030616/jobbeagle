@@ -21,7 +21,7 @@ const sizeClasses = {
   nav: 'text-2xl sm:text-3xl font-black tracking-tight',
   inline: 'text-xl font-bold tracking-tight',
   /** Matches REPORT_ACTION_TEXT / Back to Home */
-  sm: 'text-lg font-semibold tracking-tight',
+  sm: 'text-xl font-semibold tracking-tight',
   hero: 'text-5xl md:text-7xl font-black tracking-tight',
 } as const;
 
@@ -29,7 +29,8 @@ const iconClasses = {
   hero: 'w-20 h-20 md:w-32 md:h-32 drop-shadow-xl',
   nav: 'w-10 h-10 sm:w-12 sm:h-12',
   inline: 'w-9 h-9',
-  sm: 'w-8 h-8 sm:w-9 sm:h-9',
+  /** Samples / report chrome — must read as large as action buttons */
+  sm: 'w-12 h-12 sm:w-14 sm:h-14',
 } as const;
 
 export function BrandWordmark({ className = '' }: { className?: string }) {

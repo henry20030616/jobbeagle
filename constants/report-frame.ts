@@ -1,12 +1,16 @@
 /** Shared label size — Back to Home / Jobbeagle / sample tabs / compare */
-export const REPORT_ACTION_TEXT = 'text-lg font-semibold';
+export const REPORT_ACTION_TEXT = 'text-xl font-semibold';
 
 /** Shared icon size inside report action controls */
-export const REPORT_ACTION_ICON = 'w-5 h-5 shrink-0';
+export const REPORT_ACTION_ICON = 'w-6 h-6 shrink-0';
 
 /** Action buttons — thin light-grey frame; side-by-side in sample column */
 export const REPORT_ACTION_BTN =
-  `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3.5 py-2.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex items-center gap-2.5 rounded-lg border border-slate-400 bg-slate-900/80 px-4 py-3 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+
+/** Samples page top bar — same text as Back to Home, larger hit targets */
+export const SAMPLE_HEADER_BTN =
+  `inline-flex items-center gap-2.5 rounded-lg border px-5 py-3.5 ${REPORT_ACTION_TEXT} transition-colors`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
