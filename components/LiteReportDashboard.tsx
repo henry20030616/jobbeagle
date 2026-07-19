@@ -290,7 +290,9 @@ export default function LiteReportDashboard({
                           </span>
                         </p>
                         {b.note ? (
-                          <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
+                          <p className="text-sm text-slate-400 mt-0.5 leading-snug line-clamp-3">
+                            {b.note}
+                          </p>
                         ) : null}
                       </div>
                       <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">

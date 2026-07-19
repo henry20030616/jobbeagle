@@ -13,6 +13,7 @@ Rules:
 - fit_score.sharp_verdict_points: EXACTLY 3 short bullets for Score Summary UI. Parallel form only: "Short label: one-sentence detail" (use a colon + space; never em/en dashes as the separator). Suggested labels: "Core fit:", "Level/tenure:", "Main gap:". Fit-only; no apply checklist; no resume rewrite advice.
 - fit_score.sharp_verdict: join those 3 bullets into one short prose string (fallback).
 - Suggest score breakdown weights as guidance for your assessment (backend may recompute): hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain experience 15%, proven impact 10%.
+- fit_score.breakdown: exactly 5 dimensions with those weights. Each note MUST be one short sentence that explains WHY that dimension scored that number (what was met + what capped the score). Never a keyword fragment like "ACH partial" — e.g. "72 because SQL/YOE must-haves are met, but ACH/settlement ownership is only adjacent, so hard-feasibility stays mid-70s."
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Use Blocked ONLY for explicit conflicts (e.g. must be onsite NYC but candidate is remote-only with no relocation). Missing data → Unknown or Risk, not Blocked.
 - expected_offer is a product hero — always fill it thoughtfully:
   A = JD/employer posted range (copy into posted_range; also set p25/p75 as the low/high ends of that range)
@@ -23,7 +24,6 @@ Rules:
 - If CANDIDATE CAREER CONTEXT includes target_tc or walk_away_tc, target_gap MUST compare the offer band to those personal floors.
 - Optionally fill expected_offer.tc_breakdown (base/bonus/equity/total) when estimable; else omit or null fields.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
-- fit_score.breakdown: exactly 5 dimensions with weights 30/25/20/15/10.
 - apply_decision.label must be one of: Apply now | Apply after fixes | Clarify first | Skip
 - apply_decision.reason: recruiter-facing why this decision — competitiveness and risk only. Do NOT teach resume rewriting, bullet edits, page layout, or “put X on page one”.
 - apply_decision.next_best_action: ONE next decision step (apply, clarify with recruiter, validate a hard requirement, or skip). Never coach how to rewrite or reformat a resume.
