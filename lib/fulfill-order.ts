@@ -27,40 +27,12 @@ export async function fulfillOrder(
     return;
   }
 
-  await admin
-    .from('orders')
-    .update({
-      status: 'succeeded',
-      stripe_payment_intent_id: externalPaymentId,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', orderId);
-
   const plan = CHECKOUT_PLANS[canonical] ?? CHECKOUT_PLANS[planType];
-  if (!plan) return;
-
-  const snapshot =
-    plan.jobFitSnapshotCredits ?? plan.liteCredits ?? 0;
-  const strategy =
-    plan.interviewStrategyGuideCredits ?? plan.fullCredits ?? 0;
-
-  if (snapshot || strategy) {
-    let { error } = await admin.rpc('increment_profile_credits', {
-      p_user_id: userId,
-      p_job_fit_snapshot: snapshot,
-      p_interview_strategy_guide: strategy,
-    });
-    if (error) {
-      const retry = await admin.rpc('increment_profile_credits', {
-        p_user_id: userId,
-        p_lite: snapshot,
-        p_full: strategy,
-      });
-      error = retry.error;
-    }
-    if (error) throw new Error(error.message);
+  if (!plan) {
+    throw new Error(`Unknown plan type: ${planType}`);
   }
 
+  // Grant entitlements BEFORE marking succeeded so webhook retries can recover.
   if (plan.membershipTier) {
     const allowance = SUBSCRIPTION_ALLOWANCES[plan.membershipTier];
     const patchNew = {
@@ -71,7 +43,7 @@ export async function fulfillOrder(
     };
     let { error } = await admin.from('profiles').update(patchNew).eq('id', userId);
     if (error) {
-      await admin
+      const retry = await admin
         .from('profiles')
         .update({
           membership_tier: plan.membershipTier,
@@ -80,6 +52,26 @@ export async function fulfillOrder(
           updated_at: new Date().toISOString(),
         })
         .eq('id', userId);
+      if (retry.error) throw new Error(retry.error.message);
+    }
+  } else {
+    const snapshot = plan.jobFitSnapshotCredits ?? plan.liteCredits ?? 0;
+    const strategy = plan.interviewStrategyGuideCredits ?? plan.fullCredits ?? 0;
+    if (snapshot || strategy) {
+      let { error } = await admin.rpc('increment_profile_credits', {
+        p_user_id: userId,
+        p_job_fit_snapshot: snapshot,
+        p_interview_strategy_guide: strategy,
+      });
+      if (error) {
+        const retry = await admin.rpc('increment_profile_credits', {
+          p_user_id: userId,
+          p_lite: snapshot,
+          p_full: strategy,
+        });
+        error = retry.error;
+      }
+      if (error) throw new Error(error.message);
     }
   }
 
@@ -94,9 +86,6 @@ export async function fulfillOrder(
       .eq('user_id', userId);
   }
 
-  if (planType === 'basic_overage' || canonical === 'single_job_fit_snapshot') {
-    // no-op beyond credits above for new plans
-  }
   if (planType === 'basic_overage') {
     try {
       await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 1 });
@@ -111,6 +100,17 @@ export async function fulfillOrder(
       /* legacy RPC may be absent */
     }
   }
+
+  const { error: orderErr } = await admin
+    .from('orders')
+    .update({
+      status: 'succeeded',
+      stripe_payment_intent_id: externalPaymentId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', orderId);
+
+  if (orderErr) throw new Error(orderErr.message);
 }
 
 export async function fulfillSubscriptionRenewal(
@@ -130,7 +130,7 @@ export async function fulfillSubscriptionRenewal(
     .eq('id', userId);
 
   if (error) {
-    await admin
+    const retry = await admin
       .from('profiles')
       .update({
         membership_tier: tier,
@@ -139,5 +139,6 @@ export async function fulfillSubscriptionRenewal(
         updated_at: new Date().toISOString(),
       })
       .eq('id', userId);
+    if (retry.error) throw new Error(retry.error.message);
   }
 }

@@ -293,7 +293,7 @@ export async function POST(request: NextRequest) {
 
     // Deduct before AI call so concurrent requests cannot overspend
     const remaining = await deductCredit(admin, user.id, reportType);
-    if (remaining < 0 && !hasSubscriptionCredits(profile.membership_tier)) {
+    if (remaining < 0) {
       return paymentRequiredResponse(profile);
     }
 
@@ -329,12 +329,10 @@ export async function POST(request: NextRequest) {
         modelUsed = result.model;
       }
     } catch (analysisErr) {
-      if (!hasSubscriptionCredits(profile.membership_tier)) {
-        try {
-          await refundCredit(admin, user.id, reportType);
-        } catch (refundErr) {
-          console.error('[Analyze] Credit refund failed:', refundErr);
-        }
+      try {
+        await refundCredit(admin, user.id, reportType);
+      } catch (refundErr) {
+        console.error('[Analyze] Credit refund failed:', refundErr);
       }
       throw analysisErr;
     }

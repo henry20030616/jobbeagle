@@ -170,21 +170,8 @@ export function canAffordReport(
   reportType: ReportType | string,
 ): boolean {
   const type = normalizeReportType(reportType);
-  if (hasSubscriptionCredits(profile.membership_tier)) {
-    const allowance = getSubscriptionAllowance(profile.membership_tier);
-    if (!allowance) return false;
-    if (type === REPORT_CODES.JOB_FIT_SNAPSHOT) {
-      return (
-        profile.available_job_fit_snapshot_credits > 0
-        || allowance.job_fit_snapshot > 0
-      );
-    }
-    return (
-      profile.available_interview_strategy_guide_credits > 0
-      || allowance.interview_strategy_guide > 0
-    );
-  }
-
+  // Free + paid + subscription all gate on remaining balance.
+  // Monthly caps are applied when the sub is purchased/renewed (balance reset).
   if (type === REPORT_CODES.JOB_FIT_SNAPSHOT) {
     return profile.available_job_fit_snapshot_credits > 0;
   }

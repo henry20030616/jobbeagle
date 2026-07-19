@@ -15,6 +15,20 @@ const freeProfile = (snapshot: number, strategy = 0): ProfileRow => ({
   stripe_customer_id: null,
   stripe_subscription_id: null,
   deactivated_at: null,
+  career_context: {
+    target_level: '',
+    location_or_remote: '',
+    work_auth: '',
+    target_tc: '',
+    walk_away_tc: '',
+    non_negotiables: '',
+    signature_strengths: '',
+  },
+});
+
+const subProfile = (snapshot: number, strategy: number): ProfileRow => ({
+  ...freeProfile(snapshot, strategy),
+  membership_tier: 'standard_sub',
 });
 
 describe('canAffordReport', () => {
@@ -27,6 +41,13 @@ describe('canAffordReport', () => {
   it('free tier blocks Interview Strategy Guide when strategy credits are 0', () => {
     expect(canAffordReport(freeProfile(3, 0), REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)).toBe(false);
     expect(canAffordReport(freeProfile(0, 1), 'full')).toBe(true);
+  });
+
+  it('subscribers also gate on remaining balance (not marketing allowance constants)', () => {
+    expect(canAffordReport(subProfile(100, 5), REPORT_CODES.JOB_FIT_SNAPSHOT)).toBe(true);
+    expect(canAffordReport(subProfile(0, 5), REPORT_CODES.JOB_FIT_SNAPSHOT)).toBe(false);
+    expect(canAffordReport(subProfile(10, 0), REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)).toBe(false);
+    expect(canAffordReport(subProfile(10, 1), REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)).toBe(true);
   });
 
   it('canAffordUserProfile mirrors server check and accepts legacy fields', () => {
