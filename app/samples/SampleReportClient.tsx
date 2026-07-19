@@ -78,6 +78,11 @@ export default function SampleReportClient() {
           </Link>
         </div>
 
+        <ReportCompareModal
+          language="en"
+          variant="panel"
+          className="w-full shrink-0"
+        />
         <Link
           href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
           className={sampleTabClass(!isGuide)}
@@ -90,11 +95,6 @@ export default function SampleReportClient() {
         >
           {guideLabel}
         </Link>
-        <ReportCompareModal
-          language="en"
-          variant="panel"
-          className="w-full shrink-0"
-        />
       </aside>
 
       {/* Right — takes all remaining width */}
