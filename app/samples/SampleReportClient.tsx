@@ -67,7 +67,7 @@ export default function SampleReportClient() {
             <Sparkles className={`${SAMPLE_RAIL_ICON} text-white`} aria-hidden />
           </div>
           <p className={`${SAMPLE_RAIL_TEXT} text-white`}>
-            {isGuide ? guideLabel : snapshotLabel} · no credits
+            {isGuide ? guideLabel : snapshotLabel}
           </p>
           <Link
             href="/"
