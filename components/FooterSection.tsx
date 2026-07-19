@@ -97,7 +97,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
     <div className="mt-12 space-y-6">
       <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
 
-      <div className="w-full max-w-3xl mx-auto">
+      <div className="w-full max-w-5xl mx-auto">
         <div
           ref={panelRef}
           className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden"
