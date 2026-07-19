@@ -53,14 +53,6 @@ export default function LiteReportDashboard({
   const offerEval = offerEvaluationSummary(offer);
   const breakdown = (report.fit_score?.breakdown ?? []).slice(0, 5);
   const apply = report.apply_decision;
-  const applyStyles: Record<string, string> = {
-    'Apply now': 'border-emerald-400/50 bg-emerald-500/10 text-emerald-200',
-    'Apply after fixes': 'border-amber-400/50 bg-amber-500/10 text-amber-100',
-    'Clarify first': 'border-sky-400/50 bg-sky-500/10 text-sky-100',
-    Skip: 'border-rose-400/50 bg-rose-500/10 text-rose-100',
-  };
-  const applyClass =
-    applyStyles[apply?.label ?? ''] ?? 'border-slate-600 bg-slate-800/60 text-slate-200';
 
   const handleBack = () => {
     if (onNewAnalysis) {
@@ -134,9 +126,9 @@ export default function LiteReportDashboard({
           </div>
         </header>
 
-        {/* Heroes + equal-height Score Summary | Range Evaluation */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-[auto_1fr] divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
-          <section className="flex flex-col p-5 sm:p-6 lg:col-start-1 lg:row-start-1">
+        {/* Heroes: Fit | Offer + Range Evaluation */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90">
+          <section className="flex flex-col p-5 sm:p-6">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 mb-3">
               Candidate Fit Score
             </p>
@@ -233,53 +225,7 @@ export default function LiteReportDashboard({
             </div>
           </section>
 
-          <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 lg:col-start-1 lg:row-start-2">
-            {breakdown.length > 0 ? (
-              <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
-                <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-2">
-                  Score breakdown
-                </p>
-                <ul className="space-y-2 flex-1">
-                  {breakdown.map((b, i) => (
-                    <li key={i} className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-base font-semibold text-slate-200">
-                          {b.dimension}
-                          <span className="ml-2 text-xs font-medium text-slate-500">
-                            {b.weight_pct}%
-                          </span>
-                        </p>
-                        {b.note ? (
-                          <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
-                        ) : null}
-                      </div>
-                      <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
-                        {Math.round(b.score)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
-                <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
-                  Score Summary
-                </p>
-                <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
-                  {score}/100 · {scoreInfo.level}
-                  {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
-                </p>
-                <p className="text-lg text-slate-200 leading-relaxed flex-1">
-                  {report.fit_score?.sharp_verdict
-                    || report.recruiter_verdict
-                    || report.one_sentence_sharp_critique
-                    || scoreInfo.description}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <section className="flex flex-col p-5 sm:p-6 lg:col-start-2 lg:row-start-1 border-t border-slate-700/90 lg:border-t-0">
+          <section className="flex flex-col p-5 sm:p-6 border-t border-slate-700/90 lg:border-t-0">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-400/90 mb-1 flex items-center gap-1">
               <DollarSign className="w-3.5 h-3.5" />
               Expected Offer Range
@@ -310,63 +256,89 @@ export default function LiteReportDashboard({
                 </>
               )}
             </div>
-          </section>
 
-          <div className="flex flex-col h-full min-h-0 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 border-t border-slate-700/90 lg:border-t-0 lg:col-start-2 lg:row-start-2">
-            <div className="h-full min-h-[8.5rem] rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3 flex flex-col">
+            <div className="mt-5 rounded-lg border border-emerald-400/55 bg-emerald-500/10 px-3.5 py-3">
               <p className="text-xs font-bold uppercase tracking-widest text-emerald-300 mb-1">
                 Range Evaluation
               </p>
               <p className="text-lg font-bold text-emerald-100 mb-1">{offerEval.headline}</p>
-              <p className="text-lg text-slate-200 leading-relaxed flex-1">{offerEval.body}</p>
+              <p className="text-lg text-slate-200 leading-relaxed">{offerEval.body}</p>
               {offerEval.note ? (
                 <p className="text-base text-slate-400 mt-2 leading-relaxed">{offerEval.note}</p>
               ) : null}
             </div>
+          </section>
+        </div>
+
+        {/* Full-width Score Summary — Apply Decision at bottom */}
+        <div className="border-t border-slate-700/90 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="w-full rounded-lg border border-sky-400/50 bg-indigo-500/10 px-4 py-4 sm:px-5 sm:py-5 flex flex-col">
+            <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
+              Score Summary
+            </p>
+            <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
+              {score}/100 · {scoreInfo.level}
+              {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
+            </p>
+            <p className="text-lg text-slate-200 leading-relaxed">
+              {report.fit_score?.sharp_verdict
+                || report.recruiter_verdict
+                || report.one_sentence_sharp_critique
+                || scoreInfo.description}
+            </p>
+            {apply?.label ? (
+              <div className="mt-4 pt-4 border-t border-sky-400/30">
+                <p className={`text-xl sm:text-2xl font-black leading-tight ${
+                  apply.label === 'Apply now'
+                    ? 'text-emerald-300'
+                    : apply.label === 'Skip'
+                      ? 'text-rose-300'
+                      : apply.label === 'Clarify first'
+                        ? 'text-sky-300'
+                        : 'text-amber-200'
+                }`}>
+                  {apply.label}
+                </p>
+                {apply.reason ? (
+                  <p className="text-base text-slate-300 mt-1.5 leading-relaxed">{apply.reason}</p>
+                ) : null}
+                {apply.next_best_action ? (
+                  <p className="text-base text-slate-400 mt-2 leading-relaxed">
+                    <span className="font-semibold text-slate-300">Next: </span>
+                    {apply.next_best_action}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
 
-        {(breakdown.length > 0 || apply?.label) && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/90 border-t border-slate-700/90">
-            {breakdown.length > 0 && (
-              <section className="p-5 sm:px-6 sm:py-5">
-                <div className="h-full min-h-[8.5rem] rounded-lg border border-sky-400/50 bg-indigo-500/10 px-3.5 py-3 flex flex-col">
-                  <p className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-1">
-                    Score Summary
-                  </p>
-                  <p className={`text-lg font-bold ${scoreInfo.color} mb-1`}>
-                    {score}/100 · {scoreInfo.level}
-                    {report.fit_score?.band ? ` · ${report.fit_score.band}` : ''}
-                  </p>
-                  <p className="text-lg text-slate-200 leading-relaxed flex-1">
-                    {report.fit_score?.sharp_verdict
-                      || report.recruiter_verdict
-                      || report.one_sentence_sharp_critique
-                      || scoreInfo.description}
-                  </p>
-                </div>
-              </section>
-            )}
-            {apply?.label && (
-              <section className="p-5 sm:px-6 sm:py-5">
-                <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400 mb-3">
-                  Apply Decision
-                </h3>
-                <div className={`rounded-xl border px-4 py-3 ${applyClass}`}>
-                  <p className="text-2xl font-black leading-tight">{apply.label}</p>
-                  {apply.reason ? (
-                    <p className="text-base mt-2 leading-relaxed opacity-90">{apply.reason}</p>
-                  ) : null}
-                  {apply.next_best_action ? (
-                    <p className="text-base mt-3 pt-3 border-t border-white/10 leading-relaxed">
-                      <span className="font-semibold">Next: </span>
-                      {apply.next_best_action}
+        {breakdown.length > 0 && (
+          <section className="p-5 sm:px-6 sm:py-5 border-t border-slate-700/90">
+            <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-300 mb-3">
+              Score breakdown
+            </h3>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
+              {breakdown.map((b, i) => (
+                <li key={i} className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold text-slate-200">
+                      {b.dimension}
+                      <span className="ml-2 text-xs font-medium text-slate-500">
+                        {b.weight_pct}%
+                      </span>
                     </p>
-                  ) : null}
-                </div>
-              </section>
-            )}
-          </div>
+                    {b.note ? (
+                      <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{b.note}</p>
+                    ) : null}
+                  </div>
+                  <span className="text-lg font-black tabular-nums text-indigo-200 shrink-0">
+                    {Math.round(b.score)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
 
         {/* Strengths | Gaps — bottom of same slide */}
