@@ -11,6 +11,10 @@ export const REPORT_ACTION_ICON = 'w-5 h-5 shrink-0';
 export const REPORT_ACTION_BTN =
   `inline-flex items-center gap-2 rounded-lg border border-slate-400 bg-slate-900/80 px-3 py-1.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
+/** Compact “View sample” chip — same text-xl scale as Jobbeagle / REPORT_ACTION */
+export const SAMPLE_LINK_BTN =
+  `inline-flex w-fit items-center gap-1 rounded-lg border border-indigo-400/50 bg-indigo-500/15 px-2.5 py-1 ${REPORT_ACTION_TEXT} text-indigo-200 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
+
 /**
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
  * Keep in sync across all four boxes.
@@ -47,6 +51,3 @@ export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
  * Wider canvas = less empty side margin on desktop monitors.
  */
 export const REPORT_SLIDE_DESIGN_WIDTH = 1680;
-
-/** Samples page chrome design width (header + left rail + report row). */
-export const HOME_DESIGN_WIDTH = 1680;

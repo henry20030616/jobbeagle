@@ -12,6 +12,7 @@ import ReportCompareModal from '@/components/ReportCompareModal';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel } from '@/constants/report-products';
+import { SAMPLE_LINK_BTN } from '@/constants/report-frame';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -747,7 +748,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-300 hover:text-indigo-200"
+                        className={SAMPLE_LINK_BTN}
                         onClick={(e) => e.stopPropagation()}
                       >
                         View sample →
@@ -772,7 +773,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-300 hover:text-indigo-200"
+                        className={SAMPLE_LINK_BTN}
                         onClick={(e) => e.stopPropagation()}
                       >
                         View sample →

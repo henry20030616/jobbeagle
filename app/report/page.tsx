@@ -15,10 +15,8 @@ import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import BrandLogo from '@/components/BrandLogo';
 import { ReportFitStage } from '@/components/ReportFitStage';
+import { REPORT_ACTION_BTN, REPORT_ACTION_ICON } from '@/constants/report-frame';
 import { Loader2, Home, RotateCcw } from 'lucide-react';
-
-const actionBtnClass =
-  'inline-flex items-center gap-2 rounded-xl border border-slate-500/50 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-700 hover:border-slate-400/60 transition-colors';
 
 export default function ReportPage() {
   const router = useRouter();
@@ -67,12 +65,12 @@ export default function ReportPage() {
       {/* Absolute top — above logo / report */}
       <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3 shrink-0">
         <div className="mx-auto w-full max-w-full flex flex-wrap items-center gap-2 sm:gap-3">
-          <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
-            <Home className="w-4 h-4" />
+          <button type="button" onClick={handleNewAnalysis} className={REPORT_ACTION_BTN}>
+            <Home className={REPORT_ACTION_ICON} aria-hidden />
             Back to Home
           </button>
-          <button type="button" onClick={handleNewAnalysis} className={actionBtnClass}>
-            <RotateCcw className="w-4 h-4" />
+          <button type="button" onClick={handleNewAnalysis} className={REPORT_ACTION_BTN}>
+            <RotateCcw className={REPORT_ACTION_ICON} aria-hidden />
             New Analysis
           </button>
         </div>
