@@ -11,7 +11,7 @@ import SmartInputArea from '@/components/SmartInputArea';
 import ReportCompareModal from '@/components/ReportCompareModal';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
-import { REPORT_CODES, reportShortLabel } from '@/constants/report-products';
+import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import BrandLogo from '@/components/BrandLogo';
 
 const PILL =
@@ -22,9 +22,12 @@ const STEP_COL =
   'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-5 sm:p-6 lg:border-b-0 lg:border-r';
 const STEP_TITLE =
   'flex min-h-[2.75rem] shrink-0 items-center pb-1.5 text-lg sm:text-xl font-bold text-white';
-const STEP_PILL_ROW = 'flex min-h-[2.125rem] shrink-0 items-center pb-3';
+const STEP_PILL_ROW = 'mb-3 flex h-[2.125rem] shrink-0 items-center overflow-hidden';
 /** Shared content shell height — steps 1–4 bottom boxes align */
 const STEP_BODY = 'flex min-h-[17.5rem] flex-1 flex-col';
+/** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
+const STEP_BODY_CARDS = 'grid min-h-[17.5rem] flex-1 grid-rows-3 gap-2.5';
+const STEP_BODY_CARDS_COMPACT = 'grid min-h-[17.5rem] flex-1 grid-rows-2 gap-2.5';
 const REPORT_CARD_IDLE =
   'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50';
 const REPORT_CARD_ACTIVE =
@@ -662,18 +665,18 @@ const InputForm: React.FC<InputFormProps> = ({
               </h2>
               <div className={STEP_PILL_ROW}>
                 {extensionCapture ? (
-                  <div className="inline-flex max-w-full flex-col gap-1">
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm text-emerald-300">
-                      <Puzzle className="h-4 w-4 shrink-0" />
-                      <span className="font-bold">{zh ? '外掛已抓取 ✓' : 'Captured ✓'}</span>
+                  <span
+                    className="inline-flex max-w-full items-center gap-1.5 truncate rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm text-emerald-300"
+                    title={[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || undefined}
+                  >
+                    <Puzzle className="h-4 w-4 shrink-0" />
+                    <span className="truncate font-bold">
+                      {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
+                      {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).length > 0
+                        ? ` · ${[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ')}`
+                        : ''}
                     </span>
-                    <span
-                      className="max-w-[16rem] truncate pl-1 text-xs text-slate-400"
-                      title={`${extensionCapture.company_name} · ${extensionCapture.job_title}`}
-                    >
-                      {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || '—'}
-                    </span>
-                  </div>
+                  </span>
                 ) : (
                   <Link
                     href="/extension"
@@ -861,7 +864,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 ) : null}
               </div>
               {onReportTypeChange ? (
-                <div className={`${STEP_BODY} grid grid-rows-3 gap-2.5`}>
+                <div className={compactChrome ? STEP_BODY_CARDS_COMPACT : STEP_BODY_CARDS}>
                   <button
                     type="button"
                     onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
@@ -869,7 +872,9 @@ const InputForm: React.FC<InputFormProps> = ({
                       reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? REPORT_CARD_ACTIVE : REPORT_CARD_IDLE
                     }`}
                   >
-                    <p className="text-base font-semibold text-white">Job Fit Snapshot</p>
+                    <p className="text-base font-semibold text-white">
+                      {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
+                    </p>
                     <p className="mt-1 text-sm leading-snug text-slate-400">{t.snapshotBlurb}</p>
                   </button>
                   <button
@@ -880,15 +885,13 @@ const InputForm: React.FC<InputFormProps> = ({
                     }`}
                   >
                     <p className="flex flex-wrap items-center gap-1.5 text-base font-semibold text-white">
-                      Interview Strategy Guide
+                      {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
                       <Sparkles className="h-4 w-4 shrink-0 text-violet-400" />
                     </p>
                     <p className="mt-1 text-sm leading-snug text-slate-400">{t.strategyBlurb}</p>
                   </button>
-                  {!compactChrome ? (
+                  {!compactChrome && (
                     <ReportCompareModal language={currentLanguage} variant="panel" className="min-h-0" />
-                  ) : (
-                    <div className="min-h-0" aria-hidden />
                   )}
                 </div>
               ) : (

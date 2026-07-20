@@ -93,7 +93,7 @@ export default function SampleReportClient() {
           </div>
 
           {/* Same order + equal height as homepage step 3: Snapshot → Guide → Compare */}
-          <div className="grid w-full gap-2.5 [grid-template-rows:repeat(3,minmax(5rem,auto))]">
+          <div className="grid h-[16.5rem] w-full grid-rows-3 gap-2.5">
             <Link
               href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
               className={sampleTabClass(!isGuide)}
@@ -106,7 +106,7 @@ export default function SampleReportClient() {
             >
               {guideLabel}
             </Link>
-            <ReportCompareModal language="en" variant="panel" className="w-full min-h-[5rem]" />
+            <ReportCompareModal language="en" variant="panel" className="w-full min-h-0" />
           </div>
         </aside>
 
