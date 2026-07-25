@@ -12,6 +12,7 @@ import ReportCompareModal from '@/components/ReportCompareModal';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
+import { SAMPLE_LINK_BTN } from '@/constants/report-frame';
 import BrandLogo from '@/components/BrandLogo';
 
 const PILL =
@@ -33,7 +34,7 @@ const REPORT_CARD_IDLE =
 const REPORT_CARD_ACTIVE =
   'border-solid border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
 const REPORT_CARD =
-  'w-full min-h-0 h-full rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center';
+  'w-full min-h-0 h-full rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-1.5';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -875,31 +876,57 @@ const InputForm: React.FC<InputFormProps> = ({
               </div>
               {onReportTypeChange ? (
                 <div className={compactChrome ? STEP_BODY_CARDS_COMPACT : STEP_BODY_CARDS}>
-                  <button
-                    type="button"
-                    onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                  <div
                     className={`${REPORT_CARD} ${
                       reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? REPORT_CARD_ACTIVE : REPORT_CARD_IDLE
                     }`}
                   >
-                    <p className="text-base font-semibold text-white">
-                      {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
-                    </p>
-                    <p className="mt-1 text-sm leading-snug text-slate-400">{t.snapshotBlurb}</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                    <button
+                      type="button"
+                      onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                      className="w-full min-w-0 text-left"
+                    >
+                      <p className="text-base font-semibold text-white">
+                        {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
+                      </p>
+                      <p className="mt-1 text-sm leading-snug text-slate-400">{t.snapshotBlurb}</p>
+                    </button>
+                    <Link
+                      href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={SAMPLE_LINK_BTN}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View sample →
+                    </Link>
+                  </div>
+                  <div
                     className={`${REPORT_CARD} ${
                       reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? REPORT_CARD_ACTIVE : REPORT_CARD_IDLE
                     }`}
                   >
-                    <p className="flex flex-wrap items-center gap-1.5 text-base font-semibold text-white">
-                      {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                      <Sparkles className="h-4 w-4 shrink-0 text-violet-400" />
-                    </p>
-                    <p className="mt-1 text-sm leading-snug text-slate-400">{t.strategyBlurb}</p>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                      className="w-full min-w-0 text-left"
+                    >
+                      <p className="flex flex-wrap items-center gap-1.5 text-base font-semibold text-white">
+                        {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
+                        <Sparkles className="h-4 w-4 shrink-0 text-violet-400" />
+                      </p>
+                      <p className="mt-1 text-sm leading-snug text-slate-400">{t.strategyBlurb}</p>
+                    </button>
+                    <Link
+                      href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={SAMPLE_LINK_BTN}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View sample →
+                    </Link>
+                  </div>
                   {!compactChrome && (
                     <ReportCompareModal language={currentLanguage} variant="panel" className="min-h-0" />
                   )}
@@ -916,21 +943,28 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 4. Launch — same title/pill spacers so content box aligns */}
-            <div className={`${STEP_COL} border-r-0 bg-slate-700/30 lg:col-span-2`}>
+            <div className={`${STEP_COL} relative z-0 border-r-0 bg-slate-700/30 lg:col-span-2`}>
               <div className={STEP_TITLE} aria-hidden />
               <div className={STEP_PILL_ROW} aria-hidden />
-              <div className={STEP_BODY}>
+              <div className={`${STEP_BODY} relative z-10`}>
                 <button
                   type="submit"
                   disabled={submitDisabled}
-                  className={`flex h-full w-full flex-1 flex-col items-center justify-center gap-2.5 rounded-xl px-4 py-5 text-center text-base font-black text-white shadow-lg transition-all sm:text-lg ${
+                  title={
                     submitDisabled
-                      ? 'cursor-not-allowed bg-slate-700 text-slate-500'
+                      ? zh
+                        ? '請先貼上完整職缺並上傳履歷'
+                        : 'Paste the full job posting and upload a resume first'
+                      : undefined
+                  }
+                  className={`flex h-full min-h-[17.5rem] w-full flex-1 flex-col items-center justify-center gap-2.5 rounded-xl px-4 py-5 text-center text-base font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-lg ${
+                    submitDisabled
+                      ? 'cursor-not-allowed bg-indigo-600/35 text-white/55 shadow-none'
                       : publicAts
-                        ? 'bg-gradient-to-b from-emerald-600 to-teal-600 ring-1 ring-white/10 hover:from-emerald-500 hover:to-teal-500'
+                        ? 'bg-emerald-600 shadow-emerald-500/30 hover:-translate-y-1 hover:bg-emerald-500 active:translate-y-0 active:bg-emerald-700'
                         : jdError
-                          ? 'bg-gradient-to-b from-red-700 to-red-600 ring-1 ring-red-500/30'
-                          : 'bg-gradient-to-b from-indigo-600 to-violet-600 ring-1 ring-white/10 hover:from-indigo-500 hover:to-violet-500'
+                          ? 'bg-red-600 shadow-red-500/30 hover:-translate-y-1 hover:bg-red-500 active:translate-y-0 active:bg-red-700'
+                          : 'bg-indigo-600 hover:-translate-y-1 hover:bg-indigo-500 active:translate-y-0 active:bg-indigo-700'
                   }`}
                 >
                   {isLoading || isParsingUrl ? (
@@ -939,12 +973,12 @@ const InputForm: React.FC<InputFormProps> = ({
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span className="animate-pulse text-xs leading-snug">
+                      <span className="animate-pulse text-xs leading-snug text-white/80">
                         {isParsingUrl ? (zh ? '解析中…' : 'Parsing…') : t.generating}
                       </span>
                     </>
                   ) : isSaving ? (
-                    <span className="text-xs text-slate-500">{t.waitingSave}</span>
+                    <span className="text-xs text-white/70">{t.waitingSave}</span>
                   ) : (
                     <>
                       <span className="px-1 leading-snug">{submitLabel}</span>
