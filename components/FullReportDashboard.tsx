@@ -1,32 +1,21 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import type { FullReport, StarTemplate } from '@/types';
+import React, { useState } from 'react';
+import type { FullReport } from '@/types';
 import {
-  AlertTriangle,
-  MessageSquare,
-  HandCoins,
+  Building2,
   Globe,
-  ShieldAlert,
-  HelpCircle,
+  HandCoins,
   Home,
+  Link2,
   RotateCcw,
-  Layers,
-  ChevronDown,
-  ExternalLink,
-  Copy,
-  Check,
   ScanSearch,
-  FileText,
 } from 'lucide-react';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
-import PredictedLandSquircle from '@/components/PredictedLandSquircle';
+import GuideStrategyPages, {
+  type GuideStrategyTab,
+} from '@/components/guide/GuideStrategyPages';
 import type { AppLanguage } from '@/lib/language-context';
-import {
-  evidenceTierLabel,
-  formatOfferRange,
-  formatPredictedOffer,
-} from '@/lib/offer-display';
 import {
   REPORT_SLIDE_SURFACE,
   REPORT_ACTION_BTN,
@@ -35,7 +24,7 @@ import {
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
-type GuideTab = 'snapshot' | 'hiring' | 'interview' | 'salary' | 'provenance';
+type GuideTab = 'snapshot' | GuideStrategyTab;
 
 interface FullReportDashboardProps {
   report: FullReport;
@@ -55,133 +44,29 @@ const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }
   },
   {
     id: 'hiring',
-    label: 'Hiring Context',
-    icon: <Globe className="w-5 h-5" />,
-    blurb: 'Why they may be hiring — public signals only.',
+    label: 'Company & Role',
+    icon: <Building2 className="w-5 h-5" />,
+    blurb: 'Role basics, company background, and market insights.',
   },
   {
     id: 'interview',
-    label: 'Interview',
-    icon: <MessageSquare className="w-5 h-5" />,
-    blurb: 'Answer templates, concerns, and the interview playbook.',
+    label: 'Online Intel',
+    icon: <Globe className="w-5 h-5" />,
+    blurb: 'Real reviews, salary signals, and interview resource links.',
   },
   {
     id: 'salary',
-    label: 'Salary',
+    label: 'Interview & Offer',
     icon: <HandCoins className="w-5 h-5" />,
-    blurb: 'Expected offer range and negotiation script templates.',
+    blurb: 'Predicted questions, answer playbook, and negotiation ladder.',
   },
   {
     id: 'provenance',
-    label: 'Provenance',
-    icon: <Layers className="w-5 h-5" />,
-    blurb: 'Sources and confidence limits for this guide.',
+    label: 'References',
+    icon: <Link2 className="w-5 h-5" />,
+    blurb: 'Source audit — what the guide cited and when.',
   },
 ];
-
-function Card({
-  title,
-  badge,
-  children,
-}: {
-  title: string;
-  badge?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-800/80 p-5 sm:p-6">
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <h3 className="text-xl font-semibold text-white">{title}</h3>
-        {badge ? (
-          <span className="shrink-0 text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-slate-600 text-slate-300 bg-white/5">
-            {badge}
-          </span>
-        ) : null}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(text);
-          setCopied(true);
-          window.setTimeout(() => setCopied(false), 1600);
-        } catch {
-          /* ignore */
-        }
-      }}
-      className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-300 hover:text-indigo-200 transition-colors"
-    >
-      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-      {copied ? 'Copied' : 'Copy template'}
-    </button>
-  );
-}
-
-function starTemplateText(t: StarTemplate): string {
-  return [
-    t.title,
-    t.for_question ? `Question: ${t.for_question}` : '',
-    t.situation ? `Situation: ${t.situation}` : '',
-    t.task ? `Task: ${t.task}` : '',
-    t.action ? `Action: ${t.action}` : '',
-    t.result ? `Result: ${t.result}` : '',
-    t.resume_anchor ? `Resume anchor: ${t.resume_anchor}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
-}
-
-function StarTemplateCard({ template, index }: { template: StarTemplate; index: number }) {
-  const rows = [
-    { key: 'S', label: 'Situation', value: template.situation },
-    { key: 'T', label: 'Task', value: template.task },
-    { key: 'A', label: 'Action', value: template.action },
-    { key: 'R', label: 'Result', value: template.result },
-  ].filter((r) => r.value?.trim());
-
-  return (
-    <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/5 p-4">
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-1">
-            Template {index + 1}
-          </p>
-          <p className="text-lg font-semibold text-white">{template.title}</p>
-          {template.for_question ? (
-            <p className="text-base text-slate-400 mt-1 leading-relaxed">{template.for_question}</p>
-          ) : null}
-        </div>
-        <CopyButton text={starTemplateText(template)} />
-      </div>
-      <div className="space-y-2">
-        {rows.map((r) => (
-          <div key={r.key} className="flex gap-2.5 text-lg">
-            <span className="shrink-0 w-6 h-6 rounded-md bg-indigo-500/20 text-indigo-200 text-sm font-bold flex items-center justify-center">
-              {r.key}
-            </span>
-            <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{r.label}</p>
-              <p className="text-slate-200 leading-relaxed">{r.value}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      {template.resume_anchor ? (
-        <p className="text-sm text-slate-500 mt-3 pt-3 border-t border-slate-700/80">
-          Resume anchor: {template.resume_anchor}
-        </p>
-      ) : null}
-    </div>
-  );
-}
 
 export default function FullReportDashboard({
   report,
@@ -190,57 +75,6 @@ export default function FullReportDashboard({
   isSample = false,
 }: FullReportDashboardProps) {
   const [tab, setTab] = useState<GuideTab>('snapshot');
-  const [provenanceOpen, setProvenanceOpen] = useState(false);
-
-  const playbook = report.interview_playbook;
-  const concerns = report.concerns_defenses ?? [];
-  const hiring = report.hiring_context;
-  const offer = report.offer_strategy;
-  const fitSalary = report.strategy_fit_salary;
-  const expected = report.expected_offer;
-  const offerRange = formatOfferRange(expected);
-  const predictedOffer = formatPredictedOffer(expected);
-
-  const sources = useMemo(() => {
-    if (report.provenance?.entries?.length) {
-      return report.provenance.entries.map((e) => ({
-        label: e.label,
-        url: e.url || undefined,
-        date: e.date || undefined,
-        status: e.status,
-      }));
-    }
-    const list: { label: string; url?: string; date?: string; status?: string }[] = [];
-    for (const s of expected?.sources ?? []) {
-      if (s?.trim()) list.push({ label: s.trim(), status: 'unverified' });
-    }
-    for (const ins of hiring?.insights ?? []) {
-      if (ins.source_url || ins.claim) {
-        list.push({
-          label: ins.claim || ins.source_url || 'Insight',
-          url: ins.source_url || undefined,
-          date: ins.date || undefined,
-          status: ins.source_url ? 'valid' : 'unverified',
-        });
-      }
-    }
-    for (const q of playbook?.reported ?? []) {
-      if (q.source_url) {
-        list.push({
-          label: q.question.slice(0, 80),
-          url: q.source_url,
-          date: q.source_date || undefined,
-          status: 'valid',
-        });
-      }
-    }
-    return list;
-  }, [report.provenance, expected?.sources, hiring?.insights, playbook?.reported]);
-
-  const candidateCase = report.candidate_case;
-  const tc =
-    offer?.tc_breakdown
-    || expected?.tc_breakdown;
 
   const handleBack = () => {
     if (onNewAnalysis) onNewAnalysis();
@@ -269,47 +103,47 @@ export default function FullReportDashboard({
       )}
 
       <div className={`@container/report relative min-w-0 overflow-x-auto ${REPORT_SLIDE_SURFACE}`}>
-      {/* Title bar inside slide */}
-      <div className="flex flex-wrap items-start justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
-        <div className="min-w-0">
-          <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-            Interview Strategy Guide
-          </p>
-          <p className="text-lg text-slate-400 mt-1.5">
-            Snapshot + playbook — switch pages from the top nav
-          </p>
-        </div>
-        {isSample ? (
-          <div className="shrink-0 self-start">
-            <SampleMark />
+        {/* Title bar inside slide */}
+        <div className="flex flex-wrap items-start justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
+          <div className="min-w-0">
+            <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+              Interview Strategy Guide
+            </p>
+            <p className="text-lg text-slate-400 mt-1.5">
+              Snapshot + playbook — switch pages from the top nav
+            </p>
           </div>
-        ) : null}
-      </div>
+          {isSample ? (
+            <div className="shrink-0 self-start">
+              <SampleMark />
+            </div>
+          ) : null}
+        </div>
 
-      {/* Page nav — wrap so no tab is clipped */}
-      <nav className="px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex flex-wrap gap-2">
-        {NAV.map((item) => {
-          const active = tab === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setTab(item.id)}
-              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-base sm:text-lg font-bold transition-colors border ${
-                active
-                  ? 'border-violet-500 bg-violet-500/10 text-violet-100'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
-              }`}
-            >
-              <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
-              {item.label}
-            </button>
-          );
-        })}
-      </nav>
+        {/* Page nav — wrap so no tab is clipped */}
+        <nav className="px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex flex-wrap gap-2">
+          {NAV.map((item) => {
+            const active = tab === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setTab(item.id)}
+                className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-base sm:text-lg font-bold transition-colors border ${
+                  active
+                    ? 'border-violet-500 bg-violet-500/10 text-violet-100'
+                    : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                }`}
+              >
+                <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
 
-      {/* Content panel */}
-      <section className="p-4 sm:p-6 space-y-4 bg-slate-950 min-w-0 min-h-[28rem]">
+        {/* Content panel */}
+        <section className="p-4 sm:p-6 space-y-4 bg-slate-950 min-w-0 min-h-[28rem]">
           {tab !== 'snapshot' && (
             <div>
               <p className="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-1">
@@ -320,563 +154,18 @@ export default function FullReportDashboard({
           )}
 
           <div key={tab} className="animate-fade-in space-y-4">
-            {tab === 'snapshot' && (
+            {tab === 'snapshot' ? (
               <LiteReportDashboard
                 report={report}
                 language="en"
                 embedded
                 onNewAnalysis={onNewAnalysis}
               />
+            ) : (
+              <GuideStrategyPages tab={tab} report={report} />
             )}
-
-            {tab === 'hiring' && (
-                <>
-                  {candidateCase?.hire_thesis && (
-                    <Card title="Candidate Case" badge="hire thesis">
-                      <p className="text-lg text-slate-200 leading-relaxed mb-3">
-                        {candidateCase.hire_thesis}
-                      </p>
-                      {(candidateCase.top_facts?.length ?? 0) > 0 && (
-                        <ol className="space-y-2">
-                          {candidateCase.top_facts.map((fact, i) => (
-                            <li key={i} className="text-base text-emerald-100/90 flex gap-2">
-                              <span className="font-black text-emerald-400/80 shrink-0">
-                                {i + 1}.
-                              </span>
-                              <span>{fact}</span>
-                            </li>
-                          ))}
-                        </ol>
-                      )}
-                    </Card>
-                  )}
-
-                  {fitSalary && (
-                    <Card title="Fit implications">
-                      <p className="text-lg text-slate-300 leading-relaxed mb-2">
-                        {fitSalary.score_implications}
-                      </p>
-                      {(fitSalary.validate_with_recruiter?.length ?? 0) > 0 && (
-                        <ul className="mt-3 space-y-1">
-                          {fitSalary.validate_with_recruiter.map((q, i) => (
-                            <li key={i} className="text-lg text-slate-400">
-                              · {q}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </Card>
-                  )}
-
-                  <Card
-                    title="Public hiring signals"
-                    badge={`${hiring?.insights?.length ?? 0} insights`}
-                  >
-                    {(hiring?.insights?.length ?? 0) > 0 ? (
-                      <ul className="space-y-3">
-                        {hiring!.insights.map((ins, i) => (
-                          <li
-                            key={i}
-                            className="rounded-xl border border-slate-700/80 bg-black/20 p-4"
-                          >
-                            <p className="text-lg font-semibold text-slate-100">{ins.claim}</p>
-                            <p className="text-base text-slate-400 mt-1 leading-relaxed">
-                              {ins.why_it_matters}
-                            </p>
-                            {(ins.source_url || ins.date) && (
-                              <p className="text-sm text-indigo-300/80 mt-2 flex items-center gap-1">
-                                {ins.date ? <span>{ins.date}</span> : null}
-                                {ins.source_url ? (
-                                  <a
-                                    href={ins.source_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 underline underline-offset-2"
-                                  >
-                                    source <ExternalLink className="w-3 h-3" />
-                                  </a>
-                                ) : null}
-                              </p>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/20 px-4 py-3 text-lg text-indigo-100 flex gap-2">
-                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                        Limited public hiring-context signals — use validation questions below.
-                      </div>
-                    )}
-
-                    {(hiring?.limitations?.length ?? 0) > 0 && (
-                      <ul className="mt-4 space-y-1">
-                        {hiring!.limitations.map((l, i) => (
-                          <li key={i} className="text-base text-slate-500">
-                            · {l}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {(hiring?.validation_questions?.length ?? 0) > 0 && (
-                      <div className="mt-4 pt-4 border-t border-slate-700">
-                        <p className="text-sm font-bold uppercase tracking-wide text-slate-500 mb-2">
-                          Validate with recruiter
-                        </p>
-                        <ul className="space-y-1">
-                          {hiring!.validation_questions.map((q, i) => (
-                            <li key={i} className="text-lg text-slate-300">
-                              · {q}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </Card>
-                </>
-              )}
-
-              {tab === 'interview' && (
-                <>
-                  <Card
-                    title="STAR Answer Templates"
-                    badge={`${Math.min(playbook?.star_templates?.length || 0, 4) || '3-4'}`}
-                  >
-                    <p className="text-base text-slate-500 mb-4 leading-relaxed">
-                      Copy-ready practice scripts built only from your resume facts. Rehearse out loud before the interview.
-                    </p>
-                    <div className="space-y-3">
-                      {(playbook?.star_templates?.length
-                        ? playbook.star_templates
-                        : []
-                      )
-                        .slice(0, 4)
-                        .map((t, i) => (
-                          <StarTemplateCard key={i} template={t} index={i} />
-                        ))}
-                      {(playbook?.star_templates?.length ?? 0) === 0 && (
-                        <p className="text-lg text-slate-400">
-                          Templates will appear after a fresh Strategy Guide run.
-                        </p>
-                      )}
-                    </div>
-                  </Card>
-
-                  <Card title="Concerns & Defenses" badge="3">
-                    <div className="space-y-4">
-                      {concerns.map((c, i) => (
-                        <div
-                          key={i}
-                          className="rounded-xl border border-violet-500/20 bg-violet-500/5 overflow-hidden"
-                        >
-                          <p className="text-lg font-bold text-violet-100 px-4 pt-4 pb-2 flex items-center gap-2">
-                            <ShieldAlert className="w-4 h-4 shrink-0" />
-                            {i + 1}. {c.concern}
-                          </p>
-                          <p className="text-base text-slate-400 px-4 pb-3">{c.why}</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-violet-500/20">
-                            <div className="p-4 border-b sm:border-b-0 sm:border-r border-violet-500/20 bg-rose-500/5">
-                              <p className="text-xs font-bold uppercase tracking-wide text-rose-300/90 mb-2">
-                                Recruiter risk
-                              </p>
-                              <p className="text-base text-slate-200 leading-relaxed">
-                                {c.missing_proof || c.why || '—'}
-                              </p>
-                            </div>
-                            <div className="p-4 bg-emerald-500/5">
-                              <p className="text-xs font-bold uppercase tracking-wide text-emerald-300/90 mb-2">
-                                Resume evidence
-                              </p>
-                              <p className="text-base text-slate-200 leading-relaxed">
-                                {c.evidence || 'No matching resume proof yet.'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="m-4 mt-0 rounded-lg border border-violet-500/20 bg-black/20 p-3">
-                            <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <p className="text-xs font-bold uppercase tracking-wide text-violet-300">
-                                Answer template
-                              </p>
-                              {c.answer_guide ? <CopyButton text={c.answer_guide} /> : null}
-                            </div>
-                            <p className="text-lg text-slate-200 leading-relaxed">{c.answer_guide}</p>
-                          </div>
-                          {c.do_not_claim && (
-                            <p className="text-base text-red-300/90 px-4 pb-4">
-                              Do not claim: {c.do_not_claim}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-
-                  <Card title="Interview Playbook">
-                    {(playbook?.reported?.length ?? 0) > 0 && (
-                      <div className="mb-5">
-                        <p className="text-sm font-bold uppercase tracking-wide text-emerald-400/90 mb-2">
-                          Reported (cited)
-                        </p>
-                        <ol className="space-y-3">
-                          {playbook!.reported.map((q, i) => (
-                            <li
-                              key={i}
-                              className="text-lg rounded-xl bg-black/25 border border-emerald-500/20 px-4 py-3 text-slate-300"
-                            >
-                              <p className="leading-relaxed">{q.question}</p>
-                              {(q.source_url || q.source_date) && (
-                                <p className="text-sm text-emerald-300/80 mt-1">
-                                  {q.source_date ? `${q.source_date} · ` : ''}
-                                  {q.source_url ? (
-                                    <a
-                                      href={q.source_url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="underline"
-                                    >
-                                      source
-                                    </a>
-                                  ) : null}
-                                </p>
-                              )}
-                              {q.star_outline && (
-                                <div className="mt-2 rounded-lg border border-slate-700 bg-slate-900/50 p-2.5">
-                                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
-                                    Answer outline
-                                  </p>
-                                  <p className="text-base text-slate-400 whitespace-pre-wrap">{q.star_outline}</p>
-                                </div>
-                              )}
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                    )}
-
-                    <div className="mb-5">
-                      <p className="text-sm font-bold uppercase tracking-wide text-violet-300/90 mb-2">
-                        Predicted
-                      </p>
-                      <ol className="space-y-3">
-                        {(playbook?.predicted?.length
-                          ? playbook.predicted
-                          : (report.custom_star_interview_bank || []).map((question) => ({
-                              question,
-                              predicted: true as const,
-                            }))
-                        ).map((q, i) => (
-                          <li
-                            key={i}
-                            className="text-lg rounded-xl bg-black/25 border border-slate-700 px-4 py-3 text-slate-300 leading-relaxed"
-                          >
-                            <span className="text-violet-400 font-mono text-base font-bold mr-2">
-                              P{i + 1}
-                            </span>
-                            {q.question}
-                            {'star_outline' in q && q.star_outline ? (
-                              <div className="mt-2 rounded-lg border border-slate-700 bg-slate-900/50 p-2.5">
-                                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
-                                  Answer outline
-                                </p>
-                                <p className="text-base text-slate-400 whitespace-pre-wrap">{q.star_outline}</p>
-                              </div>
-                            ) : null}
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-
-                    {(playbook?.reverse_questions?.length ?? 0) > 0 && (
-                      <div className="mb-4">
-                        <p className="text-sm font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-1">
-                          <HelpCircle className="w-3.5 h-3.5" />
-                          Reverse questions
-                        </p>
-                        <ul className="space-y-1">
-                          {playbook!.reverse_questions.map((q, i) => (
-                            <li key={i} className="text-lg text-slate-300">
-                              · {q}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {(playbook?.validate_before_join?.length ?? 0) > 0 && (
-                      <div>
-                        <p className="text-sm font-bold uppercase tracking-wide text-slate-500 mb-2">
-                          Validate before join
-                        </p>
-                        <ul className="space-y-1">
-                          {playbook!.validate_before_join.map((q, i) => (
-                            <li key={i} className="text-lg text-slate-400">
-                              · {q}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </Card>
-                </>
-              )}
-
-              {tab === 'salary' && (
-                <>
-                  <Card
-                    title="Expected Offer Range"
-                    badge={
-                      expected?.evidence_tier
-                        ? evidenceTierLabel(expected.evidence_tier)
-                        : undefined
-                    }
-                  >
-                    <p className="text-lg text-slate-300 mb-3">
-                      {[expected?.region, expected?.currency].filter(Boolean).join(' · ') || 'USD'}
-                    </p>
-                    {offerRange ? (
-                      <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/30 px-4 py-5 mb-4">
-                        <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4">
-                          <div className="min-w-0 text-center sm:text-left flex-1">
-                            <p className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">
-                              Seat range
-                            </p>
-                            <p className="text-3xl sm:text-4xl font-black text-white tracking-tight break-words">
-                              {offerRange}
-                            </p>
-                          </div>
-                          {predictedOffer ? (
-                            <PredictedLandSquircle value={predictedOffer} />
-                          ) : null}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
-                        <p className="text-lg font-semibold text-indigo-100">
-                          No reliable offer band yet
-                        </p>
-                        <p className="text-base text-indigo-100/80 mt-1">
-                          Ask the recruiter for the approved cash range before anchoring.
-                        </p>
-                      </div>
-                    )}
-                    {expected?.candidate_position_label && (
-                      <p className="text-lg text-slate-300 leading-relaxed mb-2">
-                        {expected.candidate_position_label}
-                      </p>
-                    )}
-                    {expected?.target_gap && (
-                      <p className="text-base text-slate-500 leading-relaxed">{expected.target_gap}</p>
-                    )}
-                    {fitSalary?.offer_implications && (
-                      <p className="text-lg text-slate-300 leading-relaxed mt-4 pt-4 border-t border-slate-700">
-                        {fitSalary.offer_implications}
-                      </p>
-                    )}
-                  </Card>
-
-                  {tc && (tc.base || tc.bonus || tc.equity || tc.total) && (
-                    <Card title="TC breakdown">
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-lg">
-                        {[
-                          ['Base', tc.base],
-                          ['Bonus', tc.bonus],
-                          ['Equity', tc.equity],
-                          ['Total', tc.total],
-                        ].map(([label, value]) => (
-                          <div
-                            key={label as string}
-                            className="rounded-xl bg-black/25 border border-slate-700 p-3"
-                          >
-                            <p className="text-sm text-slate-500 mb-1">{label}</p>
-                            <p className="text-slate-100 font-medium">{value || '—'}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </Card>
-                  )}
-
-                  {offer && (
-                    <Card title="Offer Strategy">
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-lg">
-                        <div className="rounded-xl bg-black/25 border border-slate-700 p-3">
-                          <p className="text-sm text-slate-500 mb-1">Target</p>
-                          <p className="text-slate-100 font-medium">{offer.target || '—'}</p>
-                        </div>
-                        <div className="rounded-xl bg-black/25 border border-slate-700 p-3">
-                          <p className="text-sm text-slate-500 mb-1">Acceptable</p>
-                          <p className="text-slate-100 font-medium">{offer.acceptable || '—'}</p>
-                        </div>
-                        <div className="rounded-xl bg-black/25 border border-slate-700 p-3">
-                          <p className="text-sm text-slate-500 mb-1">Walk away</p>
-                          <p className="text-slate-100 font-medium">{offer.walk_away || '—'}</p>
-                        </div>
-                      </div>
-                      {(offer.structured_levers?.length ?? 0) > 0 ? (
-                        <ul className="space-y-2 mb-3">
-                          {offer.structured_levers!.map((l, i) => (
-                            <li key={i} className="text-base text-slate-300">
-                              <span className="font-semibold text-slate-100">{l.name}</span>
-                              {l.note ? (
-                                <span className="text-slate-400"> — {l.note}</span>
-                              ) : null}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (offer.levers?.length ?? 0) > 0 ? (
-                        <p className="text-base text-slate-400 mb-3">
-                          Levers: {offer.levers.join(' · ')}
-                        </p>
-                      ) : null}
-                      {offer.script && (
-                        <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/5 p-4 mb-3">
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <p className="text-xs font-bold uppercase tracking-wide text-indigo-300">
-                              Negotiation script template
-                            </p>
-                            <CopyButton text={offer.script} />
-                          </div>
-                          <p className="text-lg leading-relaxed text-slate-200 whitespace-pre-wrap">
-                            {offer.script}
-                          </p>
-                        </div>
-                      )}
-                      {(offer.discovery_questions?.length ?? 0) > 0 && (
-                        <ul className="space-y-1">
-                          {offer.discovery_questions.map((q, i) => (
-                            <li key={i} className="text-lg text-indigo-100/80">
-                              · {q}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </Card>
-                  )}
-
-                  {!offer && report.salary_negotiation_script && (
-                    <Card title="Negotiation Script">
-                      <p className="text-lg leading-relaxed text-slate-200 whitespace-pre-wrap">
-                        {report.salary_negotiation_script}
-                      </p>
-                    </Card>
-                  )}
-                </>
-              )}
-
-              {tab === 'provenance' && (
-                <Card
-                  title="Provenance"
-                  badge={`${sources.length} sources${
-                    report.report_version ? ` · ${report.report_version}` : ''
-                  }`}
-                >
-                  {report.provenance?.invalid_url_count ? (
-                    <p className="text-base text-amber-200/90 mb-3">
-                      {report.provenance.invalid_url_count} URL(s) failed validation and were
-                      downgraded (no live link).
-                    </p>
-                  ) : null}
-                  {sources.length === 0 ? (
-                    <p className="text-lg text-slate-400">
-                      No citable public sources were attached for this run. Treat salary and culture
-                      claims as hypotheses until you validate with the recruiter.
-                    </p>
-                  ) : (
-                    <ul className="space-y-3">
-                      {sources.map((s, i) => (
-                        <li
-                          key={i}
-                          className="rounded-xl border border-slate-700 bg-black/20 px-4 py-3 text-lg text-slate-300"
-                        >
-                          <div className="flex items-start gap-2">
-                            <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                            <div className="min-w-0">
-                              <p className="leading-relaxed">{s.label}</p>
-                              <p className="text-sm text-slate-500 mt-1">
-                                {s.status ? (
-                                  <span className="mr-2 uppercase tracking-wide text-[11px] font-bold text-slate-400">
-                                    {s.status}
-                                  </span>
-                                ) : null}
-                                {s.date ? `${s.date} · ` : ''}
-                                {s.url ? (
-                                  <a
-                                    href={s.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-violet-300/90 underline underline-offset-2"
-                                  >
-                                    open source
-                                  </a>
-                                ) : (
-                                  'Listed source note'
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {(hiring?.limitations?.length ?? 0) > 0 && (
-                    <div className="mt-4 pt-4 border-t border-slate-700">
-                      <p className="text-sm font-bold uppercase tracking-wide text-slate-500 mb-2">
-                        Limitations
-                      </p>
-                      <ul className="space-y-1">
-                        {hiring!.limitations.map((l, i) => (
-                          <li key={i} className="text-base text-slate-500">
-                            · {l}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </Card>
-              )}
-            </div>
-
-            {/* Collapsible provenance log footer — style cue from mock */}
-            {tab !== 'provenance' && tab !== 'snapshot' && (
-              <button
-                type="button"
-                onClick={() => setProvenanceOpen((v) => !v)}
-                className="w-full flex items-center justify-between gap-3 rounded-xl border border-slate-700 bg-black/30 px-4 py-3 text-left hover:bg-black/40 transition-colors"
-              >
-                <span className="text-base text-slate-400 flex items-center gap-2 min-w-0">
-                  <Layers className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                  <span className="truncate">
-                    Provenance Log · {sources.length} sources
-                    {sources[0]?.date ? ` · latest: ${sources[0].date}` : ''}
-                  </span>
-                </span>
-                <ChevronDown
-                  className={`w-4 h-4 text-slate-500 shrink-0 transition-transform ${
-                    provenanceOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-            )}
-            {provenanceOpen && tab !== 'provenance' && tab !== 'snapshot' && (
-              <div className="rounded-xl border border-slate-700 bg-slate-800/80 p-4 space-y-2">
-                {sources.length === 0 ? (
-                  <p className="text-base text-slate-500">No sources listed for this panel.</p>
-                ) : (
-                  sources.slice(0, 5).map((s, i) => (
-                    <p key={i} className="text-base text-slate-400 truncate">
-                      · {s.label}
-                    </p>
-                  ))
-                )}
-                <button
-                  type="button"
-                  onClick={() => setTab('provenance')}
-                  className="text-sm font-semibold text-indigo-400 hover:text-indigo-300 mt-1"
-                >
-                  Open full provenance →
-                </button>
-              </div>
-            )}
-          </section>
+          </div>
+        </section>
       </div>
     </div>
   );
