@@ -22,7 +22,7 @@ const STEP_COL =
   'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-5 sm:p-6 lg:border-b-0 lg:border-r';
 const STEP_TITLE =
   'flex min-h-[2.75rem] shrink-0 items-center pb-1.5 text-lg sm:text-xl font-bold text-white';
-const STEP_PILL_ROW = 'mb-3 flex h-[2.125rem] shrink-0 items-center overflow-hidden';
+const STEP_PILL_ROW = 'mb-3 flex h-[2.125rem] shrink-0 items-center';
 /** Shared content shell height — steps 1–4 bottom boxes align */
 const STEP_BODY = 'flex min-h-[17.5rem] flex-1 flex-col';
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
@@ -726,17 +726,19 @@ const InputForm: React.FC<InputFormProps> = ({
               </div>
             </div>
 
-            {/* 2. Resume */}
-            <div className={`${STEP_COL} lg:col-span-3`}>
+            {/* 2. Resume — overflow-visible so Saved Resumes dropdown can open */}
+            <div className={`${STEP_COL} overflow-visible lg:col-span-3`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 h-7 w-1.5 shrink-0 rounded-full bg-violet-500" />
                 <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
-              <div className={`relative ${STEP_PILL_ROW}`}>
+              <div className={`relative z-40 ${STEP_PILL_ROW} overflow-visible`}>
                 <button
                   type="button"
                   onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
                   className={PILL}
+                  aria-expanded={showHistoryDropdown}
+                  aria-haspopup="listbox"
                 >
                   <History className="h-4 w-4 shrink-0" />
                   <span className="font-bold">{t.resumeLibrary}</span>
@@ -744,9 +746,16 @@ const InputForm: React.FC<InputFormProps> = ({
                 </button>
                 {showHistoryDropdown && (
                   <>
-                    <div className="fixed inset-0 z-10" onClick={() => setShowHistoryDropdown(false)} />
-                    <div className="absolute left-0 top-full z-20 mt-1 max-w-[calc(100vw-2rem)] w-80 animate-fade-in overflow-hidden rounded-xl border border-slate-600 bg-slate-800 shadow-2xl">
-                      <div className="border-b border-slate-700 bg-slate-900/80 p-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowHistoryDropdown(false)}
+                      aria-hidden
+                    />
+                    <div
+                      role="listbox"
+                      className="absolute left-0 top-full z-50 mt-1 max-h-72 max-w-[calc(100vw-2rem)] w-80 animate-fade-in overflow-y-auto rounded-xl border border-slate-600 bg-slate-800 shadow-2xl"
+                    >
+                      <div className="sticky top-0 border-b border-slate-700 bg-slate-900/95 p-3 text-xs font-bold uppercase tracking-widest text-slate-500">
                         {t.recentlyUploaded}
                       </div>
                       {resumeHistory.length === 0 ? (
@@ -757,6 +766,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         resumeHistory.map((historyItem) => (
                           <div
                             key={historyItem.id}
+                            role="option"
                             onClick={() => handleSelectResume(historyItem)}
                             className="group relative flex cursor-pointer items-start border-b border-slate-700/50 p-3 transition-all last:border-0 hover:bg-slate-700"
                           >
