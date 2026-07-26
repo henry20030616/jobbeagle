@@ -15,6 +15,7 @@ import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { ChevronLeft, History, X, ChevronRight, Loader2, Play } from 'lucide-react';
 import { useLanguage, AppLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import { normalizeLiteReport, isLiteReport, isFullReport, normalizeFullReport } from '@/lib/normalize-lite-report';
@@ -507,7 +508,7 @@ export default function Home() {
                               report: normalizeFullReport(payload as FullReport),
                               report_type: REPORT_CODES.INTERVIEW_STRATEGY_GUIDE,
                               report_id: item.id,
-                              language: item.language || language,
+                              language: normalizeReportLanguage(item.language || language),
                             });
                             setShowHistory(false);
                             router.push('/report');
@@ -518,7 +519,7 @@ export default function Home() {
                               report: normalizeLiteReport(payload),
                               report_type: REPORT_CODES.JOB_FIT_SNAPSHOT,
                               report_id: item.id,
-                              language: item.language || language,
+                              language: normalizeReportLanguage(item.language || language),
                             });
                             setShowHistory(false);
                             router.push('/report');
