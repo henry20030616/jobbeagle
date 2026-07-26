@@ -139,12 +139,7 @@ function QuestionAccordion({
   }
   return (
     <div>
-      <p className={`${SECTION_TITLE} ${titleClass} mb-2`}>
-        {title}{' '}
-        <span className="text-slate-500 font-semibold normal-case tracking-normal">
-          ({items.length})
-        </span>
-      </p>
+      <p className={`${SECTION_TITLE} ${titleClass} mb-2`}>{title}</p>
       <div className="space-y-2">
         {items.map((q, i) => {
           const expanded = open === i;
@@ -423,56 +418,112 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   );
 }
 
+function enrichQuestionCard(
+  q: InterviewQuestionCard,
+  playbook: FullReport['interview_playbook'],
+  concerns: FullReport['concerns_defenses'],
+): InterviewQuestionCard {
+  const cat =
+    q.category || (isBehavioral(q.question) ? 'behavioral' : 'technical');
+  const template = playbook?.star_templates?.find(
+    (tmpl) => tmpl.for_question && q.question.includes(tmpl.for_question.slice(0, 24)),
+  );
+  const concern = (concerns ?? []).find((c) =>
+    q.question.toLowerCase().includes(c.concern.toLowerCase().slice(0, 12)),
+  );
+  const isReported = q.predicted === false || Boolean(q.source_url);
+  return {
+    ...q,
+    predicted: isReported ? false : true,
+    category: cat as 'behavioral' | 'technical',
+    star_blueprint:
+      q.star_blueprint
+      || q.star_outline
+      || (template
+        ? `S: ${template.situation}\nT: ${template.task}\nA: ${template.action}\nR: ${template.result}`
+        : undefined),
+    dos_donts:
+      q.dos_donts
+      || (concern ? `Do not claim: ${concern.do_not_claim}` : undefined),
+    interviewer_intent: q.interviewer_intent || concern?.why || q.evidence,
+  };
+}
+
+/** Exactly 5 cards per column: reported (full STAR) first, then system analysis. */
+function takeFiveForCategory(
+  enriched: InterviewQuestionCard[],
+  category: 'behavioral' | 'technical',
+  pads: InterviewQuestionCard[],
+): InterviewQuestionCard[] {
+  const primary = enriched.filter((q) => q.category === category);
+  const out = [...primary];
+  for (const pad of pads) {
+    if (out.length >= 5) break;
+    if (out.some((q) => q.question === pad.question)) continue;
+    out.push({ ...pad, category, predicted: true });
+  }
+  return out.slice(0, 5);
+}
+
 function Page4({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   const offer = report.offer_strategy;
   const tc = offer?.tc_breakdown || report.expected_offer?.tc_breakdown;
   const playbook = report.interview_playbook;
 
-  const enriched = useMemo(() => {
+  const { behavioral, technical } = useMemo(() => {
     const predicted = playbook?.predicted?.length
       ? playbook.predicted
       : (report.custom_star_interview_bank || []).map(
           (question): InterviewQuestionCard => ({ question, predicted: true }),
         );
     const reported = playbook?.reported ?? [];
+    // All reported + predicted get full STAR write-ups — no list-only dump.
     const merged = [
       ...reported.map((q) => ({ ...q, predicted: false as const })),
       ...predicted,
-    ];
-    return merged.map((q) => {
-      const cat =
-        q.category || (isBehavioral(q.question) ? 'behavioral' : 'technical');
-      const template = playbook?.star_templates?.find(
-        (tmpl) => tmpl.for_question && q.question.includes(tmpl.for_question.slice(0, 24)),
-      );
-      const concern = report.concerns_defenses?.find((c) =>
-        q.question.toLowerCase().includes(c.concern.toLowerCase().slice(0, 12)),
-      );
-      return {
-        ...q,
-        category: cat as 'behavioral' | 'technical',
-        star_blueprint:
-          q.star_blueprint
-          || q.star_outline
-          || (template
-            ? `S: ${template.situation}\nT: ${template.task}\nA: ${template.action}\nR: ${template.result}`
-            : undefined),
-        dos_donts:
-          q.dos_donts
-          || (concern ? `Do not claim: ${concern.do_not_claim}` : undefined),
-        interviewer_intent: q.interviewer_intent || concern?.why || q.evidence,
-      };
-    });
-  }, [playbook, report.custom_star_interview_bank, report.concerns_defenses]);
+    ].map((q) => enrichQuestionCard(q, playbook, report.concerns_defenses));
 
-  const behavioral = enriched.filter((q) => q.category === 'behavioral').slice(0, 5);
-  const technical = enriched.filter((q) => q.category === 'technical').slice(0, 5);
-  const deepIds = new Set(
-    [...behavioral, ...technical].map((q) => q.question),
-  );
-  const realListOnly = (playbook?.reported ?? []).filter(
-    (q) => !deepIds.has(q.question),
-  );
+    const pads: InterviewQuestionCard[] = [
+      ...(report.interview_starters ?? []).map(
+        (question): InterviewQuestionCard => ({
+          question,
+          predicted: true,
+          interviewer_intent: 'Likely probe from resume↔JD gaps.',
+          star_blueprint: 'S → T → A → R with one resume proof point.',
+          dos_donts: 'Stay inside verified resume facts.',
+        }),
+      ),
+      ...(report.concerns_defenses ?? []).map(
+        (c): InterviewQuestionCard => ({
+          question: c.concern,
+          predicted: true,
+          interviewer_intent: c.why,
+          star_blueprint: c.answer_guide,
+          dos_donts: c.do_not_claim,
+        }),
+      ),
+      ...(report.proof_map?.gaps ?? []).map(
+        (g): InterviewQuestionCard => ({
+          question: g.gap,
+          predicted: true,
+          interviewer_intent: g.description || 'Gap screeners will probe.',
+          star_blueprint: 'S → T → A → R bridging adjacent proof to this gap.',
+          dos_donts: 'Do not invent experience you do not have.',
+        }),
+      ),
+    ];
+
+    return {
+      behavioral: takeFiveForCategory(merged, 'behavioral', pads),
+      technical: takeFiveForCategory(merged, 'technical', pads),
+    };
+  }, [
+    playbook,
+    report.custom_star_interview_bank,
+    report.concerns_defenses,
+    report.interview_starters,
+    report.proof_map?.gaps,
+  ]);
 
   const tcRows = (
     [
@@ -573,44 +624,6 @@ function Page4({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
             titleClass="text-indigo-300"
             copy={copy}
           />
-        }
-      />
-      <ActionDualRow
-        fullWidth={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
-              {copy.extraReportedTitle}
-            </p>
-            {realListOnly.length > 0 ? (
-              <ul className="space-y-2">
-                {realListOnly.map((q, i) => (
-                  <li
-                    key={i}
-                    className={`flex flex-wrap items-start justify-between gap-2 ${BODY} text-slate-200`}
-                  >
-                    <span className="flex gap-2.5 min-w-0">
-                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-400/90" />
-                      <span>{q.question}</span>
-                    </span>
-                    {q.source_url ? (
-                      <a
-                        href={q.source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-300 shrink-0"
-                      >
-                        Source <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                    ) : (
-                      <span className="text-sm text-slate-500 shrink-0">—</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={`${BODY} text-slate-500`}>{copy.noExtraReported}</p>
-            )}
-          </>
         }
       />
     </GuideSlideShell>

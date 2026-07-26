@@ -247,6 +247,10 @@ const ZH_TW: SampleLocalePack = {
           source_url: 'https://www.glassdoor.com',
           source_date: '2026-05',
           category: 'behavioral',
+          interviewer_intent: '清算風險下的衝突處理。',
+          star_blueprint:
+            'S：工程想延後清算熱修 · T：守住關帳日 · A：影響×風險打分 + 薄 MVP · R：熱修上線、無 sev-1',
+          dos_donts: '不要把工程講成壞人；聚焦風險與客戶影響。',
         },
       ],
       predicted: [
@@ -275,6 +279,15 @@ const ZH_TW: SampleLocalePack = {
           dos_donts: '不要抹黑任一利害關係人。',
         },
         {
+          question: '說說你曾經對利害關係人的需求說不的經驗。',
+          predicted: true,
+          category: 'behavioral',
+          interviewer_intent: '在不傷信任下設界線。',
+          star_blueprint:
+            'S：客服要虛榮指標 · T：保持決策有用 · A：提替代 KPI + 負責人 · R：延後請求、MBR 維持精準',
+          dos_donts: '語氣不要輕蔑；講清楚你守住的取捨。',
+        },
+        {
           question: '前 60 天你會如何上手 ACH 退票？',
           predicted: true,
           category: 'technical',
@@ -298,6 +311,24 @@ const ZH_TW: SampleLocalePack = {
           interviewer_intent: '模糊情境下的營運事故結構。',
           star_blueprint: '穩定 · 根因分群 · 臨時控制 · 永久修復',
           dos_donts: '不要虛構處理商後台經驗。',
+        },
+        {
+          question: '在自己不擁有合規的情況下，你會如何驗證與 NACHA 相關的控制？',
+          predicted: true,
+          category: 'technical',
+          interviewer_intent: '在 BA 範疇內與風險／合規合作。',
+          star_blueprint:
+            '對齊控制負責人 · 定義證據清單 · 每週例外檢視 · 缺口上升通報',
+          dos_donts: '不要聲稱自己是 NACHA 負責人。',
+        },
+        {
+          question: '當清算 SLA 告急時，你如何估算並排序工程需求？',
+          predicted: true,
+          category: 'technical',
+          interviewer_intent: 'SLA 壓力下的產品／營運優先級。',
+          star_blueprint:
+            '量化 SLA 燒損 · 估工程成本 · 提 MVP vs 完整修復 · 與風險＋工程對齊',
+          dos_donts: '不要虛構無法辯護的產能數字。',
         },
       ],
       star_templates: [
@@ -678,6 +709,10 @@ const ZH_CN: SampleLocalePack = {
           source_url: 'https://www.glassdoor.com',
           source_date: '2026-05',
           category: 'behavioral',
+          interviewer_intent: '清算风险下的冲突处理。',
+          star_blueprint:
+            'S：工程想延后清算热修 · T：守住关账日 · A：影响×风险打分 + 薄 MVP · R：热修上线、无 sev-1',
+          dos_donts: '不要把工程讲成坏人；聚焦风险与客户影响。',
         },
       ],
       predicted: [
@@ -706,6 +741,15 @@ const ZH_CN: SampleLocalePack = {
           dos_donts: '不要抹黑任一利益相关者。',
         },
         {
+          question: '说说你曾经对利益相关者的需求说不的经验。',
+          predicted: true,
+          category: 'behavioral',
+          interviewer_intent: '在不伤信任下设界限。',
+          star_blueprint:
+            'S：客服要虚荣指标 · T：保持决策有用 · A：提替代 KPI + 负责人 · R：延后请求、MBR 维持精准',
+          dos_donts: '语气不要轻蔑；讲清楚你守住的取舍。',
+        },
+        {
           question: '前 60 天你会如何上手 ACH 退票？',
           predicted: true,
           category: 'technical',
@@ -729,6 +773,24 @@ const ZH_CN: SampleLocalePack = {
           interviewer_intent: '模糊情境下的运营事故结构。',
           star_blueprint: '稳定 · 根因分群 · 临时控制 · 永久修复',
           dos_donts: '不要虚构处理商后台经验。',
+        },
+        {
+          question: '在自己不拥有合规的情况下，你会如何验证与 NACHA 相关的控制？',
+          predicted: true,
+          category: 'technical',
+          interviewer_intent: '在 BA 范畴内与风险／合规合作。',
+          star_blueprint:
+            '对齐控制负责人 · 定义证据清单 · 每周例外检视 · 缺口上升通报',
+          dos_donts: '不要声称自己是 NACHA 负责人。',
+        },
+        {
+          question: '当清算 SLA 告急时，你如何估算并排序工程需求？',
+          predicted: true,
+          category: 'technical',
+          interviewer_intent: 'SLA 压力下的产品／运营优先级。',
+          star_blueprint:
+            '量化 SLA 烧损 · 估工程成本 · 提 MVP vs 完整修复 · 与风险＋工程对齐',
+          dos_donts: '不要虚构无法辩护的产能数字。',
         },
       ],
       star_templates: [
@@ -1115,6 +1177,10 @@ const ES: SampleLocalePack = {
           source_url: 'https://www.glassdoor.com',
           source_date: '2026-05',
           category: 'behavioral',
+          interviewer_intent: 'Resolución de conflicto bajo riesgo de settlement.',
+          star_blueprint:
+            'S: eng quería retrasar un hotfix · T: proteger close · A: score impacto×riesgo + MVP fino · R: hotfix shipped, sin sev-1',
+          dos_donts: 'No pintes a eng como villano; enfócate en riesgo e impacto al cliente.',
         },
       ],
       predicted: [
@@ -1143,6 +1209,15 @@ const ES: SampleLocalePack = {
           dos_donts: 'No critiques a ningún grupo de stakeholders.',
         },
         {
+          question: 'Cuéntame de una vez que dijiste no a un pedido de un stakeholder.',
+          predicted: true,
+          category: 'behavioral',
+          interviewer_intent: 'Poner límites sin quemar confianza.',
+          star_blueprint:
+            'S: CX pedía vanity metric · T: pack útil · A: KPI alterno + owner · R: pedido diferido, MBR claro',
+          dos_donts: 'No suenes desdeñoso; muestra el tradeoff que protegiste.',
+        },
+        {
           question: '¿Cómo rampéas ACH returns en tus primeros 60 días?',
           predicted: true,
           category: 'technical',
@@ -1166,6 +1241,24 @@ const ES: SampleLocalePack = {
           interviewer_intent: 'Estructura de incidente ops bajo ambigüedad.',
           star_blueprint: 'Estabilizar · segmentar causas · control temporal · fix permanente',
           dos_donts: 'No inventes experiencia en consola de processor.',
+        },
+        {
+          question: '¿Cómo validarías controles NACHA sin ser el owner de compliance?',
+          predicted: true,
+          category: 'technical',
+          interviewer_intent: 'Colaborar con risk/compliance dentro del scope BA.',
+          star_blueprint:
+            'Mapear owners · checklist de evidencia · review semanal · escalar gaps',
+          dos_donts: 'No digas que eras el officer NACHA.',
+        },
+        {
+          question: '¿Cómo dimensionas y priorizas un ask de eng cuando peligran SLAs de settlement?',
+          predicted: true,
+          category: 'technical',
+          interviewer_intent: 'Priorización producto/ops bajo presión de SLA.',
+          star_blueprint:
+            'Cuantificar burn de SLA · estimar costo eng · MVP vs fix completo · alinear risk+eng',
+          dos_donts: 'No inventes capacity que no puedas defender.',
         },
       ],
       star_templates: [

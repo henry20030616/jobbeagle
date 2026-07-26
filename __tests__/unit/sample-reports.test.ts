@@ -30,6 +30,19 @@ describe('sample reports', () => {
     expect(report.company_truth?.competitors[0]?.name).not.toMatch(/peers|pipelines|同儕|管線/i);
     expect(report.company_truth?.current_strategy).not.toMatch(/Wikipedia|encyclopedic|百科|維基/i);
     expect(report.offer_strategy.tc_breakdown?.sign_on).toBeTruthy();
+    const playbookQs = [
+      ...report.interview_playbook.reported,
+      ...report.interview_playbook.predicted,
+    ];
+    const behavioral = playbookQs.filter((q) => q.category === 'behavioral');
+    const technical = playbookQs.filter((q) => q.category === 'technical');
+    expect(behavioral).toHaveLength(5);
+    expect(technical).toHaveLength(5);
+    for (const q of playbookQs) {
+      expect(q.interviewer_intent?.trim().length).toBeGreaterThan(5);
+      expect((q.star_blueprint || q.star_outline || '').trim().length).toBeGreaterThan(5);
+      expect(q.dos_donts?.trim().length).toBeGreaterThan(5);
+    }
   });
 
   it('localizes Snapshot body + keeps English chrome-free for zh-TW', () => {
@@ -67,6 +80,11 @@ describe('guide page copy', () => {
     expect(zh.currentStrategy).not.toMatch(/維基|百科|wiki/i);
     expect(zh.competitors).toMatch(/產業競爭對手/);
     expect(zh.competitorsHint).toMatch(/具名企業|求職者/);
+    expect(zh.behavioralTitle).toMatch(/（5）/);
+    expect(zh.technicalTitle).toMatch(/（5）/);
+    expect(zh.predictedBadge).toBe('系統分析');
+    expect(zh.extraReportedTitle).toBe('');
+    expect(zh.noExtraReported).toBe('');
   });
 });
 

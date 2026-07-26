@@ -16,6 +16,7 @@ import type {
   HardRequirementStatus,
   HiringContext,
   InterviewPlaybook,
+  InterviewQuestionCard,
   LiteHardRequirement,
   LiteMatchPoint,
   LiteReport,
@@ -808,12 +809,19 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
                 .filter((q) => q?.question)
                 .map((q) => ({
                   question: asString(q.question),
-                  predicted: q.predicted,
+                  predicted: q.predicted === true ? true : false,
                   source_url: asString(q.source_url),
                   source_date: asString(q.source_date),
                   evidence: asString(q.evidence),
                   star_outline: asString(q.star_outline),
+                  star_blueprint: asString(q.star_blueprint),
+                  interviewer_intent: asString(q.interviewer_intent),
+                  dos_donts: asString(q.dos_donts),
                   missing_facts: asString(q.missing_facts),
+                  category:
+                    q.category === 'behavioral' || q.category === 'technical'
+                      ? q.category
+                      : undefined,
                   date: asString(q.source_date),
                 })),
             ).map(({ date, ...q }) => ({
@@ -823,7 +831,11 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
               source_date: q.source_date || date,
               evidence: q.evidence || undefined,
               star_outline: q.star_outline || undefined,
+              star_blueprint: q.star_blueprint || undefined,
+              interviewer_intent: q.interviewer_intent || undefined,
+              dos_donts: q.dos_donts || undefined,
               missing_facts: q.missing_facts || undefined,
+              category: q.category,
             }))
           : [],
         predicted: Array.isArray(raw.interview_playbook.predicted)
@@ -990,18 +1002,32 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
     (raw as Partial<StrategyIntelFields>).reference_citations,
   );
 
-  // Enrich predicted questions with category when omitted
-  interview_playbook.predicted = interview_playbook.predicted.map((q) => {
-    if (q.category) return q;
+  // Enrich reported + predicted with category when omitted
+  const inferCategory = (
+    q: InterviewQuestionCard,
+  ): InterviewQuestionCard['category'] => {
+    if (q.category === 'behavioral' || q.category === 'technical') return q.category;
     const s = q.question.toLowerCase();
     const behavioral =
       s.includes('tell me about')
       || s.includes('walk me through')
       || s.includes('time you')
       || s.includes('how do you')
-      || s.includes('describe a');
-    return { ...q, category: behavioral ? 'behavioral' : 'technical' };
-  });
+      || s.includes('describe a')
+      || s.includes('說說')
+      || s.includes('描述')
+      || s.includes('請從頭');
+    return behavioral ? 'behavioral' : 'technical';
+  };
+  interview_playbook.reported = interview_playbook.reported.map((q) => ({
+    ...q,
+    predicted: false,
+    category: inferCategory(q),
+  }));
+  interview_playbook.predicted = interview_playbook.predicted.map((q) => ({
+    ...q,
+    category: inferCategory(q),
+  }));
 
   return {
     strategy_fit_salary,

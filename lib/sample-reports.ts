@@ -260,6 +260,10 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
         source_url: 'https://www.glassdoor.com',
         source_date: '2026-05',
         category: 'behavioral',
+        interviewer_intent: 'Conflict resolution under settlement risk.',
+        star_blueprint:
+          'S: eng wanted to slip a settlement hotfix · T: protect close date · A: impact×risk scoring + thin MVP · R: hotfix shipped, no sev-1',
+        dos_donts: 'Do not frame eng as the villain; stay on risk and customer impact.',
       },
     ],
     predicted: [
@@ -288,6 +292,15 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
         dos_donts: 'Do not badmouth either stakeholder group.',
       },
       {
+        question: 'Tell me about a time you had to say no to a stakeholder request.',
+        predicted: true,
+        category: 'behavioral',
+        interviewer_intent: 'Boundary-setting without burning trust.',
+        star_blueprint:
+          'S: CX asked for a vanity metric · T: keep pack decision-useful · A: offered alternate KPI + owner · R: request deferred, MBR stayed crisp',
+        dos_donts: 'Do not sound dismissive; show the tradeoff you protected.',
+      },
+      {
         question: 'How would you ramp on ACH returns in your first 60 days?',
         predicted: true,
         category: 'technical',
@@ -311,6 +324,24 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
         interviewer_intent: 'Ops incident structure under ambiguity.',
         star_blueprint: 'Stabilize · segment root causes · temporary control · permanent fix',
         dos_donts: 'Do not invent processor console experience.',
+      },
+      {
+        question: 'How would you validate NACHA-related controls without owning compliance yourself?',
+        predicted: true,
+        category: 'technical',
+        interviewer_intent: 'Partnering with risk/compliance while staying in BA scope.',
+        star_blueprint:
+          'Map control owners · define evidence checklist · weekly exception review · escalate gaps',
+        dos_donts: 'Do not claim you were the NACHA officer.',
+      },
+      {
+        question: 'How do you size and prioritize an eng ask when settlement SLAs are at risk?',
+        predicted: true,
+        category: 'technical',
+        interviewer_intent: 'Product/ops prioritization under SLA pressure.',
+        star_blueprint:
+          'Quantify SLA burn · estimate eng cost · propose MVP vs full fix · socialize with risk+eng',
+        dos_donts: 'Do not invent capacity numbers you cannot defend.',
       },
     ],
     star_templates: [
