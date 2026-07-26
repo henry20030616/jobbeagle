@@ -36,7 +36,7 @@ export function PageHeaderBar({
           </h2>
         </div>
         <span
-          className={`shrink-0 rounded-lg border px-3 py-1.5 text-sm font-bold uppercase tracking-wider ${tones[badgeTone]}`}
+          className={`shrink-0 rounded-lg border px-3 py-1.5 text-sm font-bold tracking-wide ${tones[badgeTone]}`}
         >
           {badge}
         </span>

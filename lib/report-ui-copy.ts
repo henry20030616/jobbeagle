@@ -104,6 +104,8 @@ export interface GuideUiCopy {
   // Page 4
   page4Of: string;
   page4Title: string;
+  /** Plain-language page badge — never jargon like "HIGH ROI" */
+  page4Badge: string;
   /** Same Snapshot salary trio: range · median · predicted land */
   offerRangeTitle: string;
   noOfferBand: string;
@@ -135,6 +137,7 @@ export interface GuideUiCopy {
   // Page 5
   page5Of: string;
   page5Title: string;
+  page5Badge: string;
   ragCount: string;
   ragSourcesHint: string;
   invalidLinkTitle: string;
@@ -449,6 +452,7 @@ const GUIDE: Dict<GuideUiCopy> = {
       'If there is no public layoff/legal record, do not invent one — output 2–3 strategy questions instead.',
     page4Of: 'PAGE 4 OF 5',
     page4Title: 'Interview & offer strategy',
+    page4Badge: 'Highest prep payoff',
     offerRangeTitle: 'Expected offer range',
     noOfferBand: 'No reliable offer band yet',
     offerMedianLabel: 'Seat median',
@@ -478,6 +482,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     noExtraReported: '',
     page5Of: 'PAGE 5 OF 5',
     page5Title: 'References & evidence chain',
+    page5Badge: 'Sources you can verify',
     ragCount: 'RAG citation count',
     ragSourcesHint: 'Reddit/Blind threads, Levels.fyi, Layoff, news — original links',
     invalidLinkTitle: 'Missing URL handling',
@@ -569,6 +574,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     strategyQuestionsNote: '降級條款：若無公開違法/裁員紀錄，不得編造；改輸出 2–3 題戰略問題。',
     page4Of: '第 4 / 5 頁',
     page4Title: '面試與談薪策略',
+    page4Badge: '準備最划算',
     offerRangeTitle: '預期薪資區間',
     noOfferBand: '尚無可靠薪資區間',
     offerMedianLabel: '座位中位數',
@@ -598,6 +604,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     noExtraReported: '',
     page5Of: '第 5 / 5 頁',
     page5Title: '參考資料與證據鏈',
+    page5Badge: '來源可查證',
     ragCount: 'RAG 引用條數',
     ragSourcesHint: 'Reddit/Blind 討論串、Levels.fyi、Layoff、新聞等原始連結',
     invalidLinkTitle: '無效連結處理',
@@ -688,6 +695,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     strategyQuestionsNote: '降级条款：若无公开违法/裁员记录，不得编造；改输出 2–3 题战略问题。',
     page4Of: '第 4 / 5 页',
     page4Title: '面试与谈薪策略',
+    page4Badge: '准备最划算',
     offerRangeTitle: '预期薪酬区间',
     noOfferBand: '尚无可靠薪酬区间',
     offerMedianLabel: '座位中位数',
@@ -717,6 +725,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     noExtraReported: '',
     page5Of: '第 5 / 5 页',
     page5Title: '参考资料与证据链',
+    page5Badge: '来源可查证',
     ragCount: 'RAG 引用条数',
     ragSourcesHint: 'Reddit/Blind 讨论串、Levels.fyi、Layoff、新闻等原始链接',
     invalidLinkTitle: '无效链接处理',
@@ -814,6 +823,7 @@ const GUIDE: Dict<GuideUiCopy> = {
       'Si no hay registro público de layoffs/legal, no inventes — escribe 2–3 preguntas de estrategia.',
     page4Of: 'PÁGINA 4 DE 5',
     page4Title: 'Estrategia de entrevista y oferta',
+    page4Badge: 'Mayor retorno al prepararte',
     offerRangeTitle: 'Rango de oferta esperada',
     noOfferBand: 'Aún no hay banda salarial fiable',
     offerMedianLabel: 'Mediana del puesto',
@@ -843,6 +853,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     noExtraReported: '',
     page5Of: 'PÁGINA 5 DE 5',
     page5Title: 'Referencias y cadena de evidencia',
+    page5Badge: 'Fuentes verificables',
     ragCount: 'Conteo de citas RAG',
     ragSourcesHint: 'Hilos Reddit/Blind, Levels.fyi, Layoff, noticias — enlaces originales',
     invalidLinkTitle: 'Sin URL directa',
@@ -939,6 +950,7 @@ const GUIDE: Dict<GuideUiCopy> = {
       'यदि कोई सार्वजनिक लेऑफ/कानूनी रिकॉर्ड नहीं — गढ़ें नहीं; 2–3 रणनीति प्रश्न दें।',
     page4Of: 'पेज 4 / 5',
     page4Title: 'इंटरव्यू और ऑफर रणनीति',
+    page4Badge: 'सबसे ज़्यादा तैयारी फायदा',
     offerRangeTitle: 'अपेक्षित ऑफर रेंज',
     noOfferBand: 'अभी कोई विश्वसनीय ऑफर बैंड नहीं',
     offerMedianLabel: 'सीट माध्यिका',
@@ -968,6 +980,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     noExtraReported: '',
     page5Of: 'पेज 5 / 5',
     page5Title: 'संदर्भ और सबूत श्रृंखला',
+    page5Badge: 'जाँच योग्य स्रोत',
     ragCount: 'RAG उद्धरण संख्या',
     ragSourcesHint: 'Reddit/Blind, Levels.fyi, Layoff, समाचार — मूल लिंक',
     invalidLinkTitle: 'URL न होने पर',
@@ -1064,6 +1077,7 @@ const GUIDE: Dict<GuideUiCopy> = {
       'إن لم يوجد سجل تسريح/قانوني عام — لا تختلق؛ اكتب 2–3 أسئلة استراتيجية.',
     page4Of: 'الصفحة 4 من 5',
     page4Title: 'استراتيجية المقابلة والعرض',
+    page4Badge: 'أعلى عائد للتحضير',
     offerRangeTitle: 'نطاق العرض المتوقع',
     noOfferBand: 'لا يوجد نطاق عرض موثوق بعد',
     offerMedianLabel: 'وسيط المقعد',
@@ -1093,6 +1107,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     noExtraReported: '',
     page5Of: 'الصفحة 5 من 5',
     page5Title: 'المراجع وسلسلة الأدلة',
+    page5Badge: 'مصادر يمكن التحقق منها',
     ragCount: 'عدد اقتباسات RAG',
     ragSourcesHint: 'خيوط Reddit/Blind وLevels.fyi وLayoff والأخبار — روابط أصلية',
     invalidLinkTitle: 'عند غياب الرابط',

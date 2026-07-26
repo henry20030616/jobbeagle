@@ -102,6 +102,9 @@ describe('guide page copy', () => {
     expect(zh.newsCatLeadership).toMatch(/經營層/);
     expect(zh.resumeAnchorLabel).toMatch(/履歷錨點/);
     expect(zh.starLabel).toMatch(/履歷/);
+    expect(zh.page4Badge).toBe('準備最划算');
+    expect(zh.page4Badge).not.toMatch(/ROI|HIGH/i);
+    expect(zh.page5Badge).toBe('來源可查證');
     expect(zh.behavioralTitle).toMatch(/（5）/);
     expect(zh.technicalTitle).toMatch(/（5）/);
     expect(zh.predictedBadge).toBe('系統分析');

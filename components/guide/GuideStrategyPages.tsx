@@ -732,7 +732,7 @@ function Page4({
       <PageHeaderBar
         pageOf={copy.page4Of}
         title={copy.page4Title}
-        badge="HIGH ROI"
+        badge={copy.page4Badge}
         badgeTone="violet"
       />
       <HeroDualRow
@@ -877,7 +877,7 @@ function Page5({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
       <PageHeaderBar
         pageOf={copy.page5Of}
         title={copy.page5Title}
-        badge="AUDIT TRAIL"
+        badge={copy.page5Badge}
         badgeTone="sky"
       />
       <HeroDualRow
