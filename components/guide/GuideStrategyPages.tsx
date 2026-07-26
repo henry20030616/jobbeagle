@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * Interview Strategy Guide — Pages 2–5.
- * Layout mirrors LiteReportDashboard (Page 1) 4-row grid. No duplicate $ salary ranges on 2–3.
+ * Interview Strategy Guide Pages 2–5 — Excel《Jobbeagle報告範圍》A–E 原稿。
+ * Layout mirrors Page 1. No invented sections. No $ salary on Pages 2–3.
  */
 
 import React, { useMemo, useState } from 'react';
@@ -43,79 +43,38 @@ function isBehavioral(q: string): boolean {
   );
 }
 
-function synthesizeRoleTeam(report: FullReport): RoleTeamInsights {
+function roleTeamOrEmpty(report: FullReport): RoleTeamInsights {
   if (report.role_team_insights) return report.role_team_insights;
-  const role = report.role_read;
-  const hard = report.hard_filter?.items ?? [];
-  const insights = report.hiring_context?.insights ?? [];
-  const insufficient = insights.length === 0;
   return {
-    team_fit_badge: insufficient ? 'UNKNOWN' : 'MEDIUM',
-    career_trajectory: {
-      current_label: report.job_title || 'This role',
-      next_role: role?.hiring_signals?.[0] || 'Senior ownership track (validate leveling)',
-      growth_potential_pct: '—',
-    },
-    work_arrangement: {
-      mode: 'UNKNOWN',
-      hours_per_week: undefined,
-      notes: 'Confirm RTO / remote with recruiter — not stated in structured output.',
-    },
-    role_core: role?.responsibilities?.length
-      ? role.responsibilities
-      : [role?.mission || 'Role mission not extracted.'],
-    hard_requirements: hard.length
-      ? hard.map((h) => `${h.requirement} (${h.status})`)
-      : role?.hiring_signals ?? [],
-    team_vibe: insights[0]
-      ? `${insights[0].claim} — ${insights[0].why_it_matters}`
-      : 'Limited public team-culture signals for this seat.',
-    vibe_source_tag: insights[0]?.source_url
-      ? '[ Official JD vs. Web-Grounded Verified ]'
-      : '[ Official JD — web signals thin ]',
-    team_highlights: (report.candidate_case?.top_facts ?? []).slice(0, 3),
-    team_pain_points: (report.proof_map?.gaps ?? [])
-      .slice(0, 3)
-      .map((g) => `${g.gap}${g.description ? `: ${g.description}` : ''}`),
-    promotion_drivers: role?.hiring_signals?.slice(0, 3) ?? [],
-    hm_verification_questions: [
-      ...(report.hiring_context?.validation_questions ?? []),
-      ...(report.strategy_fit_salary?.validate_with_recruiter ?? []),
-    ]
-      .filter((q, i, a) => a.indexOf(q) === i)
-      .slice(0, 3),
-    data_insufficient: insufficient,
+    role_content_refined: report.role_read?.responsibilities?.slice(0, 6) ?? [],
+    requirements_refined: report.role_read?.hiring_signals?.slice(0, 6) ?? [],
+    rto_official: 'Not stated on JD',
+    rto_employee_reality: '該團隊公開樣本不足',
+    next_title_1_3yr: '',
+    promotion_skill_gaps: (report.proof_map?.gaps ?? []).slice(0, 3).map((g) => g.gap),
+    team_sample_insufficient: true,
+    department_fallback_note:
+      'Public sample for this specific team is insufficient — validate with the hiring manager.',
   };
 }
 
-function synthesizeCompanyTruth(report: FullReport): CompanyTruth {
+function companyTruthOrEmpty(report: FullReport): CompanyTruth {
   if (report.company_truth) return report.company_truth;
   const insights = report.hiring_context?.insights ?? [];
-  const insufficient = insights.length < 2;
   return {
-    risk_audit_badge: insufficient ? 'DATA THIN' : 'PASSED',
-    strategic_focus: insights[0]?.claim || 'No recent strategic news extracted for this company.',
-    leadership_notes:
-      insights[1]?.claim
-      || insights[0]?.why_it_matters
-      || 'CEO / leadership public signals unavailable for this run.',
-    competitors: insights.slice(0, 3).map((ins, i) => ({
-      name: `Signal ${i + 1}`,
-      note: ins.claim,
-    })),
-    culture_forum_takeaways: insights.map((i) => i.claim).slice(0, 4),
+    current_strategy:
+      insights[0]?.claim || 'No current-strategy public signal — do not invent company history.',
+    competitors: [],
+    insider_voice: insights.map((i) => i.claim).slice(0, 4),
+    forum_sample_thin: insights.length < 2,
     layoff_legal_flags: [],
-    company_moat: insights.slice(0, 2).map((i) => i.why_it_matters).filter(Boolean),
-    org_risks: (report.hiring_context?.limitations ?? []).slice(0, 3),
-    insufficient_public_data: insufficient,
-    strategic_questions: (report.hiring_context?.validation_questions ?? []).slice(0, 3),
-    suggested_search_query: report.company_name
-      ? `"${report.company_name}" Glassdoor OR Blind OR layoff`
-      : undefined,
+    interviewer_strategy_questions: (
+      report.hiring_context?.validation_questions ?? []
+    ).slice(0, 3),
   };
 }
 
-function synthesizeCitations(report: FullReport): ReferenceCitation[] {
+function citationsOrEmpty(report: FullReport): ReferenceCitation[] {
   if (report.reference_citations?.length) return report.reference_citations;
   const out: ReferenceCitation[] = [];
   for (const e of report.provenance?.entries ?? []) {
@@ -125,9 +84,9 @@ function synthesizeCitations(report: FullReport): ReferenceCitation[] {
       date: e.date || '—',
       evidence_tier: e.status === 'valid' ? 2 : 3,
       url: e.url || '',
+      manual_verify_keywords: e.url ? undefined : e.label.slice(0, 80),
     });
   }
-  if (out.length) return out;
   for (const ins of report.hiring_context?.insights ?? []) {
     out.push({
       source_badge: 'web',
@@ -135,16 +94,21 @@ function synthesizeCitations(report: FullReport): ReferenceCitation[] {
       date: ins.date || '—',
       evidence_tier: ins.source_url ? 2 : 3,
       url: ins.source_url || '',
+      manual_verify_keywords: ins.source_url
+        ? undefined
+        : `${report.company_name} Glassdoor Blind`,
     });
   }
   for (const q of report.interview_playbook?.reported ?? []) {
-    if (!q.source_url && !q.question) continue;
     out.push({
       source_badge: 'interview',
       description: q.question.slice(0, 120),
       date: q.source_date || '—',
       evidence_tier: q.source_url ? 2 : 3,
       url: q.source_url || '',
+      manual_verify_keywords: q.source_url
+        ? undefined
+        : `${report.company_name} interview questions`,
     });
   }
   return out;
@@ -170,14 +134,19 @@ function QuestionAccordion({
   }
   return (
     <div>
-      <p className={`${SECTION_TITLE} ${titleClass} mb-2`}>{title}</p>
+      <p className={`${SECTION_TITLE} ${titleClass} mb-2`}>
+        {title}{' '}
+        <span className="text-slate-500 font-semibold normal-case tracking-normal">
+          ({items.length})
+        </span>
+      </p>
       <div className="space-y-2">
         {items.map((q, i) => {
           const expanded = open === i;
+          const isGuess = q.predicted !== false && !q.source_url;
           const blueprint =
             q.star_blueprint
             || q.star_outline
-            || (q.missing_facts ? `Missing facts to prepare: ${q.missing_facts}` : '')
             || 'Outline Situation → Task → Action → Result with one resume proof point.';
           return (
             <div
@@ -194,26 +163,35 @@ function QuestionAccordion({
                     expanded ? 'rotate-180' : ''
                   }`}
                 />
-                <span className={`${BODY} font-semibold text-slate-100`}>{q.question}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="inline-flex flex-wrap items-center gap-2">
+                    {isGuess ? (
+                      <span className="rounded border border-amber-400/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
+                        猜題 Predicted
+                      </span>
+                    ) : (
+                      <span className="rounded border border-emerald-400/50 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-200">
+                        真題 Reported
+                      </span>
+                    )}
+                    <span className={`${BODY} font-semibold text-slate-100`}>{q.question}</span>
+                  </span>
+                </span>
               </button>
               {expanded ? (
                 <div className="border-t border-slate-700/80 px-3 py-3 space-y-2">
-                  {q.interviewer_intent || q.evidence ? (
-                    <p className={BODY_MUTED}>
-                      <span className="font-semibold text-slate-300">Intent: </span>
-                      {q.interviewer_intent || q.evidence}
-                    </p>
-                  ) : null}
+                  <p className={BODY_MUTED}>
+                    <span className="font-semibold text-slate-300">考察意圖 Intent: </span>
+                    {q.interviewer_intent || q.evidence || '—'}
+                  </p>
                   <p className={`${BODY} text-slate-200 whitespace-pre-wrap`}>
-                    <span className="font-semibold text-indigo-200">STAR blueprint: </span>
+                    <span className="font-semibold text-indigo-200">STAR 大綱: </span>
                     {blueprint}
                   </p>
-                  {q.dos_donts ? (
-                    <p className={BODY_MUTED}>
-                      <span className="font-semibold text-amber-200">Do&apos;s &amp; Don&apos;ts: </span>
-                      {q.dos_donts}
-                    </p>
-                  ) : null}
+                  <p className={BODY_MUTED}>
+                    <span className="font-semibold text-amber-200">Do&apos;s &amp; Don&apos;ts: </span>
+                    {q.dos_donts || 'Do not invent resume facts; stay inside verified experience.'}
+                  </p>
                 </div>
               ) : null}
             </div>
@@ -224,78 +202,82 @@ function QuestionAccordion({
   );
 }
 
+/** Excel B — 職位與團隊現況 */
 function Page2({ report }: { report: FullReport }) {
-  const t = synthesizeRoleTeam(report);
-  const badgeTone =
-    t.team_fit_badge.toUpperCase().includes('HIGH')
-      ? 'emerald'
-      : t.team_fit_badge.toUpperCase().includes('LOW')
-        ? 'red'
-        : t.data_insufficient
-          ? 'amber'
-          : 'sky';
+  const t = roleTeamOrEmpty(report);
 
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 2 OF 5"
-        title="Role & Team Insights"
-        badge={`TEAM FIT: ${t.team_fit_badge}`}
-        badgeTone={badgeTone}
+        pageOf="PAGE 2 OF 5 · Excel B"
+        title="職位與團隊現況"
+        badge={t.team_sample_insufficient ? '樣本不足' : 'TEAM SIGNALS'}
+        badgeTone={t.team_sample_insufficient ? 'amber' : 'sky'}
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>Career Trajectory & Growth</p>
-            <p className="text-2xl font-black text-white leading-snug">
-              {t.career_trajectory.current_label}
-              <span className="text-slate-500 mx-2">→</span>
-              <span className="text-indigo-200">{t.career_trajectory.next_role}</span>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
+              職位內容（重構精練）
             </p>
-            <div className="mt-4 flex items-center gap-4">
-              <div
-                className="flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-4 border-indigo-400/50 bg-indigo-500/10"
-                aria-label={`Growth potential ${t.career_trajectory.growth_potential_pct}`}
-              >
-                <span className="text-2xl font-black text-indigo-200 tabular-nums text-center px-1">
-                  {t.career_trajectory.growth_potential_pct}
-                </span>
-              </div>
-              <p className={BODY_MUTED}>
-                1–3yr growth potential (relative). Confirm leveling — no dollar ranges on this page.
-              </p>
-            </div>
+            <p className={`${META} text-slate-500 mb-2`}>嚴禁照抄 JD 原文</p>
+            <BulletList
+              items={
+                t.role_content_refined.length
+                  ? t.role_content_refined
+                  : ['Role content not extracted in this run.']
+              }
+              tone="indigo"
+            />
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>RTO & Work-Life Balance</p>
-            <p className="text-4xl font-black text-white tracking-tight leading-none break-words">
-              {t.work_arrangement.mode}
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
+              要求條件（重構精練）
             </p>
-            {t.work_arrangement.hours_per_week ? (
-              <p className={`${BODY} text-emerald-100/90 mt-3`}>
-                Est. {t.work_arrangement.hours_per_week}
-              </p>
-            ) : null}
-            {t.work_arrangement.notes ? (
-              <p className={`${BODY_MUTED} mt-2 leading-relaxed`}>{t.work_arrangement.notes}</p>
-            ) : null}
+            <BulletList
+              items={
+                t.requirements_refined.length
+                  ? t.requirements_refined
+                  : ['Requirements not extracted in this run.']
+              }
+              tone="emerald"
+            />
           </>
         }
       />
       <DetailDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>Role Core & Hard Requirements</p>
-            <BulletList items={[...t.role_core, ...t.hard_requirements].slice(0, 8)} tone="indigo" />
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
+              工作型態 / RTO（官方）
+            </p>
+            <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
+              {t.rto_official || 'Not stated on JD'}
+            </p>
+            <p className={`${BODY_MUTED} mt-2`}>來源：JD / Company Career Page</p>
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>Team Vibe & Work Culture</p>
-            <p className={`${BODY} text-slate-200 leading-relaxed flex-1`}>{t.team_vibe}</p>
-            <p className={`${META} text-slate-500 mt-3`}>{t.vibe_source_tag}</p>
+            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
+              真實體感（加班 / WLB）
+            </p>
+            {t.team_sample_insufficient ? (
+              <div className="mb-2">
+                <InsufficientDataBadge label="該團隊公開樣本不足" />
+              </div>
+            ) : null}
+            <p className={`${BODY} text-slate-200 leading-relaxed`}>
+              {t.rto_employee_reality}
+            </p>
+            {t.department_fallback_note ? (
+              <p className={`${BODY_MUTED} mt-2`}>{t.department_fallback_note}</p>
+            ) : null}
+            <p className={`${META} text-slate-500 mt-2`}>
+              來源：LinkedIn / Glassdoor / 論壇（非官方 PR）
+            </p>
           </>
         }
       />
@@ -304,29 +286,27 @@ function Page2({ report }: { report: FullReport }) {
           <>
             <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
               <CheckCircle2 className="w-5 h-5 mr-1.5" />
-              Team Highlights
+              1–3 年下一階段職銜
             </h3>
-            <BulletList
-              items={
-                t.team_highlights.length
-                  ? t.team_highlights
-                  : ['Limited verified team highlights — validate with HM.']
-              }
-              tone="emerald"
-            />
+            <p className="text-2xl font-black text-white leading-snug">
+              {t.next_title_1_3yr || 'Validate leveling path with hiring manager'}
+            </p>
+            <p className={`${BODY_MUTED} mt-2`}>
+              嚴禁出現任何具體薪資金額（薪資見 Page 1 / Page 4）
+            </p>
           </>
         }
         right={
           <>
             <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
               <AlertTriangle className="w-5 h-5 mr-1.5" />
-              Team Pain Points & Risks
+              升遷核心能力缺口
             </h3>
             <BulletList
               items={
-                t.team_pain_points.length
-                  ? t.team_pain_points
-                  : ['No structured team risks extracted — ask about on-call and meeting load.']
+                t.promotion_skill_gaps.length
+                  ? t.promotion_skill_gaps
+                  : ['Promotion skill gaps not extracted — ask HM what “next level” looks like.']
               }
               tone="violet"
             />
@@ -334,31 +314,12 @@ function Page2({ report }: { report: FullReport }) {
         }
       />
       <ActionDualRow
-        left={
+        fullWidth={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>Promotion Drivers</p>
-            <BulletList items={t.promotion_drivers} tone="indigo" />
-          </>
-        }
-        right={
-          <>
-            <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>Recruiter / HM Verification</p>
-            {t.data_insufficient ? (
-              <div className="mb-2">
-                <InsufficientDataBadge label="Insufficient Team Data" />
-              </div>
-            ) : null}
-            <BulletList
-              items={
-                t.hm_verification_questions.length
-                  ? t.hm_verification_questions
-                  : [
-                      'What does 90-day success look like for this hire?',
-                      'Is this backfill or net-new scope?',
-                    ]
-              }
-              tone="violet"
-            />
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>降級說明</p>
+            <p className={`${BODY_MUTED} leading-relaxed`}>
+              若該特定 Team/職位在網路上無公開評價：降級為同部門/同職等整體風向，或標註「該團隊公開樣本不足」。不得編造團隊八卦。
+            </p>
           </>
         }
       />
@@ -366,45 +327,56 @@ function Page2({ report }: { report: FullReport }) {
   );
 }
 
+/** Excel C — 公司真相與風險 */
 function Page3({ report }: { report: FullReport }) {
-  const c = synthesizeCompanyTruth(report);
-  const flags =
+  const c = companyTruthOrEmpty(report);
+  const layoffDisplay =
     c.layoff_legal_flags.length > 0
       ? c.layoff_legal_flags
-      : ['No Major Public Red Flags'];
+      : ['無顯著公開違法/裁員紀錄'];
 
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 3 OF 5"
-        title="Company Truth & Macro Audit"
-        badge={`RISK AUDIT: ${c.risk_audit_badge}`}
-        badgeTone={c.insufficient_public_data ? 'amber' : 'emerald'}
+        pageOf="PAGE 3 OF 5 · Excel C"
+        title="公司真相與風險"
+        badge={c.forum_sample_thin ? '論壇聲量少' : 'RISK AUDIT'}
+        badgeTone={c.forum_sample_thin ? 'amber' : 'emerald'}
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>Strategic Focus & Leadership</p>
-            <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
-              {c.strategic_focus}
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
+              當前核心戰略（非維基歷史）
             </p>
-            <p className={`${BODY_MUTED} mt-3 leading-relaxed`}>{c.leadership_notes}</p>
+            <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
+              {c.current_strategy}
+            </p>
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>Market Position & Competitors</p>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
+              主要競爭對手（2–3）與競合優劣勢
+            </p>
             {c.competitors.length > 0 ? (
-              <ul className="space-y-2.5 flex-1">
+              <ul className="space-y-2.5">
                 {c.competitors.slice(0, 3).map((comp, i) => (
                   <li key={i} className={`${BODY} text-slate-200`}>
                     <span className="font-bold text-emerald-100">{comp.name}</span>
-                    <span className="text-slate-400"> — {comp.note}</span>
+                    {comp.strengths ? (
+                      <span className="block text-slate-300 mt-0.5">優：{comp.strengths}</span>
+                    ) : null}
+                    {comp.weaknesses ? (
+                      <span className="block text-slate-400 mt-0.5">劣：{comp.weaknesses}</span>
+                    ) : null}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className={`${BODY} text-slate-500`}>Competitor map unavailable for this run.</p>
+              <p className={`${BODY} text-slate-500`}>
+                Competitor set not extracted — do not invent peer maps.
+              </p>
             )}
           </>
         }
@@ -414,76 +386,55 @@ function Page3({ report }: { report: FullReport }) {
         rightAccent="amber"
         left={
           <>
-            <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>Internal Culture & Forum Rumors</p>
+            <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>
+              內部人真實聲響（Glassdoor / Blind / Reddit）
+            </p>
+            {c.forum_sample_thin ? (
+              <div className="mb-2">
+                <InsufficientDataBadge label="公開論壇聲量較少" />
+              </div>
+            ) : null}
             <BulletList
               items={
-                c.culture_forum_takeaways.length
-                  ? c.culture_forum_takeaways
-                  : ['No Glassdoor / Blind / Reddit takeaways extracted.']
+                c.insider_voice.length
+                  ? c.insider_voice
+                  : ['公開論壇聲量較少 — 不編造風向。']
               }
               tone="violet"
             />
+            <p className={`${META} text-slate-500 mt-2`}>過濾官方 PR；聚焦主管風格 / WLB / Toxic</p>
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-amber-200 mb-2`}>Layoff & Legal Red Flags</p>
-            <BulletList items={flags} tone="amber" />
-          </>
-        }
-      />
-      <ContrastDualRow
-        left={
-          <>
-            <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
-              <CheckCircle2 className="w-5 h-5 mr-1.5" />
-              Company Moat & Advantages
-            </h3>
-            <BulletList
-              items={c.company_moat.length ? c.company_moat : ['Moat signals not extracted.']}
-              tone="emerald"
-            />
-          </>
-        }
-        right={
-          <>
-            <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
-              <AlertTriangle className="w-5 h-5 mr-1.5" />
-              Organizational Risks
-            </h3>
-            <BulletList
-              items={c.org_risks.length ? c.org_risks : ['No org-risk bullets for this run.']}
-              tone="violet"
-            />
+            <p className={`${SECTION_TITLE} text-amber-200 mb-2`}>
+              Layoff.fyi / 公開訴訟與爭議
+            </p>
+            <BulletList items={layoffDisplay} tone="amber" />
           </>
         }
       />
       <ActionDualRow
         fullWidth={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>Fallback & Strategic Verification</p>
-            {c.insufficient_public_data ? (
-              <div className="mb-3">
-                <InsufficientDataBadge label="Insufficient Public Forum Data" />
-              </div>
-            ) : null}
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
+              面試可反問的公司營運戰略問題
+            </p>
+            <p className={`${BODY_MUTED} mb-2`}>
+              降級條款：若無公開違法/裁員紀錄，不得編造；改輸出 2–3 題戰略問題。
+            </p>
             <BulletList
               items={
-                c.strategic_questions.length
-                  ? c.strategic_questions
+                c.interviewer_strategy_questions.length
+                  ? c.interviewer_strategy_questions
                   : [
                       'Why is this role open now — backfill or new initiative?',
-                      'How has headcount on this team changed in the last 12 months?',
+                      'What is the 12-month operating priority for this team?',
+                      'How has headcount on this org changed in the last year?',
                     ]
               }
               tone="indigo"
             />
-            {c.suggested_search_query ? (
-              <p className={`${BODY_MUTED} mt-3`}>
-                Suggested search:{' '}
-                <span className="font-semibold text-slate-300">{c.suggested_search_query}</span>
-              </p>
-            ) : null}
           </>
         }
       />
@@ -491,21 +442,26 @@ function Page3({ report }: { report: FullReport }) {
   );
 }
 
+/** Excel D — 面試與談薪策略 */
 function Page4({ report }: { report: FullReport }) {
   const offer = report.offer_strategy;
   const tc = offer?.tc_breakdown || report.expected_offer?.tc_breakdown;
   const playbook = report.interview_playbook;
-  const predicted = playbook?.predicted?.length
-    ? playbook.predicted
-    : (report.custom_star_interview_bank || []).map(
-        (question): InterviewQuestionCard => ({ question, predicted: true }),
-      );
 
   const enriched = useMemo(() => {
-    return predicted.map((q) => {
+    const predicted = playbook?.predicted?.length
+      ? playbook.predicted
+      : (report.custom_star_interview_bank || []).map(
+          (question): InterviewQuestionCard => ({ question, predicted: true }),
+        );
+    const reported = playbook?.reported ?? [];
+    const merged = [
+      ...reported.map((q) => ({ ...q, predicted: false as const })),
+      ...predicted,
+    ];
+    return merged.map((q) => {
       const cat =
-        q.category
-        || (isBehavioral(q.question) ? 'behavioral' : 'technical');
+        q.category || (isBehavioral(q.question) ? 'behavioral' : 'technical');
       const template = playbook?.star_templates?.find(
         (t) => t.for_question && q.question.includes(t.for_question.slice(0, 24)),
       );
@@ -527,35 +483,46 @@ function Page4({ report }: { report: FullReport }) {
         interviewer_intent: q.interviewer_intent || concern?.why || q.evidence,
       };
     });
-  }, [predicted, playbook?.star_templates, report.concerns_defenses]);
+  }, [playbook, report.custom_star_interview_bank, report.concerns_defenses]);
 
-  const behavioral = enriched.filter((q) => q.category === 'behavioral').slice(0, 3);
-  const technical = enriched.filter((q) => q.category === 'technical').slice(0, 3);
-  const realList = playbook?.reported ?? [];
+  // Excel D: 3–5 behavioral + 3–5 technical (depth STAR on up to 5 each)
+  const behavioral = enriched.filter((q) => q.category === 'behavioral').slice(0, 5);
+  const technical = enriched.filter((q) => q.category === 'technical').slice(0, 5);
+  const deepIds = new Set(
+    [...behavioral, ...technical].map((q) => q.question),
+  );
+  const realListOnly = (playbook?.reported ?? []).filter(
+    (q) => !deepIds.has(q.question),
+  );
 
   const tcRows = (
     [
-      ['Base', tc?.base],
-      ['Bonus', tc?.bonus],
-      ['Equity', tc?.equity],
-      ['Total', tc?.total],
+      ['Base 底薪', tc?.base],
+      ['Equity / RSU', tc?.equity],
+      ['Sign-on 簽約金', tc?.sign_on ?? tc?.bonus],
+      ['Total TC', tc?.total],
     ] as const
   ).filter(([, v]) => Boolean(v?.trim()));
 
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 4 OF 5"
-        title="Interview & Comp Playbook"
-        badge="HIGH ROI STRATEGY"
+        pageOf="PAGE 4 OF 5 · Excel D"
+        title="面試與談薪策略"
+        badge="HIGH ROI"
         badgeTone="violet"
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>TC Structure Breakdown</p>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
+              TC 結構拆解（Levels.fyi 等）
+            </p>
+            <p className={`${META} text-slate-500 mb-2`}>
+              Base + 股票/RSU + Sign-on — 市場行情占比
+            </p>
             {tcRows.length > 0 ? (
-              <div className="grid grid-cols-2 gap-2 flex-1">
+              <div className="grid grid-cols-2 gap-2">
                 {tcRows.map(([label, value]) => (
                   <div
                     key={label}
@@ -568,34 +535,39 @@ function Page4({ report }: { report: FullReport }) {
               </div>
             ) : (
               <p className={`${BODY} text-slate-500`}>
-                TC mix unavailable — use discovery before anchoring (Page 1 seat band still applies).
+                TC mix unavailable — use discovery before anchoring (seat band on Page 1).
               </p>
             )}
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>Negotiation Playbook</p>
-            <ol className="space-y-2 flex-1">
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
+              談薪腳本（個人 Context）
+            </p>
+            <ol className="space-y-2">
               {[
                 {
-                  step: '1. Prepare',
+                  step: '1. 談薪前準備（錨定點）',
                   body:
                     offer?.discovery_questions?.[0]
                     || offer?.target
                     || 'Confirm approved cash band before sharing a number.',
                 },
                 {
-                  step: '2. Pitch',
-                  body: offer?.script?.slice(0, 220) || offer?.acceptable || 'Anchor to mid-band once scope is clear.',
+                  step: '2. 個人價值 Pitch',
+                  body:
+                    offer?.script?.slice(0, 280)
+                    || offer?.acceptable
+                    || 'Pitch mid-band once scope is confirmed.',
                 },
                 {
-                  step: '3. Counter',
+                  step: '3. 被拒時 Counter',
                   body:
                     offer?.walk_away
                     || (offer?.structured_levers?.[0]
                       ? `${offer.structured_levers[0].name}: ${offer.structured_levers[0].note}`
-                      : 'Trade scope / sign-on / flexibility if cash is low-mid.'),
+                      : 'Counter with scope / sign-on / leveling — never invent numbers.'),
                 },
               ].map((s) => (
                 <li
@@ -615,11 +587,17 @@ function Page4({ report }: { report: FullReport }) {
       <DetailDualRow
         leftAccent="violet"
         rightAccent="indigo"
-        left={<QuestionAccordion items={behavioral} title="Behavioral Questions" titleClass="text-violet-300" />}
+        left={
+          <QuestionAccordion
+            items={behavioral}
+            title="行為題 Behavioral（3–5）"
+            titleClass="text-violet-300"
+          />
+        }
         right={
           <QuestionAccordion
             items={technical}
-            title="Technical / Case Questions"
+            title="專業/案例題 Technical/Case（3–5）"
             titleClass="text-indigo-300"
           />
         }
@@ -628,11 +606,11 @@ function Page4({ report }: { report: FullReport }) {
         fullWidth={
           <>
             <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
-              All Real Interview Questions List
+              其餘真實面試題清單（僅列出，不逐題 STAR）
             </p>
-            {realList.length > 0 ? (
+            {realListOnly.length > 0 ? (
               <ul className="space-y-2">
-                {realList.map((q, i) => (
+                {realListOnly.map((q, i) => (
                   <li
                     key={i}
                     className={`flex flex-wrap items-start justify-between gap-2 ${BODY} text-slate-200`}
@@ -658,7 +636,7 @@ function Page4({ report }: { report: FullReport }) {
               </ul>
             ) : (
               <p className={`${BODY} text-slate-500`}>
-                No citable real interview questions for this run — practice the predicted set above.
+                無額外真題清單 — 上方精選題已涵蓋本輪檢索結果。找不到真題時已標「猜題」。
               </p>
             )}
           </>
@@ -668,28 +646,37 @@ function Page4({ report }: { report: FullReport }) {
   );
 }
 
+/** Excel E — 參考資料與證據鏈 */
 function Page5({ report }: { report: FullReport }) {
-  const citations = synthesizeCitations(report);
-  const tier1 = citations.filter((c) => c.evidence_tier === 1).length;
-  const tier2 = citations.filter((c) => c.evidence_tier === 2).length;
-  const tier3 = citations.filter((c) => c.evidence_tier === 3).length;
+  const citations = citationsOrEmpty(report);
 
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 5 OF 5"
-        title="References & Audit Trail"
-        badge="VERIFIED SOURCES"
+        pageOf="PAGE 5 OF 5 · Excel E"
+        title="參考資料與證據鏈"
+        badge="AUDIT TRAIL"
         badgeTone="sky"
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>Grounding Confidence</p>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>RAG 引用條數</p>
             <p className="text-5xl font-black text-white tabular-nums leading-none">
               {citations.length}
             </p>
-            <p className={`${BODY_MUTED} mt-2`}>Total citations / source notes in this guide.</p>
+            <p className={`${BODY_MUTED} mt-2`}>
+              Reddit/Blind 討論串、Levels.fyi、Layoff、新聞等原始連結
+            </p>
+          </>
+        }
+        right={
+          <>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>無效連結處理</p>
+            <p className={`${BODY} text-slate-200 leading-relaxed`}>
+              若 RAG 檢索不到直接 URL：寫明「檢索數據摘要與建議手動查證關鍵字」，
+              <strong className="text-amber-200"> 絕不填充假網址</strong>。
+            </p>
             {report.provenance?.invalid_url_count ? (
               <p className={`${BODY} text-amber-200/90 mt-3`}>
                 {report.provenance.invalid_url_count} URL(s) failed validation and were downgraded.
@@ -697,41 +684,22 @@ function Page5({ report }: { report: FullReport }) {
             ) : null}
           </>
         }
-        right={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>Evidence Tier Distribution</p>
-            <div className="grid grid-cols-3 gap-2 flex-1">
-              {[
-                ['Tier 1', tier1, 'Official'],
-                ['Tier 2', tier2, 'Multi-source'],
-                ['Tier 3', tier3, 'Forum'],
-              ].map(([label, count, sub]) => (
-                <div
-                  key={String(label)}
-                  className="rounded-md border border-emerald-400/30 bg-black/20 px-2.5 py-3 text-center"
-                >
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</p>
-                  <p className="text-3xl font-black text-emerald-100 tabular-nums">{count}</p>
-                  <p className={`${META} text-slate-400`}>{sub}</p>
-                </div>
-              ))}
-            </div>
-          </>
-        }
       />
       <div className="border-t border-slate-700/90 px-5 py-3.5">
         <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>Citation Audit</p>
+          <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>網路資訊與參考資料</p>
           {citations.length === 0 ? (
             <div>
-              <InsufficientDataBadge />
+              <InsufficientDataBadge label="無直接 URL — 請手動查證" />
               <p className={`${BODY_MUTED} mt-3`}>
-                No citable public sources attached. Treat culture and salary claims as hypotheses
-                until you validate with the recruiter.
+                檢索數據摘要與建議手動查證關鍵字：{' '}
+                <span className="text-slate-300 font-semibold">
+                  {report.company_name} Glassdoor Blind Levels.fyi layoff
+                </span>
               </p>
             </div>
           ) : (
-            <ul className="space-y-2 max-h-[22rem] overflow-y-auto pr-1">
+            <ul className="space-y-2 max-h-[24rem] overflow-y-auto pr-1">
               {citations.map((c, i) => (
                 <li
                   key={i}
@@ -740,9 +708,6 @@ function Page5({ report }: { report: FullReport }) {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="rounded border border-sky-400/40 bg-sky-500/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-sky-200">
                       {c.source_badge}
-                    </span>
-                    <span className="rounded border border-slate-600 px-2 py-0.5 text-xs font-bold text-slate-300">
-                      Tier {c.evidence_tier}
                     </span>
                     <span className={`${META} text-slate-500`}>{c.date}</span>
                   </div>
@@ -759,8 +724,11 @@ function Page5({ report }: { report: FullReport }) {
                       <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                     </a>
                   ) : (
-                    <p className={`${META} text-slate-500 mt-1`}>
-                      Summary Only — Direct Link Unavailable
+                    <p className={`${META} text-amber-200/90 mt-1`}>
+                      檢索數據摘要與建議手動查證關鍵字
+                      {c.manual_verify_keywords
+                        ? `：${c.manual_verify_keywords}`
+                        : '（無直接連結）'}
                     </p>
                   )}
                 </li>
@@ -771,29 +739,13 @@ function Page5({ report }: { report: FullReport }) {
       </div>
       <ActionDualRow
         fullWidth={
-          <>
-            <p className={`${SECTION_TITLE} text-slate-400 mb-2`}>Disclaimer</p>
-            <p className={`${BODY_MUTED} leading-relaxed`}>
-              JobBeagle cites public web signals when available. Paywalled or unverified forum claims
-              are marked or omitted. Snapshot timestamp / report version:{' '}
-              <span className="text-slate-300 font-semibold">
-                {report.report_version || 'v3'}
-                {report.provenance?.validated_at
-                  ? ` · ${report.provenance.validated_at}`
-                  : ''}
-              </span>
-              . Never treat model memory as a live offer letter.
-            </p>
-            {(report.hiring_context?.limitations?.length ?? 0) > 0 ? (
-              <ul className="mt-3 space-y-1">
-                {report.hiring_context!.limitations.map((l, i) => (
-                  <li key={i} className={`${META} text-slate-500`}>
-                    · {l}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </>
+          <p className={`${BODY_MUTED} leading-relaxed`}>
+            Report version: {report.report_version || 'v3'}
+            {report.provenance?.validated_at
+              ? ` · validated ${report.provenance.validated_at}`
+              : ''}
+            . 定位：確保可信度，讓求職者可自主深度追蹤原始來源。
+          </p>
         }
       />
     </GuideSlideShell>

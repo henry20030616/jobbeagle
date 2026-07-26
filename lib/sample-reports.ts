@@ -81,32 +81,39 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
       {
         point: 'Quantified ops improvements',
         description: 'Cut reconciliation cycle time 28% with a SQL + Looker workflow.',
+        skill_kind: 'hard',
       },
       {
         point: 'Cross-functional facilitation',
         description: 'Ran weekly triage with eng, risk, and CX for 18 months.',
+        skill_kind: 'soft',
       },
       {
         point: 'Requirements discipline',
         description: 'Owned PRDs and acceptance criteria for three platform launches.',
+        skill_kind: 'hard',
       },
       {
         point: 'Stakeholder communication',
         description: 'Executive-ready status packs used in monthly business reviews.',
+        skill_kind: 'soft',
       },
     ],
     gaps: [
       {
         gap: 'ACH / payments rails depth',
         description: 'JD emphasizes ACH returns and settlement; resume is adjacent banking ops.',
+        skill_kind: 'hard',
       },
       {
         gap: 'Vendor / processor management',
         description: 'No named processor or NACHA compliance ownership.',
+        skill_kind: 'hard',
       },
       {
         gap: 'US regulatory keywords',
         description: 'Screeners may miss Reg E / returns language on a keyword pass.',
+        skill_kind: 'hard',
       },
     ],
     resume_actions: [
@@ -140,6 +147,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
       base: '$150K',
       bonus: '$15K',
       equity: '$20K / yr est.',
+      sign_on: '$10K–$20K market norm',
       total: '~$185K TC',
     },
   },
@@ -239,21 +247,64 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
     },
   ],
   interview_playbook: {
-    reported: [],
+    reported: [
+      {
+        question: 'Describe a time you disagreed with engineering on a settlement priority.',
+        predicted: false,
+        source_url: 'https://www.glassdoor.com',
+        source_date: '2026-05',
+        category: 'behavioral',
+      },
+    ],
     predicted: [
       {
         question: 'Walk me through improving a broken ops workflow end to end.',
         predicted: true,
-        star_outline: 'S: reconciliation backlog · T: cut cycle time · A: SQL + ritual · R: −28%',
-      },
-      {
-        question: 'How would you ramp on ACH returns in your first 60 days?',
-        predicted: true,
-        missing_facts: 'Candidate should prepare one learning plan without inventing past ACH titles.',
+        category: 'behavioral',
+        interviewer_intent: 'Tests end-to-end ownership and quantified impact.',
+        star_blueprint: 'S: reconciliation backlog · T: cut cycle time · A: SQL + ritual · R: −28%',
+        dos_donts: 'Do lead with metrics; do not invent ACH processor titles.',
       },
       {
         question: 'Tell me about a time stakeholders ignored your dashboard.',
         predicted: true,
+        category: 'behavioral',
+        interviewer_intent: 'Tests influence without authority.',
+        star_blueprint: 'S: ignored packs · T: executive adoption · A: 5 KPIs + MBR · R: cited 3 months',
+        dos_donts: 'Do not claim people-manager scope.',
+      },
+      {
+        question: 'Describe a conflict between risk and CX priorities you facilitated.',
+        predicted: true,
+        category: 'behavioral',
+        interviewer_intent: 'Cross-functional tradeoff judgment.',
+        star_blueprint: 'S: dual P0 · T: protect settlement · A: impact×risk split · R: no sev-1',
+        dos_donts: 'Do not badmouth either stakeholder group.',
+      },
+      {
+        question: 'How would you ramp on ACH returns in your first 60 days?',
+        predicted: true,
+        category: 'technical',
+        interviewer_intent: 'Learning plan without inventing past ACH ownership.',
+        star_blueprint: 'Week 1–2 shadow · Week 3–4 SQL map · Week 5–8 own one KPI',
+        dos_donts: 'Do not claim NACHA titles you did not hold.',
+        missing_facts: 'Prepare a learning plan without inventing past ACH titles.',
+      },
+      {
+        question: 'How do you design a KPI pack for settlement cycle time?',
+        predicted: true,
+        category: 'technical',
+        interviewer_intent: 'Metric design and stakeholder usability.',
+        star_blueprint: 'Define numerator/denominator · owners · weekly review ritual',
+        dos_donts: 'Avoid vanity metrics with no action owner.',
+      },
+      {
+        question: 'Walk through how you would triage a spike in return exceptions.',
+        predicted: true,
+        category: 'technical',
+        interviewer_intent: 'Ops incident structure under ambiguity.',
+        star_blueprint: 'Stabilize · segment root causes · temporary control · permanent fix',
+        dos_donts: 'Do not invent processor console experience.',
       },
     ],
     star_templates: [
@@ -320,6 +371,7 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
       base: '$150K',
       bonus: '$15K',
       equity: '$20K / yr est.',
+      sign_on: '$10K–$20K market norm',
       total: '~$185K TC',
     },
     script:
@@ -331,81 +383,53 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
   },
   report_version: 'v3-sample',
   role_team_insights: {
-    team_fit_badge: 'HIGH',
-    career_trajectory: {
-      current_label: 'Senior Business Analyst',
-      next_role: 'Lead BA / Payments Ops Product Owner',
-      growth_potential_pct: '+20-25%',
-    },
-    work_arrangement: {
-      mode: 'HYBRID (3 DAYS ONSITE)',
-      hours_per_week: '45–50 hr/wk',
-      notes: 'Frequent cross-functional rituals with eng, risk, and CX.',
-    },
-    role_core: [
-      'Own requirements for payments operations improvements',
-      'Translate ops pain into prioritized backlog',
-      'Publish KPIs for cycle time and error rate',
+    role_content_refined: [
+      'Own requirements for payments-ops improvements end to end',
+      'Translate ops pain into a prioritized eng backlog',
+      'Publish KPI packs for cycle time and error rate',
     ],
-    hard_requirements: [
-      'SQL literacy (must-have)',
+    requirements_refined: [
+      'SQL literacy is a must-have',
       'Senior ownership — not junior ticket triage',
-      'Payments domain preferred',
+      'Payments domain preferred over generic BA',
     ],
-    team_vibe:
-      'Cross-functional ops/product pod that rewards written clarity and weekly triage rituals.',
-    vibe_source_tag: '[ Official JD vs. Web-Grounded Verified ]',
-    team_highlights: [
-      'Modern analytics stack (SQL + Looker) expected',
-      'High autonomy on backlog prioritization',
-      'Executive visibility via MBR packs',
+    rto_official: 'Hybrid — 3 days onsite (per JD)',
+    rto_employee_reality:
+      'Forum notes cite frequent cross-functional rituals; overtime spikes near close / incident weeks.',
+    next_title_1_3yr: 'Lead BA / Payments Ops Product Owner',
+    promotion_skill_gaps: [
+      'Named ACH / returns ownership',
+      'Processor / vendor management proof',
+      'Org-level conflict navigation',
     ],
-    team_pain_points: [
-      'Meeting-heavy stakeholder surface',
-      'Legacy settlement edge cases create on-call noise',
-      'ACH depth uneven across the team',
-    ],
-    promotion_drivers: [
-      'Demonstrated payments-domain ownership',
-      'Quantified cycle-time / error-rate wins',
-      'Ability to facilitate eng + risk tradeoffs',
-    ],
-    hm_verification_questions: [
-      'Is ACH / returns experience required or preferred?',
-      'What does 90-day success look like for this hire?',
-      'How often does product roadmap slip affect settlement SLAs?',
-    ],
-    data_insufficient: false,
+    team_sample_insufficient: false,
   },
   company_truth: {
-    risk_audit_badge: 'PASSED',
-    strategic_focus:
-      'Fintech ops teams are prioritizing analysts who bridge product and settlement reliability.',
-    leadership_notes:
-      'Public messaging emphasizes efficiency and async written clarity for remote-friendly roles.',
+    current_strategy:
+      'Public fintech-ops hiring signals emphasize settlement reliability and AI-assisted efficiency — not encyclopedic company history.',
     competitors: [
-      { name: 'Peer fintech ops seats', note: 'Compete on payments-native proof and SQL depth.' },
-      { name: 'Generic BA pipelines', note: 'Weaker on settlement domain — easier to differentiate.' },
+      {
+        name: 'Payments-native BA peers',
+        strengths: 'Deeper ACH / processor titles',
+        weaknesses: 'Weaker cross-functional facilitation proof',
+      },
+      {
+        name: 'Generic senior BA pipelines',
+        strengths: 'Broad stakeholder polish',
+        weaknesses: 'Thin settlement domain',
+      },
     ],
-    culture_forum_takeaways: [
-      'Remote-friendly US fintech roles still expect crisp written status.',
-      'Interviewers probe cross-functional delivery, not only SQL puzzles.',
+    insider_voice: [
+      'Remote-friendly roles still expect crisp written status packs',
+      'Interviewers probe cross-functional delivery, not only SQL puzzles',
     ],
+    forum_sample_thin: false,
     layoff_legal_flags: [],
-    company_moat: [
-      'Payments ops complexity creates switching costs',
-      'Data/KPI culture favors analysts who ship rituals',
-    ],
-    org_risks: [
-      'No company-specific IR filing used in this demo sample',
-      'Treat hiring-context claims as public-market context, not insider intel',
-    ],
-    insufficient_public_data: false,
-    strategic_questions: [
+    interviewer_strategy_questions: [
       'Why is this role open now — backfill or new scope?',
+      'What is the 12-month operating priority for this team?',
       'How has ops headcount changed in the last year?',
     ],
-    suggested_search_query: '"fintech" "business analyst" Glassdoor OR Blind payments',
   },
 };
 

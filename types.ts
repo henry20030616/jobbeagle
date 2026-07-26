@@ -161,11 +161,15 @@ export interface Radford2026CompensationMatrix {
 export interface LiteMatchPoint {
   point: string;
   description: string;
+  /** Excel A: 明確劃分硬技能/軟技能 */
+  skill_kind?: 'hard' | 'soft';
 }
 
 export interface LiteSkillGap {
   gap: string;
   description: string;
+  /** Excel A: 明確劃分硬技能/軟技能 */
+  skill_kind?: 'hard' | 'soft';
 }
 
 export type HardRequirementStatus = 'met' | 'partial' | 'missing';
@@ -230,11 +234,13 @@ export interface ProofMap {
   screenability_note: string;
 }
 
-/** Optional TC split for Offer Strategy / Expected Offer (D24). */
+/** Optional TC split for Offer Strategy / Expected Offer (Excel D: Base + RSU + Sign-on). */
 export interface OfferTcBreakdown {
   base: string | null;
   bonus: string | null;
   equity: string | null;
+  /** Sign-on / signing bonus market norm (Levels.fyi etc.) */
+  sign_on?: string | null;
   /** All-in TC or total cash when equity unknown */
   total: string | null;
 }
@@ -293,49 +299,53 @@ export interface AtsWarning {
   missing_keywords?: string[];
 }
 
-/** Guide Page 2 — Role & Team Insights (no duplicate $ salary ranges). */
+/**
+ * Guide Page 2 — Excel B「職位與團隊現況」
+ * 嚴禁任何具體薪資金額；團隊無公開樣本時必須誠實降級。
+ */
 export interface RoleTeamInsights {
-  team_fit_badge: string;
-  career_trajectory: {
-    current_label: string;
-    next_role: string;
-    /** Percent string only, e.g. "+20-25%" — never dollar amounts */
-    growth_potential_pct: string;
-  };
-  work_arrangement: {
-    mode: string;
-    hours_per_week?: string;
-    notes?: string;
-  };
-  role_core: string[];
-  hard_requirements: string[];
-  team_vibe: string;
-  vibe_source_tag: string;
-  team_highlights: string[];
-  team_pain_points: string[];
-  promotion_drivers: string[];
-  hm_verification_questions: string[];
-  data_insufficient?: boolean;
+  /** 重構後精練職位內容重點（嚴禁照抄 JD 原文） */
+  role_content_refined: string[];
+  /** 重構後精練要求條件 */
+  requirements_refined: string[];
+  /** 官方規定：JD 寫的進辦公室天數 / RTO 政策 */
+  rto_official: string;
+  /** 真實體感：網搜員工反映的加班狀況與頻率 */
+  rto_employee_reality: string;
+  /** 1–3 年內下一階段職銜（如 PM → Senior PM） */
+  next_title_1_3yr: string;
+  /** 升遷所需核心能力缺口 */
+  promotion_skill_gaps: string[];
+  /** true → UI 標註「該團隊公開樣本不足」 */
+  team_sample_insufficient: boolean;
+  /** 降級為同部門/同職等整體風向時的說明 */
+  department_fallback_note?: string;
 }
 
+/** Excel C：主要 2–3 家競爭對手與競合優劣勢 */
 export interface CompanyCompetitor {
   name: string;
-  note: string;
+  strengths: string;
+  weaknesses: string;
 }
 
-/** Guide Page 3 — Company Truth & Macro Audit (no duplicate $ salary ranges). */
+/**
+ * Guide Page 3 — Excel C「公司真相與風險」
+ * 無裁員/訴訟紀錄時不得編造；改輸出面試可反問的戰略問題。
+ */
 export interface CompanyTruth {
-  risk_audit_badge: string;
-  strategic_focus: string;
-  leadership_notes: string;
+  /** 當前核心戰略重點（如強推 AI / 縮減成本）— 非維基百科式歷史 */
+  current_strategy: string;
+  /** 2–3 家競爭對手 */
   competitors: CompanyCompetitor[];
-  culture_forum_takeaways: string[];
+  /** Glassdoor/Blind/Reddit 高頻吐槽或讚賞 */
+  insider_voice: string[];
+  /** true →「公開論壇聲量較少」 */
+  forum_sample_thin: boolean;
+  /** 空陣列 → UI 顯示「無顯著公開違法/裁員紀錄」 */
   layoff_legal_flags: string[];
-  company_moat: string[];
-  org_risks: string[];
-  insufficient_public_data?: boolean;
-  strategic_questions: string[];
-  suggested_search_query?: string;
+  /** 無公開裁員/違法紀錄時：2–3 個可反問面試官的公司營運戰略問題 */
+  interviewer_strategy_questions: string[];
 }
 
 export type ReferenceEvidenceTier = 1 | 2 | 3;
@@ -345,7 +355,10 @@ export interface ReferenceCitation {
   description: string;
   date: string;
   evidence_tier: ReferenceEvidenceTier;
+  /** Empty when no direct URL — Excel E: never invent links */
   url: string;
+  /** Excel E: 無 URL 時的手動查證關鍵字 */
+  manual_verify_keywords?: string;
 }
 
 export type ProvenanceStatus = 'valid' | 'invalid' | 'unverified';

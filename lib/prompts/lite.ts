@@ -35,7 +35,8 @@ Rules:
 - proof_map.strengths: return 3 or 4 strongest, evidence-backed match points (never fewer than 3).
 - proof_map.gaps: return 3 or 4 most important mismatches / missing proofs (never fewer than 3).
 - proof_map.resume_actions: 0–3 missing-proof facts only (what evidence is absent). Do NOT write how-to resume edit instructions.
-- ats_warning (optional but preferred when keyword/ATS risk is real): pass_rate_pct (0–100 or null), missing_keyword_count, summary (one short critical hook), missing_keywords (0–6 JD-critical tokens absent/weak on resume). Never invent keywords not implied by the JD vs resume gap. If no ATS risk, omit ats_warning or set missing_keyword_count=0 with empty summary.
+- proof_map strengths/gaps: mark skill_kind "hard" or "soft" on each item when possible (Excel A).
+- ats_warning (Excel A critical hook): when ATS/keyword screen risk is real, set pass_rate_pct (example framing 42% when high risk), missing_keyword_count, summary like "High risk of auto-reject — missing core JD keywords", missing_keywords[]. Never invent keywords not implied by JD vs resume. If no ATS risk, omit ats_warning.
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps (no web). Label them as predicted in prose if needed; do not invent "reported" questions.
 - Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
 
@@ -124,6 +125,7 @@ export const LITE_JSON_SCHEMA = {
             properties: {
               point: { type: 'string' },
               description: { type: 'string' },
+              skill_kind: { type: 'string', enum: ['hard', 'soft'] },
             },
             required: ['point', 'description'],
           },
@@ -137,6 +139,7 @@ export const LITE_JSON_SCHEMA = {
             properties: {
               gap: { type: 'string' },
               description: { type: 'string' },
+              skill_kind: { type: 'string', enum: ['hard', 'soft'] },
             },
             required: ['gap', 'description'],
           },

@@ -44,27 +44,27 @@ const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }
   },
   {
     id: 'hiring',
-    label: 'Role & Team',
+    label: '職位與團隊',
     icon: <Building2 className="w-5 h-5" />,
-    blurb: 'Page 2 — career trajectory, RTO, team vibe, HM questions.',
+    blurb: 'Excel B — 精練職位/要求、RTO 官方 vs 體感、1–3 年職銜與升遷缺口（無薪資）。',
   },
   {
     id: 'interview',
-    label: 'Company Truth',
+    label: '公司真相',
     icon: <Globe className="w-5 h-5" />,
-    blurb: 'Page 3 — strategy, competitors, culture forums, red flags.',
+    blurb: 'Excel C — 當前戰略、競爭對手、內部聲響、Layoff/訴訟與反問題。',
   },
   {
     id: 'salary',
-    label: 'Interview & Comp',
+    label: '面試與談薪',
     icon: <HandCoins className="w-5 h-5" />,
-    blurb: 'Page 4 — TC mix, negotiation steps, behavioral & technical Qs.',
+    blurb: 'Excel D — 3–5 行為/專業題 STAR、TC（Base/RSU/Sign-on）、談薪腳本。',
   },
   {
     id: 'provenance',
-    label: 'References',
+    label: '證據鏈',
     icon: <Link2 className="w-5 h-5" />,
-    blurb: 'Page 5 — citation audit trail and evidence tiers.',
+    blurb: 'Excel E — RAG 原始連結；無 URL 則給手動查證關鍵字，絕不假網址。',
   },
 ];
 

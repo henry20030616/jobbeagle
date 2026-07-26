@@ -24,7 +24,8 @@ describe('sample reports', () => {
     expect(report.interview_playbook.star_templates.length).toBeGreaterThanOrEqual(3);
     expect(report.offer_strategy.script.length).toBeGreaterThan(20);
     expect(report.ats_warning?.missing_keyword_count).toBe(4);
-    expect(report.role_team_insights?.career_trajectory.growth_potential_pct).toContain('%');
-    expect(report.company_truth?.competitors.length).toBeGreaterThan(0);
+    expect(report.role_team_insights?.next_title_1_3yr).toContain('Lead BA');
+    expect(report.company_truth?.competitors[0]?.strengths).toBeTruthy();
+    expect(report.offer_strategy.tc_breakdown?.sign_on).toBeTruthy();
   });
 });

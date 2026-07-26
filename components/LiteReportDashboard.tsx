@@ -78,8 +78,8 @@ export default function LiteReportDashboard({
   const tcRows = (
     [
       ['Base', tc?.base],
-      ['Bonus', tc?.bonus],
-      ['Equity', tc?.equity],
+      ['Equity/RSU', tc?.equity],
+      ['Sign-on', tc?.sign_on ?? tc?.bonus],
       ['Total', tc?.total],
     ] as const
   ).filter(([, v]) => Boolean(v?.trim()));
@@ -367,7 +367,7 @@ export default function LiteReportDashboard({
                   <p className={`${META} font-bold uppercase tracking-wider text-emerald-200/80 mb-1.5`}>
                     Est. salary mix
                   </p>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className={`grid gap-2 ${tcRows.length >= 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
                     {tcRows.map(([label, value]) => (
                       <div
                         key={label}
@@ -408,6 +408,11 @@ export default function LiteReportDashboard({
                         aria-hidden
                       />
                       <span>
+                        {item.skill_kind ? (
+                          <span className="mr-1.5 text-xs font-bold uppercase tracking-wider text-emerald-200/80">
+                            [{item.skill_kind === 'hard' ? '硬技能' : '軟技能'}]
+                          </span>
+                        ) : null}
                         <span className="font-semibold text-slate-100">{item.point}</span>
                         {item.description ? (
                           <span className="text-slate-400">: {item.description}</span>
@@ -426,29 +431,29 @@ export default function LiteReportDashboard({
                   <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 mb-3">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">
-                        ATS Rejection Warning
+                        ATS 淘汰預警
                       </span>
                       {typeof report.ats_warning.pass_rate_pct === 'number' ? (
                         <span className="px-2 py-0.5 text-xs font-bold rounded bg-red-500/20 text-red-300 border border-red-500/40">
-                          Est. ATS pass rate: {Math.round(report.ats_warning.pass_rate_pct)}%
+                          ATS 通過預估率：{Math.round(report.ats_warning.pass_rate_pct)}%
+                          （高風險被系統自動刷掉）
                         </span>
                       ) : null}
                     </div>
                     <p className={`${META} text-slate-300 mt-1.5 leading-snug`}>
-                      <strong className="text-red-400">High auto-screen risk: </strong>
+                      <strong className="text-red-400">高風險被系統自動刷掉：</strong>
                       {report.ats_warning.summary}
                       {report.ats_warning.missing_keyword_count > 0 ? (
                         <>
                           {' '}
-                          Missing{' '}
+                          缺少{' '}
                           <span className="text-amber-300 font-bold">
-                            {report.ats_warning.missing_keyword_count} core keyword
-                            {report.ats_warning.missing_keyword_count === 1 ? '' : 's'}
+                            {report.ats_warning.missing_keyword_count} 個核心關鍵字
                           </span>
                           {report.ats_warning.missing_keywords?.length
-                            ? ` (${report.ats_warning.missing_keywords.slice(0, 4).join(', ')})`
+                            ? `（${report.ats_warning.missing_keywords.slice(0, 4).join(', ')}）`
                             : ''}
-                          — marked in gaps below.
+                          ，已在下方關鍵缺口標註。
                         </>
                       ) : null}
                     </p>
@@ -462,6 +467,11 @@ export default function LiteReportDashboard({
                         aria-hidden
                       />
                       <span>
+                        {item.skill_kind ? (
+                          <span className="mr-1.5 text-xs font-bold uppercase tracking-wider text-violet-200/80">
+                            [{item.skill_kind === 'hard' ? '硬技能' : '軟技能'}]
+                          </span>
+                        ) : null}
                         <span className="font-semibold text-slate-100">{item.gap}</span>
                         {item.description ? (
                           <span className="text-slate-400">: {item.description}</span>

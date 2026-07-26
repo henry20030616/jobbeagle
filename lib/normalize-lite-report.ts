@@ -201,10 +201,11 @@ function normalizeTcBreakdown(raw: unknown): OfferTcBreakdown | undefined {
   const o = raw as Record<string, unknown>;
   const base = asString(o.base) || null;
   const bonus = asString(o.bonus) || null;
-  const equity = asString(o.equity) || null;
+  const equity = asString(o.equity) || asString(o.rsu) || null;
+  const sign_on = asString(o.sign_on) || asString(o.sign_on_bonus) || null;
   const total = asString(o.total) || null;
-  if (!base && !bonus && !equity && !total) return undefined;
-  return { base, bonus, equity, total };
+  if (!base && !bonus && !equity && !sign_on && !total) return undefined;
+  return { base, bonus, equity, sign_on, total };
 }
 
 function normalizeStructuredLevers(raw: unknown): OfferLever[] {
@@ -564,64 +565,129 @@ function normalizeAtsWarning(
 
 function normalizeRoleTeamInsights(
   raw: unknown,
+  snapshot: LiteReport,
 ): RoleTeamInsights | undefined {
-  if (!raw || typeof raw !== 'object') return undefined;
-  const o = raw as Record<string, unknown>;
-  const traj = (o.career_trajectory && typeof o.career_trajectory === 'object'
-    ? o.career_trajectory
-    : {}) as Record<string, unknown>;
-  const work = (o.work_arrangement && typeof o.work_arrangement === 'object'
-    ? o.work_arrangement
-    : {}) as Record<string, unknown>;
+  // Excel B shape
+  if (raw && typeof raw === 'object') {
+    const o = raw as Record<string, unknown>;
+    const hasNew =
+      Array.isArray(o.role_content_refined)
+      || Array.isArray(o.requirements_refined)
+      || typeof o.rto_official === 'string'
+      || typeof o.next_title_1_3yr === 'string';
+    if (hasNew) {
+      return {
+        role_content_refined: asStringArray(o.role_content_refined, 8),
+        requirements_refined: asStringArray(o.requirements_refined, 8),
+        rto_official: asString(o.rto_official, 'Not stated on JD'),
+        rto_employee_reality: asString(
+          o.rto_employee_reality,
+          'Insufficient public employee reports on overtime / WLB for this team.',
+        ),
+        next_title_1_3yr: asString(o.next_title_1_3yr),
+        promotion_skill_gaps: asStringArray(o.promotion_skill_gaps, 6),
+        team_sample_insufficient: Boolean(o.team_sample_insufficient),
+        department_fallback_note: asString(o.department_fallback_note) || undefined,
+      };
+    }
+    // Legacy invented shape → map without inventing dollars / fake team gossip
+    const traj = (o.career_trajectory && typeof o.career_trajectory === 'object'
+      ? o.career_trajectory
+      : {}) as Record<string, unknown>;
+    const work = (o.work_arrangement && typeof o.work_arrangement === 'object'
+      ? o.work_arrangement
+      : {}) as Record<string, unknown>;
+    return {
+      role_content_refined: asStringArray(o.role_core, 8),
+      requirements_refined: asStringArray(o.hard_requirements, 8),
+      rto_official: asString(work.mode, 'Not stated on JD'),
+      rto_employee_reality:
+        asString(work.notes)
+        || asString(o.team_vibe)
+        || 'Insufficient public employee reports on overtime / WLB for this team.',
+      next_title_1_3yr: asString(traj.next_role) || asString(traj.current_label),
+      promotion_skill_gaps: asStringArray(o.promotion_drivers, 6),
+      team_sample_insufficient: Boolean(o.data_insufficient),
+      department_fallback_note: asString(o.department_fallback_note) || undefined,
+    };
+  }
+  // Minimal honest fallback from Snapshot role_read only (no web invent)
+  const role = snapshot.role_read;
+  if (!role?.mission && !(role?.responsibilities?.length)) return undefined;
   return {
-    team_fit_badge: asString(o.team_fit_badge, 'UNKNOWN') || 'UNKNOWN',
-    career_trajectory: {
-      current_label: asString(traj.current_label, 'This role'),
-      next_role: asString(traj.next_role),
-      growth_potential_pct: asString(traj.growth_potential_pct, '—') || '—',
-    },
-    work_arrangement: {
-      mode: asString(work.mode, 'UNKNOWN') || 'UNKNOWN',
-      hours_per_week: asString(work.hours_per_week) || undefined,
-      notes: asString(work.notes) || undefined,
-    },
-    role_core: asStringArray(o.role_core, 8),
-    hard_requirements: asStringArray(o.hard_requirements, 8),
-    team_vibe: asString(o.team_vibe),
-    vibe_source_tag: asString(o.vibe_source_tag, '[ Official JD ]'),
-    team_highlights: asStringArray(o.team_highlights, 4),
-    team_pain_points: asStringArray(o.team_pain_points, 4),
-    promotion_drivers: asStringArray(o.promotion_drivers, 5),
-    hm_verification_questions: asStringArray(o.hm_verification_questions, 5),
-    data_insufficient: Boolean(o.data_insufficient),
+    role_content_refined: role.responsibilities?.length
+      ? role.responsibilities.slice(0, 6)
+      : [role.mission].filter(Boolean),
+    requirements_refined: (role.hiring_signals ?? []).slice(0, 6),
+    rto_official: 'Not stated on JD',
+    rto_employee_reality:
+      '該團隊公開樣本不足 — Team-level public reviews not found; do not invent overtime claims.',
+    next_title_1_3yr: '',
+    promotion_skill_gaps: snapshot.proof_map.gaps.slice(0, 3).map((g) => g.gap),
+    team_sample_insufficient: true,
+    department_fallback_note:
+      'Public sample for this specific team is insufficient; validate RTO and WLB with the hiring manager.',
   };
 }
 
-function normalizeCompanyTruth(raw: unknown): CompanyTruth | undefined {
-  if (!raw || typeof raw !== 'object') return undefined;
-  const o = raw as Record<string, unknown>;
-  const competitors: CompanyCompetitor[] = Array.isArray(o.competitors)
-    ? o.competitors
-        .filter((c): c is Record<string, unknown> => Boolean(c && typeof c === 'object'))
-        .map((c) => ({
-          name: asString(c.name, 'Competitor'),
-          note: asString(c.note),
-        }))
-        .filter((c) => c.note || c.name)
-        .slice(0, 5)
-    : [];
+function normalizeCompanyTruth(
+  raw: unknown,
+  hiring: HiringContext,
+): CompanyTruth | undefined {
+  if (raw && typeof raw === 'object') {
+    const o = raw as Record<string, unknown>;
+    const hasNew =
+      typeof o.current_strategy === 'string'
+      || Array.isArray(o.insider_voice)
+      || typeof o.forum_sample_thin === 'boolean';
+    const competitors: CompanyCompetitor[] = Array.isArray(o.competitors)
+      ? o.competitors
+          .filter((c): c is Record<string, unknown> => Boolean(c && typeof c === 'object'))
+          .map((c) => ({
+            name: asString(c.name, 'Competitor'),
+            strengths: asString(c.strengths) || asString(c.note),
+            weaknesses: asString(c.weaknesses),
+          }))
+          .filter((c) => c.name)
+          .slice(0, 3)
+      : [];
+    if (hasNew || competitors.length > 0 || asString(o.strategic_focus)) {
+      const layoff = asStringArray(o.layoff_legal_flags, 6);
+      const voiceRaw = Array.isArray(o.insider_voice) && o.insider_voice.length
+        ? o.insider_voice
+        : o.culture_forum_takeaways;
+      const qRaw = Array.isArray(o.interviewer_strategy_questions)
+        && o.interviewer_strategy_questions.length
+        ? o.interviewer_strategy_questions
+        : o.strategic_questions;
+      const questions = asStringArray(qRaw, 3);
+      return {
+        current_strategy:
+          asString(o.current_strategy) || asString(o.strategic_focus),
+        competitors,
+        insider_voice: asStringArray(voiceRaw, 6),
+        forum_sample_thin: Boolean(
+          o.forum_sample_thin ?? o.insufficient_public_data,
+        ),
+        layoff_legal_flags: layoff,
+        interviewer_strategy_questions:
+          layoff.length === 0
+            ? (questions.length ? questions : hiring.validation_questions.slice(0, 3))
+            : questions,
+      };
+    }
+  }
+  // Honest fallback from hiring_context only
+  if (hiring.insights.length === 0 && hiring.limitations.length === 0) return undefined;
   return {
-    risk_audit_badge: asString(o.risk_audit_badge, 'UNKNOWN') || 'UNKNOWN',
-    strategic_focus: asString(o.strategic_focus),
-    leadership_notes: asString(o.leadership_notes),
-    competitors,
-    culture_forum_takeaways: asStringArray(o.culture_forum_takeaways, 6),
-    layoff_legal_flags: asStringArray(o.layoff_legal_flags, 6),
-    company_moat: asStringArray(o.company_moat, 4),
-    org_risks: asStringArray(o.org_risks, 4),
-    insufficient_public_data: Boolean(o.insufficient_public_data),
-    strategic_questions: asStringArray(o.strategic_questions, 5),
-    suggested_search_query: asString(o.suggested_search_query) || undefined,
+    current_strategy:
+      hiring.insights[0]?.claim
+      || 'No current-strategy public signal extracted — do not invent PR narratives.',
+    competitors: [],
+    insider_voice: hiring.insights.map((i) => i.claim).slice(0, 4),
+    forum_sample_thin: hiring.insights.length < 2,
+    layoff_legal_flags: [],
+    interviewer_strategy_questions: hiring.validation_questions.slice(0, 3),
   };
 }
 
@@ -641,6 +707,7 @@ function normalizeReferenceCitations(raw: unknown): ReferenceCitation[] | undefi
       date: asString(o.date, '—') || '—',
       evidence_tier,
       url: asString(o.url),
+      manual_verify_keywords: asString(o.manual_verify_keywords) || undefined,
     });
   }
   return out.length ? out : undefined;
@@ -883,9 +950,11 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
 
   const role_team_insights = normalizeRoleTeamInsights(
     (raw as Partial<StrategyIntelFields>).role_team_insights,
+    snapshot,
   );
   const company_truth = normalizeCompanyTruth(
     (raw as Partial<StrategyIntelFields>).company_truth,
+    hiring_context,
   );
   const reference_citations = normalizeReferenceCitations(
     (raw as Partial<StrategyIntelFields>).reference_citations,

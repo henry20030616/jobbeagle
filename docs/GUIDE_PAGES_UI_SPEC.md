@@ -1,25 +1,51 @@
-# JobBeagle — Interview Strategy Guide (Pages 1–5) UI Layout & Component Spec
+# JobBeagle 報告範圍 — Excel 原稿（唯一真相來源）
 
-> **Target:** Cursor Agent / Front-end Developer  
-> **Source of Truth:** Excel《Jobbeagle報告範圍》最新修訂版  
-> **Design System:** Dark Slate Theme, Border-rendered Boxed Cards, Dual-column Responsive Grid, High-density Typography (mirrored from Page 1 `LiteReportDashboard`).
+來源檔：`Desktop/ Jobbeagle報告範圍.xlsx`（工作表1）。實作必須嚴格對齊下列 A–E，禁止自行加欄位或幻想內容。
 
-## Global rules
+## A｜求職者匹配度（Page 1 · Snapshot）
 
-1. Pages 2–5 must reuse Page 1 card/grid/CSS/typography.
-2. Page 1 frozen except mandatory ATS Rejection Warning in Critical Gaps.
-3. Pages 2–3 must not repeat numeric salary prediction ranges from Page 1.
-4. Honest fallback UI when web grounding is thin — never fake data/URLs.
+1. 綜合匹配分數與簡評：0–100 + 小狗圖等級 + 綜合評語  
+2. 匹配強項與關鍵缺口：3–4 優點 + 3–4 缺口；明確硬技能/軟技能  
+   - **ATS 淘汰預警**：顯示「ATS 通過預估率：42%（高風險被系統自動刷掉）」，標註缺少核心關鍵字數量  
+3. 市場薪資落點預測：範圍/中位數 + 使用者落點  
 
-## Implementation map
+LLM：輕量模型 / 低延遲。薪資可用預計算數據，不依賴高階 LLM。
 
-| Page | Nav tab id | Component |
-|------|------------|-----------|
-| 1 Snapshot + ATS | `snapshot` | `LiteReportDashboard` |
-| 2 Role & Team | `hiring` | `GuideStrategyPages` → Page2 |
-| 3 Company Truth | `interview` | `GuideStrategyPages` → Page3 |
-| 4 Interview & Comp | `salary` | `GuideStrategyPages` → Page4 |
-| 5 References | `provenance` | `GuideStrategyPages` → Page5 |
+## B｜職位與團隊現況（Page 2）
 
-Shared chrome: `components/guide/GuideSlideChrome.tsx`  
-Schema fields: `ats_warning`, `role_team_insights`, `company_truth`, `reference_citations` in `types.ts` + Full/Lite prompts + normalize.
+1. 職位內容/要求：重構精練重點，**嚴禁照抄 JD**  
+2. 工作型態與 RTO：官方規定 + 真實體感（加班）  
+3. 職涯：1–3 年下一階段職銜 + 核心能力缺口  
+4. **嚴禁任何具體薪資金額**  
+5. 降級：該團隊無公開評價 → 同部門風向或標註「該團隊公開樣本不足」  
+
+來源：LinkedIn, Glassdoor, Company Career Page。
+
+## C｜公司真相與風險（Page 3）
+
+1. 當前核心戰略（非維基歷史）+ 2–3 競爭對手優劣勢  
+2. 內部人真實聲響（Glassdoor/Blind/Reddit）；小公司無貼文 →「公開論壇聲量較少」  
+3. Layoff.fyi / 訴訟；無紀錄 →「無顯著公開違法/裁員紀錄」+ 2–3 戰略反問題  
+
+來源：Reddit, X, Blind, Glassdoor, Layoff.fyi, SEC/新聞。
+
+## D｜面試與談薪策略（Page 4）
+
+1. 固定 **3–5 行為題 + 3–5 專業/案例題**；每題：考察意圖 + STAR + Do's & Don'ts；找不到真題標「猜題」  
+2. 其餘真題僅清單列出  
+3. TC：Base + RSU + Sign-on（Levels.fyi 等）  
+4. 談薪：準備（錨定）→ Pitch → Counter  
+
+## E｜參考資料與證據鏈（Page 5）
+
+條列 RAG 原始連結；無 URL →「檢索數據摘要與建議手動查證關鍵字」，**絕不填充假網址**。
+
+## 實作對照
+
+| Excel | Tab id | UI |
+|-------|--------|-----|
+| A | snapshot | `LiteReportDashboard` + ATS |
+| B | hiring | `GuideStrategyPages` Page2 |
+| C | interview | Page3 |
+| D | salary | Page4 |
+| E | provenance | Page5 |

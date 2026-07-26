@@ -36,9 +36,20 @@ Use google search / public web sources when citing hiring_context insights or re
 4) interview_playbook — SEPARATE reported questions (citation: source_url, source_date) from predicted (predicted=true). Tag each predicted question category as "behavioral" or "technical". Prefer interviewer_intent, star_blueprint, dos_donts on predicted items. EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
 5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers. Page 4 may show TC mix; Pages 2–3 must NOT invent dollar salary ranges.
 6) candidate_case — hire_thesis (2–3 sentences: why hire THIS candidate for THIS seat) + top_facts (exactly 3 resume-backed facts that most support an offer). Upgrade of the proof map — not a resume rewrite.
-7) role_team_insights (Guide Page 2) — career_trajectory with growth_potential_pct as a PERCENT string only (e.g. "+20-25%"), NEVER dollar amounts. work_arrangement.mode (REMOTE/HYBRID/ONSITE/UNKNOWN). role_core + hard_requirements bullets. team_vibe + vibe_source_tag. team_highlights vs team_pain_points (2–3 each). promotion_drivers + hm_verification_questions. If web data thin → data_insufficient=true and honest unknowns (do not invent team gossip).
-8) company_truth (Guide Page 3) — strategic_focus + leadership_notes; competitors[{name,note}] (2–3); culture_forum_takeaways; layoff_legal_flags (empty array if none — UI shows "No Major Public Red Flags"); company_moat vs org_risks; if small/niche company with thin news → insufficient_public_data=true + strategic_questions + suggested_search_query. NEVER invent URLs.
-9) reference_citations (Guide Page 5, optional) — array of {source_badge, description, date, evidence_tier:1|2|3, url}. Prefer real URLs; if summary-only leave url="".
+7) role_team_insights (Guide Page 2 / Excel B「職位與團隊現況」) — REQUIRED fields:
+   - role_content_refined[] + requirements_refined[]: RESTRUCTURED highlights; NEVER paste JD verbatim.
+   - rto_official: office days / RTO policy from JD.
+   - rto_employee_reality: web employee overtime/WLB reality (Glassdoor/LinkedIn/forums). Filter official PR.
+   - next_title_1_3yr: next title in 1–3 years (e.g. PM → Senior PM) + promotion_skill_gaps[].
+   - ABSOLUTELY NO dollar salary amounts on this page (salary is Page 1 + Page 4 only).
+   - If no public reviews for THIS team: team_sample_insufficient=true and/or department_fallback_note; label 該團隊公開樣本不足. Do NOT invent team gossip.
+8) company_truth (Guide Page 3 / Excel C「公司真相與風險」) — REQUIRED:
+   - current_strategy: CURRENT strategic focus (AI push / cost-cut etc.) — NOT Wikipedia history.
+   - competitors[2–3]: {name, strengths, weaknesses}.
+   - insider_voice[]: Glassdoor/Blind/Reddit high-frequency praise/complaints (manager style, WLB, toxic). If no posts: forum_sample_thin=true and say 公開論壇聲量較少 — never fabricate.
+   - layoff_legal_flags[]: Layoff.fyi / litigation / controversy. If none: EMPTY array (UI shows 無顯著公開違法/裁員紀錄) and fill interviewer_strategy_questions with 2–3 company strategy questions for the interviewer. NEVER invent layoffs.
+9) interview_playbook Page 4 depth: EXACTLY 3–5 behavioral + 3–5 technical/case predicted (or reported). Each must include interviewer_intent + star_blueprint + dos_donts. Mark predicted guesses clearly. Extra real questions go in reported[] as a list without full STAR. offer_strategy.tc_breakdown MUST try Base + equity/RSU + sign_on (+ total) from Levels.fyi-class sources when possible. Negotiation script = Prepare(anchor) → Pitch → Counter.
+10) reference_citations (Guide Page 5 / Excel E) — RAG source list: Reddit/Blind threads, Levels.fyi, Layoff, news. If no direct URL: url="" and manual_verify_keywords set — NEVER invent URLs.
 
 Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
 Output valid JSON only. No markdown fences.`;
@@ -197,6 +208,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
             base: { type: ['string', 'null'] },
             bonus: { type: ['string', 'null'] },
             equity: { type: ['string', 'null'] },
+            sign_on: { type: ['string', 'null'] },
             total: { type: ['string', 'null'] },
           },
         },
@@ -223,82 +235,53 @@ export const FULL_INTEL_JSON_SCHEMA = {
     role_team_insights: {
       type: 'object',
       properties: {
-        team_fit_badge: { type: 'string' },
-        career_trajectory: {
-          type: 'object',
-          properties: {
-            current_label: { type: 'string' },
-            next_role: { type: 'string' },
-            growth_potential_pct: { type: 'string' },
-          },
-          required: ['current_label', 'next_role', 'growth_potential_pct'],
-        },
-        work_arrangement: {
-          type: 'object',
-          properties: {
-            mode: { type: 'string' },
-            hours_per_week: { type: 'string' },
-            notes: { type: 'string' },
-          },
-          required: ['mode'],
-        },
-        role_core: { type: 'array', items: { type: 'string' } },
-        hard_requirements: { type: 'array', items: { type: 'string' } },
-        team_vibe: { type: 'string' },
-        vibe_source_tag: { type: 'string' },
-        team_highlights: { type: 'array', items: { type: 'string' } },
-        team_pain_points: { type: 'array', items: { type: 'string' } },
-        promotion_drivers: { type: 'array', items: { type: 'string' } },
-        hm_verification_questions: { type: 'array', items: { type: 'string' } },
-        data_insufficient: { type: 'boolean' },
+        role_content_refined: { type: 'array', items: { type: 'string' } },
+        requirements_refined: { type: 'array', items: { type: 'string' } },
+        rto_official: { type: 'string' },
+        rto_employee_reality: { type: 'string' },
+        next_title_1_3yr: { type: 'string' },
+        promotion_skill_gaps: { type: 'array', items: { type: 'string' } },
+        team_sample_insufficient: { type: 'boolean' },
+        department_fallback_note: { type: 'string' },
       },
       required: [
-        'team_fit_badge',
-        'career_trajectory',
-        'work_arrangement',
-        'role_core',
-        'hard_requirements',
-        'team_vibe',
-        'team_highlights',
-        'team_pain_points',
-        'hm_verification_questions',
+        'role_content_refined',
+        'requirements_refined',
+        'rto_official',
+        'rto_employee_reality',
+        'next_title_1_3yr',
+        'promotion_skill_gaps',
+        'team_sample_insufficient',
       ],
     },
     company_truth: {
       type: 'object',
       properties: {
-        risk_audit_badge: { type: 'string' },
-        strategic_focus: { type: 'string' },
-        leadership_notes: { type: 'string' },
+        current_strategy: { type: 'string' },
         competitors: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
               name: { type: 'string' },
-              note: { type: 'string' },
+              strengths: { type: 'string' },
+              weaknesses: { type: 'string' },
             },
-            required: ['name', 'note'],
+            required: ['name', 'strengths', 'weaknesses'],
           },
         },
-        culture_forum_takeaways: { type: 'array', items: { type: 'string' } },
+        insider_voice: { type: 'array', items: { type: 'string' } },
+        forum_sample_thin: { type: 'boolean' },
         layoff_legal_flags: { type: 'array', items: { type: 'string' } },
-        company_moat: { type: 'array', items: { type: 'string' } },
-        org_risks: { type: 'array', items: { type: 'string' } },
-        insufficient_public_data: { type: 'boolean' },
-        strategic_questions: { type: 'array', items: { type: 'string' } },
-        suggested_search_query: { type: 'string' },
+        interviewer_strategy_questions: { type: 'array', items: { type: 'string' } },
       },
       required: [
-        'risk_audit_badge',
-        'strategic_focus',
-        'leadership_notes',
+        'current_strategy',
         'competitors',
-        'culture_forum_takeaways',
+        'insider_voice',
+        'forum_sample_thin',
         'layoff_legal_flags',
-        'company_moat',
-        'org_risks',
-        'strategic_questions',
+        'interviewer_strategy_questions',
       ],
     },
     reference_citations: {
@@ -311,8 +294,9 @@ export const FULL_INTEL_JSON_SCHEMA = {
           date: { type: 'string' },
           evidence_tier: { type: 'number' },
           url: { type: 'string' },
+          manual_verify_keywords: { type: 'string' },
         },
-        required: ['source_badge', 'description', 'evidence_tier'],
+        required: ['source_badge', 'description', 'evidence_tier', 'url'],
       },
     },
   },
