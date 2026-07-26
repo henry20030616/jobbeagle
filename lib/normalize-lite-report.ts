@@ -27,6 +27,8 @@ import type {
   ProofMap,
   AtsWarning,
   CompanyCompetitor,
+  CompanyNewsCategory,
+  CompanyNewsItem,
   CompanyTruth,
   ReferenceCitation,
   ReferenceEvidenceTier,
@@ -661,6 +663,49 @@ function inferMarketNextTitle(jobTitle: string | undefined): string {
   return `Senior ${t}`;
 }
 
+const NEWS_CATEGORIES: CompanyNewsCategory[] = [
+  'leadership',
+  'product',
+  'award',
+  'funding',
+  'other',
+];
+
+function normalizeCompanyNewsItems(raw: unknown): CompanyNewsItem[] {
+  if (!Array.isArray(raw)) return [];
+  const out: CompanyNewsItem[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const o = item as Record<string, unknown>;
+    const headline = asString(o.headline) || asString(o.title);
+    if (!headline) continue;
+    const catRaw = asString(o.category).toLowerCase();
+    const category = NEWS_CATEGORIES.includes(catRaw as CompanyNewsCategory)
+      ? (catRaw as CompanyNewsCategory)
+      : 'other';
+    out.push({
+      headline,
+      summary: asString(o.summary) || asString(o.why_it_matters),
+      date: asString(o.date) || asString(o.source_date) || '—',
+      category,
+      source_name: asString(o.source_name) || undefined,
+      source_url: asString(o.source_url) || undefined,
+    });
+    if (out.length >= 5) break;
+  }
+  return out;
+}
+
+function newsFromHiringInsights(hiring: HiringContext): CompanyNewsItem[] {
+  return hiring.insights.slice(0, 5).map((i) => ({
+    headline: i.claim,
+    summary: i.why_it_matters || i.claim,
+    date: i.date || '—',
+    category: 'other' as const,
+    source_url: i.source_url || undefined,
+  }));
+}
+
 function normalizeCompanyTruth(
   raw: unknown,
   hiring: HiringContext,
@@ -670,6 +715,7 @@ function normalizeCompanyTruth(
     const hasNew =
       typeof o.company_overview === 'string'
       || typeof o.current_strategy === 'string'
+      || Array.isArray(o.recent_developments)
       || Array.isArray(o.insider_voice)
       || typeof o.forum_sample_thin === 'boolean';
     const competitors: CompanyCompetitor[] = Array.isArray(o.competitors)
@@ -693,11 +739,16 @@ function normalizeCompanyTruth(
         ? o.interviewer_strategy_questions
         : o.strategic_questions;
       const questions = asStringArray(qRaw, 3);
+      const developments = normalizeCompanyNewsItems(
+        o.recent_developments ?? o.recent_news ?? o.company_news,
+      );
       return {
         company_overview:
           asString(o.company_overview)
           || asString(o.company_situation)
           || asString(o.overview),
+        recent_developments:
+          developments.length > 0 ? developments : newsFromHiringInsights(hiring),
         current_strategy:
           asString(o.current_strategy) || asString(o.strategic_focus),
         competitors,
@@ -719,6 +770,7 @@ function normalizeCompanyTruth(
     company_overview:
       hiring.insights.slice(0, 2).map((i) => i.claim).filter(Boolean).join(' ')
       || '',
+    recent_developments: newsFromHiringInsights(hiring),
     current_strategy:
       hiring.insights[0]?.claim
       || 'No current-strategy public signal extracted — do not invent PR narratives.',

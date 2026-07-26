@@ -5,7 +5,7 @@ Produce BOTH:
 (A) the Job Fit Snapshot layer (fit score, hard filter, proof map, expected offer, apply decision, role read, interview starters), AND
 (B) the strategy layer (strategy_fit_salary, hiring_context, concerns_defenses, interview_playbook, offer_strategy, candidate_case).
 
-Use google search / public web sources when citing hiring_context insights or reported interview questions.
+Use google search / public web sources when citing hiring_context insights, company_truth.recent_developments, or reported interview questions.
 
 === Snapshot layer rules ===
 - Extract facts from the JD and resume only. Never invent experience, visas, or compensation from model memory.
@@ -47,6 +47,7 @@ Use google search / public web sources when citing hiring_context insights or re
    - If no public reviews for THIS team: team_sample_insufficient=true and/or department_fallback_note; write the insufficient-sample phrase in the OUTPUT LANGUAGE. Do NOT invent team gossip. This thin-sample rule applies to team culture/WLB — NOT to next_title_1_3yr (always analyze a market path).
 8) company_truth (Guide Page 3 / Excel C「公司真相與風險」) — REQUIRED:
    - company_overview: FIRST section for the candidate — 3–5 plain sentences on what kind of company this is RIGHT NOW (industry, products/customers, size/stage if public, market posture, operating climate). Goal: a job seeker should quickly grasp “what company am I walking into?” Prefer IR / news / careers / reputable profiles. Never founding mythology, never meta “not Wikipedia” phrasing, never invent headcount or funding.
+   - recent_developments: UP TO 5 most relevant PUBLIC news items for THIS employer (prefer last 12–18 months). Categories: leadership (exec/org moves), product (major launches), award, funding, other. Each needs headline, summary (why it matters to a candidate), date, category, source_name, and source_url when citable — NEVER invent URLs; if no URL set source_url="". Prefer IR, trusted news, company blogs. If public news is thin, return fewer items (even 0) — do not fabricate headlines.
    - current_strategy: 2–4 plain sentences on what THIS employer is pushing NOW (product bets, cost cuts, AI, expansion, reliability). Distinct from company_overview (overview = who they are; strategy = what they’re pushing). Write for the candidate — never put meta instructions in the string. Prefer IR / news / careers signals over founding lore.
    - competitors[2–3]: REAL industry companies that compete with THIS employer for customers/market share (named firms, e.g. Stripe / Adyen / Block for a payments company). Each needs concrete strengths + weaknesses vs THIS employer’s positioning. FORBIDDEN: candidate peer buckets like “payments-native BA peers”, “generic senior BA pipelines”, job-seeker rival categories, or vague “other fintechs”. If public competitor map is thin, still name the closest public rivals and state uncertainty in weaknesses — do not invent fake startups.
    - insider_voice[]: Glassdoor/Blind/Reddit high-frequency praise/complaints (manager style, WLB, toxic). If no posts: forum_sample_thin=true and say the thin-forum phrase in the OUTPUT LANGUAGE — never fabricate.
@@ -283,6 +284,25 @@ export const FULL_INTEL_JSON_SCHEMA = {
       type: 'object',
       properties: {
         company_overview: { type: 'string' },
+        recent_developments: {
+          type: 'array',
+          maxItems: 5,
+          items: {
+            type: 'object',
+            properties: {
+              headline: { type: 'string' },
+              summary: { type: 'string' },
+              date: { type: 'string' },
+              category: {
+                type: 'string',
+                enum: ['leadership', 'product', 'award', 'funding', 'other'],
+              },
+              source_name: { type: 'string' },
+              source_url: { type: 'string' },
+            },
+            required: ['headline', 'summary', 'date', 'category'],
+          },
+        },
         current_strategy: { type: 'string' },
         competitors: {
           type: 'array',
@@ -303,6 +323,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
       },
       required: [
         'company_overview',
+        'recent_developments',
         'current_strategy',
         'competitors',
         'insider_voice',

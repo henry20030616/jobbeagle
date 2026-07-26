@@ -432,6 +432,48 @@ const ZH_TW: SampleLocalePack = {
     company_truth: {
       company_overview:
         'Northstar Payments 是美國金融科技公司，主攻商戶清算、ACH 退票與營運分析，客群偏中型與成長型商戶。市場位置介於開發者友善軌道（Stripe 類）與較重的企業收單之間——這次開缺是 Senior BA 走可靠度／例外擁有權，不是消費型 neobank 故事。公開訊號顯示重視書面狀態包、跨職能分流，以及可量化的週期 KPI。',
+      recent_developments: [
+        {
+          headline: '營運領導層擴大清算可靠度計畫',
+          summary: '顯示 Senior BA 會用例外週期與關帳品質衡量，而不只看工單量。',
+          date: '2026-04',
+          category: 'leadership',
+          source_name: '公司部落格',
+          source_url: 'https://www.reuters.com',
+        },
+        {
+          headline: 'AI 輔助退票分流導入營運流程',
+          summary: '產品賭注代表面試可能深挖 human-in-the-loop 例外設計與 KPI 擁有權。',
+          date: '2026-03',
+          category: 'product',
+          source_name: '科技媒體',
+          source_url: 'https://www.bloomberg.com',
+        },
+        {
+          headline: '支付可靠度工具獲產業肯定',
+          summary: '獲獎敘事強化清算品質品牌，可用於「為何選這家公司」回答。',
+          date: '2026-02',
+          category: 'award',
+          source_name: '產業媒體',
+          source_url: 'https://www.reuters.com',
+        },
+        {
+          headline: '宣布擴大中型商戶 ACH 覆蓋',
+          summary: 'ACH 範圍擴大通常代表第一年會有更多退票／清算邊緣案例。',
+          date: '2026-01',
+          category: 'product',
+          source_name: '公司新聞室',
+          source_url: 'https://www.bloomberg.com',
+        },
+        {
+          headline: '同業加大營運自動化投入',
+          summary: '競爭壓力解釋為何 Northstar 現在開自動化與可靠度分析職缺。',
+          date: '2025-11',
+          category: 'other',
+          source_name: '市場新聞',
+          source_url: 'https://www.reuters.com',
+        },
+      ],
       current_strategy:
         '近期重心是清算可靠度與例外自動化：降低 ACH 退票失敗、加快關帳，並用 AI 輔助分流，讓營運分析師用週期 KPI 帶隊，而不是只救火工單。',
       competitors: [
@@ -897,6 +939,48 @@ const ZH_CN: SampleLocalePack = {
     company_truth: {
       company_overview:
         'Northstar Payments 是美国金融科技公司，主攻商户清算、ACH 退票与运营分析，客群偏中型与成长型商户。市场位置介于开发者友好轨道（Stripe 类）与较重的企业收单之间——这次开缺是 Senior BA 走可靠度／例外所有权，不是消费型 neobank 故事。公开信号显示重视书面状态包、跨职能分流，以及可量化的周期 KPI。',
+      recent_developments: [
+        {
+          headline: '运营领导层扩大清算可靠度计划',
+          summary: '显示 Senior BA 会用例外周期与关账质量衡量，而不只看工单量。',
+          date: '2026-04',
+          category: 'leadership',
+          source_name: '公司博客',
+          source_url: 'https://www.reuters.com',
+        },
+        {
+          headline: 'AI 辅助退票分流导入运营流程',
+          summary: '产品赌注代表面试可能深挖 human-in-the-loop 例外设计与 KPI 所有权。',
+          date: '2026-03',
+          category: 'product',
+          source_name: '科技媒体',
+          source_url: 'https://www.bloomberg.com',
+        },
+        {
+          headline: '支付可靠度工具获产业肯定',
+          summary: '获奖叙事强化清算质量品牌，可用于「为何选这家公司」回答。',
+          date: '2026-02',
+          category: 'award',
+          source_name: '产业媒体',
+          source_url: 'https://www.reuters.com',
+        },
+        {
+          headline: '宣布扩大中型商户 ACH 覆盖',
+          summary: 'ACH 范围扩大通常代表第一年会有更多退票／清算边缘案例。',
+          date: '2026-01',
+          category: 'product',
+          source_name: '公司新闻室',
+          source_url: 'https://www.bloomberg.com',
+        },
+        {
+          headline: '同业加大运营自动化投入',
+          summary: '竞争压力解释为何 Northstar 现在开自动化与可靠度分析职位。',
+          date: '2025-11',
+          category: 'other',
+          source_name: '市场新闻',
+          source_url: 'https://www.reuters.com',
+        },
+      ],
       current_strategy:
         '近期重心是清算可靠度与例外自动化：降低 ACH 退票失败、加快关账，并用 AI 辅助分流，让运营分析师用周期 KPI 带队，而不是只救火工单。',
       competitors: [
@@ -1369,6 +1453,53 @@ const ES: SampleLocalePack = {
     company_truth: {
       company_overview:
         'Northstar Payments es un fintech de EE. UU. centrado en settlement mercantil, ACH returns y analytics de ops para merchants mid-market y de crecimiento. Se sitúa entre rails developer-first (clase Stripe) y acquiring enterprise más pesado — este hire es Senior BA de confiabilidad/excepciones, no una historia de neobank de consumo. El clima operativo enfatiza status packs escritos, triage cross-funcional y KPIs de cycle-time medibles.',
+      recent_developments: [
+        {
+          headline: 'Liderazgo de ops amplía el programa de confiabilidad de settlement',
+          summary:
+            'Señala que los seats Senior BA se medirán por cycle-time de excepciones y calidad de close, no solo tickets.',
+          date: '2026-04',
+          category: 'leadership',
+          source_name: 'Blog de la empresa',
+          source_url: 'https://www.reuters.com',
+        },
+        {
+          headline: 'Triage de returns con IA entra al workflow de ops',
+          summary:
+            'Apuesta de producto: espera preguntas sobre diseño human-in-the-loop y ownership de KPI.',
+          date: '2026-03',
+          category: 'product',
+          source_name: 'Prensa tech',
+          source_url: 'https://www.bloomberg.com',
+        },
+        {
+          headline: 'Reconocimiento de industria por tooling de confiabilidad',
+          summary:
+            'Narrativa de premio útil para “por qué esta empresa” en entrevista.',
+          date: '2026-02',
+          category: 'award',
+          source_name: 'Prensa sectorial',
+          source_url: 'https://www.reuters.com',
+        },
+        {
+          headline: 'Anuncian expansión de cobertura ACH mid-market',
+          summary:
+            'Más alcance ACH suele traer más edge cases de returns/settlement el primer año.',
+          date: '2026-01',
+          category: 'product',
+          source_name: 'Newsroom',
+          source_url: 'https://www.bloomberg.com',
+        },
+        {
+          headline: 'Peers fintech aumentan gasto en automatización de ops',
+          summary:
+            'Presión competitiva explica por qué Northstar contrata analytics de confiabilidad ahora.',
+          date: '2025-11',
+          category: 'other',
+          source_name: 'Noticias de mercado',
+          source_url: 'https://www.reuters.com',
+        },
+      ],
       current_strategy:
         'Prioridad cercana: confiabilidad de settlement y automatización de excepciones — menos ACH returns fallidos, close más rápido y triage con IA para que los analistas de ops sean dueños de KPIs de cycle-time, no solo apaguen tickets.',
       competitors: [

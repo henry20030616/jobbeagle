@@ -447,6 +447,53 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
   company_truth: {
     company_overview:
       'Northstar Payments is a US fintech focused on merchant settlement, ACH returns, and ops analytics for mid-market and growth merchants. Public positioning sits between developer-first rails (Stripe-class) and heavier enterprise acquiring — hiring Senior BAs into reliability and exception ownership, not a consumer-neobank story. Operating climate emphasizes written status packs, cross-functional triage, and measurable cycle-time KPIs.',
+    recent_developments: [
+      {
+        headline: 'Ops leadership expands settlement reliability program',
+        summary:
+          'Signals that Senior BA seats will be measured on exception cycle-time and close quality, not ticket volume alone.',
+        date: '2026-04',
+        category: 'leadership',
+        source_name: 'Company blog',
+        source_url: 'https://www.reuters.com',
+      },
+      {
+        headline: 'AI-assisted returns triage rolled into ops workflow',
+        summary:
+          'Product bet candidates should expect interview probes on human-in-the-loop exception design and KPI ownership.',
+        date: '2026-03',
+        category: 'product',
+        source_name: 'Tech press',
+        source_url: 'https://www.bloomberg.com',
+      },
+      {
+        headline: 'Industry recognition for payments reliability tooling',
+        summary:
+          'Award narrative reinforces brand push on settlement quality — useful talking point in “why this company” answers.',
+        date: '2026-02',
+        category: 'award',
+        source_name: 'Trade press',
+        source_url: 'https://www.reuters.com',
+      },
+      {
+        headline: 'Mid-market ACH coverage expansion announced',
+        summary:
+          'Growth in ACH scope often means more returns/settlement edge cases for analytics hires in the first year.',
+        date: '2026-01',
+        category: 'product',
+        source_name: 'Company careers / newsroom',
+        source_url: 'https://www.bloomberg.com',
+      },
+      {
+        headline: 'Public fintech peers raise bar on ops automation spend',
+        summary:
+          'Competitive pressure context for why Northstar is hiring into automation and reliability analytics now.',
+        date: '2025-11',
+        category: 'other',
+        source_name: 'Market news',
+        source_url: 'https://www.reuters.com',
+      },
+    ],
     current_strategy:
       'Near-term push is settlement reliability and exception automation: fewer failed ACH returns, faster close, and AI-assisted triage so ops analysts own cycle-time KPIs instead of ticket firefighting.',
     competitors: [

@@ -28,6 +28,11 @@ describe('sample reports', () => {
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels\.fyi|LinkedIn|market/i);
     expect(report.company_truth?.company_overview).toMatch(/fintech|Payments|merchant|清算|支付/i);
     expect(report.company_truth?.company_overview).not.toMatch(/Wikipedia|encyclopedic|百科|維基/i);
+    expect(report.company_truth?.recent_developments?.length).toBe(5);
+    expect(report.company_truth?.recent_developments?.[0]?.headline).toBeTruthy();
+    expect(report.company_truth?.recent_developments?.[0]?.category).toMatch(
+      /leadership|product|award|funding|other/,
+    );
     expect(report.company_truth?.competitors[0]?.name).toMatch(/Stripe|Adyen|Block/i);
     expect(report.company_truth?.competitors[0]?.name).not.toMatch(/peers|pipelines|同儕|管線/i);
     expect(report.company_truth?.current_strategy).not.toMatch(/Wikipedia|encyclopedic|百科|維基/i);
@@ -65,6 +70,7 @@ describe('sample reports', () => {
     expect(report.role_team_insights?.role_content_refined[0]).toMatch(/支付|需求/);
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels|LinkedIn|職涯|推估/);
     expect(report.company_truth?.company_overview).toMatch(/金融科技|清算|商戶|Northstar/);
+    expect(report.company_truth?.recent_developments?.[0]?.headline).toMatch(/清算|AI|可靠度|ACH/);
     expect(report.company_truth?.current_strategy).toMatch(/清算|自動化|ACH/);
     expect(report.company_truth?.current_strategy).not.toMatch(/百科|維基/);
     expect(report.company_truth?.competitors.some((c) => /Stripe|Adyen|Block/.test(c.name))).toBe(
@@ -89,6 +95,8 @@ describe('guide page copy', () => {
     expect(zh.competitorsHint).toMatch(/具名企業|求職者/);
     expect(zh.companyOverview).toBe('公司現況');
     expect(zh.companyOverviewHint).toMatch(/怎樣的一間公司|產業/);
+    expect(zh.recentDevelopments).toBe('公司最近發展');
+    expect(zh.newsCatLeadership).toMatch(/經營層/);
     expect(zh.behavioralTitle).toMatch(/（5）/);
     expect(zh.technicalTitle).toMatch(/（5）/);
     expect(zh.predictedBadge).toBe('系統分析');

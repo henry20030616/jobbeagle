@@ -8,6 +8,7 @@
 
 import React, { useMemo } from 'react';
 import type {
+  CompanyNewsCategory,
   CompanyTruth,
   FullReport,
   InterviewQuestionCard,
@@ -72,6 +73,7 @@ function companyTruthOrEmpty(report: FullReport): CompanyTruth {
     return {
       ...report.company_truth,
       company_overview: report.company_truth.company_overview || '',
+      recent_developments: report.company_truth.recent_developments ?? [],
     };
   }
   const insights = report.hiring_context?.insights ?? [];
@@ -79,6 +81,13 @@ function companyTruthOrEmpty(report: FullReport): CompanyTruth {
     company_overview:
       insights.slice(0, 2).map((i) => i.claim).filter(Boolean).join(' ')
       || '',
+    recent_developments: insights.slice(0, 5).map((i) => ({
+      headline: i.claim,
+      summary: i.why_it_matters || i.claim,
+      date: i.date || '—',
+      category: 'other' as const,
+      source_url: i.source_url || undefined,
+    })),
     current_strategy:
       insights[0]?.claim || '—',
     competitors: [],
@@ -89,6 +98,24 @@ function companyTruthOrEmpty(report: FullReport): CompanyTruth {
       report.hiring_context?.validation_questions ?? []
     ).slice(0, 3),
   };
+}
+
+function newsCategoryLabel(
+  category: CompanyNewsCategory,
+  copy: GuideUiCopy,
+): string {
+  switch (category) {
+    case 'leadership':
+      return copy.newsCatLeadership;
+    case 'product':
+      return copy.newsCatProduct;
+    case 'award':
+      return copy.newsCatAward;
+    case 'funding':
+      return copy.newsCatFunding;
+    default:
+      return copy.newsCatOther;
+  }
 }
 
 function citationsOrEmpty(report: FullReport): ReferenceCitation[] {
@@ -385,6 +412,51 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
           {c.company_overview?.trim()
             || copy.companyOverviewEmpty}
         </p>
+      </div>
+      <div className="border-b border-slate-700/90 px-5 py-4">
+        <p className={`${SECTION_TITLE} text-sky-300 mb-2`}>{copy.recentDevelopments}</p>
+        <p className={`${META} text-slate-500 mb-3`}>{copy.recentDevelopmentsHint}</p>
+        {c.recent_developments.length > 0 ? (
+          <ol className="space-y-2.5 list-none">
+            {c.recent_developments.slice(0, 5).map((n, i) => (
+              <li
+                key={i}
+                className="rounded-lg border border-sky-400/30 bg-sky-500/5 px-3 py-2.5"
+              >
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <span className="text-sm font-black tabular-nums text-slate-300">
+                    {i + 1}.
+                  </span>
+                  <span className="rounded border border-sky-400/40 bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-200">
+                    {newsCategoryLabel(n.category, copy)}
+                  </span>
+                  <span className={`${META} text-slate-500`}>{n.date}</span>
+                  {n.source_name ? (
+                    <span className={`${META} text-slate-400`}>{n.source_name}</span>
+                  ) : null}
+                </div>
+                <p className={`${BODY} font-semibold text-slate-100`}>{n.headline}</p>
+                {n.summary ? (
+                  <p className={`${BODY_MUTED} mt-1 leading-snug`}>{n.summary}</p>
+                ) : null}
+                {n.source_url ? (
+                  <a
+                    href={n.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1.5 inline-flex max-w-full items-center gap-1 truncate text-sm font-semibold text-violet-300 underline underline-offset-2"
+                    title={n.source_url}
+                  >
+                    <span className="truncate">{n.source_url}</span>
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  </a>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className={`${BODY} text-slate-400`}>{copy.recentDevelopmentsEmpty}</p>
+        )}
       </div>
       <HeroDualRow
         left={

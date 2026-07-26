@@ -337,6 +337,25 @@ export interface CompanyCompetitor {
   weaknesses: string;
 }
 
+/** Guide Page 3 — recent public news / developments (max 5). */
+export type CompanyNewsCategory =
+  | 'leadership'
+  | 'product'
+  | 'award'
+  | 'funding'
+  | 'other';
+
+export interface CompanyNewsItem {
+  headline: string;
+  /** Why this matters to a candidate (1–2 sentences) */
+  summary: string;
+  date: string;
+  category: CompanyNewsCategory;
+  source_name?: string;
+  /** Empty when no citable URL — never invent */
+  source_url?: string;
+}
+
 /**
  * Guide Page 3 — Excel C「公司真相與風險」
  * 無裁員/訴訟紀錄時不得編造；改輸出面試可反問的戰略問題。
@@ -347,6 +366,8 @@ export interface CompanyTruth {
    * (industry, business model, scale/stage, market posture). Not founding lore.
    */
   company_overview: string;
+  /** Up to 5 most relevant recent public developments (news) */
+  recent_developments: CompanyNewsItem[];
   /** 公司近期重心（如強推 AI / 縮減成本）— 給求職者看的白話，禁止 meta「非維基」用語 */
   current_strategy: string;
   /** 2–3 家競爭對手 */

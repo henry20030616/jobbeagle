@@ -79,6 +79,14 @@ export interface GuideUiCopy {
   companyOverview: string;
   companyOverviewHint: string;
   companyOverviewEmpty: string;
+  recentDevelopments: string;
+  recentDevelopmentsHint: string;
+  recentDevelopmentsEmpty: string;
+  newsCatLeadership: string;
+  newsCatProduct: string;
+  newsCatAward: string;
+  newsCatFunding: string;
+  newsCatOther: string;
   currentStrategy: string;
   currentStrategyHint: string;
   competitors: string;
@@ -413,6 +421,16 @@ const GUIDE: Dict<GuideUiCopy> = {
       'What kind of company this is right now — industry, customers, stage, market posture',
     companyOverviewEmpty:
       'Not enough public signal to sketch the company snapshot — verify on the careers site and recent news.',
+    recentDevelopments: 'Recent company developments',
+    recentDevelopmentsHint:
+      'Up to 5 most relevant public items — leadership, major product launches, awards, funding',
+    recentDevelopmentsEmpty:
+      'No citable recent public news found — do not invent headlines; check the company newsroom and reputable press.',
+    newsCatLeadership: 'Leadership',
+    newsCatProduct: 'Product',
+    newsCatAward: 'Award',
+    newsCatFunding: 'Funding',
+    newsCatOther: 'News',
     currentStrategy: 'What the company is focused on now',
     currentStrategyHint: 'Near-term bets from public signals — not a company history lesson',
     competitors: 'Industry competitors (2–3)',
@@ -524,6 +542,15 @@ const GUIDE: Dict<GuideUiCopy> = {
     companyOverview: '公司現況',
     companyOverviewHint: '這是怎樣的一間公司——產業、客群、階段、市場位置',
     companyOverviewEmpty: '公開訊號不足以勾勒公司現況——請到官網職涯頁與近期新聞自行核對。',
+    recentDevelopments: '公司最近發展',
+    recentDevelopmentsHint: '最多 5 則最相關公開新聞——經營層、重大產品、獲獎、融資等',
+    recentDevelopmentsEmpty:
+      '找不到可引用的近期公開新聞——不編造標題；請查公司新聞室與可信媒體。',
+    newsCatLeadership: '經營層',
+    newsCatProduct: '產品',
+    newsCatAward: '獲獎',
+    newsCatFunding: '融資',
+    newsCatOther: '新聞',
     currentStrategy: '公司現在在拚什麼',
     currentStrategyHint: '近期待辦與公開訊號，不是公司沿革介紹',
     competitors: '產業競爭對手（2–3 家）',
@@ -633,6 +660,15 @@ const GUIDE: Dict<GuideUiCopy> = {
     companyOverview: '公司现况',
     companyOverviewHint: '这是怎样的一家公司——产业、客群、阶段、市场位置',
     companyOverviewEmpty: '公开信号不足以勾勒公司现况——请到官网职涯页与近期新闻自行核对。',
+    recentDevelopments: '公司最近发展',
+    recentDevelopmentsHint: '最多 5 则最相关公开新闻——经营层、重大产品、获奖、融资等',
+    recentDevelopmentsEmpty:
+      '找不到可引用的近期公开新闻——不编造标题；请查公司新闻室与可信媒体。',
+    newsCatLeadership: '经营层',
+    newsCatProduct: '产品',
+    newsCatAward: '获奖',
+    newsCatFunding: '融资',
+    newsCatOther: '新闻',
     currentStrategy: '公司现在在拼什么',
     currentStrategyHint: '近期待办与公开信号，不是公司沿革介绍',
     competitors: '产业竞争对手（2–3 家）',
@@ -747,6 +783,16 @@ const GUIDE: Dict<GuideUiCopy> = {
       'Qué tipo de empresa es ahora — industria, clientes, etapa, postura de mercado',
     companyOverviewEmpty:
       'Señal pública insuficiente para el panorama — verifica en careers y noticias recientes.',
+    recentDevelopments: 'Desarrollos recientes de la empresa',
+    recentDevelopmentsHint:
+      'Hasta 5 noticias públicas relevantes — liderazgo, productos, premios, funding',
+    recentDevelopmentsEmpty:
+      'Sin noticias públicas citables recientes — no inventes titulares; revisa newsroom y prensa.',
+    newsCatLeadership: 'Liderazgo',
+    newsCatProduct: 'Producto',
+    newsCatAward: 'Premio',
+    newsCatFunding: 'Funding',
+    newsCatOther: 'Noticia',
     currentStrategy: 'En qué está enfocada la empresa ahora',
     currentStrategyHint: 'Apuestas de corto plazo con señales públicas — no una historia de la empresa',
     competitors: 'Competidores de la industria (2–3)',
@@ -861,6 +907,16 @@ const GUIDE: Dict<GuideUiCopy> = {
     companyOverviewHint: 'अभी यह कैसी कंपनी है — उद्योग, ग्राहक, चरण, बाज़ार पोस्चर',
     companyOverviewEmpty:
       'कंपनी स्नैपशॉट के लिए सार्वजनिक सिग्नल अपर्याप्त — careers और हाल की खबरें जाँचें।',
+    recentDevelopments: 'कंपनी के हाल के विकास',
+    recentDevelopmentsHint:
+      'अधिकतम 5 प्रासंगिक सार्वजनिक समाचार — लीडरशिप, उत्पाद, पुरस्कार, फंडिंग',
+    recentDevelopmentsEmpty:
+      'हाल की उद्धरणयोग्य सार्वजनिक खबर नहीं मिली — हेडलाइन न गढ़ें; newsroom देखें।',
+    newsCatLeadership: 'लीडरशिप',
+    newsCatProduct: 'उत्पाद',
+    newsCatAward: 'पुरस्कार',
+    newsCatFunding: 'फंडिंग',
+    newsCatOther: 'समाचार',
     currentStrategy: 'कंपनी अभी किस पर फोकस है',
     currentStrategyHint: 'नज़दीकी दांव और सार्वजनिक संकेत — कंपनी इतिहास नहीं',
     competitors: 'उद्योग प्रतिस्पर्धी (2–3)',
@@ -975,6 +1031,16 @@ const GUIDE: Dict<GuideUiCopy> = {
     companyOverviewHint: 'ما نوع هذه الشركة الآن — الصناعة والعملاء والمرحلة ووضع السوق',
     companyOverviewEmpty:
       'إشارة عامة غير كافية لرسم لمحة الشركة — تحقق من صفحة الوظائف والأخبار الحديثة.',
+    recentDevelopments: 'أحدث تطورات الشركة',
+    recentDevelopmentsHint:
+      'حتى 5 أخبار عامة ذات صلة — قيادة ومنتجات وجوائز وتمويل',
+    recentDevelopmentsEmpty:
+      'لا أخبار عامة قابلة للاقتباس حديثًا — لا تختلق عناوين؛ راجع غرفة الأخبار.',
+    newsCatLeadership: 'قيادة',
+    newsCatProduct: 'منتج',
+    newsCatAward: 'جائزة',
+    newsCatFunding: 'تمويل',
+    newsCatOther: 'خبر',
     currentStrategy: 'على ماذا تركز الشركة الآن',
     currentStrategyHint: 'رهانات قريبة المدى من إشارات عامة — ليست تاريخ الشركة',
     competitors: 'منافسو الصناعة (2–3)',
