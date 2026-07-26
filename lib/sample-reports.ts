@@ -264,7 +264,9 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
         interviewer_intent: 'Conflict resolution under settlement risk.',
         star_blueprint:
           'S: eng wanted to slip a settlement hotfix · T: protect close date · A: impact×risk scoring + thin MVP · R: hotfix shipped, no sev-1',
-        dos_donts: 'Do not frame eng as the villain; stay on risk and customer impact.',
+        dos_donts:
+          'Do not frame eng as the villain; stay on risk and customer impact. Anchor on your 18-month eng/risk/CX triage — do not invent ACH processor titles.',
+        resume_anchor: 'Cross-functional facilitation',
       },
     ],
     predicted: [
@@ -273,76 +275,92 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
         predicted: true,
         category: 'behavioral',
         interviewer_intent: 'Tests end-to-end ownership and quantified impact.',
-        star_blueprint: 'S: reconciliation backlog · T: cut cycle time · A: SQL + ritual · R: −28%',
-        dos_donts: 'Do lead with metrics; do not invent ACH processor titles.',
+        resume_anchor: 'Quantified ops improvements',
+        star_blueprint:
+          'S: On your fintech ops resume, monthly reconciliation took ~9 days and blocked close · T: cut cycle without headcount · A: SQL exception queue + Looker triage board; 2× weekly with eng/CX · R: cycle −28%, error escapes −15% (your listed win)',
+        dos_donts:
+          'Lead with the −28% metric on your resume; do not invent ACH processor console titles you do not have.',
       },
       {
         question: 'Tell me about a time stakeholders ignored your dashboard.',
         predicted: true,
         category: 'behavioral',
         interviewer_intent: 'Tests influence without authority.',
-        star_blueprint: 'S: ignored packs · T: executive adoption · A: 5 KPIs + MBR · R: cited 3 months',
-        dos_donts: 'Do not claim people-manager scope.',
+        resume_anchor: 'Executive-ready communication',
+        star_blueprint:
+          'S: Prior packs were ignored after week two (your stakeholder story) · T: get execs to open a weekly KPI pack · A: cut to 5 metrics + owners + next actions; attach to MBR · R: cited three consecutive monthly reviews (resume)',
+        dos_donts: 'Do not claim people-manager scope; stay on IC influence via MBR rituals on your resume.',
       },
       {
         question: 'Describe a conflict between risk and CX priorities you facilitated.',
         predicted: true,
         category: 'behavioral',
         interviewer_intent: 'Cross-functional tradeoff judgment.',
-        star_blueprint: 'S: dual P0 · T: protect settlement · A: impact×risk split · R: no sev-1',
-        dos_donts: 'Do not badmouth either stakeholder group.',
+        resume_anchor: 'Cross-functional facilitation',
+        star_blueprint:
+          'S: Dual P0 from risk + CX in the same sprint (matches your 18-month weekly triage) · T: protect settlement reliability and still ship a CX win · A: impact×risk scoring; thin CX MVP + settlement hotfix same train · R: both sides accepted; no sev-1 next quarter',
+        dos_donts: 'Do not badmouth either stakeholder group; name the facilitation ritual you actually ran.',
       },
       {
         question: 'Tell me about a time you had to say no to a stakeholder request.',
         predicted: true,
         category: 'behavioral',
         interviewer_intent: 'Boundary-setting without burning trust.',
+        resume_anchor: 'Requirements discipline',
         star_blueprint:
-          'S: CX asked for a vanity metric · T: keep pack decision-useful · A: offered alternate KPI + owner · R: request deferred, MBR stayed crisp',
-        dos_donts: 'Do not sound dismissive; show the tradeoff you protected.',
+          'S: CX asked for a vanity metric outside your PRD/acceptance bar · T: keep the pack decision-useful · A: offered alternate KPI + owner using your requirements discipline · R: request deferred; MBR stayed crisp',
+        dos_donts: 'Do not sound dismissive; show the tradeoff and cite a PRD/AC example from your resume.',
       },
       {
         question: 'How would you ramp on ACH returns in your first 60 days?',
         predicted: true,
         category: 'technical',
         interviewer_intent: 'Learning plan without inventing past ACH ownership.',
-        star_blueprint: 'Week 1–2 shadow · Week 3–4 SQL map · Week 5–8 own one KPI',
-        dos_donts: 'Do not claim NACHA titles you did not hold.',
-        missing_facts: 'Prepare a learning plan without inventing past ACH titles.',
+        resume_anchor: 'Quantified ops improvements',
+        star_blueprint:
+          'S: Resume is banking-ops adjacent, not named ACH owner · T: ramp without fake titles · A: W1–2 shadow returns triage using your SQL/Looker muscle; W3–4 map exception queues like your −28% cycle win; W5–8 own one returns KPI · R: honest 60-day plan tied to proven ops tooling',
+        dos_donts: 'Do not claim NACHA/ACH processor titles you did not hold; bridge from SQL + Looker wins.',
+        missing_facts: 'No named ACH ownership on resume — use adjacent ops proof + learning plan.',
       },
       {
         question: 'How do you design a KPI pack for settlement cycle time?',
         predicted: true,
         category: 'technical',
         interviewer_intent: 'Metric design and stakeholder usability.',
-        star_blueprint: 'Define numerator/denominator · owners · weekly review ritual',
-        dos_donts: 'Avoid vanity metrics with no action owner.',
+        resume_anchor: 'Executive-ready communication',
+        star_blueprint:
+          'S: Your resume already shows executive packs used in MBRs · T: design settlement cycle-time pack · A: define numerator/denominator + owners + weekly ritual (same pattern as your 5-KPI packs) · R: pack that leadership will open, not vanity charts',
+        dos_donts: 'Avoid vanity metrics with no action owner; reuse your MBR pack pattern, do not invent settlement SLAs you never owned.',
       },
       {
         question: 'Walk through how you would triage a spike in return exceptions.',
         predicted: true,
         category: 'technical',
         interviewer_intent: 'Ops incident structure under ambiguity.',
-        star_blueprint: 'Stabilize · segment root causes · temporary control · permanent fix',
-        dos_donts: 'Do not invent processor console experience.',
+        resume_anchor: 'Cross-functional facilitation',
+        star_blueprint:
+          'S: Spike in return exceptions (JD risk) · T: stabilize without inventing processor console past · A: reuse your weekly eng/risk/CX triage — stabilize, segment root causes, temp control, permanent fix via SQL queues · R: clear owners + cycle recovery narrative',
+        dos_donts: 'Do not invent processor console experience; lean on your 18-month triage facilitation.',
       },
       {
         question: 'How would you validate NACHA-related controls without owning compliance yourself?',
         predicted: true,
         category: 'technical',
         interviewer_intent: 'Partnering with risk/compliance while staying in BA scope.',
+        resume_anchor: 'Cross-functional facilitation',
         star_blueprint:
-          'Map control owners · define evidence checklist · weekly exception review · escalate gaps',
-        dos_donts: 'Do not claim you were the NACHA officer.',
+          'S: JD probes NACHA; resume lacks compliance ownership · T: validate controls as BA partner · A: map control owners with risk (like your eng/risk/CX rituals); evidence checklist; weekly exception review · R: gaps escalated without claiming you were NACHA officer',
+        dos_donts: 'Do not claim you were the NACHA officer; stay in BA facilitation scope on your resume.',
       },
       {
         question: 'How do you size and prioritize an eng ask when settlement SLAs are at risk?',
         predicted: true,
         category: 'technical',
         interviewer_intent: 'Product/ops prioritization under SLA pressure.',
+        resume_anchor: 'Requirements discipline',
         star_blueprint:
-          'Quantify SLA burn · estimate eng cost · propose MVP vs full fix · socialize with risk+eng',
-        dos_donts: 'Do not invent capacity numbers you cannot defend.',
+          'S: Settlement SLA burn (JD) · T: prioritize eng ask · A: quantify impact like your cycle-time wins; estimate eng cost; MVP vs full fix; socialize with risk+eng using your PRD/AC discipline · R: shared tradeoff, no invented capacity numbers',
+        dos_donts: 'Do not invent capacity numbers you cannot defend; cite your requirements/acceptance-criteria ownership.',
       },
     ],
     star_templates: [

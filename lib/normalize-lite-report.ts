@@ -878,6 +878,7 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
                   star_blueprint: asString(q.star_blueprint),
                   interviewer_intent: asString(q.interviewer_intent),
                   dos_donts: asString(q.dos_donts),
+                  resume_anchor: asString(q.resume_anchor),
                   missing_facts: asString(q.missing_facts),
                   category:
                     q.category === 'behavioral' || q.category === 'technical'
@@ -896,6 +897,7 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
               star_blueprint: q.star_blueprint || undefined,
               interviewer_intent: q.interviewer_intent || undefined,
               dos_donts: q.dos_donts || undefined,
+              resume_anchor: q.resume_anchor || undefined,
               missing_facts: q.missing_facts || undefined,
               category: q.category,
             }))

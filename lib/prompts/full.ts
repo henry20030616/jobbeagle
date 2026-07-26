@@ -33,7 +33,13 @@ Use google search / public web sources when citing hiring_context insights, comp
 1) strategy_fit_salary — what THIS response's fit score and expected offer imply for interview odds and negotiation. Weak evidence → recruiter validation questions, not false precision.
 2) hiring_context — 3–5 dated tactical insights from PUBLIC web sources only (IR, trusted news, company blogs). Attach source_url + date. If thin public data, return limitations + validation_questions (NOT a failure). Never claim paywalled content.
 3) concerns_defenses — EXACTLY 3 recruiter concerns for THIS candidate vs THIS JD. Each: concern, why, evidence, missing_proof, answer_guide, do_not_claim. Direct and respectful; never invent experience.
-4) interview_playbook — SEPARATE reported (MUST include source_url + source_date + source_name e.g. Glassdoor/Blind/Levels.fyi — NEVER invent URLs; if no citable URL omit from reported) from system-analyzed (predicted=true). Tag EVERY item category "behavioral" or "technical". EVERY question — reported AND predicted — MUST include interviewer_intent + star_blueprint + dos_donts (full write-up; NEVER dump reported as title-only). EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
+4) interview_playbook — SEPARATE reported (MUST include source_url + source_date + source_name e.g. Glassdoor/Blind/Levels.fyi — NEVER invent URLs; if no citable URL omit from reported) from system-analyzed (predicted=true). Tag EVERY item category "behavioral" or "technical". EVERY question — reported AND predicted — MUST include interviewer_intent + star_blueprint + dos_donts + resume_anchor (full write-up; NEVER dump reported as title-only).
+   CRITICAL — answer coaching must be THIS candidate’s resume, not generic advice:
+   - star_blueprint MUST name concrete resume facts (role/employer context if present, tools, metrics, stakeholders) in S/T/A/R. FORBIDDEN: vague templates like “S→T→A→R with one proof point”, “describe a conflict”, or textbook STAR with no resume numbers/tools.
+   - resume_anchor MUST point to a specific resume proof (e.g. proof_map strength title or a short resume fact). Never invent employers, titles, or metrics not on the resume.
+   - dos_donts MUST call out what THIS resume can claim vs must not invent (gaps, adjacent domain).
+   - If the question probes a resume gap: still write a resume-anchored bridge plan (adjacent proof + honest learning plan) — never fake past ownership.
+   EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
 5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers. Page 4 may show TC mix; Pages 2–3 must NOT invent dollar salary ranges.
 6) candidate_case — hire_thesis (2–3 sentences: why hire THIS candidate for THIS seat) + top_facts (exactly 3 resume-backed facts that most support an offer). Upgrade of the proof map — not a resume rewrite.
 7) role_team_insights (Guide Page 2 / Excel B「職位與團隊現況」) — REQUIRED fields:
@@ -52,7 +58,7 @@ Use google search / public web sources when citing hiring_context insights, comp
    - competitors[2–3]: REAL industry companies that compete with THIS employer for customers/market share (named firms, e.g. Stripe / Adyen / Block for a payments company). Each needs concrete strengths + weaknesses vs THIS employer’s positioning. FORBIDDEN: candidate peer buckets like “payments-native BA peers”, “generic senior BA pipelines”, job-seeker rival categories, or vague “other fintechs”. If public competitor map is thin, still name the closest public rivals and state uncertainty in weaknesses — do not invent fake startups.
    - insider_voice[]: Glassdoor/Blind/Reddit high-frequency praise/complaints (manager style, WLB, toxic). If no posts: forum_sample_thin=true and say the thin-forum phrase in the OUTPUT LANGUAGE — never fabricate.
    - layoff_legal_flags[]: Layoff.fyi / litigation / controversy. If none: EMPTY array (UI shows the localized “no public layoff/legal flags” phrase) and fill interviewer_strategy_questions with 2–3 company strategy questions for the interviewer. NEVER invent layoffs.
-9) interview_playbook Page 4 depth: EXACTLY 5 behavioral + EXACTLY 5 technical/case across reported+predicted combined (UI shows two columns of 5). Prefer putting every citable real question into reported[] WITH full STAR fields — do NOT create a separate “list-only” dump. If fewer than 5 real questions exist in a category, fill the remainder with predicted=true system-analyzed most-likely questions from resume↔JD gaps (UI labels these as system analysis, not vague “guess”). offer_strategy.tc_breakdown MUST try Base + equity/RSU + sign_on (+ total) from Levels.fyi-class sources when possible. Negotiation script = Prepare(anchor) → Pitch → Counter.
+9) interview_playbook Page 4 depth: EXACTLY 5 behavioral + EXACTLY 5 technical/case across reported+predicted combined (UI shows two columns of 5). Prefer putting every citable real question into reported[] WITH full STAR fields — do NOT create a separate “list-only” dump. If fewer than 5 real questions exist in a category, fill the remainder with predicted=true system-analyzed most-likely questions from resume↔JD gaps (UI labels these as system analysis, not vague “guess”). Every card’s star_blueprint + resume_anchor must be resume-specific (see rule 4). offer_strategy.tc_breakdown MUST try Base + equity/RSU + sign_on (+ total) from Levels.fyi-class sources when possible. Negotiation script = Prepare(anchor) → Pitch → Counter — Pitch must cite THIS candidate’s quantified resume wins, not generic value talk.
 10) reference_citations (Guide Page 5 / Excel E) — RAG source list: Reddit/Blind threads, Levels.fyi, Layoff, news. If no direct URL: url="" and manual_verify_keywords set — NEVER invent URLs.
 
 Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
@@ -133,6 +139,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
               interviewer_intent: { type: 'string' },
               star_blueprint: { type: 'string' },
               dos_donts: { type: 'string' },
+              resume_anchor: { type: 'string' },
             },
             required: [
               'question',
@@ -143,6 +150,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
               'interviewer_intent',
               'star_blueprint',
               'dos_donts',
+              'resume_anchor',
             ],
           },
         },
@@ -160,6 +168,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
               interviewer_intent: { type: 'string' },
               star_blueprint: { type: 'string' },
               dos_donts: { type: 'string' },
+              resume_anchor: { type: 'string' },
             },
             required: [
               'question',
@@ -167,6 +176,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
               'interviewer_intent',
               'star_blueprint',
               'dos_donts',
+              'resume_anchor',
             ],
           },
         },

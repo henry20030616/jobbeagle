@@ -49,6 +49,9 @@ describe('sample reports', () => {
       expect(q.interviewer_intent?.trim().length).toBeGreaterThan(5);
       expect((q.star_blueprint || q.star_outline || '').trim().length).toBeGreaterThan(5);
       expect(q.dos_donts?.trim().length).toBeGreaterThan(5);
+      expect(q.resume_anchor?.trim().length).toBeGreaterThan(3);
+      // STAR coaching must cite resume-specific facts, not bare generic templates
+      expect(q.star_blueprint || '').not.toMatch(/^S\s*→\s*T\s*→\s*A\s*→\s*R/i);
     }
     const reported = report.interview_playbook.reported[0];
     expect(reported?.source_url).toMatch(/^https?:\/\//);
@@ -97,6 +100,8 @@ describe('guide page copy', () => {
     expect(zh.companyOverviewHint).toMatch(/怎樣的一間公司|產業/);
     expect(zh.recentDevelopments).toBe('公司最近發展');
     expect(zh.newsCatLeadership).toMatch(/經營層/);
+    expect(zh.resumeAnchorLabel).toMatch(/履歷錨點/);
+    expect(zh.starLabel).toMatch(/履歷/);
     expect(zh.behavioralTitle).toMatch(/（5）/);
     expect(zh.technicalTitle).toMatch(/（5）/);
     expect(zh.predictedBadge).toBe('系統分析');

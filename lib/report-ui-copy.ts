@@ -128,6 +128,7 @@ export interface GuideUiCopy {
   systemAnalysisSourceNote: string;
   intentLabel: string;
   starLabel: string;
+  resumeAnchorLabel: string;
   dosDontsLabel: string;
   extraReportedTitle: string;
   noExtraReported: string;
@@ -470,7 +471,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     questionSourceLabel: 'Source',
     systemAnalysisSourceNote: 'System analysis (resume ↔ JD gaps) — not a cited real question',
     intentLabel: 'Intent: ',
-    starLabel: 'STAR outline: ',
+    starLabel: 'STAR outline (from your resume): ',
+    resumeAnchorLabel: 'Resume anchor: ',
     dosDontsLabel: "Do's & Don'ts: ",
     extraReportedTitle: '',
     noExtraReported: '',
@@ -589,7 +591,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     questionSourceLabel: '來源',
     systemAnalysisSourceNote: '系統分析（履歷↔JD 缺口）— 非檢索到的真題',
     intentLabel: '考察意圖：',
-    starLabel: 'STAR 大綱：',
+    starLabel: 'STAR 大綱（依你的履歷）：',
+    resumeAnchorLabel: '履歷錨點：',
     dosDontsLabel: "Do's & Don'ts：",
     extraReportedTitle: '',
     noExtraReported: '',
@@ -707,7 +710,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     questionSourceLabel: '来源',
     systemAnalysisSourceNote: '系统分析（简历↔JD 缺口）— 非检索到的真题',
     intentLabel: '考察意图：',
-    starLabel: 'STAR 大纲：',
+    starLabel: 'STAR 大纲（依据你的简历）：',
+    resumeAnchorLabel: '简历锚点：',
     dosDontsLabel: "Do's & Don'ts：",
     extraReportedTitle: '',
     noExtraReported: '',
@@ -832,7 +836,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     questionSourceLabel: 'Fuente',
     systemAnalysisSourceNote: 'Análisis del sistema (CV ↔ JD) — no es pregunta citada',
     intentLabel: 'Intención: ',
-    starLabel: 'Esquema STAR: ',
+    starLabel: 'Esquema STAR (desde tu CV): ',
+    resumeAnchorLabel: 'Ancla del CV: ',
     dosDontsLabel: "Do's & Don'ts: ",
     extraReportedTitle: '',
     noExtraReported: '',
@@ -956,7 +961,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     questionSourceLabel: 'स्रोत',
     systemAnalysisSourceNote: 'सिस्टम विश्लेषण (रिज्यूमे ↔ JD) — उद्धृत सवाल नहीं',
     intentLabel: 'इरादा: ',
-    starLabel: 'STAR रूपरेखा: ',
+    starLabel: 'STAR रूपरेखा (आपके रिज्यूमे से): ',
+    resumeAnchorLabel: 'रिज्यूमे एंकर: ',
     dosDontsLabel: "Do's & Don'ts: ",
     extraReportedTitle: '',
     noExtraReported: '',
@@ -1080,7 +1086,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     questionSourceLabel: 'المصدر',
     systemAnalysisSourceNote: 'تحليل النظام (السيرة ↔ الوصف) — ليس سؤالاً مقتبساً',
     intentLabel: 'القصد: ',
-    starLabel: 'مخطط STAR: ',
+    starLabel: 'مخطط STAR (من سيرتك): ',
+    resumeAnchorLabel: 'مرساة السيرة: ',
     dosDontsLabel: "Do's & Don'ts: ",
     extraReportedTitle: '',
     noExtraReported: '',

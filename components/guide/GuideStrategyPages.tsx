@@ -260,6 +260,12 @@ function QuestionList({
                 <span className="font-semibold text-slate-300">{copy.intentLabel}</span>
                 {q.interviewer_intent || q.evidence || '—'}
               </p>
+              {q.resume_anchor ? (
+                <p className={BODY_MUTED}>
+                  <span className="font-semibold text-emerald-200">{copy.resumeAnchorLabel}</span>
+                  {q.resume_anchor}
+                </p>
+              ) : null}
               <p className={`${BODY} text-slate-200 whitespace-pre-wrap`}>
                 <span className="font-semibold text-indigo-200">{copy.starLabel}</span>
                 {blueprint}
@@ -549,7 +555,9 @@ function enrichQuestionCard(
   q: InterviewQuestionCard,
   playbook: FullReport['interview_playbook'],
   concerns: FullReport['concerns_defenses'],
+  strengths: NonNullable<FullReport['proof_map']>['strengths'] | undefined,
 ): InterviewQuestionCard {
+  const proof = strengths ?? [];
   const cat =
     q.category || (isBehavioral(q.question) ? 'behavioral' : 'technical');
   const template = playbook?.star_templates?.find(
@@ -558,20 +566,41 @@ function enrichQuestionCard(
   const concern = (concerns ?? []).find((c) =>
     q.question.toLowerCase().includes(c.concern.toLowerCase().slice(0, 12)),
   );
+  const strength =
+    proof.find((s) =>
+      (q.star_blueprint || q.question || '')
+        .toLowerCase()
+        .includes(s.point.toLowerCase().slice(0, 12)),
+    )
+    || proof[0];
   const isReported = q.predicted === false || Boolean(q.source_url);
+  const fromTemplate = template
+    ? `S: ${template.situation}\nT: ${template.task}\nA: ${template.action}\nR: ${template.result}`
+    : undefined;
+  const fromStrength = strength
+    ? `S/T/A/R from resume: ${strength.point} — ${strength.description}`
+    : undefined;
   return {
     ...q,
     predicted: isReported ? false : true,
     category: cat as 'behavioral' | 'technical',
+    resume_anchor:
+      q.resume_anchor
+      || template?.resume_anchor
+      || strength?.point
+      || undefined,
     star_blueprint:
       q.star_blueprint
       || q.star_outline
-      || (template
-        ? `S: ${template.situation}\nT: ${template.task}\nA: ${template.action}\nR: ${template.result}`
-        : undefined),
+      || fromTemplate
+      || fromStrength,
     dos_donts:
       q.dos_donts
-      || (concern ? `Do not claim: ${concern.do_not_claim}` : undefined),
+      || (concern
+        ? `Stay inside resume proof (${strength?.point || 'listed wins'}); do not claim: ${concern.do_not_claim}`
+        : strength
+          ? `Lead with resume proof: ${strength.point}. Do not invent tools, titles, or metrics not on the resume.`
+          : undefined),
     interviewer_intent: q.interviewer_intent || concern?.why || q.evidence,
   };
 }
@@ -618,39 +647,61 @@ function Page4({
           (question): InterviewQuestionCard => ({ question, predicted: true }),
         );
     const reported = playbook?.reported ?? [];
-    // All reported + predicted get full STAR write-ups — no list-only dump.
+    const strengths = report.proof_map?.strengths ?? [];
+    // All reported + predicted get resume-anchored STAR write-ups.
     const merged = [
       ...reported.map((q) => ({ ...q, predicted: false as const })),
       ...predicted,
-    ].map((q) => enrichQuestionCard(q, playbook, report.concerns_defenses));
+    ].map((q) =>
+      enrichQuestionCard(q, playbook, report.concerns_defenses, strengths),
+    );
 
     const pads: InterviewQuestionCard[] = [
       ...(report.interview_starters ?? []).map(
-        (question): InterviewQuestionCard => ({
-          question,
-          predicted: true,
-          interviewer_intent: 'Likely probe from resume↔JD gaps.',
-          star_blueprint: 'S → T → A → R with one resume proof point.',
-          dos_donts: 'Stay inside verified resume facts.',
-        }),
+        (question, i): InterviewQuestionCard => {
+          const s = strengths[i % Math.max(strengths.length, 1)];
+          return {
+            question,
+            predicted: true,
+            interviewer_intent: 'Likely probe from resume↔JD gaps.',
+            resume_anchor: s?.point,
+            star_blueprint: s
+              ? `S/T/A/R using resume proof “${s.point}”: ${s.description}`
+              : 'Use one quantified resume win in S/T/A/R — do not invent facts.',
+            dos_donts: s
+              ? `Lead with “${s.point}”. Stay inside verified resume facts; do not invent ACH/titles you lack.`
+              : 'Stay inside verified resume facts.',
+          };
+        },
       ),
       ...(report.concerns_defenses ?? []).map(
         (c): InterviewQuestionCard => ({
           question: c.concern,
           predicted: true,
           interviewer_intent: c.why,
-          star_blueprint: c.answer_guide,
-          dos_donts: c.do_not_claim,
+          resume_anchor: c.evidence?.slice(0, 80) || strengths[0]?.point,
+          star_blueprint:
+            c.answer_guide
+            || (strengths[0]
+              ? `Bridge with resume proof “${strengths[0].point}”: ${strengths[0].description}`
+              : undefined),
+          dos_donts: `Do not claim: ${c.do_not_claim}`,
         }),
       ),
       ...(report.proof_map?.gaps ?? []).map(
-        (g): InterviewQuestionCard => ({
-          question: g.gap,
-          predicted: true,
-          interviewer_intent: g.description || 'Gap screeners will probe.',
-          star_blueprint: 'S → T → A → R bridging adjacent proof to this gap.',
-          dos_donts: 'Do not invent experience you do not have.',
-        }),
+        (g, i): InterviewQuestionCard => {
+          const s = strengths[i % Math.max(strengths.length, 1)];
+          return {
+            question: g.gap,
+            predicted: true,
+            interviewer_intent: g.description || 'Gap screeners will probe.',
+            resume_anchor: s?.point,
+            star_blueprint: s
+              ? `Honest bridge: adjacent resume proof “${s.point}” (${s.description}) + 60-day learning plan — do not invent past ownership of this gap.`
+              : 'Bridge with adjacent resume proof + honest learning plan; do not invent experience.',
+            dos_donts: 'Do not invent experience you do not have.',
+          };
+        },
       ),
     ];
 
@@ -664,6 +715,7 @@ function Page4({
     report.concerns_defenses,
     report.interview_starters,
     report.proof_map?.gaps,
+    report.proof_map?.strengths,
   ]);
 
   const tcRows = (

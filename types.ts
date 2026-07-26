@@ -461,6 +461,8 @@ export interface InterviewQuestionCard {
   interviewer_intent?: string;
   star_blueprint?: string;
   dos_donts?: string;
+  /** Which resume fact this answer is anchored to — never invent */
+  resume_anchor?: string;
 }
 
 /** Practice-ready STAR answer template (Strategy Guide differentiator). */
