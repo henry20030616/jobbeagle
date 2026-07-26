@@ -42,12 +42,12 @@ Use google search / public web sources when citing hiring_context insights or re
    - rto_employee_reality: web employee overtime/WLB reality (Glassdoor/LinkedIn/forums). Filter official PR.
    - next_title_1_3yr: next title in 1–3 years (e.g. PM → Senior PM) + promotion_skill_gaps[].
    - ABSOLUTELY NO dollar salary amounts on this page (salary is Page 1 + Page 4 only).
-   - If no public reviews for THIS team: team_sample_insufficient=true and/or department_fallback_note; label 該團隊公開樣本不足. Do NOT invent team gossip.
+   - If no public reviews for THIS team: team_sample_insufficient=true and/or department_fallback_note; write the insufficient-sample phrase in the OUTPUT LANGUAGE. Do NOT invent team gossip.
 8) company_truth (Guide Page 3 / Excel C「公司真相與風險」) — REQUIRED:
    - current_strategy: CURRENT strategic focus (AI push / cost-cut etc.) — NOT Wikipedia history.
    - competitors[2–3]: {name, strengths, weaknesses}.
-   - insider_voice[]: Glassdoor/Blind/Reddit high-frequency praise/complaints (manager style, WLB, toxic). If no posts: forum_sample_thin=true and say 公開論壇聲量較少 — never fabricate.
-   - layoff_legal_flags[]: Layoff.fyi / litigation / controversy. If none: EMPTY array (UI shows 無顯著公開違法/裁員紀錄) and fill interviewer_strategy_questions with 2–3 company strategy questions for the interviewer. NEVER invent layoffs.
+   - insider_voice[]: Glassdoor/Blind/Reddit high-frequency praise/complaints (manager style, WLB, toxic). If no posts: forum_sample_thin=true and say the thin-forum phrase in the OUTPUT LANGUAGE — never fabricate.
+   - layoff_legal_flags[]: Layoff.fyi / litigation / controversy. If none: EMPTY array (UI shows the localized “no public layoff/legal flags” phrase) and fill interviewer_strategy_questions with 2–3 company strategy questions for the interviewer. NEVER invent layoffs.
 9) interview_playbook Page 4 depth: EXACTLY 3–5 behavioral + 3–5 technical/case predicted (or reported). Each must include interviewer_intent + star_blueprint + dos_donts. Mark predicted guesses clearly. Extra real questions go in reported[] as a list without full STAR. offer_strategy.tc_breakdown MUST try Base + equity/RSU + sign_on (+ total) from Levels.fyi-class sources when possible. Negotiation script = Prepare(anchor) → Pitch → Counter.
 10) reference_citations (Guide Page 5 / Excel E) — RAG source list: Reddit/Blind threads, Levels.fyi, Layoff, news. If no direct URL: url="" and manual_verify_keywords set — NEVER invent URLs.
 

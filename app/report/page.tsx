@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { FullReport, LiteReport } from '@/types';
-import { REPORT_CODES } from '@/constants/report-products';
 import {
   clearReportSession,
   isStrategyReport,
@@ -17,9 +16,13 @@ import BrandLogo from '@/components/BrandLogo';
 import { ReportFitStage } from '@/components/ReportFitStage';
 import { REPORT_ACTION_BTN, REPORT_ACTION_ICON } from '@/constants/report-frame';
 import { Loader2, Home, RotateCcw } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
+import { getGuideUiCopy, getSnapshotUiCopy } from '@/lib/report-ui-copy';
 
 export default function ReportPage() {
   const router = useRouter();
+  const { language: appLanguage } = useLanguage();
   const [payload, setPayload] = useState<StoredReportPayload | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -43,6 +46,7 @@ export default function ReportPage() {
   }
 
   if (!payload) {
+    const emptyCopy = getSnapshotUiCopy(appLanguage);
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center gap-4 px-4">
         <BrandLogo size="nav" showIcon />
@@ -52,26 +56,27 @@ export default function ReportPage() {
           onClick={() => router.push('/')}
           className="rounded-xl bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-sm font-semibold"
         >
-          Back to Home
+          {emptyCopy.backHome}
         </button>
       </div>
     );
   }
 
   const strategy = isStrategyReport(payload.report_type);
+  const lang = normalizeReportLanguage(payload.language || appLanguage);
+  const chrome = strategy ? getGuideUiCopy(lang) : getSnapshotUiCopy(lang);
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200 flex flex-col">
-      {/* Absolute top — above logo / report */}
       <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3 shrink-0">
         <div className="mx-auto w-full max-w-full flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={REPORT_ACTION_BTN}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
-            Back to Home
+            {chrome.backHome}
           </button>
           <button type="button" onClick={handleNewAnalysis} className={REPORT_ACTION_BTN}>
             <RotateCcw className={REPORT_ACTION_ICON} aria-hidden />
-            New Analysis
+            {chrome.newAnalysis}
           </button>
         </div>
       </div>
@@ -79,7 +84,9 @@ export default function ReportPage() {
       <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
         <BrandLogo size="nav" showIcon />
         <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-          {strategy ? 'Interview Strategy Guide' : 'Job Fit Snapshot'}
+          {strategy
+            ? getGuideUiCopy(lang).productTitle
+            : getSnapshotUiCopy(lang).productTitle}
         </span>
       </header>
       <main className="flex-1 min-h-0 w-full min-w-0 overflow-auto p-6 flex flex-col items-stretch">
@@ -87,14 +94,14 @@ export default function ReportPage() {
           {strategy ? (
             <FullReportDashboard
               report={normalizeFullReport(payload.report as FullReport)}
-              language="en"
+              language={lang}
               embedded
               onNewAnalysis={handleNewAnalysis}
             />
           ) : (
             <LiteReportDashboard
               report={normalizeLiteReport(payload.report as LiteReport)}
-              language="en"
+              language={lang}
               embedded
               onNewAnalysis={handleNewAnalysis}
             />

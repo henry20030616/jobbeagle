@@ -331,12 +331,13 @@ export default function Home() {
           report_type: reportType,
           jobDescription: inputs.jobDescription,
           resume: inputs.resume,
-          language: 'en',
+          language: inputs.language || language,
           device_fingerprint: fingerprint,
         }),
       });
 
       const result = await response.json();
+      const reportLang = inputs.language || language;
 
       if (!response.ok) {
         const code = (result.code || result.errorCode) as string | undefined;
@@ -374,6 +375,7 @@ export default function Home() {
           report: reportPayload,
           report_type: normalizedType,
           report_id: typeof result.report_id === 'string' ? result.report_id : null,
+          language: reportLang,
         });
         if (result.report_id) {
           setLastReportId(result.report_id);
@@ -505,6 +507,7 @@ export default function Home() {
                               report: normalizeFullReport(payload as FullReport),
                               report_type: REPORT_CODES.INTERVIEW_STRATEGY_GUIDE,
                               report_id: item.id,
+                              language: item.language || language,
                             });
                             setShowHistory(false);
                             router.push('/report');
@@ -515,6 +518,7 @@ export default function Home() {
                               report: normalizeLiteReport(payload),
                               report_type: REPORT_CODES.JOB_FIT_SNAPSHOT,
                               report_id: item.id,
+                              language: item.language || language,
                             });
                             setShowHistory(false);
                             router.push('/report');

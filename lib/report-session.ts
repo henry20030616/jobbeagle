@@ -1,5 +1,7 @@
 import type { FullReport, LiteReport, ReportType } from '@/types';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
+import type { AppLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
 
 const STORAGE_KEY = 'jb_active_report_v1';
 
@@ -7,6 +9,8 @@ export interface StoredReportPayload {
   report: LiteReport | FullReport;
   report_type: ReportType;
   report_id: string | null;
+  /** Language used for this analysis run (UI chrome + model narrative). */
+  language?: AppLanguage;
   saved_at: number;
 }
 
@@ -15,6 +19,9 @@ export function saveReportSession(payload: Omit<StoredReportPayload, 'saved_at'>
   const body: StoredReportPayload = {
     ...payload,
     report_type: normalizeReportType(payload.report_type),
+    language: payload.language
+      ? normalizeReportLanguage(payload.language)
+      : undefined,
     saved_at: Date.now(),
   };
   try {

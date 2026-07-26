@@ -316,6 +316,8 @@ export async function POST(request: NextRequest) {
       : normalizeCareerContext(profile.career_context);
 
     try {
+      const reportLanguage = body.language || 'en';
+
       if (reportType === REPORT_CODES.JOB_FIT_SNAPSHOT) {
         const result = await executeLiteAnalysis(
           input.resume_text,
@@ -323,6 +325,7 @@ export async function POST(request: NextRequest) {
           input.pdf_inline,
           careerContext,
           input.page_url,
+          reportLanguage,
         );
         report = result.report;
         modelUsed = result.model;
@@ -335,6 +338,7 @@ export async function POST(request: NextRequest) {
           input.pdf_inline,
           careerContext,
           input.page_url,
+          reportLanguage,
         );
         report = normalizeFullReport(result.report, { careerContext });
         modelUsed = result.model;

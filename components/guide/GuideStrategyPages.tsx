@@ -3,6 +3,7 @@
 /**
  * Interview Strategy Guide Pages 2–5 — Excel《Jobbeagle報告範圍》A–E 原稿。
  * Layout mirrors Page 1. No invented sections. No $ salary on Pages 2–3.
+ * Chrome labels follow the report language button.
  */
 
 import React, { useMemo, useState } from 'react';
@@ -28,6 +29,9 @@ import {
   PageHeaderBar,
   SECTION_TITLE,
 } from '@/components/guide/GuideSlideChrome';
+import type { AppLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
+import { getGuideUiCopy, type GuideUiCopy } from '@/lib/report-ui-copy';
 
 export type GuideStrategyTab = 'hiring' | 'interview' | 'salary' | 'provenance';
 
@@ -43,18 +47,17 @@ function isBehavioral(q: string): boolean {
   );
 }
 
-function roleTeamOrEmpty(report: FullReport): RoleTeamInsights {
+function roleTeamOrEmpty(report: FullReport, copy: GuideUiCopy): RoleTeamInsights {
   if (report.role_team_insights) return report.role_team_insights;
   return {
     role_content_refined: report.role_read?.responsibilities?.slice(0, 6) ?? [],
     requirements_refined: report.role_read?.hiring_signals?.slice(0, 6) ?? [],
-    rto_official: 'Not stated on JD',
-    rto_employee_reality: '該團隊公開樣本不足',
+    rto_official: '—',
+    rto_employee_reality: copy.teamSampleInsufficient,
     next_title_1_3yr: '',
     promotion_skill_gaps: (report.proof_map?.gaps ?? []).slice(0, 3).map((g) => g.gap),
     team_sample_insufficient: true,
-    department_fallback_note:
-      'Public sample for this specific team is insufficient — validate with the hiring manager.',
+    department_fallback_note: copy.downgradeNote,
   };
 }
 
@@ -63,7 +66,7 @@ function companyTruthOrEmpty(report: FullReport): CompanyTruth {
   const insights = report.hiring_context?.insights ?? [];
   return {
     current_strategy:
-      insights[0]?.claim || 'No current-strategy public signal — do not invent company history.',
+      insights[0]?.claim || '—',
     competitors: [],
     insider_voice: insights.map((i) => i.claim).slice(0, 4),
     forum_sample_thin: insights.length < 2,
@@ -118,17 +121,19 @@ function QuestionAccordion({
   items,
   title,
   titleClass,
+  copy,
 }: {
   items: InterviewQuestionCard[];
   title: string;
   titleClass: string;
+  copy: GuideUiCopy;
 }) {
   const [open, setOpen] = useState(0);
   if (items.length === 0) {
     return (
       <div>
         <p className={`${SECTION_TITLE} ${titleClass} mb-2`}>{title}</p>
-        <p className={`${BODY} text-slate-500`}>No questions in this category for this run.</p>
+        <p className={`${BODY} text-slate-500`}>—</p>
       </div>
     );
   }
@@ -147,7 +152,7 @@ function QuestionAccordion({
           const blueprint =
             q.star_blueprint
             || q.star_outline
-            || 'Outline Situation → Task → Action → Result with one resume proof point.';
+            || '—';
           return (
             <div
               key={i}
@@ -167,11 +172,11 @@ function QuestionAccordion({
                   <span className="inline-flex flex-wrap items-center gap-2">
                     {isGuess ? (
                       <span className="rounded border border-amber-400/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
-                        猜題 Predicted
+                        {copy.predictedBadge}
                       </span>
                     ) : (
                       <span className="rounded border border-emerald-400/50 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-200">
-                        真題 Reported
+                        {copy.reportedBadge}
                       </span>
                     )}
                     <span className={`${BODY} font-semibold text-slate-100`}>{q.question}</span>
@@ -181,16 +186,16 @@ function QuestionAccordion({
               {expanded ? (
                 <div className="border-t border-slate-700/80 px-3 py-3 space-y-2">
                   <p className={BODY_MUTED}>
-                    <span className="font-semibold text-slate-300">考察意圖 Intent: </span>
+                    <span className="font-semibold text-slate-300">{copy.intentLabel}</span>
                     {q.interviewer_intent || q.evidence || '—'}
                   </p>
                   <p className={`${BODY} text-slate-200 whitespace-pre-wrap`}>
-                    <span className="font-semibold text-indigo-200">STAR 大綱: </span>
+                    <span className="font-semibold text-indigo-200">{copy.starLabel}</span>
                     {blueprint}
                   </p>
                   <p className={BODY_MUTED}>
-                    <span className="font-semibold text-amber-200">Do&apos;s &amp; Don&apos;ts: </span>
-                    {q.dos_donts || 'Do not invent resume facts; stay inside verified experience.'}
+                    <span className="font-semibold text-amber-200">{copy.dosDontsLabel}</span>
+                    {q.dos_donts || '—'}
                   </p>
                 </div>
               ) : null}
@@ -202,30 +207,27 @@ function QuestionAccordion({
   );
 }
 
-/** Excel B — 職位與團隊現況 */
-function Page2({ report }: { report: FullReport }) {
-  const t = roleTeamOrEmpty(report);
+function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
+  const t = roleTeamOrEmpty(report, copy);
 
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 2 OF 5 · Excel B"
-        title="職位與團隊現況"
-        badge={t.team_sample_insufficient ? '樣本不足' : 'TEAM SIGNALS'}
+        pageOf={copy.page2Of}
+        title={copy.page2Title}
+        badge={t.team_sample_insufficient ? copy.badgeSampleThin : copy.badgeTeamSignals}
         badgeTone={t.team_sample_insufficient ? 'amber' : 'sky'}
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
-              職位內容（重構精練）
-            </p>
-            <p className={`${META} text-slate-500 mb-2`}>嚴禁照抄 JD 原文</p>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.roleContent}</p>
+            <p className={`${META} text-slate-500 mb-2`}>{copy.roleContentHint}</p>
             <BulletList
               items={
                 t.role_content_refined.length
                   ? t.role_content_refined
-                  : ['Role content not extracted in this run.']
+                  : [copy.emptyRoleContent]
               }
               tone="indigo"
             />
@@ -233,14 +235,12 @@ function Page2({ report }: { report: FullReport }) {
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
-              要求條件（重構精練）
-            </p>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.requirements}</p>
             <BulletList
               items={
                 t.requirements_refined.length
                   ? t.requirements_refined
-                  : ['Requirements not extracted in this run.']
+                  : [copy.emptyRequirements]
               }
               tone="emerald"
             />
@@ -250,23 +250,19 @@ function Page2({ report }: { report: FullReport }) {
       <DetailDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
-              工作型態 / RTO（官方）
-            </p>
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.rtoOfficial}</p>
             <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
-              {t.rto_official || 'Not stated on JD'}
+              {t.rto_official || '—'}
             </p>
-            <p className={`${BODY_MUTED} mt-2`}>來源：JD / Company Career Page</p>
+            <p className={`${BODY_MUTED} mt-2`}>{copy.rtoOfficialSource}</p>
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
-              真實體感（加班 / WLB）
-            </p>
+            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>{copy.rtoReality}</p>
             {t.team_sample_insufficient ? (
               <div className="mb-2">
-                <InsufficientDataBadge label="該團隊公開樣本不足" />
+                <InsufficientDataBadge label={copy.teamSampleInsufficient} />
               </div>
             ) : null}
             <p className={`${BODY} text-slate-200 leading-relaxed`}>
@@ -275,9 +271,7 @@ function Page2({ report }: { report: FullReport }) {
             {t.department_fallback_note ? (
               <p className={`${BODY_MUTED} mt-2`}>{t.department_fallback_note}</p>
             ) : null}
-            <p className={`${META} text-slate-500 mt-2`}>
-              來源：LinkedIn / Glassdoor / 論壇（非官方 PR）
-            </p>
+            <p className={`${META} text-slate-500 mt-2`}>{copy.rtoRealitySource}</p>
           </>
         }
       />
@@ -286,27 +280,25 @@ function Page2({ report }: { report: FullReport }) {
           <>
             <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
               <CheckCircle2 className="w-5 h-5 mr-1.5" />
-              1–3 年下一階段職銜
+              {copy.nextTitle}
             </h3>
             <p className="text-2xl font-black text-white leading-snug">
-              {t.next_title_1_3yr || 'Validate leveling path with hiring manager'}
+              {t.next_title_1_3yr || '—'}
             </p>
-            <p className={`${BODY_MUTED} mt-2`}>
-              嚴禁出現任何具體薪資金額（薪資見 Page 1 / Page 4）
-            </p>
+            <p className={`${BODY_MUTED} mt-2`}>{copy.noSalaryOnPage}</p>
           </>
         }
         right={
           <>
             <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
               <AlertTriangle className="w-5 h-5 mr-1.5" />
-              升遷核心能力缺口
+              {copy.promotionGaps}
             </h3>
             <BulletList
               items={
                 t.promotion_skill_gaps.length
                   ? t.promotion_skill_gaps
-                  : ['Promotion skill gaps not extracted — ask HM what “next level” looks like.']
+                  : ['—']
               }
               tone="violet"
             />
@@ -316,10 +308,8 @@ function Page2({ report }: { report: FullReport }) {
       <ActionDualRow
         fullWidth={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>降級說明</p>
-            <p className={`${BODY_MUTED} leading-relaxed`}>
-              若該特定 Team/職位在網路上無公開評價：降級為同部門/同職等整體風向，或標註「該團隊公開樣本不足」。不得編造團隊八卦。
-            </p>
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.downgradeTitle}</p>
+            <p className={`${BODY_MUTED} leading-relaxed`}>{copy.downgradeNote}</p>
           </>
         }
       />
@@ -327,28 +317,25 @@ function Page2({ report }: { report: FullReport }) {
   );
 }
 
-/** Excel C — 公司真相與風險 */
-function Page3({ report }: { report: FullReport }) {
+function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   const c = companyTruthOrEmpty(report);
   const layoffDisplay =
     c.layoff_legal_flags.length > 0
       ? c.layoff_legal_flags
-      : ['無顯著公開違法/裁員紀錄'];
+      : [copy.noLayoffRecord];
 
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 3 OF 5 · Excel C"
-        title="公司真相與風險"
-        badge={c.forum_sample_thin ? '論壇聲量少' : 'RISK AUDIT'}
+        pageOf={copy.page3Of}
+        title={copy.page3Title}
+        badge={c.forum_sample_thin ? copy.badgeForumThin : copy.badgeRiskAudit}
         badgeTone={c.forum_sample_thin ? 'amber' : 'emerald'}
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
-              當前核心戰略（非維基歷史）
-            </p>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.currentStrategy}</p>
             <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
               {c.current_strategy}
             </p>
@@ -356,27 +343,27 @@ function Page3({ report }: { report: FullReport }) {
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
-              主要競爭對手（2–3）與競合優劣勢
-            </p>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.competitors}</p>
             {c.competitors.length > 0 ? (
               <ul className="space-y-2.5">
                 {c.competitors.slice(0, 3).map((comp, i) => (
                   <li key={i} className={`${BODY} text-slate-200`}>
                     <span className="font-bold text-emerald-100">{comp.name}</span>
                     {comp.strengths ? (
-                      <span className="block text-slate-300 mt-0.5">優：{comp.strengths}</span>
+                      <span className="block text-slate-300 mt-0.5">
+                        {copy.strengthLabel}{comp.strengths}
+                      </span>
                     ) : null}
                     {comp.weaknesses ? (
-                      <span className="block text-slate-400 mt-0.5">劣：{comp.weaknesses}</span>
+                      <span className="block text-slate-400 mt-0.5">
+                        {copy.weaknessLabel}{comp.weaknesses}
+                      </span>
                     ) : null}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className={`${BODY} text-slate-500`}>
-                Competitor set not extracted — do not invent peer maps.
-              </p>
+              <p className={`${BODY} text-slate-500`}>—</p>
             )}
           </>
         }
@@ -386,30 +373,26 @@ function Page3({ report }: { report: FullReport }) {
         rightAccent="amber"
         left={
           <>
-            <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>
-              內部人真實聲響（Glassdoor / Blind / Reddit）
-            </p>
+            <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>{copy.insiderVoice}</p>
             {c.forum_sample_thin ? (
               <div className="mb-2">
-                <InsufficientDataBadge label="公開論壇聲量較少" />
+                <InsufficientDataBadge label={copy.forumThinBadge} />
               </div>
             ) : null}
             <BulletList
               items={
                 c.insider_voice.length
                   ? c.insider_voice
-                  : ['公開論壇聲量較少 — 不編造風向。']
+                  : [copy.forumThinFallback]
               }
               tone="violet"
             />
-            <p className={`${META} text-slate-500 mt-2`}>過濾官方 PR；聚焦主管風格 / WLB / Toxic</p>
+            <p className={`${META} text-slate-500 mt-2`}>{copy.insiderHint}</p>
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-amber-200 mb-2`}>
-              Layoff.fyi / 公開訴訟與爭議
-            </p>
+            <p className={`${SECTION_TITLE} text-amber-200 mb-2`}>{copy.layoffLegal}</p>
             <BulletList items={layoffDisplay} tone="amber" />
           </>
         }
@@ -417,21 +400,13 @@ function Page3({ report }: { report: FullReport }) {
       <ActionDualRow
         fullWidth={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
-              面試可反問的公司營運戰略問題
-            </p>
-            <p className={`${BODY_MUTED} mb-2`}>
-              降級條款：若無公開違法/裁員紀錄，不得編造；改輸出 2–3 題戰略問題。
-            </p>
+            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.strategyQuestions}</p>
+            <p className={`${BODY_MUTED} mb-2`}>{copy.strategyQuestionsNote}</p>
             <BulletList
               items={
                 c.interviewer_strategy_questions.length
                   ? c.interviewer_strategy_questions
-                  : [
-                      'Why is this role open now — backfill or new initiative?',
-                      'What is the 12-month operating priority for this team?',
-                      'How has headcount on this org changed in the last year?',
-                    ]
+                  : ['—']
               }
               tone="indigo"
             />
@@ -442,8 +417,7 @@ function Page3({ report }: { report: FullReport }) {
   );
 }
 
-/** Excel D — 面試與談薪策略 */
-function Page4({ report }: { report: FullReport }) {
+function Page4({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   const offer = report.offer_strategy;
   const tc = offer?.tc_breakdown || report.expected_offer?.tc_breakdown;
   const playbook = report.interview_playbook;
@@ -463,7 +437,7 @@ function Page4({ report }: { report: FullReport }) {
       const cat =
         q.category || (isBehavioral(q.question) ? 'behavioral' : 'technical');
       const template = playbook?.star_templates?.find(
-        (t) => t.for_question && q.question.includes(t.for_question.slice(0, 24)),
+        (tmpl) => tmpl.for_question && q.question.includes(tmpl.for_question.slice(0, 24)),
       );
       const concern = report.concerns_defenses?.find((c) =>
         q.question.toLowerCase().includes(c.concern.toLowerCase().slice(0, 12)),
@@ -485,7 +459,6 @@ function Page4({ report }: { report: FullReport }) {
     });
   }, [playbook, report.custom_star_interview_bank, report.concerns_defenses]);
 
-  // Excel D: 3–5 behavioral + 3–5 technical (depth STAR on up to 5 each)
   const behavioral = enriched.filter((q) => q.category === 'behavioral').slice(0, 5);
   const technical = enriched.filter((q) => q.category === 'technical').slice(0, 5);
   const deepIds = new Set(
@@ -497,9 +470,9 @@ function Page4({ report }: { report: FullReport }) {
 
   const tcRows = (
     [
-      ['Base 底薪', tc?.base],
-      ['Equity / RSU', tc?.equity],
-      ['Sign-on 簽約金', tc?.sign_on ?? tc?.bonus],
+      [copy.tcBase, tc?.base],
+      [copy.tcRsu, tc?.equity],
+      [copy.tcSignOn, tc?.sign_on ?? tc?.bonus],
       ['Total TC', tc?.total],
     ] as const
   ).filter(([, v]) => Boolean(v?.trim()));
@@ -507,20 +480,16 @@ function Page4({ report }: { report: FullReport }) {
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 4 OF 5 · Excel D"
-        title="面試與談薪策略"
+        pageOf={copy.page4Of}
+        title={copy.page4Title}
         badge="HIGH ROI"
         badgeTone="violet"
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>
-              TC 結構拆解（Levels.fyi 等）
-            </p>
-            <p className={`${META} text-slate-500 mb-2`}>
-              Base + 股票/RSU + Sign-on — 市場行情占比
-            </p>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.tcBreakdown}</p>
+            <p className={`${META} text-slate-500 mb-2`}>{copy.tcHint}</p>
             {tcRows.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
                 {tcRows.map(([label, value]) => (
@@ -534,40 +503,36 @@ function Page4({ report }: { report: FullReport }) {
                 ))}
               </div>
             ) : (
-              <p className={`${BODY} text-slate-500`}>
-                TC mix unavailable — use discovery before anchoring (seat band on Page 1).
-              </p>
+              <p className={`${BODY} text-slate-500`}>—</p>
             )}
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
-              談薪腳本（個人 Context）
-            </p>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.negotiateScript}</p>
             <ol className="space-y-2">
               {[
                 {
-                  step: '1. 談薪前準備（錨定點）',
+                  step: copy.prepareStep,
                   body:
                     offer?.discovery_questions?.[0]
                     || offer?.target
-                    || 'Confirm approved cash band before sharing a number.',
+                    || '—',
                 },
                 {
-                  step: '2. 個人價值 Pitch',
+                  step: copy.pitchStep,
                   body:
                     offer?.script?.slice(0, 280)
                     || offer?.acceptable
-                    || 'Pitch mid-band once scope is confirmed.',
+                    || '—',
                 },
                 {
-                  step: '3. 被拒時 Counter',
+                  step: copy.counterStep,
                   body:
                     offer?.walk_away
                     || (offer?.structured_levers?.[0]
                       ? `${offer.structured_levers[0].name}: ${offer.structured_levers[0].note}`
-                      : 'Counter with scope / sign-on / leveling — never invent numbers.'),
+                      : '—'),
                 },
               ].map((s) => (
                 <li
@@ -590,15 +555,17 @@ function Page4({ report }: { report: FullReport }) {
         left={
           <QuestionAccordion
             items={behavioral}
-            title="行為題 Behavioral（3–5）"
+            title={copy.behavioralTitle}
             titleClass="text-violet-300"
+            copy={copy}
           />
         }
         right={
           <QuestionAccordion
             items={technical}
-            title="專業/案例題 Technical/Case（3–5）"
+            title={copy.technicalTitle}
             titleClass="text-indigo-300"
+            copy={copy}
           />
         }
       />
@@ -606,7 +573,7 @@ function Page4({ report }: { report: FullReport }) {
         fullWidth={
           <>
             <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
-              其餘真實面試題清單（僅列出，不逐題 STAR）
+              {copy.extraReportedTitle}
             </p>
             {realListOnly.length > 0 ? (
               <ul className="space-y-2">
@@ -629,15 +596,13 @@ function Page4({ report }: { report: FullReport }) {
                         Source <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     ) : (
-                      <span className="text-sm text-slate-500 shrink-0">Summary only</span>
+                      <span className="text-sm text-slate-500 shrink-0">—</span>
                     )}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className={`${BODY} text-slate-500`}>
-                無額外真題清單 — 上方精選題已涵蓋本輪檢索結果。找不到真題時已標「猜題」。
-              </p>
+              <p className={`${BODY} text-slate-500`}>{copy.noExtraReported}</p>
             )}
           </>
         }
@@ -646,40 +611,37 @@ function Page4({ report }: { report: FullReport }) {
   );
 }
 
-/** Excel E — 參考資料與證據鏈 */
-function Page5({ report }: { report: FullReport }) {
+function Page5({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   const citations = citationsOrEmpty(report);
 
   return (
     <GuideSlideShell>
       <PageHeaderBar
-        pageOf="PAGE 5 OF 5 · Excel E"
-        title="參考資料與證據鏈"
+        pageOf={copy.page5Of}
+        title={copy.page5Title}
         badge="AUDIT TRAIL"
         badgeTone="sky"
       />
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>RAG 引用條數</p>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.ragCount}</p>
             <p className="text-5xl font-black text-white tabular-nums leading-none">
               {citations.length}
             </p>
-            <p className={`${BODY_MUTED} mt-2`}>
-              Reddit/Blind 討論串、Levels.fyi、Layoff、新聞等原始連結
-            </p>
+            <p className={`${BODY_MUTED} mt-2`}>{copy.ragSourcesHint}</p>
           </>
         }
         right={
           <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>無效連結處理</p>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.invalidLinkTitle}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>
-              若 RAG 檢索不到直接 URL：寫明「檢索數據摘要與建議手動查證關鍵字」，
-              <strong className="text-amber-200"> 絕不填充假網址</strong>。
+              {copy.invalidLinkBody}
+              <strong className="text-amber-200">{copy.neverFakeUrl}</strong>
             </p>
             {report.provenance?.invalid_url_count ? (
               <p className={`${BODY} text-amber-200/90 mt-3`}>
-                {report.provenance.invalid_url_count} URL(s) failed validation and were downgraded.
+                {report.provenance.invalid_url_count}
               </p>
             ) : null}
           </>
@@ -687,12 +649,12 @@ function Page5({ report }: { report: FullReport }) {
       />
       <div className="border-t border-slate-700/90 px-5 py-3.5">
         <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>網路資訊與參考資料</p>
+          <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>{copy.webReferences}</p>
           {citations.length === 0 ? (
             <div>
-              <InsufficientDataBadge label="無直接 URL — 請手動查證" />
+              <InsufficientDataBadge label={copy.noDirectUrl} />
               <p className={`${BODY_MUTED} mt-3`}>
-                檢索數據摘要與建議手動查證關鍵字：{' '}
+                {copy.manualVerifyPrefix}{' '}
                 <span className="text-slate-300 font-semibold">
                   {report.company_name} Glassdoor Blind Levels.fyi layoff
                 </span>
@@ -725,10 +687,10 @@ function Page5({ report }: { report: FullReport }) {
                     </a>
                   ) : (
                     <p className={`${META} text-amber-200/90 mt-1`}>
-                      檢索數據摘要與建議手動查證關鍵字
+                      {copy.manualVerifyPrefix}
                       {c.manual_verify_keywords
-                        ? `：${c.manual_verify_keywords}`
-                        : '（無直接連結）'}
+                        ? c.manual_verify_keywords
+                        : copy.noDirectLinkParen}
                     </p>
                   )}
                 </li>
@@ -744,7 +706,7 @@ function Page5({ report }: { report: FullReport }) {
             {report.provenance?.validated_at
               ? ` · validated ${report.provenance.validated_at}`
               : ''}
-            . 定位：確保可信度，讓求職者可自主深度追蹤原始來源。
+            . {copy.provenanceFooter}
           </p>
         }
       />
@@ -755,12 +717,15 @@ function Page5({ report }: { report: FullReport }) {
 export default function GuideStrategyPages({
   tab,
   report,
+  language = 'en',
 }: {
   tab: GuideStrategyTab;
   report: FullReport;
+  language?: AppLanguage | string;
 }) {
-  if (tab === 'hiring') return <Page2 report={report} />;
-  if (tab === 'interview') return <Page3 report={report} />;
-  if (tab === 'salary') return <Page4 report={report} />;
-  return <Page5 report={report} />;
+  const copy = getGuideUiCopy(normalizeReportLanguage(language));
+  if (tab === 'hiring') return <Page2 report={report} copy={copy} />;
+  if (tab === 'interview') return <Page3 report={report} copy={copy} />;
+  if (tab === 'salary') return <Page4 report={report} copy={copy} />;
+  return <Page5 report={report} copy={copy} />;
 }

@@ -12,6 +12,11 @@ import { LITE_SYSTEM_PROMPT } from '@/lib/prompts/lite';
 import { FULL_SYSTEM_PROMPT } from '@/lib/prompts/full';
 import { formatCareerContextForPrompt } from '@/lib/career-context';
 import { jobSourceFromUrl } from '@/lib/job-source';
+import type { AppLanguage } from '@/lib/language-context';
+import {
+  geminiLanguageDirective,
+  normalizeReportLanguage,
+} from '@/lib/report-language';
 
 function getApiKey(): string {
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
@@ -476,16 +481,19 @@ export async function executeLiteAnalysis(
   pdfInline?: PdfInlineAttachment,
   careerContext?: CareerContext | null,
   pageUrl?: string | null,
+  language: AppLanguage | string = 'en',
 ): Promise<{ report: LiteReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_LITE_MODEL;
   const opts = { careerContext };
+  const lang = normalizeReportLanguage(language);
+  const systemBase = `${LITE_SYSTEM_PROMPT}\n\n${geminiLanguageDirective(lang)}`;
 
   const response = await ai.models.generateContent({
     model,
     contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl) }],
     config: {
-      systemInstruction: LITE_SYSTEM_PROMPT,
+      systemInstruction: systemBase,
       temperature: 0.3,
       maxOutputTokens: 8192,
       responseMimeType: 'application/json',
@@ -508,7 +516,7 @@ export async function executeLiteAnalysis(
       contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl) }],
       config: {
         systemInstruction:
-          `${LITE_SYSTEM_PROMPT}\n\nCRITICAL: Return COMPLETE valid JSON only. Keep string fields concise (1–2 sentences each). Do not truncate. Tier D → null salary numbers.`,
+          `${systemBase}\n\nCRITICAL: Return COMPLETE valid JSON only. Keep string fields concise (1–2 sentences each). Do not truncate. Tier D → null salary numbers.`,
         temperature: 0.2,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
@@ -534,10 +542,14 @@ export async function executeFullAnalysis(
   pdfInline?: PdfInlineAttachment,
   careerContext?: CareerContext | null,
   pageUrl?: string | null,
+  language: AppLanguage | string = 'en',
 ): Promise<{ report: FullReport; model: string }> {
   const ai = getAI();
   const model = GEMINI_FULL_MODEL;
   const opts = { careerContext };
+  const lang = normalizeReportLanguage(language);
+  const languageBlock = geminiLanguageDirective(lang);
+  const systemBase = `${FULL_SYSTEM_PROMPT}\n\n${languageBlock}`;
 
   const intro = [
     companyName ? `Target Company hint: ${companyName}` : null,
@@ -546,6 +558,7 @@ export async function executeFullAnalysis(
     'Use public web sources when citing hiring_context or reported interview questions.',
     'If public sources are thin, return limitations + validation_questions — that is success, not failure.',
     'Include candidate_case (hire_thesis + top_facts) and offer_strategy.tc_breakdown when estimable.',
+    languageBlock,
   ]
     .filter(Boolean)
     .join('\n');
@@ -561,8 +574,8 @@ export async function executeFullAnalysis(
       contents: [{ parts }],
       config: {
         systemInstruction: systemExtra
-          ? `${FULL_SYSTEM_PROMPT}\n\n${systemExtra}`
-          : FULL_SYSTEM_PROMPT,
+          ? `${systemBase}\n\n${systemExtra}`
+          : systemBase,
         temperature: 0.35,
         maxOutputTokens: 16384,
         responseMimeType: 'application/json',

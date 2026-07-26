@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { FullReport } from '@/types';
 import {
   Building2,
@@ -16,6 +16,8 @@ import GuideStrategyPages, {
   type GuideStrategyTab,
 } from '@/components/guide/GuideStrategyPages';
 import type { AppLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
+import { getGuideUiCopy } from '@/lib/report-ui-copy';
 import {
   REPORT_SLIDE_SURFACE,
   REPORT_ACTION_BTN,
@@ -29,59 +31,65 @@ type GuideTab = 'snapshot' | GuideStrategyTab;
 interface FullReportDashboardProps {
   report: FullReport;
   embedded?: boolean;
-  language?: AppLanguage;
+  language?: AppLanguage | string;
   onNewAnalysis?: () => void;
   /** Show large SAMPLE mark at top of the Guide frame (sample preview pages) */
   isSample?: boolean;
 }
 
-const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }[] = [
-  {
-    id: 'snapshot',
-    label: 'Snapshot',
-    icon: <ScanSearch className="w-5 h-5" />,
-    blurb: 'One-page fit score, offer range, strengths and gaps.',
-  },
-  {
-    id: 'hiring',
-    label: '職位與團隊',
-    icon: <Building2 className="w-5 h-5" />,
-    blurb: 'Excel B — 精練職位/要求、RTO 官方 vs 體感、1–3 年職銜與升遷缺口（無薪資）。',
-  },
-  {
-    id: 'interview',
-    label: '公司真相',
-    icon: <Globe className="w-5 h-5" />,
-    blurb: 'Excel C — 當前戰略、競爭對手、內部聲響、Layoff/訴訟與反問題。',
-  },
-  {
-    id: 'salary',
-    label: '面試與談薪',
-    icon: <HandCoins className="w-5 h-5" />,
-    blurb: 'Excel D — 3–5 行為/專業題 STAR、TC（Base/RSU/Sign-on）、談薪腳本。',
-  },
-  {
-    id: 'provenance',
-    label: '證據鏈',
-    icon: <Link2 className="w-5 h-5" />,
-    blurb: 'Excel E — RAG 原始連結；無 URL 則給手動查證關鍵字，絕不假網址。',
-  },
-];
-
 export default function FullReportDashboard({
   report,
   embedded = false,
+  language = 'en',
   onNewAnalysis,
   isSample = false,
 }: FullReportDashboardProps) {
+  const lang = normalizeReportLanguage(language);
+  const copy = getGuideUiCopy(lang);
   const [tab, setTab] = useState<GuideTab>('snapshot');
+
+  const nav = useMemo(
+    () => [
+      {
+        id: 'snapshot' as const,
+        label: copy.nav.snapshot.label,
+        icon: <ScanSearch className="w-5 h-5" />,
+        blurb: copy.nav.snapshot.blurb,
+      },
+      {
+        id: 'hiring' as const,
+        label: copy.nav.hiring.label,
+        icon: <Building2 className="w-5 h-5" />,
+        blurb: copy.nav.hiring.blurb,
+      },
+      {
+        id: 'interview' as const,
+        label: copy.nav.interview.label,
+        icon: <Globe className="w-5 h-5" />,
+        blurb: copy.nav.interview.blurb,
+      },
+      {
+        id: 'salary' as const,
+        label: copy.nav.salary.label,
+        icon: <HandCoins className="w-5 h-5" />,
+        blurb: copy.nav.salary.blurb,
+      },
+      {
+        id: 'provenance' as const,
+        label: copy.nav.provenance.label,
+        icon: <Link2 className="w-5 h-5" />,
+        blurb: copy.nav.provenance.blurb,
+      },
+    ],
+    [copy],
+  );
 
   const handleBack = () => {
     if (onNewAnalysis) onNewAnalysis();
     else window.location.href = '/';
   };
 
-  const activeNav = NAV.find((n) => n.id === tab) ?? NAV[0];
+  const activeNav = nav.find((n) => n.id === tab) ?? nav[0];
 
   return (
     <div
@@ -93,24 +101,23 @@ export default function FullReportDashboard({
         <div className="no-print flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleBack} className={REPORT_ACTION_BTN}>
             <Home className={REPORT_ACTION_ICON} />
-            Back to Home
+            {copy.backHome}
           </button>
           <button type="button" onClick={handleBack} className={REPORT_ACTION_BTN}>
             <RotateCcw className={REPORT_ACTION_ICON} />
-            New Analysis
+            {copy.newAnalysis}
           </button>
         </div>
       )}
 
       <div className={`@container/report relative min-w-0 overflow-x-auto ${REPORT_SLIDE_SURFACE}`}>
-        {/* Title bar inside slide */}
         <div className="flex flex-wrap items-start justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
           <div className="min-w-0">
             <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-              Interview Strategy Guide
+              {copy.productTitle}
             </p>
             <p className="text-lg text-slate-400 mt-1.5">
-              Snapshot + playbook — switch pages from the top nav
+              {copy.productSubtitle}
             </p>
           </div>
           {isSample ? (
@@ -120,9 +127,8 @@ export default function FullReportDashboard({
           ) : null}
         </div>
 
-        {/* Page nav — wrap so no tab is clipped */}
         <nav className="px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex flex-wrap gap-2">
-          {NAV.map((item) => {
+          {nav.map((item) => {
             const active = tab === item.id;
             return (
               <button
@@ -142,7 +148,6 @@ export default function FullReportDashboard({
           })}
         </nav>
 
-        {/* Content panel */}
         <section className="p-4 sm:p-6 space-y-4 bg-slate-950 min-w-0 min-h-[28rem]">
           {tab !== 'snapshot' && (
             <div>
@@ -157,12 +162,12 @@ export default function FullReportDashboard({
             {tab === 'snapshot' ? (
               <LiteReportDashboard
                 report={report}
-                language="en"
+                language={lang}
                 embedded
                 onNewAnalysis={onNewAnalysis}
               />
             ) : (
-              <GuideStrategyPages tab={tab} report={report} />
+              <GuideStrategyPages tab={tab} report={report} language={lang} />
             )}
           </div>
         </section>

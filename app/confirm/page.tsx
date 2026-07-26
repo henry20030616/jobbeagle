@@ -285,6 +285,7 @@ export default function ConfirmPage() {
         report,
         report_type: normalizedType,
         report_id: typeof data.report_id === 'string' ? data.report_id : null,
+        language: inputs.language || language || 'en',
       });
       await loadSession();
       router.push('/report');
@@ -303,7 +304,7 @@ export default function ConfirmPage() {
           progress={loadingJob ? Math.max(analysisProgress, 20) : analysisProgress}
           elapsed={loadingJob ? 0 : analysisElapsed}
           stageLabel={loadingJob ? 'Loading job capture...' : analysisStage}
-          language="en"
+          language={language}
         />
       </div>
     );

@@ -32,6 +32,9 @@ import {
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { SampleMark } from '@/components/SampleMark';
 import PredictedLandSquircle from '@/components/PredictedLandSquircle';
+import type { AppLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
+import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 
 /** Fixed slide type — no viewport breakpoints (scale stage handles size). */
 const SECTION_TITLE = 'text-lg font-bold uppercase tracking-[0.14em]';
@@ -42,8 +45,8 @@ const META = 'text-base';
 
 interface LiteReportDashboardProps {
   report: LiteReport;
-  /** Snapshot UI is English-only per product direction */
-  language?: 'en';
+  /** UI chrome + Beagle tiers follow the language button */
+  language?: AppLanguage | string;
   onNewAnalysis?: () => void;
   embedded?: boolean;
   /** Show large SAMPLE mark at top of the slide (sample preview pages) */
@@ -58,29 +61,32 @@ interface LiteReportDashboardProps {
  */
 export default function LiteReportDashboard({
   report,
+  language = 'en',
   onNewAnalysis,
   embedded = false,
   isSample = false,
 }: LiteReportDashboardProps) {
+  const lang = normalizeReportLanguage(language);
+  const t = getSnapshotUiCopy(lang);
   const score = report.fit_score?.score ?? report.match_score ?? 0;
-  const scoreInfo = getScoreInfo(score, 'en');
+  const scoreInfo = getScoreInfo(score, lang);
   const scoreData = [{ name: 'Score', value: score, fill: scoreInfo.fill }];
   const [showBeagleScale, setShowBeagleScale] = React.useState(false);
-  const beagleTiers = getBeagleTierLegend(score, 'en');
+  const beagleTiers = getBeagleTierLegend(score, lang);
 
   const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 4);
   const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
   const offer = report.expected_offer;
   const offerRange = formatOfferRange(offer);
   const predictedOffer = formatPredictedOffer(offer);
-  const offerEval = offerEvaluationSummary(offer);
+  const offerEval = offerEvaluationSummary(offer, lang);
   const tc = offer?.tc_breakdown;
   const tcRows = (
     [
-      ['Base', tc?.base],
-      ['Equity/RSU', tc?.equity],
-      ['Sign-on', tc?.sign_on ?? tc?.bonus],
-      ['Total', tc?.total],
+      [t.base, tc?.base],
+      [t.equityRsu, tc?.equity],
+      [t.signOn, tc?.sign_on ?? tc?.bonus],
+      [t.total, tc?.total],
     ] as const
   ).filter(([, v]) => Boolean(v?.trim()));
   const breakdown = (report.fit_score?.breakdown ?? []).slice(0, 5);
@@ -115,7 +121,7 @@ export default function LiteReportDashboard({
             className={REPORT_ACTION_BTN}
           >
             <Home className={REPORT_ACTION_ICON} />
-            Back to Home
+            {t.backHome}
           </button>
           <button
             type="button"
@@ -123,7 +129,7 @@ export default function LiteReportDashboard({
             className={REPORT_ACTION_BTN}
           >
             <RotateCcw className={REPORT_ACTION_ICON} />
-            New Analysis
+            {t.newAnalysis}
           </button>
         </div>
       )}
@@ -137,29 +143,29 @@ export default function LiteReportDashboard({
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className={`${SECTION_TITLE} text-indigo-400 mb-1`}>
-                Job Fit Snapshot
+                {t.productTitle}
               </p>
               <h1 className="text-4xl font-black text-white flex items-center gap-2 flex-wrap leading-tight">
                 <Briefcase className="w-5 h-5 text-slate-400 shrink-0" />
-                {report.job_title || 'Unknown Role'}
+                {report.job_title || t.unknownRole}
               </h1>
               <dl className={`mt-2 space-y-1 ${BODY}`}>
                 <div className="flex items-center gap-2 text-slate-300">
                   <Building2 className="w-5 h-5 shrink-0 text-slate-500" aria-hidden />
-                  <dt className="sr-only">Company</dt>
+                  <dt className="sr-only">{t.company}</dt>
                   <dd>
                     <span className="text-slate-500 text-base font-semibold uppercase tracking-wide mr-2">
-                      Company
+                      {t.company}
                     </span>
-                    {report.company_name || 'Unknown Company'}
+                    {report.company_name || t.unknownCompany}
                   </dd>
                 </div>
                 <div className="flex items-center gap-2 text-slate-300">
                   <CalendarDays className="w-5 h-5 shrink-0 text-slate-500" aria-hidden />
-                  <dt className="sr-only">Posted</dt>
+                  <dt className="sr-only">{t.posted}</dt>
                   <dd>
                     <span className="text-slate-500 text-base font-semibold uppercase tracking-wide mr-2">
-                      Posted
+                      {t.posted}
                     </span>
                     {formatJobSourceDate(report.job_source, report.job_posted_date)}
                   </dd>
@@ -172,7 +178,7 @@ export default function LiteReportDashboard({
                 className="rounded-lg border border-sky-400/70 bg-slate-950/60 px-3.5 py-2 text-center"
                 style={{ borderColor: `${scoreInfo.fill}66` }}
               >
-                <p className="text-sm font-bold uppercase tracking-wider text-slate-400">Fit</p>
+                <p className="text-sm font-bold uppercase tracking-wider text-slate-400">{t.fit}</p>
                 <p className={`text-3xl font-black tabular-nums leading-none ${scoreInfo.color}`}>
                   {score}
                 </p>
@@ -185,7 +191,7 @@ export default function LiteReportDashboard({
         <div className="grid grid-cols-2 items-stretch divide-x divide-slate-700/90">
           <section className="flex flex-col p-4 min-w-0">
             <p className={`${SECTION_TITLE} text-indigo-400 mb-2 min-h-[1.25rem]`}>
-              Candidate Fit Score
+              {t.candidateFitScore}
             </p>
             <div className="flex flex-1 items-center gap-5 min-h-[11rem]">
               <div className="flex flex-col items-center shrink-0">
@@ -286,14 +292,14 @@ export default function LiteReportDashboard({
           <section className="flex flex-col p-4 min-w-0">
             <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2 min-h-[1.25rem] flex items-center gap-1.5`}>
               <DollarSign className="w-4 h-4 shrink-0" />
-              Expected Offer Range
+              {t.expectedOffer}
             </p>
 
             <div className="flex flex-1 items-center gap-4 min-w-0 min-h-[7.5rem]">
               <div className="min-w-0 flex-1">
                 <p className={`${BODY_MUTED} mb-1.5 break-words leading-snug`}>
                   {[offer?.region, offer?.currency].filter(Boolean).join(' · ') || 'USD'}
-                  {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier)}` : ''}
+                  {offer?.evidence_tier ? ` · ${evidenceTierLabel(offer.evidence_tier, lang)}` : ''}
                 </p>
                 {offerRange ? (
                   <>
@@ -308,7 +314,7 @@ export default function LiteReportDashboard({
                   </>
                 ) : (
                   <>
-                    <p className="text-2xl font-bold text-slate-200">No reliable offer band yet</p>
+                    <p className="text-2xl font-bold text-slate-200">{t.noOfferBand}</p>
                     <p className={`${BODY_MUTED} mt-1 leading-relaxed`}>
                       Ask the recruiter for the approved cash range before you invest interview time.
                     </p>
@@ -398,7 +404,7 @@ export default function LiteReportDashboard({
               <section className="p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
                   <CheckCircle2 className="w-5 h-5 mr-1.5" />
-                  Top Strengths
+                  {t.topStrengths}
                 </h3>
                 <ul className="space-y-1.5">
                   {strengths.map((item, idx) => (
@@ -410,7 +416,7 @@ export default function LiteReportDashboard({
                       <span>
                         {item.skill_kind ? (
                           <span className="mr-1.5 text-xs font-bold uppercase tracking-wider text-emerald-200/80">
-                            [{item.skill_kind === 'hard' ? '硬技能' : '軟技能'}]
+                            [{item.skill_kind === 'hard' ? t.hardSkill : t.softSkill}]
                           </span>
                         ) : null}
                         <span className="font-semibold text-slate-100">{item.point}</span>
@@ -425,37 +431,31 @@ export default function LiteReportDashboard({
               <section className="p-4 min-w-0">
                 <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
                   <AlertTriangle className="w-5 h-5 mr-1.5" />
-                  Critical Gaps
+                  {t.criticalGaps}
                 </h3>
                 {report.ats_warning ? (
                   <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 mb-3">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">
-                        ATS 淘汰預警
+                        {t.atsWarningTitle}
                       </span>
                       {typeof report.ats_warning.pass_rate_pct === 'number' ? (
                         <span className="px-2 py-0.5 text-xs font-bold rounded bg-red-500/20 text-red-300 border border-red-500/40">
-                          ATS 通過預估率：{Math.round(report.ats_warning.pass_rate_pct)}%
-                          （高風險被系統自動刷掉）
+                          {t.atsPassRate(Math.round(report.ats_warning.pass_rate_pct))}
                         </span>
                       ) : null}
                     </div>
                     <p className={`${META} text-slate-300 mt-1.5 leading-snug`}>
-                      <strong className="text-red-400">高風險被系統自動刷掉：</strong>
+                      <strong className="text-red-400">{t.atsHighRiskPrefix}</strong>
                       {report.ats_warning.summary}
-                      {report.ats_warning.missing_keyword_count > 0 ? (
-                        <>
-                          {' '}
-                          缺少{' '}
-                          <span className="text-amber-300 font-bold">
-                            {report.ats_warning.missing_keyword_count} 個核心關鍵字
-                          </span>
-                          {report.ats_warning.missing_keywords?.length
-                            ? `（${report.ats_warning.missing_keywords.slice(0, 4).join(', ')}）`
-                            : ''}
-                          ，已在下方關鍵缺口標註。
-                        </>
-                      ) : null}
+                      {report.ats_warning.missing_keyword_count > 0
+                        ? t.atsMissingKeywords(
+                            report.ats_warning.missing_keyword_count,
+                            report.ats_warning.missing_keywords?.length
+                              ? report.ats_warning.missing_keywords.slice(0, 4).join(', ')
+                              : '',
+                          )
+                        : null}
                     </p>
                   </div>
                 ) : null}
@@ -469,7 +469,7 @@ export default function LiteReportDashboard({
                       <span>
                         {item.skill_kind ? (
                           <span className="mr-1.5 text-xs font-bold uppercase tracking-wider text-violet-200/80">
-                            [{item.skill_kind === 'hard' ? '硬技能' : '軟技能'}]
+                            [{item.skill_kind === 'hard' ? t.hardSkill : t.softSkill}]
                           </span>
                         ) : null}
                         <span className="font-semibold text-slate-100">{item.gap}</span>
@@ -491,7 +491,7 @@ export default function LiteReportDashboard({
             <div className="grid grid-cols-2 divide-x divide-sky-400/25 items-stretch">
               <section className="p-4 min-w-0 flex flex-col">
                 <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
-                  Score Summary
+                  {t.scoreSummary}
                 </p>
                 <p className={`text-xl font-bold ${scoreInfo.color} mb-2`}>
                   {score}/100 · {scoreInfo.level}
@@ -520,7 +520,7 @@ export default function LiteReportDashboard({
 
               <section className="p-4 min-w-0 flex flex-col">
                 <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>
-                  {apply?.label || 'Apply decision'}
+                  {(apply?.label && t.applyLabels[apply.label]) || apply?.label || t.applyDecisionFallback}
                 </p>
                 {apply?.reason ? (
                   <ul className="space-y-1.5 flex-1">

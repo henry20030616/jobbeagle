@@ -28,9 +28,13 @@ import {
 import { SampleMark } from '@/components/SampleMark';
 import ReportCompareModal from '@/components/ReportCompareModal';
 import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
+import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 
 export default function SampleReportClient() {
   const searchParams = useSearchParams();
+  const { language } = useLanguage();
+  const chrome = getSnapshotUiCopy(language);
   const rawType = searchParams.get('type') || REPORT_CODES.JOB_FIT_SNAPSHOT;
   const reportType =
     normalizeReportType(rawType) ?? REPORT_CODES.JOB_FIT_SNAPSHOT;
@@ -61,11 +65,11 @@ export default function SampleReportClient() {
         <div className="flex flex-wrap items-center justify-end gap-2">
           <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
-            Back to Home
+            {chrome.backHome}
           </button>
           <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
             <RotateCcw className={REPORT_ACTION_ICON} aria-hidden />
-            New Analysis
+            {chrome.newAnalysis}
           </button>
         </div>
       </header>
@@ -106,7 +110,7 @@ export default function SampleReportClient() {
             >
               {guideLabel}
             </Link>
-            <ReportCompareModal language="en" variant="panel" className="w-full min-h-0" />
+            <ReportCompareModal language={language} variant="panel" className="w-full min-h-0" />
           </div>
         </aside>
 
@@ -119,7 +123,7 @@ export default function SampleReportClient() {
             {isGuide ? (
               <FullReportDashboard
                 report={guide}
-                language="en"
+                language={language}
                 embedded
                 isSample
                 onNewAnalysis={goHome}
@@ -127,7 +131,7 @@ export default function SampleReportClient() {
             ) : (
               <LiteReportDashboard
                 report={snapshot}
-                language="en"
+                language={language}
                 embedded
                 isSample
                 onNewAnalysis={goHome}
