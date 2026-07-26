@@ -342,6 +342,11 @@ export interface CompanyCompetitor {
  * 無裁員/訴訟紀錄時不得編造；改輸出面試可反問的戰略問題。
  */
 export interface CompanyTruth {
+  /**
+   * Guide Page 3 lead — what kind of company this is right now
+   * (industry, business model, scale/stage, market posture). Not founding lore.
+   */
+  company_overview: string;
   /** 公司近期重心（如強推 AI / 縮減成本）— 給求職者看的白話，禁止 meta「非維基」用語 */
   current_strategy: string;
   /** 2–3 家競爭對手 */

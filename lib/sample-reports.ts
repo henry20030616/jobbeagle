@@ -445,6 +445,8 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
     team_sample_insufficient: false,
   },
   company_truth: {
+    company_overview:
+      'Northstar Payments is a US fintech focused on merchant settlement, ACH returns, and ops analytics for mid-market and growth merchants. Public positioning sits between developer-first rails (Stripe-class) and heavier enterprise acquiring — hiring Senior BAs into reliability and exception ownership, not a consumer-neobank story. Operating climate emphasizes written status packs, cross-functional triage, and measurable cycle-time KPIs.',
     current_strategy:
       'Near-term push is settlement reliability and exception automation: fewer failed ACH returns, faster close, and AI-assisted triage so ops analysts own cycle-time KPIs instead of ticket firefighting.',
     competitors: [

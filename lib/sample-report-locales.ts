@@ -430,6 +430,8 @@ const ZH_TW: SampleLocalePack = {
       team_sample_insufficient: false,
     },
     company_truth: {
+      company_overview:
+        'Northstar Payments 是美國金融科技公司，主攻商戶清算、ACH 退票與營運分析，客群偏中型與成長型商戶。市場位置介於開發者友善軌道（Stripe 類）與較重的企業收單之間——這次開缺是 Senior BA 走可靠度／例外擁有權，不是消費型 neobank 故事。公開訊號顯示重視書面狀態包、跨職能分流，以及可量化的週期 KPI。',
       current_strategy:
         '近期重心是清算可靠度與例外自動化：降低 ACH 退票失敗、加快關帳，並用 AI 輔助分流，讓營運分析師用週期 KPI 帶隊，而不是只救火工單。',
       competitors: [
@@ -893,6 +895,8 @@ const ZH_CN: SampleLocalePack = {
       team_sample_insufficient: false,
     },
     company_truth: {
+      company_overview:
+        'Northstar Payments 是美国金融科技公司，主攻商户清算、ACH 退票与运营分析，客群偏中型与成长型商户。市场位置介于开发者友好轨道（Stripe 类）与较重的企业收单之间——这次开缺是 Senior BA 走可靠度／例外所有权，不是消费型 neobank 故事。公开信号显示重视书面状态包、跨职能分流，以及可量化的周期 KPI。',
       current_strategy:
         '近期重心是清算可靠度与例外自动化：降低 ACH 退票失败、加快关账，并用 AI 辅助分流，让运营分析师用周期 KPI 带队，而不是只救火工单。',
       competitors: [
@@ -1363,6 +1367,8 @@ const ES: SampleLocalePack = {
       team_sample_insufficient: false,
     },
     company_truth: {
+      company_overview:
+        'Northstar Payments es un fintech de EE. UU. centrado en settlement mercantil, ACH returns y analytics de ops para merchants mid-market y de crecimiento. Se sitúa entre rails developer-first (clase Stripe) y acquiring enterprise más pesado — este hire es Senior BA de confiabilidad/excepciones, no una historia de neobank de consumo. El clima operativo enfatiza status packs escritos, triage cross-funcional y KPIs de cycle-time medibles.',
       current_strategy:
         'Prioridad cercana: confiabilidad de settlement y automatización de excepciones — menos ACH returns fallidos, close más rápido y triage con IA para que los analistas de ops sean dueños de KPIs de cycle-time, no solo apaguen tickets.',
       competitors: [
@@ -1546,6 +1552,8 @@ const HI: SampleLocalePack = {
     },
     company_truth: {
       ...ES.guide.company_truth!,
+      company_overview:
+        'Northstar Payments एक अमेरिकी fintech है जो merchant settlement, ACH returns और ops analytics पर फोकस करता है — mid-market / growth merchants के लिए। पोजिशनिंग Stripe-क्लास developer rails और भारी enterprise acquiring के बीच है; यह hire Senior BA reliability/exceptions वाला है, consumer neobank नहीं।',
       current_strategy:
         'नज़दीकी फोकस: settlement विश्वसनीयता और exception automation — कम failed ACH returns, तेज़ close, और AI-assisted triage ताकि ops analysts cycle-time KPI own करें, न कि सिर्फ tickets बुझाएँ।',
       interviewer_strategy_questions: [
@@ -1699,6 +1707,8 @@ const AR: SampleLocalePack = {
     },
     company_truth: {
       ...ES.guide.company_truth!,
+      company_overview:
+        'Northstar Payments شركة fintech أمريكية تركز على تسوية التجار وACH returns وتحليلات ops للتجار متوسطي النمو. موقعها بين مسارات developer-first من فئة Stripe والاستحواذ المؤسسي الأثقل — هذا التوظيف Senior BA للموثوقية/الاستثناءات وليس قصة neobank استهلاكية.',
       current_strategy:
         'التركيز القريب: موثوقية التسوية وأتمتة الاستثناءات — أقل فشل ACH returns وإغلاق أسرع وفرز بمساعدة الذكاء الاصطناعي ليملك محللو ops مؤشرات cycle-time بدل إطفاء التذاكر فقط.',
       interviewer_strategy_questions: [

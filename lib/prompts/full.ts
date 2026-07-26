@@ -46,7 +46,8 @@ Use google search / public web sources when citing hiring_context insights or re
    - ABSOLUTELY NO dollar salary amounts on this page (salary is Page 1 + Page 4 only).
    - If no public reviews for THIS team: team_sample_insufficient=true and/or department_fallback_note; write the insufficient-sample phrase in the OUTPUT LANGUAGE. Do NOT invent team gossip. This thin-sample rule applies to team culture/WLB — NOT to next_title_1_3yr (always analyze a market path).
 8) company_truth (Guide Page 3 / Excel C「公司真相與風險」) — REQUIRED:
-   - current_strategy: 2–4 plain sentences on what THIS employer is pushing NOW (product bets, cost cuts, AI, expansion, reliability). Write for the candidate — never put meta instructions in the string (no “not Wikipedia”, no “not encyclopedic history”). Prefer IR / news / careers signals over founding lore.
+   - company_overview: FIRST section for the candidate — 3–5 plain sentences on what kind of company this is RIGHT NOW (industry, products/customers, size/stage if public, market posture, operating climate). Goal: a job seeker should quickly grasp “what company am I walking into?” Prefer IR / news / careers / reputable profiles. Never founding mythology, never meta “not Wikipedia” phrasing, never invent headcount or funding.
+   - current_strategy: 2–4 plain sentences on what THIS employer is pushing NOW (product bets, cost cuts, AI, expansion, reliability). Distinct from company_overview (overview = who they are; strategy = what they’re pushing). Write for the candidate — never put meta instructions in the string. Prefer IR / news / careers signals over founding lore.
    - competitors[2–3]: REAL industry companies that compete with THIS employer for customers/market share (named firms, e.g. Stripe / Adyen / Block for a payments company). Each needs concrete strengths + weaknesses vs THIS employer’s positioning. FORBIDDEN: candidate peer buckets like “payments-native BA peers”, “generic senior BA pipelines”, job-seeker rival categories, or vague “other fintechs”. If public competitor map is thin, still name the closest public rivals and state uncertainty in weaknesses — do not invent fake startups.
    - insider_voice[]: Glassdoor/Blind/Reddit high-frequency praise/complaints (manager style, WLB, toxic). If no posts: forum_sample_thin=true and say the thin-forum phrase in the OUTPUT LANGUAGE — never fabricate.
    - layoff_legal_flags[]: Layoff.fyi / litigation / controversy. If none: EMPTY array (UI shows the localized “no public layoff/legal flags” phrase) and fill interviewer_strategy_questions with 2–3 company strategy questions for the interviewer. NEVER invent layoffs.
@@ -281,6 +282,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
     company_truth: {
       type: 'object',
       properties: {
+        company_overview: { type: 'string' },
         current_strategy: { type: 'string' },
         competitors: {
           type: 'array',
@@ -300,6 +302,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
         interviewer_strategy_questions: { type: 'array', items: { type: 'string' } },
       },
       required: [
+        'company_overview',
         'current_strategy',
         'competitors',
         'insider_voice',

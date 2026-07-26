@@ -68,9 +68,17 @@ function roleTeamOrEmpty(report: FullReport, copy: GuideUiCopy): RoleTeamInsight
 }
 
 function companyTruthOrEmpty(report: FullReport): CompanyTruth {
-  if (report.company_truth) return report.company_truth;
+  if (report.company_truth) {
+    return {
+      ...report.company_truth,
+      company_overview: report.company_truth.company_overview || '',
+    };
+  }
   const insights = report.hiring_context?.insights ?? [];
   return {
+    company_overview:
+      insights.slice(0, 2).map((i) => i.claim).filter(Boolean).join(' ')
+      || '',
     current_strategy:
       insights[0]?.claim || '—',
     competitors: [],
@@ -370,6 +378,14 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         badge={c.forum_sample_thin ? copy.badgeForumThin : copy.badgeRiskAudit}
         badgeTone={c.forum_sample_thin ? 'amber' : 'emerald'}
       />
+      <div className="border-b border-slate-700/90 px-5 py-4">
+        <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>{copy.companyOverview}</p>
+        <p className={`${META} text-slate-500 mb-2`}>{copy.companyOverviewHint}</p>
+        <p className={`${BODY} text-slate-100 leading-relaxed`}>
+          {c.company_overview?.trim()
+            || copy.companyOverviewEmpty}
+        </p>
+      </div>
       <HeroDualRow
         left={
           <>

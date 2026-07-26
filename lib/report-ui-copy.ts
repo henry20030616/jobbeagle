@@ -76,6 +76,9 @@ export interface GuideUiCopy {
   page3Title: string;
   badgeForumThin: string;
   badgeRiskAudit: string;
+  companyOverview: string;
+  companyOverviewHint: string;
+  companyOverviewEmpty: string;
   currentStrategy: string;
   currentStrategyHint: string;
   competitors: string;
@@ -405,6 +408,11 @@ const GUIDE: Dict<GuideUiCopy> = {
     page3Title: 'Company truth & risk',
     badgeForumThin: 'Thin forum signal',
     badgeRiskAudit: 'RISK AUDIT',
+    companyOverview: 'Company snapshot',
+    companyOverviewHint:
+      'What kind of company this is right now — industry, customers, stage, market posture',
+    companyOverviewEmpty:
+      'Not enough public signal to sketch the company snapshot — verify on the careers site and recent news.',
     currentStrategy: 'What the company is focused on now',
     currentStrategyHint: 'Near-term bets from public signals — not a company history lesson',
     competitors: 'Industry competitors (2–3)',
@@ -513,6 +521,9 @@ const GUIDE: Dict<GuideUiCopy> = {
     page3Title: '公司真相與風險',
     badgeForumThin: '論壇聲量少',
     badgeRiskAudit: '風險稽核',
+    companyOverview: '公司現況',
+    companyOverviewHint: '這是怎樣的一間公司——產業、客群、階段、市場位置',
+    companyOverviewEmpty: '公開訊號不足以勾勒公司現況——請到官網職涯頁與近期新聞自行核對。',
     currentStrategy: '公司現在在拚什麼',
     currentStrategyHint: '近期待辦與公開訊號，不是公司沿革介紹',
     competitors: '產業競爭對手（2–3 家）',
@@ -619,6 +630,9 @@ const GUIDE: Dict<GuideUiCopy> = {
     page3Title: '公司真相与风险',
     badgeForumThin: '论坛声量少',
     badgeRiskAudit: '风险稽核',
+    companyOverview: '公司现况',
+    companyOverviewHint: '这是怎样的一家公司——产业、客群、阶段、市场位置',
+    companyOverviewEmpty: '公开信号不足以勾勒公司现况——请到官网职涯页与近期新闻自行核对。',
     currentStrategy: '公司现在在拼什么',
     currentStrategyHint: '近期待办与公开信号，不是公司沿革介绍',
     competitors: '产业竞争对手（2–3 家）',
@@ -728,6 +742,11 @@ const GUIDE: Dict<GuideUiCopy> = {
     page3Title: 'Verdad y riesgo de la empresa',
     badgeForumThin: 'Poco señal en foros',
     badgeRiskAudit: 'AUDITORÍA DE RIESGO',
+    companyOverview: 'Panorama de la empresa',
+    companyOverviewHint:
+      'Qué tipo de empresa es ahora — industria, clientes, etapa, postura de mercado',
+    companyOverviewEmpty:
+      'Señal pública insuficiente para el panorama — verifica en careers y noticias recientes.',
     currentStrategy: 'En qué está enfocada la empresa ahora',
     currentStrategyHint: 'Apuestas de corto plazo con señales públicas — no una historia de la empresa',
     competitors: 'Competidores de la industria (2–3)',
@@ -838,6 +857,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     page3Title: 'कंपनी सच और जोखिम',
     badgeForumThin: 'कम फोरम सिग्नल',
     badgeRiskAudit: 'जोखिम ऑडिट',
+    companyOverview: 'कंपनी स्नैपशॉट',
+    companyOverviewHint: 'अभी यह कैसी कंपनी है — उद्योग, ग्राहक, चरण, बाज़ार पोस्चर',
+    companyOverviewEmpty:
+      'कंपनी स्नैपशॉट के लिए सार्वजनिक सिग्नल अपर्याप्त — careers और हाल की खबरें जाँचें।',
     currentStrategy: 'कंपनी अभी किस पर फोकस है',
     currentStrategyHint: 'नज़दीकी दांव और सार्वजनिक संकेत — कंपनी इतिहास नहीं',
     competitors: 'उद्योग प्रतिस्पर्धी (2–3)',
@@ -948,6 +971,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     page3Title: 'حقيقة الشركة والمخاطر',
     badgeForumThin: 'إشارة منتدى ضعيفة',
     badgeRiskAudit: 'تدقيق المخاطر',
+    companyOverview: 'لمحة عن الشركة',
+    companyOverviewHint: 'ما نوع هذه الشركة الآن — الصناعة والعملاء والمرحلة ووضع السوق',
+    companyOverviewEmpty:
+      'إشارة عامة غير كافية لرسم لمحة الشركة — تحقق من صفحة الوظائف والأخبار الحديثة.',
     currentStrategy: 'على ماذا تركز الشركة الآن',
     currentStrategyHint: 'رهانات قريبة المدى من إشارات عامة — ليست تاريخ الشركة',
     competitors: 'منافسو الصناعة (2–3)',

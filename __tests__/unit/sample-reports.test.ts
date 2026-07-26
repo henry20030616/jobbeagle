@@ -26,6 +26,8 @@ describe('sample reports', () => {
     expect(report.ats_warning?.missing_keyword_count).toBe(4);
     expect(report.role_team_insights?.next_title_1_3yr).toContain('Lead BA');
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels\.fyi|LinkedIn|market/i);
+    expect(report.company_truth?.company_overview).toMatch(/fintech|Payments|merchant|清算|支付/i);
+    expect(report.company_truth?.company_overview).not.toMatch(/Wikipedia|encyclopedic|百科|維基/i);
     expect(report.company_truth?.competitors[0]?.name).toMatch(/Stripe|Adyen|Block/i);
     expect(report.company_truth?.competitors[0]?.name).not.toMatch(/peers|pipelines|同儕|管線/i);
     expect(report.company_truth?.current_strategy).not.toMatch(/Wikipedia|encyclopedic|百科|維基/i);
@@ -62,6 +64,7 @@ describe('sample reports', () => {
     const report = getSampleStrategyGuideReport('zh-TW');
     expect(report.role_team_insights?.role_content_refined[0]).toMatch(/支付|需求/);
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels|LinkedIn|職涯|推估/);
+    expect(report.company_truth?.company_overview).toMatch(/金融科技|清算|商戶|Northstar/);
     expect(report.company_truth?.current_strategy).toMatch(/清算|自動化|ACH/);
     expect(report.company_truth?.current_strategy).not.toMatch(/百科|維基/);
     expect(report.company_truth?.competitors.some((c) => /Stripe|Adyen|Block/.test(c.name))).toBe(
@@ -84,6 +87,8 @@ describe('guide page copy', () => {
     expect(zh.currentStrategy).not.toMatch(/維基|百科|wiki/i);
     expect(zh.competitors).toMatch(/產業競爭對手/);
     expect(zh.competitorsHint).toMatch(/具名企業|求職者/);
+    expect(zh.companyOverview).toBe('公司現況');
+    expect(zh.companyOverviewHint).toMatch(/怎樣的一間公司|產業/);
     expect(zh.behavioralTitle).toMatch(/（5）/);
     expect(zh.technicalTitle).toMatch(/（5）/);
     expect(zh.predictedBadge).toBe('系統分析');

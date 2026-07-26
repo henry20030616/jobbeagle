@@ -668,7 +668,8 @@ function normalizeCompanyTruth(
   if (raw && typeof raw === 'object') {
     const o = raw as Record<string, unknown>;
     const hasNew =
-      typeof o.current_strategy === 'string'
+      typeof o.company_overview === 'string'
+      || typeof o.current_strategy === 'string'
       || Array.isArray(o.insider_voice)
       || typeof o.forum_sample_thin === 'boolean';
     const competitors: CompanyCompetitor[] = Array.isArray(o.competitors)
@@ -693,6 +694,10 @@ function normalizeCompanyTruth(
         : o.strategic_questions;
       const questions = asStringArray(qRaw, 3);
       return {
+        company_overview:
+          asString(o.company_overview)
+          || asString(o.company_situation)
+          || asString(o.overview),
         current_strategy:
           asString(o.current_strategy) || asString(o.strategic_focus),
         competitors,
@@ -711,6 +716,9 @@ function normalizeCompanyTruth(
   // Honest fallback from hiring_context only
   if (hiring.insights.length === 0 && hiring.limitations.length === 0) return undefined;
   return {
+    company_overview:
+      hiring.insights.slice(0, 2).map((i) => i.claim).filter(Boolean).join(' ')
+      || '',
     current_strategy:
       hiring.insights[0]?.claim
       || 'No current-strategy public signal extracted — do not invent PR narratives.',
