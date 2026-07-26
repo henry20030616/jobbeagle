@@ -422,6 +422,38 @@ export default function LiteReportDashboard({
                   <AlertTriangle className="w-5 h-5 mr-1.5" />
                   Critical Gaps
                 </h3>
+                {report.ats_warning ? (
+                  <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 mb-3">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">
+                        ATS Rejection Warning
+                      </span>
+                      {typeof report.ats_warning.pass_rate_pct === 'number' ? (
+                        <span className="px-2 py-0.5 text-xs font-bold rounded bg-red-500/20 text-red-300 border border-red-500/40">
+                          Est. ATS pass rate: {Math.round(report.ats_warning.pass_rate_pct)}%
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className={`${META} text-slate-300 mt-1.5 leading-snug`}>
+                      <strong className="text-red-400">High auto-screen risk: </strong>
+                      {report.ats_warning.summary}
+                      {report.ats_warning.missing_keyword_count > 0 ? (
+                        <>
+                          {' '}
+                          Missing{' '}
+                          <span className="text-amber-300 font-bold">
+                            {report.ats_warning.missing_keyword_count} core keyword
+                            {report.ats_warning.missing_keyword_count === 1 ? '' : 's'}
+                          </span>
+                          {report.ats_warning.missing_keywords?.length
+                            ? ` (${report.ats_warning.missing_keywords.slice(0, 4).join(', ')})`
+                            : ''}
+                          — marked in gaps below.
+                        </>
+                      ) : null}
+                    </p>
+                  </div>
+                ) : null}
                 <ul className="space-y-1.5">
                   {gaps.map((item, idx) => (
                     <li key={idx} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>

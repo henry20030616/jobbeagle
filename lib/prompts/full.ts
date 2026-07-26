@@ -33,9 +33,12 @@ Use google search / public web sources when citing hiring_context insights or re
 1) strategy_fit_salary — what THIS response's fit score and expected offer imply for interview odds and negotiation. Weak evidence → recruiter validation questions, not false precision.
 2) hiring_context — 3–5 dated tactical insights from PUBLIC web sources only (IR, trusted news, company blogs). Attach source_url + date. If thin public data, return limitations + validation_questions (NOT a failure). Never claim paywalled content.
 3) concerns_defenses — EXACTLY 3 recruiter concerns for THIS candidate vs THIS JD. Each: concern, why, evidence, missing_proof, answer_guide, do_not_claim. Direct and respectful; never invent experience.
-4) interview_playbook — SEPARATE reported questions (citation: source_url, source_date) from predicted (predicted=true). EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
-5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers.
+4) interview_playbook — SEPARATE reported questions (citation: source_url, source_date) from predicted (predicted=true). Tag each predicted question category as "behavioral" or "technical". Prefer interviewer_intent, star_blueprint, dos_donts on predicted items. EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
+5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers. Page 4 may show TC mix; Pages 2–3 must NOT invent dollar salary ranges.
 6) candidate_case — hire_thesis (2–3 sentences: why hire THIS candidate for THIS seat) + top_facts (exactly 3 resume-backed facts that most support an offer). Upgrade of the proof map — not a resume rewrite.
+7) role_team_insights (Guide Page 2) — career_trajectory with growth_potential_pct as a PERCENT string only (e.g. "+20-25%"), NEVER dollar amounts. work_arrangement.mode (REMOTE/HYBRID/ONSITE/UNKNOWN). role_core + hard_requirements bullets. team_vibe + vibe_source_tag. team_highlights vs team_pain_points (2–3 each). promotion_drivers + hm_verification_questions. If web data thin → data_insufficient=true and honest unknowns (do not invent team gossip).
+8) company_truth (Guide Page 3) — strategic_focus + leadership_notes; competitors[{name,note}] (2–3); culture_forum_takeaways; layoff_legal_flags (empty array if none — UI shows "No Major Public Red Flags"); company_moat vs org_risks; if small/niche company with thin news → insufficient_public_data=true + strategic_questions + suggested_search_query. NEVER invent URLs.
+9) reference_citations (Guide Page 5, optional) — array of {source_badge, description, date, evidence_tier:1|2|3, url}. Prefer real URLs; if summary-only leave url="".
 
 Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
 Output valid JSON only. No markdown fences.`;
@@ -124,6 +127,10 @@ export const FULL_INTEL_JSON_SCHEMA = {
               evidence: { type: 'string' },
               star_outline: { type: 'string' },
               missing_facts: { type: 'string' },
+              category: { type: 'string', enum: ['behavioral', 'technical'] },
+              interviewer_intent: { type: 'string' },
+              star_blueprint: { type: 'string' },
+              dos_donts: { type: 'string' },
             },
             required: ['question'],
           },
@@ -213,6 +220,101 @@ export const FULL_INTEL_JSON_SCHEMA = {
       },
       required: ['hire_thesis', 'top_facts'],
     },
+    role_team_insights: {
+      type: 'object',
+      properties: {
+        team_fit_badge: { type: 'string' },
+        career_trajectory: {
+          type: 'object',
+          properties: {
+            current_label: { type: 'string' },
+            next_role: { type: 'string' },
+            growth_potential_pct: { type: 'string' },
+          },
+          required: ['current_label', 'next_role', 'growth_potential_pct'],
+        },
+        work_arrangement: {
+          type: 'object',
+          properties: {
+            mode: { type: 'string' },
+            hours_per_week: { type: 'string' },
+            notes: { type: 'string' },
+          },
+          required: ['mode'],
+        },
+        role_core: { type: 'array', items: { type: 'string' } },
+        hard_requirements: { type: 'array', items: { type: 'string' } },
+        team_vibe: { type: 'string' },
+        vibe_source_tag: { type: 'string' },
+        team_highlights: { type: 'array', items: { type: 'string' } },
+        team_pain_points: { type: 'array', items: { type: 'string' } },
+        promotion_drivers: { type: 'array', items: { type: 'string' } },
+        hm_verification_questions: { type: 'array', items: { type: 'string' } },
+        data_insufficient: { type: 'boolean' },
+      },
+      required: [
+        'team_fit_badge',
+        'career_trajectory',
+        'work_arrangement',
+        'role_core',
+        'hard_requirements',
+        'team_vibe',
+        'team_highlights',
+        'team_pain_points',
+        'hm_verification_questions',
+      ],
+    },
+    company_truth: {
+      type: 'object',
+      properties: {
+        risk_audit_badge: { type: 'string' },
+        strategic_focus: { type: 'string' },
+        leadership_notes: { type: 'string' },
+        competitors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              note: { type: 'string' },
+            },
+            required: ['name', 'note'],
+          },
+        },
+        culture_forum_takeaways: { type: 'array', items: { type: 'string' } },
+        layoff_legal_flags: { type: 'array', items: { type: 'string' } },
+        company_moat: { type: 'array', items: { type: 'string' } },
+        org_risks: { type: 'array', items: { type: 'string' } },
+        insufficient_public_data: { type: 'boolean' },
+        strategic_questions: { type: 'array', items: { type: 'string' } },
+        suggested_search_query: { type: 'string' },
+      },
+      required: [
+        'risk_audit_badge',
+        'strategic_focus',
+        'leadership_notes',
+        'competitors',
+        'culture_forum_takeaways',
+        'layoff_legal_flags',
+        'company_moat',
+        'org_risks',
+        'strategic_questions',
+      ],
+    },
+    reference_citations: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          source_badge: { type: 'string' },
+          description: { type: 'string' },
+          date: { type: 'string' },
+          evidence_tier: { type: 'number' },
+          url: { type: 'string' },
+        },
+        required: ['source_badge', 'description', 'evidence_tier'],
+      },
+    },
   },
   required: [
     'strategy_fit_salary',
@@ -221,6 +323,8 @@ export const FULL_INTEL_JSON_SCHEMA = {
     'interview_playbook',
     'offer_strategy',
     'candidate_case',
+    'role_team_insights',
+    'company_truth',
   ],
 };
 

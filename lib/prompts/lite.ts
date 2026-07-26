@@ -35,6 +35,7 @@ Rules:
 - proof_map.strengths: return 3 or 4 strongest, evidence-backed match points (never fewer than 3).
 - proof_map.gaps: return 3 or 4 most important mismatches / missing proofs (never fewer than 3).
 - proof_map.resume_actions: 0–3 missing-proof facts only (what evidence is absent). Do NOT write how-to resume edit instructions.
+- ats_warning (optional but preferred when keyword/ATS risk is real): pass_rate_pct (0–100 or null), missing_keyword_count, summary (one short critical hook), missing_keywords (0–6 JD-critical tokens absent/weak on resume). Never invent keywords not implied by the JD vs resume gap. If no ATS risk, omit ats_warning or set missing_keyword_count=0 with empty summary.
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps (no web). Label them as predicted in prose if needed; do not invent "reported" questions.
 - Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
 
@@ -208,6 +209,16 @@ export const LITE_JSON_SCHEMA = {
       items: { type: 'string' },
       minItems: 3,
       maxItems: 3,
+    },
+    ats_warning: {
+      type: 'object',
+      properties: {
+        pass_rate_pct: { type: ['number', 'null'] },
+        missing_keyword_count: { type: 'number' },
+        summary: { type: 'string' },
+        missing_keywords: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['pass_rate_pct', 'missing_keyword_count', 'summary'],
     },
   },
   required: [

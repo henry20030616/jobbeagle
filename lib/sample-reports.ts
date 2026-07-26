@@ -115,6 +115,13 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     ],
     screenability_note: 'Strong ops keywords; payments rails keywords are thin.',
   },
+  ats_warning: {
+    pass_rate_pct: 42,
+    missing_keyword_count: 4,
+    summary:
+      'Resume is light on ACH / returns / settlement / NACHA keywords that this JD treats as core.',
+    missing_keywords: ['ACH', 'returns', 'settlement', 'NACHA'],
+  },
   expected_offer: {
     posted_range: null,
     p25: '$145K',
@@ -323,6 +330,83 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
     ],
   },
   report_version: 'v3-sample',
+  role_team_insights: {
+    team_fit_badge: 'HIGH',
+    career_trajectory: {
+      current_label: 'Senior Business Analyst',
+      next_role: 'Lead BA / Payments Ops Product Owner',
+      growth_potential_pct: '+20-25%',
+    },
+    work_arrangement: {
+      mode: 'HYBRID (3 DAYS ONSITE)',
+      hours_per_week: '45–50 hr/wk',
+      notes: 'Frequent cross-functional rituals with eng, risk, and CX.',
+    },
+    role_core: [
+      'Own requirements for payments operations improvements',
+      'Translate ops pain into prioritized backlog',
+      'Publish KPIs for cycle time and error rate',
+    ],
+    hard_requirements: [
+      'SQL literacy (must-have)',
+      'Senior ownership — not junior ticket triage',
+      'Payments domain preferred',
+    ],
+    team_vibe:
+      'Cross-functional ops/product pod that rewards written clarity and weekly triage rituals.',
+    vibe_source_tag: '[ Official JD vs. Web-Grounded Verified ]',
+    team_highlights: [
+      'Modern analytics stack (SQL + Looker) expected',
+      'High autonomy on backlog prioritization',
+      'Executive visibility via MBR packs',
+    ],
+    team_pain_points: [
+      'Meeting-heavy stakeholder surface',
+      'Legacy settlement edge cases create on-call noise',
+      'ACH depth uneven across the team',
+    ],
+    promotion_drivers: [
+      'Demonstrated payments-domain ownership',
+      'Quantified cycle-time / error-rate wins',
+      'Ability to facilitate eng + risk tradeoffs',
+    ],
+    hm_verification_questions: [
+      'Is ACH / returns experience required or preferred?',
+      'What does 90-day success look like for this hire?',
+      'How often does product roadmap slip affect settlement SLAs?',
+    ],
+    data_insufficient: false,
+  },
+  company_truth: {
+    risk_audit_badge: 'PASSED',
+    strategic_focus:
+      'Fintech ops teams are prioritizing analysts who bridge product and settlement reliability.',
+    leadership_notes:
+      'Public messaging emphasizes efficiency and async written clarity for remote-friendly roles.',
+    competitors: [
+      { name: 'Peer fintech ops seats', note: 'Compete on payments-native proof and SQL depth.' },
+      { name: 'Generic BA pipelines', note: 'Weaker on settlement domain — easier to differentiate.' },
+    ],
+    culture_forum_takeaways: [
+      'Remote-friendly US fintech roles still expect crisp written status.',
+      'Interviewers probe cross-functional delivery, not only SQL puzzles.',
+    ],
+    layoff_legal_flags: [],
+    company_moat: [
+      'Payments ops complexity creates switching costs',
+      'Data/KPI culture favors analysts who ship rituals',
+    ],
+    org_risks: [
+      'No company-specific IR filing used in this demo sample',
+      'Treat hiring-context claims as public-market context, not insider intel',
+    ],
+    insufficient_public_data: false,
+    strategic_questions: [
+      'Why is this role open now — backfill or new scope?',
+      'How has ops headcount changed in the last year?',
+    ],
+    suggested_search_query: '"fintech" "business analyst" Glassdoor OR Blind payments',
+  },
 };
 
 export function getSampleSnapshotReport(): LiteReport {

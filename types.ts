@@ -283,6 +283,71 @@ export interface CandidateCase {
   top_facts: string[];
 }
 
+/** Snapshot Page 1 — ATS rejection hook (surgical UI addition). */
+export interface AtsWarning {
+  /** Estimated ATS pass rate 0–100; null when unknown */
+  pass_rate_pct: number | null;
+  missing_keyword_count: number;
+  /** Short critical hook copy for the badge body */
+  summary: string;
+  missing_keywords?: string[];
+}
+
+/** Guide Page 2 — Role & Team Insights (no duplicate $ salary ranges). */
+export interface RoleTeamInsights {
+  team_fit_badge: string;
+  career_trajectory: {
+    current_label: string;
+    next_role: string;
+    /** Percent string only, e.g. "+20-25%" — never dollar amounts */
+    growth_potential_pct: string;
+  };
+  work_arrangement: {
+    mode: string;
+    hours_per_week?: string;
+    notes?: string;
+  };
+  role_core: string[];
+  hard_requirements: string[];
+  team_vibe: string;
+  vibe_source_tag: string;
+  team_highlights: string[];
+  team_pain_points: string[];
+  promotion_drivers: string[];
+  hm_verification_questions: string[];
+  data_insufficient?: boolean;
+}
+
+export interface CompanyCompetitor {
+  name: string;
+  note: string;
+}
+
+/** Guide Page 3 — Company Truth & Macro Audit (no duplicate $ salary ranges). */
+export interface CompanyTruth {
+  risk_audit_badge: string;
+  strategic_focus: string;
+  leadership_notes: string;
+  competitors: CompanyCompetitor[];
+  culture_forum_takeaways: string[];
+  layoff_legal_flags: string[];
+  company_moat: string[];
+  org_risks: string[];
+  insufficient_public_data?: boolean;
+  strategic_questions: string[];
+  suggested_search_query?: string;
+}
+
+export type ReferenceEvidenceTier = 1 | 2 | 3;
+
+export interface ReferenceCitation {
+  source_badge: string;
+  description: string;
+  date: string;
+  evidence_tier: ReferenceEvidenceTier;
+  url: string;
+}
+
 export type ProvenanceStatus = 'valid' | 'invalid' | 'unverified';
 
 export interface ProvenanceEntry {
@@ -342,6 +407,11 @@ export interface InterviewQuestionCard {
   evidence?: string;
   star_outline?: string;
   missing_facts?: string;
+  /** behavioral | technical — Guide Page 4 grouping */
+  category?: 'behavioral' | 'technical';
+  interviewer_intent?: string;
+  star_blueprint?: string;
+  dos_donts?: string;
 }
 
 /** Practice-ready STAR answer template (Strategy Guide differentiator). */
@@ -406,6 +476,8 @@ export interface LiteReport {
   role_read: RoleRead;
   /** Snapshot-only predicted starters (no web search) */
   interview_starters: string[];
+  /** ATS rejection warning hook — Page 1 Critical Gaps */
+  ats_warning?: AtsWarning | null;
 
   /** @deprecated use fit_score.score */
   match_score: number;
@@ -439,6 +511,12 @@ export interface StrategyIntelFields {
   /** Backend-validated citations (A5) */
   provenance?: ProvenanceRecord;
   report_version?: string;
+  /** Guide Page 2 — Role & Team Insights */
+  role_team_insights?: RoleTeamInsights;
+  /** Guide Page 3 — Company Truth & Macro Audit */
+  company_truth?: CompanyTruth;
+  /** Guide Page 5 — structured citations (falls back to provenance) */
+  reference_citations?: ReferenceCitation[];
 
   /** @deprecated mapped into hiring_context / validate_before_join */
   online_intel_warning?: string;

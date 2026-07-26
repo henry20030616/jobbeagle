@@ -23,5 +23,8 @@ describe('sample reports', () => {
     expect(report.concerns_defenses).toHaveLength(3);
     expect(report.interview_playbook.star_templates.length).toBeGreaterThanOrEqual(3);
     expect(report.offer_strategy.script.length).toBeGreaterThan(20);
+    expect(report.ats_warning?.missing_keyword_count).toBe(4);
+    expect(report.role_team_insights?.career_trajectory.growth_potential_pct).toContain('%');
+    expect(report.company_truth?.competitors.length).toBeGreaterThan(0);
   });
 });

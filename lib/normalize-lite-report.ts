@@ -24,7 +24,13 @@ import type {
   OfferStrategy,
   OfferTcBreakdown,
   ProofMap,
+  AtsWarning,
+  CompanyCompetitor,
+  CompanyTruth,
+  ReferenceCitation,
+  ReferenceEvidenceTier,
   RoleRead,
+  RoleTeamInsights,
   SalaryEvidenceTier,
   StarTemplate,
   StrategyFitSalary,
@@ -354,6 +360,7 @@ export function normalizeLiteReport(
     apply_decision,
     role_read,
     interview_starters,
+    ats_warning: normalizeAtsWarning(raw.ats_warning, proof_map),
     match_score: fit_score.score,
     recruiter_verdict: asString(raw.recruiter_verdict) || fit_score.sharp_verdict,
     one_sentence_sharp_critique:
@@ -510,6 +517,133 @@ function emptyStrategyFit(): StrategyFitSalary {
     offer_implications: '',
     validate_with_recruiter: [],
   };
+}
+
+function normalizeAtsWarning(
+  raw: unknown,
+  proof_map: ProofMap,
+): AtsWarning | null {
+  if (raw && typeof raw === 'object') {
+    const o = raw as Record<string, unknown>;
+    const summary = asString(o.summary);
+    const missing_keywords = asStringArray(o.missing_keywords, 8);
+    const missing_keyword_count =
+      typeof o.missing_keyword_count === 'number' && Number.isFinite(o.missing_keyword_count)
+        ? Math.max(0, Math.round(o.missing_keyword_count))
+        : missing_keywords.length;
+    let pass_rate_pct: number | null = null;
+    if (typeof o.pass_rate_pct === 'number' && Number.isFinite(o.pass_rate_pct)) {
+      pass_rate_pct = Math.max(0, Math.min(100, Math.round(o.pass_rate_pct)));
+    }
+    if (summary || missing_keyword_count > 0) {
+      return {
+        pass_rate_pct,
+        missing_keyword_count,
+        summary:
+          summary
+          || `Resume may miss ${missing_keyword_count} JD-critical keyword(s) on an ATS pass.`,
+        missing_keywords: missing_keywords.length ? missing_keywords : undefined,
+      };
+    }
+  }
+  // Soft synthesize from gaps / screenability when model omitted ats_warning
+  const gapKeywords = proof_map.gaps
+    .map((g) => g.gap)
+    .filter(Boolean)
+    .slice(0, 4);
+  if (gapKeywords.length >= 2 && /keyword|ATS|screen/i.test(proof_map.screenability_note || '')) {
+    return {
+      pass_rate_pct: null,
+      missing_keyword_count: gapKeywords.length,
+      summary: proof_map.screenability_note || 'Keyword / ATS screen risk flagged from critical gaps.',
+      missing_keywords: gapKeywords,
+    };
+  }
+  return null;
+}
+
+function normalizeRoleTeamInsights(
+  raw: unknown,
+): RoleTeamInsights | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const o = raw as Record<string, unknown>;
+  const traj = (o.career_trajectory && typeof o.career_trajectory === 'object'
+    ? o.career_trajectory
+    : {}) as Record<string, unknown>;
+  const work = (o.work_arrangement && typeof o.work_arrangement === 'object'
+    ? o.work_arrangement
+    : {}) as Record<string, unknown>;
+  return {
+    team_fit_badge: asString(o.team_fit_badge, 'UNKNOWN') || 'UNKNOWN',
+    career_trajectory: {
+      current_label: asString(traj.current_label, 'This role'),
+      next_role: asString(traj.next_role),
+      growth_potential_pct: asString(traj.growth_potential_pct, '—') || '—',
+    },
+    work_arrangement: {
+      mode: asString(work.mode, 'UNKNOWN') || 'UNKNOWN',
+      hours_per_week: asString(work.hours_per_week) || undefined,
+      notes: asString(work.notes) || undefined,
+    },
+    role_core: asStringArray(o.role_core, 8),
+    hard_requirements: asStringArray(o.hard_requirements, 8),
+    team_vibe: asString(o.team_vibe),
+    vibe_source_tag: asString(o.vibe_source_tag, '[ Official JD ]'),
+    team_highlights: asStringArray(o.team_highlights, 4),
+    team_pain_points: asStringArray(o.team_pain_points, 4),
+    promotion_drivers: asStringArray(o.promotion_drivers, 5),
+    hm_verification_questions: asStringArray(o.hm_verification_questions, 5),
+    data_insufficient: Boolean(o.data_insufficient),
+  };
+}
+
+function normalizeCompanyTruth(raw: unknown): CompanyTruth | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const o = raw as Record<string, unknown>;
+  const competitors: CompanyCompetitor[] = Array.isArray(o.competitors)
+    ? o.competitors
+        .filter((c): c is Record<string, unknown> => Boolean(c && typeof c === 'object'))
+        .map((c) => ({
+          name: asString(c.name, 'Competitor'),
+          note: asString(c.note),
+        }))
+        .filter((c) => c.note || c.name)
+        .slice(0, 5)
+    : [];
+  return {
+    risk_audit_badge: asString(o.risk_audit_badge, 'UNKNOWN') || 'UNKNOWN',
+    strategic_focus: asString(o.strategic_focus),
+    leadership_notes: asString(o.leadership_notes),
+    competitors,
+    culture_forum_takeaways: asStringArray(o.culture_forum_takeaways, 6),
+    layoff_legal_flags: asStringArray(o.layoff_legal_flags, 6),
+    company_moat: asStringArray(o.company_moat, 4),
+    org_risks: asStringArray(o.org_risks, 4),
+    insufficient_public_data: Boolean(o.insufficient_public_data),
+    strategic_questions: asStringArray(o.strategic_questions, 5),
+    suggested_search_query: asString(o.suggested_search_query) || undefined,
+  };
+}
+
+function normalizeReferenceCitations(raw: unknown): ReferenceCitation[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  const out: ReferenceCitation[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const o = item as Record<string, unknown>;
+    const tierRaw = o.evidence_tier;
+    let evidence_tier: ReferenceEvidenceTier = 3;
+    if (tierRaw === 1 || tierRaw === '1') evidence_tier = 1;
+    else if (tierRaw === 2 || tierRaw === '2') evidence_tier = 2;
+    out.push({
+      source_badge: asString(o.source_badge, 'source'),
+      description: asString(o.description),
+      date: asString(o.date, '—') || '—',
+      evidence_tier,
+      url: asString(o.url),
+    });
+  }
+  return out.length ? out : undefined;
 }
 
 function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: LiteReport): StrategyIntelFields {
@@ -747,6 +881,29 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
     ].slice(0, 8);
   }
 
+  const role_team_insights = normalizeRoleTeamInsights(
+    (raw as Partial<StrategyIntelFields>).role_team_insights,
+  );
+  const company_truth = normalizeCompanyTruth(
+    (raw as Partial<StrategyIntelFields>).company_truth,
+  );
+  const reference_citations = normalizeReferenceCitations(
+    (raw as Partial<StrategyIntelFields>).reference_citations,
+  );
+
+  // Enrich predicted questions with category when omitted
+  interview_playbook.predicted = interview_playbook.predicted.map((q) => {
+    if (q.category) return q;
+    const s = q.question.toLowerCase();
+    const behavioral =
+      s.includes('tell me about')
+      || s.includes('walk me through')
+      || s.includes('time you')
+      || s.includes('how do you')
+      || s.includes('describe a');
+    return { ...q, category: behavioral ? 'behavioral' : 'technical' };
+  });
+
   return {
     strategy_fit_salary,
     hiring_context,
@@ -756,6 +913,9 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
     candidate_case,
     provenance,
     report_version,
+    role_team_insights,
+    company_truth,
+    reference_citations,
     online_intel_warning: asString(raw.online_intel_warning),
     corporate_culture_blackbox:
       asString(raw.corporate_culture_blackbox)

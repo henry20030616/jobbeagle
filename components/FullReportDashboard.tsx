@@ -44,27 +44,27 @@ const NAV: { id: GuideTab; label: string; icon: React.ReactNode; blurb: string }
   },
   {
     id: 'hiring',
-    label: 'Company & Role',
+    label: 'Role & Team',
     icon: <Building2 className="w-5 h-5" />,
-    blurb: 'Role basics, company background, and market insights.',
+    blurb: 'Page 2 — career trajectory, RTO, team vibe, HM questions.',
   },
   {
     id: 'interview',
-    label: 'Online Intel',
+    label: 'Company Truth',
     icon: <Globe className="w-5 h-5" />,
-    blurb: 'Real reviews, salary signals, and interview resource links.',
+    blurb: 'Page 3 — strategy, competitors, culture forums, red flags.',
   },
   {
     id: 'salary',
-    label: 'Interview & Offer',
+    label: 'Interview & Comp',
     icon: <HandCoins className="w-5 h-5" />,
-    blurb: 'Predicted questions, answer playbook, and negotiation ladder.',
+    blurb: 'Page 4 — TC mix, negotiation steps, behavioral & technical Qs.',
   },
   {
     id: 'provenance',
     label: 'References',
     icon: <Link2 className="w-5 h-5" />,
-    blurb: 'Source audit — what the guide cited and when.',
+    blurb: 'Page 5 — citation audit trail and evidence tiers.',
   },
 ];
 
