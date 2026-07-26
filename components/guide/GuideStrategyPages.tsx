@@ -29,7 +29,13 @@ import {
   PageHeaderBar,
   SECTION_TITLE,
 } from '@/components/guide/GuideSlideChrome';
+import PredictedLandSquircle from '@/components/PredictedLandSquircle';
 import type { AppLanguage } from '@/lib/language-context';
+import {
+  evidenceTierLabel,
+  formatOfferRange,
+  formatPredictedOffer,
+} from '@/lib/offer-display';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getGuideUiCopy, type GuideUiCopy } from '@/lib/report-ui-copy';
 
@@ -465,9 +471,23 @@ function takeFiveForCategory(
   return out.slice(0, 5);
 }
 
-function Page4({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
+function Page4({
+  report,
+  copy,
+  language,
+}: {
+  report: FullReport;
+  copy: GuideUiCopy;
+  language: AppLanguage;
+}) {
   const offer = report.offer_strategy;
-  const tc = offer?.tc_breakdown || report.expected_offer?.tc_breakdown;
+  const expected = report.expected_offer;
+  const offerRange = formatOfferRange(expected);
+  const predictedOffer = formatPredictedOffer(expected);
+  const seatMedian = expected?.p50?.trim() && expected.p50.trim() !== '—'
+    ? expected.p50.trim()
+    : null;
+  const tc = offer?.tc_breakdown || expected?.tc_breakdown;
   const playbook = report.interview_playbook;
 
   const { behavioral, technical } = useMemo(() => {
@@ -545,7 +565,51 @@ function Page4({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
       <HeroDualRow
         left={
           <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.tcBreakdown}</p>
+            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
+              {copy.offerRangeTitle}
+            </p>
+            <p className={`${BODY_MUTED} mb-2 break-words leading-snug`}>
+              {[expected?.region, expected?.currency].filter(Boolean).join(' · ') || 'USD'}
+              {expected?.evidence_tier
+                ? ` · ${evidenceTierLabel(expected.evidence_tier, language)}`
+                : ''}
+            </p>
+            <div className="flex items-center gap-3 min-w-0 mb-3">
+              <div className="min-w-0 flex-1">
+                {offerRange ? (
+                  <>
+                    <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-none break-words">
+                      {offerRange}
+                    </p>
+                    {seatMedian ? (
+                      <p className={`${BODY} text-emerald-100/90 mt-2`}>
+                        <span className="text-slate-400 font-semibold">
+                          {copy.offerMedianLabel}:{' '}
+                        </span>
+                        <span className="font-bold tabular-nums text-emerald-50">
+                          {seatMedian}
+                        </span>
+                      </p>
+                    ) : null}
+                    {expected?.candidate_position_label ? (
+                      <p className={`${BODY_MUTED} mt-1.5 leading-snug line-clamp-2`}>
+                        {expected.candidate_position_label}
+                      </p>
+                    ) : null}
+                  </>
+                ) : (
+                  <p className="text-xl font-bold text-slate-200">{copy.noOfferBand}</p>
+                )}
+              </div>
+              {predictedOffer ? (
+                <PredictedLandSquircle
+                  value={predictedOffer}
+                  label={copy.predictedLandLabel}
+                  size="sm"
+                />
+              ) : null}
+            </div>
+            <p className={`${SECTION_TITLE} text-indigo-400 mb-1.5`}>{copy.tcBreakdown}</p>
             <p className={`${META} text-slate-500 mb-2`}>{copy.tcHint}</p>
             {tcRows.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
@@ -742,9 +806,10 @@ export default function GuideStrategyPages({
   report: FullReport;
   language?: AppLanguage | string;
 }) {
-  const copy = getGuideUiCopy(normalizeReportLanguage(language));
+  const lang = normalizeReportLanguage(language);
+  const copy = getGuideUiCopy(lang);
   if (tab === 'hiring') return <Page2 report={report} copy={copy} />;
   if (tab === 'interview') return <Page3 report={report} copy={copy} />;
-  if (tab === 'salary') return <Page4 report={report} copy={copy} />;
+  if (tab === 'salary') return <Page4 report={report} copy={copy} language={lang} />;
   return <Page5 report={report} copy={copy} />;
 }

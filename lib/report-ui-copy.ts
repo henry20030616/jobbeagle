@@ -93,6 +93,11 @@ export interface GuideUiCopy {
   // Page 4
   page4Of: string;
   page4Title: string;
+  /** Same Snapshot salary trio: range · median · predicted land */
+  offerRangeTitle: string;
+  noOfferBand: string;
+  offerMedianLabel: string;
+  predictedLandLabel: string;
   tcBreakdown: string;
   tcHint: string;
   tcBase: string;
@@ -413,6 +418,10 @@ const GUIDE: Dict<GuideUiCopy> = {
       'If there is no public layoff/legal record, do not invent one — output 2–3 strategy questions instead.',
     page4Of: 'PAGE 4 OF 5',
     page4Title: 'Interview & offer strategy',
+    offerRangeTitle: 'Expected offer range',
+    noOfferBand: 'No reliable offer band yet',
+    offerMedianLabel: 'Seat median',
+    predictedLandLabel: 'Your predicted land',
     tcBreakdown: 'TC mix (Levels.fyi-class sources)',
     tcHint: 'Base + Equity/RSU + Sign-on — market mix for this seat',
     tcBase: 'Base',
@@ -512,6 +521,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     strategyQuestionsNote: '降級條款：若無公開違法/裁員紀錄，不得編造；改輸出 2–3 題戰略問題。',
     page4Of: '第 4 / 5 頁',
     page4Title: '面試與談薪策略',
+    offerRangeTitle: '預期薪資區間',
+    noOfferBand: '尚無可靠薪資區間',
+    offerMedianLabel: '座位中位數',
+    predictedLandLabel: '你的落點預測',
     tcBreakdown: 'TC 結構拆解（Levels.fyi 等）',
     tcHint: 'Base + 股票/RSU + Sign-on — 市場行情占比',
     tcBase: 'Base 底薪',
@@ -610,6 +623,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     strategyQuestionsNote: '降级条款：若无公开违法/裁员记录，不得编造；改输出 2–3 题战略问题。',
     page4Of: '第 4 / 5 页',
     page4Title: '面试与谈薪策略',
+    offerRangeTitle: '预期薪酬区间',
+    noOfferBand: '尚无可靠薪酬区间',
+    offerMedianLabel: '座位中位数',
+    predictedLandLabel: '你的落点预测',
     tcBreakdown: 'TC 结构拆解（Levels.fyi 等）',
     tcHint: 'Base + 股票/RSU + Sign-on — 市场行情占比',
     tcBase: 'Base 底薪',
@@ -712,6 +729,10 @@ const GUIDE: Dict<GuideUiCopy> = {
       'Si no hay registro público de layoffs/legal, no inventes — escribe 2–3 preguntas de estrategia.',
     page4Of: 'PÁGINA 4 DE 5',
     page4Title: 'Estrategia de entrevista y oferta',
+    offerRangeTitle: 'Rango de oferta esperada',
+    noOfferBand: 'Aún no hay banda salarial fiable',
+    offerMedianLabel: 'Mediana del puesto',
+    predictedLandLabel: 'Tu aterrizaje previsto',
     tcBreakdown: 'Mix de TC (fuentes tipo Levels.fyi)',
     tcHint: 'Base + Equity/RSU + Sign-on — mix de mercado',
     tcBase: 'Base',
@@ -814,6 +835,10 @@ const GUIDE: Dict<GuideUiCopy> = {
       'यदि कोई सार्वजनिक लेऑफ/कानूनी रिकॉर्ड नहीं — गढ़ें नहीं; 2–3 रणनीति प्रश्न दें।',
     page4Of: 'पेज 4 / 5',
     page4Title: 'इंटरव्यू और ऑफर रणनीति',
+    offerRangeTitle: 'अपेक्षित ऑफर रेंज',
+    noOfferBand: 'अभी कोई विश्वसनीय ऑफर बैंड नहीं',
+    offerMedianLabel: 'सीट माध्यिका',
+    predictedLandLabel: 'आपका अनुमानित लैंड',
     tcBreakdown: 'TC मिश्रण (Levels.fyi-श्रेणी स्रोत)',
     tcHint: 'Base + Equity/RSU + Sign-on — बाज़ार मिश्रण',
     tcBase: 'बेस',
@@ -916,6 +941,10 @@ const GUIDE: Dict<GuideUiCopy> = {
       'إن لم يوجد سجل تسريح/قانوني عام — لا تختلق؛ اكتب 2–3 أسئلة استراتيجية.',
     page4Of: 'الصفحة 4 من 5',
     page4Title: 'استراتيجية المقابلة والعرض',
+    offerRangeTitle: 'نطاق العرض المتوقع',
+    noOfferBand: 'لا يوجد نطاق عرض موثوق بعد',
+    offerMedianLabel: 'وسيط المقعد',
+    predictedLandLabel: 'نقطة هبوطك المتوقعة',
     tcBreakdown: 'مزيج TC (مصادر بمستوى Levels.fyi)',
     tcHint: 'الأساسي + الأسهم/RSU + Sign-on — مزيج السوق',
     tcBase: 'الأساسي',

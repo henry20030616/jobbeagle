@@ -85,6 +85,9 @@ describe('guide page copy', () => {
     expect(zh.predictedBadge).toBe('系統分析');
     expect(zh.extraReportedTitle).toBe('');
     expect(zh.noExtraReported).toBe('');
+    expect(zh.offerRangeTitle).toMatch(/區間|薪資/);
+    expect(zh.offerMedianLabel).toMatch(/中位/);
+    expect(zh.predictedLandLabel).toMatch(/落點|預測/);
   });
 });
 
