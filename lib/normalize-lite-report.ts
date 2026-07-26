@@ -584,7 +584,12 @@ function normalizeRoleTeamInsights(
           o.rto_employee_reality,
           'Insufficient public employee reports on overtime / WLB for this team.',
         ),
-        next_title_1_3yr: asString(o.next_title_1_3yr),
+        next_title_1_3yr:
+          asString(o.next_title_1_3yr)
+          || inferMarketNextTitle(snapshot.job_title),
+        career_path_basis:
+          asString(o.career_path_basis)
+          || 'Company ladder not public — inferred from common US market title paths for this seat.',
         promotion_skill_gaps: asStringArray(o.promotion_skill_gaps, 6),
         team_sample_insufficient: Boolean(o.team_sample_insufficient),
         department_fallback_note: asString(o.department_fallback_note) || undefined,
@@ -597,6 +602,10 @@ function normalizeRoleTeamInsights(
     const work = (o.work_arrangement && typeof o.work_arrangement === 'object'
       ? o.work_arrangement
       : {}) as Record<string, unknown>;
+    const legacyNext =
+      asString(traj.next_role)
+      || asString(traj.current_label)
+      || inferMarketNextTitle(snapshot.job_title);
     return {
       role_content_refined: asStringArray(o.role_core, 8),
       requirements_refined: asStringArray(o.hard_requirements, 8),
@@ -605,13 +614,16 @@ function normalizeRoleTeamInsights(
         asString(work.notes)
         || asString(o.team_vibe)
         || 'Insufficient public employee reports on overtime / WLB for this team.',
-      next_title_1_3yr: asString(traj.next_role) || asString(traj.current_label),
+      next_title_1_3yr: legacyNext,
+      career_path_basis:
+        asString(o.career_path_basis)
+        || 'Company ladder not public — inferred from common US market title paths for this seat.',
       promotion_skill_gaps: asStringArray(o.promotion_drivers, 6),
       team_sample_insufficient: Boolean(o.data_insufficient),
       department_fallback_note: asString(o.department_fallback_note) || undefined,
     };
   }
-  // Minimal honest fallback from Snapshot role_read only (no web invent)
+  // Minimal honest fallback from Snapshot role_read only (no web invent for team gossip)
   const role = snapshot.role_read;
   if (!role?.mission && !(role?.responsibilities?.length)) return undefined;
   return {
@@ -622,12 +634,30 @@ function normalizeRoleTeamInsights(
     rto_official: 'Not stated on JD',
     rto_employee_reality:
       '該團隊公開樣本不足 — Team-level public reviews not found; do not invent overtime claims.',
-    next_title_1_3yr: '',
+    next_title_1_3yr: inferMarketNextTitle(snapshot.job_title),
+    career_path_basis:
+      'Company ladder not public — inferred from Levels.fyi / LinkedIn-style title ladders for this role family.',
     promotion_skill_gaps: snapshot.proof_map.gaps.slice(0, 3).map((g) => g.gap),
     team_sample_insufficient: true,
     department_fallback_note:
       'Public sample for this specific team is insufficient; validate RTO and WLB with the hiring manager.',
   };
+}
+
+/** Last-resort market ladder when model omits next_title_1_3yr (no $ amounts). */
+function inferMarketNextTitle(jobTitle: string | undefined): string {
+  const t = (jobTitle || '').trim();
+  if (!t) return 'Senior / Lead in the same function (market path)';
+  if (/^senior\b/i.test(t)) {
+    return t.replace(/^senior\b/i, 'Lead').replace(/\s+/g, ' ').trim();
+  }
+  if (/^staff\b/i.test(t) || /^principal\b/i.test(t)) {
+    return `${t} → Director / Head track (market path)`;
+  }
+  if (/^lead\b/i.test(t)) {
+    return t.replace(/^lead\b/i, 'Staff').replace(/\s+/g, ' ').trim();
+  }
+  return `Senior ${t}`;
 }
 
 function normalizeCompanyTruth(

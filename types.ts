@@ -304,16 +304,24 @@ export interface AtsWarning {
  * 嚴禁任何具體薪資金額；團隊無公開樣本時必須誠實降級。
  */
 export interface RoleTeamInsights {
-  /** 重構後精練職位內容重點（嚴禁照抄 JD 原文） */
+  /** 職位重點（改寫濃縮，非 JD 原文貼上） */
   role_content_refined: string[];
-  /** 重構後精練要求條件 */
+  /** 錄取關鍵條件（改寫濃縮） */
   requirements_refined: string[];
   /** 官方規定：JD 寫的進辦公室天數 / RTO 政策 */
   rto_official: string;
   /** 真實體感：網搜員工反映的加班狀況與頻率 */
   rto_employee_reality: string;
-  /** 1–3 年內下一階段職銜（如 PM → Senior PM） */
+  /**
+   * 1–3 年下一階段職銜（如 Senior BA → Lead BA）。
+   * 無公司內部職等表時，必須用產業／市場職涯路徑推估，不可留空。
+   */
   next_title_1_3yr: string;
+  /**
+   * 下一職銜依據說明（公司職涯頁／Levels.fyi／LinkedIn 職涯路徑／就業市場報告等）。
+   * 無公司真實資料時必填。
+   */
+  career_path_basis?: string;
   /** 升遷所需核心能力缺口 */
   promotion_skill_gaps: string[];
   /** true → UI 標註「該團隊公開樣本不足」 */

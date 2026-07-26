@@ -37,12 +37,14 @@ Use google search / public web sources when citing hiring_context insights or re
 5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers. Page 4 may show TC mix; Pages 2–3 must NOT invent dollar salary ranges.
 6) candidate_case — hire_thesis (2–3 sentences: why hire THIS candidate for THIS seat) + top_facts (exactly 3 resume-backed facts that most support an offer). Upgrade of the proof map — not a resume rewrite.
 7) role_team_insights (Guide Page 2 / Excel B「職位與團隊現況」) — REQUIRED fields:
-   - role_content_refined[] + requirements_refined[]: RESTRUCTURED highlights; NEVER paste JD verbatim.
+   - role_content_refined[] + requirements_refined[]: rewrite into short plain-language highlights for the candidate (what the job actually does + must-have hire bar). NEVER paste JD verbatim. Do NOT use internal jargon like “refined/restructured” in the string values.
    - rto_official: office days / RTO policy from JD.
    - rto_employee_reality: web employee overtime/WLB reality (Glassdoor/LinkedIn/forums). Filter official PR.
-   - next_title_1_3yr: next title in 1–3 years (e.g. PM → Senior PM) + promotion_skill_gaps[].
+   - next_title_1_3yr: ALWAYS fill a concrete next title in 1–3 years (e.g. Senior BA → Lead BA / Payments Ops Product Owner). If the employer has no public ladder, INFER from industry career paths using authoritative market sources (Levels.fyi title ladders, LinkedIn career-path norms, BLS/Robert Half or similar employment-market reports, major job-board leveling patterns). NEVER leave blank and NEVER say “no data” as the title.
+   - career_path_basis: REQUIRED short note naming the basis (company careers page vs market ladder sources). Example: “Company ladder not public — inferred from Levels.fyi / LinkedIn Senior BA→Lead BA paths in US fintech ops.”
+   - promotion_skill_gaps[]: skills to close for that next title.
    - ABSOLUTELY NO dollar salary amounts on this page (salary is Page 1 + Page 4 only).
-   - If no public reviews for THIS team: team_sample_insufficient=true and/or department_fallback_note; write the insufficient-sample phrase in the OUTPUT LANGUAGE. Do NOT invent team gossip.
+   - If no public reviews for THIS team: team_sample_insufficient=true and/or department_fallback_note; write the insufficient-sample phrase in the OUTPUT LANGUAGE. Do NOT invent team gossip. This thin-sample rule applies to team culture/WLB — NOT to next_title_1_3yr (always analyze a market path).
 8) company_truth (Guide Page 3 / Excel C「公司真相與風險」) — REQUIRED:
    - current_strategy: CURRENT strategic focus (AI push / cost-cut etc.) — NOT Wikipedia history.
    - competitors[2–3]: {name, strengths, weaknesses}.
@@ -240,6 +242,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
         rto_official: { type: 'string' },
         rto_employee_reality: { type: 'string' },
         next_title_1_3yr: { type: 'string' },
+        career_path_basis: { type: 'string' },
         promotion_skill_gaps: { type: 'array', items: { type: 'string' } },
         team_sample_insufficient: { type: 'boolean' },
         department_fallback_note: { type: 'string' },
@@ -250,6 +253,7 @@ export const FULL_INTEL_JSON_SCHEMA = {
         'rto_official',
         'rto_employee_reality',
         'next_title_1_3yr',
+        'career_path_basis',
         'promotion_skill_gaps',
         'team_sample_insufficient',
       ],

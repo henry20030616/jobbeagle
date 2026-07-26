@@ -25,6 +25,7 @@ describe('sample reports', () => {
     expect(report.offer_strategy.script.length).toBeGreaterThan(20);
     expect(report.ats_warning?.missing_keyword_count).toBe(4);
     expect(report.role_team_insights?.next_title_1_3yr).toContain('Lead BA');
+    expect(report.role_team_insights?.career_path_basis).toMatch(/Levels\.fyi|LinkedIn|market/i);
     expect(report.company_truth?.competitors[0]?.strengths).toBeTruthy();
     expect(report.offer_strategy.tc_breakdown?.sign_on).toBeTruthy();
   });
@@ -41,7 +42,21 @@ describe('sample reports', () => {
   it('localizes Guide strategy layer for zh-TW', () => {
     const report = getSampleStrategyGuideReport('zh-TW');
     expect(report.role_team_insights?.role_content_refined[0]).toMatch(/支付|需求/);
+    expect(report.role_team_insights?.career_path_basis).toMatch(/Levels|LinkedIn|職涯|推估/);
     expect(report.company_truth?.current_strategy).toMatch(/清算|金融/);
     expect(report.interview_playbook.predicted[0]?.question).toMatch(/改善|流程/);
   });
 });
+
+describe('guide page copy', () => {
+  it('uses plain-language Page 2 labels (no 重構精練 jargon)', async () => {
+    const { getGuideUiCopy } = await import('@/lib/report-ui-copy');
+    const zh = getGuideUiCopy('zh-TW');
+    expect(zh.roleContent).toBe('這份工作在做什麼');
+    expect(zh.requirements).toBe('錄取關鍵條件');
+    expect(zh.roleContent).not.toMatch(/重構|精練|精炼/);
+    expect(zh.requirements).not.toMatch(/重構|精練|精炼/);
+    expect(zh.nextTitleBasisFallback).toMatch(/Levels|LinkedIn|市場|就業/);
+  });
+});
+

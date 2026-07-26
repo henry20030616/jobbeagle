@@ -403,6 +403,8 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
     rto_employee_reality:
       'Forum notes cite frequent cross-functional rituals; overtime spikes near close / incident weeks.',
     next_title_1_3yr: 'Lead BA / Payments Ops Product Owner',
+    career_path_basis:
+      'Company ladder not public — inferred from Levels.fyi / LinkedIn Senior BA→Lead BA paths and US fintech-ops employment ladders (no $ on this page).',
     promotion_skill_gaps: [
       'Named ACH / returns ownership',
       'Processor / vendor management proof',

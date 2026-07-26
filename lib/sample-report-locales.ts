@@ -388,6 +388,8 @@ const ZH_TW: SampleLocalePack = {
       rto_official: '混合制——每週到辦公室 3 天（依 JD）',
       rto_employee_reality: '論壇提到跨職能節奏頻繁；關帳／事故週加班會升高。',
       next_title_1_3yr: 'Lead BA／支付營運產品負責人',
+      career_path_basis:
+        '公司未公開內部職等表 — 依 Levels.fyi／LinkedIn 的 Senior BA→Lead BA 路徑，以及美國金融科技營運就業市場職涯階梯推估（本頁不顯示薪資金額）。',
       promotion_skill_gaps: [
         '具名 ACH／退票擁有權',
         '處理商／供應商管理證據',
@@ -806,6 +808,8 @@ const ZH_CN: SampleLocalePack = {
       rto_official: '混合制——每周到办公室 3 天（依 JD）',
       rto_employee_reality: '论坛提到跨职能节奏频繁；关账／事故周加班会升高。',
       next_title_1_3yr: 'Lead BA／支付运营产品负责人',
+      career_path_basis:
+        '公司未公开内部职等表 — 依 Levels.fyi／LinkedIn 的 Senior BA→Lead BA 路径，以及美国金融科技运营就业市场职涯阶梯推估（本页不显示薪酬金额）。',
       promotion_skill_gaps: [
         '具名 ACH／退票所有权',
         '处理商／供应商管理证据',
@@ -1231,6 +1235,8 @@ const ES: SampleLocalePack = {
       rto_employee_reality:
         'Notas de foros citan rituales cross-funcionales frecuentes; overtime sube cerca de close / semanas de incidente.',
       next_title_1_3yr: 'Lead BA / Payments Ops Product Owner',
+      career_path_basis:
+        'Sin escalera pública — inferido de Levels.fyi / LinkedIn Senior BA→Lead BA y ladders de empleo fintech-ops en EE. UU. (sin $ en esta página).',
       promotion_skill_gaps: [
         'Ownership nombrado ACH / returns',
         'Prueba de gestión processor / vendor',

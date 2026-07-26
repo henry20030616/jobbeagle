@@ -236,6 +236,7 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         right={
           <>
             <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.requirements}</p>
+            <p className={`${META} text-slate-500 mb-2`}>{copy.requirementsHint}</p>
             <BulletList
               items={
                 t.requirements_refined.length
@@ -285,7 +286,10 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
             <p className="text-2xl font-black text-white leading-snug">
               {t.next_title_1_3yr || '—'}
             </p>
-            <p className={`${BODY_MUTED} mt-2`}>{copy.noSalaryOnPage}</p>
+            <p className={`${BODY_MUTED} mt-2`}>
+              {t.career_path_basis?.trim() || copy.nextTitleBasisFallback}
+            </p>
+            <p className={`${META} text-slate-500 mt-2`}>{copy.noSalaryOnPage}</p>
           </>
         }
         right={
