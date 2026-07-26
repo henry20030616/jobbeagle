@@ -1,5 +1,9 @@
 import type { FullReport, LiteReport } from '@/types';
 import { normalizeFullReport, normalizeLiteReport } from '@/lib/normalize-lite-report';
+import type { AppLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
+import { deepMerge } from '@/lib/deep-merge';
+import { SAMPLE_REPORT_LOCALES } from '@/lib/sample-report-locales';
 
 /** Public demo Snapshot — fictional candidate vs fictional US role. */
 const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
@@ -433,10 +437,28 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
   },
 };
 
-export function getSampleSnapshotReport(): LiteReport {
-  return normalizeLiteReport(SAMPLE_SNAPSHOT_RAW);
+export function getSampleSnapshotReport(
+  language: AppLanguage | string = 'en',
+): LiteReport {
+  const lang = normalizeReportLanguage(language);
+  const pack = SAMPLE_REPORT_LOCALES[lang];
+  const raw = pack?.snapshot
+    ? deepMerge(SAMPLE_SNAPSHOT_RAW, pack.snapshot)
+    : SAMPLE_SNAPSHOT_RAW;
+  return normalizeLiteReport(raw);
 }
 
-export function getSampleStrategyGuideReport(): FullReport {
-  return normalizeFullReport(SAMPLE_GUIDE_RAW);
+export function getSampleStrategyGuideReport(
+  language: AppLanguage | string = 'en',
+): FullReport {
+  const lang = normalizeReportLanguage(language);
+  const pack = SAMPLE_REPORT_LOCALES[lang];
+  let raw: Partial<FullReport> = SAMPLE_GUIDE_RAW;
+  if (pack) {
+    raw = deepMerge(
+      SAMPLE_GUIDE_RAW,
+      deepMerge(pack.snapshot ?? {}, pack.guide ?? {}),
+    );
+  }
+  return normalizeFullReport(raw);
 }

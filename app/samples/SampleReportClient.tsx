@@ -27,9 +27,19 @@ import {
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 import ReportCompareModal from '@/components/ReportCompareModal';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, type AppLanguage } from '@/lib/language-context';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
+
+const ANALYZE_LABEL: Record<AppLanguage, string> = {
+  en: 'Analyze',
+  'zh-TW': '開始分析',
+  'zh-CN': '开始分析',
+  es: 'Analizar',
+  hi: 'विश्लेषण',
+  ar: 'حلّل',
+};
 
 export default function SampleReportClient() {
   const searchParams = useSearchParams();
@@ -40,8 +50,8 @@ export default function SampleReportClient() {
     normalizeReportType(rawType) ?? REPORT_CODES.JOB_FIT_SNAPSHOT;
   const isGuide = reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE;
 
-  const snapshot = useMemo(() => getSampleSnapshotReport(), []);
-  const guide = useMemo(() => getSampleStrategyGuideReport(), []);
+  const snapshot = useMemo(() => getSampleSnapshotReport(language), [language]);
+  const guide = useMemo(() => getSampleStrategyGuideReport(language), [language]);
 
   const goHome = () => {
     window.location.href = '/';
@@ -54,15 +64,15 @@ export default function SampleReportClient() {
         : 'border-dashed border-slate-500 bg-slate-900/60 text-slate-100 hover:bg-slate-800/80 hover:border-slate-400'
     }`;
 
-  const snapshotLabel = reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT);
-  const guideLabel = reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE);
+  const snapshotLabel = reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language);
+  const guideLabel = reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language);
 
   return (
     <div className="flex h-screen w-full min-w-0 flex-col overflow-hidden bg-slate-950 text-slate-200">
-      {/* Shared top bar — logo + actions; body columns start at the same Y */}
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-3 sm:px-6">
         <BrandLogo size="nav" showIcon />
         <div className="flex flex-wrap items-center justify-end gap-2">
+          <LanguageSwitcher />
           <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
             {chrome.backHome}
@@ -75,7 +85,6 @@ export default function SampleReportClient() {
       </header>
 
       <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-        {/* Left rail — SAMPLE top aligns with report card top (shared p-6) */}
         <aside className="flex h-full w-[240px] flex-shrink-0 flex-col gap-2.5 overflow-y-auto border-r border-slate-800 p-6">
           <div
             className={`${SAMPLE_NOTICE_SURFACE} w-full px-3 py-2.5 flex flex-col gap-1.5 rounded-xl`}
@@ -92,11 +101,10 @@ export default function SampleReportClient() {
               className={`inline-flex items-center gap-1 ${SAMPLE_RAIL_TEXT} text-white hover:text-blue-50`}
             >
               <ArrowLeft className={SAMPLE_RAIL_ICON} />
-              Analyze
+              {ANALYZE_LABEL[language] ?? ANALYZE_LABEL.en}
             </Link>
           </div>
 
-          {/* Same order + equal height as homepage step 3: Snapshot → Guide → Compare */}
           <div className="grid h-[16.5rem] w-full grid-rows-3 gap-2.5">
             <Link
               href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
