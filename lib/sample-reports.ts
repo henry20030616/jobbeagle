@@ -414,17 +414,28 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
   },
   company_truth: {
     current_strategy:
-      'Public fintech-ops hiring signals emphasize settlement reliability and AI-assisted efficiency — not encyclopedic company history.',
+      'Near-term push is settlement reliability and exception automation: fewer failed ACH returns, faster close, and AI-assisted triage so ops analysts own cycle-time KPIs instead of ticket firefighting.',
     competitors: [
       {
-        name: 'Payments-native BA peers',
-        strengths: 'Deeper ACH / processor titles',
-        weaknesses: 'Weaker cross-functional facilitation proof',
+        name: 'Stripe',
+        strengths:
+          'Developer-first rails, broad US ACH/card coverage, and strong brand for product teams that want self-serve payments.',
+        weaknesses:
+          'Enterprise settlement / returns ownership can feel less “ops-analyst native”; complex B2B reconciliation often still needs heavy custom tooling.',
       },
       {
-        name: 'Generic senior BA pipelines',
-        strengths: 'Broad stakeholder polish',
-        weaknesses: 'Thin settlement domain',
+        name: 'Adyen',
+        strengths:
+          'Unified commerce stack and strong global acquiring — attractive when Northstar customers expand cross-border.',
+        weaknesses:
+          'Heavier enterprise sales cycle; mid-market US ACH ops teams sometimes prefer lighter US-centric processors.',
+      },
+      {
+        name: 'Block (Square)',
+        strengths:
+          'SMB density and cash-flow products that compete for smaller merchant volumes Northstar also courts.',
+        weaknesses:
+          'Less focused on large-scale returns/settlement analytics seats; thinner enterprise BA/ops tooling narrative.',
       },
     ],
     insider_voice: [

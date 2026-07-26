@@ -342,7 +342,7 @@ export interface CompanyCompetitor {
  * 無裁員/訴訟紀錄時不得編造；改輸出面試可反問的戰略問題。
  */
 export interface CompanyTruth {
-  /** 當前核心戰略重點（如強推 AI / 縮減成本）— 非維基百科式歷史 */
+  /** 公司近期重心（如強推 AI / 縮減成本）— 給求職者看的白話，禁止 meta「非維基」用語 */
   current_strategy: string;
   /** 2–3 家競爭對手 */
   competitors: CompanyCompetitor[];

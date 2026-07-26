@@ -26,7 +26,9 @@ describe('sample reports', () => {
     expect(report.ats_warning?.missing_keyword_count).toBe(4);
     expect(report.role_team_insights?.next_title_1_3yr).toContain('Lead BA');
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels\.fyi|LinkedIn|market/i);
-    expect(report.company_truth?.competitors[0]?.strengths).toBeTruthy();
+    expect(report.company_truth?.competitors[0]?.name).toMatch(/Stripe|Adyen|Block/i);
+    expect(report.company_truth?.competitors[0]?.name).not.toMatch(/peers|pipelines|同儕|管線/i);
+    expect(report.company_truth?.current_strategy).not.toMatch(/Wikipedia|encyclopedic|百科|維基/i);
     expect(report.offer_strategy.tc_breakdown?.sign_on).toBeTruthy();
   });
 
@@ -43,13 +45,17 @@ describe('sample reports', () => {
     const report = getSampleStrategyGuideReport('zh-TW');
     expect(report.role_team_insights?.role_content_refined[0]).toMatch(/支付|需求/);
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels|LinkedIn|職涯|推估/);
-    expect(report.company_truth?.current_strategy).toMatch(/清算|金融/);
+    expect(report.company_truth?.current_strategy).toMatch(/清算|自動化|ACH/);
+    expect(report.company_truth?.current_strategy).not.toMatch(/百科|維基/);
+    expect(report.company_truth?.competitors.some((c) => /Stripe|Adyen|Block/.test(c.name))).toBe(
+      true,
+    );
     expect(report.interview_playbook.predicted[0]?.question).toMatch(/改善|流程/);
   });
 });
 
 describe('guide page copy', () => {
-  it('uses plain-language Page 2 labels (no 重構精練 jargon)', async () => {
+  it('uses plain-language Page 2–3 labels (no internal model jargon)', async () => {
     const { getGuideUiCopy } = await import('@/lib/report-ui-copy');
     const zh = getGuideUiCopy('zh-TW');
     expect(zh.roleContent).toBe('這份工作在做什麼');
@@ -57,6 +63,10 @@ describe('guide page copy', () => {
     expect(zh.roleContent).not.toMatch(/重構|精練|精炼/);
     expect(zh.requirements).not.toMatch(/重構|精練|精炼/);
     expect(zh.nextTitleBasisFallback).toMatch(/Levels|LinkedIn|市場|就業/);
+    expect(zh.currentStrategy).toBe('公司現在在拚什麼');
+    expect(zh.currentStrategy).not.toMatch(/維基|百科|wiki/i);
+    expect(zh.competitors).toMatch(/產業競爭對手/);
+    expect(zh.competitorsHint).toMatch(/具名企業|求職者/);
   });
 });
 

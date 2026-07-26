@@ -399,17 +399,28 @@ const ZH_TW: SampleLocalePack = {
     },
     company_truth: {
       current_strategy:
-        '公開金融科技營運招聘訊號強調清算可靠度與 AI 輔助效率——不是百科式公司史。',
+        '近期重心是清算可靠度與例外自動化：降低 ACH 退票失敗、加快關帳，並用 AI 輔助分流，讓營運分析師用週期 KPI 帶隊，而不是只救火工單。',
       competitors: [
         {
-          name: '支付原生 BA 同儕',
-          strengths: '更深的 ACH／處理商職稱',
-          weaknesses: '跨職能協調證據較弱',
+          name: 'Stripe',
+          strengths:
+            '開發者友善軌道、美國 ACH／卡覆蓋廣，產品團隊想自助接支付時品牌很強。',
+          weaknesses:
+            '大型企業清算／退票擁有權較不像「營運分析師原生」；複雜 B2B 對帳常仍要大量客製。',
         },
         {
-          name: '泛用高階 BA 管線',
-          strengths: '利害關係人溝通全面',
-          weaknesses: '清算領域偏薄',
+          name: 'Adyen',
+          strengths:
+            '統一商務堆疊與全球收單強，當 Northstar 客戶要跨境擴張時很有威脅。',
+          weaknesses:
+            '企業銷售週期較重；中型美國 ACH 營運團隊有時偏好更輕、偏美國的處理商。',
+        },
+        {
+          name: 'Block（Square）',
+          strengths:
+            '中小商家密度與現金流產品，與 Northstar 也在搶的小型商戶量重疊。',
+          weaknesses:
+            '較少聚焦大規模退票／清算分析職缺；企業級 BA／營運工具敘事較薄。',
         },
       ],
       insider_voice: [
@@ -819,17 +830,28 @@ const ZH_CN: SampleLocalePack = {
     },
     company_truth: {
       current_strategy:
-        '公开金融科技运营招聘信号强调清算可靠度与 AI 辅助效率——不是百科式公司史。',
+        '近期重心是清算可靠度与例外自动化：降低 ACH 退票失败、加快关账，并用 AI 辅助分流，让运营分析师用周期 KPI 带队，而不是只救火工单。',
       competitors: [
         {
-          name: '支付原生 BA 同侪',
-          strengths: '更深的 ACH／处理商标题',
-          weaknesses: '跨职能协调证据较弱',
+          name: 'Stripe',
+          strengths:
+            '开发者友好轨道、美国 ACH／卡覆盖广，产品团队想自助接支付时品牌很强。',
+          weaknesses:
+            '大型企业清算／退票所有权较不像「运营分析师原生」；复杂 B2B 对账常仍要大量定制。',
         },
         {
-          name: '泛用高阶 BA 管线',
-          strengths: '利益相关者沟通全面',
-          weaknesses: '清算领域偏薄',
+          name: 'Adyen',
+          strengths:
+            '统一商务堆叠与全球收单强，当 Northstar 客户要跨境扩张时很有威胁。',
+          weaknesses:
+            '企业销售周期较重；中型美国 ACH 运营团队有时偏好更轻、偏美国的处理商。',
+        },
+        {
+          name: 'Block（Square）',
+          strengths:
+            '中小商家密度与现金流产品，与 Northstar 也在抢的小型商户量重叠。',
+          weaknesses:
+            '较少聚焦大规模退票／清算分析职位；企业级 BA／运营工具叙事较薄。',
         },
       ],
       insider_voice: [
@@ -1246,17 +1268,28 @@ const ES: SampleLocalePack = {
     },
     company_truth: {
       current_strategy:
-        'Señales públicas de hiring fintech-ops enfatizan reliability de settlement y eficiencia asistida por IA — no historia enciclopédica.',
+        'Prioridad cercana: confiabilidad de settlement y automatización de excepciones — menos ACH returns fallidos, close más rápido y triage con IA para que los analistas de ops sean dueños de KPIs de cycle-time, no solo apaguen tickets.',
       competitors: [
         {
-          name: 'Peers BA payments-native',
-          strengths: 'Títulos ACH / processor más profundos',
-          weaknesses: 'Prueba más débil de facilitación cross-funcional',
+          name: 'Stripe',
+          strengths:
+            'Rails developer-first, amplia cobertura ACH/tarjeta en EE. UU. y marca fuerte para equipos de producto self-serve.',
+          weaknesses:
+            'Ownership enterprise de settlement/returns se siente menos “ops-analyst native”; reconciliación B2B compleja aún pide tooling a medida.',
         },
         {
-          name: 'Pipelines Senior BA genéricos',
-          strengths: 'Pulido amplio de stakeholders',
-          weaknesses: 'Dominio de settlement fino',
+          name: 'Adyen',
+          strengths:
+            'Stack de commerce unificado y acquiring global — amenaza cuando clientes Northstar cruzan fronteras.',
+          weaknesses:
+            'Ciclo de ventas enterprise más pesado; equipos ACH mid-market en EE. UU. a veces prefieren processors más ligeros y US-centric.',
+        },
+        {
+          name: 'Block (Square)',
+          strengths:
+            'Densidad SMB y productos de cash-flow que compiten por volúmenes de merchants pequeños que Northstar también corteja.',
+          weaknesses:
+            'Menos foco en seats de analytics de returns/settlement a gran escala; narrativa de tooling BA/ops enterprise más fina.',
         },
       ],
       insider_voice: [
@@ -1418,7 +1451,7 @@ const HI: SampleLocalePack = {
     company_truth: {
       ...ES.guide.company_truth!,
       current_strategy:
-        'सार्वजनिक fintech-ops हायरिंग सिग्नल settlement विश्वसनीयता और AI-assisted efficiency पर ज़ोर देते हैं — विश्वकोषीय कंपनी इतिहास नहीं।',
+        'नज़दीकी फोकस: settlement विश्वसनीयता और exception automation — कम failed ACH returns, तेज़ close, और AI-assisted triage ताकि ops analysts cycle-time KPI own करें, न कि सिर्फ tickets बुझाएँ।',
       interviewer_strategy_questions: [
         'यह रोल अभी क्यों खुला है — बैकफिल या नया स्कोप?',
         'इस टीम की 12-महीने की ऑपरेटिंग प्राथमिकता क्या है?',
@@ -1571,7 +1604,7 @@ const AR: SampleLocalePack = {
     company_truth: {
       ...ES.guide.company_truth!,
       current_strategy:
-        'إشارات التوظيف العامة لـ fintech-ops تؤكد موثوقية التسوية والكفاءة بمساعدة الذكاء الاصطناعي — لا تاريخًا موسوعيًا للشركة.',
+        'التركيز القريب: موثوقية التسوية وأتمتة الاستثناءات — أقل فشل ACH returns وإغلاق أسرع وفرز بمساعدة الذكاء الاصطناعي ليملك محللو ops مؤشرات cycle-time بدل إطفاء التذاكر فقط.',
       interviewer_strategy_questions: [
         'لماذا الدور مفتوح الآن — استبدال أم نطاق جديد؟',
         'ما أولوية التشغيل لـ 12 شهرًا لهذا الفريق؟',

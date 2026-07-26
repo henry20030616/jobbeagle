@@ -340,6 +340,7 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         left={
           <>
             <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.currentStrategy}</p>
+            <p className={`${META} text-slate-500 mb-2`}>{copy.currentStrategyHint}</p>
             <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
               {c.current_strategy}
             </p>
@@ -348,6 +349,7 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         right={
           <>
             <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.competitors}</p>
+            <p className={`${META} text-slate-500 mb-2`}>{copy.competitorsHint}</p>
             {c.competitors.length > 0 ? (
               <ul className="space-y-2.5">
                 {c.competitors.slice(0, 3).map((comp, i) => (
