@@ -6,7 +6,7 @@
  * Chrome labels follow the report language button.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import type {
   CompanyTruth,
   FullReport,
@@ -14,7 +14,7 @@ import type {
   ReferenceCitation,
   RoleTeamInsights,
 } from '@/types';
-import { CheckCircle2, AlertTriangle, ChevronDown, ExternalLink } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';
 import {
   ActionDualRow,
   BODY,
@@ -123,7 +123,8 @@ function citationsOrEmpty(report: FullReport): ReferenceCitation[] {
   return out;
 }
 
-function QuestionAccordion({
+/** Always-expanded Q&A cards — no accordion / hover gate. */
+function QuestionList({
   items,
   title,
   titleClass,
@@ -134,7 +135,6 @@ function QuestionAccordion({
   titleClass: string;
   copy: GuideUiCopy;
 }) {
-  const [open, setOpen] = useState(0);
   if (items.length === 0) {
     return (
       <div>
@@ -148,7 +148,6 @@ function QuestionAccordion({
       <p className={`${SECTION_TITLE} ${titleClass} mb-2`}>{title}</p>
       <div className="space-y-2">
         {items.map((q, i) => {
-          const expanded = open === i;
           const isGuess = q.predicted !== false && !q.source_url;
           const blueprint =
             q.star_blueprint
@@ -157,49 +156,32 @@ function QuestionAccordion({
           return (
             <div
               key={i}
-              className="rounded-lg border border-slate-700/80 bg-black/20 overflow-hidden"
+              className="rounded-lg border border-slate-700/80 bg-black/20 px-3 py-2.5 space-y-2"
             >
-              <button
-                type="button"
-                className="w-full flex items-start gap-2 px-3 py-2.5 text-left"
-                onClick={() => setOpen(expanded ? -1 : i)}
-              >
-                <ChevronDown
-                  className={`mt-0.5 h-4 w-4 shrink-0 text-slate-500 transition-transform ${
-                    expanded ? 'rotate-180' : ''
-                  }`}
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="inline-flex flex-wrap items-center gap-2">
-                    {isGuess ? (
-                      <span className="rounded border border-amber-400/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
-                        {copy.predictedBadge}
-                      </span>
-                    ) : (
-                      <span className="rounded border border-emerald-400/50 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-200">
-                        {copy.reportedBadge}
-                      </span>
-                    )}
-                    <span className={`${BODY} font-semibold text-slate-100`}>{q.question}</span>
+              <div className="inline-flex flex-wrap items-center gap-2">
+                {isGuess ? (
+                  <span className="rounded border border-amber-400/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
+                    {copy.predictedBadge}
                   </span>
-                </span>
-              </button>
-              {expanded ? (
-                <div className="border-t border-slate-700/80 px-3 py-3 space-y-2">
-                  <p className={BODY_MUTED}>
-                    <span className="font-semibold text-slate-300">{copy.intentLabel}</span>
-                    {q.interviewer_intent || q.evidence || '—'}
-                  </p>
-                  <p className={`${BODY} text-slate-200 whitespace-pre-wrap`}>
-                    <span className="font-semibold text-indigo-200">{copy.starLabel}</span>
-                    {blueprint}
-                  </p>
-                  <p className={BODY_MUTED}>
-                    <span className="font-semibold text-amber-200">{copy.dosDontsLabel}</span>
-                    {q.dos_donts || '—'}
-                  </p>
-                </div>
-              ) : null}
+                ) : (
+                  <span className="rounded border border-emerald-400/50 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-200">
+                    {copy.reportedBadge}
+                  </span>
+                )}
+                <span className={`${BODY} font-semibold text-slate-100`}>{q.question}</span>
+              </div>
+              <p className={BODY_MUTED}>
+                <span className="font-semibold text-slate-300">{copy.intentLabel}</span>
+                {q.interviewer_intent || q.evidence || '—'}
+              </p>
+              <p className={`${BODY} text-slate-200 whitespace-pre-wrap`}>
+                <span className="font-semibold text-indigo-200">{copy.starLabel}</span>
+                {blueprint}
+              </p>
+              <p className={BODY_MUTED}>
+                <span className="font-semibold text-amber-200">{copy.dosDontsLabel}</span>
+                {q.dos_donts || '—'}
+              </p>
             </div>
           );
         })}
@@ -674,7 +656,7 @@ function Page4({
         leftAccent="violet"
         rightAccent="indigo"
         left={
-          <QuestionAccordion
+          <QuestionList
             items={behavioral}
             title={copy.behavioralTitle}
             titleClass="text-violet-300"
@@ -682,7 +664,7 @@ function Page4({
           />
         }
         right={
-          <QuestionAccordion
+          <QuestionList
             items={technical}
             title={copy.technicalTitle}
             titleClass="text-indigo-300"
