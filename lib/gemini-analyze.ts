@@ -12,10 +12,10 @@ import { LITE_SYSTEM_PROMPT } from '@/lib/prompts/lite';
 import { FULL_SYSTEM_PROMPT } from '@/lib/prompts/full';
 import { formatCareerContextForPrompt } from '@/lib/career-context';
 import { jobSourceFromUrl } from '@/lib/job-source';
-import type { AppLanguage } from '@/lib/language-context';
 import {
   geminiLanguageDirective,
   normalizeReportLanguage,
+  type AppLanguage,
 } from '@/lib/report-language';
 
 function getApiKey(): string {

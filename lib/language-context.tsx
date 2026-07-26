@@ -1,8 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import type { AppLanguage } from '@/lib/report-language';
 
-export type AppLanguage = 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
+export type { AppLanguage } from '@/lib/report-language';
 
 export interface LanguageOption {
   code: AppLanguage;

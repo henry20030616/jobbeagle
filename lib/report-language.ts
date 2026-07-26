@@ -1,7 +1,7 @@
-import type { AppLanguage } from '@/lib/language-context';
-import { LANGUAGE_OPTIONS } from '@/lib/language-context';
+/** Shared language codes — keep free of React/client imports (used by API routes). */
+export type AppLanguage = 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
 
-const CODES = new Set<string>(LANGUAGE_OPTIONS.map((o) => o.code));
+const CODES = new Set<string>(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar']);
 
 export function normalizeReportLanguage(raw: unknown): AppLanguage {
   if (raw === 'zh') return 'zh-TW';

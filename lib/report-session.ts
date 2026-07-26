@@ -1,7 +1,9 @@
 import type { FullReport, LiteReport, ReportType } from '@/types';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
-import type { AppLanguage } from '@/lib/language-context';
-import { normalizeReportLanguage } from '@/lib/report-language';
+import {
+  normalizeReportLanguage,
+  type AppLanguage,
+} from '@/lib/report-language';
 
 const STORAGE_KEY = 'jb_active_report_v1';
 

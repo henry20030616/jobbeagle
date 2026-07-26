@@ -1,5 +1,7 @@
-import type { AppLanguage } from '@/lib/language-context';
-import { normalizeReportLanguage } from '@/lib/report-language';
+import {
+  normalizeReportLanguage,
+  type AppLanguage,
+} from '@/lib/report-language';
 
 /** Snapshot slide chrome (labels only — body comes from the model). */
 export interface SnapshotUiCopy {

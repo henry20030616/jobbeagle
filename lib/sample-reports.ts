@@ -1,7 +1,9 @@
 import type { FullReport, LiteReport } from '@/types';
 import { normalizeFullReport, normalizeLiteReport } from '@/lib/normalize-lite-report';
-import type { AppLanguage } from '@/lib/language-context';
-import { normalizeReportLanguage } from '@/lib/report-language';
+import {
+  normalizeReportLanguage,
+  type AppLanguage,
+} from '@/lib/report-language';
 import { deepMerge } from '@/lib/deep-merge';
 import { SAMPLE_REPORT_LOCALES } from '@/lib/sample-report-locales';
 

@@ -1,6 +1,8 @@
 import type { ExpectedOfferRange, SalaryEvidenceTier } from '@/types';
-import type { AppLanguage } from '@/lib/language-context';
-import { normalizeReportLanguage } from '@/lib/report-language';
+import {
+  normalizeReportLanguage,
+  type AppLanguage,
+} from '@/lib/report-language';
 
 function cleanMoney(v: string | null | undefined): string {
   if (!v || !v.trim() || v.trim() === '—') return '';

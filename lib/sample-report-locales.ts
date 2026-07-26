@@ -1,5 +1,5 @@
 import type { FullReport, LiteReport } from '@/types';
-import type { AppLanguage } from '@/lib/language-context';
+import type { AppLanguage } from '@/lib/report-language';
 
 /** Narrative overlays merged onto the English sample base (enums / numbers stay). */
 export type SampleLocalePack = {
