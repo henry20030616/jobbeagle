@@ -111,6 +111,10 @@ export interface GuideUiCopy {
   technicalTitle: string;
   predictedBadge: string;
   reportedBadge: string;
+  categoryBehavioral: string;
+  categoryTechnical: string;
+  questionSourceLabel: string;
+  systemAnalysisSourceNote: string;
   intentLabel: string;
   starLabel: string;
   dosDontsLabel: string;
@@ -435,6 +439,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     technicalTitle: 'Technical / case (5)',
     predictedBadge: 'System analysis',
     reportedBadge: 'Reported',
+    categoryBehavioral: 'Behavioral',
+    categoryTechnical: 'Technical / case',
+    questionSourceLabel: 'Source',
+    systemAnalysisSourceNote: 'System analysis (resume ↔ JD gaps) — not a cited real question',
     intentLabel: 'Intent: ',
     starLabel: 'STAR outline: ',
     dosDontsLabel: "Do's & Don'ts: ",
@@ -538,6 +546,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     technicalTitle: '專業／案例題（5）',
     predictedBadge: '系統分析',
     reportedBadge: '真題',
+    categoryBehavioral: '行為題',
+    categoryTechnical: '專業／案例題',
+    questionSourceLabel: '來源',
+    systemAnalysisSourceNote: '系統分析（履歷↔JD 缺口）— 非檢索到的真題',
     intentLabel: '考察意圖：',
     starLabel: 'STAR 大綱：',
     dosDontsLabel: "Do's & Don'ts：",
@@ -640,6 +652,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     technicalTitle: '专业／案例题（5）',
     predictedBadge: '系统分析',
     reportedBadge: '真题',
+    categoryBehavioral: '行为题',
+    categoryTechnical: '专业／案例题',
+    questionSourceLabel: '来源',
+    systemAnalysisSourceNote: '系统分析（简历↔JD 缺口）— 非检索到的真题',
     intentLabel: '考察意图：',
     starLabel: 'STAR 大纲：',
     dosDontsLabel: "Do's & Don'ts：",
@@ -746,6 +762,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     technicalTitle: 'Técnicas / caso (5)',
     predictedBadge: 'Análisis del sistema',
     reportedBadge: 'Reportada',
+    categoryBehavioral: 'Conductual',
+    categoryTechnical: 'Técnica / caso',
+    questionSourceLabel: 'Fuente',
+    systemAnalysisSourceNote: 'Análisis del sistema (CV ↔ JD) — no es pregunta citada',
     intentLabel: 'Intención: ',
     starLabel: 'Esquema STAR: ',
     dosDontsLabel: "Do's & Don'ts: ",
@@ -852,6 +872,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     technicalTitle: 'टेक्निकल / केस (5)',
     predictedBadge: 'सिस्टम विश्लेषण',
     reportedBadge: 'रिपोर्टेड',
+    categoryBehavioral: 'बिहेवियरल',
+    categoryTechnical: 'टेक्निकल / केस',
+    questionSourceLabel: 'स्रोत',
+    systemAnalysisSourceNote: 'सिस्टम विश्लेषण (रिज्यूमे ↔ JD) — उद्धृत सवाल नहीं',
     intentLabel: 'इरादा: ',
     starLabel: 'STAR रूपरेखा: ',
     dosDontsLabel: "Do's & Don'ts: ",
@@ -958,6 +982,10 @@ const GUIDE: Dict<GuideUiCopy> = {
     technicalTitle: 'تقنية / حالة (5)',
     predictedBadge: 'تحليل النظام',
     reportedBadge: 'مُبلَّغ عنها',
+    categoryBehavioral: 'سلوكية',
+    categoryTechnical: 'تقنية / حالة',
+    questionSourceLabel: 'المصدر',
+    systemAnalysisSourceNote: 'تحليل النظام (السيرة ↔ الوصف) — ليس سؤالاً مقتبساً',
     intentLabel: 'القصد: ',
     starLabel: 'مخطط STAR: ',
     dosDontsLabel: "Do's & Don'ts: ",

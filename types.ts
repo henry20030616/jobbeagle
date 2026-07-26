@@ -425,6 +425,8 @@ export interface InterviewQuestionCard {
   predicted?: boolean;
   source_url?: string;
   source_date?: string;
+  /** Human site name when known, e.g. Glassdoor / Blind / Levels.fyi */
+  source_name?: string;
   evidence?: string;
   star_outline?: string;
   missing_facts?: string;

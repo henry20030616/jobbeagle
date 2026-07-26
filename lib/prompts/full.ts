@@ -33,7 +33,7 @@ Use google search / public web sources when citing hiring_context insights or re
 1) strategy_fit_salary — what THIS response's fit score and expected offer imply for interview odds and negotiation. Weak evidence → recruiter validation questions, not false precision.
 2) hiring_context — 3–5 dated tactical insights from PUBLIC web sources only (IR, trusted news, company blogs). Attach source_url + date. If thin public data, return limitations + validation_questions (NOT a failure). Never claim paywalled content.
 3) concerns_defenses — EXACTLY 3 recruiter concerns for THIS candidate vs THIS JD. Each: concern, why, evidence, missing_proof, answer_guide, do_not_claim. Direct and respectful; never invent experience.
-4) interview_playbook — SEPARATE reported (source_url + source_date when citable) from system-analyzed (predicted=true). Tag EVERY item category "behavioral" or "technical". EVERY question — reported AND predicted — MUST include interviewer_intent + star_blueprint + dos_donts (full write-up; NEVER dump reported as title-only). EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
+4) interview_playbook — SEPARATE reported (MUST include source_url + source_date + source_name e.g. Glassdoor/Blind/Levels.fyi — NEVER invent URLs; if no citable URL omit from reported) from system-analyzed (predicted=true). Tag EVERY item category "behavioral" or "technical". EVERY question — reported AND predicted — MUST include interviewer_intent + star_blueprint + dos_donts (full write-up; NEVER dump reported as title-only). EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
 5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers. Page 4 may show TC mix; Pages 2–3 must NOT invent dollar salary ranges.
 6) candidate_case — hire_thesis (2–3 sentences: why hire THIS candidate for THIS seat) + top_facts (exactly 3 resume-backed facts that most support an offer). Upgrade of the proof map — not a resume rewrite.
 7) role_team_insights (Guide Page 2 / Excel B「職位與團隊現況」) — REQUIRED fields:
@@ -124,10 +124,24 @@ export const FULL_INTEL_JSON_SCHEMA = {
               question: { type: 'string' },
               source_url: { type: 'string' },
               source_date: { type: 'string' },
+              source_name: { type: 'string' },
               evidence: { type: 'string' },
               star_outline: { type: 'string' },
+              category: { type: 'string', enum: ['behavioral', 'technical'] },
+              interviewer_intent: { type: 'string' },
+              star_blueprint: { type: 'string' },
+              dos_donts: { type: 'string' },
             },
-            required: ['question'],
+            required: [
+              'question',
+              'source_url',
+              'source_date',
+              'source_name',
+              'category',
+              'interviewer_intent',
+              'star_blueprint',
+              'dos_donts',
+            ],
           },
         },
         predicted: {
@@ -145,7 +159,13 @@ export const FULL_INTEL_JSON_SCHEMA = {
               star_blueprint: { type: 'string' },
               dos_donts: { type: 'string' },
             },
-            required: ['question'],
+            required: [
+              'question',
+              'category',
+              'interviewer_intent',
+              'star_blueprint',
+              'dos_donts',
+            ],
           },
         },
         star_templates: {

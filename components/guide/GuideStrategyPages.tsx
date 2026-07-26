@@ -123,16 +123,28 @@ function citationsOrEmpty(report: FullReport): ReferenceCitation[] {
   return out;
 }
 
-/** Always-expanded Q&A cards — no accordion / hover gate. */
+function sourceHostLabel(url?: string, sourceName?: string): string {
+  if (sourceName?.trim()) return sourceName.trim();
+  if (!url?.trim()) return '';
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url.trim();
+  }
+}
+
+/** Always-expanded Q&A cards — numbered, categorized, full source line. */
 function QuestionList({
   items,
   title,
   titleClass,
+  categoryLabel,
   copy,
 }: {
   items: InterviewQuestionCard[];
   title: string;
   titleClass: string;
+  categoryLabel: string;
   copy: GuideUiCopy;
 }) {
   if (items.length === 0) {
@@ -146,29 +158,68 @@ function QuestionList({
   return (
     <div>
       <p className={`${SECTION_TITLE} ${titleClass} mb-2`}>{title}</p>
-      <div className="space-y-2">
+      <ol className="space-y-2 list-none">
         {items.map((q, i) => {
-          const isGuess = q.predicted !== false && !q.source_url;
+          const isReported = q.predicted === false || Boolean(q.source_url);
           const blueprint =
             q.star_blueprint
             || q.star_outline
             || '—';
+          const host = sourceHostLabel(q.source_url, q.source_name);
           return (
-            <div
+            <li
               key={i}
               className="rounded-lg border border-slate-700/80 bg-black/20 px-3 py-2.5 space-y-2"
             >
-              <div className="inline-flex flex-wrap items-center gap-2">
-                {isGuess ? (
-                  <span className="rounded border border-amber-400/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
-                    {copy.predictedBadge}
-                  </span>
-                ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-black tabular-nums text-slate-300 shrink-0">
+                  {i + 1}.
+                </span>
+                <span className="rounded border border-sky-400/40 bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-200">
+                  {categoryLabel}
+                </span>
+                {isReported ? (
                   <span className="rounded border border-emerald-400/50 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-200">
                     {copy.reportedBadge}
                   </span>
+                ) : (
+                  <span className="rounded border border-amber-400/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
+                    {copy.predictedBadge}
+                  </span>
                 )}
-                <span className={`${BODY} font-semibold text-slate-100`}>{q.question}</span>
+                {isReported && q.source_date ? (
+                  <span className={`${META} text-slate-500`}>{q.source_date}</span>
+                ) : null}
+              </div>
+              <p className={`${BODY} font-semibold text-slate-100`}>{q.question}</p>
+              <div className="rounded-md border border-slate-700/70 bg-black/25 px-2.5 py-2 space-y-1">
+                <p className={`${META} font-bold uppercase tracking-wider text-slate-400`}>
+                  {copy.questionSourceLabel}
+                </p>
+                {isReported ? (
+                  <>
+                    <p className={`${BODY} text-slate-200`}>
+                      {host || copy.reportedBadge}
+                      {q.source_date ? ` · ${q.source_date}` : ''}
+                    </p>
+                    {q.source_url ? (
+                      <a
+                        href={q.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex max-w-full items-center gap-1 truncate text-sm font-semibold text-violet-300 underline underline-offset-2"
+                        title={q.source_url}
+                      >
+                        <span className="truncate">{q.source_url}</span>
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                      </a>
+                    ) : (
+                      <p className={`${META} text-amber-200/90`}>{copy.noDirectUrl}</p>
+                    )}
+                  </>
+                ) : (
+                  <p className={`${BODY} text-amber-100/90`}>{copy.systemAnalysisSourceNote}</p>
+                )}
               </div>
               <p className={BODY_MUTED}>
                 <span className="font-semibold text-slate-300">{copy.intentLabel}</span>
@@ -182,10 +233,10 @@ function QuestionList({
                 <span className="font-semibold text-amber-200">{copy.dosDontsLabel}</span>
                 {q.dos_donts || '—'}
               </p>
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ol>
     </div>
   );
 }
@@ -660,6 +711,7 @@ function Page4({
             items={behavioral}
             title={copy.behavioralTitle}
             titleClass="text-violet-300"
+            categoryLabel={copy.categoryBehavioral}
             copy={copy}
           />
         }
@@ -668,6 +720,7 @@ function Page4({
             items={technical}
             title={copy.technicalTitle}
             titleClass="text-indigo-300"
+            categoryLabel={copy.categoryTechnical}
             copy={copy}
           />
         }

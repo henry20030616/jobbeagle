@@ -257,8 +257,9 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
       {
         question: 'Describe a time you disagreed with engineering on a settlement priority.',
         predicted: false,
-        source_url: 'https://www.glassdoor.com',
+        source_url: 'https://www.glassdoor.com/Interview/index.htm',
         source_date: '2026-05',
+        source_name: 'Glassdoor',
         category: 'behavioral',
         interviewer_intent: 'Conflict resolution under settlement risk.',
         star_blueprint:

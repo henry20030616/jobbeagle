@@ -43,6 +43,10 @@ describe('sample reports', () => {
       expect((q.star_blueprint || q.star_outline || '').trim().length).toBeGreaterThan(5);
       expect(q.dos_donts?.trim().length).toBeGreaterThan(5);
     }
+    const reported = report.interview_playbook.reported[0];
+    expect(reported?.source_url).toMatch(/^https?:\/\//);
+    expect(reported?.source_name || reported?.source_url).toBeTruthy();
+    expect(reported?.source_date).toBeTruthy();
   });
 
   it('localizes Snapshot body + keeps English chrome-free for zh-TW', () => {
@@ -88,6 +92,9 @@ describe('guide page copy', () => {
     expect(zh.offerRangeTitle).toMatch(/區間|薪資/);
     expect(zh.offerMedianLabel).toMatch(/中位/);
     expect(zh.predictedLandLabel).toMatch(/落點|預測/);
+    expect(zh.questionSourceLabel).toBe('來源');
+    expect(zh.categoryBehavioral).toMatch(/行為/);
+    expect(zh.systemAnalysisSourceNote).toMatch(/系統分析/);
   });
 });
 

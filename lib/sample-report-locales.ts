@@ -244,8 +244,9 @@ const ZH_TW: SampleLocalePack = {
         {
           question: '描述一次你與工程在清算優先級上意見不合的經驗。',
           predicted: false,
-          source_url: 'https://www.glassdoor.com',
+          source_url: 'https://www.glassdoor.com/Interview/index.htm',
           source_date: '2026-05',
+          source_name: 'Glassdoor',
           category: 'behavioral',
           interviewer_intent: '清算風險下的衝突處理。',
           star_blueprint:
@@ -706,8 +707,9 @@ const ZH_CN: SampleLocalePack = {
         {
           question: '描述一次你与工程在清算优先级上意见不合的经验。',
           predicted: false,
-          source_url: 'https://www.glassdoor.com',
+          source_url: 'https://www.glassdoor.com/Interview/index.htm',
           source_date: '2026-05',
+          source_name: 'Glassdoor',
           category: 'behavioral',
           interviewer_intent: '清算风险下的冲突处理。',
           star_blueprint:
@@ -1174,8 +1176,9 @@ const ES: SampleLocalePack = {
         {
           question: 'Describe una vez que disentiste con engineering sobre una prioridad de settlement.',
           predicted: false,
-          source_url: 'https://www.glassdoor.com',
+          source_url: 'https://www.glassdoor.com/Interview/index.htm',
           source_date: '2026-05',
+          source_name: 'Glassdoor',
           category: 'behavioral',
           interviewer_intent: 'Resolución de conflicto bajo riesgo de settlement.',
           star_blueprint:
