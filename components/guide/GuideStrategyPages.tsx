@@ -211,7 +211,7 @@ export default function GuideStrategyPages({
   const professional = predicted.filter((q) => !isBehavioral(q.question));
 
   const qaItems = useMemo(() => {
-    const out: { q: string; answer: string; kind: string }[] = [];
+    const out: { q: string; answer: string; kind: string; extra?: string }[] = [];
     for (const t of playbook?.star_templates ?? []) {
       const answer = [
         t.situation && `Situation: ${t.situation}`,
@@ -240,15 +240,25 @@ export default function GuideStrategyPages({
       });
     }
     for (const c of concerns) {
+      const extra = [
+        c.why && `Why it matters: ${c.why}`,
+        c.missing_proof && `Recruiter risk: ${c.missing_proof}`,
+        c.evidence && `Resume evidence: ${c.evidence}`,
+        c.do_not_claim && `Do not claim: ${c.do_not_claim}`,
+      ]
+        .filter(Boolean)
+        .join('\n');
       out.push({
         q: c.concern,
         answer: c.answer_guide || c.evidence || '—',
         kind: 'Concern defense',
+        extra: extra || undefined,
       });
     }
     return out;
   }, [playbook, predicted, concerns]);
 
+  const tc = offer?.tc_breakdown || expected?.tc_breakdown;
   const refRows = useMemo(() => {
     type Row = { type: string; description: string; date: string; url: string };
     const rows: Row[] = [];
@@ -382,6 +392,35 @@ export default function GuideStrategyPages({
             )}
           </HeroPanel>
         </div>
+
+        {(report.candidate_case?.hire_thesis
+          || (hiring?.validation_questions?.length ?? 0) > 0
+          || (fitSalary?.validate_with_recruiter?.length ?? 0) > 0) && (
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {report.candidate_case?.hire_thesis ? (
+              <Panel title="Hire thesis" icon={<Briefcase className="h-4 w-4" />}>
+                <p className={BODY}>{report.candidate_case.hire_thesis}</p>
+              </Panel>
+            ) : null}
+            <Panel title="Validate with recruiter" icon={<ListChecks className="h-4 w-4" />}>
+              <ul className="space-y-1.5">
+                {[
+                  ...(hiring?.validation_questions ?? []),
+                  ...(fitSalary?.validate_with_recruiter ?? []),
+                ]
+                  .filter((q, i, arr) => arr.indexOf(q) === i)
+                  .slice(0, 8)
+                  .map((q, i) => (
+                    <Bullet key={i}>{q}</Bullet>
+                  ))}
+                {(hiring?.validation_questions?.length ?? 0) === 0
+                  && (fitSalary?.validate_with_recruiter?.length ?? 0) === 0 && (
+                  <EmptyNote>Ask why the seat is open and what 90-day success looks like.</EmptyNote>
+                )}
+              </ul>
+            </Panel>
+          </div>
+        )}
       </SlidePage>
     );
   }
@@ -391,7 +430,6 @@ export default function GuideStrategyPages({
       report.candidate_case?.top_facts?.length
         ? report.candidate_case.top_facts
         : (hiring?.insights ?? []).map((i) => i.claim).slice(0, 4);
-
     return (
       <SlidePage>
         <TopBand>
@@ -418,6 +456,11 @@ export default function GuideStrategyPages({
             icon={<Quote className="h-4 w-4" />}
             accent="violet"
           >
+            {report.candidate_case?.hire_thesis ? (
+              <p className={`${BODY} mb-3 font-semibold text-violet-100`}>
+                {report.candidate_case.hire_thesis}
+              </p>
+            ) : null}
             {reviewBullets.length > 0 ? (
               <ul className="space-y-2">
                 {reviewBullets.map((b, i) => (
@@ -594,14 +637,63 @@ export default function GuideStrategyPages({
                 ['Acceptable', offer?.acceptable],
                 ['Walk away', offer?.walk_away],
               ].map(([label, value]) => (
-                <div key={label as string} className="rounded-md border border-slate-700 bg-slate-950/40 px-2 py-2">
+                <div key={String(label)} className="rounded-md border border-slate-700 bg-slate-950/40 px-2 py-2">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
                   <p className="mt-0.5 text-xs font-semibold text-slate-100 line-clamp-3">{value || '—'}</p>
                 </div>
               ))}
             </div>
+            {(offer?.structured_levers?.length ?? 0) > 0 || (offer?.levers?.length ?? 0) > 0 ? (
+              <ul className="mt-3 space-y-1 border-t border-emerald-500/20 pt-3">
+                {(offer?.structured_levers?.length
+                  ? offer.structured_levers.map((l) => `${l.name}${l.note ? ` — ${l.note}` : ''}`)
+                  : (offer?.levers ?? [])
+                ).map((line, i) => (
+                  <Bullet key={i}>{line}</Bullet>
+                ))}
+              </ul>
+            ) : null}
+            {tc && (tc.base || tc.bonus || tc.equity || tc.total) ? (
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {[
+                  ['Base', tc.base],
+                  ['Bonus', tc.bonus],
+                  ['Equity', tc.equity],
+                  ['Total', tc.total],
+                ].map(([label, value]) => (
+                  <div key={String(label)} className="rounded-md border border-slate-700 bg-black/20 px-2 py-1.5 text-center">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
+                    <p className="text-xs font-semibold text-slate-100">{value || '—'}</p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </HeroPanel>
         </div>
+
+        {(playbook?.reverse_questions?.length ?? 0) > 0
+          || (playbook?.validate_before_join?.length ?? 0) > 0 ? (
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {(playbook?.reverse_questions?.length ?? 0) > 0 ? (
+              <Panel title="Reverse questions" icon={<MessageSquare className="h-4 w-4" />}>
+                <ul className="space-y-1.5">
+                  {playbook!.reverse_questions.map((q, i) => (
+                    <Bullet key={i}>{q}</Bullet>
+                  ))}
+                </ul>
+              </Panel>
+            ) : null}
+            {(playbook?.validate_before_join?.length ?? 0) > 0 ? (
+              <Panel title="Validate before join" icon={<ListChecks className="h-4 w-4" />}>
+                <ul className="space-y-1.5">
+                  {playbook!.validate_before_join.map((q, i) => (
+                    <Bullet key={i}>{q}</Bullet>
+                  ))}
+                </ul>
+              </Panel>
+            ) : null}
+          </div>
+        ) : null}
 
         <Panel
           title="Suggested Answers & Q&A Playbook"
@@ -612,6 +704,11 @@ export default function GuideStrategyPages({
               {qaItems.map((item, i) => (
                 <AccordionItem key={i} title={`${item.kind}: ${item.q}`} defaultOpen={i === 0}>
                   <p className="whitespace-pre-wrap leading-relaxed text-slate-200">{item.answer}</p>
+                  {item.extra ? (
+                    <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-slate-400">
+                      {item.extra}
+                    </p>
+                  ) : null}
                 </AccordionItem>
               ))}
             </div>
@@ -681,6 +778,20 @@ export default function GuideStrategyPages({
             </table>
           </div>
         )}
+        {(hiring?.limitations?.length ?? 0) > 0 ? (
+          <div className="mt-4 border-t border-slate-700 pt-3">
+            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+              Limitations
+            </p>
+            <ul className="space-y-1">
+              {hiring!.limitations.map((l, i) => (
+                <li key={i} className="text-xs text-slate-500">
+                  · {l}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         {report.report_version ? (
           <p className="mt-3 text-xs text-slate-500">Report version: {report.report_version}</p>
         ) : null}

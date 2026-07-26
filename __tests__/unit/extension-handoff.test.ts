@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
+import { createHmac } from 'crypto';
 import {
   createHandoffToken,
   verifyHandoffToken,
@@ -36,5 +37,32 @@ describe('extension handoff', () => {
         jobId: '1',
       }),
     ).toThrow(/too short/i);
+  });
+
+  it('rejects tampered handoff signature', () => {
+    const sid = createHandoffToken({
+      pageTitle: 'Role',
+      pageUrl: 'https://www.linkedin.com/jobs/view/1',
+      rawText: 'Enough job description text for validation. '.repeat(3),
+      jobId: '1',
+    });
+    const [payload] = sid.split('.');
+    expect(() => verifyHandoffToken(`${payload}.bad-signature-padding-xxx`)).toThrow(
+      /signature/i,
+    );
+  });
+
+  it('rejects expired handoff token', () => {
+    const secret = process.env.CRON_SECRET as string;
+    const payload = {
+      pageTitle: 'Role',
+      pageUrl: 'https://www.linkedin.com/jobs/view/1',
+      rawText: 'Enough job description text for validation. '.repeat(3),
+      jobId: '1',
+      exp: Date.now() - 1000,
+    };
+    const payloadB64 = Buffer.from(JSON.stringify(payload), 'utf-8').toString('base64url');
+    const signature = createHmac('sha256', secret).update(payloadB64).digest('base64url');
+    expect(() => verifyHandoffToken(`${payloadB64}.${signature}`)).toThrow(/expired/i);
   });
 });

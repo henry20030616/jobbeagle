@@ -116,9 +116,11 @@ export async function POST(request: NextRequest) {
           throw new Error(`Gemini API Error: ${v1Response.status} ${v1ErrorText.substring(0, 100)}`);
         }
 
-        const v1Data = await v1Response.json();
+        const v1Data = (await v1Response.json()) as {
+          candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+        };
         const parts = v1Data.candidates?.[0]?.content?.parts || [];
-        const text = parts.map((part: any) => part.text || '').join('');
+        const text = parts.map((part) => part.text || '').join('');
 
         if (!text) {
           throw new Error('No text response from Gemini');
@@ -148,9 +150,11 @@ export async function POST(request: NextRequest) {
       throw new Error(`Gemini API Error: ${response.status} ${errorText.substring(0, 100)}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    };
     const parts = data.candidates?.[0]?.content?.parts || [];
-    const text = parts.map((part: any) => part.text || '').join('');
+    const text = parts.map((part) => part.text || '').join('');
 
     if (!text) {
       throw new Error('No text response from Gemini');
@@ -176,11 +180,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ [Jobbeagle API] 錯誤:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to generate script' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Failed to generate script';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
