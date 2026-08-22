@@ -2,10 +2,10 @@
 
 /**
  * Shorts / employer video recruiting surface.
- * Enabled by default. Set NEXT_PUBLIC_SHORTS_ENABLED=false to freeze.
+ * Frozen by default to keep focus on analyze funnel. Set NEXT_PUBLIC_SHORTS_ENABLED=true to enable.
  */
 export function isShortsEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_SHORTS_ENABLED !== 'false';
+  return process.env.NEXT_PUBLIC_SHORTS_ENABLED === 'true';
 }
 
 /**

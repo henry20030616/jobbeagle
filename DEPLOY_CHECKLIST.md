@@ -15,7 +15,8 @@
 **預估時間：** 30–45 分鐘（含 Lemon Squeezy 建產品）  
 **你的 Supabase 專案：** `yvzorfeespljbitxxufo`  
 **正式網域：** `https://www.jobbeagle.com`  
-**Lemon Squeezy Store ID：** `424272`
+**Lemon Squeezy Store ID：** `424272`  
+**Chrome 外掛版本：** `1.3.0` （manifest）
 
 ---
 
@@ -272,7 +273,7 @@ Supabase → **Authentication → Providers → Google** 亦須啟用並填入 C
 |---|------|----------|
 | 1 | Google 登入首頁 | 右上角顯示用戶名；表單上方有 **Lite / Full 額度** 與 **推薦連結** |
 | 2 | 貼 **真實 JD** + **PDF 履歷** → 分析 | 完整 Lite 報告：米格魯圖、分數環、優勢/缺口、面試題、薪酬 |
-| 3 | LinkedIn 搜尋頁選職缺 → 點 Chrome 外掛 **1.1.0**（先重載外掛） | **Side Panel** 開 pre-flight，公司/JD 正確 → Launch；額度 0 顯示付費牆 |
+| 3 | LinkedIn 搜尋頁選職缺 → 點 Chrome 外掛 **1.3.0**（先重載外掛） | **新分頁**開 `/confirm`，公司/JD 正確 → Launch；額度 0 顯示付費牆 |
 | 4 | `/shorts` → 某影片 → AI 匹配 | Modal 內為新 Lite 報告（不是只有 5 欄的舊 Snapshot） |
 | 5 | 額度用盡 → 付費牆 → 點 $3 Lite | 跳轉 Lemon Squeezy 結帳頁 |
 | 6 | 測試付款成功（或 sandbox） | 回到 `/?checkout=success`，額度數字增加 |
@@ -291,7 +292,7 @@ Supabase → **Authentication → Providers → Google** 亦須啟用並填入 C
 1. 確認 zip：`jobbeagle-extension-*.zip`（或請 Agent 依最新 `browser-extension/` 重打）  
 2. 開 https://chrome.google.com/webstore/devconsole → 新增／更新項目 → 上傳 zip  
 3. 隱私政策填：`https://www.jobbeagle.com/privacy`  
-4. 上傳截圖（LinkedIn／Indeed／Pre-Flight／報告）  
+4. 上傳截圖（LinkedIn／Indeed／Confirm 頁／報告）  
 5. 按 **提交審查（Submit for review）**  
 6. 細節見 `browser-extension/STORE_LISTING.md`
 
@@ -310,14 +311,14 @@ Supabase → **Authentication → Providers → Google** 亦須啟用並填入 C
 2. 右上角開啟 **「開發人員模式」**（若尚未開啟）  
 3. 找到 **JobBeagle - Headhunter-Level Job Triage**  
 4. 點該卡片上的 **「重新載入」** 圓形箭頭按鈕  
-5. 確認版本為 **1.2.0**（或 Agent 告知的版本）
+5. 確認版本為 **1.3.0**（或 Agent 告知的版本）
 
 ### B. 測試 LinkedIn 外掛（約 2 分鐘）
 
 1. 打開 [LinkedIn 職缺搜尋](https://www.linkedin.com/jobs/)，搜尋關鍵字  
 2. **左側點選一個職缺**，等 **右側詳情** 完全載入  
 3. 點工具列 **JobBeagle 圖示**  
-4. 預期：開 Pre-Flight 分頁，公司／職稱／JD 正確  
+4. 預期：開 **Confirm** 分頁，公司／職稱／JD 正確  
 5. 貼履歷 → **Launch**（額度足夠）或看到 **付費牆**（額度 0）
 
 ### C. 僅 Agent 無法代做時（通常各做一次）

@@ -32,7 +32,7 @@ const PRIVACY_EN: LegalDocument = {
     {
       title: 'Chrome Extension — Allowed Sites',
       paragraphs: [
-        'The JobBeagle Chrome extension only requests access to a whitelist of job boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor, and 104.com.tw, plus jobbeagle.com for handoff.',
+        'The JobBeagle Chrome extension only requests access to a whitelist of job boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs.com (including SchoolJobs), and 104.com.tw, plus jobbeagle.com for handoff.',
         'We do not sell scraped job content or your resume data. Job text is used solely to provide AI analysis you request.',
         'You can revoke site access anytime in chrome://extensions → JobBeagle → Site access.',
       ],
@@ -109,7 +109,7 @@ const PRIVACY_ZH_TW: LegalDocument = {
     {
       title: 'Chrome 外掛 — 允許的網站',
       paragraphs: [
-        '外掛僅申請存取白名單職缺網：LinkedIn、Indeed、ZipRecruiter、Glassdoor、104.com.tw，以及 jobbeagle.com（交接用）。',
+        '外掛僅申請存取白名單職缺網：LinkedIn、Indeed、ZipRecruiter、Glassdoor、GovernmentJobs.com（含 SchoolJobs）、104.com.tw，以及 jobbeagle.com（交接用）。',
         '我們不會販售抓取的職缺內容或您的履歷；職缺文字僅用於您主動要求的 AI 分析。',
         '您可隨時於 chrome://extensions → JobBeagle → 網站存取權限撤銷授權。',
       ],
