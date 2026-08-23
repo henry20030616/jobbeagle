@@ -739,22 +739,22 @@ function BottomNav({
         { id: 'saved' as const, icon: Bookmark,  label: t('saved'),     badge: savedCount,  active: activeTab === 'saved' && navTab === 'home' },
       ]).map(({ id, icon: Icon, label, badge, active }) => (
         <button key={id} onClick={() => onTabChange(id)}
-          className={`flex flex-col items-center gap-2 px-3 py-2 min-w-[3.9rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+          className="flex flex-col items-center gap-2 px-3 py-2 min-w-[3.9rem] text-white transition-colors">
           <div className="relative">
-            <Icon className="h-12 w-12 md:h-[3.6rem] md:w-[3.6rem]" strokeWidth={active ? 2.75 : 2} />
+            <Icon className="h-12 w-12 fill-white text-white md:h-[3.6rem] md:w-[3.6rem]" strokeWidth={active ? 2.75 : 2} />
             {badge > 0 && (
-              <span className="shorts-nav-badge absolute -top-1 -right-1.5 min-w-4 h-4 bg-blue-500 text-white font-bold rounded-full flex items-center justify-center px-0.5">
+              <span className="shorts-nav-badge absolute -top-2 -right-3 flex h-[3.5rem] min-w-[3.5rem] items-center justify-center rounded-full bg-blue-500 px-1.5 font-bold text-white">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
           </div>
-          <span className="shorts-nav-label font-bold leading-none">{label}</span>
+          <span className="shorts-nav-label font-bold leading-none text-white">{label}</span>
         </button>
       ))}
       <button onClick={() => onNav('profile')}
-        className={`flex flex-col items-center gap-2 px-3 py-2 min-w-[3.9rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
-        <User className="h-12 w-12 md:h-[3.6rem] md:w-[3.6rem]" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
-        <span className="shorts-nav-label font-bold leading-none">{t('me')}</span>
+        className="flex flex-col items-center gap-2 px-3 py-2 min-w-[3.9rem] text-white transition-colors">
+        <User className="h-12 w-12 fill-white text-white md:h-[3.6rem] md:w-[3.6rem]" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        <span className="shorts-nav-label font-bold leading-none text-white">{t('me')}</span>
       </button>
     </div>
   );
