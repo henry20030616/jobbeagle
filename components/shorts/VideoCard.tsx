@@ -59,6 +59,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
     if (typeof window === 'undefined') return true;
     return localStorage.getItem('jobbeagle_sound_pref') !== 'on';
   });
+  const [ytPaused, setYtPaused] = useState(false);
   const [showSoundHint, setShowSoundHint] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [applyState, setApplyState] = useState<'idle' | 'step1' | 'step2' | 'submitting' | 'success'>('idle');
@@ -98,6 +99,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
   // Sync with parent state
   useEffect(() => { setFollowed(isFollowed); }, [isFollowed]);
   useEffect(() => { setBookmarked(isBookmarked); }, [isBookmarked]);
+  useEffect(() => {
+    if (isActive) setYtPaused(false);
+  }, [isActive]);
 
   // Load saved user info from localStorage
   useEffect(() => {
@@ -506,6 +510,19 @@ const VideoCard: React.FC<VideoCardProps> = ({
       }
   };
 
+  const toggleYouTubePlayback = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const iframe = youtubeIframeRef.current;
+    if (!iframe?.contentWindow) return;
+    if (ytPaused) {
+      iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      setYtPaused(false);
+    } else {
+      iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      setYtPaused(true);
+    }
+  };
+
 
   const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
 
@@ -739,6 +756,18 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     allowFullScreen
                     title="YouTube 短影音"
                   />
+                  <button
+                    type="button"
+                    onClick={toggleYouTubePlayback}
+                    className="absolute inset-0 z-10 flex items-center justify-center"
+                    aria-label={ytPaused ? 'Play' : 'Pause'}
+                  >
+                    {ytPaused ? (
+                      <span className="flex h-[12.5rem] w-[12.5rem] items-center justify-center rounded-full bg-black/55">
+                        <Play className="ml-3 h-40 w-40 text-white" fill="white" />
+                      </span>
+                    ) : null}
+                  </button>
                 </div>
               );
             }
