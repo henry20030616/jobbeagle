@@ -18,9 +18,9 @@ import BrandLogo from '@/components/BrandLogo';
 const PILL =
   'inline-flex items-center gap-2.5 text-lg text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
 const STEP_CONNECTOR =
-  'hidden';
+  'hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none';
 const STEP_COL =
-  'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-8 sm:p-10 lg:border-r';
+  'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-8 sm:p-10 lg:border-b-0 lg:border-r';
 const STEP_TITLE =
   'flex min-h-[4rem] shrink-0 items-center pb-3 text-2xl sm:text-3xl font-bold text-white';
 const STEP_PILL_ROW = 'mb-5 flex h-[3.5rem] shrink-0 items-center';
@@ -580,7 +580,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className="pointer-events-none absolute top-0 right-0 p-12 opacity-5">
               <Sparkles className="h-64 w-64 text-indigo-500" />
             </div>
-            <div className="relative grid grid-cols-1 divide-y divide-slate-700/80 lg:grid-cols-2 lg:divide-x">
+            <div className="relative grid grid-cols-1 divide-y divide-slate-700/80 lg:grid-cols-4 lg:divide-x lg:divide-y-0">
               {([
                 {
                   id: 'fit',
@@ -657,9 +657,9 @@ const InputForm: React.FC<InputFormProps> = ({
 
         {/* Classic 1→4 operator: equal-height content shells, circular connectors */}
         <div className="w-full min-w-0 rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
             {/* 1. Job */}
-            <div className={STEP_COL}>
+            <div className={`${STEP_COL} lg:col-span-4`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-indigo-500" />
                 <span className="leading-snug">{t.jobData}</span>
@@ -728,7 +728,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 2. Resume — overflow-visible so Saved Resumes dropdown can open */}
-            <div className={`${STEP_COL} overflow-visible`}>
+            <div className={`${STEP_COL} overflow-visible lg:col-span-3`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-violet-500" />
                 <span className="whitespace-nowrap">{t.resume}</span>
@@ -861,7 +861,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 3. Report type — Snapshot + Guide + Compare (3 equal boxes) */}
-            <div className={STEP_COL}>
+            <div className={`${STEP_COL} lg:col-span-3`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-emerald-500" />
                 <span className="leading-snug">{t.reportTypeStep}</span>
@@ -943,7 +943,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {/* 4. Launch — same title/pill spacers so content box aligns */}
-            <div className={`${STEP_COL} relative z-0 border-r-0 bg-slate-700/30`}>
+            <div className={`${STEP_COL} relative z-0 border-r-0 bg-slate-700/30 lg:col-span-2`}>
               <div className={STEP_TITLE} aria-hidden />
               <div className={STEP_PILL_ROW} aria-hidden />
               <div className={`${STEP_BODY} relative z-10`}>

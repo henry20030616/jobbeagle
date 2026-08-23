@@ -154,11 +154,9 @@ main input {
 }
 
 /*
- * Homepage presentation scale.
- *
- * The homepage uses Tailwind's standard type utilities across several nested
- * components. Scope a true 2× type scale here so every nested label, field,
- * option, and button grows consistently without changing report pages.
+ * Keep the e42c7b5 homepage layout while rendering its complete Tailwind
+ * typography scale at exactly 2×. The scope prevents report and Shorts text
+ * from being resized.
  */
 .homepage-font-2x .text-xs { font-size: 1.5rem; line-height: 2rem; }
 .homepage-font-2x .text-sm { font-size: 1.75rem; line-height: 2.5rem; }
