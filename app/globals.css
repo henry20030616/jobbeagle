@@ -372,26 +372,52 @@ main input {
  * Compare overlay (portaled to body — does not inherit homepage type).
  * 350% of default Tailwind text sizes.
  */
-.compare-font-large .text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
-.compare-font-large .text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
-.compare-font-large .text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
-.compare-font-large .text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
-.compare-font-large .text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
-.compare-font-large .text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
-.compare-font-large .text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
-.compare-font-large .text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
-.compare-font-large .text-5xl { font-size: 10.5rem !important; line-height: 1.1 !important; }
-.compare-font-large .text-6xl { font-size: 13.125rem !important; line-height: 1.1 !important; }
+.compare-font-large .text-xs,
+.shorts-details-modal .text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
+.compare-font-large .text-sm,
+.shorts-details-modal .text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
+.compare-font-large .text-base,
+.shorts-details-modal .text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
+.compare-font-large .text-lg,
+.shorts-details-modal .text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
+.compare-font-large .text-xl,
+.shorts-details-modal .text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
+.compare-font-large .text-2xl,
+.shorts-details-modal .text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
+.compare-font-large .text-3xl,
+.shorts-details-modal .text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
+.compare-font-large .text-4xl,
+.shorts-details-modal .text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
+.compare-font-large .text-5xl,
+.shorts-details-modal .text-5xl { font-size: 10.5rem !important; line-height: 1.1 !important; }
+.compare-font-large .text-6xl,
+.shorts-details-modal .text-6xl { font-size: 13.125rem !important; line-height: 1.1 !important; }
 
 @media (min-width: 640px) {
-  .compare-font-large .sm\:text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
-  .compare-font-large .sm\:text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
-  .compare-font-large .sm\:text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
-  .compare-font-large .sm\:text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
-  .compare-font-large .sm\:text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
-  .compare-font-large .sm\:text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
-  .compare-font-large .sm\:text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
-  .compare-font-large .sm\:text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
+  .compare-font-large .sm\:text-xs,
+  .shorts-details-modal .sm\:text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
+  .compare-font-large .sm\:text-sm,
+  .shorts-details-modal .sm\:text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
+  .compare-font-large .sm\:text-base,
+  .shorts-details-modal .sm\:text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
+  .compare-font-large .sm\:text-lg,
+  .shorts-details-modal .sm\:text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
+  .compare-font-large .sm\:text-xl,
+  .shorts-details-modal .sm\:text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
+  .compare-font-large .sm\:text-2xl,
+  .shorts-details-modal .sm\:text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
+  .compare-font-large .sm\:text-3xl,
+  .shorts-details-modal .sm\:text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
+  .compare-font-large .sm\:text-4xl,
+  .shorts-details-modal .sm\:text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
+}
+
+@media (min-width: 768px) {
+  .shorts-details-modal .md\:text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
+  .shorts-details-modal .md\:text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
+  .shorts-details-modal .md\:text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
+  .shorts-details-modal .md\:text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
+  .shorts-details-modal .md\:text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
 }
 
 /* Compare overlay: puppy + stars at 250% of previous icon size */

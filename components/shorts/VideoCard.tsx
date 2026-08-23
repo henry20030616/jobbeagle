@@ -1076,15 +1076,15 @@ const VideoCard: React.FC<VideoCardProps> = ({
           />
           
           {/* Modal Content：較高大面板、內文放大 */}
-          <div className="absolute inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-[1.75rem] md:rounded-t-3xl border-t border-white/10 shadow-2xl animate-slide-up min-h-[72vh] max-h-[94vh] md:max-h-[92vh] flex flex-col">
+          <div className="shorts-details-modal absolute inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-[1.75rem] md:rounded-t-3xl border-t border-white/10 shadow-2xl animate-slide-up min-h-[72vh] max-h-[94vh] md:max-h-[92vh] flex flex-col">
             {/* Drag Handle */}
             <div className="w-full flex justify-center pt-4 pb-3 cursor-pointer" onClick={() => setShowFullDetails(false)}>
                 <div className="w-14 h-1.5 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors" />
             </div>
 
             {/* Header */}
-            <div className="flex justify-between items-start gap-3 mb-5 px-6 md:px-8">
-                <div className="flex items-center gap-4 min-w-0">
+            <div className="flex justify-between items-start gap-6 mb-5 px-6 md:px-8">
+                <div className="flex items-center gap-6 min-w-0">
                      <Link
                        href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                        onClick={(e) => e.stopPropagation()}
@@ -1094,12 +1094,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
                      {job.logoUrl && !logoError ? (
                         <img 
                             src={job.logoUrl} 
-                            className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-white/20 bg-white object-contain" 
+                            className="h-[12.25rem] w-[12.25rem] md:h-[14rem] md:w-[14rem] rounded-full border border-white/20 bg-white object-contain" 
                             alt=""
                             onError={() => setLogoError(true)}
                         />
                      ) : (
-                        <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-700 rounded-full flex items-center justify-center">
+                        <div className="h-[12.25rem] w-[12.25rem] md:h-[14rem] md:w-[14rem] bg-gray-700 rounded-full flex items-center justify-center">
                             <span className="text-white font-bold text-lg md:text-xl">
                                 {job.companyName.charAt(0).toUpperCase()}
                             </span>
@@ -1119,9 +1119,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 </div>
                 <button 
                   onClick={() => setShowFullDetails(false)} 
-                  className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0"
+                  className="p-5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0"
                 >
-                    <X size={24} className="text-gray-300" />
+                    <X className="h-[5.25rem] w-[5.25rem] text-gray-300" />
                 </button>
             </div>
 
@@ -1139,9 +1139,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   href={job.applyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] text-base md:text-lg"
+                  className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-14 px-8 rounded-2xl shadow-lg flex items-center justify-center gap-7 transition-all active:scale-[0.99] text-base md:text-lg"
                 >
-                  <ExternalLink size={22} />
+                  <ExternalLink className="h-[4.8125rem] w-[4.8125rem] shrink-0" />
                   <span>{(language === 'zh-TW' || language === 'zh-CN') ? '套用（前往企業申請頁）' : 'Apply on Company Site'}</span>
                 </a>
               ) : (
@@ -1149,9 +1149,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   <button
                     type="button"
                     onClick={(e) => handleAnalyzeWithAI(e)}
-                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 px-3 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-2 transition-all active:scale-[0.99] text-sm md:text-base"
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-14 px-8 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-7 transition-all active:scale-[0.99] text-sm md:text-base"
                   >
-                    <Sparkles size={22} className="shrink-0" />
+                    <Sparkles className="h-[4.8125rem] w-[4.8125rem] shrink-0" />
                     <span className="text-center leading-tight">
                       {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
                     </span>
@@ -1162,9 +1162,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       setShowFullDetails(false);
                       handleApplyStart();
                     }}
-                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 px-3 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-2 transition-all active:scale-[0.99] text-sm md:text-base"
+                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-14 px-8 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-7 transition-all active:scale-[0.99] text-sm md:text-base"
                   >
-                    <Briefcase size={22} className="shrink-0" />
+                    <Briefcase className="h-[4.8125rem] w-[4.8125rem] shrink-0" />
                     <span className="text-center leading-tight">{(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}</span>
                   </button>
                 </div>
