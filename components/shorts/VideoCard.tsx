@@ -869,7 +869,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- Right rail: all actions sit on the video's right edge --- */}
       {(!showFullDetails && !showApplyModal) && (
-      <div className="absolute right-3 md:right-5 top-1/2 z-20 flex w-[5.5rem] md:w-36 xl:w-44 -translate-y-1/2 flex-col items-center gap-3 md:gap-4">
+      <div className="shorts-font-large absolute right-3 md:right-5 top-1/2 z-20 flex w-[6.5rem] md:w-40 xl:w-48 -translate-y-1/2 flex-col items-center gap-3 md:gap-4">
         <div className="flex flex-col items-center gap-1.5">
             <button 
               className={`flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
@@ -877,7 +877,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             >
               <Heart fill={liked ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${liked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white tabular-nums">
+            <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white tabular-nums">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
@@ -889,7 +889,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             >
               <UserPlus fill={followed ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${followed ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white text-center leading-tight">
+            <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white text-center leading-tight">
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
@@ -901,7 +901,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             >
               <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${bookmarked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white">
+            <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
@@ -913,7 +913,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           >
             <Share2 className="h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12" />
           </button>
-          <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
+          <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
 
         <div className="flex flex-col items-center gap-1.5">
@@ -937,7 +937,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             className="mt-1 flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-violet-600 px-2 py-2.5 text-white shadow-lg border-2 border-violet-400/30 hover:bg-violet-500 active:scale-[0.99]"
           >
             <Sparkles className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
-            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">
+            <span className="text-center text-base md:text-xl font-bold leading-tight">
               {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配' : 'AI Match'}
             </span>
           </button>
@@ -952,7 +952,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-600 px-2 py-2.5 text-white shadow-lg border-2 border-white/15 hover:bg-slate-500 active:scale-[0.99]"
           >
             <ExternalLink className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
-            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">
+            <span className="text-center text-base md:text-xl font-bold leading-tight">
               {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
             </span>
           </a>
@@ -963,7 +963,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-700 px-2 py-2.5 text-slate-300 border-2 border-slate-600 cursor-not-allowed"
           >
             <CheckCircle className="h-6 w-6 md:h-7 md:w-7 shrink-0 text-emerald-400" />
-            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">{t('已申請', 'Applied')}</span>
+            <span className="text-center text-base md:text-xl font-bold leading-tight">{t('已申請', 'Applied')}</span>
           </button>
         ) : (
           <button
@@ -972,7 +972,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-cyan-600 px-2 py-2.5 text-white shadow-lg border-2 border-cyan-400/30 hover:bg-cyan-500 active:scale-[0.99]"
           >
             <Briefcase className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
-            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">
+            <span className="text-center text-base md:text-xl font-bold leading-tight">
               {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Apply'}
             </span>
           </button>
@@ -982,10 +982,10 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- Bottom-left job copy only; actions live on the right --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-6 pt-16 pr-[6.5rem] md:pr-44 xl:pr-52">
-            <div className="pointer-events-auto px-3 md:px-8 max-w-[min(100%,42rem)]">
-                <div className="flex flex-col justify-end gap-2">
-                  <div className="flex flex-row items-center gap-3 min-h-0 shrink-0">
+          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-6 pt-16 pr-[7.5rem] md:pr-52">
+            <div className="pointer-events-auto px-4 md:px-8 max-w-[min(100%,56rem)]">
+                <div className="flex flex-col justify-end gap-3">
+                  <div className="flex flex-row items-center gap-4 min-h-0 shrink-0">
                     <Link
                       href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                       onClick={(e) => e.stopPropagation()}
@@ -996,41 +996,41 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         <img
                           src={job.logoUrl}
                           alt=""
-                          className="w-10 h-10 sm:w-11 sm:h-11 md:w-16 md:h-16 rounded-full border-2 border-white/40 bg-white object-contain shadow-lg"
+                          className="w-14 h-14 md:w-20 md:h-20 rounded-full border-2 border-white/40 bg-white object-contain shadow-lg"
                           onError={() => setLogoError(true)}
                         />
                       ) : (
-                        <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-16 md:h-16 rounded-full border-2 border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
-                          <span className="text-white font-bold text-base sm:text-lg md:text-2xl">
+                        <div className="w-14 h-14 md:w-20 md:h-20 rounded-full border-2 border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
+                          <span className="text-white font-bold text-2xl md:text-3xl">
                             {job.companyName.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
                     </Link>
-                    <div className="flex flex-col min-w-0 gap-0 justify-center">
-                      <h3 className="text-base sm:text-lg md:text-2xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
+                    <div className="flex flex-col min-w-0 gap-1 justify-center">
+                      <h3 className="text-3xl md:text-4xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
                         {job.jobTitle}
                       </h3>
                       <Link
                         href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-sm sm:text-base md:text-xl font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
+                        className="text-2xl md:text-3xl font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
                       >
                         @{job.companyName}
                       </Link>
                     </div>
                   </div>
-                  <div className="flex flex-nowrap gap-1.5 text-xs sm:text-sm md:text-base min-h-0 shrink-0 overflow-hidden">
-                    <span className="flex items-center gap-1 bg-slate-800/90 px-2 py-0.5 rounded-md text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
-                      <MapPin size={14} className="shrink-0 opacity-90" />
+                  <div className="flex flex-nowrap gap-2 text-xl md:text-2xl min-h-0 shrink-0 overflow-hidden">
+                    <span className="flex items-center gap-1.5 bg-slate-800/90 px-3 py-1.5 rounded-lg text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
+                      <MapPin size={20} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.location}</span>
                     </span>
-                    <span className="flex items-center gap-1 bg-emerald-950/70 text-emerald-200 px-2 py-0.5 rounded-md border border-emerald-500/25 min-w-0 max-w-[50%]">
-                      <DollarSign size={14} className="shrink-0 opacity-90" />
+                    <span className="flex items-center gap-1.5 bg-emerald-950/70 text-emerald-200 px-3 py-1.5 rounded-lg border border-emerald-500/25 min-w-0 max-w-[50%]">
+                      <DollarSign size={20} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.salary}</span>
                     </span>
                   </div>
-                  <div className="flex items-baseline gap-1.5 min-w-0 text-sm sm:text-base md:text-lg text-gray-100/95 leading-snug">
+                  <div className="flex items-baseline gap-2 min-w-0 text-xl md:text-2xl text-gray-100/95 leading-snug">
                     <p className="line-clamp-2 min-w-0 flex-1 break-words">{job.description}</p>
                     <button
                       type="button"

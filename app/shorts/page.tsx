@@ -732,7 +732,7 @@ function BottomNav({
 }) {
   return (
     <div
-      className="h-[4.25rem] md:h-40 xl:h-48 bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      className="shorts-font-large h-32 md:h-36 bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {([
@@ -741,22 +741,22 @@ function BottomNav({
         { id: 'saved' as const, icon: Bookmark,  label: t('saved'),     badge: savedCount,  active: activeTab === 'saved' && navTab === 'home' },
       ]).map(({ id, icon: Icon, label, badge, active }) => (
         <button key={id} onClick={() => onTabChange(id)}
-          className={`flex flex-col items-center gap-1 md:gap-3 px-4 md:px-10 py-1.5 md:py-4 min-w-[4rem] md:min-w-40 transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+          className={`flex flex-col items-center gap-2 px-4 py-2 min-w-[5.5rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
           <div className="relative">
-            <Icon className="h-6 w-6 md:h-14 md:w-14 xl:h-[72px] xl:w-[72px]" strokeWidth={active ? 2.75 : 2} />
+            <Icon className="h-10 w-10 md:h-12 md:w-12" strokeWidth={active ? 2.75 : 2} />
             {badge > 0 && (
-              <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] bg-blue-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+              <span className="absolute -top-1.5 -right-2 min-w-6 h-6 bg-blue-500 text-white text-sm font-bold rounded-full flex items-center justify-center px-1">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
           </div>
-          <span className="text-[10px] md:text-2xl xl:text-[30px] xl:leading-9 font-semibold">{label}</span>
+          <span className="text-2xl md:text-3xl font-bold leading-none">{label}</span>
         </button>
       ))}
       <button onClick={() => onNav('profile')}
-        className={`flex flex-col items-center gap-1 md:gap-3 px-4 md:px-10 py-1.5 md:py-4 min-w-[4rem] md:min-w-40 transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
-        <User className="h-6 w-6 md:h-14 md:w-14 xl:h-[72px] xl:w-[72px]" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
-        <span className="text-[10px] md:text-2xl xl:text-[30px] xl:leading-9 font-semibold">{t('me')}</span>
+        className={`flex flex-col items-center gap-2 px-4 py-2 min-w-[5.5rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+        <User className="h-10 w-10 md:h-12 md:w-12" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        <span className="text-2xl md:text-3xl font-bold leading-none">{t('me')}</span>
       </button>
     </div>
   );
