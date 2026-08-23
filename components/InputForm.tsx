@@ -592,7 +592,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
       <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-20'}`}>
         {!compactChrome && (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
+          <div className="homepage-features grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
             {([
               {
                 id: 'fit',
@@ -646,7 +646,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-3xl font-bold leading-snug text-slate-200">{item.title}</span>
+                        <span className="feature-title text-3xl font-bold leading-snug text-slate-200">{item.title}</span>
                         <ChevronDown
                           className={`mt-0.5 h-6 w-6 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
@@ -654,7 +654,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       </div>
                       <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                         <div className="overflow-hidden">
-                          <p className="pb-0.5 pt-2.5 text-2xl leading-normal text-slate-400">
+                          <p className="feature-desc pb-0.5 pt-2.5 text-2xl leading-normal text-slate-400">
                             {item.desc}
                           </p>
                         </div>

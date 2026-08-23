@@ -189,6 +189,16 @@ main input {
   line-height: 1.25 !important;
 }
 
+/* Four feature cards: 75% of current title (text-3xl) / desc (text-2xl) */
+.homepage-font-large .feature-title {
+  font-size: 3.1640625rem !important;
+  line-height: 1.2 !important;
+}
+.homepage-font-large .feature-desc {
+  font-size: 2.53125rem !important;
+  line-height: 1.35 !important;
+}
+
 @media (min-width: 640px) {
   .homepage-font-large .sm\:text-xs { font-size: 1.6875rem !important; line-height: 2.0625rem !important; }
   .homepage-font-large .sm\:text-sm { font-size: 1.96875rem !important; line-height: 2.4375rem !important; }
