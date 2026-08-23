@@ -32,6 +32,18 @@ const RAIL_BTN =
 const RAIL_ICON = 'h-24 w-24 md:h-[7.5rem] md:w-[7.5rem]';
 const RAIL_LABEL = 'shorts-rail-label font-semibold drop-shadow-md text-white text-center leading-tight';
 
+/** If company_name was saved as a video URL, show a readable host instead of the watch link. */
+function shortsCompanyDisplayName(name: string): string {
+  const trimmed = name.trim();
+  if (!/^https?:\/\//i.test(trimmed)) return trimmed;
+  try {
+    const host = new URL(trimmed).hostname.replace(/^www\./, '');
+    return host || trimmed;
+  } catch {
+    return trimmed;
+  }
+}
+
 const VideoCard: React.FC<VideoCardProps> = ({
   job, isActive, isFollowed = false, isBookmarked = false,
   onFollowChange, onSaveChange, language = 'en',
@@ -994,13 +1006,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* Company info (replaces tiny YouTube embed title) */}
       {(!showFullDetails && !showApplyModal) && (
-        <div className="pointer-events-none absolute left-0 top-0 z-20 w-full pr-[24rem] md:pr-[27rem]">
-          <div className="pointer-events-auto flex max-w-[88rem] items-center gap-5 px-5 pt-5 md:gap-6 md:px-10 md:pt-6">
+        <div className="pointer-events-none absolute left-0 top-0 z-20 w-full pr-[12rem] md:pr-[13.5rem]">
+          <div className="pointer-events-auto flex w-full max-w-[176rem] items-center gap-5 px-5 pt-5 md:gap-6 md:px-10 md:pt-6">
             <Link
               href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
               onClick={(e) => e.stopPropagation()}
               className="shrink-0 rounded-full ring-2 ring-transparent transition-shadow hover:ring-white/50"
-              aria-label={(language === 'zh-TW' || language === 'zh-CN') ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
+              aria-label={(language === 'zh-TW' || language === 'zh-CN') ? `查看 ${shortsCompanyDisplayName(job.companyName)} 公開主頁` : `View ${shortsCompanyDisplayName(job.companyName)} public page`}
             >
               {job.logoUrl && !logoError ? (
                 <img
@@ -1012,13 +1024,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
               ) : (
                 <div className="flex h-[8.75rem] w-[8.75rem] items-center justify-center rounded-full border-2 border-white/40 bg-gray-700 shadow-lg md:h-40 md:w-40">
                   <span className="shorts-company-title font-bold text-white">
-                    {job.companyName.charAt(0).toUpperCase()}
+                    {shortsCompanyDisplayName(job.companyName).charAt(0).toUpperCase()}
                   </span>
                 </div>
               )}
             </Link>
-            <div className="flex min-w-0 flex-col justify-center gap-1">
-              <h3 className="shorts-company-title font-extrabold leading-snug text-white drop-shadow-lg line-clamp-2">
+            <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+              <h3 className="shorts-company-title truncate font-extrabold leading-snug text-white drop-shadow-lg">
                 {job.jobTitle}
               </h3>
               <Link
@@ -1026,7 +1038,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 onClick={(e) => e.stopPropagation()}
                 className="shorts-company-name truncate text-left font-bold text-white/90 drop-shadow-md hover:underline"
               >
-                {job.companyName}
+                {shortsCompanyDisplayName(job.companyName)}
               </Link>
             </div>
           </div>
