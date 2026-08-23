@@ -69,9 +69,9 @@ export default function SampleReportClient() {
 
   return (
     <div className="flex h-screen w-full min-w-0 flex-col overflow-hidden bg-slate-950 text-slate-200">
-      <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-3 sm:px-6">
-        <BrandLogo size="nav" showIcon />
-        <div className="flex flex-wrap items-center justify-end gap-2">
+      <header className="flex shrink-0 flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-6 py-5 sm:px-8">
+        <BrandLogo size="hero" showIcon />
+        <div className="flex flex-wrap items-center justify-end gap-3">
           <LanguageSwitcher />
           <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
@@ -85,11 +85,11 @@ export default function SampleReportClient() {
       </header>
 
       <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-        <aside className="flex h-full w-[360px] flex-shrink-0 flex-col gap-4 overflow-y-auto border-r border-slate-800 p-8">
+        <aside className="flex h-full w-[480px] flex-shrink-0 flex-col gap-5 overflow-y-auto border-r border-slate-800 p-10">
           <div
-            className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-4 flex flex-col gap-2.5 rounded-xl`}
+            className={`${SAMPLE_NOTICE_SURFACE} w-full px-6 py-5 flex flex-col gap-3 rounded-xl`}
           >
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
               <SampleMark variant="notice" />
               <Sparkles className={`${SAMPLE_RAIL_ICON} text-white`} aria-hidden />
             </div>
@@ -98,14 +98,14 @@ export default function SampleReportClient() {
             </p>
             <Link
               href="/"
-              className={`inline-flex items-center gap-1 ${SAMPLE_RAIL_TEXT} text-white hover:text-blue-50`}
+              className={`inline-flex items-center gap-2 ${SAMPLE_RAIL_TEXT} text-white hover:text-blue-50`}
             >
               <ArrowLeft className={SAMPLE_RAIL_ICON} />
               {ANALYZE_LABEL[language] ?? ANALYZE_LABEL.en}
             </Link>
           </div>
 
-          <div className="grid h-[22rem] w-full grid-rows-3 gap-4">
+          <div className="grid h-[26rem] w-full grid-rows-3 gap-5">
             <Link
               href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
               className={sampleTabClass(!isGuide)}
