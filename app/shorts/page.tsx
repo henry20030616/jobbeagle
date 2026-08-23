@@ -730,7 +730,7 @@ function BottomNav({
 }) {
   return (
     <div
-      className="shorts-font-large h-[6.5rem] md:h-[7.8rem] bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      className="shorts-font-large h-[8.5rem] md:h-[10.5rem] bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {([
@@ -739,11 +739,11 @@ function BottomNav({
         { id: 'saved' as const, icon: Bookmark,  label: t('saved'),     badge: savedCount,  active: activeTab === 'saved' && navTab === 'home' },
       ]).map(({ id, icon: Icon, label, badge, active }) => (
         <button key={id} onClick={() => onTabChange(id)}
-          className="flex flex-col items-center gap-2 px-3 py-2 min-w-[3.9rem] text-white transition-colors">
+          className="flex flex-col items-center gap-2 px-3 py-2 min-w-[4.5rem] text-white transition-colors">
           <div className="relative">
-            <Icon className="h-12 w-12 fill-white text-white md:h-[3.6rem] md:w-[3.6rem]" strokeWidth={active ? 2.75 : 2} />
+            <Icon className="h-[4.5rem] w-[4.5rem] fill-white text-white md:h-[5.4rem] md:w-[5.4rem]" strokeWidth={active ? 2.75 : 2} />
             {badge > 0 && (
-              <span className="shorts-nav-badge absolute -top-2 -right-3 flex h-[3.5rem] min-w-[3.5rem] items-center justify-center rounded-full bg-blue-500 px-1.5 font-bold text-white">
+              <span className="shorts-nav-badge absolute left-full top-0 ml-0.5 flex h-[2.1rem] min-w-[2.1rem] items-center justify-center rounded-full bg-blue-500 px-1 font-bold text-white">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
@@ -752,8 +752,8 @@ function BottomNav({
         </button>
       ))}
       <button onClick={() => onNav('profile')}
-        className="flex flex-col items-center gap-2 px-3 py-2 min-w-[3.9rem] text-white transition-colors">
-        <User className="h-12 w-12 fill-white text-white md:h-[3.6rem] md:w-[3.6rem]" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        className="flex flex-col items-center gap-2 px-3 py-2 min-w-[4.5rem] text-white transition-colors">
+        <User className="h-[4.5rem] w-[4.5rem] fill-white text-white md:h-[5.4rem] md:w-[5.4rem]" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
         <span className="shorts-nav-label font-bold leading-none text-white">{t('me')}</span>
       </button>
     </div>
