@@ -419,18 +419,18 @@ export default function Home() {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
       {/* Centered canvas with proper constraints */}
-      <main className="mx-auto w-full min-w-0 max-w-[98vw] px-4 sm:px-6 py-4 sm:py-6">
-        <div className="flex items-center justify-between gap-4 mb-6 min-w-0 w-full">
+      <main className="mx-auto w-full min-w-0 max-w-[92vw] xl:max-w-[88vw] px-8 sm:px-12 lg:px-16 py-8 sm:py-10">
+        <div className="flex items-center justify-between gap-6 mb-8 min-w-0 w-full">
           <BrandLogo size="hero" showIcon />
-          <div className="flex items-center gap-4 sm:gap-5 shrink-0 min-w-0">
+          <div className="flex items-center gap-5 sm:gap-6 shrink-0 min-w-0">
             <LanguageSwitcher variant="dark" />
             {currentUser && (
               <button
                 onClick={() => { setShowHistory(true); loadHistory(); }}
-                className="flex items-center gap-2.5 px-5 py-3 text-lg rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
+                className="flex items-center gap-3 px-6 py-4 text-xl rounded-xl bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
                 title={t.historyTitle}
               >
-                <History className="w-6 h-6" />
+                <History className="w-7 h-7" />
                 <span className="hidden sm:inline">{t.history}</span>
               </button>
             )}
@@ -445,16 +445,16 @@ export default function Home() {
         {isHomepageShortsBannerEnabled() && isShortsEnabled() && !report && (
           <Link
             href="/shorts"
-            className="mb-8 flex items-center gap-6 p-6 sm:p-8 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
+            className="mb-10 flex items-center gap-8 p-8 sm:p-10 rounded-3xl border-2 border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
           >
-            <div className="w-20 h-20 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Play className="w-10 h-10 text-indigo-300 fill-indigo-300/30" />
+            <div className="w-24 h-24 rounded-2xl bg-indigo-600/30 border-2 border-indigo-500/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Play className="w-12 h-12 text-indigo-300 fill-indigo-300/30" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-white font-bold text-xl sm:text-2xl">{t.exploreShorts}</p>
-              <p className="text-slate-400 text-base sm:text-lg mt-1">{t.exploreShortsDesc}</p>
+              <p className="text-white font-bold text-2xl sm:text-3xl">{t.exploreShorts}</p>
+              <p className="text-slate-400 text-lg sm:text-xl mt-2">{t.exploreShortsDesc}</p>
             </div>
-            <ChevronRight className="w-8 h-8 text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="w-10 h-10 text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         )}
 

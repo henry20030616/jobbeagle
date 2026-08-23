@@ -115,9 +115,9 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center space-x-2 text-slate-400">
-        <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-sm">載入中...</span>
+      <div className="flex items-center space-x-3 text-slate-400">
+        <div className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-lg">載入中...</span>
       </div>
     );
   }
@@ -134,31 +134,31 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
     const displayEmail = user.email || '';
 
     return (
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-3 text-slate-300 group relative">
+      <div className="flex items-center space-x-5">
+        <div className="flex items-center space-x-4 text-slate-300 group relative">
           {avatarUrl ? (
             <img 
               src={avatarUrl} 
               alt={displayName}
-              className="w-10 h-10 rounded-full border-2 border-slate-600 object-cover hover:border-indigo-500 transition-colors"
+              className="w-12 h-12 rounded-full border-2 border-slate-600 object-cover hover:border-indigo-500 transition-colors"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center border-2 border-slate-600 hover:border-indigo-500 transition-colors">
-              <User className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center border-2 border-slate-600 hover:border-indigo-500 transition-colors">
+              <User className="w-7 h-7 text-white" />
             </div>
           )}
           <div className="flex flex-col">
-            <span className="text-base font-medium text-white">{displayName}</span>
+            <span className="text-lg font-semibold text-white">{displayName}</span>
             {displayEmail && (
-              <span className="text-sm text-slate-400">{displayEmail}</span>
+              <span className="text-base text-slate-400">{displayEmail}</span>
             )}
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-2 px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors text-base font-medium"
+          className="flex items-center space-x-2.5 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-colors text-lg font-semibold"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-6 h-6" />
           <span>登出</span>
         </button>
       </div>
@@ -166,12 +166,12 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
   }
 
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center space-x-4">
       <button
         onClick={handleLogin}
-        className="flex items-center space-x-2 px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-base font-medium border border-gray-300"
+        className="flex items-center space-x-3 px-6 py-3 bg-white hover:bg-gray-100 text-gray-700 rounded-xl transition-colors text-lg font-semibold border border-gray-300"
       >
-        <svg className="w-5 h-5" viewBox="0 0 24 24">
+        <svg className="w-6 h-6" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
