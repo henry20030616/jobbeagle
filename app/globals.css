@@ -351,3 +351,29 @@ main input {
     font-size: 1.92rem !important;
   }
 }
+
+/*
+ * Compare overlay (portaled to body — does not inherit homepage type).
+ * 350% of default Tailwind text sizes.
+ */
+.compare-font-large .text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
+.compare-font-large .text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
+.compare-font-large .text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
+.compare-font-large .text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
+.compare-font-large .text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
+.compare-font-large .text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
+.compare-font-large .text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
+.compare-font-large .text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
+.compare-font-large .text-5xl { font-size: 10.5rem !important; line-height: 1.1 !important; }
+.compare-font-large .text-6xl { font-size: 13.125rem !important; line-height: 1.1 !important; }
+
+@media (min-width: 640px) {
+  .compare-font-large .sm\:text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
+  .compare-font-large .sm\:text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
+  .compare-font-large .sm\:text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
+  .compare-font-large .sm\:text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
+  .compare-font-large .sm\:text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
+  .compare-font-large .sm\:text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
+  .compare-font-large .sm\:text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
+  .compare-font-large .sm\:text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
+}

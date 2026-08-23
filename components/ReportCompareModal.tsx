@@ -86,7 +86,7 @@ export default function ReportCompareModal({
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
-              className="absolute inset-2 sm:inset-4 z-10 flex w-auto max-w-none flex-col rounded-2xl border border-slate-500 bg-slate-950 shadow-2xl animate-slide-in-right overflow-hidden"
+              className="compare-font-large absolute inset-2 sm:inset-4 z-10 flex w-auto max-w-none flex-col rounded-2xl border border-slate-500 bg-slate-950 shadow-2xl animate-slide-in-right overflow-hidden"
             >
               <header className="flex items-start justify-between gap-4 border-b border-slate-800 px-5 py-4 sm:px-8 sm:py-5 shrink-0">
                 <div className="min-w-0">
