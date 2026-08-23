@@ -28,8 +28,8 @@ interface VideoCardProps {
 }
 
 const RAIL_BTN =
-  'flex h-28 w-28 md:h-32 md:w-32 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105';
-const RAIL_ICON = 'h-16 w-16 md:h-20 md:w-20';
+  'flex h-[10.5rem] w-[10.5rem] md:h-48 md:w-48 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105';
+const RAIL_ICON = 'h-24 w-24 md:h-[7.5rem] md:w-[7.5rem]';
 const RAIL_LABEL = 'shorts-rail-label font-semibold drop-shadow-md text-white text-center leading-tight';
 
 const VideoCard: React.FC<VideoCardProps> = ({
@@ -874,7 +874,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- Right rail: social actions --- */}
       {(!showFullDetails && !showApplyModal) && (
-      <div className="shorts-font-large absolute right-4 md:right-6 top-[38%] z-20 flex w-44 md:w-52 -translate-y-1/2 flex-col items-center gap-4 md:gap-5">
+      <div className="shorts-font-large absolute right-4 md:right-6 top-[38%] z-20 flex w-[16.5rem] md:w-[19.5rem] -translate-y-1/2 flex-col items-center gap-6 md:gap-[1.875rem]">
         <div className="flex flex-col items-center gap-1.5">
             <button 
               className={`${RAIL_BTN} ${liked ? 'text-red-500' : 'text-white'}`} 
@@ -992,7 +992,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- Bottom-left job copy: wide + large type --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-8 pt-20 pr-[16rem] md:pr-72">
+          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-8 pt-20 pr-[24rem] md:pr-[27rem]">
             <div className="pointer-events-auto px-5 md:px-10 w-full max-w-[88rem]">
                 <div className="flex flex-col justify-end gap-5">
                   <div className="flex flex-row items-center gap-5 min-h-0 shrink-0">
