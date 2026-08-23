@@ -325,21 +325,21 @@ main input {
   .shorts-font-large .md\:text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
 }
 
-/* Company overlay: 60% of the previous 350% YouTube-title size */
+/* Company overlay: 250% of the previous (60%) size */
 .shorts-company-title {
-  font-size: 1.8375rem !important;
+  font-size: 4.59375rem !important;
   line-height: 1.15 !important;
 }
 .shorts-company-name {
-  font-size: 1.3125rem !important;
+  font-size: 3.28125rem !important;
   line-height: 1.2 !important;
 }
 @media (min-width: 768px) {
   .shorts-company-title {
-    font-size: 2.1rem !important;
+    font-size: 5.25rem !important;
   }
   .shorts-company-name {
-    font-size: 1.575rem !important;
+    font-size: 3.9375rem !important;
   }
 }
 .shorts-font-large .shorts-rail-label {
