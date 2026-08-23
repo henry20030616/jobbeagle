@@ -423,7 +423,7 @@ export default function Home() {
         <div className="flex items-center justify-between gap-6 mb-8 min-w-0 w-full">
           <BrandLogo size="hero" showIcon />
           <div className="flex items-center gap-5 sm:gap-6 shrink-0 min-w-0">
-            <LanguageSwitcher variant="dark" />
+            <LanguageSwitcher variant="dark" size="lg" />
             {currentUser && (
               <button
                 onClick={() => { setShowHistory(true); loadHistory(); }}

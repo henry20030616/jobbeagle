@@ -87,7 +87,7 @@ export default function ReferralCard({
 
   if (compact) {
     return (
-      <div className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+      <div className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-lg text-slate-400">
         <button
           type="button"
           onClick={handleCopy}
@@ -103,20 +103,20 @@ export default function ReferralCard({
   return (
     <div className="inline-flex w-fit max-w-full flex-col gap-1.5 rounded-xl border border-slate-700/80 bg-slate-800/60 px-3.5 py-2.5">
       <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-        <p className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-100 min-w-0">
-          <Gift className="w-4 h-4 text-indigo-400 shrink-0" />
+        <p className="inline-flex items-center gap-1.5 text-xl font-semibold text-zinc-100 min-w-0">
+          <Gift className="w-6 h-6 text-indigo-400 shrink-0" />
           <span>{t.title}</span>
         </p>
         <button
           type="button"
           onClick={handleCopy}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-lg font-semibold text-white"
         >
-          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
           {copied ? t.copied : t.copy}
         </button>
       </div>
-      <p className="text-xs text-zinc-500 leading-relaxed">{t.desc}</p>
+      <p className="text-lg text-zinc-500 leading-relaxed">{t.desc}</p>
     </div>
   );
 }

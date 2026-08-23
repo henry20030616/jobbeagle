@@ -16,14 +16,14 @@ import { SAMPLE_LINK_BTN } from '@/constants/report-frame';
 import BrandLogo from '@/components/BrandLogo';
 
 const PILL =
-  'inline-flex items-center gap-2.5 text-lg text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
+  'inline-flex items-center gap-3 text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-6 py-3 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
 const STEP_CONNECTOR =
   'hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none';
 const STEP_COL =
   'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-10 sm:p-12 lg:border-b-0 lg:border-r';
 const STEP_TITLE =
-  'flex min-h-[6.5rem] shrink-0 items-center pb-5 text-2xl sm:text-3xl font-bold text-white';
-const STEP_PILL_ROW = 'mb-6 flex h-[5.5rem] shrink-0 items-center';
+  'flex min-h-[8.5rem] shrink-0 items-center pb-5 text-4xl sm:text-5xl font-bold text-white';
+const STEP_PILL_ROW = 'mb-6 flex min-h-[7rem] shrink-0 items-center';
 /** Shared content shell height — steps 1–4 bottom boxes align */
 const STEP_BODY_MIN = 'min-h-[42rem]';
 const STEP_BODY = `flex ${STEP_BODY_MIN} flex-1 flex-col`;
@@ -635,7 +635,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-xl font-bold leading-snug text-slate-200">{item.title}</span>
+                        <span className="text-3xl font-bold leading-snug text-slate-200">{item.title}</span>
                         <ChevronDown
                           className={`mt-0.5 h-6 w-6 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
@@ -643,7 +643,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       </div>
                       <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                         <div className="overflow-hidden">
-                          <p className="pb-0.5 pt-2.5 text-lg leading-normal text-slate-400">
+                          <p className="pb-0.5 pt-2.5 text-2xl leading-normal text-slate-400">
                             {item.desc}
                           </p>
                         </div>
@@ -805,8 +805,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         <Upload className="h-6 w-6 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="min-w-0 text-center">
-                        <p className="text-base font-bold text-slate-300">{t.upload}</p>
-                        <p className="mt-1 text-xs font-medium leading-snug text-slate-500">{t.uploadSupport}</p>
+                        <p className="text-2xl font-bold text-slate-300">{t.upload}</p>
+                        <p className="mt-1 text-lg font-medium leading-snug text-slate-500">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input
@@ -887,10 +887,10 @@ const InputForm: React.FC<InputFormProps> = ({
                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                       className="w-full min-w-0 text-left"
                     >
-                      <p className="text-xl font-bold text-white">
+                      <p className="text-3xl font-bold text-white">
                         {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                       </p>
-                      <p className="mt-2 text-lg leading-snug text-slate-400">{t.snapshotBlurb}</p>
+                      <p className="mt-2 text-2xl leading-snug text-slate-400">{t.snapshotBlurb}</p>
                     </button>
                     <Link
                       href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
@@ -912,11 +912,11 @@ const InputForm: React.FC<InputFormProps> = ({
                       onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                       className="w-full min-w-0 text-left"
                     >
-                      <p className="flex flex-wrap items-center gap-2 text-xl font-bold text-white">
+                      <p className="flex flex-wrap items-center gap-2 text-3xl font-bold text-white">
                         {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                        <Sparkles className="h-5 w-5 shrink-0 text-violet-400" />
+                        <Sparkles className="h-8 w-8 shrink-0 text-violet-400" />
                       </p>
-                      <p className="mt-2 text-lg leading-snug text-slate-400">{t.strategyBlurb}</p>
+                      <p className="mt-2 text-2xl leading-snug text-slate-400">{t.strategyBlurb}</p>
                     </button>
                     <Link
                       href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
@@ -958,7 +958,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-6 rounded-xl px-10 py-10 text-center text-xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-2xl ${
+                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-6 rounded-xl px-10 py-10 text-center text-3xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-4xl ${
                     submitDisabled
                       ? 'cursor-not-allowed bg-indigo-600/35 text-white/55 shadow-none'
                       : publicAts
