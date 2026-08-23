@@ -208,28 +208,27 @@ main input {
 }
 
 /*
- * Shorts feed copy (job overlay, right-rail labels, bottom nav).
- * 2× Tailwind type so labels stay readable beside a video; scoped so the
- * already-large header / Login control is not scaled again.
+ * Shorts feed copy. !important so Tailwind utilities cannot shrink overlay /
+ * rail / nav type back to caption size.
  */
-.shorts-font-large .text-xs { font-size: 1.5rem; line-height: 2rem; }
-.shorts-font-large .text-sm { font-size: 1.75rem; line-height: 2.25rem; }
-.shorts-font-large .text-base { font-size: 2rem; line-height: 2.5rem; }
-.shorts-font-large .text-lg { font-size: 2.25rem; line-height: 2.75rem; }
-.shorts-font-large .text-xl { font-size: 2.5rem; line-height: 3rem; }
-.shorts-font-large .text-2xl { font-size: 3rem; line-height: 3.5rem; }
-.shorts-font-large .text-3xl { font-size: 3.75rem; line-height: 4.25rem; }
-.shorts-font-large .text-4xl { font-size: 4.5rem; line-height: 5rem; }
-.shorts-font-large .text-5xl { font-size: 6rem; line-height: 1; }
+.shorts-font-large .text-xs { font-size: 1.75rem !important; line-height: 2.25rem !important; }
+.shorts-font-large .text-sm { font-size: 2rem !important; line-height: 2.5rem !important; }
+.shorts-font-large .text-base { font-size: 2.25rem !important; line-height: 2.75rem !important; }
+.shorts-font-large .text-lg { font-size: 2.5rem !important; line-height: 3rem !important; }
+.shorts-font-large .text-xl { font-size: 2.75rem !important; line-height: 3.25rem !important; }
+.shorts-font-large .text-2xl { font-size: 3.25rem !important; line-height: 3.75rem !important; }
+.shorts-font-large .text-3xl { font-size: 4rem !important; line-height: 4.5rem !important; }
+.shorts-font-large .text-4xl { font-size: 5rem !important; line-height: 5.5rem !important; }
+.shorts-font-large .text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
 
 @media (min-width: 768px) {
-  .shorts-font-large .md\:text-xs { font-size: 1.5rem; line-height: 2rem; }
-  .shorts-font-large .md\:text-sm { font-size: 1.75rem; line-height: 2.25rem; }
-  .shorts-font-large .md\:text-base { font-size: 2rem; line-height: 2.5rem; }
-  .shorts-font-large .md\:text-lg { font-size: 2.25rem; line-height: 2.75rem; }
-  .shorts-font-large .md\:text-xl { font-size: 2.5rem; line-height: 3rem; }
-  .shorts-font-large .md\:text-2xl { font-size: 3rem; line-height: 3.5rem; }
-  .shorts-font-large .md\:text-3xl { font-size: 3.75rem; line-height: 4.25rem; }
-  .shorts-font-large .md\:text-4xl { font-size: 4.5rem; line-height: 5rem; }
-  .shorts-font-large .md\:text-5xl { font-size: 6rem; line-height: 1; }
+  .shorts-font-large .md\:text-xs { font-size: 1.75rem !important; line-height: 2.25rem !important; }
+  .shorts-font-large .md\:text-sm { font-size: 2rem !important; line-height: 2.5rem !important; }
+  .shorts-font-large .md\:text-base { font-size: 2.25rem !important; line-height: 2.75rem !important; }
+  .shorts-font-large .md\:text-lg { font-size: 2.5rem !important; line-height: 3rem !important; }
+  .shorts-font-large .md\:text-xl { font-size: 2.75rem !important; line-height: 3.25rem !important; }
+  .shorts-font-large .md\:text-2xl { font-size: 3.25rem !important; line-height: 3.75rem !important; }
+  .shorts-font-large .md\:text-3xl { font-size: 4rem !important; line-height: 4.5rem !important; }
+  .shorts-font-large .md\:text-4xl { font-size: 5rem !important; line-height: 5.5rem !important; }
+  .shorts-font-large .md\:text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
 }

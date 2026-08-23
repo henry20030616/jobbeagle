@@ -402,11 +402,11 @@ export default function JobbeagleShortsPage() {
       {navTab === 'home' && (
         <>
           {/* ── Top Header: Logo + Avatar (no tab pills here) ── */}
-          <div className="w-full flex-shrink-0 px-6 py-5 md:min-h-40 md:px-12 md:py-8 z-30 flex justify-between items-center bg-black/90 backdrop-blur-md border-b border-white/8">
+          <div className="shorts-font-large w-full flex-shrink-0 px-6 py-5 md:min-h-40 md:px-12 md:py-8 z-30 flex justify-between items-center bg-black/90 backdrop-blur-md border-b border-white/8">
             {/* Logo */}
-            <div className="flex origin-left items-center gap-3 shrink-0 md:scale-150">
+            <div className="flex origin-left items-center gap-4 shrink-0">
               <BrandLogo size="hero" showIcon />
-              <span className="text-white/70 text-xl md:text-2xl font-semibold">Shorts</span>
+              <span className="text-white/80 text-4xl md:text-6xl font-semibold">Shorts</span>
             </div>
 
             {/* Right: language switcher + avatar */}
@@ -421,9 +421,7 @@ export default function JobbeagleShortsPage() {
                   <Search className="h-6 w-6 md:h-12 md:w-12 xl:h-[72px] xl:w-[72px]" />
                 </button>
               )}
-              <div className="origin-right md:scale-150">
-                <LanguageSwitcher variant="light" />
-              </div>
+              <LanguageSwitcher variant="light" size="lg" />
 
               {user ? (
                 <div className="relative">
@@ -732,7 +730,7 @@ function BottomNav({
 }) {
   return (
     <div
-      className="shorts-font-large h-32 md:h-36 bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      className="shorts-font-large h-44 md:h-52 bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {([
@@ -741,11 +739,11 @@ function BottomNav({
         { id: 'saved' as const, icon: Bookmark,  label: t('saved'),     badge: savedCount,  active: activeTab === 'saved' && navTab === 'home' },
       ]).map(({ id, icon: Icon, label, badge, active }) => (
         <button key={id} onClick={() => onTabChange(id)}
-          className={`flex flex-col items-center gap-2 px-4 py-2 min-w-[5.5rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+          className={`flex flex-col items-center gap-3 px-5 py-3 min-w-[6.5rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
           <div className="relative">
-            <Icon className="h-10 w-10 md:h-12 md:w-12" strokeWidth={active ? 2.75 : 2} />
+            <Icon className="h-20 w-20 md:h-24 md:w-24" strokeWidth={active ? 2.75 : 2} />
             {badge > 0 && (
-              <span className="absolute -top-1.5 -right-2 min-w-6 h-6 bg-blue-500 text-white text-sm font-bold rounded-full flex items-center justify-center px-1">
+              <span className="absolute -top-1.5 -right-2 min-w-7 h-7 bg-blue-500 text-white text-base font-bold rounded-full flex items-center justify-center px-1">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
@@ -754,8 +752,8 @@ function BottomNav({
         </button>
       ))}
       <button onClick={() => onNav('profile')}
-        className={`flex flex-col items-center gap-2 px-4 py-2 min-w-[5.5rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
-        <User className="h-10 w-10 md:h-12 md:w-12" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        className={`flex flex-col items-center gap-3 px-5 py-3 min-w-[6.5rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+        <User className="h-20 w-20 md:h-24 md:w-24" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
         <span className="text-2xl md:text-3xl font-bold leading-none">{t('me')}</span>
       </button>
     </div>

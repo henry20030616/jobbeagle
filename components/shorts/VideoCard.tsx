@@ -867,66 +867,71 @@ const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </div>
 
-      {/* --- Right rail: all actions sit on the video's right edge --- */}
+      {/* --- Right rail: social actions --- */}
       {(!showFullDetails && !showApplyModal) && (
-      <div className="shorts-font-large absolute right-3 md:right-5 top-1/2 z-20 flex w-[6.5rem] md:w-40 xl:w-48 -translate-y-1/2 flex-col items-center gap-3 md:gap-4">
-        <div className="flex flex-col items-center gap-1.5">
+      <div className="shorts-font-large absolute right-4 md:right-6 top-[38%] z-20 flex w-[7.5rem] md:w-44 -translate-y-1/2 flex-col items-center gap-4 md:gap-5">
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
+              className={`flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${liked ? 'animate-pulse' : ''}`} />
+              <Heart fill={liked ? "currentColor" : "none"} className={`h-12 w-12 md:h-14 md:w-14 ${liked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white tabular-nums">
+            <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white tabular-nums">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
+              className={`flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${followed ? 'animate-pulse' : ''}`} />
+              <UserPlus fill={followed ? "currentColor" : "none"} className={`h-12 w-12 md:h-14 md:w-14 ${followed ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white text-center leading-tight">
+            <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white text-center leading-tight">
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
+              className={`flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${bookmarked ? 'animate-pulse' : ''}`} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`h-12 w-12 md:h-14 md:w-14 ${bookmarked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white">
+            <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
           <button
-            className="flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
+            className="flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
             onClick={handleShareClick}
           >
-            <Share2 className="h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12" />
+            <Share2 className="h-12 w-12 md:h-14 md:w-14" />
           </button>
-          <span className="text-lg md:text-2xl font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
+          <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2">
           <button
             onClick={toggleMute}
-            className="flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
+            className="flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
           >
             {isMuted
-              ? <VolumeX className="h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12" />
-              : <Volume2 className="h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12" />}
+              ? <VolumeX className="h-12 w-12 md:h-14 md:w-14" />
+              : <Volume2 className="h-12 w-12 md:h-14 md:w-14" />}
           </button>
         </div>
+      </div>
+      )}
 
+      {/* AI Match + Apply sit above the Me tab (bottom-right) */}
+      {(!showFullDetails && !showApplyModal) && (
+      <div className="shorts-font-large absolute bottom-6 right-4 md:right-6 z-20 flex w-44 md:w-52 flex-col items-stretch gap-3">
         {!job.applyUrl && (
           <button
             type="button"
@@ -934,10 +939,10 @@ const VideoCard: React.FC<VideoCardProps> = ({
               e.stopPropagation();
               handleAnalyzeWithAI(e);
             }}
-            className="mt-1 flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-violet-600 px-2 py-2.5 text-white shadow-lg border-2 border-violet-400/30 hover:bg-violet-500 active:scale-[0.99]"
+            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-violet-600 px-3 py-3 text-white shadow-lg border-2 border-violet-400/30 hover:bg-violet-500 active:scale-[0.99]"
           >
-            <Sparkles className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
-            <span className="text-center text-base md:text-xl font-bold leading-tight">
+            <Sparkles className="h-8 w-8 md:h-9 md:w-9 shrink-0" />
+            <span className="text-center text-xl md:text-2xl font-bold leading-tight">
               {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配' : 'AI Match'}
             </span>
           </button>
@@ -949,10 +954,10 @@ const VideoCard: React.FC<VideoCardProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-600 px-2 py-2.5 text-white shadow-lg border-2 border-white/15 hover:bg-slate-500 active:scale-[0.99]"
+            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-600 px-3 py-3 text-white shadow-lg border-2 border-white/15 hover:bg-slate-500 active:scale-[0.99]"
           >
-            <ExternalLink className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
-            <span className="text-center text-base md:text-xl font-bold leading-tight">
+            <ExternalLink className="h-8 w-8 md:h-9 md:w-9 shrink-0" />
+            <span className="text-center text-xl md:text-2xl font-bold leading-tight">
               {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
             </span>
           </a>
@@ -960,19 +965,19 @@ const VideoCard: React.FC<VideoCardProps> = ({
           <button
             type="button"
             disabled
-            className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-700 px-2 py-2.5 text-slate-300 border-2 border-slate-600 cursor-not-allowed"
+            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-700 px-3 py-3 text-slate-300 border-2 border-slate-600 cursor-not-allowed"
           >
-            <CheckCircle className="h-6 w-6 md:h-7 md:w-7 shrink-0 text-emerald-400" />
-            <span className="text-center text-base md:text-xl font-bold leading-tight">{t('已申請', 'Applied')}</span>
+            <CheckCircle className="h-8 w-8 md:h-9 md:w-9 shrink-0 text-emerald-400" />
+            <span className="text-center text-xl md:text-2xl font-bold leading-tight">{t('已申請', 'Applied')}</span>
           </button>
         ) : (
           <button
             type="button"
             onClick={(e) => { void handleApplyStart(e); }}
-            className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-cyan-600 px-2 py-2.5 text-white shadow-lg border-2 border-cyan-400/30 hover:bg-cyan-500 active:scale-[0.99]"
+            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-cyan-600 px-3 py-3 text-white shadow-lg border-2 border-cyan-400/30 hover:bg-cyan-500 active:scale-[0.99]"
           >
-            <Briefcase className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
-            <span className="text-center text-base md:text-xl font-bold leading-tight">
+            <Briefcase className="h-8 w-8 md:h-9 md:w-9 shrink-0" />
+            <span className="text-center text-xl md:text-2xl font-bold leading-tight">
               {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Apply'}
             </span>
           </button>
@@ -980,12 +985,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
       </div>
       )}
 
-      {/* --- Bottom-left job copy only; actions live on the right --- */}
+      {/* --- Bottom-left job copy: wide + large type --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-6 pt-16 pr-[7.5rem] md:pr-52">
-            <div className="pointer-events-auto px-4 md:px-8 max-w-[min(100%,56rem)]">
-                <div className="flex flex-col justify-end gap-3">
-                  <div className="flex flex-row items-center gap-4 min-h-0 shrink-0">
+          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-8 pt-20 pr-[13rem] md:pr-60">
+            <div className="pointer-events-auto px-5 md:px-10 w-full max-w-[88rem]">
+                <div className="flex flex-col justify-end gap-5">
+                  <div className="flex flex-row items-center gap-5 min-h-0 shrink-0">
                     <Link
                       href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                       onClick={(e) => e.stopPropagation()}
@@ -996,42 +1001,42 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         <img
                           src={job.logoUrl}
                           alt=""
-                          className="w-14 h-14 md:w-20 md:h-20 rounded-full border-2 border-white/40 bg-white object-contain shadow-lg"
+                          className="w-20 h-20 md:w-28 md:h-28 rounded-full border-2 border-white/40 bg-white object-contain shadow-lg"
                           onError={() => setLogoError(true)}
                         />
                       ) : (
-                        <div className="w-14 h-14 md:w-20 md:h-20 rounded-full border-2 border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
-                          <span className="text-white font-bold text-2xl md:text-3xl">
+                        <div className="w-20 h-20 md:w-28 md:h-28 rounded-full border-2 border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
+                          <span className="text-white font-bold text-3xl md:text-4xl">
                             {job.companyName.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
                     </Link>
-                    <div className="flex flex-col min-w-0 gap-1 justify-center">
-                      <h3 className="text-3xl md:text-4xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
+                    <div className="flex flex-col min-w-0 gap-2 justify-center">
+                      <h3 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
                         {job.jobTitle}
                       </h3>
                       <Link
                         href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-2xl md:text-3xl font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
+                        className="text-3xl md:text-4xl font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
                       >
                         @{job.companyName}
                       </Link>
                     </div>
                   </div>
-                  <div className="flex flex-nowrap gap-2 text-xl md:text-2xl min-h-0 shrink-0 overflow-hidden">
-                    <span className="flex items-center gap-1.5 bg-slate-800/90 px-3 py-1.5 rounded-lg text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
-                      <MapPin size={20} className="shrink-0 opacity-90" />
+                  <div className="flex flex-nowrap gap-3 text-2xl md:text-3xl min-h-0 shrink-0 overflow-hidden">
+                    <span className="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-lg text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
+                      <MapPin size={28} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.location}</span>
                     </span>
-                    <span className="flex items-center gap-1.5 bg-emerald-950/70 text-emerald-200 px-3 py-1.5 rounded-lg border border-emerald-500/25 min-w-0 max-w-[50%]">
-                      <DollarSign size={20} className="shrink-0 opacity-90" />
+                    <span className="flex items-center gap-2 bg-emerald-950/70 text-emerald-200 px-4 py-2 rounded-lg border border-emerald-500/25 min-w-0 max-w-[50%]">
+                      <DollarSign size={28} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.salary}</span>
                     </span>
                   </div>
-                  <div className="flex items-baseline gap-2 min-w-0 text-xl md:text-2xl text-gray-100/95 leading-snug">
-                    <p className="line-clamp-2 min-w-0 flex-1 break-words">{job.description}</p>
+                  <div className="flex items-baseline gap-3 min-w-0 text-2xl md:text-3xl text-gray-100/95 leading-relaxed">
+                    <p className="line-clamp-3 min-w-0 flex-1 break-words">{job.description}</p>
                     <button
                       type="button"
                       className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform shrink-0"
