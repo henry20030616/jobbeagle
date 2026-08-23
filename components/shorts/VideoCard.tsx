@@ -718,14 +718,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
             const embedSrc = toYouTubeEmbedUrl(videoUrl, isMuted);
             if (embedSrc && isActive) {
               return (
-                <iframe
-                  ref={youtubeIframeRef}
-                  src={embedSrc}
-                  className="w-full h-full object-cover z-10 border-0"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  title="YouTube 短影音"
-                />
+                <div className="relative z-10 h-full w-full overflow-hidden">
+                  <iframe
+                    ref={youtubeIframeRef}
+                    src={embedSrc}
+                    className="absolute inset-x-0 -top-16 h-[calc(100%+4rem)] w-full border-0"
+                    allow="autoplay; encrypted-media; fullscreen"
+                    allowFullScreen
+                    title="YouTube 短影音"
+                  />
+                </div>
               );
             }
             return (
@@ -990,46 +992,50 @@ const VideoCard: React.FC<VideoCardProps> = ({
       </div>
       )}
 
-      {/* --- Bottom-left job copy: wide + large type --- */}
+      {/* Company info (replaces tiny YouTube embed title) */}
+      {(!showFullDetails && !showApplyModal) && (
+        <div className="pointer-events-none absolute left-0 top-0 z-20 w-full pr-[24rem] md:pr-[27rem]">
+          <div className="pointer-events-auto flex max-w-[88rem] items-center gap-5 px-5 pt-5 md:gap-6 md:px-10 md:pt-6">
+            <Link
+              href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+              onClick={(e) => e.stopPropagation()}
+              className="shrink-0 rounded-full ring-2 ring-transparent transition-shadow hover:ring-white/50"
+              aria-label={(language === 'zh-TW' || language === 'zh-CN') ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
+            >
+              {job.logoUrl && !logoError ? (
+                <img
+                  src={job.logoUrl}
+                  alt=""
+                  className="h-[8.75rem] w-[8.75rem] rounded-full border-2 border-white/40 bg-white object-contain shadow-lg md:h-40 md:w-40"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <div className="flex h-[8.75rem] w-[8.75rem] items-center justify-center rounded-full border-2 border-white/40 bg-gray-700 shadow-lg md:h-40 md:w-40">
+                  <span className="shorts-company-title font-bold text-white">
+                    {job.companyName.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </Link>
+            <div className="flex min-w-0 flex-col justify-center gap-1">
+              <h3 className="shorts-company-title font-extrabold leading-snug text-white drop-shadow-lg line-clamp-2">
+                {job.jobTitle}
+              </h3>
+              <Link
+                href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                onClick={(e) => e.stopPropagation()}
+                className="shorts-company-name truncate text-left font-bold text-white/90 drop-shadow-md hover:underline"
+              >
+                {job.companyName}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
       {(!showFullDetails && !showApplyModal) && (
           <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-8 pt-20 pr-[24rem] md:pr-[27rem]">
             <div className="pointer-events-auto px-5 md:px-10 w-full max-w-[88rem]">
                 <div className="flex flex-col justify-end gap-5">
-                  <div className="flex flex-row items-center gap-5 min-h-0 shrink-0">
-                    <Link
-                      href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/50 transition-shadow"
-                      aria-label={(language === 'zh-TW' || language === 'zh-CN') ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
-                    >
-                      {job.logoUrl && !logoError ? (
-                        <img
-                          src={job.logoUrl}
-                          alt=""
-                          className="w-20 h-20 md:w-28 md:h-28 rounded-full border-2 border-white/40 bg-white object-contain shadow-lg"
-                          onError={() => setLogoError(true)}
-                        />
-                      ) : (
-                        <div className="w-20 h-20 md:w-28 md:h-28 rounded-full border-2 border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
-                          <span className="text-white font-bold text-3xl md:text-4xl">
-                            {job.companyName.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                    </Link>
-                    <div className="flex flex-col min-w-0 gap-2 justify-center">
-                      <h3 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
-                        {job.jobTitle}
-                      </h3>
-                      <Link
-                        href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-3xl md:text-4xl font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
-                      >
-                        @{job.companyName}
-                      </Link>
-                    </div>
-                  </div>
                   <div className="flex flex-nowrap gap-3 text-2xl md:text-3xl min-h-0 shrink-0 overflow-hidden">
                     <span className="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-lg text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
                       <MapPin size={28} className="shrink-0 opacity-90" />
