@@ -1033,31 +1033,33 @@ const VideoCard: React.FC<VideoCardProps> = ({
         </div>
       )}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-8 pt-20 pr-[24rem] md:pr-[27rem]">
-            <div className="pointer-events-auto px-5 md:px-10 w-full max-w-[88rem]">
+          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-8 pt-20 pr-[12rem] md:pr-[13.5rem]">
+            <div className="pointer-events-auto px-5 md:px-10 w-full max-w-[176rem]">
                 <div className="flex flex-col justify-end gap-5">
-                  <div className="flex flex-nowrap gap-3 text-2xl md:text-3xl min-h-0 shrink-0 overflow-hidden">
-                    <span className="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-lg text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
+                  <div className="flex flex-nowrap gap-3 text-2xl md:text-3xl min-h-0 shrink-0">
+                    <span className="flex min-w-0 items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-lg text-gray-100 border border-white/10 max-w-[min(100%,40rem)]">
                       <MapPin size={28} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.location}</span>
                     </span>
-                    <span className="flex items-center gap-2 bg-emerald-950/70 text-emerald-200 px-4 py-2 rounded-lg border border-emerald-500/25 min-w-0 max-w-[50%]">
+                    <span className="flex min-w-0 items-center gap-2 bg-emerald-950/70 text-emerald-200 px-4 py-2 rounded-lg border border-emerald-500/25 max-w-[min(100%,40rem)]">
                       <DollarSign size={28} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.salary}</span>
                     </span>
                   </div>
-                  <div className="flex items-baseline gap-3 min-w-0 text-2xl md:text-3xl text-gray-100/95 leading-relaxed">
-                    <p className="line-clamp-3 min-w-0 flex-1 break-words">{job.description}</p>
-                    <button
-                      type="button"
-                      className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform shrink-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowFullDetails(true);
-                      }}
-                    >
-                      ...more
-                    </button>
+                  <div className="min-w-0 w-full text-2xl md:text-3xl text-gray-100/95 leading-relaxed">
+                    <p className="line-clamp-3 break-words">
+                      {job.description}{' '}
+                      <button
+                        type="button"
+                        className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowFullDetails(true);
+                        }}
+                      >
+                        ...more
+                      </button>
+                    </p>
                   </div>
                 </div>
             </div>
