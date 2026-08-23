@@ -20,15 +20,15 @@ const PILL =
 const STEP_CONNECTOR =
   'hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none';
 const STEP_COL =
-  'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-8 sm:p-10 lg:border-b-0 lg:border-r';
+  'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-10 sm:p-12 lg:border-b-0 lg:border-r';
 const STEP_TITLE =
-  'flex min-h-[4rem] shrink-0 items-center pb-3 text-2xl sm:text-3xl font-bold text-white';
-const STEP_PILL_ROW = 'mb-5 flex h-[3.5rem] shrink-0 items-center';
+  'flex min-h-[6.5rem] shrink-0 items-center pb-5 text-2xl sm:text-3xl font-bold text-white';
+const STEP_PILL_ROW = 'mb-6 flex h-[5.5rem] shrink-0 items-center';
 /** Shared content shell height — steps 1–4 bottom boxes align */
-const STEP_BODY = 'flex min-h-[24rem] flex-1 flex-col';
+const STEP_BODY = 'flex min-h-[30rem] flex-1 flex-col';
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
-const STEP_BODY_CARDS = 'grid min-h-[24rem] flex-1 grid-rows-3 gap-4';
-const STEP_BODY_CARDS_COMPACT = 'grid min-h-[24rem] flex-1 grid-rows-2 gap-4';
+const STEP_BODY_CARDS = 'grid min-h-[30rem] flex-1 grid-rows-3 gap-5';
+const STEP_BODY_CARDS_COMPACT = 'grid min-h-[30rem] flex-1 grid-rows-2 gap-5';
 const REPORT_CARD_IDLE =
   'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50';
 const REPORT_CARD_ACTIVE =
@@ -957,7 +957,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full min-h-[24rem] w-full flex-1 flex-col items-center justify-center gap-5 rounded-xl px-8 py-8 text-center text-xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-2xl ${
+                  className={`flex h-full min-h-[30rem] w-full flex-1 flex-col items-center justify-center gap-6 rounded-xl px-10 py-10 text-center text-xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-2xl ${
                     submitDisabled
                       ? 'cursor-not-allowed bg-indigo-600/35 text-white/55 shadow-none'
                       : publicAts
