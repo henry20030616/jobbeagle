@@ -85,9 +85,9 @@ export default function SampleReportClient() {
       </header>
 
       <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-        <aside className="flex h-full w-[240px] flex-shrink-0 flex-col gap-2.5 overflow-y-auto border-r border-slate-800 p-6">
+        <aside className="flex h-full w-[360px] flex-shrink-0 flex-col gap-4 overflow-y-auto border-r border-slate-800 p-8">
           <div
-            className={`${SAMPLE_NOTICE_SURFACE} w-full px-3 py-2.5 flex flex-col gap-1.5 rounded-xl`}
+            className={`${SAMPLE_NOTICE_SURFACE} w-full px-5 py-4 flex flex-col gap-2.5 rounded-xl`}
           >
             <div className="flex items-center gap-2 min-w-0">
               <SampleMark variant="notice" />
@@ -105,7 +105,7 @@ export default function SampleReportClient() {
             </Link>
           </div>
 
-          <div className="grid h-[16.5rem] w-full grid-rows-3 gap-2.5">
+          <div className="grid h-[22rem] w-full grid-rows-3 gap-4">
             <Link
               href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
               className={sampleTabClass(!isGuide)}

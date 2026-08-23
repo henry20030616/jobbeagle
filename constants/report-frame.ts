@@ -3,14 +3,14 @@
  *   text-xl font-bold tracking-tight
  * Buttons stay compact (h-9) so they don't read larger than the wordmark.
  */
-export const REPORT_ACTION_TEXT = 'text-xl font-bold tracking-tight leading-none';
+export const REPORT_ACTION_TEXT = 'text-2xl font-bold tracking-tight leading-none';
 
 /** Icons sized to sit inside the same h-9 row as BrandLogo inline */
-export const REPORT_ACTION_ICON = 'w-4 h-4 shrink-0';
+export const REPORT_ACTION_ICON = 'w-6 h-6 shrink-0';
 
 /** Back to Home / New Analysis — same font as Jobbeagle inline, tight chrome */
 export const REPORT_ACTION_BTN =
-  `inline-flex h-9 items-center gap-1.5 rounded-md border border-slate-400 bg-slate-900/70 px-2.5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex h-12 items-center gap-2.5 rounded-md border border-slate-400 bg-slate-900/70 px-4 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
 /**
  * Compact “View sample” chip for the homepage 4-col grid.
@@ -23,13 +23,13 @@ export const SAMPLE_LINK_BTN =
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
  * Keep in sync across all four boxes.
  */
-export const SAMPLE_RAIL_TEXT = 'text-base font-bold leading-snug tracking-tight';
-export const SAMPLE_RAIL_ICON = 'w-4 h-4 shrink-0';
+export const SAMPLE_RAIL_TEXT = 'text-xl font-bold leading-snug tracking-tight';
+export const SAMPLE_RAIL_ICON = 'w-6 h-6 shrink-0';
 export const SAMPLE_HEADER_TEXT = SAMPLE_RAIL_TEXT;
 export const SAMPLE_HEADER_ICON = SAMPLE_RAIL_ICON;
 /** Base shell only — active/inactive border style set by caller (solid vs dashed) */
 export const SAMPLE_HEADER_BTN =
-  `inline-flex items-center justify-center gap-2 rounded-xl border-2 px-3 py-2.5 ${SAMPLE_RAIL_TEXT} transition-colors shrink-0`;
+  `inline-flex items-center justify-center gap-3 rounded-xl border-2 px-5 py-4 ${SAMPLE_RAIL_TEXT} transition-colors shrink-0`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
