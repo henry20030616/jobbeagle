@@ -38,13 +38,13 @@ function StarRating({
   const filled = Math.max(0, Math.min(max, Math.round(value)));
   return (
     <span
-      className="inline-flex items-center gap-0.5"
+      className="compare-star-row inline-flex items-center gap-1.5"
       aria-label={`${filled} of ${max} stars`}
     >
       {Array.from({ length: max }, (_, i) => (
         <Star
           key={i}
-          className={`${large ? 'w-5 h-5' : 'w-3.5 h-3.5 sm:w-4 sm:h-4'} ${
+          className={`compare-star ${large ? 'w-[3.125rem] h-[3.125rem]' : 'w-3.5 h-3.5 sm:w-4 sm:h-4'} ${
             i < filled
               ? 'fill-amber-400 text-amber-400'
               : 'fill-transparent text-slate-600'

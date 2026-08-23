@@ -90,7 +90,7 @@ export default function ReportCompareModal({
             >
               <header className="flex items-start justify-between gap-4 border-b border-slate-800 px-5 py-4 sm:px-8 sm:py-5 shrink-0">
                 <div className="min-w-0">
-                  <BrandLogo size="nav" showIcon href={null} className="mb-2" />
+                  <BrandLogo size="nav" showIcon href={null} className="compare-brand-logo mb-2" />
                   <h2
                     id={titleId}
                     className="text-2xl sm:text-3xl font-bold text-white leading-tight"

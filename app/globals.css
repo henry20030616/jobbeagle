@@ -393,3 +393,19 @@ main input {
   .compare-font-large .sm\:text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
   .compare-font-large .sm\:text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
 }
+
+/* Compare overlay: puppy + stars at 250% of previous icon size */
+.compare-font-large .compare-brand-logo svg {
+  width: 7.5rem !important;
+  height: 7.5rem !important;
+}
+.compare-font-large .compare-star {
+  width: 3.125rem !important;
+  height: 3.125rem !important;
+}
+@media (min-width: 640px) {
+  .compare-font-large .compare-brand-logo svg {
+    width: 8.75rem !important;
+    height: 8.75rem !important;
+  }
+}
