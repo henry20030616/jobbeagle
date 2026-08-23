@@ -437,7 +437,6 @@ export default function JobbeagleShortsPage() {
                     {/* Role badge */}
                     <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-black ${userRole === 'employer' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
                   </button>
-                  </button>
 
                   {showUserMenu && (
                     <>
