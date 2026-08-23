@@ -868,16 +868,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
       </div>
 
       {/* --- Right Sidebar Actions --- */}
-      <div className="absolute right-2 md:right-4 bottom-[6.25rem] md:bottom-[8.5rem] flex flex-col items-center gap-5 md:gap-6 z-20 pb-2">
+      <div className="absolute right-3 md:right-5 bottom-[6.25rem] md:bottom-[8.5rem] flex flex-col items-center gap-6 md:gap-7 z-20 pb-2">
         {/* Like Button */}
         <div className="flex flex-col items-center gap-2">
             <button 
-              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
+              className={`p-5 md:p-6 min-w-[72px] min-h-[72px] md:min-w-[84px] md:min-h-[84px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} size={34} className={liked ? 'animate-pulse' : ''} />
+              <Heart fill={liked ? "currentColor" : "none"} size={42} className={liked ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-sm md:text-base font-bold drop-shadow-md text-white tabular-nums">
+            <span className="text-base md:text-lg font-bold drop-shadow-md text-white tabular-nums">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
@@ -885,12 +885,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
         {/* Follow Button */}
         <div className="flex flex-col items-center gap-2">
             <button 
-              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
+              className={`p-5 md:p-6 min-w-[72px] min-h-[72px] md:min-w-[84px] md:min-h-[84px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} size={34} className={followed ? 'animate-pulse' : ''} />
+              <UserPlus fill={followed ? "currentColor" : "none"} size={42} className={followed ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-sm md:text-base font-bold drop-shadow-md text-white max-w-[4.5rem] text-center leading-tight">
+            <span className="text-base md:text-lg font-bold drop-shadow-md text-white max-w-[4.5rem] text-center leading-tight">
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
@@ -898,12 +898,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
         {/* Bookmark Button */}
         <div className="flex flex-col items-center gap-2">
             <button 
-              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
+              className={`p-5 md:p-6 min-w-[72px] min-h-[72px] md:min-w-[84px] md:min-h-[84px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={34} className={bookmarked ? 'animate-pulse' : ''} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={42} className={bookmarked ? 'animate-pulse' : ''} />
             </button>
-            <span className="text-sm md:text-base font-bold drop-shadow-md text-white">
+            <span className="text-base md:text-lg font-bold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
@@ -911,12 +911,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
         {/* Share Button */}
         <div className="flex flex-col items-center gap-2">
           <button
-            className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
+            className="p-5 md:p-6 min-w-[72px] min-h-[72px] md:min-w-[84px] md:min-h-[84px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
             onClick={handleShareClick}
           >
-            <Share2 size={34} />
+            <Share2 size={42} />
           </button>
-          <span className="text-sm md:text-base font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
+          <span className="text-base md:text-lg font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
         
         {/* Mute Toggle — shown for all video types.
@@ -926,9 +926,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
         <div className="flex flex-col items-center gap-2 mt-1">
           <button
             onClick={toggleMute}
-            className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
+            className="p-5 md:p-6 min-w-[72px] min-h-[72px] md:min-w-[84px] md:min-h-[84px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
           >
-            {isMuted ? <VolumeX size={30} /> : <Volume2 size={30} />}
+            {isMuted ? <VolumeX size={38} /> : <Volume2 size={38} />}
           </button>
         </div>
       </div>
@@ -1014,9 +1014,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         e.stopPropagation();
                         handleAnalyzeWithAI(e);
                       }}
-                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-1.5 sm:gap-2 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-violet-400/20 px-1.5 sm:px-2"
+                      className="w-full max-w-[10rem] sm:max-w-none h-[4rem] sm:h-[4.5rem] md:h-[5rem] shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 sm:gap-2.5 transition-colors active:scale-[0.99] text-sm sm:text-base md:text-lg border border-violet-400/20 px-2 sm:px-3"
                     >
-                      <Sparkles size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
+                      <Sparkles size={20} className="shrink-0 sm:w-[22px] sm:h-[22px]" />
                       <span className="text-center leading-tight line-clamp-2">
                         {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
                       </span>
@@ -1032,26 +1032,26 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-xs sm:text-sm md:text-base border border-white/10 px-2"
+                      className="w-full h-[4rem] sm:h-[4.5rem] md:h-[5rem] shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition-colors active:scale-[0.99] text-base sm:text-lg md:text-xl border border-white/10 px-3"
                     >
-                      <ExternalLink size={18} className="shrink-0" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
+                      <ExternalLink size={22} className="shrink-0" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
                     </a>
                   ) : hasApplied ? (
                     <button
                       type="button"
                       disabled
-                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-700 text-slate-300 font-bold rounded-xl md:rounded-2xl flex flex-row items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm border border-slate-600 px-1.5 sm:px-2 cursor-not-allowed"
+                      className="w-full max-w-[10rem] sm:max-w-none h-[4rem] sm:h-[4.5rem] md:h-[5rem] shrink-0 bg-slate-700 text-slate-300 font-bold rounded-xl md:rounded-2xl flex flex-row items-center justify-center gap-2 sm:gap-2.5 text-sm sm:text-base md:text-lg border border-slate-600 px-2 sm:px-3 cursor-not-allowed"
                     >
-                      <CheckCircle size={16} className="shrink-0 text-emerald-400" />
+                      <CheckCircle size={20} className="shrink-0 text-emerald-400" />
                       <span className="text-center leading-tight">{t('已申請', 'Applied')}</span>
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={(e) => { void handleApplyStart(e); }}
-                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-1.5 sm:gap-2 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-cyan-400/25 px-1.5 sm:px-2"
+                      className="w-full max-w-[10rem] sm:max-w-none h-[4rem] sm:h-[4.5rem] md:h-[5rem] shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 sm:gap-2.5 transition-colors active:scale-[0.99] text-sm sm:text-base md:text-lg border border-cyan-400/25 px-2 sm:px-3"
                     >
-                      <Briefcase size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
+                      <Briefcase size={20} className="shrink-0 sm:w-[22px] sm:h-[22px]" />
                       <span className="text-center leading-tight line-clamp-2">
                         {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}
                       </span>
