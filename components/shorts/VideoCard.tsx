@@ -1046,20 +1046,20 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       <span className="truncate">{job.salary}</span>
                     </span>
                   </div>
-                  <div className="min-w-0 w-full text-2xl md:text-3xl text-gray-100/95 leading-relaxed">
-                    <p className="line-clamp-3 break-words">
-                      {job.description}{' '}
-                      <button
-                        type="button"
-                        className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowFullDetails(true);
-                        }}
-                      >
-                        ...more
-                      </button>
+                  <div className="flex min-w-0 w-full items-baseline gap-3 text-2xl md:text-3xl text-gray-100/95 leading-relaxed">
+                    <p className="min-w-0 flex-1 truncate whitespace-nowrap">
+                      {job.description}
                     </p>
+                    <button
+                      type="button"
+                      className="shrink-0 text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowFullDetails(true);
+                      }}
+                    >
+                      ...more
+                    </button>
                   </div>
                 </div>
             </div>
