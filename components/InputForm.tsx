@@ -16,25 +16,25 @@ import { SAMPLE_LINK_BTN } from '@/constants/report-frame';
 import BrandLogo from '@/components/BrandLogo';
 
 const PILL =
-  'inline-flex items-center gap-1.5 text-sm text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
+  'inline-flex items-center gap-2 text-base text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-4 py-2 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
 const STEP_CONNECTOR =
-  'hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none';
+  'hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-8 w-8 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none';
 const STEP_COL =
-  'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-5 sm:p-6 lg:border-b-0 lg:border-r';
+  'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-6 sm:p-8 lg:border-b-0 lg:border-r';
 const STEP_TITLE =
-  'flex min-h-[2.75rem] shrink-0 items-center pb-1.5 text-lg sm:text-xl font-bold text-white';
-const STEP_PILL_ROW = 'mb-3 flex h-[2.125rem] shrink-0 items-center';
+  'flex min-h-[3.5rem] shrink-0 items-center pb-2 text-xl sm:text-2xl font-bold text-white';
+const STEP_PILL_ROW = 'mb-4 flex h-[2.75rem] shrink-0 items-center';
 /** Shared content shell height — steps 1–4 bottom boxes align */
-const STEP_BODY = 'flex min-h-[17.5rem] flex-1 flex-col';
+const STEP_BODY = 'flex min-h-[20rem] flex-1 flex-col';
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
-const STEP_BODY_CARDS = 'grid min-h-[17.5rem] flex-1 grid-rows-3 gap-2.5';
-const STEP_BODY_CARDS_COMPACT = 'grid min-h-[17.5rem] flex-1 grid-rows-2 gap-2.5';
+const STEP_BODY_CARDS = 'grid min-h-[20rem] flex-1 grid-rows-3 gap-3.5';
+const STEP_BODY_CARDS_COMPACT = 'grid min-h-[20rem] flex-1 grid-rows-2 gap-3.5';
 const REPORT_CARD_IDLE =
   'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50';
 const REPORT_CARD_ACTIVE =
   'border-solid border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
 const REPORT_CARD =
-  'w-full min-h-0 h-full rounded-xl border-2 px-3.5 py-3 text-left transition flex flex-col justify-center gap-1.5';
+  'w-full min-h-0 h-full rounded-xl border-2 px-5 py-4 text-left transition flex flex-col justify-center gap-2';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -558,8 +558,8 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`mx-auto w-full max-w-3xl break-words font-medium leading-relaxed text-zinc-400 ${
-            compactChrome ? 'text-sm md:text-base' : 'text-lg md:text-xl'
+          className={`mx-auto w-full max-w-4xl break-words font-medium leading-relaxed text-zinc-400 ${
+            compactChrome ? 'text-base md:text-lg' : 'text-xl md:text-2xl'
           }`}
         >
           {t.description}
@@ -627,22 +627,22 @@ const InputForm: React.FC<InputFormProps> = ({
                     onFocus={() => setExpandedFeature(item.id)}
                     onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
                     onClick={() => setExpandedFeature(open ? null : item.id)}
-                    className="flex w-full items-center gap-3 border-b border-slate-700/60 p-4 text-left transition-colors last:border-b-0 hover:bg-slate-700/30 sm:p-5 lg:border-b-0"
+                    className="flex w-full items-center gap-4 border-b border-slate-700/60 p-5 text-left transition-colors last:border-b-0 hover:bg-slate-700/30 sm:p-6 lg:border-b-0"
                   >
-                    <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 shadow-inner ring-1 ${item.iconWrap}`}>
-                      <Icon className={`h-6 w-6 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
+                    <div className={`shrink-0 rounded-xl bg-gradient-to-br p-4 shadow-inner ring-1 ${item.iconWrap}`}>
+                      <Icon className={`h-8 w-8 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-base font-bold leading-snug text-slate-200">{item.title}</span>
+                        <span className="text-lg font-bold leading-snug text-slate-200">{item.title}</span>
                         <ChevronDown
-                          className={`mt-0.5 h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          className={`mt-0.5 h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
                         />
                       </div>
                       <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                         <div className="overflow-hidden">
-                          <p className="pb-0.5 pt-1.5 text-sm leading-normal text-slate-400">
+                          <p className="pb-0.5 pt-2 text-base leading-normal text-slate-400">
                             {item.desc}
                           </p>
                         </div>
@@ -661,7 +661,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 1. Job */}
             <div className={`${STEP_COL} lg:col-span-4`}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-3 h-7 w-1.5 shrink-0 rounded-full bg-indigo-500" />
+                <span className="mr-4 h-8 w-2 shrink-0 rounded-full bg-indigo-500" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
@@ -730,7 +730,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 2. Resume — overflow-visible so Saved Resumes dropdown can open */}
             <div className={`${STEP_COL} overflow-visible lg:col-span-3`}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-3 h-7 w-1.5 shrink-0 rounded-full bg-violet-500" />
+                <span className="mr-4 h-8 w-2 shrink-0 rounded-full bg-violet-500" />
                 <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
               <div className={`relative z-40 ${STEP_PILL_ROW} overflow-visible`}>
@@ -863,7 +863,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 3. Report type — Snapshot + Guide + Compare (3 equal boxes) */}
             <div className={`${STEP_COL} lg:col-span-3`}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-3 h-7 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                <span className="mr-4 h-8 w-2 shrink-0 rounded-full bg-emerald-500" />
                 <span className="leading-snug">{t.reportTypeStep}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
@@ -957,7 +957,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full min-h-[17.5rem] w-full flex-1 flex-col items-center justify-center gap-2.5 rounded-xl px-4 py-5 text-center text-base font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-lg ${
+                  className={`flex h-full min-h-[20rem] w-full flex-1 flex-col items-center justify-center gap-4 rounded-xl px-6 py-6 text-center text-lg font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-xl ${
                     submitDisabled
                       ? 'cursor-not-allowed bg-indigo-600/35 text-white/55 shadow-none'
                       : publicAts
@@ -969,20 +969,20 @@ const InputForm: React.FC<InputFormProps> = ({
                 >
                   {isLoading || isParsingUrl ? (
                     <>
-                      <svg className="h-6 w-6 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="h-8 w-8 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span className="animate-pulse text-xs leading-snug text-white/80">
+                      <span className="animate-pulse text-sm leading-snug text-white/80">
                         {isParsingUrl ? (zh ? '解析中…' : 'Parsing…') : t.generating}
                       </span>
                     </>
                   ) : isSaving ? (
-                    <span className="text-xs text-white/70">{t.waitingSave}</span>
+                    <span className="text-sm text-white/70">{t.waitingSave}</span>
                   ) : (
                     <>
                       <span className="px-1 leading-snug">{submitLabel}</span>
-                      <ArrowRight className="h-6 w-6 shrink-0" />
+                      <ArrowRight className="h-8 w-8 shrink-0" />
                     </>
                   )}
                 </button>
