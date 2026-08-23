@@ -24,6 +24,11 @@ import ReferralCard from '@/components/ReferralCard';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import type { UserProfile } from '@/types';
 import { isShortsEnabled, isHomepageShortsBannerEnabled } from '@/constants/features';
+import {
+  decodePayloadParamForPreFlight,
+  formatCapturedJd,
+} from '@/lib/payload';
+import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
 
 interface ReportSummary {
   id: string;
@@ -140,6 +145,11 @@ export default function Home() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [extensionJobData, setExtensionJobData] = useState<string | null>(null);
+  const [extensionCaptureMeta, setExtensionCaptureMeta] = useState<{
+    company_name: string;
+    job_title: string;
+  } | null>(null);
+  const [handoffSid, setHandoffSid] = useState<string | null>(null);
 
   // Auth + History
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -169,9 +179,12 @@ export default function Home() {
     const init = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const payloadParam = urlParams.get('payload');
-      if (payloadParam) {
-        window.location.replace(`/confirm?payload=${encodeURIComponent(payloadParam)}`);
-        return;
+      const scrapeErrorKey = urlParams.get('error');
+      const scrapeMsg = scrapeErrorKey
+        ? getExtensionScrapeError(scrapeErrorKey, language)
+        : null;
+      if (scrapeMsg) {
+        setError(scrapeMsg);
       }
 
       const ref = urlParams.get('ref');
@@ -182,11 +195,68 @@ export default function Home() {
         setReferralCode(localStorage.getItem('jb_referral_code'));
       }
 
+      const applyCapturedJob = (job: {
+        company_name: string;
+        job_title: string;
+        raw_jd: string;
+      }) => {
+        setExtensionJobData(formatCapturedJd(job));
+        setExtensionCaptureMeta({
+          company_name: job.company_name,
+          job_title: job.job_title,
+        });
+      };
+
+      const sid = urlParams.get('sid');
+      if (sid) {
+        try {
+          const res = await fetch(`/api/extension-capture?sid=${encodeURIComponent(sid)}`);
+          const data: {
+            error?: unknown;
+            job?: {
+              company_name?: unknown;
+              job_title?: unknown;
+              raw_jd?: unknown;
+            };
+          } = await res.json();
+          const job = data.job;
+          if (
+            res.ok &&
+            job &&
+            typeof job.raw_jd === 'string' &&
+            typeof job.company_name === 'string' &&
+            typeof job.job_title === 'string'
+          ) {
+            setHandoffSid(sid);
+            applyCapturedJob({
+              company_name: job.company_name,
+              job_title: job.job_title,
+              raw_jd: job.raw_jd,
+            });
+          } else {
+            setError(
+              typeof data.error === 'string'
+                ? data.error
+                : 'Handoff session expired. Re-capture from the job page.',
+            );
+          }
+        } catch {
+          setError('Could not load captured job data.');
+        }
+      } else if (payloadParam) {
+        const decoded = decodePayloadParamForPreFlight(payloadParam);
+        if (decoded) {
+          applyCapturedJob(decoded);
+        } else {
+          setError('Extension payload could not be decoded. Re-scrape from the job detail page.');
+        }
+      }
+
       const fromExtension = urlParams.get('from') === 'extension';
       const encodedJob = urlParams.get('job');
       const jobId = urlParams.get('jobId');
 
-      if (fromExtension && (encodedJob || jobId)) {
+      if (!sid && !payloadParam && fromExtension && (encodedJob || jobId)) {
         try {
           let rawText = '';
           if (encodedJob) {
@@ -196,17 +266,26 @@ export default function Home() {
             localStorage.removeItem(`jobbeagle_job_${jobId}`);
           }
           if (rawText) {
-            const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
-              pageTitle: 'Imported Job',
-              pageUrl: window.location.href,
-              rawText,
-              jobId: jobId || 'extension-import',
-            }))));
-            window.location.replace(`/confirm?payload=${encodeURIComponent(payload)}`);
-            return;
+            const decoded = decodePayloadParamForPreFlight(
+              btoa(
+                unescape(
+                  encodeURIComponent(
+                    JSON.stringify({
+                      pageTitle: 'Imported Job',
+                      pageUrl: window.location.href,
+                      rawText,
+                      jobId: jobId || 'extension-import',
+                    }),
+                  ),
+                ),
+              ),
+            );
+            if (decoded) {
+              applyCapturedJob(decoded);
+            }
           }
         } catch (e) {
-          console.error('Extension redirect failed:', e);
+          console.error('Extension import failed:', e);
         }
       }
 
@@ -330,7 +409,9 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           report_type: reportType,
-          jobDescription: inputs.jobDescription,
+          ...(handoffSid
+            ? { handoff_sid: handoffSid }
+            : { jobDescription: inputs.jobDescription }),
           resume: inputs.resume,
           language: inputs.language || language,
           device_fingerprint: fingerprint,
@@ -625,6 +706,7 @@ export default function Home() {
               reportType={reportType}
               onReportTypeChange={setReportType}
               userProfile={userProfile}
+              extensionCapture={extensionCaptureMeta}
             />
             {currentUser && userProfile && (
               <div className="mt-4 mb-1 w-full min-w-0">

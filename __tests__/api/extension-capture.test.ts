@@ -41,7 +41,7 @@ describe('POST /api/extension-capture', () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.sid).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
-    expect(json.preflightUrl).toContain('/confirm?sid=');
+    expect(json.preflightUrl).toContain('/?sid=');
   });
 
   it('returns 400 INVALID_CAPTURE for short JD text', async () => {

@@ -124,6 +124,25 @@ export function decodePayloadParamForPreFlight(encoded: string): PreFlightJobDat
   }
 }
 
+/** Fill Step 1 textarea: prepend Company/Title only when the JD body lacks them. */
+export function formatCapturedJd(job: {
+  company_name: string;
+  job_title: string;
+  raw_jd: string;
+}): string {
+  const header = [
+    job.company_name ? `Company: ${job.company_name}` : '',
+    job.job_title ? `Title: ${job.job_title}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+  if (!header) return job.raw_jd;
+  if (job.raw_jd.includes(job.company_name) || job.raw_jd.includes(job.job_title)) {
+    return job.raw_jd;
+  }
+  return `${header}\n\n${job.raw_jd}`;
+}
+
 /** Extract job id from URL or generate hash key */
 export function deriveJobId(
   linkedinJobId: string | undefined,

@@ -32,7 +32,7 @@ export default function ExtensionInstallPage() {
         },
         {
           title: '釘選並使用',
-          body: '在 LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs 職缺詳情頁點工具列 JobBeagle 圖示，即可開啟 Confirm。',
+          body: '在 LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs 職缺詳情頁點工具列 JobBeagle 圖示，職缺會帶入官網首頁 Step 1。',
         },
       ]
     : [
@@ -50,7 +50,7 @@ export default function ExtensionInstallPage() {
         },
         {
           title: 'Pin and capture',
-          body: 'On a LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs job detail page, click the JobBeagle toolbar icon to open Confirm.',
+          body: 'On a LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs job detail page, click the JobBeagle toolbar icon. The JD fills Step 1 on the homepage.',
         },
       ];
 
@@ -72,8 +72,8 @@ export default function ExtensionInstallPage() {
           </h1>
           <p className="text-slate-400 text-base leading-relaxed">
             {zh
-              ? '在職缺頁一鍵抓取 JD → Pre-Flight 確認 → AI 分析。Chrome Web Store 上架前，請用開發人員模式載入未封裝版本。'
-              : 'One-click JD capture on job boards → Pre-Flight → AI analysis. Until Chrome Web Store review, load the unpacked developer build.'}
+              ? '在職缺頁一鍵抓取 JD → 帶回官網首頁 Step 1 → AI 分析。Chrome Web Store 上架前，請用開發人員模式載入未封裝版本。'
+              : 'One-click JD capture on job boards → homepage Step 1 → AI analysis. Until Chrome Web Store review, load the unpacked developer build.'}
           </p>
         </header>
 

@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   decodeBase64Utf8,
+  formatCapturedJd,
   payloadToPreFlightData,
 } from '@/lib/payload';
 import type { ExtensionJobPayload } from '@/types';
+import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
 
 function encodePayload(obj: unknown): string {
   const json = JSON.stringify(obj);
@@ -74,5 +76,40 @@ describe('payload decode', () => {
     });
     expect(pf.job_title).toContain('Financial Operations');
     expect(pf.company_name).toContain('Human Services');
+  });
+});
+
+describe('formatCapturedJd', () => {
+  it('returns raw JD when company or title already appears in the body', () => {
+    const raw = 'Company: Acme\nTitle: Engineer\n\nBuild APIs.';
+    expect(
+      formatCapturedJd({
+        company_name: 'Acme',
+        job_title: 'Engineer',
+        raw_jd: raw,
+      }),
+    ).toBe(raw);
+  });
+
+  it('prepends Company/Title when the body has neither', () => {
+    const raw = 'Own the roadmap and ship weekly.'.repeat(2);
+    expect(
+      formatCapturedJd({
+        company_name: 'Acme',
+        job_title: 'PM',
+        raw_jd: raw,
+      }),
+    ).toBe(`Company: Acme\nTitle: PM\n\n${raw}`);
+  });
+});
+
+describe('getExtensionScrapeError', () => {
+  it('returns English copy for unknown language codes', () => {
+    expect(getExtensionScrapeError('no_job_page', 'en')).toContain('LinkedIn');
+    expect(getExtensionScrapeError('no_job_page', 'es')).toContain('LinkedIn');
+  });
+
+  it('returns null for unknown keys', () => {
+    expect(getExtensionScrapeError('not_a_real_key', 'en')).toBeNull();
   });
 });

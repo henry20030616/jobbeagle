@@ -1,7 +1,7 @@
 /**
- * JobBeagle Chrome Extension v1.3.0
+ * JobBeagle Chrome Extension v1.3.1
  * US boards: LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs (+ 104 TW)
- * Scrape → POST /api/extension-capture → open /confirm tab
+ * Scrape → POST /api/extension-capture → open homepage /?sid= (Step 1)
  */
 
 const WEBSITE_ORIGIN = 'https://www.jobbeagle.com';
@@ -182,5 +182,5 @@ async function openPreFlight(sid, errorKey) {
       ? `?error=${encodeURIComponent(errorKey)}`
       : '';
 
-  await chrome.tabs.create({ url: `${WEBSITE_ORIGIN}/confirm${query}` });
+  await chrome.tabs.create({ url: `${WEBSITE_ORIGIN}/${query}` });
 }

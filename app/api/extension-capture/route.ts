@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       {
         sid,
         expiresInSec: 30 * 60,
-        preflightUrl: `${request.nextUrl.origin}/confirm?sid=${encodeURIComponent(sid)}`,
+        preflightUrl: `${request.nextUrl.origin}/?sid=${encodeURIComponent(sid)}`,
       },
       { headers: corsHeaders() },
     );

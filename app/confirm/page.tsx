@@ -5,7 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
-import { decodePayloadParamForPreFlight } from '@/lib/payload';
+import { decodePayloadParamForPreFlight, formatCapturedJd } from '@/lib/payload';
+import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
 import type { LiteReport, ReportType, UserInputs, UserProfile } from '@/types';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import {
@@ -31,43 +32,6 @@ interface JobDisplayData {
   job_title: string;
   raw_jd: string;
   char_count: number;
-}
-
-const SCRAPE_ERRORS: Record<string, { 'zh-TW': string; en: string }> = {
-  not_job_detail: {
-    'zh-TW': '請先在左側列表點選一個職缺，等右側詳情出現後再點外掛；或點「在新分頁中查看」/ 職缺標題進入完整頁面。',
-    en: 'Select a job in the left list and wait for details on the right, or open the job in a full page before clicking the extension.',
-  },
-  scrape_failed: {
-    'zh-TW': '職缺內容抓取失敗或太短。請在右側職缺詳情載入完成後再點外掛；或點「在新分頁中查看」打開完整職缺頁後再試。',
-    en: 'Job scrape failed or content too short. Wait for the job detail panel to load, or open the job in a new tab and try again.',
-  },
-  capture_failed: {
-    'zh-TW': '已抓到職缺，但傳送到 JobBeagle 伺服器失敗。請稍後再試，或到 chrome://extensions 點 JobBeagle 的「Service Worker」查看錯誤。',
-    en: 'Job was scraped but server handoff failed. Retry later or inspect the extension service worker console.',
-  },
-  site_access: {
-    'zh-TW': 'Chrome 未允許外掛存取此職缺網站。請到 chrome://extensions → JobBeagle →「網站存取權限」→ 打開對應網站（LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs），或選「在所有網站上」。',
-    en: 'Chrome blocked site access. Open chrome://extensions → JobBeagle → enable site access for LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs.',
-  },
-  no_job_page: {
-    'zh-TW': '此頁面不在支援清單。目前支援：LinkedIn、Indeed、ZipRecruiter、Glassdoor、GovernmentJobs（與台灣 104）。請在職缺詳情頁再點外掛。',
-    en: 'This page is not supported. Supported: LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs (and Taiwan 104). Open a job detail page and try again.',
-  },
-};
-
-function formatCapturedJd(job: JobDisplayData): string {
-  const header = [
-    job.company_name ? `Company: ${job.company_name}` : '',
-    job.job_title ? `Title: ${job.job_title}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
-  if (!header) return job.raw_jd;
-  if (job.raw_jd.includes(job.company_name) || job.raw_jd.includes(job.job_title)) {
-    return job.raw_jd;
-  }
-  return `${header}\n\n${job.raw_jd}`;
 }
 
 export default function ConfirmPage() {
@@ -134,9 +98,16 @@ export default function ConfirmPage() {
   }, []);
 
   useEffect(() => {
+    if (embedded) return;
+    const qs = searchParams.toString();
+    router.replace(qs ? `/?${qs}` : '/');
+  }, [embedded, router, searchParams]);
+
+  useEffect(() => {
     let cancelled = false;
 
     async function loadJob() {
+      if (!embedded) return;
       if (sidParam) {
         setLoadingJob(true);
         setHandoffSid(sidParam);
@@ -179,15 +150,18 @@ export default function ConfirmPage() {
     }
 
     loadJob();
-    if (scrapeErrorKey && SCRAPE_ERRORS[scrapeErrorKey]) {
-      setError(SCRAPE_ERRORS[scrapeErrorKey].en);
+    const scrapeMsg = scrapeErrorKey
+      ? getExtensionScrapeError(scrapeErrorKey, language)
+      : null;
+    if (scrapeMsg) {
+      setError(scrapeMsg);
     }
     loadSession();
 
     return () => {
       cancelled = true;
     };
-  }, [sidParam, payloadParam, scrapeErrorKey, loadSession]);
+  }, [sidParam, payloadParam, scrapeErrorKey, loadSession, embedded, language]);
 
   useEffect(() => {
     if (searchParams.get('checkout') === 'success') {
@@ -296,6 +270,14 @@ export default function ConfirmPage() {
       setAnalyzing(false);
     }
   };
+
+  if (!embedded) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <DogLoading language={language} />
+      </div>
+    );
+  }
 
   if (analyzing || loadingJob) {
     return (

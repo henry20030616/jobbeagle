@@ -68,7 +68,7 @@ interface InputFormProps {
   /** When set, credits pill shows remaining Snapshot / Strategy counts */
   userProfile?: UserProfile | null;
   /**
-   * When opened from Chrome extension (/confirm): show capture badge,
+   * When opened from Chrome extension (homepage /?sid=): show capture badge,
    * hide “Grab JD” CTA, and label the job step as already filled.
    */
   extensionCapture?: {
