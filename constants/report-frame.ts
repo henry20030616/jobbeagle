@@ -1,16 +1,14 @@
 /**
- * Exact same type scale as BrandLogo `size="inline"`:
- *   text-xl font-bold tracking-tight
- * Buttons stay compact (h-9) so they don't read larger than the wordmark.
+ * Page chrome (outside ReportFitStage zoom). Sized to stay readable
+ * next to a zoomed Snapshot/Guide slide — not compact header chips.
  */
-export const REPORT_ACTION_TEXT = 'text-3xl font-bold tracking-tight leading-none';
+export const REPORT_ACTION_TEXT = 'text-5xl font-bold tracking-tight leading-none';
 
-/** Icons sized to sit inside the same h-9 row as BrandLogo inline */
-export const REPORT_ACTION_ICON = 'w-8 h-8 shrink-0';
+export const REPORT_ACTION_ICON = 'w-12 h-12 shrink-0';
 
-/** Back to Home / New Analysis — same font as Jobbeagle inline, tight chrome */
+/** Back to Home / New Analysis */
 export const REPORT_ACTION_BTN =
-  `inline-flex h-16 items-center gap-3 rounded-md border border-slate-400 bg-slate-900/70 px-6 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex min-h-24 items-center gap-4 rounded-xl border-2 border-slate-400 bg-slate-900/70 px-8 py-5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
 /**
  * Compact “View sample” chip for the homepage 4-col grid.
@@ -23,13 +21,13 @@ export const SAMPLE_LINK_BTN =
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
  * Keep in sync across all four boxes.
  */
-export const SAMPLE_RAIL_TEXT = 'text-2xl font-bold leading-snug tracking-tight';
-export const SAMPLE_RAIL_ICON = 'w-8 h-8 shrink-0';
+export const SAMPLE_RAIL_TEXT = 'text-4xl font-bold leading-snug tracking-tight';
+export const SAMPLE_RAIL_ICON = 'w-12 h-12 shrink-0';
 export const SAMPLE_HEADER_TEXT = SAMPLE_RAIL_TEXT;
 export const SAMPLE_HEADER_ICON = SAMPLE_RAIL_ICON;
 /** Base shell only — active/inactive border style set by caller (solid vs dashed) */
 export const SAMPLE_HEADER_BTN =
-  `inline-flex items-center justify-center gap-4 rounded-xl border-2 px-6 py-5 ${SAMPLE_RAIL_TEXT} transition-colors shrink-0`;
+  `inline-flex items-center justify-center gap-5 rounded-xl border-2 px-8 py-6 ${SAMPLE_RAIL_TEXT} transition-colors shrink-0`;
 
 /**
  * Snapshot / Guide large frames — same thickness (border-2), clear blue (not white).
