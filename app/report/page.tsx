@@ -89,7 +89,7 @@ export default function ReportPage() {
             : getSnapshotUiCopy(lang).productTitle}
         </span>
       </header>
-      <main className="flex-1 min-h-0 w-full min-w-0 overflow-auto p-6 flex flex-col items-stretch">
+      <main className="flex flex-1 min-h-0 w-full min-w-0 flex-col items-center overflow-auto p-6">
         <ReportFitStage className="w-full flex-1 min-h-0">
           {strategy ? (
             <FullReportDashboard

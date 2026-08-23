@@ -55,15 +55,15 @@ export function ReportFitStage({
   return (
     <div
       ref={outerRef}
-      className={`w-full min-w-0 overflow-x-clip self-stretch ${className}`}
+      className={`flex w-full min-w-0 justify-center overflow-x-clip self-stretch ${className}`}
     >
       {/*
-        Do NOT put max-w-full on this node. CSS zoom multiplies layout size;
-        max-w-full would clamp width to the parent first, then zoom again —
-        double-shrinking the slide into a centered “island”.
+        CSS zoom multiplies layout size. Center the slide in the remaining
+        pane so leftover width on ultrawide / capped maxScale is equal on both sides.
+        Do NOT put max-w-full on this node (zoom would clamp then scale again).
       */}
       <div
-        className="origin-top-left"
+        className="origin-top shrink-0"
         style={{
           width: designWidth,
           zoom: scale,

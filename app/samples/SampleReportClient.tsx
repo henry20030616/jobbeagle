@@ -122,7 +122,7 @@ export default function SampleReportClient() {
           </div>
         </aside>
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-auto p-6">
+        <main className="flex min-h-0 min-w-0 flex-1 justify-center overflow-auto p-6">
           <ReportFitStage
             designWidth={REPORT_SLIDE_DESIGN_WIDTH}
             maxScale={2.4}
