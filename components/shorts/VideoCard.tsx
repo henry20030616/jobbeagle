@@ -27,6 +27,11 @@ interface VideoCardProps {
   language?: AppLanguage;
 }
 
+const RAIL_BTN =
+  'flex h-28 w-28 md:h-32 md:w-32 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105';
+const RAIL_ICON = 'h-16 w-16 md:h-20 md:w-20';
+const RAIL_LABEL = 'shorts-rail-label font-semibold drop-shadow-md text-white text-center leading-tight';
+
 const VideoCard: React.FC<VideoCardProps> = ({
   job, isActive, isFollowed = false, isBookmarked = false,
   onFollowChange, onSaveChange, language = 'en',
@@ -869,61 +874,61 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- Right rail: social actions --- */}
       {(!showFullDetails && !showApplyModal) && (
-      <div className="shorts-font-large absolute right-4 md:right-6 top-[38%] z-20 flex w-[7.5rem] md:w-44 -translate-y-1/2 flex-col items-center gap-4 md:gap-5">
-        <div className="flex flex-col items-center gap-2">
+      <div className="shorts-font-large absolute right-4 md:right-6 top-[38%] z-20 flex w-32 md:w-36 -translate-y-1/2 flex-col items-center gap-4 md:gap-5">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
+              className={`${RAIL_BTN} ${liked ? 'text-red-500' : 'text-white'}`} 
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} className={`h-12 w-12 md:h-14 md:w-14 ${liked ? 'animate-pulse' : ''}`} />
+              <Heart fill={liked ? "currentColor" : "none"} className={`${RAIL_ICON} ${liked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white tabular-nums">
+            <span className={`${RAIL_LABEL} tabular-nums`}>
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
+              className={`${RAIL_BTN} ${followed ? 'text-cyan-400' : 'text-white'}`} 
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} className={`h-12 w-12 md:h-14 md:w-14 ${followed ? 'animate-pulse' : ''}`} />
+              <UserPlus fill={followed ? "currentColor" : "none"} className={`${RAIL_ICON} ${followed ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white text-center leading-tight">
+            <span className={RAIL_LABEL}>
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
+              className={`${RAIL_BTN} ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`h-12 w-12 md:h-14 md:w-14 ${bookmarked ? 'animate-pulse' : ''}`} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`${RAIL_ICON} ${bookmarked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white">
+            <span className={RAIL_LABEL}>
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1.5">
           <button
-            className="flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
+            className={`${RAIL_BTN} text-white`}
             onClick={handleShareClick}
           >
-            <Share2 className="h-12 w-12 md:h-14 md:w-14" />
+            <Share2 className={RAIL_ICON} />
           </button>
-          <span className="text-2xl md:text-3xl font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
+          <span className={RAIL_LABEL}>{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
 
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1.5">
           <button
             onClick={toggleMute}
-            className="flex h-24 w-24 md:h-28 md:w-28 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
+            className={`${RAIL_BTN} text-white`}
           >
             {isMuted
-              ? <VolumeX className="h-12 w-12 md:h-14 md:w-14" />
-              : <Volume2 className="h-12 w-12 md:h-14 md:w-14" />}
+              ? <VolumeX className={RAIL_ICON} />
+              : <Volume2 className={RAIL_ICON} />}
           </button>
         </div>
       </div>

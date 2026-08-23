@@ -314,3 +314,15 @@ main input {
   .shorts-font-large .md\:text-4xl { font-size: 5rem !important; line-height: 5.5rem !important; }
   .shorts-font-large .md\:text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
 }
+
+/* Right-rail action labels stay caption-sized; icons are the primary tap target */
+.shorts-font-large .shorts-rail-label {
+  font-size: 1.125rem !important;
+  line-height: 1.25rem !important;
+}
+@media (min-width: 768px) {
+  .shorts-font-large .shorts-rail-label {
+    font-size: 1.25rem !important;
+    line-height: 1.375rem !important;
+  }
+}
