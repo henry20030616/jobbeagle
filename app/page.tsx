@@ -420,17 +420,17 @@ export default function Home() {
     <div className="flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
       {/* Centered canvas with proper constraints */}
       <main className="mx-auto w-full min-w-0 max-w-[min(1680px,95vw)] px-6 sm:px-8 lg:px-12 py-6 sm:py-8">
-        <div className="flex items-center justify-between gap-3 mb-3 min-w-0 w-full">
+        <div className="flex items-center justify-between gap-4 mb-5 min-w-0 w-full">
           <BrandLogo size="nav" showIcon />
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0 min-w-0">
             <LanguageSwitcher variant="dark" />
             {currentUser && (
               <button
                 onClick={() => { setShowHistory(true); loadHistory(); }}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 text-base rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
                 title={t.historyTitle}
               >
-                <History className="w-4 h-4" />
+                <History className="w-5 h-5" />
                 <span className="hidden sm:inline">{t.history}</span>
               </button>
             )}
@@ -445,16 +445,16 @@ export default function Home() {
         {isHomepageShortsBannerEnabled() && isShortsEnabled() && !report && (
           <Link
             href="/shorts"
-            className="mb-8 flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
+            className="mb-8 flex items-center gap-5 p-5 sm:p-6 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/80 to-violet-950/60 hover:border-indigo-400/50 hover:from-indigo-900/60 transition-all group"
           >
-            <div className="w-12 h-12 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Play className="w-6 h-6 text-indigo-300 fill-indigo-300/30" />
+            <div className="w-16 h-16 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Play className="w-8 h-8 text-indigo-300 fill-indigo-300/30" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-white font-bold text-sm sm:text-base">{t.exploreShorts}</p>
-              <p className="text-slate-400 text-xs sm:text-sm mt-0.5">{t.exploreShortsDesc}</p>
+              <p className="text-white font-bold text-base sm:text-lg">{t.exploreShorts}</p>
+              <p className="text-slate-400 text-sm sm:text-base mt-1">{t.exploreShortsDesc}</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="w-6 h-6 text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         )}
 
@@ -466,27 +466,27 @@ export default function Home() {
               onClick={e => e.stopPropagation()}
             >
               {/* Panel header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
-                <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                  <History className="w-5 h-5 text-indigo-400" />
+              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700">
+                <h2 className="text-white font-bold text-xl flex items-center gap-3">
+                  <History className="w-6 h-6 text-indigo-400" />
                   {t.historyTitle}
                 </h2>
-                <button onClick={() => setShowHistory(false)} className="text-slate-400 hover:text-white">
-                  <X className="w-5 h-5" />
+                <button onClick={() => setShowHistory(false)} className="text-slate-400 hover:text-white p-2">
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
               {/* Panel body */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="flex-1 overflow-y-auto p-5 space-y-4">
                 {historyLoading ? (
                   <div className="flex items-center justify-center h-32">
-                    <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+                    <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
                   </div>
                 ) : historyReports.length === 0 ? (
                   <div className="text-center py-16 text-slate-400">
-                    <History className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p className="text-sm">{t.noHistory}</p>
-                    <p className="text-xs mt-1 opacity-60">{t.autoSaved}</p>
+                    <History className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                    <p className="text-base">{t.noHistory}</p>
+                    <p className="text-sm mt-2 opacity-60">{t.autoSaved}</p>
                   </div>
                 ) : (
                   historyReports.map(item => {
@@ -530,24 +530,24 @@ export default function Home() {
                           }
                           setShowHistory(false);
                         }}
-                        className="w-full text-left p-4 rounded-xl bg-slate-800/60 border border-slate-700 hover:border-indigo-500 hover:bg-slate-800 transition-all group"
+                        className="w-full text-left p-5 rounded-xl bg-slate-800/60 border border-slate-700 hover:border-indigo-500 hover:bg-slate-800 transition-all group"
                       >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
-                            <p className="text-white font-semibold text-sm line-clamp-1 group-hover:text-indigo-200 transition-colors">
+                            <p className="text-white font-semibold text-base line-clamp-1 group-hover:text-indigo-200 transition-colors">
                               {item.job_title || t.unknownJob}
                             </p>
-                            <p className="text-slate-500 text-xs mt-1">
+                            <p className="text-slate-500 text-sm mt-1.5">
                               {new Date(item.created_at).toLocaleDateString(language === 'zh-TW' || language === 'zh-CN' ? 'zh-TW' : language === 'es' ? 'es-ES' : language === 'hi' ? 'hi-IN' : language === 'ar' ? 'ar-SA' : 'en-US', {
                                 month: 'short', day: 'numeric', year: 'numeric',
                               })}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex items-center gap-3 shrink-0">
                             {item.score != null && (
-                              <span className={`text-xl font-black ${scoreColor}`}>{item.score}</span>
+                              <span className={`text-2xl font-black ${scoreColor}`}>{item.score}</span>
                             )}
-                            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-colors" />
+                            <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-indigo-400 transition-colors" />
                           </div>
                         </div>
                       </button>
@@ -641,9 +641,9 @@ export default function Home() {
           <div className="animate-fade-in w-full">
             <button
               onClick={handleResetToForm}
-              className="mb-6 flex items-center text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
+              className="mb-8 flex items-center text-base text-slate-400 hover:text-white transition-all active:scale-95 hover:scale-105 group"
             >
-              <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
+              <ChevronLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
               {t.backToHome}
             </button>
             <AnalysisDashboard data={report} language={language} />
