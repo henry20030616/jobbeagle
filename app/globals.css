@@ -325,15 +325,15 @@ main input {
   .shorts-font-large .md\:text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
 }
 
-/* Right-rail action labels: 350% of previous caption size; circles stay put */
+/* Right-rail action labels: 50% of previous (350%) size; circles stay put */
 .shorts-font-large .shorts-rail-label {
-  font-size: 3.9375rem !important;
-  line-height: 1.1 !important;
+  font-size: 1.96875rem !important;
+  line-height: 1.15 !important;
 }
 @media (min-width: 768px) {
   .shorts-font-large .shorts-rail-label {
-    font-size: 4.375rem !important;
-    line-height: 1.1 !important;
+    font-size: 2.1875rem !important;
+    line-height: 1.15 !important;
   }
 }
 
