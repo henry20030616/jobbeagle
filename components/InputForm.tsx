@@ -18,9 +18,9 @@ import BrandLogo from '@/components/BrandLogo';
 const PILL =
   'inline-flex items-center gap-3 text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-6 py-3 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
 const STEP_CONNECTOR =
-  'hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-slate-800 border border-slate-600 text-slate-300 shadow-md pointer-events-none';
+  'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  'relative flex min-h-0 min-w-0 flex-col border-b border-slate-700/80 p-10 sm:p-12 lg:border-b-0 lg:border-r';
+  'relative flex min-h-0 min-w-0 flex-col rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 p-10 sm:p-12 shadow-xl';
 const STEP_TITLE =
   'flex min-h-[8.5rem] shrink-0 items-center pb-5 text-4xl sm:text-5xl font-bold text-white';
 const STEP_PILL_ROW = 'mb-6 flex min-h-[7rem] shrink-0 items-center';
@@ -36,6 +36,21 @@ const REPORT_CARD_ACTIVE =
   'border-solid border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
 const REPORT_CARD =
   'w-full min-h-0 h-full rounded-xl border-2 px-6 py-5 text-left transition flex flex-col justify-center gap-3';
+
+function StepSequenceMark() {
+  return (
+    <div className="flex items-center justify-center self-stretch">
+      <div className={STEP_CONNECTOR} aria-hidden>
+        <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
+          <ChevronRight className="h-10 w-10" strokeWidth={2.75} />
+        </span>
+      </div>
+      <div className="flex justify-center py-3 text-indigo-300 lg:hidden" aria-hidden>
+        <ChevronDown className="h-10 w-10" strokeWidth={2.75} />
+      </div>
+    </div>
+  );
+}
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -549,9 +564,9 @@ const InputForm: React.FC<InputFormProps> = ({
     (!publicAts && !resume);
 
   return (
-    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-8'}`}>
+    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-20'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
-      <div className={`w-full min-w-0 space-y-4 px-2 text-center ${compactChrome ? 'py-1' : 'py-2'}`}>
+      <div className={`w-full min-w-0 space-y-4 px-2 text-center ${compactChrome ? 'py-1' : 'py-6'}`}>
         <BrandLogo
           size={compactChrome ? 'nav' : 'hero'}
           showIcon
@@ -575,47 +590,43 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex w-full min-w-0 flex-col gap-4">
+      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-20'}`}>
         {!compactChrome && (
-          <div className="relative overflow-hidden rounded-2xl border border-slate-700 bg-slate-800/80 shadow-xl backdrop-blur-sm">
-            <div className="pointer-events-none absolute top-0 right-0 p-12 opacity-5">
-              <Sparkles className="h-64 w-64 text-indigo-500" />
-            </div>
-            <div className="relative grid grid-cols-1 divide-y divide-slate-700/80 lg:grid-cols-4 lg:divide-x lg:divide-y-0">
-              {([
-                {
-                  id: 'fit',
-                  icon: ScanSearch,
-                  iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
-                  iconColor: 'text-amber-300',
-                  title: t.matchAnalysis,
-                  desc: t.matchAnalysisDesc,
-                },
-                {
-                  id: 'offer',
-                  icon: BadgeDollarSign,
-                  iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
-                  iconColor: 'text-emerald-300',
-                  title: t.salaryResearch,
-                  desc: t.salaryResearchDesc,
-                },
-                {
-                  id: 'defenses',
-                  icon: ShieldAlert,
-                  iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
-                  iconColor: 'text-sky-300',
-                  title: t.industryAnalysis,
-                  desc: t.industryAnalysisDesc,
-                },
-                {
-                  id: 'playbook',
-                  icon: MessageSquare,
-                  iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
-                  iconColor: 'text-violet-300',
-                  title: t.interviewPrep,
-                  desc: t.interviewPrepDesc,
-                },
-              ] as const).map((item) => {
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
+            {([
+              {
+                id: 'fit',
+                icon: ScanSearch,
+                iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
+                iconColor: 'text-amber-300',
+                title: t.matchAnalysis,
+                desc: t.matchAnalysisDesc,
+              },
+              {
+                id: 'offer',
+                icon: BadgeDollarSign,
+                iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
+                iconColor: 'text-emerald-300',
+                title: t.salaryResearch,
+                desc: t.salaryResearchDesc,
+              },
+              {
+                id: 'defenses',
+                icon: ShieldAlert,
+                iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
+                iconColor: 'text-sky-300',
+                title: t.industryAnalysis,
+                desc: t.industryAnalysisDesc,
+              },
+              {
+                id: 'playbook',
+                icon: MessageSquare,
+                iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
+                iconColor: 'text-violet-300',
+                title: t.interviewPrep,
+                desc: t.interviewPrepDesc,
+              },
+            ] as const).map((item) => {
                 const open = expandedFeature === item.id;
                 const Icon = item.icon;
                 return (
@@ -628,7 +639,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     onFocus={() => setExpandedFeature(item.id)}
                     onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
                     onClick={() => setExpandedFeature(open ? null : item.id)}
-                    className="flex w-full items-center gap-5 border-b border-slate-700/60 p-6 text-left transition-colors last:border-b-0 hover:bg-slate-700/30 sm:p-8 lg:border-b-0"
+                    className="flex w-full items-center gap-5 rounded-2xl border border-slate-700 bg-slate-800/80 p-6 text-left shadow-xl backdrop-blur-sm transition-colors hover:bg-slate-700/40 sm:p-8"
                   >
                     <div className={`shrink-0 rounded-xl bg-gradient-to-br p-5 shadow-inner ring-1 ${item.iconWrap}`}>
                       <Icon className={`h-10 w-10 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
@@ -652,15 +663,13 @@ const InputForm: React.FC<InputFormProps> = ({
                   </button>
                 );
               })}
-            </div>
           </div>
         )}
 
-        {/* Classic 1→4 operator: equal-height content shells, circular connectors */}
-        <div className="w-full min-w-0 rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
+        {/* Classic 1→4 operator: separate cards with sequence arrows */}
+        <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4">
             {/* 1. Job */}
-            <div className={`${STEP_COL} lg:col-span-4`}>
+            <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-indigo-500" />
                 <span className="leading-snug">{t.jobData}</span>
@@ -720,16 +729,11 @@ const InputForm: React.FC<InputFormProps> = ({
                   }}
                 />
               </div>
-              <div className={STEP_CONNECTOR} aria-hidden>
-                <ChevronRight className="h-5 w-5" />
-              </div>
-              <div className="flex justify-center pt-3 text-slate-500 lg:hidden" aria-hidden>
-                <ChevronDown className="h-6 w-6" />
-              </div>
             </div>
+            <StepSequenceMark />
 
             {/* 2. Resume — overflow-visible so Saved Resumes dropdown can open */}
-            <div className={`${STEP_COL} overflow-visible lg:col-span-3`}>
+            <div className={`${STEP_COL} overflow-visible`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-violet-500" />
                 <span className="whitespace-nowrap">{t.resume}</span>
@@ -853,16 +857,11 @@ const InputForm: React.FC<InputFormProps> = ({
                   </div>
                 )}
               </div>
-              <div className={STEP_CONNECTOR} aria-hidden>
-                <ChevronRight className="h-5 w-5" />
-              </div>
-              <div className="flex justify-center pt-3 text-slate-500 lg:hidden" aria-hidden>
-                <ChevronDown className="h-6 w-6" />
-              </div>
             </div>
+            <StepSequenceMark />
 
             {/* 3. Report type — Snapshot + Guide + Compare (3 equal boxes) */}
-            <div className={`${STEP_COL} lg:col-span-3`}>
+            <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-emerald-500" />
                 <span className="leading-snug">{t.reportTypeStep}</span>
@@ -935,16 +934,11 @@ const InputForm: React.FC<InputFormProps> = ({
               ) : (
                 <div className={`${STEP_BODY} text-sm text-slate-500`}>—</div>
               )}
-              <div className={STEP_CONNECTOR} aria-hidden>
-                <ChevronRight className="h-5 w-5" />
-              </div>
-              <div className="flex justify-center pt-3 text-slate-500 lg:hidden" aria-hidden>
-                <ChevronDown className="h-6 w-6" />
-              </div>
             </div>
+            <StepSequenceMark />
 
             {/* 4. Launch — same title/pill spacers so content box aligns */}
-            <div className={`${STEP_COL} relative z-0 border-r-0 bg-slate-700/30 lg:col-span-2`}>
+            <div className={`${STEP_COL} relative z-0 bg-slate-700/30`}>
               <div className={STEP_TITLE} aria-hidden />
               <div className={STEP_PILL_ROW} aria-hidden />
               <div className={`${STEP_BODY} relative z-10`}>
@@ -989,7 +983,6 @@ const InputForm: React.FC<InputFormProps> = ({
                 </button>
               </div>
             </div>
-          </div>
         </div>
       </form>
     </div>
