@@ -667,7 +667,7 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
 
         {/* Classic 1→4 operator: separate cards with sequence arrows */}
-        <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4">
+        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4">
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>

@@ -231,6 +231,65 @@ main input {
 }
 
 /*
+ * Four-step operator only — 80% of the homepage type scale.
+ * Hero / feature cards / footer stay at the previous size.
+ */
+.homepage-font-large .homepage-steps .text-xs { font-size: 1.35rem !important; line-height: 1.65rem !important; }
+.homepage-font-large .homepage-steps .text-sm { font-size: 1.575rem !important; line-height: 1.95rem !important; }
+.homepage-font-large .homepage-steps .text-base { font-size: 1.8rem !important; line-height: 2.25rem !important; }
+.homepage-font-large .homepage-steps .text-lg { font-size: 2.025rem !important; line-height: 2.55rem !important; }
+.homepage-font-large .homepage-steps .text-xl { font-size: 2.25rem !important; line-height: 2.85rem !important; }
+.homepage-font-large .homepage-steps .text-2xl { font-size: 2.7rem !important; line-height: 3.3rem !important; }
+.homepage-font-large .homepage-steps .text-3xl { font-size: 3.375rem !important; line-height: 3.9rem !important; }
+.homepage-font-large .homepage-steps .text-4xl { font-size: 3.375rem !important; line-height: 3.75rem !important; }
+.homepage-font-large .homepage-steps .text-5xl { font-size: 4.5rem !important; line-height: 1 !important; }
+.homepage-font-large .homepage-steps .text-6xl { font-size: 5.625rem !important; line-height: 1 !important; }
+.homepage-font-large .homepage-steps .text-7xl { font-size: 6.75rem !important; line-height: 1 !important; }
+.homepage-font-large .homepage-steps .step-title { font-size: 2.53125rem !important; line-height: 1.15 !important; }
+.homepage-font-large .homepage-steps .upload-prompt { font-size: 4.05rem !important; line-height: 1.15 !important; }
+.homepage-font-large .homepage-steps .upload-support { font-size: 3.0375rem !important; line-height: 1.25 !important; }
+.homepage-font-large .homepage-steps .compare-panel-label { font-size: 2.7rem !important; line-height: 1.25 !important; }
+
+@media (min-width: 640px) {
+  .homepage-font-large .homepage-steps .sm\:text-xs { font-size: 1.35rem !important; line-height: 1.65rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-sm { font-size: 1.575rem !important; line-height: 1.95rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-base { font-size: 1.8rem !important; line-height: 2.25rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-lg { font-size: 2.025rem !important; line-height: 2.55rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-xl { font-size: 2.25rem !important; line-height: 2.85rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-2xl { font-size: 2.7rem !important; line-height: 3.3rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-3xl { font-size: 3.375rem !important; line-height: 3.9rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-4xl { font-size: 3.375rem !important; line-height: 3.75rem !important; }
+  .homepage-font-large .homepage-steps .sm\:text-5xl { font-size: 4.5rem !important; line-height: 1 !important; }
+  .homepage-font-large .homepage-steps .sm\:text-6xl { font-size: 5.625rem !important; line-height: 1 !important; }
+  .homepage-font-large .homepage-steps .sm\:text-7xl { font-size: 6.75rem !important; line-height: 1 !important; }
+  .homepage-font-large .homepage-steps .step-title { font-size: 3.375rem !important; }
+}
+
+@media (min-width: 768px) {
+  .homepage-font-large .homepage-steps .md\:text-xs { font-size: 1.35rem !important; line-height: 1.65rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-sm { font-size: 1.575rem !important; line-height: 1.95rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-base { font-size: 1.8rem !important; line-height: 2.25rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-lg { font-size: 2.025rem !important; line-height: 2.55rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-xl { font-size: 2.25rem !important; line-height: 2.85rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-2xl { font-size: 2.7rem !important; line-height: 3.3rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-3xl { font-size: 3.375rem !important; line-height: 3.9rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-4xl { font-size: 3.375rem !important; line-height: 3.75rem !important; }
+  .homepage-font-large .homepage-steps .md\:text-5xl { font-size: 4.5rem !important; line-height: 1 !important; }
+  .homepage-font-large .homepage-steps .md\:text-6xl { font-size: 5.625rem !important; line-height: 1 !important; }
+  .homepage-font-large .homepage-steps .md\:text-7xl { font-size: 6.75rem !important; line-height: 1 !important; }
+}
+
+@media (min-width: 1024px) {
+  .homepage-font-large .homepage-steps .lg\:text-xs { font-size: 1.35rem !important; line-height: 1.65rem !important; }
+  .homepage-font-large .homepage-steps .lg\:text-sm { font-size: 1.575rem !important; line-height: 1.95rem !important; }
+  .homepage-font-large .homepage-steps .lg\:text-base { font-size: 1.8rem !important; line-height: 2.25rem !important; }
+  .homepage-font-large .homepage-steps .lg\:text-lg { font-size: 2.025rem !important; line-height: 2.55rem !important; }
+  .homepage-font-large .homepage-steps .lg\:text-xl { font-size: 2.25rem !important; line-height: 2.85rem !important; }
+  .homepage-font-large .homepage-steps .lg\:text-2xl { font-size: 2.7rem !important; line-height: 3.3rem !important; }
+  .homepage-font-large .homepage-steps .lg\:text-3xl { font-size: 3.375rem !important; line-height: 3.9rem !important; }
+}
+
+/*
  * Shorts feed copy. !important so Tailwind utilities cannot shrink overlay /
  * rail / nav type back to caption size.
  */
