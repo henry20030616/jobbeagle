@@ -2,13 +2,13 @@
  * Page chrome (outside ReportFitStage zoom). Sized to stay readable
  * next to a zoomed Snapshot/Guide slide — not compact header chips.
  */
-export const REPORT_ACTION_TEXT = 'text-5xl font-bold tracking-tight leading-none';
+export const REPORT_ACTION_TEXT = 'text-6xl font-bold tracking-tight leading-none';
 
-export const REPORT_ACTION_ICON = 'w-12 h-12 shrink-0';
+export const REPORT_ACTION_ICON = 'w-16 h-16 shrink-0';
 
-/** Back to Home / New Analysis */
+/** Back to Home / New Analysis / language chrome */
 export const REPORT_ACTION_BTN =
-  `inline-flex min-h-24 items-center gap-4 rounded-xl border-2 border-slate-400 bg-slate-900/70 px-8 py-5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex min-h-28 items-center gap-4 rounded-xl border-2 border-slate-400 bg-slate-900/70 px-8 py-5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
 /**
  * Compact “View sample” chip for the homepage 4-col grid.
@@ -21,8 +21,8 @@ export const SAMPLE_LINK_BTN =
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
  * Keep in sync across all four boxes.
  */
-export const SAMPLE_RAIL_TEXT = 'text-4xl font-bold leading-snug tracking-tight';
-export const SAMPLE_RAIL_ICON = 'w-12 h-12 shrink-0';
+export const SAMPLE_RAIL_TEXT = 'text-6xl font-bold leading-snug tracking-tight';
+export const SAMPLE_RAIL_ICON = 'w-16 h-16 shrink-0';
 export const SAMPLE_HEADER_TEXT = SAMPLE_RAIL_TEXT;
 export const SAMPLE_HEADER_ICON = SAMPLE_RAIL_ICON;
 /** Base shell only — active/inactive border style set by caller (solid vs dashed) */

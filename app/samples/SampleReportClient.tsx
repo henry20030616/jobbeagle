@@ -72,7 +72,7 @@ export default function SampleReportClient() {
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-6 py-6 sm:px-8">
         <BrandLogo size="hero" showIcon />
         <div className="flex flex-wrap items-center justify-end gap-3">
-          <LanguageSwitcher size="lg" />
+          <LanguageSwitcher size="chrome" />
           <button type="button" onClick={goHome} className={`${REPORT_ACTION_BTN} whitespace-nowrap`}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
             {chrome.backHome}
@@ -85,7 +85,7 @@ export default function SampleReportClient() {
       </header>
 
       <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-        <aside className="flex h-full w-[36rem] flex-shrink-0 flex-col gap-6 overflow-y-auto border-r border-slate-800 p-10">
+        <aside className="flex h-full w-[42rem] flex-shrink-0 flex-col gap-6 overflow-y-auto border-r border-slate-800 p-10">
           <div
             className={`${SAMPLE_NOTICE_SURFACE} w-full px-6 py-5 flex flex-col gap-3 rounded-xl`}
           >
@@ -105,7 +105,7 @@ export default function SampleReportClient() {
             </Link>
           </div>
 
-          <div className="grid h-[36rem] w-full grid-rows-3 gap-6">
+          <div className="grid h-[42rem] w-full grid-rows-3 gap-6">
             <Link
               href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
               className={sampleTabClass(!isGuide)}
