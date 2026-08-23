@@ -325,15 +325,15 @@ main input {
   .shorts-font-large .md\:text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
 }
 
-/* Right-rail action labels stay caption-sized; icons are the primary tap target */
+/* Right-rail action labels: 350% of previous caption size; circles stay put */
 .shorts-font-large .shorts-rail-label {
-  font-size: 1.125rem !important;
-  line-height: 1.25rem !important;
+  font-size: 3.9375rem !important;
+  line-height: 1.1 !important;
 }
 @media (min-width: 768px) {
   .shorts-font-large .shorts-rail-label {
-    font-size: 1.25rem !important;
-    line-height: 1.375rem !important;
+    font-size: 4.375rem !important;
+    line-height: 1.1 !important;
   }
 }
 
