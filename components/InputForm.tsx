@@ -558,7 +558,7 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`mx-auto w-full max-w-5xl break-words font-semibold leading-relaxed text-zinc-400 ${
+          className={`mx-auto w-full max-w-[160rem] break-words font-semibold leading-relaxed text-zinc-400 ${
             compactChrome ? 'text-lg md:text-xl' : 'text-2xl md:text-3xl'
           }`}
         >
