@@ -199,7 +199,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
         )}
       </div>
 
-      <p className="text-center text-base text-slate-600 pb-4">
+      <p className="text-center text-base text-slate-500 pb-4">
         © {new Date().getFullYear()} Jobbeagle. All rights reserved.
       </p>
     </div>
