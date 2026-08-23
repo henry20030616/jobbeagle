@@ -152,3 +152,50 @@ main input {
   width: 0;
   height: 0;
 }
+
+/*
+ * Homepage presentation scale.
+ *
+ * The homepage uses Tailwind's standard type utilities across several nested
+ * components. Scope a true 2× type scale here so every nested label, field,
+ * option, and button grows consistently without changing report pages.
+ */
+.homepage-font-2x .text-xs { font-size: 1.5rem; line-height: 2rem; }
+.homepage-font-2x .text-sm { font-size: 1.75rem; line-height: 2.5rem; }
+.homepage-font-2x .text-base { font-size: 2rem; line-height: 3rem; }
+.homepage-font-2x .text-lg { font-size: 2.25rem; line-height: 3rem; }
+.homepage-font-2x .text-xl { font-size: 2.5rem; line-height: 3.5rem; }
+.homepage-font-2x .text-2xl { font-size: 3rem; line-height: 4rem; }
+.homepage-font-2x .text-3xl { font-size: 3.75rem; line-height: 4.5rem; }
+.homepage-font-2x .text-4xl { font-size: 4.5rem; line-height: 5rem; }
+.homepage-font-2x .text-5xl { font-size: 6rem; line-height: 1; }
+.homepage-font-2x .text-6xl { font-size: 7.5rem; line-height: 1; }
+.homepage-font-2x .text-7xl { font-size: 9rem; line-height: 1; }
+
+@media (min-width: 640px) {
+  .homepage-font-2x .sm\:text-xs { font-size: 1.5rem; line-height: 2rem; }
+  .homepage-font-2x .sm\:text-sm { font-size: 1.75rem; line-height: 2.5rem; }
+  .homepage-font-2x .sm\:text-base { font-size: 2rem; line-height: 3rem; }
+  .homepage-font-2x .sm\:text-lg { font-size: 2.25rem; line-height: 3rem; }
+  .homepage-font-2x .sm\:text-xl { font-size: 2.5rem; line-height: 3.5rem; }
+  .homepage-font-2x .sm\:text-2xl { font-size: 3rem; line-height: 4rem; }
+  .homepage-font-2x .sm\:text-3xl { font-size: 3.75rem; line-height: 4.5rem; }
+  .homepage-font-2x .sm\:text-4xl { font-size: 4.5rem; line-height: 5rem; }
+  .homepage-font-2x .sm\:text-5xl { font-size: 6rem; line-height: 1; }
+  .homepage-font-2x .sm\:text-6xl { font-size: 7.5rem; line-height: 1; }
+  .homepage-font-2x .sm\:text-7xl { font-size: 9rem; line-height: 1; }
+}
+
+@media (min-width: 768px) {
+  .homepage-font-2x .md\:text-xs { font-size: 1.5rem; line-height: 2rem; }
+  .homepage-font-2x .md\:text-sm { font-size: 1.75rem; line-height: 2.5rem; }
+  .homepage-font-2x .md\:text-base { font-size: 2rem; line-height: 3rem; }
+  .homepage-font-2x .md\:text-lg { font-size: 2.25rem; line-height: 3rem; }
+  .homepage-font-2x .md\:text-xl { font-size: 2.5rem; line-height: 3.5rem; }
+  .homepage-font-2x .md\:text-2xl { font-size: 3rem; line-height: 4rem; }
+  .homepage-font-2x .md\:text-3xl { font-size: 3.75rem; line-height: 4.5rem; }
+  .homepage-font-2x .md\:text-4xl { font-size: 4.5rem; line-height: 5rem; }
+  .homepage-font-2x .md\:text-5xl { font-size: 6rem; line-height: 1; }
+  .homepage-font-2x .md\:text-6xl { font-size: 7.5rem; line-height: 1; }
+  .homepage-font-2x .md\:text-7xl { font-size: 9rem; line-height: 1; }
+}
