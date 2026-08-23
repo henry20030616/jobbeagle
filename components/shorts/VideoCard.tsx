@@ -1037,13 +1037,17 @@ const VideoCard: React.FC<VideoCardProps> = ({
             <div className="pointer-events-auto px-5 md:px-10 w-full max-w-[176rem]">
                 <div className="flex flex-col justify-end gap-5">
                   <div className="flex flex-nowrap gap-3 text-2xl md:text-3xl min-h-0 shrink-0">
-                    <span className="flex min-w-0 items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-lg text-gray-100 border border-white/10 max-w-[min(100%,40rem)]">
+                    <span className="flex shrink-0 items-center gap-2 rounded-lg border border-white/10 bg-slate-800/90 px-4 py-2 text-gray-100">
                       <MapPin size={28} className="shrink-0 opacity-90" />
-                      <span className="truncate">{job.location}</span>
+                      <span>
+                        {t('工作地點', 'Location')}: {job.location?.trim() || t('未提供', 'Not listed')}
+                      </span>
                     </span>
-                    <span className="flex min-w-0 items-center gap-2 bg-emerald-950/70 text-emerald-200 px-4 py-2 rounded-lg border border-emerald-500/25 max-w-[min(100%,40rem)]">
+                    <span className="flex min-w-0 items-center gap-2 rounded-lg border border-emerald-500/25 bg-emerald-950/70 px-4 py-2 text-emerald-200">
                       <DollarSign size={28} className="shrink-0 opacity-90" />
-                      <span className="truncate">{job.salary}</span>
+                      <span className="truncate">
+                        {t('薪資範圍', 'Salary')}: {job.salary?.trim() || t('未提供', 'Not listed')}
+                      </span>
                     </span>
                   </div>
                   <div className="flex min-w-0 w-full items-baseline gap-3 text-2xl md:text-3xl text-gray-100/95 leading-relaxed">
