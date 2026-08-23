@@ -169,6 +169,12 @@ main input {
 .homepage-font-large .text-6xl { font-size: 7.03125rem !important; line-height: 1 !important; }
 .homepage-font-large .text-7xl { font-size: 8.4375rem !important; line-height: 1 !important; }
 
+/* Step 1–4 headings: 75% of the previous text-4xl / sm:text-5xl display size */
+.homepage-font-large .step-title {
+  font-size: 3.1640625rem !important;
+  line-height: 1.15 !important;
+}
+
 @media (min-width: 640px) {
   .homepage-font-large .sm\:text-xs { font-size: 1.6875rem !important; line-height: 2.0625rem !important; }
   .homepage-font-large .sm\:text-sm { font-size: 1.96875rem !important; line-height: 2.4375rem !important; }
@@ -181,6 +187,9 @@ main input {
   .homepage-font-large .sm\:text-5xl { font-size: 5.625rem !important; line-height: 1 !important; }
   .homepage-font-large .sm\:text-6xl { font-size: 7.03125rem !important; line-height: 1 !important; }
   .homepage-font-large .sm\:text-7xl { font-size: 8.4375rem !important; line-height: 1 !important; }
+  .homepage-font-large .step-title {
+    font-size: 4.21875rem !important;
+  }
 }
 
 @media (min-width: 768px) {
