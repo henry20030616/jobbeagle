@@ -175,6 +175,20 @@ main input {
   line-height: 1.15 !important;
 }
 
+/* Resume upload + compare-panel copy: 1.5× previous display size */
+.homepage-font-large .upload-prompt {
+  font-size: 5.0625rem !important;
+  line-height: 1.15 !important;
+}
+.homepage-font-large .upload-support {
+  font-size: 3.796875rem !important;
+  line-height: 1.25 !important;
+}
+.homepage-font-large .compare-panel-label {
+  font-size: 3.375rem !important;
+  line-height: 1.25 !important;
+}
+
 @media (min-width: 640px) {
   .homepage-font-large .sm\:text-xs { font-size: 1.6875rem !important; line-height: 2.0625rem !important; }
   .homepage-font-large .sm\:text-sm { font-size: 1.96875rem !important; line-height: 2.4375rem !important; }

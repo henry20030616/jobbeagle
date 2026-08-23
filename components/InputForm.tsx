@@ -805,12 +805,12 @@ const InputForm: React.FC<InputFormProps> = ({
                       htmlFor="resume-file-input"
                       className="group relative z-10 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl px-3 py-4 hover:bg-slate-700/30"
                     >
-                      <div className="rounded-full border border-slate-700 bg-slate-800 p-2.5 transition-colors group-hover:border-indigo-500/30 group-hover:bg-indigo-500/20">
-                        <Upload className="h-6 w-6 text-slate-400 group-hover:text-indigo-400" />
+                      <div className="rounded-full border border-slate-700 bg-slate-800 p-4 transition-colors group-hover:border-indigo-500/30 group-hover:bg-indigo-500/20">
+                        <Upload className="h-9 w-9 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="min-w-0 text-center">
-                        <p className="text-2xl font-bold text-slate-300">{t.upload}</p>
-                        <p className="mt-1 text-lg font-medium leading-snug text-slate-500">{t.uploadSupport}</p>
+                        <p className="upload-prompt text-4xl font-bold text-slate-300">{t.upload}</p>
+                        <p className="upload-support mt-2 text-2xl font-medium leading-snug text-slate-500">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input
@@ -830,8 +830,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         <FileText className="h-4 w-4 text-white" />
                       </div>
                       <div className="min-w-0 text-left">
-                        <p className="truncate text-base font-bold text-white">{resume.fileName}</p>
-                        <p className="text-xs text-indigo-300">Ready for Analysis</p>
+                        <p className="truncate text-2xl font-bold text-white">{resume.fileName}</p>
+                        <p className="text-lg text-indigo-300">Ready for Analysis</p>
                       </div>
                       <button
                         type="button"

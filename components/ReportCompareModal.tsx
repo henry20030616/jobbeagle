@@ -64,7 +64,7 @@ export default function ReportCompareModal({
     variant === 'button'
       ? `${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 ${className}`
       : variant === 'panel'
-        ? `flex h-full w-full min-h-0 items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-base font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50 ${className}`
+        ? `compare-panel-label flex h-full w-full min-h-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-2xl font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50 ${className}`
         : `inline-flex items-center gap-2.5 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
 
   const iconClass =
