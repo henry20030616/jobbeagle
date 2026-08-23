@@ -730,7 +730,7 @@ function BottomNav({
 }) {
   return (
     <div
-      className="shorts-font-large h-[6.6rem] md:h-[7.8rem] bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      className="shorts-font-large h-[13.5rem] md:h-[16rem] bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {([

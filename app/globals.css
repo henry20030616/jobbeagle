@@ -327,9 +327,9 @@ main input {
   }
 }
 
-/* Bottom nav labels: 60% of the previous shorts text-2xl / md:text-3xl display size */
+/* Bottom nav labels: 400% of the previous 60% size */
 .shorts-font-large .shorts-nav-label {
-  font-size: 1.95rem !important;
+  font-size: 7.8rem !important;
   line-height: 1 !important;
 }
 .shorts-font-large .shorts-nav-badge {
@@ -338,6 +338,6 @@ main input {
 }
 @media (min-width: 768px) {
   .shorts-font-large .shorts-nav-label {
-    font-size: 2.4rem !important;
+    font-size: 9.6rem !important;
   }
 }
