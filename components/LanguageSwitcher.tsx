@@ -39,16 +39,16 @@ export default function LanguageSwitcher({ variant = 'dark', size = 'md' }: Prop
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className={`flex items-center gap-2 rounded-xl font-semibold transition-all select-none ${
-          large ? 'gap-3 px-6 py-4 text-2xl' : 'gap-1.5 px-3 py-2 text-sm'
+        className={`flex items-center rounded-xl font-semibold transition-all select-none ${
+          large ? 'gap-3 px-6 py-4 text-xl' : 'gap-1.5 px-3 py-2 text-sm'
         } ${
           isDark
-            ? 'bg-slate-800/60 border-2 border-slate-700 text-slate-200 hover:bg-slate-700/70'
+            ? 'bg-slate-800/60 border border-slate-700 text-slate-200 hover:bg-slate-700/70'
             : 'bg-black/40 backdrop-blur-md border-2 border-white/20 text-white hover:bg-black/55'
         }`}
       >
-        <span className={`${large ? 'text-3xl' : 'text-base'} leading-none`}>{currentOption.flag}</span>
-        <span className="hidden sm:inline">{currentOption.nativeName}</span>
+        <span className={`${large ? 'text-xl leading-none' : 'text-base leading-none'}`}>{currentOption.flag}</span>
+        <span className={`hidden sm:inline ${large ? 'text-xl' : ''}`}>{currentOption.nativeName}</span>
         <ChevronDown
           className={`${large ? 'w-7 h-7' : 'w-3.5 h-3.5'} transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
