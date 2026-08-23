@@ -867,87 +867,125 @@ const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </div>
 
-      {/* --- Right Sidebar Actions --- */}
-      <div className="absolute right-3 bottom-[6.25rem] z-20 flex flex-col items-center gap-6 pb-2 md:right-1/2 md:bottom-[18rem] md:translate-x-1/2 md:flex-row md:gap-8 md:rounded-3xl md:border md:border-white/15 md:bg-black/50 md:px-8 md:py-5 md:backdrop-blur-xl xl:bottom-[21rem] xl:gap-4 xl:px-4">
-        {/* Like Button */}
-        <div className="flex flex-col items-center gap-2">
+      {/* --- Right rail: all actions sit on the video's right edge --- */}
+      {(!showFullDetails && !showApplyModal) && (
+      <div className="absolute right-3 md:right-5 top-1/2 z-20 flex w-[5.5rem] md:w-36 xl:w-44 -translate-y-1/2 flex-col items-center gap-3 md:gap-4">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`p-5 md:p-7 xl:p-8 min-w-[72px] min-h-[72px] md:min-w-[120px] md:min-h-[120px] xl:min-w-[160px] xl:min-h-[160px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
+              className={`flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} className={`h-[42px] w-[42px] md:h-16 md:w-16 xl:h-24 xl:w-24 ${liked ? 'animate-pulse' : ''}`} />
+              <Heart fill={liked ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${liked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-base md:text-2xl xl:text-4xl font-bold drop-shadow-md text-white tabular-nums">
+            <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white tabular-nums">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
 
-        {/* Follow Button */}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`p-5 md:p-7 xl:p-8 min-w-[72px] min-h-[72px] md:min-w-[120px] md:min-h-[120px] xl:min-w-[160px] xl:min-h-[160px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
+              className={`flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} className={`h-[42px] w-[42px] md:h-16 md:w-16 xl:h-24 xl:w-24 ${followed ? 'animate-pulse' : ''}`} />
+              <UserPlus fill={followed ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${followed ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-base md:text-2xl xl:text-4xl font-bold drop-shadow-md text-white md:max-w-[8rem] xl:max-w-[12rem] text-center leading-tight">
+            <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white text-center leading-tight">
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
 
-        {/* Bookmark Button */}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1.5">
             <button 
-              className={`p-5 md:p-7 xl:p-8 min-w-[72px] min-h-[72px] md:min-w-[120px] md:min-h-[120px] xl:min-w-[160px] xl:min-h-[160px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
+              className={`flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`h-[42px] w-[42px] md:h-16 md:w-16 xl:h-24 xl:w-24 ${bookmarked ? 'animate-pulse' : ''}`} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12 ${bookmarked ? 'animate-pulse' : ''}`} />
             </button>
-            <span className="text-base md:text-2xl xl:text-4xl font-bold drop-shadow-md text-white">
+            <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
 
-        {/* Share Button */}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-1.5">
           <button
-            className="p-5 md:p-7 xl:p-8 min-w-[72px] min-h-[72px] md:min-w-[120px] md:min-h-[120px] xl:min-w-[160px] xl:min-h-[160px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
+            className="flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
             onClick={handleShareClick}
           >
-            <Share2 className="h-[42px] w-[42px] md:h-16 md:w-16 xl:h-24 xl:w-24" />
+            <Share2 className="h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12" />
           </button>
-          <span className="text-base md:text-2xl xl:text-4xl font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
+          <span className="text-sm md:text-lg xl:text-xl font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
-        
-        {/* Mute Toggle — shown for all video types.
-            Upload: directly controls <video>.muted
-            YouTube: uses postMessage / enablejsapi
-            FB / IG / external: toggles icon; user uses platform native controls */}
-        <div className="flex flex-col items-center gap-2 mt-1">
+
+        <div className="flex flex-col items-center gap-1.5">
           <button
             onClick={toggleMute}
-            className="p-5 md:p-7 xl:p-8 min-w-[72px] min-h-[72px] md:min-w-[120px] md:min-h-[120px] xl:min-w-[160px] xl:min-h-[160px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
+            className="flex h-16 w-16 md:h-20 md:w-20 xl:h-24 xl:w-24 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 text-white transition-all active:scale-90 hover:scale-105"
           >
             {isMuted
-              ? <VolumeX className="h-[38px] w-[38px] md:h-16 md:w-16 xl:h-24 xl:w-24" />
-              : <Volume2 className="h-[38px] w-[38px] md:h-16 md:w-16 xl:h-24 xl:w-24" />}
+              ? <VolumeX className="h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12" />
+              : <Volume2 className="h-8 w-8 md:h-10 md:w-10 xl:h-12 xl:w-12" />}
           </button>
         </div>
-      </div>
 
-      {/* --- Bottom: 三等份 — 左文字 / 中 AI / 右申請，減少直向堆疊遮擋影片 --- */}
+        {!job.applyUrl && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAnalyzeWithAI(e);
+            }}
+            className="mt-1 flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-violet-600 px-2 py-2.5 text-white shadow-lg border-2 border-violet-400/30 hover:bg-violet-500 active:scale-[0.99]"
+          >
+            <Sparkles className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
+            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">
+              {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配' : 'AI Match'}
+            </span>
+          </button>
+        )}
+
+        {job.applyUrl ? (
+          <a
+            href={job.applyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-600 px-2 py-2.5 text-white shadow-lg border-2 border-white/15 hover:bg-slate-500 active:scale-[0.99]"
+          >
+            <ExternalLink className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
+            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">
+              {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
+            </span>
+          </a>
+        ) : hasApplied ? (
+          <button
+            type="button"
+            disabled
+            className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-700 px-2 py-2.5 text-slate-300 border-2 border-slate-600 cursor-not-allowed"
+          >
+            <CheckCircle className="h-6 w-6 md:h-7 md:w-7 shrink-0 text-emerald-400" />
+            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">{t('已申請', 'Applied')}</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={(e) => { void handleApplyStart(e); }}
+            className="flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-cyan-600 px-2 py-2.5 text-white shadow-lg border-2 border-cyan-400/30 hover:bg-cyan-500 active:scale-[0.99]"
+          >
+            <Briefcase className="h-6 w-6 md:h-7 md:w-7 shrink-0" />
+            <span className="text-center text-xs md:text-sm xl:text-base font-bold leading-tight">
+              {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Apply'}
+            </span>
+          </button>
+        )}
+      </div>
+      )}
+
+      {/* --- Bottom-left job copy only; actions live on the right --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="absolute bottom-0 left-0 w-full z-20 text-white pb-[4.75rem] md:pb-44 xl:pb-52 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pt-8 md:pt-16">
-            <div className="pointer-events-auto px-3 md:px-8 w-full max-w-[100vw]">
-              {/* 固定列高＝按鈕欄高度；左欄不可超出，字放大、預覽截短（詳情見 more） */}
-              <div
-                className={`grid gap-2 sm:gap-3 md:gap-8 items-stretch min-h-[6rem] h-[6rem] sm:min-h-[6.5rem] sm:h-[6.5rem] md:min-h-[10rem] md:h-[10rem] xl:min-h-[12rem] xl:h-[12rem] ${
-                  job.applyUrl ? 'grid-cols-[1fr_2fr]' : 'grid-cols-3'
-                }`}
-              >
-                {/* 左：職缺文字（高度 ≤ 中欄按鈕，overflow 裁切） */}
-                <div className="min-w-0 min-h-0 h-full max-h-full overflow-hidden flex flex-col justify-center gap-1 pr-0.5">
-                  <div className="flex flex-row items-center gap-2 min-h-0 shrink-0">
+          <div className="absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-6 pt-16 pr-[6.5rem] md:pr-44 xl:pr-52">
+            <div className="pointer-events-auto px-3 md:px-8 max-w-[min(100%,42rem)]">
+                <div className="flex flex-col justify-end gap-2">
+                  <div className="flex flex-row items-center gap-3 min-h-0 shrink-0">
                     <Link
                       href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                       onClick={(e) => e.stopPropagation()}
@@ -958,31 +996,31 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         <img
                           src={job.logoUrl}
                           alt=""
-                          className="w-10 h-10 sm:w-11 sm:h-11 md:w-20 md:h-20 rounded-full border-2 border-white/40 bg-white object-contain shadow-lg"
+                          className="w-10 h-10 sm:w-11 sm:h-11 md:w-16 md:h-16 rounded-full border-2 border-white/40 bg-white object-contain shadow-lg"
                           onError={() => setLogoError(true)}
                         />
                       ) : (
-                        <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-20 md:h-20 rounded-full border-2 border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
-                          <span className="text-white font-bold text-base sm:text-lg md:text-3xl">
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-16 md:h-16 rounded-full border-2 border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
+                          <span className="text-white font-bold text-base sm:text-lg md:text-2xl">
                             {job.companyName.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
                     </Link>
                     <div className="flex flex-col min-w-0 gap-0 justify-center">
-                      <h3 className="text-base sm:text-lg md:text-3xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
+                      <h3 className="text-base sm:text-lg md:text-2xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
                         {job.jobTitle}
                       </h3>
                       <Link
                         href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-sm sm:text-base md:text-2xl font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
+                        className="text-sm sm:text-base md:text-xl font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
                       >
                         @{job.companyName}
                       </Link>
                     </div>
                   </div>
-                  <div className="flex flex-nowrap gap-1.5 text-xs sm:text-sm md:text-xl min-h-0 shrink-0 overflow-hidden">
+                  <div className="flex flex-nowrap gap-1.5 text-xs sm:text-sm md:text-base min-h-0 shrink-0 overflow-hidden">
                     <span className="flex items-center gap-1 bg-slate-800/90 px-2 py-0.5 rounded-md text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
                       <MapPin size={14} className="shrink-0 opacity-90" />
                       <span className="truncate">{job.location}</span>
@@ -992,8 +1030,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       <span className="truncate">{job.salary}</span>
                     </span>
                   </div>
-                  <div className="flex items-baseline gap-1.5 min-w-0 min-h-0 shrink text-sm sm:text-base md:text-2xl text-gray-100/95 leading-snug">
-                    <p className="line-clamp-1 min-w-0 flex-1 break-words">{job.description}</p>
+                  <div className="flex items-baseline gap-1.5 min-w-0 text-sm sm:text-base md:text-lg text-gray-100/95 leading-snug">
+                    <p className="line-clamp-2 min-w-0 flex-1 break-words">{job.description}</p>
                     <button
                       type="button"
                       className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform shrink-0"
@@ -1006,61 +1044,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     </button>
                   </div>
                 </div>
-
-                {/* 中：AI 匹配（僅無外部申請網址時）— 列高基準 */}
-                {!job.applyUrl && (
-                  <div className="min-w-0 min-h-0 h-full flex items-end justify-center">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAnalyzeWithAI(e);
-                      }}
-                      className="w-full max-w-[10rem] sm:max-w-none h-[4rem] sm:h-[4.5rem] md:h-[8rem] xl:h-[10rem] shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl md:rounded-3xl shadow-lg flex flex-row items-center justify-center gap-2 sm:gap-2.5 md:gap-5 xl:gap-6 transition-colors active:scale-[0.99] text-sm sm:text-base md:text-3xl xl:text-4xl border-2 border-violet-400/30 px-2 sm:px-3 md:px-8"
-                    >
-                      <Sparkles className="h-5 w-5 shrink-0 sm:h-[22px] sm:w-[22px] md:h-12 md:w-12 xl:h-16 xl:w-16" />
-                      <span className="text-center leading-tight line-clamp-2">
-                        {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
-                      </span>
-                    </button>
-                  </div>
-                )}
-
-                {/* 右：一鍵申請；有外部申請時為第二欄（較寬） */}
-                <div className="min-w-0 min-h-0 h-full flex items-end justify-center">
-                  {job.applyUrl ? (
-                    <a
-                      href={job.applyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-full h-[4rem] sm:h-[4.5rem] md:h-[8rem] xl:h-[10rem] shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl md:rounded-3xl shadow-lg flex items-center justify-center gap-2.5 md:gap-5 xl:gap-6 transition-colors active:scale-[0.99] text-base sm:text-lg md:text-3xl xl:text-4xl border-2 border-white/15 px-3 md:px-8"
-                    >
-                      <ExternalLink className="h-[22px] w-[22px] shrink-0 md:h-12 md:w-12 xl:h-16 xl:w-16" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
-                    </a>
-                  ) : hasApplied ? (
-                    <button
-                      type="button"
-                      disabled
-                      className="w-full max-w-[10rem] sm:max-w-none h-[4rem] sm:h-[4.5rem] md:h-[8rem] xl:h-[10rem] shrink-0 bg-slate-700 text-slate-300 font-bold rounded-xl md:rounded-3xl flex flex-row items-center justify-center gap-2 sm:gap-2.5 md:gap-5 xl:gap-6 text-sm sm:text-base md:text-3xl xl:text-4xl border-2 border-slate-600 px-2 sm:px-3 md:px-8 cursor-not-allowed"
-                    >
-                      <CheckCircle className="h-5 w-5 shrink-0 text-emerald-400 md:h-12 md:w-12 xl:h-16 xl:w-16" />
-                      <span className="text-center leading-tight">{t('已申請', 'Applied')}</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => { void handleApplyStart(e); }}
-                      className="w-full max-w-[10rem] sm:max-w-none h-[4rem] sm:h-[4.5rem] md:h-[8rem] xl:h-[10rem] shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl md:rounded-3xl shadow-lg flex flex-row items-center justify-center gap-2 sm:gap-2.5 md:gap-5 xl:gap-6 transition-colors active:scale-[0.99] text-sm sm:text-base md:text-3xl xl:text-4xl border-2 border-cyan-400/30 px-2 sm:px-3 md:px-8"
-                    >
-                      <Briefcase className="h-5 w-5 shrink-0 sm:h-[22px] sm:w-[22px] md:h-12 md:w-12 xl:h-16 xl:w-16" />
-                      <span className="text-center leading-tight line-clamp-2">
-                        {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}
-                      </span>
-                    </button>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
       )}
