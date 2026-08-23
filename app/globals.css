@@ -326,3 +326,18 @@ main input {
     line-height: 1.375rem !important;
   }
 }
+
+/* Bottom nav labels: 60% of the previous shorts text-2xl / md:text-3xl display size */
+.shorts-font-large .shorts-nav-label {
+  font-size: 1.95rem !important;
+  line-height: 1 !important;
+}
+.shorts-font-large .shorts-nav-badge {
+  font-size: 0.7rem !important;
+  line-height: 1 !important;
+}
+@media (min-width: 768px) {
+  .shorts-font-large .shorts-nav-label {
+    font-size: 2.4rem !important;
+  }
+}
