@@ -746,7 +746,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   aria-expanded={showHistoryDropdown}
                   aria-haspopup="listbox"
                 >
-                  <History className="h-4 w-4 shrink-0" />
+                  <History className="h-[1em] w-[1em] shrink-0" />
                   <span className="font-bold">{t.resumeLibrary}</span>
                   {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
                 </button>
@@ -759,13 +759,13 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                     <div
                       role="listbox"
-                      className="absolute left-0 top-full z-50 mt-1 max-h-72 max-w-[calc(100vw-2rem)] w-80 animate-fade-in overflow-y-auto rounded-xl border border-slate-600 bg-slate-800 shadow-2xl"
+                      className="absolute left-0 top-full z-50 mt-[0.35em] max-h-[16em] w-[22em] max-w-[calc(100vw-2rem)] animate-fade-in overflow-y-auto rounded-2xl border border-slate-600 bg-slate-800 text-2xl shadow-2xl"
                     >
-                      <div className="sticky top-0 border-b border-slate-700 bg-slate-900/95 p-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+                      <div className="sticky top-0 border-b border-slate-700 bg-slate-900/95 px-[0.8em] py-[0.55em] text-lg font-bold uppercase tracking-wider text-slate-400">
                         {t.recentlyUploaded}
                       </div>
                       {resumeHistory.length === 0 ? (
-                        <div className="p-6 text-center text-sm text-slate-500">
+                        <div className="p-[1.2em] text-center text-xl text-slate-500">
                           <p>{t.noResume}</p>
                         </div>
                       ) : (
@@ -774,22 +774,23 @@ const InputForm: React.FC<InputFormProps> = ({
                             key={historyItem.id}
                             role="option"
                             onClick={() => handleSelectResume(historyItem)}
-                            className="group relative flex cursor-pointer items-start border-b border-slate-700/50 p-3 transition-all last:border-0 hover:bg-slate-700"
+                            className="group relative flex cursor-pointer items-start gap-[0.45em] border-b border-slate-700/50 px-[0.8em] py-[0.65em] transition-all last:border-0 hover:bg-slate-700"
                           >
-                            <FileText className="mr-2 mt-0.5 h-4 w-4 shrink-0 text-indigo-400" />
-                            <div className="flex-1 overflow-hidden text-left">
-                              <p className="truncate text-sm font-bold text-slate-200">{historyItem.fileName}</p>
-                              <p className="mt-1 flex items-center text-xs text-slate-500">
-                                <Clock className="mr-1 h-3.5 w-3.5" />
+                            <FileText className="mt-[0.15em] h-[1em] w-[1em] shrink-0 text-indigo-400" />
+                            <div className="min-w-0 flex-1 overflow-hidden text-left">
+                              <p className="truncate font-bold text-slate-200">{historyItem.fileName}</p>
+                              <p className="mt-[0.2em] flex items-center text-lg text-slate-400">
+                                <Clock className="mr-[0.35em] h-[1em] w-[1em]" />
                                 {formatDateTime(historyItem.timestamp)}
                               </p>
                             </div>
                             <button
                               type="button"
                               onClick={(e) => handleDeleteResume(e, historyItem.id)}
-                              className="rounded p-1.5 text-slate-600 hover:text-red-400"
+                              className="rounded-lg p-[0.35em] text-slate-500 hover:bg-white/10 hover:text-red-400"
+                              aria-label="Remove resume"
                             >
-                              <X className="h-3.5 w-3.5" />
+                              <X className="h-[1em] w-[1em]" />
                             </button>
                           </div>
                         ))
