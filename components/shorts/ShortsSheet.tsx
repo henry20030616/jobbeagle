@@ -17,7 +17,7 @@ type ShortsSheetProps = {
 /**
  * Viewport bottom sheet — portaled so VideoCard `overflow:hidden` cannot clip it
  * (job “...more” details, apply, AI match). Backdrop is unscaled (fixed inset-0).
- * Content uses phone canvas width + `--jb-fit-zoom` from FitStage fill mode.
+ * Content uses phone canvas width + `--jb-fit-zoom` from the Shorts FitStage.
  */
 export default function ShortsSheet({
   children,

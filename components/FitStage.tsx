@@ -23,12 +23,13 @@ export type FitStageProps = {
   maxScale?: number;
   /**
    * contain (default): fixed design canvas + CSS zoom.
-   * fill: full-bleed fluid stage (Shorts desktop 滿版) — width/height 100%, zoom=1.
+   * fill: full-bleed fluid stage — width/height 100%, zoom=1.
+   * shorts: phone full-bleed; desktop 9:16 height-fill so chrome scales with the video.
    */
   mode?: FitScaleMode;
   /**
    * When true, write the current scale to :root `--jb-fit-zoom` so portals
-   * (e.g. ShortsSheet) can opt into the same zoom. In fill mode this publishes
+   * (e.g. ShortsSheet) can opt into the same zoom. Fluid/fill stages publish
    * sheetZoom (stage itself stays at zoom=1).
    */
   publishZoomVar?: boolean;
@@ -45,7 +46,8 @@ export type FitStageProps = {
  * Outer always clips horizontally — never contributes to page scroll.
  * Do NOT put min-h-screen / 100vh inside the zoomed canvas (they get multiplied).
  *
- * mode="fill": fluid full-bleed (no phone pillar) — for desktop Shorts 滿版.
+ * mode="shorts": phones fill the viewport; wider screens use a 9:16 column
+ * whose zoom keeps text/buttons proportional to the video.
  */
 export function FitStage({
   children,
@@ -90,7 +92,7 @@ export function FitStage({
       if (publishZoomVar) {
         document.documentElement.style.setProperty(
           FIT_ZOOM_CSS_VAR,
-          String(mode === 'fill' ? sheetZoom : rounded),
+          String(nextFluid ? sheetZoom : rounded),
         );
       }
     };
@@ -108,22 +110,23 @@ export function FitStage({
     };
   }, [designWidth, designHeight, minScale, maxScale, mode, publishZoomVar]);
 
-  const fill = mode === 'fill';
-  const innerHeight = fill ? undefined : (canvasHeight ?? designHeight);
+  const fillLayout = mode === 'fill' || (mode === 'shorts' && fluid);
+  const innerHeight = fillLayout ? undefined : (canvasHeight ?? designHeight);
 
   return (
     <div
       ref={outerRef}
       data-fit-stage
       data-fit-mode={mode}
-      className={`flex w-full min-w-0 justify-center overflow-x-clip self-stretch ${fill ? 'h-full' : ''} ${className}`}
+      data-fit-fluid={fluid ? 'true' : 'false'}
+      className={`flex w-full min-w-0 justify-center overflow-x-clip self-stretch ${fillLayout ? 'h-full' : ''} ${className}`}
     >
       <div
         data-fit-canvas
-        className={`origin-top shrink-0 ${fluid || fill ? 'w-full max-w-full' : ''} ${fill ? 'h-full min-h-0' : ''} ${canvasClassName}`}
+        className={`origin-top shrink-0 ${fluid || fillLayout ? 'w-full max-w-full' : ''} ${fillLayout ? 'h-full min-h-0' : ''} ${canvasClassName}`}
         style={{
-          ...(fluid || fill ? {} : { width: designWidth }),
-          ...(innerHeight != null && !fluid && !fill ? { height: innerHeight } : {}),
+          ...(fluid || fillLayout ? {} : { width: designWidth }),
+          ...(innerHeight != null && !fluid && !fillLayout ? { height: innerHeight } : {}),
           zoom: scale,
           visibility: ready ? 'visible' : 'hidden',
         }}

@@ -14,18 +14,20 @@ All non-homepage surfaces use [`FitStage`](components/FitStage.tsx) + [`computeF
 
 | Surface | Canvas | Scale rule |
 |---------|--------|------------|
-| Shorts | **full-bleed** (`mode="fill"`) | `fluid` 100%×100%, zoom=1 — fills the browser (desktop 滿版). Sheet portals use `--jb-fit-zoom` ≈ 40% viewport width from a 430px reference |
+| Shorts | **430×764 (true 9:16)** | `mode="shorts"`: phones (≤9:16) full-bleed zoom=1; wider screens `min(w/430, h/764)` so visual width = `availH×9/16`. Video + text + buttons scale together. |
 | Docs (extension, account, privacy/terms, confirm) | 1440 wide | enlarge-only (`minScale=1`); below 1440 → fluid 100% |
 | Report / samples | 1680 via `ReportFitStage` | existing FitStage wrapper |
 
 Publish `--jb-fit-zoom` from Shorts so portaled sheets match.
 
-Do **not** put Shorts back into a centered 9:16 phone pillar on desktop — users expect full-bleed.
+Do **not** use a taller-than-9:16 canvas (e.g. 430×932) — height-fit then produces a skinny postage-stamp column on desktop.
+
+Do **not** switch Shorts to `mode="fill"` on desktop (full-bleed, zoom=1) — the video fills the window while chrome stays at phone pixel sizes and looks tiny.
 
 ## Hard bans
 
 - Do **not** hand-tune absolute pixels to “look big” on ultrawide (`h-16`, `min-w-[4.5rem]`, 350% `!important` font maps on Shorts).
-- Do **not** size columns with `flex` + `w-full` + `max-w-*`, `min-width: min(100%, …)`, or `%` + `aspect-ratio` in a way that collapses to a sliver (prefer `mode="fill"` + explicit `h-full min-h-0`).
+- Do **not** size columns with `flex` + `w-full` + `max-w-*`, `min-width: min(100%, …)`, or `%` + `aspect-ratio` (collapses to a sliver).
 - Do **not** put `min-h-screen` / `100vh` **inside** a zoomed (non-fill) canvas (they get multiplied).
 - Do **not** wrap `/report` or `/samples` in a second FitStage (already have ReportFitStage).
 
@@ -35,4 +37,4 @@ Do **not** put Shorts back into a centered 9:16 phone pillar on desktop — user
 
 ## After any layout change
 
-Run `npx vitest run __tests__/unit/fit-scale.test.ts` and (with Shorts enabled) `npx playwright test e2e/fit-ratio.spec.ts`. Desktop Shorts stage must be ≥ ~95% of viewport width/height — never a centered phone pillar with black side bars.
+Run `npx vitest run __tests__/unit/fit-scale.test.ts` and (with Shorts enabled) `npx playwright test e2e/fit-ratio.spec.ts`. Desktop Shorts column must be ≈ `viewportHeight × 9/16` wide (≥ ~30% of a landscape window) — never a tens-of-pixels seam, and never a full-bleed video with unscaled chrome.

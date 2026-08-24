@@ -57,7 +57,7 @@ test.describe('FitStage ratios', () => {
     }
   });
 
-  test('Shorts stage is full-bleed (≥95% viewport width when enabled)', async ({ page }) => {
+  test('Shorts phone canvas ≥ 25% viewport width (when enabled)', async ({ page }) => {
     await page.setViewportSize(VIEWPORTS[0]);
     await page.goto('/shorts', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
@@ -68,17 +68,25 @@ test.describe('FitStage ratios', () => {
       return;
     }
 
+    const ratios: number[] = [];
     for (const vp of VIEWPORTS) {
       await page.setViewportSize(vp);
       await page.goto('/shorts', { waitUntil: 'domcontentloaded' });
       await dismissShortsOverlay(page);
       await page.waitForSelector('[data-fit-canvas]', { timeout: 15_000 });
-      const stage = page.locator('[data-fit-stage]').first();
-      await expect(stage).toHaveAttribute('data-fit-mode', 'fill');
       const box = await page.locator('[data-fit-canvas]').first().boundingBox();
       expect(box).toBeTruthy();
-      expect(box!.width / vp.width).toBeGreaterThanOrEqual(0.95);
-      expect(box!.height / vp.height).toBeGreaterThanOrEqual(0.9);
+      const ratio = box!.width / vp.width;
+      // Portrait 9:16 of viewport height ≈ 30–45% on landscape desktops; full width on phone
+      expect(ratio).toBeGreaterThanOrEqual(0.28);
+      expect(ratio).toBeLessThanOrEqual(0.7);
+      expect(box!.width).toBeGreaterThan(350);
+      ratios.push(ratio);
+    }
+
+    const mean = ratios.reduce((a, b) => a + b, 0) / ratios.length;
+    for (const r of ratios) {
+      expect(Math.abs(r - mean)).toBeLessThan(0.08);
     }
   });
 });

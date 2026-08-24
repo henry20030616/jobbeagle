@@ -18,7 +18,7 @@ import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import BrandLogo from '@/components/BrandLogo';
 import { FitStage } from '@/components/FitStage';
-import { SHORTS_DESIGN_WIDTH } from '@/constants/fit-stage';
+import { SHORTS_DESIGN_HEIGHT, SHORTS_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 const getLogoUrl = (n: string) =>
   `https://www.google.com/s2/favicons?domain=${n.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
@@ -358,24 +358,34 @@ export default function JobbeagleShortsPage() {
   return (
     <div className="fixed inset-0 z-10 bg-black overflow-hidden">
 
-      {/* ── Sound overlay: full-screen, requires one tap to bypass browser autoplay policy ── */}
+      {/* Phone canvas 430×764 (9:16) on desktop; full-bleed on phones */}
+      <FitStage
+        mode="shorts"
+        designWidth={SHORTS_DESIGN_WIDTH}
+        designHeight={SHORTS_DESIGN_HEIGHT}
+        minScale={0.35}
+        maxScale={3.5}
+        publishZoomVar
+        className="h-full items-center"
+        canvasClassName="relative flex flex-col bg-black overflow-hidden"
+      >
+
       {showSoundOverlay && (
         <div
           onClick={handleEnableSound}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer"
+          className="absolute inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer"
           style={{ background: 'linear-gradient(160deg, #0d0d1a 0%, #0a0a14 50%, #050510 100%)' }}
         >
-          {/* Animated ring */}
           <div className="relative mb-8">
             <div className="w-28 h-28 rounded-full border-4 border-blue-500/30 animate-ping absolute inset-0" />
             <div className="w-28 h-28 rounded-full border-2 border-blue-400/50 flex items-center justify-center relative bg-black/80">
               <Volume2 className="w-12 h-12 text-blue-400" />
             </div>
           </div>
-          <h2 className="text-white text-2xl md:text-3xl font-bold mb-3 text-center px-8">
+          <h2 className="text-white text-2xl font-bold mb-3 text-center px-8">
             {t('tapSound', appLang)}
           </h2>
-          <p className="text-white/50 text-sm md:text-base text-center px-12 max-w-xs leading-relaxed">
+          <p className="text-white/50 text-sm text-center px-12 max-w-xs leading-relaxed">
             {t('tapDesc', appLang)}
           </p>
           <div className="mt-10 px-8 py-3 rounded-2xl bg-blue-600 text-white text-base font-bold shadow-2xl shadow-blue-600/40 hover:bg-blue-500 transition-colors">
@@ -383,17 +393,6 @@ export default function JobbeagleShortsPage() {
           </div>
         </div>
       )}
-
-      {/* Full-bleed stage — fills the browser viewport (desktop 滿版); publishes --jb-fit-zoom for sheets */}
-      <FitStage
-        mode="fill"
-        designWidth={SHORTS_DESIGN_WIDTH}
-        minScale={1}
-        maxScale={2.6}
-        publishZoomVar
-        className="h-full"
-        canvasClassName="flex flex-col bg-black overflow-hidden"
-      >
 
       {/* ── PROFILE PAGE ── */}
       {navTab === 'profile' && (
