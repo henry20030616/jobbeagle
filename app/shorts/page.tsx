@@ -354,7 +354,7 @@ export default function JobbeagleShortsPage() {
   }
 
   return (
-    <div className="h-[100dvh] w-full bg-black flex flex-col overflow-hidden">
+    <div className="h-[100dvh] w-full min-w-0 self-stretch bg-black flex flex-col overflow-hidden">
 
       {/* ── Sound overlay: full-screen, requires one tap to bypass browser autoplay policy ── */}
       {showSoundOverlay && (
@@ -658,9 +658,8 @@ export default function JobbeagleShortsPage() {
             </div>
           )}
 
-          {/* Feed: phone-width column on desktop so the video is not ultrawide */}
-          <div className="flex-1 min-h-0 w-full relative flex justify-center bg-black">
-            <div className="h-full w-full max-w-[28rem] sm:max-w-[32rem] lg:max-w-[36rem]">
+          {/* Feed area */}
+          <div className="flex-1 min-h-0 w-full relative bg-black">
             {activeTab === 'saved' && savedJobsData.length === 0 ? (
               <EmptyState icon={Bookmark} title={t('noSaved', appLang)} hint={t('tapBookmark', appLang)} />
             ) : activeTab === 'following' && !user ? (
@@ -687,7 +686,6 @@ export default function JobbeagleShortsPage() {
                 initialJobId={activeTab === 'foryou' ? initialJobId : null}
               />
             )}
-            </div>
           </div>
 
           {/* Bottom Nav */}
