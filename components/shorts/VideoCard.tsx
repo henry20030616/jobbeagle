@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { JobData } from '@/types';
 import AnalysisModal from './AnalysisModal';
+import ShortsSheet from './ShortsSheet';
 import { 
   Heart, Share2, MapPin, DollarSign, 
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
@@ -713,14 +714,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
             const embedSrc = toYouTubeEmbedUrl(videoUrl, isMuted);
             if (embedSrc && isActive) {
               return (
-                <iframe
-                  ref={youtubeIframeRef}
-                  src={embedSrc}
-                  className="w-full h-full object-cover z-10 border-0"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  title="YouTube 短影音"
-                />
+                <div className="relative z-10 h-full w-full overflow-hidden">
+                  <iframe
+                    ref={youtubeIframeRef}
+                    src={embedSrc}
+                    className="absolute inset-x-0 -top-16 h-[calc(100%+4rem)] w-full border-0"
+                    allow="autoplay; encrypted-media; fullscreen"
+                    allowFullScreen
+                    title="YouTube 短影音"
+                  />
+                </div>
               );
             }
             return (
@@ -935,11 +938,11 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- Bottom: 三等份 — 左文字 / 中 AI / 右申請，減少直向堆疊遮擋影片 --- */}
       {(!showFullDetails && !showApplyModal) && (
-          <div className="absolute bottom-0 left-0 w-full z-20 text-white pb-[4.75rem] md:pb-9 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pt-8 md:pt-12">
+          <div className="absolute bottom-0 left-0 w-full z-20 text-white pb-[5.25rem] md:pb-10 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pt-10 md:pt-14">
             <div className="pointer-events-auto px-3 md:px-5 w-full max-w-[100vw]">
               {/* 固定列高＝按鈕欄高度；左欄不可超出，字放大、預覽截短（詳情見 more） */}
               <div
-                className={`grid gap-2 sm:gap-3 md:gap-4 items-stretch min-h-[6rem] h-[6rem] sm:min-h-[6.5rem] sm:h-[6.5rem] md:min-h-[7rem] md:h-[7rem] ${
+                className={`grid gap-3 md:gap-4 items-stretch min-h-[8rem] h-[8rem] md:min-h-[9rem] md:h-[9rem] ${
                   job.applyUrl ? 'grid-cols-[1fr_2fr]' : 'grid-cols-3'
                 }`}
               >
@@ -968,7 +971,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       )}
                     </Link>
                     <div className="flex flex-col min-w-0 gap-0 justify-center">
-                      <h3 className="text-base sm:text-lg md:text-xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
                         {job.jobTitle}
                       </h3>
                       <Link
@@ -1014,9 +1017,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         e.stopPropagation();
                         handleAnalyzeWithAI(e);
                       }}
-                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-1.5 sm:gap-2 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-violet-400/20 px-1.5 sm:px-2"
+                      className="w-full h-14 md:h-16 shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base md:text-lg border border-violet-400/20 px-3"
                     >
-                      <Sparkles size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
+                      <Sparkles size={22} className="shrink-0" />
                       <span className="text-center leading-tight line-clamp-2">
                         {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
                       </span>
@@ -1032,7 +1035,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-xs sm:text-sm md:text-base border border-white/10 px-2"
+                      className="w-full h-14 md:h-16 shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base md:text-lg border border-white/10 px-3"
                     >
                       <ExternalLink size={18} className="shrink-0" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
                     </a>
@@ -1040,7 +1043,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     <button
                       type="button"
                       disabled
-                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-700 text-slate-300 font-bold rounded-xl md:rounded-2xl flex flex-row items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm border border-slate-600 px-1.5 sm:px-2 cursor-not-allowed"
+                      className="w-full h-14 md:h-16 shrink-0 bg-slate-700 text-slate-300 font-bold rounded-2xl flex flex-row items-center justify-center gap-2 text-base md:text-lg border border-slate-600 px-3 cursor-not-allowed"
                     >
                       <CheckCircle size={16} className="shrink-0 text-emerald-400" />
                       <span className="text-center leading-tight">{t('已申請', 'Applied')}</span>
@@ -1049,9 +1052,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     <button
                       type="button"
                       onClick={(e) => { void handleApplyStart(e); }}
-                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-1.5 sm:gap-2 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-cyan-400/25 px-1.5 sm:px-2"
+                      className="w-full h-14 md:h-16 shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base md:text-lg border border-cyan-400/25 px-3"
                     >
-                      <Briefcase size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
+                      <Briefcase size={22} className="shrink-0" />
                       <span className="text-center leading-tight line-clamp-2">
                         {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}
                       </span>
@@ -1173,23 +1176,18 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- LinkedIn-style Quick Apply Modal --- */}
       {showApplyModal && (
-          <>
-            {/* Backdrop */}
-            <div 
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
-              onClick={() => {
-                if (applyState === 'step1' || applyState === 'idle') {
-                  setShowApplyModal(false);
-                  setApplyState('idle');
-                  setApplyStep(1);
-                }
-              }}
-            />
-            
-            {/* Modal */}
-            <div className="fixed inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl border-t border-cyan-500/30 animate-slide-up shadow-2xl max-h-[90vh] flex flex-col">
+          <ShortsSheet
+            accentClass="border-cyan-500/30"
+            onBackdropClick={() => {
+              if (applyState === 'step1' || applyState === 'idle') {
+                setShowApplyModal(false);
+                setApplyState('idle');
+                setApplyStep(1);
+              }
+            }}
+          >
               {/* Header */}
-              <div className="flex justify-between items-center p-6 border-b border-slate-700">
+              <div className="flex justify-between items-center p-6 border-b border-slate-700 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-cyan-600/20 rounded-lg flex items-center justify-center">
                     <Briefcase className="text-cyan-400" size={24} />
@@ -1212,7 +1210,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               </div>
 
               {/* Progress Steps */}
-              <div className="px-6 py-4 border-b border-slate-700">
+              <div className="px-6 py-4 border-b border-slate-700 shrink-0">
                 <div className="flex items-center justify-between">
                   {[
                     { n: 1, label: t('確認職缺', 'Review') },
@@ -1233,7 +1231,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="min-h-0 flex-1 overflow-y-auto p-6">
                 {/* Submitting State */}
                 {applyState === 'submitting' && (
                   <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
@@ -1677,8 +1675,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   </div>
                 )}
               </div>
-            </div>
-          </>
+          </ShortsSheet>
       )}
 
 

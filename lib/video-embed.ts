@@ -70,7 +70,7 @@ export function toYouTubeEmbedUrl(url: string, muted = true): string | null {
     if (!videoId) return null;
     // enablejsapi=1：允許透過 postMessage 控制播放器
     // mute param is dynamic — when muted=false the embed starts with audio
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${muted ? '1' : '0'}&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${muted ? '1' : '0'}&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1&controls=0`;
   } catch {
     return null;
   }

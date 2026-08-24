@@ -10,6 +10,7 @@ import { ResumeInput, LiteReport, FullReport, UserProfile, ReportType } from '@/
 import { REPORT_CODES, normalizeReportType, reportShortLabel } from '@/constants/report-products';
 import { createClient } from '@/lib/supabase/browser';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
+import ShortsSheet from '@/components/shorts/ShortsSheet';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
@@ -276,30 +277,24 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 animate-fade-in" onClick={onClose} />
-
-      {/* Bottom Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl border-t border-violet-500/30 shadow-2xl animate-slide-up max-h-[92vh] flex flex-col">
-
+    <ShortsSheet onBackdropClick={onClose} accentClass="border-violet-500/30">
         {/* Drag Handle */}
         <div className="flex justify-center pt-3 pb-1 cursor-pointer shrink-0" onClick={onClose}>
           <div className="w-12 h-1.5 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/10 shrink-0">
-          <Sparkles size={17} className="text-violet-400 shrink-0" />
-          <span className="font-bold text-white text-sm shrink-0">{(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match Analysis'}</span>
-          <span className="text-xs text-gray-400 flex-1 truncate mx-1">{jobTitle} @ {companyName}</span>
+        <div className="flex items-center gap-2 px-5 py-3 border-b border-white/10 shrink-0">
+          <Sparkles size={20} className="text-violet-400 shrink-0" />
+          <span className="font-bold text-white text-lg shrink-0">{(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match Analysis'}</span>
+          <span className="text-sm text-gray-400 flex-1 truncate mx-1">{jobTitle} @ {companyName}</span>
           <button onClick={onClose} className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0">
-            <X size={15} className="text-gray-300" />
+            <X size={18} className="text-gray-300" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
 
           {/* ── STEP: resume ─────────────────────────────── */}
           {step === 'resume' && (
@@ -492,8 +487,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           )}
 
         </div>
-      </div>
-    </>
+    </ShortsSheet>
   );
 };
 

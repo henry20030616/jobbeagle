@@ -658,8 +658,9 @@ export default function JobbeagleShortsPage() {
             </div>
           )}
 
-          {/* Feed area */}
-          <div className="flex-1 min-h-0 w-full relative">
+          {/* Feed: phone-width column on desktop so the video is not ultrawide */}
+          <div className="flex-1 min-h-0 w-full relative flex justify-center bg-black">
+            <div className="h-full w-full max-w-[28rem] sm:max-w-[32rem] lg:max-w-[36rem]">
             {activeTab === 'saved' && savedJobsData.length === 0 ? (
               <EmptyState icon={Bookmark} title={t('noSaved', appLang)} hint={t('tapBookmark', appLang)} />
             ) : activeTab === 'following' && !user ? (
@@ -686,6 +687,7 @@ export default function JobbeagleShortsPage() {
                 initialJobId={activeTab === 'foryou' ? initialJobId : null}
               />
             )}
+            </div>
           </div>
 
           {/* Bottom Nav */}
@@ -730,7 +732,7 @@ function BottomNav({
 }) {
   return (
     <div
-      className="h-[4.25rem] md:h-20 bg-black/95 border-t border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      className="h-[4.75rem] md:h-[5.5rem] bg-black/95 border-t border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {([
@@ -741,20 +743,20 @@ function BottomNav({
         <button key={id} onClick={() => onTabChange(id)}
           className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
           <div className="relative">
-            <Icon size={24} strokeWidth={active ? 2.75 : 2} />
+            <Icon size={28} strokeWidth={active ? 2.75 : 2} />
             {badge > 0 && (
-              <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] bg-blue-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+              <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
           </div>
-          <span className="text-[10px] md:text-xs font-semibold">{label}</span>
+          <span className="text-xs md:text-sm font-semibold">{label}</span>
         </button>
       ))}
       <button onClick={() => onNav('profile')}
         className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
-        <User size={24} strokeWidth={navTab === 'profile' ? 2.75 : 2} />
-        <span className="text-[10px] md:text-xs font-semibold">{t('me')}</span>
+        <User size={28} strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        <span className="text-xs md:text-sm font-semibold">{t('me')}</span>
       </button>
     </div>
   );

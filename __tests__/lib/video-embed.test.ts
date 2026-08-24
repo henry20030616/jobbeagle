@@ -92,6 +92,7 @@ describe('toYouTubeEmbedUrl', () => {
     expect(result).toContain('youtube.com/embed/dQw4w9WgXcQ');
     expect(result).toContain('autoplay=1');
     expect(result).toContain('mute=1');
+    expect(result).toContain('controls=0');
   });
 
   it('converts youtu.be short URL', () => {
