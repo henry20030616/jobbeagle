@@ -384,12 +384,12 @@ export default function JobbeagleShortsPage() {
         </div>
       )}
 
-      {/* Phone canvas 430×932 — FitStage zooms to fill viewport; publishes --jb-fit-zoom for sheets */}
+      {/* Phone canvas 430×764 (9:16) — FitStage zooms to fill viewport height; publishes --jb-fit-zoom for sheets */}
       <FitStage
         designWidth={SHORTS_DESIGN_WIDTH}
         designHeight={SHORTS_DESIGN_HEIGHT}
         minScale={0.35}
-        maxScale={2.6}
+        maxScale={3.5}
         publishZoomVar
         className="h-full items-center"
         canvasClassName="flex flex-col bg-black overflow-hidden"

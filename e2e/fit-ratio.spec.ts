@@ -77,9 +77,10 @@ test.describe('FitStage ratios', () => {
       const box = await page.locator('[data-fit-canvas]').first().boundingBox();
       expect(box).toBeTruthy();
       const ratio = box!.width / vp.width;
-      expect(ratio).toBeGreaterThanOrEqual(0.25);
-      expect(ratio).toBeLessThanOrEqual(0.65);
-      expect(box!.width).toBeGreaterThan(280);
+      // Portrait 9:16 of viewport height ≈ 30–45% on landscape desktops; full width on phone
+      expect(ratio).toBeGreaterThanOrEqual(0.28);
+      expect(ratio).toBeLessThanOrEqual(0.7);
+      expect(box!.width).toBeGreaterThan(350);
       ratios.push(ratio);
     }
 

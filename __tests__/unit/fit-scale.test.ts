@@ -43,21 +43,23 @@ describe('computeFitScale — docs (enlarge-only)', () => {
   });
 });
 
-describe('computeFitScale — Shorts (phone canvas)', () => {
-  it('is height-constrained on typical desktop', () => {
+describe('computeFitScale — Shorts (9:16 phone canvas)', () => {
+  it('fills viewport height on typical desktop (not height-shrunk skinny column)', () => {
     const r = computeFitScale({
       availW: 1440,
       availH: 900,
       designWidth: SHORTS_DESIGN_WIDTH,
       designHeight: SHORTS_DESIGN_HEIGHT,
       minScale: 0.35,
-      maxScale: 2.6,
+      maxScale: 3.5,
     });
-    // min(1440/430, 900/932) = min(3.35, 0.966) ≈ 0.966
-    expect(r.scale).toBeCloseTo(900 / 932, 3);
+    // min(1440/430, 900/764) = min(3.35, 1.178) ≈ 1.178 — enlarges to fill height
+    expect(r.scale).toBeCloseTo(900 / SHORTS_DESIGN_HEIGHT, 3);
     const visualW = SHORTS_DESIGN_WIDTH * r.scale;
-    expect(visualW / 1440).toBeGreaterThanOrEqual(0.25);
-    expect(visualW / 1440).toBeLessThanOrEqual(0.6);
+    // ≈ availH × 9/16 = 506 → ~35% of 1440
+    expect(visualW).toBeCloseTo(900 * (9 / 16), 0);
+    expect(visualW / 1440).toBeGreaterThanOrEqual(0.3);
+    expect(visualW / 1440).toBeLessThanOrEqual(0.55);
   });
 
   it('fills phone width on narrow viewports', () => {
@@ -69,21 +71,25 @@ describe('computeFitScale — Shorts (phone canvas)', () => {
       minScale: 0.35,
       maxScale: 2.6,
     });
-    // min(390/430, 844/932) = min(0.907, 0.906) ≈ 0.906
-    expect(r.scale).toBeCloseTo(Math.min(390 / 430, 844 / 932), 3);
+    expect(r.scale).toBeCloseTo(
+      Math.min(390 / SHORTS_DESIGN_WIDTH, 844 / SHORTS_DESIGN_HEIGHT),
+      3,
+    );
   });
 
-  it('never collapses to a sliver on ultrawide', () => {
+  it('uses full 9:16 of viewport height on ultrawide (adaptive, not postage stamp)', () => {
     const r = computeFitScale({
       availW: 3360,
       availH: 1890,
       designWidth: SHORTS_DESIGN_WIDTH,
       designHeight: SHORTS_DESIGN_HEIGHT,
       minScale: 0.35,
-      maxScale: 2.6,
+      maxScale: 3.5,
     });
     const visualW = SHORTS_DESIGN_WIDTH * r.scale;
-    expect(visualW).toBeGreaterThan(300);
-    expect(visualW / 3360).toBeGreaterThanOrEqual(0.25);
+    // Rounded scale ≈ availH/designH; allow 1px drift from exact 9/16 of height
+    expect(visualW).toBeCloseTo(SHORTS_DESIGN_WIDTH * (1890 / SHORTS_DESIGN_HEIGHT), 0);
+    expect(visualW / 3360).toBeGreaterThanOrEqual(0.3);
+    expect(visualW).toBeGreaterThan(900);
   });
 });

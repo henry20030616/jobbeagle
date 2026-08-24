@@ -14,11 +14,13 @@ All non-homepage surfaces use [`FitStage`](components/FitStage.tsx) + [`computeF
 
 | Surface | Canvas | Scale rule |
 |---------|--------|------------|
-| Shorts | 430×932 | `min(w/430, h/932)`, may shrink |
+| Shorts | **430×764 (true 9:16)** | `min(w/430, h/764)` → visual width = `min(availW, availH×9/16)` (fills height on desktop) |
 | Docs (extension, account, privacy/terms, confirm) | 1440 wide | enlarge-only (`minScale=1`); below 1440 → fluid 100% |
 | Report / samples | 1680 via `ReportFitStage` | existing FitStage wrapper |
 
 Publish `--jb-fit-zoom` from Shorts so portaled sheets match.
+
+Do **not** use a taller-than-9:16 canvas (e.g. 430×932) — height-fit then produces a skinny postage-stamp column on desktop.
 
 ## Hard bans
 
@@ -33,4 +35,4 @@ Publish `--jb-fit-zoom` from Shorts so portaled sheets match.
 
 ## After any layout change
 
-Run `npx vitest run __tests__/unit/fit-scale.test.ts` and (with Shorts enabled) `npx playwright test e2e/fit-ratio.spec.ts`. Shorts canvas must be ≥ 25% of viewport width on desktop/ultrawide — never a tens-of-pixels seam.
+Run `npx vitest run __tests__/unit/fit-scale.test.ts` and (with Shorts enabled) `npx playwright test e2e/fit-ratio.spec.ts`. Desktop Shorts column must be ≈ `viewportHeight × 9/16` wide (≥ ~30% of a landscape window) — never a tens-of-pixels seam.
