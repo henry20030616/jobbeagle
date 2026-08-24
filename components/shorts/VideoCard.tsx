@@ -17,6 +17,8 @@ import {
 import { createClient } from '@/lib/supabase/browser';
 import { translateApiError } from '@/lib/api-errors';
 import { toYouTubeEmbedUrl, toFacebookEmbedUrl, normalizeInstagramUrl } from '@/lib/video-embed';
+import { createPortal } from 'react-dom';
+import { FIT_ZOOM_CSS_VAR, SHORTS_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 interface VideoCardProps {
   job: JobData;
@@ -79,7 +81,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const [ytPaused, setYtPaused] = useState(false);
 
   const railBtnClass =
-    'p-3 min-w-[3.75rem] min-h-[3.75rem] md:min-w-[4.25rem] md:min-h-[4.25rem] flex items-center justify-center rounded-full bg-black/55 backdrop-blur-md border border-white/20 transition-all active:scale-90 hover:scale-105';
+    'p-3 min-w-[3rem] min-h-[3rem] flex items-center justify-center rounded-full bg-black/55 backdrop-blur-md border border-white/20 transition-all active:scale-90 hover:scale-105';
 
   const getJobShareUrl = () => `${window.location.origin}/shorts?job=${encodeURIComponent(job.id)}`;
 
@@ -901,7 +903,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               className={`${railBtnClass} ${liked ? 'text-red-500' : 'text-white'}`}
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} size={32} className={liked ? 'animate-pulse' : ''} />
+              <Heart fill={liked ? "currentColor" : "none"} size={26} className={liked ? 'animate-pulse' : ''} />
             </button>
             <span className="text-sm md:text-base font-bold drop-shadow-md text-white tabular-nums">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
@@ -914,7 +916,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               className={`${railBtnClass} ${followed ? 'text-cyan-400' : 'text-white'}`}
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} size={32} className={followed ? 'animate-pulse' : ''} />
+              <UserPlus fill={followed ? "currentColor" : "none"} size={26} className={followed ? 'animate-pulse' : ''} />
             </button>
             <span className="text-sm md:text-base font-bold drop-shadow-md text-white max-w-[4.5rem] text-center leading-tight">
               {followed ? 'Followed' : 'Follow'}
@@ -927,7 +929,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               className={`${railBtnClass} ${bookmarked ? 'text-yellow-400' : 'text-white'}`}
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={32} className={bookmarked ? 'animate-pulse' : ''} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={26} className={bookmarked ? 'animate-pulse' : ''} />
             </button>
             <span className="text-sm md:text-base font-bold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
@@ -940,7 +942,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             className={`${railBtnClass} text-white`}
             onClick={handleShareClick}
           >
-            <Share2 size={32} />
+            <Share2 size={26} />
           </button>
           <span className="text-sm md:text-base font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
@@ -954,7 +956,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
             onClick={toggleMute}
             className={`${railBtnClass} text-white`}
           >
-            {isMuted ? <VolumeX size={28} /> : <Volume2 size={28} />}
+            {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
           </button>
         </div>
       </div>
@@ -1032,7 +1034,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                         e.stopPropagation();
                         handleAnalyzeWithAI(e);
                       }}
-                      className="w-full h-16 shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 transition-colors active:scale-[0.99] text-lg border border-violet-400/20 px-3"
+                      className="w-full h-12 shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base border border-violet-400/20 px-3"
                     >
                       <Sparkles size={22} className="shrink-0" />
                       <span className="text-center leading-tight line-clamp-2">
@@ -1047,7 +1049,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="w-full h-16 shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-lg border border-white/10 px-3"
+                      className="w-full h-12 shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base border border-white/10 px-3"
                     >
                       <ExternalLink size={18} className="shrink-0" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
                     </a>
@@ -1055,7 +1057,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     <button
                       type="button"
                       disabled
-                      className="w-full h-16 shrink-0 bg-slate-700 text-slate-300 font-bold rounded-2xl flex flex-row items-center justify-center gap-2 text-lg border border-slate-600 px-3 cursor-not-allowed"
+                      className="w-full h-12 shrink-0 bg-slate-700 text-slate-300 font-bold rounded-2xl flex flex-row items-center justify-center gap-2 text-base border border-slate-600 px-3 cursor-not-allowed"
                     >
                       <CheckCircle size={16} className="shrink-0 text-emerald-400" />
                       <span className="text-center leading-tight">{t('已申請', 'Applied')}</span>
@@ -1064,7 +1066,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     <button
                       type="button"
                       onClick={(e) => { void handleApplyStart(e); }}
-                      className="w-full h-16 shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 transition-colors active:scale-[0.99] text-lg border border-cyan-400/25 px-3"
+                      className="w-full h-12 shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-2xl shadow-lg flex flex-row items-center justify-center gap-2 transition-colors active:scale-[0.99] text-base border border-cyan-400/25 px-3"
                     >
                       <Briefcase size={22} className="shrink-0" />
                       <span className="text-center leading-tight line-clamp-2">
@@ -1735,6 +1737,11 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
   job, language, onClose, onCopyLink, onCopyCompanyLink, onShareSocial, onShareNative,
 }) => {
   const [copiedLink, setCopiedLink] = React.useState<null | 'link' | 'company'>(null);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCopy = async (type: 'link' | 'company') => {
     if (type === 'link') await onCopyLink();
@@ -1751,15 +1758,21 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
     { id: 'linkedin' as const, name: 'LinkedIn', bg: '#0A66C2', label: 'in' },
   ];
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-[200] bg-black/60 flex items-end"
+      className="fixed inset-0 z-[200] bg-black/60 flex items-end justify-center"
       onClick={onClose}
     >
       <div
-        className="w-full bg-slate-900 rounded-t-3xl pb-safe"
+        className="relative bg-slate-900 rounded-t-3xl"
         onClick={e => e.stopPropagation()}
-        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
+        style={{
+          width: SHORTS_DESIGN_WIDTH,
+          zoom: `var(${FIT_ZOOM_CSS_VAR}, 1)`,
+          paddingBottom: 'max(env(safe-area-inset-bottom), 16px)',
+        }}
       >
         {/* Drag handle */}
         <div className="w-10 h-1 bg-slate-600 rounded-full mx-auto mt-3 mb-5" />
@@ -1847,7 +1860,8 @@ const ShareSheet: React.FC<ShareSheetProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

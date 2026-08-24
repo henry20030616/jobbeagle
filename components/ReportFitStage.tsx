@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { REPORT_SLIDE_DESIGN_WIDTH } from '@/constants/report-frame';
+import { FitStage } from '@/components/FitStage';
 
 type ReportFitStageProps = {
   children: React.ReactNode;
@@ -13,11 +14,8 @@ type ReportFitStageProps = {
 };
 
 /**
- * Fixed-proportion stage: lay out at designWidth, then enlarge with CSS `zoom`
- * (not transform:scale). Zoom keeps text/vectors crisp; transform:scale rasterizes
- * and looks blurry when scale > 1.
- *
- * Outer always clips — never contributes to page horizontal scroll.
+ * Report / samples slide stage — thin wrapper over FitStage.
+ * Layout at designWidth, then enlarge with CSS zoom.
  */
 export function ReportFitStage({
   children,
@@ -25,53 +23,14 @@ export function ReportFitStage({
   designWidth = REPORT_SLIDE_DESIGN_WIDTH,
   maxScale = 2.4,
 }: ReportFitStageProps) {
-  const outerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const outer = outerRef.current;
-    if (!outer) return;
-
-    const update = () => {
-      const available = outer.clientWidth;
-      if (available <= 0) return;
-      const fit = available / designWidth;
-      const nextScale = Math.min(maxScale, Math.max(fit, 0.5));
-      setScale(Number(nextScale.toFixed(4)));
-      setReady(true);
-    };
-
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(outer);
-    window.addEventListener('resize', update);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener('resize', update);
-    };
-  }, [designWidth, maxScale]);
-
   return (
-    <div
-      ref={outerRef}
-      className={`flex w-full min-w-0 justify-center overflow-x-clip self-stretch ${className}`}
+    <FitStage
+      designWidth={designWidth}
+      minScale={0.5}
+      maxScale={maxScale}
+      className={className}
     >
-      {/*
-        CSS zoom multiplies layout size. Center the slide in the remaining
-        pane so leftover width on ultrawide / capped maxScale is equal on both sides.
-        Do NOT put max-w-full on this node (zoom would clamp then scale again).
-      */}
-      <div
-        className="origin-top shrink-0"
-        style={{
-          width: designWidth,
-          zoom: scale,
-          visibility: ready ? 'visible' : 'hidden',
-        }}
-      >
-        {children}
-      </div>
-    </div>
+      {children}
+    </FitStage>
   );
 }

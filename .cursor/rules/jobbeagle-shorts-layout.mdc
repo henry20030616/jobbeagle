@@ -1,23 +1,36 @@
 ---
-description: JobBeagle Shorts visual layout — desktop 9:16 stage, no CSS type-scale hacks
-globs: app/shorts/**,components/shorts/**
+description: JobBeagle unified FitStage scaling — no hand-tuned absolute pixels
+globs: app/shorts/**,components/shorts/**,app/extension/**,app/account/**,components/LegalDocumentPage.tsx,app/confirm/**,components/FitStage.tsx
 alwaysApply: false
 ---
 
-# JobBeagle Shorts — layout (do not improvise)
+# JobBeagle — unified viewport scaling (homepage frozen)
 
-Homepage (`/`, InputForm, reports) is frozen. Never restyle it while changing Shorts.
+Homepage (`/`, InputForm, `.homepage-font-large`) is **frozen**. Never restyle it while changing other surfaces.
 
-## Desktop feed
-- Pin the shell with `fixed inset-0` and size `.shorts-stage-frame` as `width: min(100vw, 28rem)` (viewport units only).
-- Do **not** use `width: auto` + `aspect-ratio`, `min-width: min(100%, …)`, or `flex` + `w-full` + `max-w-*` — all of those collapse to a sliver.
-- Do **not** full-bleed YouTube across ultrawide (buttons look microscopic).
-- Do **not** add `.shorts-font-large` or 350% `!important` font maps.
+## One scale primitive
 
-## Chrome
-- YouTube embed: `controls=0`; iframe `z-0` + `pointer-events-none` so JobBeagle overlays sit on top.
-- AI Match / Apply: at least `h-16`, `text-lg`, full width of the stage column.
-- Sheets (Match / Apply): portal to `document.body`, height `85dvh`. Never `position:fixed` inside `overflow-hidden` VideoCard.
+All non-homepage surfaces use [`FitStage`](components/FitStage.tsx) + [`computeFitScale`](lib/fit-scale.ts):
 
-## After any Shorts UI change
-Verify in a desktop viewport: stage is a readable portrait column (not a sliver, not 95% ultrawide); Match and Apply open a tall sheet.
+| Surface | Canvas | Scale rule |
+|---------|--------|------------|
+| Shorts | 430×932 | `min(w/430, h/932)`, may shrink |
+| Docs (extension, account, privacy/terms, confirm) | 1440 wide | enlarge-only (`minScale=1`); below 1440 → fluid 100% |
+| Report / samples | 1680 via `ReportFitStage` | existing FitStage wrapper |
+
+Publish `--jb-fit-zoom` from Shorts so portaled sheets match.
+
+## Hard bans
+
+- Do **not** hand-tune absolute pixels to “look big” on ultrawide (`h-16`, `min-w-[4.5rem]`, 350% `!important` font maps on Shorts).
+- Do **not** size columns with `flex` + `w-full` + `max-w-*`, `min-width: min(100%, …)`, or `%` + `aspect-ratio` (collapses to a sliver).
+- Do **not** put `min-h-screen` / `100vh` **inside** the zoomed canvas (they get multiplied).
+- Do **not** wrap `/report` or `/samples` in a second FitStage (already have ReportFitStage).
+
+## Portals
+
+`ShortsSheet` / ShareSheet: unscaled `fixed inset-0` backdrop + content with `width: 430` and `zoom: var(--jb-fit-zoom)`. Never `h-[85dvh]` + `inset-x-0` alone.
+
+## After any layout change
+
+Run `npx vitest run __tests__/unit/fit-scale.test.ts` and (with Shorts enabled) `npx playwright test e2e/fit-ratio.spec.ts`. Shorts canvas must be ≥ 25% of viewport width on desktop/ultrawide — never a tens-of-pixels seam.

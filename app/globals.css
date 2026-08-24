@@ -300,23 +300,6 @@ main input {
 }
 
 /*
- * Shorts column: width from the VIEWPORT only (100vw / 28rem).
- * Never size from parent % or aspect-ratio — those collapse to a sliver
- * when a flex ancestor has no definite width.
- */
-.shorts-stage-frame {
-  box-sizing: border-box;
-  height: 100%;
-  width: min(100vw, 28rem);
-  flex: 0 0 min(100vw, 28rem);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-  background: #000;
-}
-
-/*
  * Compare overlay (portaled to body — does not inherit homepage type).
  * 350% of default Tailwind text sizes.
  */

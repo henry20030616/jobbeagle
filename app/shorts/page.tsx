@@ -17,6 +17,8 @@ import { setStoredShortsViewRole, setStoredAccountRole, resolveUserRole } from '
 import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import BrandLogo from '@/components/BrandLogo';
+import { FitStage } from '@/components/FitStage';
+import { SHORTS_DESIGN_HEIGHT, SHORTS_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 const getLogoUrl = (n: string) =>
   `https://www.google.com/s2/favicons?domain=${n.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
@@ -354,7 +356,7 @@ export default function JobbeagleShortsPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-10 bg-black flex justify-center overflow-hidden">
+    <div className="fixed inset-0 z-10 bg-black overflow-hidden">
 
       {/* ── Sound overlay: full-screen, requires one tap to bypass browser autoplay policy ── */}
       {showSoundOverlay && (
@@ -382,7 +384,16 @@ export default function JobbeagleShortsPage() {
         </div>
       )}
 
-      <div className="shorts-stage-frame">
+      {/* Phone canvas 430×932 — FitStage zooms to fill viewport; publishes --jb-fit-zoom for sheets */}
+      <FitStage
+        designWidth={SHORTS_DESIGN_WIDTH}
+        designHeight={SHORTS_DESIGN_HEIGHT}
+        minScale={0.35}
+        maxScale={2.6}
+        publishZoomVar
+        className="h-full items-center"
+        canvasClassName="flex flex-col bg-black overflow-hidden"
+      >
 
       {/* ── PROFILE PAGE ── */}
       {navTab === 'profile' && (
@@ -701,7 +712,7 @@ export default function JobbeagleShortsPage() {
         </>
       )}
 
-      </div>
+      </FitStage>
     </div>
   );
 }
@@ -734,7 +745,7 @@ function BottomNav({
 }) {
   return (
     <div
-      className="h-[4.75rem] md:h-[5.5rem] bg-black/95 border-t border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      className="h-14 bg-black/95 border-t border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {([
@@ -745,20 +756,20 @@ function BottomNav({
         <button key={id} onClick={() => onTabChange(id)}
           className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
           <div className="relative">
-            <Icon size={28} strokeWidth={active ? 2.75 : 2} />
+            <Icon size={24} strokeWidth={active ? 2.75 : 2} />
             {badge > 0 && (
               <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
           </div>
-          <span className="text-xs md:text-sm font-semibold">{label}</span>
+          <span className="text-xs font-semibold">{label}</span>
         </button>
       ))}
       <button onClick={() => onNav('profile')}
         className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
-        <User size={28} strokeWidth={navTab === 'profile' ? 2.75 : 2} />
-        <span className="text-xs md:text-sm font-semibold">{t('me')}</span>
+        <User size={24} strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        <span className="text-xs font-semibold">{t('me')}</span>
       </button>
     </div>
   );

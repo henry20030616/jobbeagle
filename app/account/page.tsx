@@ -27,6 +27,8 @@ import {
 } from '@/constants/checkout-plans';
 import type { CareerContext, MembershipTier, UserProfile } from '@/types';
 import CareerContextForm from '@/components/CareerContextForm';
+import { FitStage } from '@/components/FitStage';
+import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 type AccountOrder = {
   id: string;
@@ -513,7 +515,8 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <main className="mx-auto w-full max-w-3xl px-4 py-8 space-y-8">
+      <FitStage designWidth={DOC_DESIGN_WIDTH} minScale={1} maxScale={2.6} className="w-full">
+      <main className="mx-auto w-full max-w-3xl px-4 py-8 space-y-8" data-fit-ref="account">
         <div className="flex items-center justify-between gap-4">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2">
@@ -781,6 +784,7 @@ export default function AccountPage() {
           </>
         )}
       </main>
+      </FitStage>
     </div>
   );
 }

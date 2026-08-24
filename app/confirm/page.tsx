@@ -26,6 +26,8 @@ import { saveReportSession } from '@/lib/report-session';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
 import { AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
+import { FitStage } from '@/components/FitStage';
+import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 interface JobDisplayData {
   company_name: string;
@@ -299,7 +301,8 @@ export default function ConfirmPage() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <main className={`max-w-[90rem] mx-auto px-4 sm:px-6 ${embedded ? 'py-4 sm:py-6' : 'py-8 sm:py-10'}`}>
+      <FitStage designWidth={DOC_DESIGN_WIDTH} minScale={1} maxScale={2.6} className="w-full">
+      <main className={`max-w-[90rem] mx-auto px-4 sm:px-6 ${embedded ? 'py-4 sm:py-6' : 'py-8 sm:py-10'}`} data-fit-ref="confirm">
         {!embedded && (
           <div className="flex items-center justify-between gap-4 mb-6">
             <BrandLogo size="nav" showIcon />
@@ -405,6 +408,7 @@ export default function ConfirmPage() {
           {!embedded && <FooterSection language={language} />}
         </div>
       </main>
+      </FitStage>
     </div>
   );
 }

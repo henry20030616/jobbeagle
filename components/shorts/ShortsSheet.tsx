@@ -2,6 +2,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import {
+  FIT_ZOOM_CSS_VAR,
+  SHORTS_DESIGN_WIDTH,
+  SHORTS_SHEET_HEIGHT,
+} from '@/constants/fit-stage';
 
 type ShortsSheetProps = {
   children: React.ReactNode;
@@ -9,7 +14,11 @@ type ShortsSheetProps = {
   accentClass?: string;
 };
 
-/** Viewport bottom sheet — portaled so VideoCard overflow cannot squash it. */
+/**
+ * Viewport bottom sheet — portaled so VideoCard overflow cannot squash it.
+ * Backdrop is unscaled (fixed inset-0). Content uses the same FitStage zoom
+ * via --jb-fit-zoom and a fixed phone canvas width (not 85dvh / inset-x-0).
+ */
 export default function ShortsSheet({
   children,
   onBackdropClick,
@@ -39,7 +48,7 @@ export default function ShortsSheet({
   if (!mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[200]" role="presentation">
+    <div className="fixed inset-0 z-[200] flex items-end justify-center" role="presentation">
       <button
         type="button"
         className="absolute inset-0 bg-black/70"
@@ -49,7 +58,12 @@ export default function ShortsSheet({
       <div
         role="dialog"
         aria-modal="true"
-        className={`absolute inset-x-0 bottom-0 flex h-[85dvh] max-h-[85dvh] min-h-[85dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t bg-slate-900 text-base text-slate-100 shadow-2xl md:inset-x-auto md:left-1/2 md:w-[36rem] md:-translate-x-1/2 ${accentClass}`}
+        className={`relative z-10 flex flex-col overflow-hidden rounded-t-3xl border-t bg-slate-900 text-base text-slate-100 shadow-2xl ${accentClass}`}
+        style={{
+          width: SHORTS_DESIGN_WIDTH,
+          height: SHORTS_SHEET_HEIGHT,
+          zoom: `var(${FIT_ZOOM_CSS_VAR}, 1)`,
+        }}
       >
         {children}
       </div>

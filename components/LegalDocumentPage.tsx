@@ -6,6 +6,8 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import BrandLogo from '@/components/BrandLogo';
 import { getLegalDocument, LEGAL_UI, type LegalDocument } from '@/lib/legal-content';
 import { isShortsEnabled } from '@/constants/features';
+import { FitStage } from '@/components/FitStage';
+import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 type LegalDocType = 'privacy' | 'terms';
 
@@ -16,7 +18,8 @@ export default function LegalDocumentPage({ type }: { type: LegalDocType }) {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-12">
+      <FitStage designWidth={DOC_DESIGN_WIDTH} minScale={1} maxScale={2.6} className="w-full">
+      <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-12" data-fit-ref="legal">
         <div className="flex items-center justify-between gap-4 mb-8">
           <BrandLogo size="nav" showIcon />
           <LanguageSwitcher variant="dark" />
@@ -56,6 +59,7 @@ export default function LegalDocumentPage({ type }: { type: LegalDocType }) {
           )}
         </footer>
       </div>
+      </FitStage>
     </div>
   );
 }

@@ -11,6 +11,8 @@ import {
 import { useLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import BrandLogo from '@/components/BrandLogo';
+import { FitStage } from '@/components/FitStage';
+import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 export default function ExtensionInstallPage() {
   const { language } = useLanguage();
@@ -56,7 +58,8 @@ export default function ExtensionInstallPage() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-100">
-      <div className="mx-auto w-full max-w-3xl px-4 py-10 space-y-8 sm:px-6">
+      <FitStage designWidth={DOC_DESIGN_WIDTH} minScale={1} maxScale={2.6} className="w-full">
+      <div className="mx-auto w-full max-w-3xl px-4 py-10 space-y-8 sm:px-6" data-fit-ref="extension">
         <div className="flex items-center justify-between gap-3">
           <BrandLogo size="nav" showIcon />
           <LanguageSwitcher />
@@ -123,6 +126,7 @@ export default function ExtensionInstallPage() {
           </Link>
         </div>
       </div>
+      </FitStage>
     </div>
   );
 }
