@@ -1,8 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { BeagleIcon } from './AnalysisDashboard';
 import { AppLanguage } from '@/lib/language-context';
+import {
+  computeDogLoadingZoom,
+  DOG_LOADING_CARD_WIDTH,
+} from '@/lib/dog-loading-zoom';
 
 interface DogLoadingProps {
   progress?: number;
@@ -20,6 +25,16 @@ const DogLoading: React.FC<DogLoadingProps> = ({
   language = 'en',
 }) => {
   const displayProgress = Math.min(Math.max(Math.round(progress), 0), 99);
+  const [zoom, setZoom] = useState(1);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const update = () => setZoom(computeDogLoadingZoom(window.innerWidth));
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   const defaultStageMap: Record<AppLanguage, string> = {
     'zh-TW': '小獵犬正在努力嗅探資料中...',
@@ -50,50 +65,51 @@ const DogLoading: React.FC<DogLoadingProps> = ({
   const estimatedLabel = estimatedMap[language];
   const elapsedLabel = elapsedMap[language];
 
-  return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-950 z-50 px-6">
-      <div className="flex flex-col items-center space-y-8 w-full max-w-md">
-
-        {/* Logo with breathing animation */}
+  const overlay = (
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 px-6">
+      {/* Portal to body so homepage-font-large does not double-scale; CSS zoom adapts to viewport */}
+      <div
+        className="flex flex-col items-center space-y-8"
+        style={{
+          width: DOG_LOADING_CARD_WIDTH,
+          zoom,
+        }}
+      >
         <div className="animate-pulse transform scale-110">
           <BeagleIcon
-            className="w-24 h-24 md:w-32 md:h-32 drop-shadow-xl"
+            className="h-32 w-32 drop-shadow-xl"
             color="#cbd5e1"
             spotColor="#5d4037"
             bellyColor="#94a3b8"
           />
         </div>
 
-        {/* Stage text */}
-        <p className="text-slate-300 text-base md:text-lg font-semibold text-center leading-snug min-h-[2rem] transition-all duration-500">
+        <p className="min-h-[2rem] text-center text-lg font-semibold leading-snug text-slate-300 transition-all duration-500">
           {currentStage}
         </p>
 
-        {/* Progress bar container */}
         <div className="w-full space-y-2">
-          <div className="flex justify-between items-center text-xs text-slate-500">
+          <div className="flex items-center justify-between text-sm text-slate-500">
             <span>{elapsedLabel}</span>
-            <span className="font-mono text-indigo-400 font-bold">{displayProgress}%</span>
+            <span className="font-mono font-bold text-indigo-400">{displayProgress}%</span>
           </div>
 
-          <div className="relative w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-            {/* Animated shimmer background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.8s_infinite] bg-[length:200%_100%]" />
-            {/* Progress fill */}
+          <div className="relative h-3 w-full overflow-hidden rounded-full bg-slate-800">
+            <div className="absolute inset-0 animate-[shimmer_1.8s_infinite] bg-[length:200%_100%] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
             <div
               className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.6)] transition-all duration-500 ease-out"
               style={{ width: `${displayProgress}%` }}
             />
           </div>
 
-          <p className="text-center text-xs text-slate-600">
-            {estimatedLabel}
-          </p>
+          <p className="text-center text-sm text-slate-600">{estimatedLabel}</p>
         </div>
-
       </div>
     </div>
   );
+
+  if (!mounted) return null;
+  return createPortal(overlay, document.body);
 };
 
 export default DogLoading;
