@@ -300,6 +300,36 @@ main input {
 }
 
 /*
+ * Shorts desktop stage: 9:16 column sized from container HEIGHT, not from
+ * flex + max-width (that collapsed to a sliver). Do not use !important type
+ * scaling on this surface.
+ */
+.shorts-stage {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background: #000;
+}
+/* Width comes from height × 9/16 — never from flex + max-width (that collapsed). */
+.shorts-stage-frame {
+  height: 100%;
+  width: auto;
+  aspect-ratio: 9 / 16;
+  max-width: min(100%, 36rem);
+  min-width: min(100%, 22rem);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+/*
  * Compare overlay (portaled to body — does not inherit homepage type).
  * 350% of default Tailwind text sizes.
  */

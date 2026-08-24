@@ -40,26 +40,32 @@ export function isSocialEmbedUrl(url: string): boolean {
  * - https://www.youtube.com/watch?v=VIDEO_ID
  * - https://youtu.be/VIDEO_ID
  * - https://www.youtube.com/shorts/VIDEO_ID
- * - https://www.youtube.com/embed/VIDEO_ID（本身已是 embed，直接回傳）
+ * - https://www.youtube.com/embed/VIDEO_ID（重建 chrome-free 參數，不沿用原 query）
  */
 /**
  * @param muted - pass false when user has enabled sound, so the embed plays with audio.
  *   Changing this param causes the iframe to reload (new src), which is the only reliable
  *   way to switch YouTube from muted → unmuted without page reload.
  */
+function youtubeEmbedSrc(videoId: string, muted: boolean): string {
+  const mute = muted ? '1' : '0';
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${mute}&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1&controls=0&fs=0&disablekb=1&iv_load_policy=3`;
+}
+
 export function toYouTubeEmbedUrl(url: string, muted = true): string | null {
   try {
     const u = new URL(url);
-    const host = u.hostname.replace('www.', '');
-
-    // 已是 embed URL
-    if (u.pathname.startsWith('/embed/')) return url;
+    const host = u.hostname.replace(/^www\./, '').replace(/^m\./, '');
+    const isYouTubeHost =
+      host === 'youtube.com' || host === 'youtu.be' || host === 'youtube-nocookie.com';
 
     let videoId: string | null = null;
 
-    if (host === 'youtu.be') {
+    if (isYouTubeHost && u.pathname.startsWith('/embed/')) {
+      videoId = u.pathname.replace('/embed/', '').split('/')[0].split('?')[0];
+    } else if (host === 'youtu.be') {
       videoId = u.pathname.slice(1).split('?')[0];
-    } else if (host === 'youtube.com') {
+    } else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
       if (u.pathname.startsWith('/shorts/')) {
         videoId = u.pathname.replace('/shorts/', '').split('?')[0];
       } else {
@@ -68,9 +74,7 @@ export function toYouTubeEmbedUrl(url: string, muted = true): string | null {
     }
 
     if (!videoId) return null;
-    // enablejsapi=1：允許透過 postMessage 控制播放器
-    // mute param is dynamic — when muted=false the embed starts with audio
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${muted ? '1' : '0'}&loop=1&playlist=${videoId}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1&controls=0`;
+    return youtubeEmbedSrc(videoId, muted);
   } catch {
     return null;
   }

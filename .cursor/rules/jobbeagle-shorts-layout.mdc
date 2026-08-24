@@ -1,0 +1,24 @@
+---
+description: JobBeagle Shorts visual layout — desktop 9:16 stage, no CSS type-scale hacks
+globs: app/shorts/**,components/shorts/**
+alwaysApply: false
+---
+
+# JobBeagle Shorts — layout (do not improvise)
+
+Homepage (`/`, InputForm, reports) is frozen. Never restyle it while changing Shorts.
+
+## Desktop feed
+- Entire Shorts chrome (header, feed, bottom nav) lives inside `.shorts-stage-frame`.
+- Player is `height: 100%` + `aspect-ratio: 9 / 16` (max 36rem), centered on black.
+- Do **not** use `flex` + `w-full` + `max-w-[28rem]` (collapses to a sliver).
+- Do **not** full-bleed YouTube across ultrawide (buttons look microscopic).
+- Do **not** add `.shorts-font-large` or 350% `!important` font maps.
+
+## Chrome
+- YouTube embed: `controls=0`; iframe `z-0` + `pointer-events-none` so JobBeagle overlays sit on top.
+- AI Match / Apply: at least `h-16`, `text-lg`, full width of the stage column.
+- Sheets (Match / Apply): portal to `document.body`, height `85dvh`. Never `position:fixed` inside `overflow-hidden` VideoCard.
+
+## After any Shorts UI change
+Verify in a desktop viewport: stage is a readable portrait column (not a sliver, not 95% ultrawide); Match and Apply open a tall sheet.

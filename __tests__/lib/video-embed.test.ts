@@ -105,9 +105,17 @@ describe('toYouTubeEmbedUrl', () => {
     expect(result).toContain('youtube.com/embed/abc123');
   });
 
-  it('returns already-embed URL as-is', () => {
-    const embedUrl = 'https://www.youtube.com/embed/abc?autoplay=1';
-    expect(toYouTubeEmbedUrl(embedUrl)).toBe(embedUrl);
+  it('forces chrome-free params on already-embed URLs', () => {
+    const result = toYouTubeEmbedUrl('https://www.youtube.com/embed/abc?autoplay=1');
+    expect(result).toContain('youtube.com/embed/abc');
+    expect(result).toContain('controls=0');
+  });
+
+  it('rebuilds chrome-free params from m.youtube.com and nocookie embed hosts', () => {
+    expect(toYouTubeEmbedUrl('https://m.youtube.com/watch?v=abc123')).toContain('youtube.com/embed/abc123');
+    const nocookie = toYouTubeEmbedUrl('https://www.youtube-nocookie.com/embed/abc123');
+    expect(nocookie).toContain('youtube.com/embed/abc123');
+    expect(nocookie).toContain('controls=0');
   });
 
   it('returns null for non-YouTube URL', () => {

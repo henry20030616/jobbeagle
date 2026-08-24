@@ -382,6 +382,11 @@ export default function JobbeagleShortsPage() {
         </div>
       )}
 
+      {/* Phone-sized 9:16 stage: header, feed, and nav share one column */}
+      <div className="flex-1 min-h-0 w-full">
+      <div className="shorts-stage">
+      <div className="shorts-stage-frame">
+
       {/* ── PROFILE PAGE ── */}
       {navTab === 'profile' && (
         <>
@@ -658,8 +663,8 @@ export default function JobbeagleShortsPage() {
             </div>
           )}
 
-          {/* Feed area */}
-          <div className="flex-1 min-h-0 w-full relative bg-black">
+          {/* Feed */}
+          <div className="flex-1 min-h-0 w-full relative overflow-hidden">
             {activeTab === 'saved' && savedJobsData.length === 0 ? (
               <EmptyState icon={Bookmark} title={t('noSaved', appLang)} hint={t('tapBookmark', appLang)} />
             ) : activeTab === 'following' && !user ? (
@@ -698,6 +703,10 @@ export default function JobbeagleShortsPage() {
           />
         </>
       )}
+
+      </div>
+      </div>
+      </div>
     </div>
   );
 }
