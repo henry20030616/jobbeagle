@@ -18,7 +18,7 @@ import { useLanguage, AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import BrandLogo from '@/components/BrandLogo';
 import { FitStage } from '@/components/FitStage';
-import { SHORTS_DESIGN_HEIGHT, SHORTS_DESIGN_WIDTH } from '@/constants/fit-stage';
+import { SHORTS_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 const getLogoUrl = (n: string) =>
   `https://www.google.com/s2/favicons?domain=${n.toLowerCase().replace(/\s+/g, '')}.com&sz=128`;
@@ -384,14 +384,14 @@ export default function JobbeagleShortsPage() {
         </div>
       )}
 
-      {/* Phone canvas 430×764 (9:16) — FitStage zooms to fill viewport height; publishes --jb-fit-zoom for sheets */}
+      {/* Full-bleed stage — fills the browser viewport (desktop 滿版); publishes --jb-fit-zoom for sheets */}
       <FitStage
+        mode="fill"
         designWidth={SHORTS_DESIGN_WIDTH}
-        designHeight={SHORTS_DESIGN_HEIGHT}
-        minScale={0.35}
-        maxScale={3.5}
+        minScale={1}
+        maxScale={2.6}
         publishZoomVar
-        className="h-full items-center"
+        className="h-full"
         canvasClassName="flex flex-col bg-black overflow-hidden"
       >
 

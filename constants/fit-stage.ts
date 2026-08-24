@@ -7,14 +7,15 @@
 export const DOC_DESIGN_WIDTH = 1440;
 
 /**
- * Shorts phone canvas — true 9:16 (not taller-than-phone 430×932).
- * Visual column width after zoom = min(availW, availH × 9/16), so desktop
- * fills viewport height with a proper portrait stage (not a skinny seam).
+ * Shorts design reference for sheet portals (not the stage size).
+ * Stage uses FitStage mode="fill" (full-bleed). Sheets still lay out at this
+ * width and zoom via --jb-fit-zoom so they stay readable on desktop.
  */
 export const SHORTS_DESIGN_WIDTH = 430;
+/** @deprecated Kept for sheet height; stage no longer uses a fixed phone canvas. */
 export const SHORTS_DESIGN_HEIGHT = Math.round((SHORTS_DESIGN_WIDTH * 16) / 9); // 764
 
-/** Sheet height inside Shorts canvas (~85% of design height). */
+/** Sheet height inside Shorts (~85% of former phone canvas height). */
 export const SHORTS_SHEET_HEIGHT = Math.round(SHORTS_DESIGN_HEIGHT * 0.85);
 
 /** CSS custom property written by FitStage for portaled overlays. */
