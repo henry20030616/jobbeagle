@@ -15,9 +15,9 @@ type ShortsSheetProps = {
 };
 
 /**
- * Viewport bottom sheet — portaled so VideoCard overflow cannot squash it.
- * Backdrop is unscaled (fixed inset-0). Content uses the same FitStage zoom
- * via --jb-fit-zoom and a fixed phone canvas width (not 85dvh / inset-x-0).
+ * Viewport bottom sheet — portaled so VideoCard `overflow:hidden` cannot clip it
+ * (job “...more” details, apply, AI match). Backdrop is unscaled (fixed inset-0).
+ * Content uses phone canvas width + `--jb-fit-zoom` from FitStage fill mode.
  */
 export default function ShortsSheet({
   children,
