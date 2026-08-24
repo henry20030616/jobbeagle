@@ -175,13 +175,13 @@ main input {
   line-height: 1.15 !important;
 }
 
-/* Resume upload + compare-panel copy: 1.5× previous display size */
+/* Resume upload prompt matches step-title (“My Resume”); support matches text-2xl */
 .homepage-font-large .upload-prompt {
-  font-size: 5.0625rem !important;
+  font-size: 3.1640625rem !important;
   line-height: 1.15 !important;
 }
 .homepage-font-large .upload-support {
-  font-size: 3.796875rem !important;
+  font-size: 3.375rem !important;
   line-height: 1.25 !important;
 }
 .homepage-font-large .compare-panel-label {
@@ -211,7 +211,8 @@ main input {
   .homepage-font-large .sm\:text-5xl { font-size: 5.625rem !important; line-height: 1 !important; }
   .homepage-font-large .sm\:text-6xl { font-size: 7.03125rem !important; line-height: 1 !important; }
   .homepage-font-large .sm\:text-7xl { font-size: 8.4375rem !important; line-height: 1 !important; }
-  .homepage-font-large .step-title {
+  .homepage-font-large .step-title,
+  .homepage-font-large .upload-prompt {
     font-size: 4.21875rem !important;
   }
 }
@@ -256,8 +257,8 @@ main input {
 .homepage-font-large .homepage-steps .text-6xl { font-size: 5.625rem !important; line-height: 1 !important; }
 .homepage-font-large .homepage-steps .text-7xl { font-size: 6.75rem !important; line-height: 1 !important; }
 .homepage-font-large .homepage-steps .step-title { font-size: 2.53125rem !important; line-height: 1.15 !important; }
-.homepage-font-large .homepage-steps .upload-prompt { font-size: 4.05rem !important; line-height: 1.15 !important; }
-.homepage-font-large .homepage-steps .upload-support { font-size: 3.0375rem !important; line-height: 1.25 !important; }
+.homepage-font-large .homepage-steps .upload-prompt { font-size: 2.53125rem !important; line-height: 1.15 !important; }
+.homepage-font-large .homepage-steps .upload-support { font-size: 2.7rem !important; line-height: 1.25 !important; }
 .homepage-font-large .homepage-steps .compare-panel-label { font-size: 2.7rem !important; line-height: 1.25 !important; }
 
 @media (min-width: 640px) {
@@ -272,7 +273,8 @@ main input {
   .homepage-font-large .homepage-steps .sm\:text-5xl { font-size: 4.5rem !important; line-height: 1 !important; }
   .homepage-font-large .homepage-steps .sm\:text-6xl { font-size: 5.625rem !important; line-height: 1 !important; }
   .homepage-font-large .homepage-steps .sm\:text-7xl { font-size: 6.75rem !important; line-height: 1 !important; }
-  .homepage-font-large .homepage-steps .step-title { font-size: 3.375rem !important; }
+  .homepage-font-large .homepage-steps .step-title,
+  .homepage-font-large .homepage-steps .upload-prompt { font-size: 3.375rem !important; }
 }
 
 @media (min-width: 768px) {
