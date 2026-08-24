@@ -55,8 +55,8 @@ export default function ExtensionInstallPage() {
       ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="max-w-2xl mx-auto px-4 py-10 space-y-8">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-100">
+      <div className="mx-auto w-full max-w-3xl px-4 py-10 space-y-8 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <BrandLogo size="nav" showIcon />
           <LanguageSwitcher />

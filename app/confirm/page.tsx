@@ -298,7 +298,7 @@ export default function ConfirmPage() {
   }).toString()}`;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-200">
       <main className={`max-w-[90rem] mx-auto px-4 sm:px-6 ${embedded ? 'py-4 sm:py-6' : 'py-8 sm:py-10'}`}>
         {!embedded && (
           <div className="flex items-center justify-between gap-4 mb-6">

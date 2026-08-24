@@ -512,8 +512,8 @@ export default function AccountPage() {
   const deactivated = Boolean(data?.profile.deactivated_at);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-200">
+      <main className="mx-auto w-full max-w-3xl px-4 py-8 space-y-8">
         <div className="flex items-center justify-between gap-4">
           <BrandLogo size="nav" showIcon />
           <div className="flex items-center gap-2">

@@ -622,7 +622,7 @@ export default function ShortsUploadPage() {
   // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen w-full bg-slate-950 text-white">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-sm border-b border-slate-800 px-4 py-3 flex items-center gap-3">
         <Link href="/shorts" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">

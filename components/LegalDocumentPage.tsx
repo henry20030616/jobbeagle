@@ -15,8 +15,8 @@ export default function LegalDocumentPage({ type }: { type: LegalDocType }) {
   const doc: LegalDocument = getLegalDocument(type, language);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-200">
+      <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-12">
         <div className="flex items-center justify-between gap-4 mb-8">
           <BrandLogo size="nav" showIcon />
           <LanguageSwitcher variant="dark" />
