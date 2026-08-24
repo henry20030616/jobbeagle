@@ -300,124 +300,29 @@ main input {
 }
 
 /*
- * Shorts feed copy. !important so Tailwind utilities cannot shrink overlay /
- * rail / nav type back to caption size.
- */
-.shorts-font-large .text-xs { font-size: 1.75rem !important; line-height: 2.25rem !important; }
-.shorts-font-large .text-sm { font-size: 2rem !important; line-height: 2.5rem !important; }
-.shorts-font-large .text-base { font-size: 2.25rem !important; line-height: 2.75rem !important; }
-.shorts-font-large .text-lg { font-size: 2.5rem !important; line-height: 3rem !important; }
-.shorts-font-large .text-xl { font-size: 2.75rem !important; line-height: 3.25rem !important; }
-.shorts-font-large .text-2xl { font-size: 3.25rem !important; line-height: 3.75rem !important; }
-.shorts-font-large .text-3xl { font-size: 4rem !important; line-height: 4.5rem !important; }
-.shorts-font-large .text-4xl { font-size: 5rem !important; line-height: 5.5rem !important; }
-.shorts-font-large .text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
-
-@media (min-width: 768px) {
-  .shorts-font-large .md\:text-xs { font-size: 1.75rem !important; line-height: 2.25rem !important; }
-  .shorts-font-large .md\:text-sm { font-size: 2rem !important; line-height: 2.5rem !important; }
-  .shorts-font-large .md\:text-base { font-size: 2.25rem !important; line-height: 2.75rem !important; }
-  .shorts-font-large .md\:text-lg { font-size: 2.5rem !important; line-height: 3rem !important; }
-  .shorts-font-large .md\:text-xl { font-size: 2.75rem !important; line-height: 3.25rem !important; }
-  .shorts-font-large .md\:text-2xl { font-size: 3.25rem !important; line-height: 3.75rem !important; }
-  .shorts-font-large .md\:text-3xl { font-size: 4rem !important; line-height: 4.5rem !important; }
-  .shorts-font-large .md\:text-4xl { font-size: 5rem !important; line-height: 5.5rem !important; }
-  .shorts-font-large .md\:text-5xl { font-size: 6.5rem !important; line-height: 1.1 !important; }
-}
-
-/* Company overlay: 250% of the previous (60%) size */
-.shorts-company-title {
-  font-size: 4.59375rem !important;
-  line-height: 1.15 !important;
-}
-.shorts-company-name {
-  font-size: 3.28125rem !important;
-  line-height: 1.2 !important;
-}
-@media (min-width: 768px) {
-  .shorts-company-title {
-    font-size: 5.25rem !important;
-  }
-  .shorts-company-name {
-    font-size: 3.9375rem !important;
-  }
-}
-.shorts-font-large .shorts-rail-label {
-  font-size: 2.953125rem !important;
-  line-height: 1.15 !important;
-}
-@media (min-width: 768px) {
-  .shorts-font-large .shorts-rail-label {
-    font-size: 3.28125rem !important;
-    line-height: 1.15 !important;
-  }
-}
-
-/* Bottom nav labels: 20% of the previous (400%) display size */
-.shorts-font-large .shorts-nav-label {
-  font-size: 1.56rem !important;
-  line-height: 1 !important;
-}
-.shorts-font-large .shorts-nav-badge {
-  font-size: 1.47rem !important;
-  line-height: 1 !important;
-}
-@media (min-width: 768px) {
-  .shorts-font-large .shorts-nav-label {
-    font-size: 1.92rem !important;
-  }
-}
-
-/*
  * Compare overlay (portaled to body — does not inherit homepage type).
  * 350% of default Tailwind text sizes.
  */
-.compare-font-large .text-xs,
-.shorts-details-modal .text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
-.compare-font-large .text-sm,
-.shorts-details-modal .text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
-.compare-font-large .text-base,
-.shorts-details-modal .text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
-.compare-font-large .text-lg,
-.shorts-details-modal .text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
-.compare-font-large .text-xl,
-.shorts-details-modal .text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
-.compare-font-large .text-2xl,
-.shorts-details-modal .text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
-.compare-font-large .text-3xl,
-.shorts-details-modal .text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
-.compare-font-large .text-4xl,
-.shorts-details-modal .text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
-.compare-font-large .text-5xl,
-.shorts-details-modal .text-5xl { font-size: 10.5rem !important; line-height: 1.1 !important; }
-.compare-font-large .text-6xl,
-.shorts-details-modal .text-6xl { font-size: 13.125rem !important; line-height: 1.1 !important; }
+.compare-font-large .text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
+.compare-font-large .text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
+.compare-font-large .text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
+.compare-font-large .text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
+.compare-font-large .text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
+.compare-font-large .text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
+.compare-font-large .text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
+.compare-font-large .text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
+.compare-font-large .text-5xl { font-size: 10.5rem !important; line-height: 1.1 !important; }
+.compare-font-large .text-6xl { font-size: 13.125rem !important; line-height: 1.1 !important; }
 
 @media (min-width: 640px) {
-  .compare-font-large .sm\:text-xs,
-  .shorts-details-modal .sm\:text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
-  .compare-font-large .sm\:text-sm,
-  .shorts-details-modal .sm\:text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
-  .compare-font-large .sm\:text-base,
-  .shorts-details-modal .sm\:text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
-  .compare-font-large .sm\:text-lg,
-  .shorts-details-modal .sm\:text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
-  .compare-font-large .sm\:text-xl,
-  .shorts-details-modal .sm\:text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
-  .compare-font-large .sm\:text-2xl,
-  .shorts-details-modal .sm\:text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
-  .compare-font-large .sm\:text-3xl,
-  .shorts-details-modal .sm\:text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
-  .compare-font-large .sm\:text-4xl,
-  .shorts-details-modal .sm\:text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
-}
-
-@media (min-width: 768px) {
-  .shorts-details-modal .md\:text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
-  .shorts-details-modal .md\:text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
-  .shorts-details-modal .md\:text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
-  .shorts-details-modal .md\:text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
-  .shorts-details-modal .md\:text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
+  .compare-font-large .sm\:text-xs { font-size: 2.625rem !important; line-height: 3.5rem !important; }
+  .compare-font-large .sm\:text-sm { font-size: 3.0625rem !important; line-height: 4.375rem !important; }
+  .compare-font-large .sm\:text-base { font-size: 3.5rem !important; line-height: 4.75rem !important; }
+  .compare-font-large .sm\:text-lg { font-size: 3.9375rem !important; line-height: 5.25rem !important; }
+  .compare-font-large .sm\:text-xl { font-size: 4.375rem !important; line-height: 5.5rem !important; }
+  .compare-font-large .sm\:text-2xl { font-size: 5.25rem !important; line-height: 6.25rem !important; }
+  .compare-font-large .sm\:text-3xl { font-size: 6.5625rem !important; line-height: 1.15 !important; }
+  .compare-font-large .sm\:text-4xl { font-size: 7.875rem !important; line-height: 1.15 !important; }
 }
 
 /* Compare overlay: puppy + stars at 250% of previous icon size */

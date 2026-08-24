@@ -5,7 +5,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { JobData } from '@/types';
 import AnalysisModal from './AnalysisModal';
-import ShortsSheet from './ShortsSheet';
 import { 
   Heart, Share2, MapPin, DollarSign, 
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
@@ -28,23 +27,6 @@ interface VideoCardProps {
   language?: AppLanguage;
 }
 
-const RAIL_BTN =
-  'flex h-[10.5rem] w-[10.5rem] md:h-48 md:w-48 items-center justify-center rounded-full bg-black/55 backdrop-blur-md border-2 border-white/20 transition-all active:scale-90 hover:scale-105';
-const RAIL_ICON = 'h-24 w-24 md:h-[7.5rem] md:w-[7.5rem]';
-const RAIL_LABEL = 'shorts-rail-label font-semibold drop-shadow-md text-white text-center leading-tight';
-
-/** If company_name was saved as a video URL, show a readable host instead of the watch link. */
-function shortsCompanyDisplayName(name: string): string {
-  const trimmed = name.trim();
-  if (!/^https?:\/\//i.test(trimmed)) return trimmed;
-  try {
-    const host = new URL(trimmed).hostname.replace(/^www\./, '');
-    return host || trimmed;
-  } catch {
-    return trimmed;
-  }
-}
-
 const VideoCard: React.FC<VideoCardProps> = ({
   job, isActive, isFollowed = false, isBookmarked = false,
   onFollowChange, onSaveChange, language = 'en',
@@ -60,7 +42,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
     if (typeof window === 'undefined') return true;
     return localStorage.getItem('jobbeagle_sound_pref') !== 'on';
   });
-  const [ytPaused, setYtPaused] = useState(false);
   const [showSoundHint, setShowSoundHint] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [applyState, setApplyState] = useState<'idle' | 'step1' | 'step2' | 'submitting' | 'success'>('idle');
@@ -100,9 +81,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
   // Sync with parent state
   useEffect(() => { setFollowed(isFollowed); }, [isFollowed]);
   useEffect(() => { setBookmarked(isBookmarked); }, [isBookmarked]);
-  useEffect(() => {
-    if (isActive) setYtPaused(false);
-  }, [isActive]);
 
   // Load saved user info from localStorage
   useEffect(() => {
@@ -511,19 +489,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
       }
   };
 
-  const toggleYouTubePlayback = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const iframe = youtubeIframeRef.current;
-    if (!iframe?.contentWindow) return;
-    if (ytPaused) {
-      iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-      setYtPaused(false);
-    } else {
-      iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-      setYtPaused(true);
-    }
-  };
-
 
   const t = (zh: string, en: string) => (language === 'zh-TW' || language === 'zh-CN') ? zh : en;
 
@@ -748,28 +713,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
             const embedSrc = toYouTubeEmbedUrl(videoUrl, isMuted);
             if (embedSrc && isActive) {
               return (
-                <div className="relative z-10 h-full w-full overflow-hidden">
-                  <iframe
-                    ref={youtubeIframeRef}
-                    src={embedSrc}
-                    className="absolute inset-x-0 -top-16 h-[calc(100%+4rem)] w-full border-0"
-                    allow="autoplay; encrypted-media; fullscreen"
-                    allowFullScreen
-                    title="YouTube 短影音"
-                  />
-                  <button
-                    type="button"
-                    onClick={toggleYouTubePlayback}
-                    className="absolute inset-0 z-10 flex items-center justify-center"
-                    aria-label={ytPaused ? 'Play' : 'Pause'}
-                  >
-                    {ytPaused ? (
-                      <span className="flex h-[12.5rem] w-[12.5rem] items-center justify-center rounded-full bg-black/55">
-                        <Play className="ml-3 h-40 w-40 text-white" fill="white" />
-                      </span>
-                    ) : null}
-                  </button>
-                </div>
+                <iframe
+                  ref={youtubeIframeRef}
+                  src={embedSrc}
+                  className="w-full h-full object-cover z-10 border-0"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title="YouTube 短影音"
+                />
               );
             }
             return (
@@ -916,189 +867,134 @@ const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </div>
 
-      {/* --- Right rail: social actions --- */}
-      {(!showFullDetails && !showApplyModal) && (
-      <div className="shorts-font-large absolute right-4 md:right-6 top-[38%] z-20 flex w-[16.5rem] md:w-[19.5rem] -translate-y-1/2 flex-col items-center gap-6 md:gap-[1.875rem]">
-        <div className="flex flex-col items-center gap-1.5">
+      {/* --- Right Sidebar Actions --- */}
+      <div className="absolute right-2 md:right-4 bottom-[6.25rem] md:bottom-[8.5rem] flex flex-col items-center gap-5 md:gap-6 z-20 pb-2">
+        {/* Like Button */}
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`${RAIL_BTN} ${liked ? 'text-red-500' : 'text-white'}`} 
+              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 ${liked ? 'text-red-500' : 'text-white'} hover:scale-105`} 
               onClick={handleLike}
             >
-              <Heart fill={liked ? "currentColor" : "none"} className={`${RAIL_ICON} ${liked ? 'animate-pulse' : ''}`} />
+              <Heart fill={liked ? "currentColor" : "none"} size={34} className={liked ? 'animate-pulse' : ''} />
             </button>
-            <span className={`${RAIL_LABEL} tabular-nums`}>
+            <span className="text-sm md:text-base font-bold drop-shadow-md text-white tabular-nums">
               {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5">
+        {/* Follow Button */}
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`${RAIL_BTN} ${followed ? 'text-cyan-400' : 'text-white'}`} 
+              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${followed ? 'text-cyan-400' : 'text-white'}`} 
               onClick={handleFollow}
             >
-              <UserPlus fill={followed ? "currentColor" : "none"} className={`${RAIL_ICON} ${followed ? 'animate-pulse' : ''}`} />
+              <UserPlus fill={followed ? "currentColor" : "none"} size={34} className={followed ? 'animate-pulse' : ''} />
             </button>
-            <span className={RAIL_LABEL}>
+            <span className="text-sm md:text-base font-bold drop-shadow-md text-white max-w-[4.5rem] text-center leading-tight">
               {followed ? 'Followed' : 'Follow'}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5">
+        {/* Bookmark Button */}
+        <div className="flex flex-col items-center gap-2">
             <button 
-              className={`${RAIL_BTN} ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
+              className={`p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 transition-all active:scale-90 hover:scale-105 ${bookmarked ? 'text-yellow-400' : 'text-white'}`} 
               onClick={handleBookmark}
             >
-              <Bookmark fill={bookmarked ? "currentColor" : "none"} className={`${RAIL_ICON} ${bookmarked ? 'animate-pulse' : ''}`} />
+              <Bookmark fill={bookmarked ? "currentColor" : "none"} size={34} className={bookmarked ? 'animate-pulse' : ''} />
             </button>
-            <span className={RAIL_LABEL}>
+            <span className="text-sm md:text-base font-bold drop-shadow-md text-white">
               {bookmarked ? 'Saved' : 'Save'}
             </span>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5">
+        {/* Share Button */}
+        <div className="flex flex-col items-center gap-2">
           <button
-            className={`${RAIL_BTN} text-white`}
+            className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
             onClick={handleShareClick}
           >
-            <Share2 className={RAIL_ICON} />
+            <Share2 size={34} />
           </button>
-          <span className={RAIL_LABEL}>{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
+          <span className="text-sm md:text-base font-bold drop-shadow-md text-white">{(language === 'zh-TW' || language === 'zh-CN') ? '分享' : 'Share'}</span>
         </div>
-
-        <div className="flex flex-col items-center gap-1.5">
+        
+        {/* Mute Toggle — shown for all video types.
+            Upload: directly controls <video>.muted
+            YouTube: uses postMessage / enablejsapi
+            FB / IG / external: toggles icon; user uses platform native controls */}
+        <div className="flex flex-col items-center gap-2 mt-1">
           <button
             onClick={toggleMute}
-            className={`${RAIL_BTN} text-white`}
+            className="p-4 md:p-[1.125rem] min-w-[56px] min-h-[56px] md:min-w-[64px] md:min-h-[64px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white transition-all active:scale-90 hover:scale-105"
           >
-            {isMuted
-              ? <VolumeX className={RAIL_ICON} />
-              : <Volume2 className={RAIL_ICON} />}
+            {isMuted ? <VolumeX size={30} /> : <Volume2 size={30} />}
           </button>
         </div>
       </div>
-      )}
 
-      {/* AI Match + Apply sit above the Me tab (bottom-right) */}
+      {/* --- Bottom: 三等份 — 左文字 / 中 AI / 右申請，減少直向堆疊遮擋影片 --- */}
       {(!showFullDetails && !showApplyModal) && (
-      <div className="shorts-font-large absolute bottom-6 right-4 md:right-6 z-20 flex w-44 md:w-52 flex-col items-stretch gap-3">
-        {!job.applyUrl && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAnalyzeWithAI(e);
-            }}
-            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-violet-600 px-3 py-3 text-white shadow-lg border-2 border-violet-400/30 hover:bg-violet-500 active:scale-[0.99]"
-          >
-            <Sparkles className="h-8 w-8 md:h-9 md:w-9 shrink-0" />
-            <span className="text-center text-xl md:text-2xl font-bold leading-tight">
-              {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配' : 'AI Match'}
-            </span>
-          </button>
-        )}
-
-        {job.applyUrl ? (
-          <a
-            href={job.applyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-600 px-3 py-3 text-white shadow-lg border-2 border-white/15 hover:bg-slate-500 active:scale-[0.99]"
-          >
-            <ExternalLink className="h-8 w-8 md:h-9 md:w-9 shrink-0" />
-            <span className="text-center text-xl md:text-2xl font-bold leading-tight">
-              {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
-            </span>
-          </a>
-        ) : hasApplied ? (
-          <button
-            type="button"
-            disabled
-            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-slate-700 px-3 py-3 text-slate-300 border-2 border-slate-600 cursor-not-allowed"
-          >
-            <CheckCircle className="h-8 w-8 md:h-9 md:w-9 shrink-0 text-emerald-400" />
-            <span className="text-center text-xl md:text-2xl font-bold leading-tight">{t('已申請', 'Applied')}</span>
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={(e) => { void handleApplyStart(e); }}
-            className="flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-cyan-600 px-3 py-3 text-white shadow-lg border-2 border-cyan-400/30 hover:bg-cyan-500 active:scale-[0.99]"
-          >
-            <Briefcase className="h-8 w-8 md:h-9 md:w-9 shrink-0" />
-            <span className="text-center text-xl md:text-2xl font-bold leading-tight">
-              {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Apply'}
-            </span>
-          </button>
-        )}
-      </div>
-      )}
-
-      {/* Company info (replaces tiny YouTube embed title) */}
-      {(!showFullDetails && !showApplyModal) && (
-        <div className="pointer-events-none absolute left-0 top-0 z-20 w-full pr-[12rem] md:pr-[13.5rem]">
-          <div className="pointer-events-auto flex w-full max-w-[176rem] items-center gap-5 px-5 pt-5 md:gap-6 md:px-10 md:pt-6">
-            <Link
-              href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
-              onClick={(e) => e.stopPropagation()}
-              className="shrink-0 rounded-full ring-2 ring-transparent transition-shadow hover:ring-white/50"
-              aria-label={(language === 'zh-TW' || language === 'zh-CN') ? `查看 ${shortsCompanyDisplayName(job.companyName)} 公開主頁` : `View ${shortsCompanyDisplayName(job.companyName)} public page`}
-            >
-              {job.logoUrl && !logoError ? (
-                <img
-                  src={job.logoUrl}
-                  alt=""
-                  className="h-[8.75rem] w-[8.75rem] rounded-full border-2 border-white/40 bg-white object-contain shadow-lg md:h-40 md:w-40"
-                  onError={() => setLogoError(true)}
-                />
-              ) : (
-                <div className="flex h-[8.75rem] w-[8.75rem] items-center justify-center rounded-full border-2 border-white/40 bg-gray-700 shadow-lg md:h-40 md:w-40">
-                  <span className="shorts-company-title font-bold text-white">
-                    {shortsCompanyDisplayName(job.companyName).charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              )}
-            </Link>
-            <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-              <h3 className="shorts-company-title truncate font-extrabold leading-snug text-white drop-shadow-lg">
-                {job.jobTitle}
-              </h3>
-              <Link
-                href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
-                onClick={(e) => e.stopPropagation()}
-                className="shorts-company-name truncate text-left font-bold text-white/90 drop-shadow-md hover:underline"
+          <div className="absolute bottom-0 left-0 w-full z-20 text-white pb-[4.75rem] md:pb-9 pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pt-8 md:pt-12">
+            <div className="pointer-events-auto px-3 md:px-5 w-full max-w-[100vw]">
+              {/* 固定列高＝按鈕欄高度；左欄不可超出，字放大、預覽截短（詳情見 more） */}
+              <div
+                className={`grid gap-2 sm:gap-3 md:gap-4 items-stretch min-h-[6rem] h-[6rem] sm:min-h-[6.5rem] sm:h-[6.5rem] md:min-h-[7rem] md:h-[7rem] ${
+                  job.applyUrl ? 'grid-cols-[1fr_2fr]' : 'grid-cols-3'
+                }`}
               >
-                {shortsCompanyDisplayName(job.companyName)}
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-      {(!showFullDetails && !showApplyModal) && (
-          <div className="shorts-font-large absolute bottom-0 left-0 z-20 w-full text-white pointer-events-none bg-gradient-to-t from-black/90 via-black/35 to-transparent pb-8 pt-20 pr-[12rem] md:pr-[13.5rem]">
-            <div className="pointer-events-auto px-5 md:px-10 w-full max-w-[176rem]">
-                <div className="flex flex-col justify-end gap-5">
-                  <div className="flex flex-nowrap gap-3 text-2xl md:text-3xl min-h-0 shrink-0">
-                    <span className="flex shrink-0 items-center gap-2 rounded-lg border border-white/10 bg-slate-800/90 px-4 py-2 text-gray-100">
-                      <MapPin size={28} className="shrink-0 opacity-90" />
-                      <span>
-                        {t('工作地點', 'Location')}: {job.location?.trim() || t('未提供', 'Not listed')}
-                      </span>
+                {/* 左：職缺文字（高度 ≤ 中欄按鈕，overflow 裁切） */}
+                <div className="min-w-0 min-h-0 h-full max-h-full overflow-hidden flex flex-col justify-center gap-1 pr-0.5">
+                  <div className="flex flex-row items-center gap-2 min-h-0 shrink-0">
+                    <Link
+                      href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex-shrink-0 rounded-full ring-2 ring-transparent hover:ring-white/50 transition-shadow"
+                      aria-label={(language === 'zh-TW' || language === 'zh-CN') ? `查看 ${job.companyName} 公開主頁` : `View ${job.companyName} public page`}
+                    >
+                      {job.logoUrl && !logoError ? (
+                        <img
+                          src={job.logoUrl}
+                          alt=""
+                          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/40 bg-white object-contain shadow-lg"
+                          onError={() => setLogoError(true)}
+                        />
+                      ) : (
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/40 bg-gray-700 flex items-center justify-center shadow-lg">
+                          <span className="text-white font-bold text-base sm:text-lg">
+                            {job.companyName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </Link>
+                    <div className="flex flex-col min-w-0 gap-0 justify-center">
+                      <h3 className="text-base sm:text-lg md:text-xl font-extrabold drop-shadow-lg leading-snug line-clamp-2">
+                        {job.jobTitle}
+                      </h3>
+                      <Link
+                        href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sm sm:text-base font-bold drop-shadow-md truncate text-white/90 hover:underline text-left"
+                      >
+                        @{job.companyName}
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="flex flex-nowrap gap-1.5 text-xs sm:text-sm min-h-0 shrink-0 overflow-hidden">
+                    <span className="flex items-center gap-1 bg-slate-800/90 px-2 py-0.5 rounded-md text-gray-100 border border-white/10 min-w-0 max-w-[50%]">
+                      <MapPin size={14} className="shrink-0 opacity-90" />
+                      <span className="truncate">{job.location}</span>
                     </span>
-                    <span className="flex min-w-0 items-center gap-2 rounded-lg border border-emerald-500/25 bg-emerald-950/70 px-4 py-2 text-emerald-200">
-                      <DollarSign size={28} className="shrink-0 opacity-90" />
-                      <span className="truncate">
-                        {t('薪資範圍', 'Salary')}: {job.salary?.trim() || t('未提供', 'Not listed')}
-                      </span>
+                    <span className="flex items-center gap-1 bg-emerald-950/70 text-emerald-200 px-2 py-0.5 rounded-md border border-emerald-500/25 min-w-0 max-w-[50%]">
+                      <DollarSign size={14} className="shrink-0 opacity-90" />
+                      <span className="truncate">{job.salary}</span>
                     </span>
                   </div>
-                  <div className="flex min-w-0 w-full items-baseline gap-3 text-2xl md:text-3xl text-gray-100/95 leading-relaxed">
-                    <p className="min-w-0 flex-1 truncate whitespace-nowrap">
-                      {job.description}
-                    </p>
+                  <div className="flex items-baseline gap-1.5 min-w-0 min-h-0 shrink text-sm sm:text-base md:text-lg text-gray-100/95 leading-snug">
+                    <p className="line-clamp-1 min-w-0 flex-1 break-words">{job.description}</p>
                     <button
                       type="button"
-                      className="shrink-0 text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform"
+                      className="text-white font-bold hover:underline cursor-pointer active:scale-95 transition-transform shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowFullDetails(true);
@@ -1108,6 +1004,61 @@ const VideoCard: React.FC<VideoCardProps> = ({
                     </button>
                   </div>
                 </div>
+
+                {/* 中：AI 匹配（僅無外部申請網址時）— 列高基準 */}
+                {!job.applyUrl && (
+                  <div className="min-w-0 min-h-0 h-full flex items-end justify-center">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAnalyzeWithAI(e);
+                      }}
+                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-1.5 sm:gap-2 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-violet-400/20 px-1.5 sm:px-2"
+                    >
+                      <Sparkles size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
+                      <span className="text-center leading-tight line-clamp-2">
+                        {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
+                      </span>
+                    </button>
+                  </div>
+                )}
+
+                {/* 右：一鍵申請；有外部申請時為第二欄（較寬） */}
+                <div className="min-w-0 min-h-0 h-full flex items-end justify-center">
+                  {job.applyUrl ? (
+                    <a
+                      href={job.applyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99] text-xs sm:text-sm md:text-base border border-white/10 px-2"
+                    >
+                      <ExternalLink size={18} className="shrink-0" /> {(language === 'zh-TW' || language === 'zh-CN') ? '套用' : 'Apply'}
+                    </a>
+                  ) : hasApplied ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-slate-700 text-slate-300 font-bold rounded-xl md:rounded-2xl flex flex-row items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs md:text-sm border border-slate-600 px-1.5 sm:px-2 cursor-not-allowed"
+                    >
+                      <CheckCircle size={16} className="shrink-0 text-emerald-400" />
+                      <span className="text-center leading-tight">{t('已申請', 'Applied')}</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => { void handleApplyStart(e); }}
+                      className="w-full max-w-[9.5rem] sm:max-w-none h-[3rem] sm:h-[3.25rem] md:h-[3.5rem] shrink-0 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl md:rounded-2xl shadow-lg flex flex-row items-center justify-center gap-1.5 sm:gap-2 transition-colors active:scale-[0.99] text-[11px] sm:text-xs md:text-sm border border-cyan-400/25 px-1.5 sm:px-2"
+                    >
+                      <Briefcase size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" />
+                      <span className="text-center leading-tight line-clamp-2">
+                        {(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
       )}
@@ -1122,15 +1073,15 @@ const VideoCard: React.FC<VideoCardProps> = ({
           />
           
           {/* Modal Content：較高大面板、內文放大 */}
-          <div className="shorts-details-modal absolute inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-[1.75rem] md:rounded-t-3xl border-t border-white/10 shadow-2xl animate-slide-up min-h-[72vh] max-h-[94vh] md:max-h-[92vh] flex flex-col">
+          <div className="absolute inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-[1.75rem] md:rounded-t-3xl border-t border-white/10 shadow-2xl animate-slide-up min-h-[72vh] max-h-[94vh] md:max-h-[92vh] flex flex-col">
             {/* Drag Handle */}
             <div className="w-full flex justify-center pt-4 pb-3 cursor-pointer" onClick={() => setShowFullDetails(false)}>
                 <div className="w-14 h-1.5 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors" />
             </div>
 
             {/* Header */}
-            <div className="flex justify-between items-start gap-6 mb-5 px-6 md:px-8">
-                <div className="flex items-center gap-6 min-w-0">
+            <div className="flex justify-between items-start gap-3 mb-5 px-6 md:px-8">
+                <div className="flex items-center gap-4 min-w-0">
                      <Link
                        href={`/shorts/company/${encodeURIComponent(job.companyName)}`}
                        onClick={(e) => e.stopPropagation()}
@@ -1140,12 +1091,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
                      {job.logoUrl && !logoError ? (
                         <img 
                             src={job.logoUrl} 
-                            className="h-[12.25rem] w-[12.25rem] md:h-[14rem] md:w-[14rem] rounded-full border border-white/20 bg-white object-contain" 
+                            className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-white/20 bg-white object-contain" 
                             alt=""
                             onError={() => setLogoError(true)}
                         />
                      ) : (
-                        <div className="h-[12.25rem] w-[12.25rem] md:h-[14rem] md:w-[14rem] bg-gray-700 rounded-full flex items-center justify-center">
+                        <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-700 rounded-full flex items-center justify-center">
                             <span className="text-white font-bold text-lg md:text-xl">
                                 {job.companyName.charAt(0).toUpperCase()}
                             </span>
@@ -1165,9 +1116,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 </div>
                 <button 
                   onClick={() => setShowFullDetails(false)} 
-                  className="p-5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0"
+                  className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0"
                 >
-                    <X className="h-[5.25rem] w-[5.25rem] text-gray-300" />
+                    <X size={24} className="text-gray-300" />
                 </button>
             </div>
 
@@ -1185,9 +1136,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   href={job.applyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-14 px-8 rounded-2xl shadow-lg flex items-center justify-center gap-7 transition-all active:scale-[0.99] text-base md:text-lg"
+                  className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] text-base md:text-lg"
                 >
-                  <ExternalLink className="h-[4.8125rem] w-[4.8125rem] shrink-0" />
+                  <ExternalLink size={22} />
                   <span>{(language === 'zh-TW' || language === 'zh-CN') ? '套用（前往企業申請頁）' : 'Apply on Company Site'}</span>
                 </a>
               ) : (
@@ -1195,9 +1146,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   <button
                     type="button"
                     onClick={(e) => handleAnalyzeWithAI(e)}
-                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-14 px-8 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-7 transition-all active:scale-[0.99] text-sm md:text-base"
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 px-3 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-2 transition-all active:scale-[0.99] text-sm md:text-base"
                   >
-                    <Sparkles className="h-[4.8125rem] w-[4.8125rem] shrink-0" />
+                    <Sparkles size={22} className="shrink-0" />
                     <span className="text-center leading-tight">
                       {(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match'}
                     </span>
@@ -1208,9 +1159,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
                       setShowFullDetails(false);
                       handleApplyStart();
                     }}
-                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-14 px-8 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-7 transition-all active:scale-[0.99] text-sm md:text-base"
+                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 px-3 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-2 transition-all active:scale-[0.99] text-sm md:text-base"
                   >
-                    <Briefcase className="h-[4.8125rem] w-[4.8125rem] shrink-0" />
+                    <Briefcase size={22} className="shrink-0" />
                     <span className="text-center leading-tight">{(language === 'zh-TW' || language === 'zh-CN') ? '一鍵申請' : 'Quick Apply'}</span>
                   </button>
                 </div>
@@ -1222,18 +1173,23 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- LinkedIn-style Quick Apply Modal --- */}
       {showApplyModal && (
-          <ShortsSheet
-            accentClass="border-cyan-500/30"
-            onBackdropClick={() => {
-              if (applyState === 'step1' || applyState === 'idle') {
-                setShowApplyModal(false);
-                setApplyState('idle');
-                setApplyStep(1);
-              }
-            }}
-          >
+          <>
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
+              onClick={() => {
+                if (applyState === 'step1' || applyState === 'idle') {
+                  setShowApplyModal(false);
+                  setApplyState('idle');
+                  setApplyStep(1);
+                }
+              }}
+            />
+            
+            {/* Modal */}
+            <div className="fixed inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl border-t border-cyan-500/30 animate-slide-up shadow-2xl max-h-[90vh] flex flex-col">
               {/* Header */}
-              <div className="flex justify-between items-center p-6 border-b border-slate-700 shrink-0">
+              <div className="flex justify-between items-center p-6 border-b border-slate-700">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-cyan-600/20 rounded-lg flex items-center justify-center">
                     <Briefcase className="text-cyan-400" size={24} />
@@ -1256,7 +1212,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               </div>
 
               {/* Progress Steps */}
-              <div className="px-6 py-4 border-b border-slate-700 shrink-0">
+              <div className="px-6 py-4 border-b border-slate-700">
                 <div className="flex items-center justify-between">
                   {[
                     { n: 1, label: t('確認職缺', 'Review') },
@@ -1277,7 +1233,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               </div>
 
               {/* Content */}
-              <div className="min-h-0 flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-6">
                 {/* Submitting State */}
                 {applyState === 'submitting' && (
                   <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
@@ -1721,7 +1677,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   </div>
                 )}
               </div>
-          </ShortsSheet>
+            </div>
+          </>
       )}
 
 

@@ -402,40 +402,40 @@ export default function JobbeagleShortsPage() {
       {navTab === 'home' && (
         <>
           {/* ── Top Header: Logo + Avatar (no tab pills here) ── */}
-          <div className="shorts-font-large w-full flex-shrink-0 px-6 py-5 md:min-h-40 md:px-12 md:py-8 z-30 flex justify-between items-center bg-black/90 backdrop-blur-md border-b border-white/8">
+          <div className="w-full flex-shrink-0 px-4 pt-3 pb-3 md:px-6 z-30 flex justify-between items-center bg-black/90 backdrop-blur-md border-b border-white/8">
             {/* Logo */}
-            <div className="flex origin-left items-center gap-4 shrink-0">
-              <BrandLogo size="hero" showIcon />
-              <span className="text-white/80 text-4xl md:text-6xl font-semibold">Shorts</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <BrandLogo size="nav" showIcon />
+              <span className="text-white/70 text-sm md:text-base font-semibold">Shorts</span>
             </div>
 
             {/* Right: language switcher + avatar */}
-            <div className="flex items-center gap-4 md:gap-8 shrink-0">
+            <div className="flex items-center gap-2 md:gap-3 shrink-0">
               {navTab === 'home' && activeTab === 'foryou' && (
                 <button
                   type="button"
                   onClick={() => setShowSearch((v) => !v)}
-                  className={`p-3 md:p-6 xl:p-8 rounded-xl md:rounded-2xl xl:rounded-3xl border-2 transition-colors ${showSearch || hasActiveFilters ? 'bg-blue-600/30 border-blue-500/50 text-blue-300' : 'bg-white/5 border-white/15 text-white/70 hover:text-white'}`}
+                  className={`p-2 rounded-xl border transition-colors ${showSearch || hasActiveFilters ? 'bg-blue-600/30 border-blue-500/50 text-blue-300' : 'bg-white/5 border-white/15 text-white/70 hover:text-white'}`}
                   aria-label={t('search', appLang)}
                 >
-                  <Search className="h-6 w-6 md:h-12 md:w-12 xl:h-[72px] xl:w-[72px]" />
+                  <Search size={18} />
                 </button>
               )}
-              <LanguageSwitcher variant="light" size="lg" />
+              <LanguageSwitcher variant="light" />
 
               {user ? (
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="relative flex items-center justify-center w-14 h-14 md:w-24 md:h-24 rounded-full ring-2 md:ring-4 ring-white/20 hover:ring-white/50 transition-all overflow-hidden bg-slate-800 shrink-0"
+                    className="relative flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-white/20 hover:ring-white/50 transition-all overflow-hidden bg-slate-800 shrink-0"
                     aria-label="Profile menu"
                   >
                     {user.user_metadata?.avatar_url
                       ? <img src={user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
-                      : <span className="text-white font-bold text-lg">{(user.user_metadata?.full_name || user.email || '?')[0].toUpperCase()}</span>
+                      : <span className="text-white font-bold text-sm">{(user.user_metadata?.full_name || user.email || '?')[0].toUpperCase()}</span>
                     }
                     {/* Role badge */}
-                    <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-black ${userRole === 'employer' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
+                    <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-black ${userRole === 'employer' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
                   </button>
 
                   {showUserMenu && (
@@ -538,11 +538,11 @@ export default function JobbeagleShortsPage() {
                 <div className="relative">
                   <button
                     onClick={() => setShowLoginMenu(!showLoginMenu)}
-                    className="flex items-center gap-2 md:gap-4 xl:gap-5 px-5 py-3 md:px-8 md:py-6 xl:px-10 xl:py-8 bg-white/10 border-2 border-white/20 rounded-xl md:rounded-2xl xl:rounded-3xl text-white text-lg md:text-3xl xl:text-5xl font-semibold hover:bg-white/20 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm font-semibold hover:bg-white/20 transition-colors"
                   >
-                    <LogIn className="w-6 h-6 md:w-12 md:h-12 xl:w-[72px] xl:h-[72px]" />
+                    <LogIn className="w-4 h-4" />
                     {t('login', appLang)}
-                    <ChevronDown className="w-5 h-5 md:w-10 md:h-10 xl:w-16 xl:h-16 opacity-60" />
+                    <ChevronDown className="w-3 h-3 opacity-60" />
                   </button>
                   {showLoginMenu && (
                     <>
@@ -730,7 +730,7 @@ function BottomNav({
 }) {
   return (
     <div
-      className="shorts-font-large h-[8.5rem] md:h-[10.5rem] bg-black/95 border-t-2 border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
+      className="h-[4.25rem] md:h-20 bg-black/95 border-t border-gray-800/60 flex items-center justify-around z-40 flex-shrink-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {([
@@ -739,22 +739,22 @@ function BottomNav({
         { id: 'saved' as const, icon: Bookmark,  label: t('saved'),     badge: savedCount,  active: activeTab === 'saved' && navTab === 'home' },
       ]).map(({ id, icon: Icon, label, badge, active }) => (
         <button key={id} onClick={() => onTabChange(id)}
-          className="flex flex-col items-center gap-2 px-3 py-2 min-w-[4.5rem] text-white transition-colors">
+          className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
           <div className="relative">
-            <Icon className="h-[4.5rem] w-[4.5rem] fill-white text-white md:h-[5.4rem] md:w-[5.4rem]" strokeWidth={active ? 2.75 : 2} />
+            <Icon size={24} strokeWidth={active ? 2.75 : 2} />
             {badge > 0 && (
-              <span className="shorts-nav-badge absolute left-full top-0 ml-0.5 flex h-[2.1rem] min-w-[2.1rem] items-center justify-center rounded-full bg-blue-500 px-1 font-bold text-white">
+              <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] bg-blue-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
           </div>
-          <span className="shorts-nav-label font-bold leading-none text-white">{label}</span>
+          <span className="text-[10px] md:text-xs font-semibold">{label}</span>
         </button>
       ))}
       <button onClick={() => onNav('profile')}
-        className="flex flex-col items-center gap-2 px-3 py-2 min-w-[4.5rem] text-white transition-colors">
-        <User className="h-[4.5rem] w-[4.5rem] fill-white text-white md:h-[5.4rem] md:w-[5.4rem]" strokeWidth={navTab === 'profile' ? 2.75 : 2} />
-        <span className="shorts-nav-label font-bold leading-none text-white">{t('me')}</span>
+        className={`flex flex-col items-center gap-1 px-4 py-1.5 min-w-[4rem] transition-colors ${navTab === 'profile' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+        <User size={24} strokeWidth={navTab === 'profile' ? 2.75 : 2} />
+        <span className="text-[10px] md:text-xs font-semibold">{t('me')}</span>
       </button>
     </div>
   );

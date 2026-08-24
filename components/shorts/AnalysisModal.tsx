@@ -10,7 +10,6 @@ import { ResumeInput, LiteReport, FullReport, UserProfile, ReportType } from '@/
 import { REPORT_CODES, normalizeReportType, reportShortLabel } from '@/constants/report-products';
 import { createClient } from '@/lib/supabase/browser';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
-import ShortsSheet from '@/components/shorts/ShortsSheet';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
@@ -277,29 +276,35 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <ShortsSheet onBackdropClick={onClose} accentClass="border-violet-500/30">
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 animate-fade-in" onClick={onClose} />
+
+      {/* Bottom Sheet */}
+      <div className="fixed inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl border-t border-violet-500/30 shadow-2xl animate-slide-up max-h-[92vh] flex flex-col">
+
         {/* Drag Handle */}
         <div className="flex justify-center pt-3 pb-1 cursor-pointer shrink-0" onClick={onClose}>
           <div className="w-12 h-1.5 bg-gray-600 rounded-full hover:bg-gray-500 transition-colors" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center gap-2 px-5 py-3 border-b border-white/10 shrink-0">
-          <Sparkles size={20} className="text-violet-400 shrink-0" />
-          <span className="font-bold text-white text-lg shrink-0">{(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match Analysis'}</span>
-          <span className="text-sm text-gray-400 flex-1 truncate mx-1">{jobTitle} @ {companyName}</span>
+        <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/10 shrink-0">
+          <Sparkles size={17} className="text-violet-400 shrink-0" />
+          <span className="font-bold text-white text-sm shrink-0">{(language === 'zh-TW' || language === 'zh-CN') ? 'AI 匹配度分析' : 'AI Match Analysis'}</span>
+          <span className="text-xs text-gray-400 flex-1 truncate mx-1">{jobTitle} @ {companyName}</span>
           <button onClick={onClose} className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors shrink-0">
-            <X size={18} className="text-gray-300" />
+            <X size={15} className="text-gray-300" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-5 py-4">
 
           {/* ── STEP: resume ─────────────────────────────── */}
           {step === 'resume' && (
             <div className="space-y-4">
-              <p className="text-base text-gray-300">
+              <p className="text-sm text-gray-400">
                 {(language === 'zh-TW' || language === 'zh-CN')
                   ? `上傳履歷後，AI 將針對「${jobTitle}」生成匹配度分析報告`
                   : `Upload your resume and AI will generate a match analysis for "${jobTitle}"`}
@@ -318,11 +323,11 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                     <button
                       key={saved.id}
                       onClick={() => handleAnalyze(saved, saved.id)}
-                      className="w-full flex items-center gap-3 bg-slate-800 hover:bg-violet-900/40 border border-violet-500/30 rounded-xl p-4 mb-2 transition-all active:scale-95 text-left"
+                      className="w-full flex items-center gap-3 bg-slate-800 hover:bg-violet-900/40 border border-violet-500/30 rounded-xl p-3 mb-2 transition-all active:scale-95 text-left"
                     >
                       <FileText size={19} className="text-violet-400 shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <div className="text-base font-semibold text-white truncate">{saved.fileName || ((language === 'zh-TW' || language === 'zh-CN') ? '文字履歷' : 'Text Resume')}</div>
+                        <div className="text-sm font-semibold text-white truncate">{saved.fileName || ((language === 'zh-TW' || language === 'zh-CN') ? '文字履歷' : 'Text Resume')}</div>
                         <div className="text-xs text-gray-500">{new Date(saved.timestamp).toLocaleDateString((language === 'zh-TW' || language === 'zh-CN') ? 'zh-TW' : 'en-US')}</div>
                       </div>
                       <span className="text-xs text-violet-400 font-bold shrink-0">{(language === 'zh-TW' || language === 'zh-CN') ? '使用 →' : 'Use →'}</span>
@@ -351,7 +356,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setReportType(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                    className={`flex-1 py-3 rounded-lg text-sm font-bold border ${
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold border ${
                       reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                         ? 'bg-indigo-600 border-indigo-500 text-white'
                         : 'border-slate-600 text-slate-400'
@@ -362,7 +367,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setReportType(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                    className={`flex-1 py-3 rounded-lg text-sm font-bold border ${
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold border ${
                       reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                         ? 'bg-violet-600 border-violet-500 text-white'
                         : 'border-slate-600 text-slate-400'
@@ -487,7 +492,8 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           )}
 
         </div>
-    </ShortsSheet>
+      </div>
+    </>
   );
 };
 
