@@ -11,11 +11,12 @@ export const REPORT_ACTION_BTN =
   `inline-flex min-h-28 items-center gap-4 rounded-xl border-2 border-slate-400 bg-slate-900/70 px-8 py-5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
 /**
- * Compact “View sample” chip for the homepage 4-col grid.
- * text-sm (not text-xl) so columns stay within 100% and don’t shove the page right.
+ * “View sample” chip on the homepage report-type cards.
+ * Size with em so padding tracks homepage-font-large (rem padding stayed tiny).
+ * text-2xl matches the card blurb / Saved Resumes pill; max-w-full keeps the grid from shoving.
  */
 export const SAMPLE_LINK_BTN =
-  `inline-flex w-fit max-w-full items-center gap-2 rounded-lg border-2 border-indigo-400/50 bg-indigo-500/15 px-5 py-3 text-xl font-bold text-indigo-200 underline underline-offset-2 hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
+  `inline-flex w-fit max-w-full items-center gap-[0.4em] rounded-xl border-2 border-indigo-400/50 bg-indigo-500/15 px-[0.9em] py-[0.45em] text-2xl font-bold leading-snug text-indigo-200 underline underline-offset-[0.18em] hover:bg-indigo-500/25 hover:border-indigo-300 transition-colors`;
 
 /**
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
