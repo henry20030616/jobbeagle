@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { computeFitScale, computeSheetZoom } from '@/lib/fit-scale';
 import {
+  ACCOUNT_DESIGN_WIDTH,
   DOC_DESIGN_WIDTH,
   SHORTS_DESIGN_WIDTH,
   SHORTS_DESIGN_HEIGHT,
@@ -40,6 +41,20 @@ describe('computeFitScale — docs (enlarge-only)', () => {
       maxScale: 2.6,
     });
     expect(r.scale).toBe(2.6);
+  });
+});
+
+describe('computeFitScale — account (tighter canvas)', () => {
+  it('enlarges on a 1440 laptop where 1440-wide docs would stay at zoom=1', () => {
+    const r = computeFitScale({
+      availW: 1440,
+      availH: 900,
+      designWidth: ACCOUNT_DESIGN_WIDTH,
+      minScale: 1,
+      maxScale: 2,
+    });
+    expect(r.fluid).toBe(false);
+    expect(r.scale).toBeCloseTo(1440 / ACCOUNT_DESIGN_WIDTH, 3);
   });
 });
 

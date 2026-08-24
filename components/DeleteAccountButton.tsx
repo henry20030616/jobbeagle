@@ -72,9 +72,9 @@ export default function DeleteAccountButton({ language = 'en' }: { language?: Ap
       type="button"
       onClick={handleDelete}
       disabled={busy}
-      className="inline-flex items-center gap-1.5 text-xs text-red-400/80 hover:text-red-300 transition-colors disabled:opacity-50"
+      className="inline-flex items-center gap-2 text-lg text-red-400/80 hover:text-red-300 transition-colors disabled:opacity-50"
     >
-      <Trash2 className="w-3.5 h-3.5" />
+      <Trash2 className="w-5 h-5" />
       {busy ? t.deleting : t.label}
     </button>
   );

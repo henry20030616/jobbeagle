@@ -31,24 +31,24 @@ export default function CreditsBadge({ profile, language = 'en', className = '' 
         : null;
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 text-xs ${className}`}>
+    <div className={`flex flex-wrap items-center gap-2.5 text-base ${className}`}>
       {tierLabel && (
-        <span className="rounded-full bg-violet-500/20 border border-violet-500/40 px-2.5 py-1 text-violet-200 font-semibold">
+        <span className="rounded-full bg-violet-500/20 border border-violet-500/40 px-3 py-1.5 text-violet-200 font-semibold">
           {tierLabel}
         </span>
       )}
       <span
-        className="inline-flex items-center gap-1 rounded-full bg-slate-800 border border-slate-600 px-2.5 py-1 text-slate-200"
+        className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 border border-slate-600 px-3 py-1.5 text-slate-200"
         title={reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language)}
       >
-        <Sparkles className="w-3 h-3 text-indigo-400" />
+        <Sparkles className="w-4 h-4 text-indigo-400" />
         {snapshot} {reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language)}
       </span>
       <span
-        className="inline-flex items-center gap-1 rounded-full bg-slate-800 border border-slate-600 px-2.5 py-1 text-slate-200"
+        className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 border border-slate-600 px-3 py-1.5 text-slate-200"
         title={reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language)}
       >
-        <Zap className="w-3 h-3 text-amber-400" />
+        <Zap className="w-4 h-4 text-amber-400" />
         {strategy} {reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language)}
       </span>
       {profile.membership_tier === 'free' && (
