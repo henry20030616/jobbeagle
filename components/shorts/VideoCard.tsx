@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { JobData } from '@/types';
 import AnalysisModal from './AnalysisModal';
+import ShortsSheet from './ShortsSheet';
 import { 
   Heart, Share2, MapPin, DollarSign, 
   Briefcase, User, Volume2, VolumeX, AlertCircle, 
@@ -1221,23 +1222,18 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
       {/* --- LinkedIn-style Quick Apply Modal --- */}
       {showApplyModal && (
-          <>
-            {/* Backdrop */}
-            <div 
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
-              onClick={() => {
-                if (applyState === 'step1' || applyState === 'idle') {
-                  setShowApplyModal(false);
-                  setApplyState('idle');
-                  setApplyStep(1);
-                }
-              }}
-            />
-            
-            {/* Modal */}
-            <div className="fixed inset-x-0 bottom-0 z-50 bg-slate-900 rounded-t-3xl border-t border-cyan-500/30 animate-slide-up shadow-2xl max-h-[90vh] flex flex-col">
+          <ShortsSheet
+            accentClass="border-cyan-500/30"
+            onBackdropClick={() => {
+              if (applyState === 'step1' || applyState === 'idle') {
+                setShowApplyModal(false);
+                setApplyState('idle');
+                setApplyStep(1);
+              }
+            }}
+          >
               {/* Header */}
-              <div className="flex justify-between items-center p-6 border-b border-slate-700">
+              <div className="flex justify-between items-center p-6 border-b border-slate-700 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-cyan-600/20 rounded-lg flex items-center justify-center">
                     <Briefcase className="text-cyan-400" size={24} />
@@ -1260,7 +1256,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               </div>
 
               {/* Progress Steps */}
-              <div className="px-6 py-4 border-b border-slate-700">
+              <div className="px-6 py-4 border-b border-slate-700 shrink-0">
                 <div className="flex items-center justify-between">
                   {[
                     { n: 1, label: t('確認職缺', 'Review') },
@@ -1281,7 +1277,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="min-h-0 flex-1 overflow-y-auto p-6">
                 {/* Submitting State */}
                 {applyState === 'submitting' && (
                   <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
@@ -1725,8 +1721,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
                   </div>
                 )}
               </div>
-            </div>
-          </>
+          </ShortsSheet>
       )}
 
 
