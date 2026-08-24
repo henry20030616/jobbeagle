@@ -117,7 +117,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
             <MessageCircle className="w-6 h-6 text-indigo-400 shrink-0" />
             <span className="flex-1 min-w-0">
               <span className="block text-2xl font-bold text-white">{t.contactTitle}</span>
-              <span className="block text-lg text-slate-400 mt-0.5 truncate">
+              <span className="mt-0.5 block text-lg leading-snug text-slate-400 whitespace-normal break-words">
                 {open ? t.contactDesc : t.expandHint}
               </span>
             </span>
