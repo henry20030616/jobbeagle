@@ -7,7 +7,6 @@ import {
   CreditCard,
   Gift,
   Loader2,
-  ShieldAlert,
   Target,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -96,10 +95,6 @@ const copy: Record<
     referralEmpty: string;
     activated: string;
     pending: string;
-    danger: string;
-    dangerBlurb: string;
-    dangerCta: string;
-    dangerReactivateCta: string;
     loadError: string;
     actionError: string;
     careerContextTitle: string;
@@ -140,10 +135,6 @@ const copy: Record<
     referralEmpty: 'No referrals yet.',
     activated: 'Activated',
     pending: 'Pending',
-    danger: 'Danger zone',
-    dangerBlurb: 'Pause or permanently delete your account. Lives on its own page — not mixed with billing.',
-    dangerCta: 'Open Danger zone →',
-    dangerReactivateCta: 'Reactivate account →',
     loadError: 'Could not load account.',
     actionError: 'Something went wrong. Try again.',
     careerContextTitle: 'Career Context',
@@ -184,10 +175,6 @@ const copy: Record<
     referralEmpty: '尚無推薦。',
     activated: '已啟動',
     pending: '待完成',
-    danger: '危險操作',
-    dangerBlurb: '暫停或永久刪除帳戶。獨立頁操作，不跟買額度混在一起。',
-    dangerCta: '開啟危險操作 →',
-    dangerReactivateCta: '重新啟用帳戶 →',
     loadError: '無法載入帳戶資料。',
     actionError: '操作失敗，請稍後再試。',
     careerContextTitle: 'Career Context',
@@ -227,10 +214,6 @@ const copy: Record<
     referralEmpty: '暂无推荐。',
     activated: '已激活',
     pending: '待完成',
-    danger: '危险操作',
-    dangerBlurb: '暂停或永久删除账户。独立页操作，不和买额度混在一起。',
-    dangerCta: '打开危险操作 →',
-    dangerReactivateCta: '重新启用账户 →',
     loadError: '无法加载账户数据。',
     actionError: '操作失败，请稍后再试。',
     careerContextTitle: 'Career Context',
@@ -270,10 +253,6 @@ const copy: Record<
     referralEmpty: 'Sin referidos aún.',
     activated: 'Activado',
     pending: 'Pendiente',
-    danger: 'Zona de peligro',
-    dangerBlurb: 'Pausa o elimina tu cuenta. En su propia página, no mezclado con facturación.',
-    dangerCta: 'Abrir zona de peligro →',
-    dangerReactivateCta: 'Reactivar cuenta →',
     loadError: 'No se pudo cargar la cuenta.',
     actionError: 'Algo falló. Inténtalo de nuevo.',
     careerContextTitle: 'Career Context',
@@ -314,10 +293,6 @@ const copy: Record<
     referralEmpty: 'अभी कोई रेफरल नहीं।',
     activated: 'सक्रिय',
     pending: 'लंबित',
-    danger: 'खतरनाक क्षेत्र',
-    dangerBlurb: 'खाता रोकें या स्थायी रूप से हटाएं। अलग पेज — बिलिंग के साथ नहीं।',
-    dangerCta: 'खतरनाक क्षेत्र खोलें →',
-    dangerReactivateCta: 'खाता पुनः सक्रिय करें →',
     loadError: 'खाता लोड नहीं हो सका।',
     actionError: 'त्रुटि। पुनः प्रयास करें।',
     careerContextTitle: 'Career Context',
@@ -358,10 +333,6 @@ const copy: Record<
     referralEmpty: 'لا إحالات بعد.',
     activated: 'مفعّل',
     pending: 'قيد الانتظار',
-    danger: 'منطقة خطر',
-    dangerBlurb: 'إيقاف أو حذف الحساب نهائيًا. صفحة مستقلة — ليست مع الفوترة.',
-    dangerCta: 'فتح منطقة الخطر →',
-    dangerReactivateCta: 'إعادة تفعيل الحساب →',
     loadError: 'تعذر تحميل الحساب.',
     actionError: 'حدث خطأ. حاول مجددًا.',
     careerContextTitle: 'Career Context',
@@ -729,24 +700,6 @@ export default function AccountPage() {
                   ))}
                 </ul>
               )}
-            </section>
-
-            <section className="rounded-xl border border-red-900/50 bg-red-950/20 p-7 space-y-4">
-              <div className="flex items-start gap-3">
-                <ShieldAlert className="w-7 h-7 text-red-400 shrink-0 mt-0.5" />
-                <div>
-                  <h2 className="text-xl font-semibold uppercase tracking-wide text-red-300/90">
-                    {t.danger}
-                  </h2>
-                  <p className="text-lg text-slate-400 mt-1 leading-snug">{t.dangerBlurb}</p>
-                </div>
-              </div>
-              <Link
-                href="/account/danger"
-                className="inline-flex items-center px-5 py-2.5 text-lg font-bold rounded-lg border border-red-700/60 text-red-100 hover:bg-red-950/50 transition-colors"
-              >
-                {deactivated ? t.dangerReactivateCta : t.dangerCta}
-              </Link>
             </section>
           </>
         )}
