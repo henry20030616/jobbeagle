@@ -45,6 +45,18 @@ test.describe('FitStage ratios', () => {
     }
   });
 
+  test('career-context content is not a phone sliver on desktop/ultrawide', async ({ page }) => {
+    for (const vp of VIEWPORTS) {
+      await page.setViewportSize(vp);
+      await page.goto('/career-context', { waitUntil: 'domcontentloaded' });
+      await page.waitForSelector('[data-fit-ref="career-context"]', { timeout: 15_000 });
+      const box = await page.locator('[data-fit-ref="career-context"]').boundingBox();
+      expect(box).toBeTruthy();
+      expect(box!.width).toBeGreaterThan(280);
+      expect(box!.width / vp.width).toBeGreaterThan(0.2);
+    }
+  });
+
   test('privacy legal column stays readable', async ({ page }) => {
     for (const vp of VIEWPORTS) {
       await page.setViewportSize(vp);

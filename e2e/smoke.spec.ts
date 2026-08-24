@@ -15,6 +15,12 @@ test.describe('Smoke — core pages load', () => {
     await expect(page).toHaveURL(/\/$/);
   });
 
+  test('career context intro page renders', async ({ page }) => {
+    await page.goto('/career-context');
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('body')).toContainText(/Career Context|底線|floors/i);
+  });
+
   test('privacy page renders', async ({ page }) => {
     await page.goto('/privacy');
     await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10_000 });

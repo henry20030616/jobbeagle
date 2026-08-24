@@ -10,7 +10,9 @@ import {
   PauseCircle,
   PlayCircle,
   ShieldAlert,
+  Target,
 } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { useLanguage, type AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -26,9 +28,9 @@ import {
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 import type { CareerContext, MembershipTier, UserProfile } from '@/types';
-import CareerContextForm from '@/components/CareerContextForm';
+import { careerContextHasSignal } from '@/lib/career-context';
 import { FitStage } from '@/components/FitStage';
-import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
+import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
 
 type AccountOrder = {
   id: string;
@@ -106,6 +108,10 @@ const copy: Record<
     confirmDeactivate: string;
     loadError: string;
     actionError: string;
+    careerContextTitle: string;
+    careerContextBlurb: string;
+    careerContextCta: string;
+    careerContextEdit: string;
   }
 > = {
   en: {
@@ -150,6 +156,11 @@ const copy: Record<
     confirmDeactivate: 'Deactivate your account? You can reactivate later from this page.',
     loadError: 'Could not load account.',
     actionError: 'Something went wrong. Try again.',
+    careerContextTitle: 'Career Context',
+    careerContextBlurb:
+      'Optional floors for fit and offer targeting. Lives on its own page — not mixed with billing.',
+    careerContextCta: 'Set Career Context →',
+    careerContextEdit: 'Edit Career Context →',
   },
   'zh-TW': {
     title: '帳戶管理',
@@ -192,6 +203,10 @@ const copy: Record<
     confirmDeactivate: '確定停用帳戶？之後可在此頁重新啟用。',
     loadError: '無法載入帳戶資料。',
     actionError: '操作失敗，請稍後再試。',
+    careerContextTitle: 'Career Context',
+    careerContextBlurb: '選填底線，用來對齊 fit 與薪資目標。獨立頁設定，不跟買額度混在一起。',
+    careerContextCta: '設定 Career Context →',
+    careerContextEdit: '編輯 Career Context →',
   },
   'zh-CN': {
     title: '账户管理',
@@ -234,6 +249,10 @@ const copy: Record<
     confirmDeactivate: '确定停用账户？之后可在此页重新启用。',
     loadError: '无法加载账户数据。',
     actionError: '操作失败，请稍后再试。',
+    careerContextTitle: 'Career Context',
+    careerContextBlurb: '可选底线，用于对齐 fit 与薪酬目标。在独立页设置，不和买额度混在一起。',
+    careerContextCta: '设置 Career Context →',
+    careerContextEdit: '编辑 Career Context →',
   },
   es: {
     title: 'Gestión de cuenta',
@@ -276,6 +295,11 @@ const copy: Record<
     confirmDeactivate: '¿Desactivar tu cuenta? Puedes reactivarla después.',
     loadError: 'No se pudo cargar la cuenta.',
     actionError: 'Algo falló. Inténtalo de nuevo.',
+    careerContextTitle: 'Career Context',
+    careerContextBlurb:
+      'Pisos opcionales para fit y compensación. En su propia página, no mezclado con facturación.',
+    careerContextCta: 'Configurar Career Context →',
+    careerContextEdit: 'Editar Career Context →',
   },
   hi: {
     title: 'खाता प्रबंधन',
@@ -318,6 +342,11 @@ const copy: Record<
     confirmDeactivate: 'खाता निष्क्रिय करें? बाद में पुनः सक्रिय कर सकते हैं।',
     loadError: 'खाता लोड नहीं हो सका।',
     actionError: 'त्रुटि। पुनः प्रयास करें।',
+    careerContextTitle: 'Career Context',
+    careerContextBlurb:
+      'Fit और ऑफर के लिए वैकल्पिक floors। अलग पेज पर सेट करें — बिलिंग के साथ नहीं।',
+    careerContextCta: 'Career Context सेट करें →',
+    careerContextEdit: 'Career Context संपादित करें →',
   },
   ar: {
     title: 'إدارة الحساب',
@@ -360,6 +389,11 @@ const copy: Record<
     confirmDeactivate: 'تعطيل الحساب؟ يمكنك إعادة التفعيل لاحقًا.',
     loadError: 'تعذر تحميل الحساب.',
     actionError: 'حدث خطأ. حاول مجددًا.',
+    careerContextTitle: 'Career Context',
+    careerContextBlurb:
+      'حدود اختيارية للملاءمة والعرض. صفحة مستقلة — ليست مع الفوترة.',
+    careerContextCta: 'تعيين Career Context →',
+    careerContextEdit: 'تعديل Career Context →',
   },
 };
 
@@ -515,12 +549,12 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <FitStage designWidth={DOC_DESIGN_WIDTH} minScale={1} maxScale={2.6} className="w-full">
-      <main className="mx-auto w-full max-w-3xl px-4 py-8 space-y-8" data-fit-ref="account">
+      <FitStage designWidth={ACCOUNT_DESIGN_WIDTH} minScale={1} maxScale={2} className="w-full">
+      <main className="mx-auto w-full px-8 py-10 space-y-10" data-fit-ref="account">
         <div className="flex items-center justify-between gap-4">
           <BrandLogo size="nav" showIcon />
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher variant="dark" />
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher variant="dark" size="lg" />
             <LoginButton redirectTo="/account" />
           </div>
         </div>
@@ -529,12 +563,12 @@ export default function AccountPage() {
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors mb-3"
+            className="inline-flex items-center gap-2 text-lg text-slate-400 hover:text-white transition-colors mb-4"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-5 h-5" />
             {t.back}
           </button>
-          <h1 className="text-2xl font-bold text-white">{t.title}</h1>
+          <h1 className="text-4xl font-bold text-white">{t.title}</h1>
         </div>
 
         {loading && (
@@ -544,8 +578,8 @@ export default function AccountPage() {
         )}
 
         {!loading && signedIn === false && (
-          <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-6 text-center space-y-4">
-            <p className="text-slate-300">{t.needLogin}</p>
+          <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-8 text-center space-y-4">
+            <p className="text-xl text-slate-300">{t.needLogin}</p>
             <LoginButton redirectTo="/account" />
           </div>
         )}
@@ -553,16 +587,16 @@ export default function AccountPage() {
         {!loading && signedIn && data && (
           <>
             {error && (
-              <p className="text-sm text-red-400" role="alert">
+              <p className="text-lg text-red-400" role="alert">
                 {error}
               </p>
             )}
 
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-5 space-y-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4">
+              <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
                 {t.overview}
               </h2>
-              <dl className="grid gap-2 text-sm sm:grid-cols-2">
+              <dl className="grid gap-3 text-lg sm:grid-cols-2">
                 <div>
                   <dt className="text-slate-500">{t.email}</dt>
                   <dd className="text-white">{data.email ?? '—'}</dd>
@@ -604,32 +638,50 @@ export default function AccountPage() {
               </dl>
             </section>
 
-            <CareerContextForm initial={data.profile.career_context} />
-
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-5 space-y-4">
-              <div className="flex items-start gap-2">
-                <CreditCard className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+            <section className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 p-7 space-y-4">
+              <div className="flex items-start gap-3">
+                <Target className="w-7 h-7 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-                    {t.subscription}
+                  <h2 className="text-xl font-semibold uppercase tracking-wide text-emerald-200/90">
+                    {t.careerContextTitle}
                   </h2>
-                  <p className="text-xs text-slate-500 mt-1">{t.subscriptionNote}</p>
+                  <p className="text-lg text-slate-400 mt-1 leading-snug">{t.careerContextBlurb}</p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/career-context"
+                className="inline-flex items-center px-5 py-2.5 text-lg font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+              >
+                {careerContextHasSignal(data.profile.career_context)
+                  ? t.careerContextEdit
+                  : t.careerContextCta}
+              </Link>
+            </section>
+
+            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5">
+              <div className="flex items-start gap-3">
+                <CreditCard className="w-7 h-7 text-indigo-400 shrink-0 mt-0.5" />
+                <div>
+                  <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
+                    {t.subscription}
+                  </h2>
+                  <p className="text-lg text-slate-500 mt-1 leading-snug">{t.subscriptionNote}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   disabled={syncBusy || deactivated}
                   onClick={() => void handleSyncSubscription()}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg border border-indigo-400/50 bg-indigo-500/15 text-indigo-100 hover:bg-indigo-500/25 disabled:opacity-50 transition-colors"
+                  className="px-5 py-2.5 text-lg font-bold rounded-lg border border-indigo-400/50 bg-indigo-500/15 text-indigo-100 hover:bg-indigo-500/25 disabled:opacity-50 transition-colors"
                 >
                   {syncBusy ? t.syncing : t.syncSub}
                 </button>
                 {syncMessage ? (
-                  <p className="text-xs text-slate-400">{syncMessage}</p>
+                  <p className="text-lg text-slate-400">{syncMessage}</p>
                 ) : null}
               </div>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {ACTIVE_CHECKOUT_PLAN_TYPES.map((planType) => {
                   const plan = CHECKOUT_PLANS[planType];
                   const label =
@@ -637,14 +689,14 @@ export default function AccountPage() {
                   return (
                     <li
                       key={planType}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-700/80 bg-slate-950/50 px-3 py-2.5"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-700/80 bg-slate-950/50 px-5 py-3.5"
                     >
-                      <span className="text-sm text-slate-200">{label}</span>
+                      <span className="text-lg text-slate-200">{label}</span>
                       <button
                         type="button"
                         disabled={Boolean(busyPlan) || deactivated}
                         onClick={() => void handleCheckout(planType)}
-                        className="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors"
+                        className="px-5 py-2.5 text-lg font-bold rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors"
                       >
                         {busyPlan === planType ? t.buying : t.buy}
                       </button>
@@ -654,34 +706,34 @@ export default function AccountPage() {
               </ul>
             </section>
 
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-5 space-y-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4">
+              <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
                 {t.billing}
               </h2>
               {data.orders.length === 0 ? (
-                <p className="text-sm text-slate-500">{t.billingEmpty}</p>
+                <p className="text-lg text-slate-500">{t.billingEmpty}</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left">
+                  <table className="w-full text-lg text-left">
                     <thead className="text-slate-500 border-b border-slate-700">
                       <tr>
-                        <th className="py-2 pr-3 font-medium">{t.date}</th>
-                        <th className="py-2 pr-3 font-medium">{t.plan}</th>
-                        <th className="py-2 pr-3 font-medium">{t.amount}</th>
-                        <th className="py-2 font-medium">{t.status}</th>
+                        <th className="py-3 pr-4 font-medium">{t.date}</th>
+                        <th className="py-3 pr-4 font-medium">{t.plan}</th>
+                        <th className="py-3 pr-4 font-medium">{t.amount}</th>
+                        <th className="py-3 font-medium">{t.status}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.orders.map((o) => (
                         <tr key={o.id} className="border-b border-slate-800/80">
-                          <td className="py-2 pr-3 text-slate-300 whitespace-nowrap">
+                          <td className="py-3 pr-4 text-slate-300 whitespace-nowrap">
                             {formatDate(o.created_at, language)}
                           </td>
-                          <td className="py-2 pr-3 text-slate-200">{o.plan_type}</td>
-                          <td className="py-2 pr-3 text-slate-200">
+                          <td className="py-3 pr-4 text-slate-200">{o.plan_type}</td>
+                          <td className="py-3 pr-4 text-slate-200">
                             {formatMoney(Number(o.amount), o.currency)}
                           </td>
-                          <td className="py-2 text-slate-400">{o.status}</td>
+                          <td className="py-3 text-slate-400">{o.status}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -690,14 +742,14 @@ export default function AccountPage() {
               )}
             </section>
 
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-5 space-y-4">
-              <div className="flex items-start gap-2">
-                <Gift className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5">
+              <div className="flex items-start gap-3">
+                <Gift className="w-7 h-7 text-indigo-400 shrink-0 mt-0.5" />
                 <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+                  <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
                     {t.referrals}
                   </h2>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-lg text-slate-500 mt-1">
                     {t.earned}: {data.referral_earned_snapshot_credits}
                   </p>
                 </div>
@@ -719,15 +771,15 @@ export default function AccountPage() {
                 } satisfies UserProfile}
               />
               {data.referrals.length === 0 ? (
-                <p className="text-sm text-slate-500">{t.referralEmpty}</p>
+                <p className="text-lg text-slate-500">{t.referralEmpty}</p>
               ) : (
-                <ul className="space-y-2 text-sm">
+                <ul className="space-y-2 text-lg">
                   {data.referrals.map((r) => (
                     <li
                       key={r.id}
-                      className="flex justify-between gap-2 rounded-lg border border-slate-700/60 px-3 py-2"
+                      className="flex justify-between gap-2 rounded-lg border border-slate-700/60 px-4 py-3"
                     >
-                      <span className="text-slate-400 font-mono text-xs truncate">
+                      <span className="text-slate-400 font-mono text-base truncate">
                         {r.referee_id.slice(0, 8)}…
                       </span>
                       <span className="text-slate-300 whitespace-nowrap">
@@ -740,44 +792,44 @@ export default function AccountPage() {
               )}
             </section>
 
-            <section className="rounded-xl border border-red-900/50 bg-red-950/20 p-5 space-y-4">
-              <div className="flex items-start gap-2">
-                <ShieldAlert className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-red-300/90">
+            <section className="rounded-xl border border-red-900/50 bg-red-950/20 p-7 space-y-5">
+              <div className="flex items-start gap-3">
+                <ShieldAlert className="w-7 h-7 text-red-400 shrink-0 mt-0.5" />
+                <h2 className="text-xl font-semibold uppercase tracking-wide text-red-300/90">
                   {t.danger}
                 </h2>
               </div>
 
               {deactivated ? (
-                <div className="space-y-2">
-                  <p className="text-sm text-slate-400">{t.reactivateHint}</p>
+                <div className="space-y-3">
+                  <p className="text-lg text-slate-400">{t.reactivateHint}</p>
                   <button
                     type="button"
                     disabled={actionBusy}
                     onClick={() => void handleReactivate()}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-bold disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-lg font-bold disabled:opacity-50"
                   >
-                    <PlayCircle className="w-4 h-4" />
+                    <PlayCircle className="w-5 h-5" />
                     {t.reactivate}
                   </button>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <p className="text-sm text-slate-400">{t.deactivateHint}</p>
+                <div className="space-y-3">
+                  <p className="text-lg text-slate-400">{t.deactivateHint}</p>
                   <button
                     type="button"
                     disabled={actionBusy}
                     onClick={() => void handleDeactivate()}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-700/60 text-amber-200 hover:bg-amber-950/40 text-sm font-medium disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-amber-700/60 text-amber-200 hover:bg-amber-950/40 text-lg font-medium disabled:opacity-50"
                   >
-                    <PauseCircle className="w-4 h-4" />
+                    <PauseCircle className="w-5 h-5" />
                     {t.deactivate}
                   </button>
                 </div>
               )}
 
-              <div className="pt-3 border-t border-red-900/40 space-y-2">
-                <p className="text-sm text-slate-400">{t.deleteHint}</p>
+              <div className="pt-4 border-t border-red-900/40 space-y-3">
+                <p className="text-lg text-slate-400">{t.deleteHint}</p>
                 <DeleteAccountButton language={language} />
               </div>
             </section>
