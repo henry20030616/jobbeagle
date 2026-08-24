@@ -347,14 +347,14 @@ export default function JobbeagleShortsPage() {
 
   if (loading) {
     return (
-      <div className="h-[100dvh] w-full bg-black flex items-center justify-center">
+      <div className="fixed inset-0 z-10 bg-black flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="h-[100dvh] w-full min-w-0 self-stretch bg-black flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-10 bg-black flex justify-center overflow-hidden">
 
       {/* ── Sound overlay: full-screen, requires one tap to bypass browser autoplay policy ── */}
       {showSoundOverlay && (
@@ -382,9 +382,6 @@ export default function JobbeagleShortsPage() {
         </div>
       )}
 
-      {/* Phone-sized 9:16 stage: header, feed, and nav share one column */}
-      <div className="flex-1 min-h-0 w-full">
-      <div className="shorts-stage">
       <div className="shorts-stage-frame">
 
       {/* ── PROFILE PAGE ── */}
@@ -704,8 +701,6 @@ export default function JobbeagleShortsPage() {
         </>
       )}
 
-      </div>
-      </div>
       </div>
     </div>
   );

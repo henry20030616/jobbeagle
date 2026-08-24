@@ -9,9 +9,8 @@ alwaysApply: false
 Homepage (`/`, InputForm, reports) is frozen. Never restyle it while changing Shorts.
 
 ## Desktop feed
-- Entire Shorts chrome (header, feed, bottom nav) lives inside `.shorts-stage-frame`.
-- Player is `height: 100%` + `aspect-ratio: 9 / 16` (max 36rem), centered on black.
-- Do **not** use `flex` + `w-full` + `max-w-[28rem]` (collapses to a sliver).
+- Pin the shell with `fixed inset-0` and size `.shorts-stage-frame` as `width: min(100vw, 28rem)` (viewport units only).
+- Do **not** use `width: auto` + `aspect-ratio`, `min-width: min(100%, …)`, or `flex` + `w-full` + `max-w-*` — all of those collapse to a sliver.
 - Do **not** full-bleed YouTube across ultrawide (buttons look microscopic).
 - Do **not** add `.shorts-font-large` or 350% `!important` font maps.
 
