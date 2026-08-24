@@ -5,10 +5,10 @@ alwaysApply: true
 
 # JobBeagle — Product Focus & Launch Reminder
 
-## Chrome Web Store status (2026-07-11)
-- **Decision:** Keep current extension as-is; **do NOT submit for Chrome Web Store review yet.**
-- Zip / listing draft may exist (`jobbeagle-extension-*.zip`, `browser-extension/STORE_LISTING.md`) for later use only.
-- When the user says **正式上線 / launch / go live / 上架外掛 / 公開發布**, Agent **must remind** them to complete Chrome Web Store submit (upload zip, privacy URL, screenshots, Submit for review). Do not assume they already submitted.
+## Chrome Web Store status (2026-08-24)
+- **Decision:** Owner asked for **one-click install** → **submit Chrome Web Store** (user action in Developer Dashboard).
+- Agent packs zip (`bash scripts/ops/pack-extension.sh`); `/extension` shows **Add to Chrome** when `NEXT_PUBLIC_CHROME_WEBSTORE_URL` is set.
+- Until the listing is live, Agent **must remind** them: upload zip, privacy URL, screenshots, **Submit for review**, then paste the store URL into `.env.local` / Vercel.
 
 ## P0 (mostly done in code)
 1. Legal: `/privacy` + `/terms` whitelist + no sale of data

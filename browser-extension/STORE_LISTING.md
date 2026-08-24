@@ -1,7 +1,7 @@
 # JobBeagle Chrome Web Store — Listing Draft
 
-> **Status (2026-07-11):** Packaging ready. **Do not submit for review yet** (owner decision).  
-> When launching publicly, remind owner to upload zip + Submit for review.
+> **Status (2026-08-24):** Owner asked for one-click install — **submit for Chrome Web Store review.**
+> After the listing URL exists, set `NEXT_PUBLIC_CHROME_WEBSTORE_URL` and sync Vercel.
 
 ## Single purpose
 Help job seekers capture a job posting from supported boards and open JobBeagle Pre-Flight for AI triage analysis.
@@ -29,12 +29,11 @@ https://www.jobbeagle.com/terms
 
 ## Packaging (developer)
 ```bash
-# From repo root — zip the extension folder (no parent path junk)
-cd browser-extension
-zip -r ../jobbeagle-extension-1.2.0.zip . -x "*.md" -x ".gitignore"
+bash scripts/ops/pack-extension.sh
+# writes jobbeagle-extension-<manifest version>.zip at repo root (gitignored)
 ```
 
-Upload the zip in Chrome Developer Dashboard → New item → **Submit for review only when owner asks to go live.**
+Upload the zip in [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole) → New item → **Submit for review**.
 
 ## Notes
 - Do not obfuscate code.
