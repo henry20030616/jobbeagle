@@ -150,6 +150,32 @@ export default function CareerContextPageClient() {
             </p>
           </div>
 
+          {loading && (
+            <div className="flex items-center gap-2 text-slate-400 py-6 justify-center">
+              <Loader2 className="w-5 h-5 animate-spin" />
+            </div>
+          )}
+
+          {!loading && signedIn === false && (
+            <div className="rounded-2xl border-2 border-emerald-400/50 bg-emerald-950/20 p-8 text-center space-y-4">
+              <p className="text-xl text-slate-200">
+                {zh
+                  ? '登入後即可把底線存進帳號，之後每次分析自動使用。'
+                  : 'Sign in to save your floors. Every later analysis uses them automatically.'}
+              </p>
+              <LoginButton redirectTo="/career-context" />
+            </div>
+          )}
+
+          {!loading && signedIn && (
+            <div className="space-y-5">
+              <h2 className="text-3xl font-black tracking-tight text-white">
+                {zh ? '寫進你的帳號' : 'Save to your account'}
+              </h2>
+              <CareerContextForm initial={initial} hideIntro />
+            </div>
+          )}
+
           <ul className="grid gap-4 sm:grid-cols-3">
             {benefits.map((item) => (
               <li
@@ -179,32 +205,6 @@ export default function CareerContextPageClient() {
               ))}
             </ul>
           </div>
-
-          {loading && (
-            <div className="flex items-center gap-2 text-slate-400 py-6 justify-center">
-              <Loader2 className="w-5 h-5 animate-spin" />
-            </div>
-          )}
-
-          {!loading && signedIn === false && (
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-8 text-center space-y-4">
-              <p className="text-xl text-slate-200">
-                {zh
-                  ? '登入後即可把底線存進帳號，之後每次分析自動使用。'
-                  : 'Sign in to save your floors. Every later analysis uses them automatically.'}
-              </p>
-              <LoginButton redirectTo="/career-context" />
-            </div>
-          )}
-
-          {!loading && signedIn && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
-                {zh ? '寫進你的帳號' : 'Save to your account'}
-              </h2>
-              <CareerContextForm initial={initial} hideIntro />
-            </div>
-          )}
         </div>
       </FitStage>
     </div>
