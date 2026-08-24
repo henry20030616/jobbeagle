@@ -180,11 +180,22 @@ export default function Home() {
       const urlParams = new URLSearchParams(window.location.search);
       const payloadParam = urlParams.get('payload');
       const scrapeErrorKey = urlParams.get('error');
-      const scrapeMsg = scrapeErrorKey
-        ? getExtensionScrapeError(scrapeErrorKey, language)
-        : null;
-      if (scrapeMsg) {
-        setError(scrapeMsg);
+      // Homepage is the paste-JD fallback — "page not supported" is the wrong scare.
+      if (scrapeErrorKey === 'no_job_page') {
+        urlParams.delete('error');
+        const qs = urlParams.toString();
+        window.history.replaceState(
+          {},
+          '',
+          `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`,
+        );
+      } else {
+        const scrapeMsg = scrapeErrorKey
+          ? getExtensionScrapeError(scrapeErrorKey, language)
+          : null;
+        if (scrapeMsg) {
+          setError(scrapeMsg);
+        }
       }
 
       const ref = urlParams.get('ref');
