@@ -83,7 +83,9 @@ test.describe('Full funnel — public surfaces', () => {
   test('extension install page renders', async ({ page }) => {
     await page.goto('/extension');
     await expect(page.locator('[data-fit-ref="extension"]')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText(/Add to Chrome|Developer install/i).first()).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: /Add to Chrome|Download for Chrome|加到 Chrome|下載 Chrome 外掛/i }),
+    ).toBeVisible();
   });
 
   test('account page asks unsigned visitors to sign in', async ({ page }) => {

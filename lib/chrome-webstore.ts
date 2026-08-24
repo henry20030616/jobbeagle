@@ -2,6 +2,8 @@
  * Chrome Web Store listing URL for one-click “Add to Chrome”.
  * Set NEXT_PUBLIC_CHROME_WEBSTORE_URL after the item exists in the developer dashboard.
  */
+export const EXTENSION_ZIP_HREF = '/downloads/jobbeagle-extension.zip';
+
 
 export function getChromeWebStoreUrl(
   raw: string | undefined = process.env.NEXT_PUBLIC_CHROME_WEBSTORE_URL,

@@ -4,10 +4,14 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 ver="$(node -p "require('./browser-extension/manifest.json').version")"
 out="jobbeagle-extension-${ver}.zip"
-rm -f "$out"
+public_out="public/downloads/jobbeagle-extension.zip"
+rm -f "$out" "$public_out"
+mkdir -p public/downloads
 (
   cd browser-extension
   zip -r "../$out" . -x "*.md" -x ".gitignore" -x "*.DS_Store"
 )
+cp "$out" "$public_out"
 echo "Wrote $out"
-ls -lh "$out"
+echo "Wrote $public_out"
+ls -lh "$out" "$public_out"
