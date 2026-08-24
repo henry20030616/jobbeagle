@@ -24,6 +24,7 @@ alwaysApply: true
 | `bash scripts/ops/sync-vercel-env.sh` | 僅同步 env |
 | `node scripts/ops/verify-integrations.mjs` | GitHub / Supabase / Vercel 健康檢查 |
 | `node scripts/ops/verify-supabase.mjs` | profiles 表 |
+| `node scripts/ops/generated-code-gate.ts` | 生成碼審查 + 安全測試（`npm run gate:generated`） |
 | `node scripts/ops/setup-lemonsqueezy.mjs` | LS 產品 / webhook / 寫回 `.env.local` |
 
 ## GitHub — Agent 代跑
@@ -77,7 +78,7 @@ alwaysApply: true
 
 ## 程式變更後 Agent 必做檢查
 
-1. `npm test`（unit；e2e 可略）
+1. `npm run gate:generated`（審查 diff + 安全測試），再 `npm test`（unit；e2e 可略）
 2. 若動到 `/api` 或 env：`node scripts/ops/verify-integrations.mjs`
 3. `git push origin main`
 4. 若動到 env 或 extension-capture：`bash scripts/ops/sync-all.sh`（或至少 redeploy）

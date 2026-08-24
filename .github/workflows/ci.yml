@@ -31,8 +31,27 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
 
+  generated-code-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Review generated patch + security tests
+        run: npm run gate:generated
+        env:
+          GATE_DIFF_RANGE: ${{ github.event_name == 'pull_request' && format('{0}...{1}', github.event.pull_request.base.sha, github.sha) || format('{0}...{1}', github.event.before, github.sha) }}
+
   e2e-smoke:
-    needs: unit-and-api
+    needs: [unit-and-api, generated-code-gate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

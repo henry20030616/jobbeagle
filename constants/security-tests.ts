@@ -1,0 +1,17 @@
+/** Vitest files that must pass before generated / security-sensitive code ships. */
+export const SECURITY_TEST_FILES = [
+  '__tests__/unit/prompt-injection-guard.test.ts',
+  '__tests__/unit/generated-code-review.test.ts',
+  '__tests__/unit/rate-limit-memory.test.ts',
+  '__tests__/unit/sybil-mode.test.ts',
+  '__tests__/unit/profiles-credits.test.ts',
+  '__tests__/unit/extension-handoff.test.ts',
+  '__tests__/unit/account-deactivate.test.ts',
+  '__tests__/unit/fulfill-order.test.ts',
+  '__tests__/unit/resume-pdf.test.ts',
+  '__tests__/api/account-delete.test.ts',
+  '__tests__/api/analyze-auth.test.ts',
+  '__tests__/api/rate-limit.test.ts',
+  '__tests__/api/extension-capture.test.ts',
+  '__tests__/api/checkout.test.ts',
+] as const;

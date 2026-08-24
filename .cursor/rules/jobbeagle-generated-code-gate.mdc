@@ -1,0 +1,18 @@
+---
+description: AI-generated code must pass review, refactor, and security tests before ship
+alwaysApply: true
+---
+
+# Generated code — review, refactor, security tests
+
+Agent/LLM patches are **untrusted until the gate passes**. Do not treat generated code as done after it compiles.
+
+## Before commit / push
+
+1. **Review** — read the diff. Check auth, credits, webhooks, untrusted JD/resume wrapping, and no secrets in Client Components (`jobbeagle-enterprise-security.mdc`).
+2. **Refactor** — surgical types (no `any`), no leftover dump code, untrusted model inputs go through `wrapUntrusted` / `assembleAnalysisDocuments`.
+3. **Security tests** — run `npm run gate:generated` (static patch review + `npm run test:security`).
+
+If `gate:generated` prints `BLOCK`, fix and re-run. `REFACTOR` notes must be addressed when they are in `lib/` or `app/api/`.
+
+CI job `generated-code-gate` runs the same command on every push/PR to `main`.

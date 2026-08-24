@@ -5,7 +5,7 @@ alwaysApply: true
 
 # JobBeagle — Enterprise Security Constraints
 
-When changing APIs, auth, payments, or storage, enforce all five:
+When changing APIs, auth, payments, or storage, enforce all six:
 
 ## 1. Rate limiting & anti-Sybil
 - `POST /api/analyze` and `POST /api/extension-capture` must rate-limit by IP and/or user id (in-memory Map or Upstash Redis).
@@ -27,5 +27,10 @@ When changing APIs, auth, payments, or storage, enforce all five:
 
 ## 5. Scraping safety
 - Extension scrapers: try/catch, delays, graceful degrade to “paste JD manually” — never crash the SW.
+
+## 6. Generated code gate
+- Agent/LLM patches are untrusted until `npm run gate:generated` passes (static review of the diff + `npm run test:security`).
+- CI job `generated-code-gate` must stay green on `main`.
+- Untrusted JD/resume/search text must stay fenced (`lib/prompt-injection-guard.ts`); never concatenate it into `systemInstruction`.
 
 Role trigger: user says `@SecOpsExpert` → prioritize this rule.
