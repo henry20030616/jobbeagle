@@ -21,6 +21,12 @@ test.describe('Smoke — core pages load', () => {
     await expect(page.locator('body')).toContainText(/Career Context|底線|floors/i);
   });
 
+  test('danger zone page renders', async ({ page }) => {
+    await page.goto('/account/danger');
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('body')).toContainText(/Danger zone|危險操作|危险操作/i);
+  });
+
   test('privacy page renders', async ({ page }) => {
     await page.goto('/privacy');
     await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10_000 });

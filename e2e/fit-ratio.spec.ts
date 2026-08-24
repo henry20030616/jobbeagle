@@ -57,6 +57,18 @@ test.describe('FitStage ratios', () => {
     }
   });
 
+  test('account-danger content is not a phone sliver on desktop/ultrawide', async ({ page }) => {
+    for (const vp of VIEWPORTS) {
+      await page.setViewportSize(vp);
+      await page.goto('/account/danger', { waitUntil: 'domcontentloaded' });
+      await page.waitForSelector('[data-fit-ref="account-danger"]', { timeout: 15_000 });
+      const box = await page.locator('[data-fit-ref="account-danger"]').boundingBox();
+      expect(box).toBeTruthy();
+      expect(box!.width).toBeGreaterThan(280);
+      expect(box!.width / vp.width).toBeGreaterThan(0.2);
+    }
+  });
+
   test('privacy legal column stays readable', async ({ page }) => {
     for (const vp of VIEWPORTS) {
       await page.setViewportSize(vp);

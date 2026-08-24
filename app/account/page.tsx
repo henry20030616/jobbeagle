@@ -7,8 +7,6 @@ import {
   CreditCard,
   Gift,
   Loader2,
-  PauseCircle,
-  PlayCircle,
   ShieldAlert,
   Target,
 } from 'lucide-react';
@@ -17,7 +15,6 @@ import { createClient } from '@/lib/supabase/browser';
 import { useLanguage, type AppLanguage } from '@/lib/language-context';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import LoginButton from '@/components/LoginButton';
-import DeleteAccountButton from '@/components/DeleteAccountButton';
 import ReferralCard from '@/components/ReferralCard';
 import BrandLogo from '@/components/BrandLogo';
 import CreditsBadge from '@/components/CreditsBadge';
@@ -100,12 +97,9 @@ const copy: Record<
     activated: string;
     pending: string;
     danger: string;
-    deactivate: string;
-    deactivateHint: string;
-    reactivate: string;
-    reactivateHint: string;
-    deleteHint: string;
-    confirmDeactivate: string;
+    dangerBlurb: string;
+    dangerCta: string;
+    dangerReactivateCta: string;
     loadError: string;
     actionError: string;
     careerContextTitle: string;
@@ -147,13 +141,9 @@ const copy: Record<
     activated: 'Activated',
     pending: 'Pending',
     danger: 'Danger zone',
-    deactivate: 'Deactivate account',
-    deactivateHint:
-      'Temporarily pause analyze and checkout. Your data stays; you can reactivate anytime.',
-    reactivate: 'Reactivate account',
-    reactivateHint: 'Restore access to analyze and checkout.',
-    deleteHint: 'Permanently erase your account and all reports (CCPA). Cannot be undone.',
-    confirmDeactivate: 'Deactivate your account? You can reactivate later from this page.',
+    dangerBlurb: 'Pause or permanently delete your account. Lives on its own page — not mixed with billing.',
+    dangerCta: 'Open Danger zone →',
+    dangerReactivateCta: 'Reactivate account →',
     loadError: 'Could not load account.',
     actionError: 'Something went wrong. Try again.',
     careerContextTitle: 'Career Context',
@@ -195,12 +185,9 @@ const copy: Record<
     activated: '已啟動',
     pending: '待完成',
     danger: '危險操作',
-    deactivate: '停用帳戶',
-    deactivateHint: '暫時無法分析與結帳；資料保留，可隨時重新啟用。',
-    reactivate: '重新啟用',
-    reactivateHint: '恢復分析與結帳權限。',
-    deleteHint: '永久刪除帳戶與所有報告（CCPA），無法復原。',
-    confirmDeactivate: '確定停用帳戶？之後可在此頁重新啟用。',
+    dangerBlurb: '暫停或永久刪除帳戶。獨立頁操作，不跟買額度混在一起。',
+    dangerCta: '開啟危險操作 →',
+    dangerReactivateCta: '重新啟用帳戶 →',
     loadError: '無法載入帳戶資料。',
     actionError: '操作失敗，請稍後再試。',
     careerContextTitle: 'Career Context',
@@ -241,12 +228,9 @@ const copy: Record<
     activated: '已激活',
     pending: '待完成',
     danger: '危险操作',
-    deactivate: '停用账户',
-    deactivateHint: '暂时无法分析与结账；数据保留，可随时重新启用。',
-    reactivate: '重新启用',
-    reactivateHint: '恢复分析与结账权限。',
-    deleteHint: '永久删除账户与所有报告（CCPA），无法恢复。',
-    confirmDeactivate: '确定停用账户？之后可在此页重新启用。',
+    dangerBlurb: '暂停或永久删除账户。独立页操作，不和买额度混在一起。',
+    dangerCta: '打开危险操作 →',
+    dangerReactivateCta: '重新启用账户 →',
     loadError: '无法加载账户数据。',
     actionError: '操作失败，请稍后再试。',
     careerContextTitle: 'Career Context',
@@ -287,12 +271,9 @@ const copy: Record<
     activated: 'Activado',
     pending: 'Pendiente',
     danger: 'Zona de peligro',
-    deactivate: 'Desactivar cuenta',
-    deactivateHint: 'Pausa análisis y checkout. Tus datos se conservan.',
-    reactivate: 'Reactivar cuenta',
-    reactivateHint: 'Restaura el acceso a análisis y checkout.',
-    deleteHint: 'Borra permanentemente tu cuenta e informes (CCPA).',
-    confirmDeactivate: '¿Desactivar tu cuenta? Puedes reactivarla después.',
+    dangerBlurb: 'Pausa o elimina tu cuenta. En su propia página, no mezclado con facturación.',
+    dangerCta: 'Abrir zona de peligro →',
+    dangerReactivateCta: 'Reactivar cuenta →',
     loadError: 'No se pudo cargar la cuenta.',
     actionError: 'Algo falló. Inténtalo de nuevo.',
     careerContextTitle: 'Career Context',
@@ -334,12 +315,9 @@ const copy: Record<
     activated: 'सक्रिय',
     pending: 'लंबित',
     danger: 'खतरनाक क्षेत्र',
-    deactivate: 'खाता निष्क्रिय करें',
-    deactivateHint: 'विश्लेषण और चेकआउट रोकें। डेटा सुरक्षित रहता है।',
-    reactivate: 'पुनः सक्रिय करें',
-    reactivateHint: 'विश्लेषण और चेकआउट बहाल करें।',
-    deleteHint: 'खाता और रिपोर्ट स्थायी रूप से हटाएं (CCPA)।',
-    confirmDeactivate: 'खाता निष्क्रिय करें? बाद में पुनः सक्रिय कर सकते हैं।',
+    dangerBlurb: 'खाता रोकें या स्थायी रूप से हटाएं। अलग पेज — बिलिंग के साथ नहीं।',
+    dangerCta: 'खतरनाक क्षेत्र खोलें →',
+    dangerReactivateCta: 'खाता पुनः सक्रिय करें →',
     loadError: 'खाता लोड नहीं हो सका।',
     actionError: 'त्रुटि। पुनः प्रयास करें।',
     careerContextTitle: 'Career Context',
@@ -381,12 +359,9 @@ const copy: Record<
     activated: 'مفعّل',
     pending: 'قيد الانتظار',
     danger: 'منطقة خطر',
-    deactivate: 'تعطيل الحساب',
-    deactivateHint: 'إيقاف التحليل والدفع مؤقتًا مع الاحتفاظ بالبيانات.',
-    reactivate: 'إعادة التفعيل',
-    reactivateHint: 'استعادة التحليل والدفع.',
-    deleteHint: 'حذف الحساب والتقارير نهائيًا (CCPA).',
-    confirmDeactivate: 'تعطيل الحساب؟ يمكنك إعادة التفعيل لاحقًا.',
+    dangerBlurb: 'إيقاف أو حذف الحساب نهائيًا. صفحة مستقلة — ليست مع الفوترة.',
+    dangerCta: 'فتح منطقة الخطر →',
+    dangerReactivateCta: 'إعادة تفعيل الحساب →',
     loadError: 'تعذر تحميل الحساب.',
     actionError: 'حدث خطأ. حاول مجددًا.',
     careerContextTitle: 'Career Context',
@@ -438,7 +413,6 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyPlan, setBusyPlan] = useState<CheckoutPlanType | null>(null);
-  const [actionBusy, setActionBusy] = useState(false);
   const [syncBusy, setSyncBusy] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
@@ -507,41 +481,6 @@ export default function AccountPage() {
       setError(t.actionError);
     } finally {
       setSyncBusy(false);
-    }
-  };
-
-  const handleDeactivate = async () => {
-    if (!window.confirm(t.confirmDeactivate)) return;
-    setActionBusy(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/account/deactivate', { method: 'POST' });
-      if (!res.ok) {
-        setError(t.actionError);
-        return;
-      }
-      await load();
-    } catch {
-      setError(t.actionError);
-    } finally {
-      setActionBusy(false);
-    }
-  };
-
-  const handleReactivate = async () => {
-    setActionBusy(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/account/reactivate', { method: 'POST' });
-      if (!res.ok) {
-        setError(t.actionError);
-        return;
-      }
-      await load();
-    } catch {
-      setError(t.actionError);
-    } finally {
-      setActionBusy(false);
     }
   };
 
@@ -792,46 +731,22 @@ export default function AccountPage() {
               )}
             </section>
 
-            <section className="rounded-xl border border-red-900/50 bg-red-950/20 p-7 space-y-5">
+            <section className="rounded-xl border border-red-900/50 bg-red-950/20 p-7 space-y-4">
               <div className="flex items-start gap-3">
                 <ShieldAlert className="w-7 h-7 text-red-400 shrink-0 mt-0.5" />
-                <h2 className="text-xl font-semibold uppercase tracking-wide text-red-300/90">
-                  {t.danger}
-                </h2>
-              </div>
-
-              {deactivated ? (
-                <div className="space-y-3">
-                  <p className="text-lg text-slate-400">{t.reactivateHint}</p>
-                  <button
-                    type="button"
-                    disabled={actionBusy}
-                    onClick={() => void handleReactivate()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-lg font-bold disabled:opacity-50"
-                  >
-                    <PlayCircle className="w-5 h-5" />
-                    {t.reactivate}
-                  </button>
+                <div>
+                  <h2 className="text-xl font-semibold uppercase tracking-wide text-red-300/90">
+                    {t.danger}
+                  </h2>
+                  <p className="text-lg text-slate-400 mt-1 leading-snug">{t.dangerBlurb}</p>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <p className="text-lg text-slate-400">{t.deactivateHint}</p>
-                  <button
-                    type="button"
-                    disabled={actionBusy}
-                    onClick={() => void handleDeactivate()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-amber-700/60 text-amber-200 hover:bg-amber-950/40 text-lg font-medium disabled:opacity-50"
-                  >
-                    <PauseCircle className="w-5 h-5" />
-                    {t.deactivate}
-                  </button>
-                </div>
-              )}
-
-              <div className="pt-4 border-t border-red-900/40 space-y-3">
-                <p className="text-lg text-slate-400">{t.deleteHint}</p>
-                <DeleteAccountButton language={language} />
               </div>
+              <Link
+                href="/account/danger"
+                className="inline-flex items-center px-5 py-2.5 text-lg font-bold rounded-lg border border-red-700/60 text-red-100 hover:bg-red-950/50 transition-colors"
+              >
+                {deactivated ? t.dangerReactivateCta : t.dangerCta}
+              </Link>
             </section>
           </>
         )}
