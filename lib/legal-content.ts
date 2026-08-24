@@ -166,7 +166,7 @@ const PRIVACY_ZH_TW: LegalDocument = {
 
 const TERMS_EN: LegalDocument = {
   title: 'Terms of Service',
-  lastUpdated: 'July 11, 2026',
+  lastUpdated: 'August 24, 2026',
   intro: 'By using JobBeagle (website and Chrome extension), you agree to these Terms. If you do not agree, please do not use the service.',
   sections: [
     {
@@ -189,6 +189,7 @@ const TERMS_EN: LegalDocument = {
       paragraphs: [
         'You must provide accurate information and keep your account secure. Analysis requires Google sign-in.',
         'Free accounts receive a limited lifetime Lite allowance. Paid credits and subscriptions are fulfilled via Lemon Squeezy after successful payment.',
+        'You can cancel a monthly Standard or Advanced subscription from Account management with one click. Access continues until the end of the current billing period; leftover credits remain.',
         'Credits are non-transferable. Refunds follow Lemon Squeezy and applicable law.',
       ],
     },
@@ -236,7 +237,7 @@ const TERMS_EN: LegalDocument = {
 
 const TERMS_ZH_TW: LegalDocument = {
   title: '服務條款',
-  lastUpdated: '2026 年 7 月 11 日',
+  lastUpdated: '2026 年 8 月 24 日',
   intro: '使用 JobBeagle（網站與 Chrome 外掛）即表示您同意本條款。若不同意，請勿使用本服務。',
   sections: [
     {
@@ -259,6 +260,7 @@ const TERMS_ZH_TW: LegalDocument = {
       paragraphs: [
         '您應提供正確資訊並妥善保管帳號。分析需 Google 登入。',
         '免費帳號享有有限終身 Lite 額度；付費額度與訂閱於 Lemon Squeezy 付款成功後發放。',
+        '您可在帳戶管理頁一鍵取消月費 Standard／Advanced 訂閱。本期結束前仍可使用；剩餘額度會保留。',
         '額度不可轉讓；退款依 Lemon Squeezy 與適用法律辦理。',
       ],
     },
@@ -314,7 +316,7 @@ const PRIVACY_ZH_CN: LegalDocument = {
 const TERMS_ZH_CN: LegalDocument = {
   ...TERMS_ZH_TW,
   title: '服务条款',
-  lastUpdated: '2026 年 7 月 11 日',
+  lastUpdated: '2026 年 8 月 24 日',
 };
 
 const DOCS: Record<LegalDocKey, Partial<Record<AppLanguage, LegalDocument>>> = {

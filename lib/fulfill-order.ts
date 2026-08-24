@@ -5,6 +5,10 @@ import {
   SUBSCRIPTION_ALLOWANCES,
   normalizeCheckoutPlanType,
 } from '@/constants/checkout-plans';
+import {
+  desiredMembershipFromLemonSubscriptions,
+  type LemonSubscriptionSummary,
+} from '@/lib/lemonsqueezy';
 
 /** Idempotent post-payment fulfillment (Lemon Squeezy). */
 export async function fulfillOrder(
@@ -141,4 +145,71 @@ export async function fulfillSubscriptionRenewal(
       .eq('id', userId);
     if (retry.error) throw new Error(retry.error.message);
   }
+}
+
+/** Period ended: drop paid tier, keep leftover credits. */
+export async function downgradeExpiredSubscription(
+  admin: SupabaseClient,
+  userId: string,
+): Promise<void> {
+  const { error } = await admin
+    .from('profiles')
+    .update({
+      membership_tier: 'free',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', userId);
+  if (error) throw new Error(error.message);
+}
+
+function isPaidMembershipTier(
+  tier: string | null | undefined,
+): tier is 'standard_sub' | 'advanced_sub' {
+  return tier === 'standard_sub' || tier === 'advanced_sub';
+}
+
+/**
+ * Align `membership_tier` with Lemon Squeezy (no credit reset).
+ * Empty `subscriptions` is left unchanged unless `emptyMeans` is `free`
+ * (expire webhook when we know this user had a sub that just ended).
+ */
+export async function applyMembershipFromLemonSubscriptions(
+  admin: SupabaseClient,
+  userId: string,
+  subscriptions: LemonSubscriptionSummary[],
+  opts?: { emptyMeans?: 'unchanged' | 'free'; mode?: 'align' | 'downgrade-only' },
+): Promise<'standard_sub' | 'advanced_sub' | 'free' | 'unchanged'> {
+  const monthly = subscriptions.filter(
+    (s) => s.membershipTier === 'standard_sub' || s.membershipTier === 'advanced_sub',
+  );
+  if (monthly.length === 0 && opts?.emptyMeans !== 'free') {
+    return 'unchanged';
+  }
+
+  const desired = desiredMembershipFromLemonSubscriptions(monthly);
+  const { data: profile } = await admin
+    .from('profiles')
+    .select('membership_tier')
+    .eq('id', userId)
+    .maybeSingle();
+  const current = typeof profile?.membership_tier === 'string' ? profile.membership_tier : null;
+  if (current === desired) return 'unchanged';
+
+  if (desired === 'free') {
+    if (!isPaidMembershipTier(current)) return 'unchanged';
+    await downgradeExpiredSubscription(admin, userId);
+    return 'free';
+  }
+
+  if (opts?.mode === 'downgrade-only') return 'unchanged';
+
+  const { error } = await admin
+    .from('profiles')
+    .update({
+      membership_tier: desired,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', userId);
+  if (error) throw new Error(error.message);
+  return desired;
 }

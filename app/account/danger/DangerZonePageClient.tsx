@@ -49,7 +49,7 @@ const copy: Record<
     pauseBody:
       'Temporarily stop analyze and checkout. Your profile, Career Context, and reports stay. You can reactivate anytime.',
     pauseNote:
-      'Pause does not cancel a paid Lemon Squeezy subscription. Use the link in your order receipt email to cancel billing.',
+      'Pause does not cancel a paid subscription. Cancel monthly billing from Account → Subscription.',
     deactivate: 'Deactivate account',
     reactivate: 'Reactivate account',
     reactivateHint: 'Restore access to analyze and checkout.',
@@ -69,7 +69,7 @@ const copy: Record<
     needLogin: '請登入以暫停或刪除帳戶。',
     pauseTitle: '暫停帳戶',
     pauseBody: '暫時無法分析與結帳。資料、Career Context 與報告都會保留，可隨時重新啟用。',
-    pauseNote: '暫停不會取消 Lemon Squeezy 付費訂閱。若要停扣款，請用訂單確認信裡的連結。',
+    pauseNote: '暫停不會取消付費訂閱。若要停扣款，請到「帳戶管理 → 訂閱與額度」一鍵取消。',
     deactivate: '停用帳戶',
     reactivate: '重新啟用',
     reactivateHint: '恢復分析與結帳權限。',
@@ -88,7 +88,7 @@ const copy: Record<
     needLogin: '请登录以暂停或删除账户。',
     pauseTitle: '暂停账户',
     pauseBody: '暂时无法分析与结账。资料、Career Context 与报告都会保留，可随时重新启用。',
-    pauseNote: '暂停不会取消 Lemon Squeezy 付费订阅。若要停扣款，请用订单确认信里的链接。',
+    pauseNote: '暂停不会取消付费订阅。若要停扣款，请到「账户管理 → 订阅与额度」一键取消。',
     deactivate: '停用账户',
     reactivate: '重新启用',
     reactivateHint: '恢复分析与结账权限。',
@@ -109,7 +109,7 @@ const copy: Record<
     pauseBody:
       'Detiene análisis y checkout. Tu perfil, Career Context e informes se conservan. Puedes reactivar cuando quieras.',
     pauseNote:
-      'Pausar no cancela una suscripción de Lemon Squeezy. Usa el enlace del email del pedido.',
+      'Pausar no cancela una suscripción de pago. Cancela el cobro mensual en Cuenta → Suscripción.',
     deactivate: 'Desactivar cuenta',
     reactivate: 'Reactivar cuenta',
     reactivateHint: 'Restaura el acceso a análisis y checkout.',
@@ -129,7 +129,7 @@ const copy: Record<
     pauseTitle: 'खाता रोकें',
     pauseBody:
       'विश्लेषण और चेकआउट रुकते हैं। प्रोफ़ाइल, Career Context और रिपोर्ट सुरक्षित रहती हैं।',
-    pauseNote: 'रोकने से Lemon Squeezy सदस्यता रद्द नहीं होती। ऑर्डर ईमेल का लिंक उपयोग करें।',
+    pauseNote: 'रोकने से भुगतान वाली सदस्यता रद्द नहीं होती। मासिक बिलिंग खाता → सदस्यता से रद्द करें।',
     deactivate: 'खाता निष्क्रिय करें',
     reactivate: 'पुनः सक्रिय करें',
     reactivateHint: 'विश्लेषण और चेकआउट बहाल करें।',
@@ -148,7 +148,7 @@ const copy: Record<
     needLogin: 'سجّل الدخول لإيقاف أو حذف حسابك.',
     pauseTitle: 'إيقاف الحساب',
     pauseBody: 'يتوقف التحليل والدفع. تبقى بياناتك وCareer Context والتقارير. يمكنك إعادة التفعيل.',
-    pauseNote: 'الإيقاف لا يلغي اشتراك Lemon Squeezy. استخدم رابط رسالة الطلب.',
+    pauseNote: 'الإيقاف لا يلغي اشتراكًا مدفوعًا. ألغِ الفوترة الشهرية من الحساب ← الاشتراك.',
     deactivate: 'تعطيل الحساب',
     reactivate: 'إعادة التفعيل',
     reactivateHint: 'استعادة التحليل والدفع.',

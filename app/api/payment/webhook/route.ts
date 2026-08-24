@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
-import { fulfillOrder, fulfillSubscriptionRenewal } from '@/lib/fulfill-order';
+import {
+  applyMembershipFromLemonSubscriptions,
+  fulfillOrder,
+  fulfillSubscriptionRenewal,
+} from '@/lib/fulfill-order';
+import { findAuthUserIdByEmail } from '@/lib/auth-admin-lookup';
 import {
   getLemonSqueezyConfig,
   getWebhookCustomData,
+  listLemonSubscriptionsForEmail,
   verifyLemonSqueezySignature,
+  type LemonSubscriptionSummary,
   type LemonWebhookPayload,
 } from '@/lib/lemonsqueezy';
 import {
   isCheckoutPlanType,
   normalizeCheckoutPlanType,
-  type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 
 export const runtime = 'nodejs';
@@ -20,6 +26,22 @@ const FULFILL_EVENTS = new Set([
   'subscription_created',
   'subscription_payment_success',
 ]);
+
+const LIFECYCLE_EVENTS = new Set([
+  'subscription_cancelled',
+  'subscription_expired',
+]);
+
+async function resolveWebhookUserId(
+  admin: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
+  payload: LemonWebhookPayload,
+): Promise<string | null> {
+  const custom = getWebhookCustomData(payload);
+  if (custom.user_id) return custom.user_id;
+  const email = payload.data?.attributes?.user_email;
+  if (!email) return null;
+  return findAuthUserIdByEmail(admin, email);
+}
 
 export async function POST(request: NextRequest) {
   const ls = getLemonSqueezyConfig();
@@ -49,6 +71,41 @@ export async function POST(request: NextRequest) {
   }
 
   const eventName = payload.meta?.event_name ?? '';
+
+  if (LIFECYCLE_EVENTS.has(eventName)) {
+    const userId = await resolveWebhookUserId(admin, payload);
+    if (!userId) {
+      console.error('[webhook] lifecycle missing user', { eventName });
+      return NextResponse.json({ received: true, skipped: 'no_user' });
+    }
+
+    const email = payload.data?.attributes?.user_email ?? null;
+    let subscriptions: LemonSubscriptionSummary[] = [];
+    if (email) {
+      try {
+        subscriptions = await listLemonSubscriptionsForEmail(ls.apiKey, ls.storeId, email);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'list failed';
+        console.error('[webhook] lifecycle list', message);
+      }
+    }
+
+    if (eventName === 'subscription_expired') {
+      try {
+        await applyMembershipFromLemonSubscriptions(admin, userId, subscriptions, {
+          emptyMeans: 'free',
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'downgrade failed';
+        console.error('[webhook] expire downgrade', message);
+        return NextResponse.json({ error: message }, { status: 500 });
+      }
+    }
+
+    // subscription_cancelled: keep tier + credits until ends_at (expire event).
+    return NextResponse.json({ received: true, lifecycle: eventName });
+  }
+
   if (!FULFILL_EVENTS.has(eventName)) {
     return NextResponse.json({ received: true, skipped: eventName });
   }

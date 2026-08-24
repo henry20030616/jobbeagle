@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fulfillOrder, fulfillSubscriptionRenewal } from '@/lib/fulfill-order';
+import { fulfillOrder, fulfillSubscriptionRenewal, downgradeExpiredSubscription } from '@/lib/fulfill-order';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type Call = { op: string; table?: string; payload?: unknown; rpc?: string };
@@ -123,5 +123,26 @@ describe('fulfillSubscriptionRenewal', () => {
       available_job_fit_snapshot_credits: 100,
       available_interview_strategy_guide_credits: 5,
     });
+  });
+});
+
+describe('downgradeExpiredSubscription', () => {
+  it('sets membership_tier to free without touching credits', async () => {
+    const updates: unknown[] = [];
+    const admin = {
+      from: () => ({
+        update: (payload: unknown) => {
+          updates.push(payload);
+          return {
+            eq: async () => ({ error: null }),
+          };
+        },
+      }),
+    } as unknown as SupabaseClient;
+
+    await downgradeExpiredSubscription(admin, 'user-sub');
+    expect(updates).toHaveLength(1);
+    expect(updates[0]).toMatchObject({ membership_tier: 'free' });
+    expect(updates[0]).not.toHaveProperty('available_job_fit_snapshot_credits');
   });
 });

@@ -44,6 +44,18 @@ type AccountReferral = {
   created_at: string;
 };
 
+type BillingView = {
+  id: string;
+  status: string;
+  planType: string | null;
+  membershipTier: 'standard_sub' | 'advanced_sub' | null;
+  renewsAt: string | null;
+  endsAt: string | null;
+  cancelled: boolean;
+  canCancel: boolean;
+  canManage: boolean;
+};
+
 type AccountPayload = {
   email: string | null;
   profile: {
@@ -78,6 +90,19 @@ const copy: Record<
     statusDeactivated: string;
     subscription: string;
     subscriptionNote: string;
+    manageBilling: string;
+    managingBilling: string;
+    cancelSub: string;
+    cancelling: string;
+    cancelConfirm: string;
+    cancelOk: string;
+    cancelOkNoDate: string;
+    cancelNone: string;
+    manageNone: string;
+    subRenews: string;
+    subEnds: string;
+    subCancelledNote: string;
+    subUnmatched: string;
     buy: string;
     buying: string;
     syncSub: string;
@@ -117,7 +142,22 @@ const copy: Record<
     statusDeactivated: 'Deactivated',
     subscription: 'Subscription & credits',
     subscriptionNote:
-      'Buy or upgrade below. To cancel a Lemon Squeezy subscription, use the link in your order receipt email until a customer portal is available.',
+      'Buy or upgrade below. Cancel a monthly plan here with one click — you keep access until the current period ends.',
+    manageBilling: 'Manage billing',
+    managingBilling: 'Opening portal…',
+    cancelSub: 'Cancel subscription',
+    cancelling: 'Cancelling…',
+    cancelConfirm:
+      'Cancel your monthly subscription? You keep access until the current billing period ends. You can subscribe again below anytime.',
+    cancelOk: 'Billing stopped. You keep access until {date}.',
+    cancelOkNoDate: 'Billing stopped. You keep access until the current period ends.',
+    cancelNone: 'No cancellable monthly subscription found for this email.',
+    manageNone: 'Could not open the billing portal. Try again in a moment.',
+    subRenews: 'Renews {date}',
+    subEnds: 'Access until {date}',
+    subCancelledNote: 'Billing has stopped.',
+    subUnmatched:
+      'No Lemon Squeezy subscription matched this email. If you still pay monthly, use the cancel link in your receipt.',
     buy: 'Buy',
     buying: 'Redirecting…',
     syncSub: 'Sync subscription credits',
@@ -157,7 +197,22 @@ const copy: Record<
     statusDeactivated: '已停用',
     subscription: '訂閱與額度',
     subscriptionNote:
-      '可在下方購買或升級。若需取消 Lemon Squeezy 訂閱，請先使用訂單確認信中的連結；客戶入口稍後會開放。',
+      '可在下方購買或升級。月費可在本頁一鍵取消；本期結束前仍可使用。',
+    manageBilling: '管理帳單',
+    managingBilling: '開啟中…',
+    cancelSub: '取消訂閱',
+    cancelling: '取消中…',
+    cancelConfirm:
+      '確定取消月費訂閱？本期結束前仍可使用。之後可再從下方重新訂閱。',
+    cancelOk: '已停止扣款。你可使用至 {date}。',
+    cancelOkNoDate: '已停止扣款。本期結束前仍可使用。',
+    cancelNone: '此信箱沒有可取消的月費訂閱。',
+    manageNone: '無法開啟帳單入口，請稍後再試。',
+    subRenews: '下次續訂 {date}',
+    subEnds: '可用至 {date}',
+    subCancelledNote: '已停止扣款。',
+    subUnmatched:
+      '找不到與此信箱對應的 Lemon Squeezy 訂閱。若仍在扣款，請用訂單確認信中的取消連結。',
     buy: '購買',
     buying: '跳轉中…',
     syncSub: '同步訂閱額度',
@@ -195,8 +250,21 @@ const copy: Record<
     statusActive: '启用中',
     statusDeactivated: '已停用',
     subscription: '订阅与额度',
-    subscriptionNote:
-      '可在下方购买或升级。取消 Lemon Squeezy 订阅请先使用订单确认信中的链接。',
+    subscriptionNote: '可在下方购买或升级。月费可在本页一键取消；本期结束前仍可使用。',
+    manageBilling: '管理账单',
+    managingBilling: '打开中…',
+    cancelSub: '取消订阅',
+    cancelling: '取消中…',
+    cancelConfirm: '确定取消月费订阅？本期结束前仍可使用。之后可再从下方重新订阅。',
+    cancelOk: '已停止扣款。你可使用至 {date}。',
+    cancelOkNoDate: '已停止扣款。本期结束前仍可使用。',
+    cancelNone: '此邮箱没有可取消的月费订阅。',
+    manageNone: '无法打开账单入口，请稍后再试。',
+    subRenews: '下次续订 {date}',
+    subEnds: '可用至 {date}',
+    subCancelledNote: '已停止扣款。',
+    subUnmatched:
+      '找不到与此邮箱对应的 Lemon Squeezy 订阅。若仍在扣款，请用订单确认信中的取消链接。',
     buy: '购买',
     buying: '跳转中…',
     syncSub: '同步订阅额度',
@@ -235,7 +303,22 @@ const copy: Record<
     statusDeactivated: 'Desactivada',
     subscription: 'Suscripción y créditos',
     subscriptionNote:
-      'Compra o mejora abajo. Para cancelar en Lemon Squeezy, usa el enlace del email del pedido.',
+      'Compra o mejora abajo. Cancela el plan mensual aquí con un clic — sigues teniendo acceso hasta el fin del periodo.',
+    manageBilling: 'Gestionar facturación',
+    managingBilling: 'Abriendo…',
+    cancelSub: 'Cancelar suscripción',
+    cancelling: 'Cancelando…',
+    cancelConfirm:
+      '¿Cancelar la suscripción mensual? Conservas el acceso hasta el fin del periodo. Puedes volver a suscribirte abajo.',
+    cancelOk: 'Se detuvo el cobro. Conservas el acceso hasta {date}.',
+    cancelOkNoDate: 'Se detuvo el cobro. Conservas el acceso hasta el fin del periodo.',
+    cancelNone: 'No hay una suscripción mensual cancelable para este email.',
+    manageNone: 'No se pudo abrir el portal de facturación. Inténtalo de nuevo.',
+    subRenews: 'Se renueva {date}',
+    subEnds: 'Acceso hasta {date}',
+    subCancelledNote: 'El cobro se detuvo.',
+    subUnmatched:
+      'No hay una suscripción de Lemon Squeezy para este email. Si aún te cobran, usa el enlace del recibo.',
     buy: 'Comprar',
     buying: 'Redirigiendo…',
     syncSub: 'Sincronizar créditos de suscripción',
@@ -275,7 +358,22 @@ const copy: Record<
     statusDeactivated: 'निष्क्रिय',
     subscription: 'सदस्यता और क्रेडिट',
     subscriptionNote:
-      'नीचे खरीदें या अपग्रेड करें। Lemon Squeezy रद्द करने के लिए ऑर्डर ईमेल लिंक उपयोग करें।',
+      'नीचे खरीदें या अपग्रेड करें। मासिक योजना यहाँ एक क्लिक में रद्द करें — अवधि खत्म होने तक ऐक्सेस रहेगा।',
+    manageBilling: 'बिलिंग प्रबंधित करें',
+    managingBilling: 'खुल रहा है…',
+    cancelSub: 'सदस्यता रद्द करें',
+    cancelling: 'रद्द हो रहा है…',
+    cancelConfirm:
+      'मासिक सदस्यता रद्द करें? वर्तमान अवधि खत्म होने तक ऐक्सेस रहेगा। बाद में नीचे फिर से ले सकते हैं।',
+    cancelOk: 'बिलिंग बंद। आप {date} तक उपयोग कर सकते हैं।',
+    cancelOkNoDate: 'बिलिंग बंद। वर्तमान अवधि खत्म होने तक ऐक्सेस रहेगा।',
+    cancelNone: 'इस ईमेल पर रद्द करने योग्य मासिक सदस्यता नहीं मिली।',
+    manageNone: 'बिलिंग पोर्टल नहीं खुल सका। बाद में प्रयास करें।',
+    subRenews: 'नवीनीकरण {date}',
+    subEnds: '{date} तक ऐक्सेस',
+    subCancelledNote: 'बिलिंग बंद हो गई।',
+    subUnmatched:
+      'इस ईमेल से Lemon Squeezy सदस्यता नहीं मिली। अगर अभी भी शुल्क कट रहा है तो रसीद वाला लिंक उपयोग करें।',
     buy: 'खरीदें',
     buying: 'रीडायरेक्ट…',
     syncSub: 'सदस्यता क्रेडिट सिंक करें',
@@ -315,7 +413,22 @@ const copy: Record<
     statusDeactivated: 'معطّل',
     subscription: 'الاشتراك والرصيد',
     subscriptionNote:
-      'اشترِ أو رقِّ أدناه. لإلغاء Lemon Squeezy استخدم رابط رسالة الطلب.',
+      'اشترِ أو رقِّ أدناه. ألغِ الخطة الشهرية من هنا بنقرة واحدة — يبقى الوصول حتى نهاية الفترة.',
+    manageBilling: 'إدارة الفوترة',
+    managingBilling: 'جارٍ الفتح…',
+    cancelSub: 'إلغاء الاشتراك',
+    cancelling: 'جارٍ الإلغاء…',
+    cancelConfirm:
+      'إلغاء الاشتراك الشهري؟ يبقى الوصول حتى نهاية الفترة الحالية. يمكنك الاشتراك مجددًا أدناه.',
+    cancelOk: 'توقف الفوترة. يمكنك الاستخدام حتى {date}.',
+    cancelOkNoDate: 'توقف الفوترة. يبقى الوصول حتى نهاية الفترة الحالية.',
+    cancelNone: 'لا يوجد اشتراك شهري قابل للإلغاء لهذا البريد.',
+    manageNone: 'تعذر فتح بوابة الفوترة. حاول لاحقًا.',
+    subRenews: 'يتجدد {date}',
+    subEnds: 'الوصول حتى {date}',
+    subCancelledNote: 'توقفت الفوترة.',
+    subUnmatched:
+      'لا يوجد اشتراك Lemon Squeezy لهذا البريد. إن استمر الخصم فاستخدم رابط رسالة الطلب.',
     buy: 'شراء',
     buying: 'جارٍ التحويل…',
     syncSub: 'مزامنة رصيد الاشتراك',
@@ -375,6 +488,11 @@ function formatDate(iso: string, language: AppLanguage): string {
   }
 }
 
+function fillDate(template: string, iso: string | null, language: AppLanguage): string {
+  if (!iso) return template.replace('{date}', '').replace(/\s{2,}/g, ' ').trim();
+  return template.replace('{date}', formatDate(iso, language));
+}
+
 export default function AccountPage() {
   const { language } = useLanguage();
   const t = copy[language] ?? copy.en;
@@ -386,6 +504,45 @@ export default function AccountPage() {
   const [busyPlan, setBusyPlan] = useState<CheckoutPlanType | null>(null);
   const [syncBusy, setSyncBusy] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [billing, setBilling] = useState<BillingView | null>(null);
+  const [billingLoaded, setBillingLoaded] = useState(false);
+  const [portalBusy, setPortalBusy] = useState(false);
+  const [cancelBusy, setCancelBusy] = useState(false);
+
+  const loadBilling = useCallback(async () => {
+    try {
+      const res = await fetch('/api/account/subscription');
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setBilling(null);
+        setBillingLoaded(true);
+        return;
+      }
+      const sub = body.subscription;
+      setBilling(
+        sub && typeof sub === 'object' && typeof sub.id === 'string'
+          ? {
+              id: sub.id,
+              status: typeof sub.status === 'string' ? sub.status : '',
+              planType: typeof sub.planType === 'string' ? sub.planType : null,
+              membershipTier:
+                sub.membershipTier === 'standard_sub' || sub.membershipTier === 'advanced_sub'
+                  ? sub.membershipTier
+                  : null,
+              renewsAt: typeof sub.renewsAt === 'string' ? sub.renewsAt : null,
+              endsAt: typeof sub.endsAt === 'string' ? sub.endsAt : null,
+              cancelled: Boolean(sub.cancelled),
+              canCancel: Boolean(sub.canCancel),
+              canManage: Boolean(sub.canManage),
+            }
+          : null,
+      );
+    } catch {
+      setBilling(null);
+    } finally {
+      setBillingLoaded(true);
+    }
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -403,12 +560,13 @@ export default function AccountPage() {
       }
       setSignedIn(true);
       setData(await res.json());
+      void loadBilling();
     } catch {
       setError(t.loadError);
     } finally {
       setLoading(false);
     }
-  }, [t.loadError]);
+  }, [t.loadError, loadBilling]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -452,6 +610,64 @@ export default function AccountPage() {
       setError(t.actionError);
     } finally {
       setSyncBusy(false);
+    }
+  };
+
+  const handleManageBilling = async () => {
+    setPortalBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/account/billing-portal');
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || typeof body.url !== 'string') {
+        setError(typeof body.error === 'string' ? body.error : t.manageNone);
+        return;
+      }
+      window.location.href = body.url;
+    } catch {
+      setError(t.manageNone);
+    } finally {
+      setPortalBusy(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!window.confirm(t.cancelConfirm)) return;
+    setCancelBusy(true);
+    setError(null);
+    setSyncMessage(null);
+    try {
+      const res = await fetch('/api/account/cancel-subscription', { method: 'POST' });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(typeof body.error === 'string' ? body.error : t.cancelNone);
+        return;
+      }
+      const endsAt = typeof body.ends_at === 'string' ? body.ends_at : null;
+      setSyncMessage(endsAt ? fillDate(t.cancelOk, endsAt, language) : t.cancelOkNoDate);
+      const sub = body.subscription;
+      if (sub && typeof sub === 'object' && typeof sub.id === 'string') {
+        setBilling({
+          id: sub.id,
+          status: typeof sub.status === 'string' ? sub.status : 'cancelled',
+          planType: typeof sub.planType === 'string' ? sub.planType : null,
+          membershipTier:
+            sub.membershipTier === 'standard_sub' || sub.membershipTier === 'advanced_sub'
+              ? sub.membershipTier
+              : null,
+          renewsAt: typeof sub.renewsAt === 'string' ? sub.renewsAt : null,
+          endsAt,
+          cancelled: true,
+          canCancel: false,
+          canManage: Boolean(sub.canManage),
+        });
+      } else {
+        await loadBilling();
+      }
+    } catch {
+      setError(t.actionError);
+    } finally {
+      setCancelBusy(false);
     }
   };
 
@@ -579,6 +795,26 @@ export default function AccountPage() {
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-3">
+                {billing?.canManage ? (
+                  <button
+                    type="button"
+                    disabled={portalBusy || deactivated}
+                    onClick={() => void handleManageBilling()}
+                    className="px-5 py-2.5 text-lg font-bold rounded-lg border border-slate-500 bg-slate-800 text-slate-100 hover:bg-slate-700 disabled:opacity-50 transition-colors"
+                  >
+                    {portalBusy ? t.managingBilling : t.manageBilling}
+                  </button>
+                ) : null}
+                {billing?.canCancel ? (
+                  <button
+                    type="button"
+                    disabled={cancelBusy || deactivated}
+                    onClick={() => void handleCancelSubscription()}
+                    className="px-5 py-2.5 text-lg font-bold rounded-lg border border-rose-400/60 bg-rose-500/10 text-rose-100 hover:bg-rose-500/20 disabled:opacity-50 transition-colors"
+                  >
+                    {cancelBusy ? t.cancelling : t.cancelSub}
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   disabled={syncBusy || deactivated}
@@ -591,6 +827,19 @@ export default function AccountPage() {
                   <p className="text-lg text-slate-400">{syncMessage}</p>
                 ) : null}
               </div>
+              {billingLoaded && billing ? (
+                <p className="text-lg text-slate-400">
+                  {billing.cancelled || billing.status === 'cancelled'
+                    ? `${t.subCancelledNote} ${fillDate(t.subEnds, billing.endsAt, language)}`.trim()
+                    : fillDate(t.subRenews, billing.renewsAt ?? billing.endsAt, language)}
+                </p>
+              ) : null}
+              {billingLoaded
+                && !billing
+                && (data.profile.membership_tier === 'standard_sub'
+                  || data.profile.membership_tier === 'advanced_sub') ? (
+                <p className="text-lg text-amber-200/80">{t.subUnmatched}</p>
+              ) : null}
               <ul className="space-y-3">
                 {ACTIVE_CHECKOUT_PLAN_TYPES.map((planType) => {
                   const plan = CHECKOUT_PLANS[planType];
