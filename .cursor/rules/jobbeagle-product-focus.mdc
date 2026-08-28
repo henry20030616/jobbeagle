@@ -5,10 +5,12 @@ alwaysApply: true
 
 # JobBeagle — Product Focus & Launch Reminder
 
-## Chrome Web Store status (2026-08-24)
-- **Decision:** Owner asked for **one-click install** → **submit Chrome Web Store** (user action in Developer Dashboard).
-- Agent packs zip (`bash scripts/ops/pack-extension.sh`); `/extension` shows **Add to Chrome** when `NEXT_PUBLIC_CHROME_WEBSTORE_URL` is set.
-- Until the listing is live, Agent **must remind** them: upload zip, privacy URL, screenshots, **Submit for review**, then paste the store URL into `.env.local` / Vercel.
+## Chrome Web Store status (2026-08-28)
+- **Submitted** JobBeagle 1.3.2 for review (Draft → 待審查). Item ID `pceknhembhfnljhpajkpdbihfbpfolpm`.
+- Owner asked (2026-08-28) to **pause extension work** and be **reminded later**.
+- **Do not** ask them to upload zip / Submit again unless Google rejects the listing.
+- When listing is **Published**, Agent **must remind** them to paste the store URL; set `NEXT_PUBLIC_CHROME_WEBSTORE_URL` and sync Vercel so `/extension` becomes **Add to Chrome**.
+- Pack zip if they need a new version: `bash scripts/ops/pack-extension.sh`.
 
 ## P0 (mostly done in code)
 1. Legal: `/privacy` + `/terms` whitelist + no sale of data
