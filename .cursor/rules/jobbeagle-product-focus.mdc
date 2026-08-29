@@ -6,16 +6,19 @@ alwaysApply: true
 # JobBeagle — Product Focus & Launch Reminder
 
 ## Chrome Web Store status (2026-08-28)
-- **Submitted** JobBeagle 1.3.2 for review (Draft → 待審查). Item ID `pceknhembhfnljhpajkpdbihfbpfolpm`.
-- Owner asked (2026-08-28) to **pause extension work** and be **reminded later**.
-- **Do not** ask them to upload zip / Submit again unless Google rejects the listing.
-- When listing is **Published**, Agent **must remind** them to paste the store URL; set `NEXT_PUBLIC_CHROME_WEBSTORE_URL` and sync Vercel so `/extension` becomes **Add to Chrome**.
-- Pack zip if they need a new version: `bash scripts/ops/pack-extension.sh`.
+- **Submitted for review** (JobBeagle 1.3.2, item `pceknhembhfnljhpajkpdbihfbpfolpm`). Status was **待審查**. Owner asked to pause CWS work.
+- `/extension` stays zip download until listing is live. Then paste store URL into `.env.local` / Vercel `NEXT_PUBLIC_CHROME_WEBSTORE_URL` and sync.
+- **Every conversation wrap-up while listing is not live:** remind owner to check Developer Dashboard / Gmail for review result, then paste the `chromewebstore.google.com/detail/...` URL. Do **not** nag mid-Lemon-Squeezy work unless they ask.
 
-## P0 (mostly done in code)
+## P0 now — Lemon Squeezy live payments
+- Store **Jobbeagle** (`424272`) is still **Test mode**. Products/webhooks/API key are test. **0 live sales.**
+- Owner must in LS dashboard: identity verification → business details / Activate store → Payouts → Copy products to Live → live API key + webhook.
+- After they paste live keys/variant IDs, Agent syncs Vercel and sets `LEMONSQUEEZY_TEST_MODE=false` **only when live variants exist**.
+
+## Already in code
 1. Legal: `/privacy` + `/terms` whitelist + no sale of data
 2. CCPA hard delete via `/api/account/delete`
-3. Packaging draft ready; **store review = user action when they choose to launch**
+3. In-app subscription cancel + billing portal on `/account`
 
 ## Product focus (do / don't)
 - **DO** invest in: extension → `/confirm` → analyze → Job Fit Snapshot / Interview Strategy Guide → paywall/checkout.
