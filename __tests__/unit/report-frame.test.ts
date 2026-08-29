@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { REPORT_ACTION_TEXT, SAMPLE_RAIL_TEXT } from '@/constants/report-frame';
 
 describe('report chrome type scale', () => {

@@ -1,0 +1,13 @@
+# Robots.txt for JobBeagle
+# https://www.jobbeagle.com
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /account/
+Disallow: /employer/dashboard
+Disallow: /confirm
+Disallow: /report
+
+# Sitemap
+Sitemap: https://www.jobbeagle.com/sitemap.xml

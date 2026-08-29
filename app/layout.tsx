@@ -9,7 +9,48 @@ const GA_MEASUREMENT_ID =
 
 export const metadata: Metadata = {
   title: "Jobbeagle | AI Job Match Analysis",
-  description: "AI-powered job match analysis and interview preparation for job seekers.",
+  description: "AI-powered job match analysis and interview preparation for job seekers. Chrome extension for LinkedIn, Indeed, ZipRecruiter, and more.",
+  keywords: ["job search", "AI job analysis", "job matching", "interview preparation", "career", "resume analysis"],
+  authors: [{ name: "JobBeagle" }],
+  creator: "JobBeagle",
+  publisher: "JobBeagle",
+  metadataBase: new URL('https://www.jobbeagle.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "Jobbeagle | AI Job Match Analysis",
+    description: "AI-powered job match analysis and interview preparation for job seekers.",
+    url: 'https://www.jobbeagle.com',
+    siteName: 'Jobbeagle',
+    locale: 'en_US',
+    type: 'website',
+    images: [
+      {
+        url: '/icon.svg',
+        width: 512,
+        height: 512,
+        alt: 'JobBeagle Logo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Jobbeagle | AI Job Match Analysis",
+    description: "AI-powered job match analysis and interview preparation for job seekers.",
+    images: ['/icon.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: '/icon.svg',
     apple: '/icon.svg',
