@@ -3,10 +3,11 @@ import {
   getLemonSqueezyConfig,
   listRecentLemonOrders,
 } from '@/lib/lemonsqueezy';
+import { getPaddleClient, getPaddleConfig } from '@/lib/paddle';
 
 export type BillingReconcileReport = {
   ok: boolean;
-  paidLsCount: number;
+  paidCount: number;
   dbOrderCount: number;
   pendingStuck: Array<{ id: string; plan_type: string; created_at: string }>;
   paidMissingLocal: Array<Record<string, unknown>>;
@@ -120,7 +121,114 @@ export async function reconcileLemonBilling(
 
   return {
     ok,
-    paidLsCount: paidLs.length,
+    paidCount: paidLs.length,
+    dbOrderCount: (dbOrders || []).length,
+    pendingStuck,
+    paidMissingLocal,
+    summary,
+  };
+}
+
+/** Compare recent Paddle transactions to local `orders` rows. */
+export async function reconcilePaddleBilling(
+  admin: SupabaseClient,
+  opts?: { alert?: boolean },
+): Promise<BillingReconcileReport> {
+  const paddleConfig = getPaddleConfig();
+  const paddle = getPaddleClient();
+  if (!paddleConfig || !paddle) {
+    throw new Error('Paddle is not configured');
+  }
+
+  // List recent completed Paddle transactions
+  let paddleTransactions: any[] = [];
+  try {
+    const response: any = await paddle.transactions.list({
+      status: ['completed'] as any,
+      perPage: 50 as any,
+    });
+    paddleTransactions = response?.data ?? [];
+  } catch (err) {
+    console.error('[reconcile-paddle] list transactions error:', err);
+    paddleTransactions = [];
+  }
+
+  const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: dbOrders, error } = await admin
+    .from('orders')
+    .select('id, status, external_checkout_id, plan_type, created_at, payment_provider')
+    .gte('created_at', since)
+    .eq('payment_provider', 'paddle')
+    .order('created_at', { ascending: false })
+    .limit(200);
+
+  if (error) throw new Error(error.message);
+
+  const byExternal = new Map(
+    (dbOrders || [])
+      .filter((o) => o.external_checkout_id)
+      .map((o) => [String(o.external_checkout_id), o]),
+  );
+
+  const pendingStuck = (dbOrders || [])
+    .filter(
+      (o) =>
+        o.status === 'pending'
+        && Date.now() - new Date(o.created_at).getTime() > 60 * 60 * 1000,
+    )
+    .map((o) => ({
+      id: o.id as string,
+      plan_type: String(o.plan_type),
+      created_at: String(o.created_at),
+    }));
+
+  const paidMissingLocal: Array<Record<string, unknown>> = [];
+  for (const txn of paddleTransactions) {
+    const txnId = String(txn.id);
+    const local = byExternal.get(txnId);
+    if (!local) {
+      paidMissingLocal.push({
+        paddle_transaction_id: txnId,
+        customer_email: txn.customer_email ?? null,
+        total: txn.details?.totals?.total ?? null,
+        created_at: txn.created_at ?? null,
+      });
+    } else if (local.status !== 'succeeded') {
+      paidMissingLocal.push({
+        paddle_transaction_id: txnId,
+        local_order_id: local.id,
+        local_status: local.status,
+        customer_email: txn.customer_email ?? null,
+      });
+    }
+  }
+
+  const summary = [
+    `JobBeagle Paddle billing reconcile ${new Date().toISOString()}`,
+    `Completed Paddle txns (page): ${paddleTransactions.length}`,
+    `DB Paddle orders (14d): ${(dbOrders || []).length}`,
+    `Paddle txns without local succeeded: ${paidMissingLocal.length}`,
+    `Stuck pending (>1h): ${pendingStuck.length}`,
+    '',
+    paidMissingLocal.length
+      ? `Sample mismatches:\n${paidMissingLocal
+          .slice(0, 10)
+          .map((r) => JSON.stringify(r))
+          .join('\n')}`
+      : 'No Paddle transaction↔local mismatches on this page.',
+  ].join('\n');
+
+  const ok = paidMissingLocal.length === 0 && pendingStuck.length === 0;
+  if (opts?.alert && !ok) {
+    await sendBillingAlert(
+      `[JobBeagle] Paddle billing reconcile: ${paidMissingLocal.length + pendingStuck.length} issue(s)`,
+      summary,
+    );
+  }
+
+  return {
+    ok,
+    paidCount: paddleTransactions.length,
     dbOrderCount: (dbOrders || []).length,
     pendingStuck,
     paidMissingLocal,

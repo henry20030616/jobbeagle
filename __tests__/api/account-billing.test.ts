@@ -6,7 +6,7 @@ const mockEnsureProfile = vi.fn();
 const mockList = vi.fn();
 const mockCancel = vi.fn();
 const mockRetrieve = vi.fn();
-const mockGetLs = vi.fn();
+const mockGetPaddle = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () => mockCreateClient(),
@@ -20,14 +20,16 @@ vi.mock('@/lib/profiles', () => ({
   ensureProfile: (...args: unknown[]) => mockEnsureProfile(...args),
 }));
 
-vi.mock('@/lib/lemonsqueezy', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/lemonsqueezy')>();
+vi.mock('@/lib/paddle', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/paddle')>();
   return {
     ...actual,
-    getLemonSqueezyConfig: () => mockGetLs(),
-    listLemonSubscriptionsForEmail: (...args: unknown[]) => mockList(...args),
-    cancelLemonSubscription: (...args: unknown[]) => mockCancel(...args),
-    retrieveLemonSubscription: (...args: unknown[]) => mockRetrieve(...args),
+    getPaddleConfig: () => mockGetPaddle(),
+    getPaddleClient: () => ({}),
+    listPaddleSubscriptionsForEmail: (...args: unknown[]) => mockList(...args),
+    cancelPaddleSubscription: (...args: unknown[]) => mockCancel(...args),
+    retrievePaddleSubscription: (...args: unknown[]) => mockRetrieve(...args),
+    getPaddleCustomerPortalUrl: () => 'https://customer-portal.paddle.com',
   };
 });
 
@@ -35,11 +37,11 @@ import { POST as cancelPost } from '@/app/api/account/cancel-subscription/route'
 import { GET as portalGet } from '@/app/api/account/billing-portal/route';
 import { __resetMemoryRateLimitForTests } from '@/lib/rate-limit';
 
-const LS_CONFIG = {
+const PADDLE_CONFIG = {
   apiKey: 'test-key',
-  storeId: '1',
+  environment: 'sandbox' as const,
   webhookSecret: 'whsec',
-  variantIds: {},
+  priceIds: {},
 };
 
 function signedIn(email = 'user@example.com') {
@@ -52,7 +54,7 @@ function signedIn(email = 'user@example.com') {
     },
   });
   mockGetAdmin.mockReturnValue({ from: vi.fn() });
-  mockGetLs.mockReturnValue(LS_CONFIG);
+  mockGetPaddle.mockReturnValue(PADDLE_CONFIG);
   mockEnsureProfile.mockResolvedValue({});
 }
 
@@ -63,7 +65,7 @@ describe('POST /api/account/cancel-subscription', () => {
   });
 
   it('returns 401 when not signed in', async () => {
-    mockGetLs.mockReturnValue(LS_CONFIG);
+    mockGetPaddle.mockReturnValue(PADDLE_CONFIG);
     mockGetAdmin.mockReturnValue({ from: vi.fn() });
     mockCreateClient.mockResolvedValue({
       auth: { getUser: async () => ({ data: { user: null }, error: null }) },
@@ -79,25 +81,21 @@ describe('POST /api/account/cancel-subscription', () => {
       {
         id: 'sub-std',
         status: 'active',
-        variantId: '8888',
-        userEmail: 'user@example.com',
-        renewsAt: '2026-09-24T00:00:00.000Z',
-        endsAt: null,
-        cancelled: false,
-        customerPortalUrl: null,
+        priceId: 'pri_123',
+        customerEmail: 'user@example.com',
+        currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
+        scheduledChange: null,
         planType: 'standard_subscription',
         membershipTier: 'standard_sub',
       },
     ]);
     mockCancel.mockResolvedValue({
       id: 'sub-std',
-      status: 'cancelled',
-      variantId: '8888',
-      userEmail: 'user@example.com',
-      renewsAt: null,
-      endsAt: '2026-09-24T00:00:00.000Z',
-      cancelled: true,
-      customerPortalUrl: 'https://portal.example',
+      status: 'canceled',
+      priceId: 'pri_123',
+      customerEmail: 'user@example.com',
+      currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
+      scheduledChange: { action: 'cancel', effectiveAt: '2026-09-24T00:00:00.000Z' },
       planType: 'standard_subscription',
       membershipTier: 'standard_sub',
     });
@@ -106,10 +104,10 @@ describe('POST /api/account/cancel-subscription', () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.cancelled).toBe(true);
-    expect(json.ends_at).toBe('2026-09-24T00:00:00.000Z');
+    expect(json.current_billing_period_ends_at).toBe('2026-09-24T00:00:00.000Z');
     expect(json.subscription.canCancel).toBe(false);
-    expect(mockCancel).toHaveBeenCalledWith('test-key', 'sub-std');
-    expect(mockList).toHaveBeenCalledWith('test-key', '1', 'user@example.com');
+    expect(mockCancel).toHaveBeenCalledWith({}, 'sub-std');
+    expect(mockList).toHaveBeenCalledWith({}, 'user@example.com');
   });
 
   it('returns 404 when there is no live monthly subscription', async () => {
@@ -117,13 +115,11 @@ describe('POST /api/account/cancel-subscription', () => {
     mockList.mockResolvedValue([
       {
         id: 'sub-done',
-        status: 'cancelled',
-        variantId: '8888',
-        userEmail: 'user@example.com',
-        renewsAt: null,
-        endsAt: '2026-09-24T00:00:00.000Z',
-        cancelled: true,
-        customerPortalUrl: null,
+        status: 'canceled',
+        priceId: 'pri_123',
+        customerEmail: 'user@example.com',
+        currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
+        scheduledChange: null,
         planType: 'standard_subscription',
         membershipTier: 'standard_sub',
       },
@@ -141,7 +137,7 @@ describe('GET /api/account/billing-portal', () => {
   });
 
   it('returns 401 when not signed in', async () => {
-    mockGetLs.mockReturnValue(LS_CONFIG);
+    mockGetPaddle.mockReturnValue(PADDLE_CONFIG);
     mockGetAdmin.mockReturnValue({ from: vi.fn() });
     mockCreateClient.mockResolvedValue({
       auth: { getUser: async () => ({ data: { user: null }, error: null }) },
@@ -150,37 +146,24 @@ describe('GET /api/account/billing-portal', () => {
     expect(res.status).toBe(401);
   });
 
-  it('returns a fresh signed portal URL', async () => {
+  it('returns the Paddle customer portal URL', async () => {
     signedIn();
     mockList.mockResolvedValue([
       {
         id: 'sub-std',
         status: 'active',
-        variantId: '8888',
-        userEmail: 'user@example.com',
-        renewsAt: '2026-09-24T00:00:00.000Z',
-        endsAt: null,
-        cancelled: false,
-        customerPortalUrl: 'https://stale.example',
+        priceId: 'pri_123',
+        customerEmail: 'user@example.com',
+        currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
+        scheduledChange: null,
         planType: 'standard_subscription',
         membershipTier: 'standard_sub',
       },
     ]);
-    mockRetrieve.mockResolvedValue({
-      id: 'sub-std',
-      status: 'active',
-      variantId: '8888',
-      userEmail: 'user@example.com',
-      renewsAt: '2026-09-24T00:00:00.000Z',
-      endsAt: null,
-      cancelled: false,
-      customerPortalUrl: 'https://fresh.lemonsqueezy.com/billing',
-      planType: 'standard_subscription',
-      membershipTier: 'standard_sub',
-    });
     const res = await portalGet();
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ url: 'https://fresh.lemonsqueezy.com/billing' });
-    expect(mockRetrieve).toHaveBeenCalledWith('test-key', 'sub-std');
+    const json = await res.json();
+    expect(json.url).toBe('https://customer-portal.paddle.com');
+    expect(json.note).toContain('Paddle Customer Portal');
   });
 });

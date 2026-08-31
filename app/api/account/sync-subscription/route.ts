@@ -4,18 +4,23 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
 import { fulfillSubscriptionRenewal } from '@/lib/fulfill-order';
 import {
-  getLemonSqueezyConfig,
-  listLemonSubscriptionsForEmail,
-} from '@/lib/lemonsqueezy';
+  getPaddleClient,
+  getPaddleConfig,
+  listPaddleSubscriptionsForEmail,
+  isLivePaddleSubscription,
+} from '@/lib/paddle';
+
+export const runtime = 'nodejs';
 
 /**
- * Pull active Lemon Squeezy subscription for the signed-in user and
+ * Pull active Paddle subscription for the signed-in user and
  * reset monthly Snapshot/Guide balances to the plan allowance.
  */
 export async function POST() {
-  const ls = getLemonSqueezyConfig();
+  const paddleConfig = getPaddleConfig();
+  const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if (!ls || !admin) {
+  if (!paddleConfig || !paddle || !admin) {
     return NextResponse.json(
       { error: 'Billing sync is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -40,23 +45,19 @@ export async function POST() {
 
   let subscriptions;
   try {
-    subscriptions = await listLemonSubscriptionsForEmail(
-      ls.apiKey,
-      ls.storeId,
-      user.email,
-    );
+    subscriptions = await listPaddleSubscriptionsForEmail(paddle, user.email);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
+    const message = err instanceof Error ? err.message : 'Paddle error';
     console.error('[sync-subscription]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
+      { error: message, errorCode: 'PADDLE_ERROR' },
       { status: 502 },
     );
   }
 
   const active = subscriptions.filter(
     (s) =>
-      (s.status === 'active' || s.status === 'on_trial')
+      isLivePaddleSubscription(s)
       && (s.membershipTier === 'standard_sub' || s.membershipTier === 'advanced_sub'),
   );
 
@@ -65,12 +66,12 @@ export async function POST() {
       synced: false,
       reason: 'no_active_subscription',
       message:
-        'No active Standard/Advanced subscription found for this email on Lemon Squeezy.',
+        'No active Standard/Advanced subscription found for this email on Paddle.',
       subscriptions: subscriptions.map((s) => ({
         id: s.id,
         status: s.status,
         planType: s.planType,
-        renewsAt: s.renewsAt,
+        currentBillingPeriodEndsAt: s.currentBillingPeriodEndsAt,
       })),
     });
   }
@@ -93,8 +94,8 @@ export async function POST() {
     synced: true,
     membership_tier: chosen.membershipTier,
     plan_type: chosen.planType,
-    lemon_subscription_id: chosen.id,
-    renews_at: chosen.renewsAt,
+    paddle_subscription_id: chosen.id,
+    current_billing_period_ends_at: chosen.currentBillingPeriodEndsAt,
     credits: {
       job_fit_snapshot:
         profile?.available_job_fit_snapshot_credits
