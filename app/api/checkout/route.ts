@@ -9,20 +9,22 @@ import {
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 import {
-  createLemonSqueezyCheckout,
-  getLemonSqueezyConfig,
-  getMissingLemonSqueezyVariants,
-  resolveLemonSqueezyVariant,
-} from '@/lib/lemonsqueezy';
+  createStripeCheckoutSession,
+  getStripeClient,
+  getStripeConfig,
+  getMissingStripePriceIds,
+  resolveStripePriceId,
+} from '@/lib/stripe';
 import { ensureProfile } from '@/lib/profiles';
 
 export async function POST(request: NextRequest) {
-  const ls = getLemonSqueezyConfig();
-  if (!ls) {
+  const stripeConfig = getStripeConfig();
+  const stripe = getStripeClient();
+  if (!stripeConfig || !stripe) {
     return NextResponse.json(
       {
-        error: 'Lemon Squeezy is not configured. Set LEMONSQUEEZY_API_KEY and LEMONSQUEEZY_STORE_ID.',
-        errorCode: 'LEMONSQUEEZY_NOT_CONFIGURED',
+        error: 'Stripe is not configured. Set STRIPE_SECRET_KEY and NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.',
+        errorCode: 'STRIPE_NOT_CONFIGURED',
       },
       { status: 503 },
     );
@@ -63,13 +65,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const variantId = resolveLemonSqueezyVariant(planType);
-  if (!variantId) {
-    const missing = getMissingLemonSqueezyVariants();
+  const priceId = resolveStripePriceId(planType);
+  if (!priceId) {
+    const missing = getMissingStripePriceIds();
     return NextResponse.json(
       {
-        error: `Lemon Squeezy variant not configured for plan "${planType}". Set: ${missing.join(', ')}`,
-        errorCode: 'LEMONSQUEEZY_VARIANT_MISSING',
+        error: `Stripe price not configured for plan "${planType}". Set: ${missing.join(', ')}`,
+        errorCode: 'STRIPE_PRICE_MISSING',
         missing,
       },
       { status: 503 },
@@ -100,7 +102,7 @@ export async function POST(request: NextRequest) {
       amount,
       currency: 'usd',
       status: 'pending',
-      payment_provider: 'lemonsqueezy',
+      payment_provider: 'stripe',
       metadata: { plan_label: plan.labelEn },
     })
     .select('id')
@@ -116,51 +118,47 @@ export async function POST(request: NextRequest) {
 
   const origin = request.nextUrl.origin;
   const successUrl = `${origin}/?checkout=success`;
+  const cancelUrl = `${origin}/?checkout=cancel`;
 
-  const testMode =
-    process.env.LEMONSQUEEZY_TEST_MODE === 'true'
-    || process.env.NODE_ENV !== 'production';
-
-  const custom: Record<string, string> = {
+  const metadata: Record<string, string> = {
     order_id: order.id,
     user_id: user.id,
     plan_type: planType,
   };
-  if (reportId) custom.report_id = reportId;
+  if (reportId) metadata.report_id = reportId;
 
   try {
-    const checkoutUrl = await createLemonSqueezyCheckout(ls.apiKey, {
+    const checkoutUrl = await createStripeCheckoutSession(stripe, {
       planType: planType as CheckoutPlanType,
-      variantId,
-      storeId: ls.storeId,
+      priceId,
       email: user.email ?? undefined,
-      redirectUrl: successUrl,
-      custom,
-      testMode,
+      successUrl,
+      cancelUrl,
+      metadata,
     });
 
-    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'lemonsqueezy' });
+    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'stripe' });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
-    console.error('[checkout] Lemon Squeezy create failed:', message);
+    const message = err instanceof Error ? err.message : 'Stripe error';
+    console.error('[checkout] Stripe create failed:', message);
     await admin.from('orders').update({ status: 'failed' }).eq('id', order.id);
     return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
+      { error: message, errorCode: 'STRIPE_ERROR' },
       { status: 500 },
     );
   }
 }
 
 export async function GET() {
-  const ls = getLemonSqueezyConfig();
-  const missing = getMissingLemonSqueezyVariants();
+  const stripeConfig = getStripeConfig();
+  const missing = getMissingStripePriceIds();
   return NextResponse.json({
-    provider: 'lemonsqueezy',
-    configured: !!ls,
-    missingVariants: missing,
+    provider: 'stripe',
+    configured: !!stripeConfig,
+    missingPrices: missing,
     plans: ACTIVE_CHECKOUT_PLAN_TYPES.map((t) => ({
       ...CHECKOUT_PLANS[t],
-      variantConfigured: !!resolveLemonSqueezyVariant(t),
+      priceConfigured: !!resolveStripePriceId(t),
     })),
   });
 }
