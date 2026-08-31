@@ -3,26 +3,26 @@ import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
 import {
-  cancelStripeSubscription,
-  getStripeClient,
-  getStripeConfig,
-  listStripeSubscriptionsForEmail,
-  pickCancellableStripeSubscription,
-  toStripeSubscriptionBillingView,
-} from '@/lib/stripe';
+  cancelPaddleSubscription,
+  getPaddleClient,
+  getPaddleConfig,
+  listPaddleSubscriptionsForEmail,
+  pickCancellablePaddleSubscription,
+  toPaddleSubscriptionBillingView,
+} from '@/lib/paddle';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 /**
  * Cancel the signed-in user's Standard/Advanced subscription at period end.
- * Does not strip credits or membership until Stripe `current_period_end`.
+ * Does not strip credits or membership until Paddle billing period ends.
  */
 export async function POST() {
-  const stripeConfig = getStripeConfig();
-  const stripe = getStripeClient();
+  const paddleConfig = getPaddleConfig();
+  const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if (!stripeConfig || !stripe || !admin) {
+  if (!paddleConfig || !paddle || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -55,17 +55,17 @@ export async function POST() {
 
   let subscriptions;
   try {
-    subscriptions = await listStripeSubscriptionsForEmail(stripe, user.email);
+    subscriptions = await listPaddleSubscriptionsForEmail(paddle, user.email);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Stripe error';
+    const message = err instanceof Error ? err.message : 'Paddle error';
     console.error('[cancel-subscription]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'STRIPE_ERROR' },
+      { error: message, errorCode: 'PADDLE_ERROR' },
       { status: 502 },
     );
   }
 
-  const chosen = pickCancellableStripeSubscription(subscriptions);
+  const chosen = pickCancellablePaddleSubscription(subscriptions);
   if (!chosen) {
     return NextResponse.json(
       {
@@ -77,17 +77,17 @@ export async function POST() {
   }
 
   try {
-    const cancelled = await cancelStripeSubscription(stripe, chosen.id);
+    const cancelled = await cancelPaddleSubscription(paddle, chosen.id);
     return NextResponse.json({
       cancelled: true,
-      current_period_end: cancelled.currentPeriodEnd,
-      subscription: toStripeSubscriptionBillingView(cancelled),
+      current_billing_period_ends_at: cancelled.currentBillingPeriodEndsAt,
+      subscription: toPaddleSubscriptionBillingView(cancelled),
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Stripe error';
+    const message = err instanceof Error ? err.message : 'Paddle error';
     console.error('[cancel-subscription] update', message);
     return NextResponse.json(
-      { error: message, errorCode: 'STRIPE_ERROR' },
+      { error: message, errorCode: 'PADDLE_ERROR' },
       { status: 502 },
     );
   }

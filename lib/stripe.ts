@@ -72,7 +72,7 @@ export function getStripeClient(): Stripe | null {
   const config = getStripeConfig();
   if (!config) return null;
   return new Stripe(config.secretKey, {
-    apiVersion: '2024-12-18.acacia',
+    apiVersion: '2026-08-26.dahlia' as any,
     typescript: true,
   });
 }
@@ -185,13 +185,18 @@ export function parseStripeSubscription(sub: Stripe.Subscription): StripeSubscri
   const priceId = sub.items.data[0]?.price?.id ?? null;
   const planType = priceId ? planTypeFromStripePriceId(priceId) : null;
   
+  const customerEmail = 
+    typeof sub.customer === 'string' 
+      ? null 
+      : ('email' in sub.customer ? (sub.customer as any).email : null);
+  
   return {
     id: sub.id,
     status: sub.status,
     priceId,
-    customerEmail: typeof sub.customer === 'string' ? null : sub.customer?.email ?? null,
-    currentPeriodEnd: sub.current_period_end,
-    cancelAtPeriodEnd: sub.cancel_at_period_end,
+    customerEmail,
+    currentPeriodEnd: (sub as any).current_period_end ?? null,
+    cancelAtPeriodEnd: sub.cancel_at_period_end ?? false,
     planType,
     membershipTier: membershipTierForPlan(planType),
   };

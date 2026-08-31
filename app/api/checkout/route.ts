@@ -9,22 +9,22 @@ import {
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 import {
-  createStripeCheckoutSession,
-  getStripeClient,
-  getStripeConfig,
-  getMissingStripePriceIds,
-  resolveStripePriceId,
-} from '@/lib/stripe';
+  createPaddleCheckout,
+  getPaddleClient,
+  getPaddleConfig,
+  getMissingPaddlePriceIds,
+  resolvePaddlePriceId,
+} from '@/lib/paddle';
 import { ensureProfile } from '@/lib/profiles';
 
 export async function POST(request: NextRequest) {
-  const stripeConfig = getStripeConfig();
-  const stripe = getStripeClient();
-  if (!stripeConfig || !stripe) {
+  const paddleConfig = getPaddleConfig();
+  const paddle = getPaddleClient();
+  if (!paddleConfig || !paddle) {
     return NextResponse.json(
       {
-        error: 'Stripe is not configured. Set STRIPE_SECRET_KEY and NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.',
-        errorCode: 'STRIPE_NOT_CONFIGURED',
+        error: 'Paddle is not configured. Set PADDLE_API_KEY.',
+        errorCode: 'PADDLE_NOT_CONFIGURED',
       },
       { status: 503 },
     );
@@ -65,13 +65,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const priceId = resolveStripePriceId(planType);
+  const priceId = resolvePaddlePriceId(planType);
   if (!priceId) {
-    const missing = getMissingStripePriceIds();
+    const missing = getMissingPaddlePriceIds();
     return NextResponse.json(
       {
-        error: `Stripe price not configured for plan "${planType}". Set: ${missing.join(', ')}`,
-        errorCode: 'STRIPE_PRICE_MISSING',
+        error: `Paddle price not configured for plan "${planType}". Set: ${missing.join(', ')}`,
+        errorCode: 'PADDLE_PRICE_MISSING',
         missing,
       },
       { status: 503 },
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       amount,
       currency: 'usd',
       status: 'pending',
-      payment_provider: 'stripe',
+      payment_provider: 'paddle',
       metadata: { plan_label: plan.labelEn },
     })
     .select('id')
@@ -118,7 +118,6 @@ export async function POST(request: NextRequest) {
 
   const origin = request.nextUrl.origin;
   const successUrl = `${origin}/?checkout=success`;
-  const cancelUrl = `${origin}/?checkout=cancel`;
 
   const metadata: Record<string, string> = {
     order_id: order.id,
@@ -128,37 +127,37 @@ export async function POST(request: NextRequest) {
   if (reportId) metadata.report_id = reportId;
 
   try {
-    const checkoutUrl = await createStripeCheckoutSession(stripe, {
+    const checkoutUrl = await createPaddleCheckout(paddle, {
       planType: planType as CheckoutPlanType,
       priceId,
       email: user.email ?? undefined,
       successUrl,
-      cancelUrl,
       metadata,
     });
 
-    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'stripe' });
+    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'paddle' });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Stripe error';
-    console.error('[checkout] Stripe create failed:', message);
+    const message = err instanceof Error ? err.message : 'Paddle error';
+    console.error('[checkout] Paddle create failed:', message);
     await admin.from('orders').update({ status: 'failed' }).eq('id', order.id);
     return NextResponse.json(
-      { error: message, errorCode: 'STRIPE_ERROR' },
+      { error: message, errorCode: 'PADDLE_ERROR' },
       { status: 500 },
     );
   }
 }
 
 export async function GET() {
-  const stripeConfig = getStripeConfig();
-  const missing = getMissingStripePriceIds();
+  const paddleConfig = getPaddleConfig();
+  const missing = getMissingPaddlePriceIds();
   return NextResponse.json({
-    provider: 'stripe',
-    configured: !!stripeConfig,
+    provider: 'paddle',
+    configured: !!paddleConfig,
+    environment: paddleConfig?.environment ?? 'sandbox',
     missingPrices: missing,
     plans: ACTIVE_CHECKOUT_PLAN_TYPES.map((t) => ({
       ...CHECKOUT_PLANS[t],
-      priceConfigured: !!resolveStripePriceId(t),
+      priceConfigured: !!resolvePaddlePriceId(t),
     })),
   });
 }

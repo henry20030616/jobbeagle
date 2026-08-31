@@ -3,22 +3,22 @@ import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
 import {
-  getStripeClient,
-  getStripeConfig,
-  listStripeSubscriptionsForEmail,
-  pickManageableStripeSubscription,
-  createStripeBillingPortalSession,
-} from '@/lib/stripe';
+  getPaddleClient,
+  getPaddleConfig,
+  getPaddleCustomerPortalUrl,
+  listPaddleSubscriptionsForEmail,
+  pickManageablePaddleSubscription,
+} from '@/lib/paddle';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-/** Fresh signed Stripe billing portal URL (card, invoices, cancel). */
+/** Paddle customer portal URL for managing subscriptions. */
 export async function GET() {
-  const stripeConfig = getStripeConfig();
-  const stripe = getStripeClient();
+  const paddleConfig = getPaddleConfig();
+  const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if (!stripeConfig || !stripe || !admin) {
+  if (!paddleConfig || !paddle || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -51,17 +51,17 @@ export async function GET() {
 
   let subscriptions;
   try {
-    subscriptions = await listStripeSubscriptionsForEmail(stripe, user.email);
+    subscriptions = await listPaddleSubscriptionsForEmail(paddle, user.email);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Stripe error';
+    const message = err instanceof Error ? err.message : 'Paddle error';
     console.error('[billing-portal]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'STRIPE_ERROR' },
+      { error: message, errorCode: 'PADDLE_ERROR' },
       { status: 502 },
     );
   }
 
-  const chosen = pickManageableStripeSubscription(subscriptions);
+  const chosen = pickManageablePaddleSubscription(subscriptions);
   if (!chosen) {
     return NextResponse.json(
       {
@@ -72,22 +72,11 @@ export async function GET() {
     );
   }
 
-  try {
-    // Get fresh subscription to find customer ID
-    const sub = await stripe.subscriptions.retrieve(chosen.id);
-    const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id;
-    
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jobbeagle.com';
-    const returnUrl = `${origin}/account`;
-    
-    const url = await createStripeBillingPortalSession(stripe, customerId, returnUrl);
-    return NextResponse.json({ url });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Stripe error';
-    console.error('[billing-portal] create session', message);
-    return NextResponse.json(
-      { error: message, errorCode: 'STRIPE_ERROR' },
-      { status: 502 },
-    );
-  }
+  // Paddle Customer Portal - users manage their subscription directly
+  const url = getPaddleCustomerPortalUrl(paddleConfig.environment);
+  
+  return NextResponse.json({ 
+    url,
+    note: 'Please use your subscription email to access the Paddle Customer Portal.',
+  });
 }

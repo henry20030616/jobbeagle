@@ -16,7 +16,7 @@
 - **UI 框架**：React 19 + Tailwind CSS
 - **AI 服務**：Google Gemini 3.1 Flash-Lite Preview
 - **資料庫**：Supabase (PostgreSQL)
-- **付款系統**：Stripe (訂閱 + 單次購買)
+- **付款系統**：Paddle (訂閱 + 單次購買)
 - **圖表庫**：Recharts
 
 ## 安裝步驟
@@ -37,10 +37,10 @@
    - `GEMINI_API_KEY`: 您的 Google Gemini API Key
    - `NEXT_PUBLIC_SUPABASE_URL`: 您的 Supabase 專案 URL
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: 您的 Supabase Anon Key
-   - `STRIPE_SECRET_KEY`: Stripe 測試金鑰 (sk_test_...)
-   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Stripe 可公開金鑰 (pk_test_...)
+   - `PADDLE_API_KEY`: Paddle API 金鑰
+   - `PADDLE_ENVIRONMENT`: Paddle 環境 (sandbox 或 production)
    
-   完整設定指南請參考：[docs/STRIPE_SETUP.md](docs/STRIPE_SETUP.md)
+   完整設定指南請參考：[docs/PADDLE_SETUP.md](docs/PADDLE_SETUP.md)
 
 3. **設定 Supabase 資料庫**
    

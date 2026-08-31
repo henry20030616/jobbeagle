@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import {
-  applyMembershipFromStripeSubscriptions,
+  applyMembershipFromPaddleSubscriptions,
   fulfillOrder,
   fulfillSubscriptionRenewal,
 } from '@/lib/fulfill-order';
 import { findAuthUserIdByEmail } from '@/lib/auth-admin-lookup';
 import {
-  getStripeClient,
-  getStripeConfig,
-  verifyStripeSignature,
-  listStripeSubscriptionsForEmail,
-  parseStripeSubscription,
-  type StripeSubscriptionSummary,
-} from '@/lib/stripe';
+  getPaddleClient,
+  getPaddleConfig,
+  verifyPaddleSignature,
+  listPaddleSubscriptionsForEmail,
+  parsePaddleSubscription,
+  type PaddleSubscriptionSummary,
+} from '@/lib/paddle';
 import {
   isCheckoutPlanType,
   normalizeCheckoutPlanType,
@@ -23,66 +22,71 @@ import {
 export const runtime = 'nodejs';
 
 const FULFILL_EVENTS = new Set([
-  'checkout.session.completed',
-  'invoice.payment_succeeded',
+  'transaction.completed',
 ]);
 
 const LIFECYCLE_EVENTS = new Set([
-  'customer.subscription.deleted',
+  'subscription.canceled',
 ]);
 
 async function resolveWebhookUserId(
   admin: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
   email: string | null,
-  metadata: Record<string, string>,
+  customData: Record<string, string>,
 ): Promise<string | null> {
-  if (metadata.user_id) return metadata.user_id;
+  if (customData.user_id) return customData.user_id;
   if (!email) return null;
   return findAuthUserIdByEmail(admin, email);
 }
 
 export async function POST(request: NextRequest) {
-  const stripeConfig = getStripeConfig();
-  const stripe = getStripeClient();
+  const paddleConfig = getPaddleConfig();
+  const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
 
-  if (!stripeConfig || !stripe || !admin) {
+  if (!paddleConfig || !paddle || !admin) {
     return NextResponse.json({ error: 'Webhook not configured' }, { status: 503 });
   }
 
-  if (!stripeConfig.webhookSecret) {
-    return NextResponse.json({ error: 'STRIPE_WEBHOOK_SECRET not set' }, { status: 503 });
+  if (!paddleConfig.webhookSecret) {
+    return NextResponse.json({ error: 'PADDLE_WEBHOOK_SECRET not set' }, { status: 503 });
   }
 
   const rawBody = await request.text();
-  const signature = request.headers.get('stripe-signature');
+  const signature = request.headers.get('paddle-signature');
 
-  const event = verifyStripeSignature(rawBody, signature, stripeConfig.webhookSecret);
-  if (!event) {
-    console.error('[webhook] Stripe signature invalid');
+  const isValid = verifyPaddleSignature(rawBody, signature, paddleConfig.webhookSecret);
+  if (!isValid) {
+    console.error('[webhook] Paddle signature invalid');
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  const eventType = event.type;
+  let event: any;
+  try {
+    event = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const eventType = event.event_type;
 
   // Handle subscription lifecycle events
   if (LIFECYCLE_EVENTS.has(eventType)) {
-    if (eventType === 'customer.subscription.deleted') {
-      const subscription = event.data.object as Stripe.Subscription;
-      const customerEmail = typeof subscription.customer === 'string' 
-        ? null 
-        : subscription.customer?.email ?? null;
+    if (eventType === 'subscription.canceled') {
+      const subscriptionData = event.data;
+      const customerEmail = subscriptionData.customer_email ?? null;
 
-      const userId = await resolveWebhookUserId(admin, customerEmail, subscription.metadata);
+      const customData = subscriptionData.custom_data ?? {};
+      const userId = await resolveWebhookUserId(admin, customerEmail, customData);
       if (!userId) {
         console.error('[webhook] lifecycle missing user', { eventType });
         return NextResponse.json({ received: true, skipped: 'no_user' });
       }
 
-      let subscriptions: StripeSubscriptionSummary[] = [];
+      let subscriptions: PaddleSubscriptionSummary[] = [];
       if (customerEmail) {
         try {
-          subscriptions = await listStripeSubscriptionsForEmail(stripe, customerEmail);
+          subscriptions = await listPaddleSubscriptionsForEmail(paddle, customerEmail);
         } catch (err) {
           const message = err instanceof Error ? err.message : 'list failed';
           console.error('[webhook] lifecycle list', message);
@@ -90,12 +94,12 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        await applyMembershipFromStripeSubscriptions(admin, userId, subscriptions, {
+        await applyMembershipFromPaddleSubscriptions(admin, userId, subscriptions, {
           emptyMeans: 'free',
         });
       } catch (err) {
         const message = err instanceof Error ? err.message : 'downgrade failed';
-        console.error('[webhook] subscription deleted downgrade', message);
+        console.error('[webhook] subscription canceled downgrade', message);
         return NextResponse.json({ error: message }, { status: 500 });
       }
     }
@@ -107,15 +111,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true, skipped: eventType });
   }
 
-  // Handle checkout.session.completed
-  if (eventType === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
+  // Handle transaction.completed
+  if (eventType === 'transaction.completed') {
+    const transaction = event.data;
     
-    if (session.payment_status !== 'paid') {
-      return NextResponse.json({ received: true, skipped: `payment_status_${session.payment_status}` });
+    if (transaction.status !== 'completed') {
+      return NextResponse.json({ received: true, skipped: `status_${transaction.status}` });
     }
 
-    const externalId = session.id;
+    const externalId = transaction.id;
     const { data: existingByExternal } = await admin
       .from('orders')
       .select('id, status')
@@ -126,20 +130,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true, idempotent: true });
     }
 
-    const metadata = session.metadata ?? {};
-    const orderId = metadata.order_id;
-    const userId = metadata.user_id;
-    const planTypeRaw = metadata.plan_type;
-    const reportId = metadata.report_id ?? null;
+    const customData = transaction.custom_data ?? {};
+    const orderId = customData.order_id;
+    const userId = customData.user_id;
+    const planTypeRaw = customData.plan_type;
+    const reportId = customData.report_id ?? null;
 
     const planType = planTypeRaw ? normalizeCheckoutPlanType(planTypeRaw) : null;
     if (!userId || !planType || !isCheckoutPlanType(planType)) {
-      console.error('[webhook] missing metadata', { eventType, metadata });
-      return NextResponse.json({ error: 'Missing metadata' }, { status: 400 });
+      console.error('[webhook] missing custom_data', { eventType, customData });
+      return NextResponse.json({ error: 'Missing custom_data' }, { status: 400 });
     }
 
     if (!orderId) {
-      return NextResponse.json({ error: 'Missing order_id in metadata' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing order_id in custom_data' }, { status: 400 });
     }
 
     const { data: orderRow } = await admin
@@ -156,7 +160,7 @@ export async function POST(request: NextRequest) {
       .from('orders')
       .update({
         external_checkout_id: externalId,
-        payment_provider: 'stripe',
+        payment_provider: 'paddle',
       })
       .eq('id', orderId);
 
@@ -168,38 +172,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message }, { status: 500 });
     }
 
-    return NextResponse.json({ received: true, provider: 'stripe' });
+    return NextResponse.json({ received: true, provider: 'paddle' });
   }
 
-  // Handle invoice.payment_succeeded (subscription renewals)
-  if (eventType === 'invoice.payment_succeeded') {
-    const invoice = event.data.object as Stripe.Invoice;
+  // Handle subscription.updated (for renewals)
+  if (eventType === 'subscription.updated') {
+    const subscription = event.data;
     
-    // Skip if not a subscription invoice
-    if (!invoice.subscription) {
-      return NextResponse.json({ received: true, skipped: 'not_subscription' });
+    // Check if this is a renewal (billing cycle change)
+    if (!subscription.billing_cycle) {
+      return NextResponse.json({ received: true, skipped: 'not_renewal' });
     }
 
-    // Skip first invoice (already handled by checkout.session.completed)
-    if (invoice.billing_reason === 'subscription_create') {
-      return NextResponse.json({ received: true, skipped: 'first_invoice' });
-    }
-
-    const subscription = typeof invoice.subscription === 'string'
-      ? await stripe.subscriptions.retrieve(invoice.subscription)
-      : invoice.subscription;
-
-    const customerEmail = typeof invoice.customer === 'string'
-      ? null
-      : invoice.customer?.email ?? null;
-
-    const userId = await resolveWebhookUserId(admin, customerEmail, subscription.metadata);
+    const customerEmail = subscription.customer_email ?? null;
+    const customData = subscription.custom_data ?? {};
+    const userId = await resolveWebhookUserId(admin, customerEmail, customData);
+    
     if (!userId) {
       console.error('[webhook] renewal missing user', { eventType });
       return NextResponse.json({ received: true, skipped: 'no_user' });
     }
 
-    const subSummary = parseStripeSubscription(subscription);
+    const subSummary = parsePaddleSubscription(subscription);
     if (!subSummary.membershipTier) {
       return NextResponse.json({ received: true, skipped: 'not_monthly_plan' });
     }
@@ -208,5 +202,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true, renewal: true });
   }
 
-  return NextResponse.json({ received: true, provider: 'stripe' });
+  return NextResponse.json({ received: true, provider: 'paddle' });
 }

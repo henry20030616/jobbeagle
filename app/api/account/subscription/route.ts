@@ -2,27 +2,27 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
-import { applyMembershipFromStripeSubscriptions } from '@/lib/fulfill-order';
+import { applyMembershipFromPaddleSubscriptions } from '@/lib/fulfill-order';
 import {
-  getStripeClient,
-  getStripeConfig,
-  listStripeSubscriptionsForEmail,
-  pickManageableStripeSubscription,
-  toStripeSubscriptionBillingView,
-} from '@/lib/stripe';
+  getPaddleClient,
+  getPaddleConfig,
+  listPaddleSubscriptionsForEmail,
+  pickManageablePaddleSubscription,
+  toPaddleSubscriptionBillingView,
+} from '@/lib/paddle';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 /**
  * Current monthly subscription for the signed-in email (read-only view).
- * Downgrades a stale paid tier if Stripe already shows the sub expired.
+ * Downgrades a stale paid tier if Paddle already shows the sub expired.
  */
 export async function GET() {
-  const stripeConfig = getStripeConfig();
-  const stripe = getStripeClient();
+  const paddleConfig = getPaddleConfig();
+  const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if (!stripeConfig || !stripe || !admin) {
+  if (!paddleConfig || !paddle || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -55,18 +55,18 @@ export async function GET() {
 
   let subscriptions;
   try {
-    subscriptions = await listStripeSubscriptionsForEmail(stripe, user.email);
+    subscriptions = await listPaddleSubscriptionsForEmail(paddle, user.email);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Stripe error';
+    const message = err instanceof Error ? err.message : 'Paddle error';
     console.error('[account/subscription]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'STRIPE_ERROR' },
+      { error: message, errorCode: 'PADDLE_ERROR' },
       { status: 502 },
     );
   }
 
   try {
-    await applyMembershipFromStripeSubscriptions(admin, user.id, subscriptions, {
+    await applyMembershipFromPaddleSubscriptions(admin, user.id, subscriptions, {
       mode: 'downgrade-only',
     });
   } catch (err) {
@@ -74,8 +74,8 @@ export async function GET() {
     console.error('[account/subscription] reconcile', message);
   }
 
-  const chosen = pickManageableStripeSubscription(subscriptions);
+  const chosen = pickManageablePaddleSubscription(subscriptions);
   return NextResponse.json({
-    subscription: toStripeSubscriptionBillingView(chosen),
+    subscription: toPaddleSubscriptionBillingView(chosen),
   });
 }
