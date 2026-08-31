@@ -29,7 +29,7 @@ vi.mock('@/lib/paddle', async (importOriginal) => {
     listPaddleSubscriptionsForEmail: (...args: unknown[]) => mockList(...args),
     cancelPaddleSubscription: (...args: unknown[]) => mockCancel(...args),
     retrievePaddleSubscription: (...args: unknown[]) => mockRetrieve(...args),
-    getPaddleCustomerPortalUrl: () => 'https://customer-portal.paddle.com',
+    createPaddleCustomerPortalUrl: async () => 'https://customer-portal.paddle.com/session',
   };
 });
 
@@ -82,6 +82,7 @@ describe('POST /api/account/cancel-subscription', () => {
         id: 'sub-std',
         status: 'active',
         priceId: 'pri_123',
+        customerId: 'ctm_1',
         customerEmail: 'user@example.com',
         currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
         scheduledChange: null,
@@ -90,10 +91,11 @@ describe('POST /api/account/cancel-subscription', () => {
       },
     ]);
     mockCancel.mockResolvedValue({
-      id: 'sub-std',
-      status: 'canceled',
-      priceId: 'pri_123',
-      customerEmail: 'user@example.com',
+        id: 'sub-std',
+        status: 'canceled',
+        priceId: 'pri_123',
+        customerId: 'ctm_1',
+        customerEmail: 'user@example.com',
       currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
       scheduledChange: { action: 'cancel', effectiveAt: '2026-09-24T00:00:00.000Z' },
       planType: 'standard_subscription',
@@ -117,6 +119,7 @@ describe('POST /api/account/cancel-subscription', () => {
         id: 'sub-done',
         status: 'canceled',
         priceId: 'pri_123',
+        customerId: 'ctm_1',
         customerEmail: 'user@example.com',
         currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
         scheduledChange: null,
@@ -153,6 +156,7 @@ describe('GET /api/account/billing-portal', () => {
         id: 'sub-std',
         status: 'active',
         priceId: 'pri_123',
+        customerId: 'ctm_1',
         customerEmail: 'user@example.com',
         currentBillingPeriodEndsAt: '2026-09-24T00:00:00.000Z',
         scheduledChange: null,
@@ -163,7 +167,6 @@ describe('GET /api/account/billing-portal', () => {
     const res = await portalGet();
     expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json.url).toBe('https://customer-portal.paddle.com');
-    expect(json.note).toContain('Paddle Customer Portal');
+    expect(json.url).toBe('https://customer-portal.paddle.com/session');
   });
 });

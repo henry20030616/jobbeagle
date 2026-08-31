@@ -1,4 +1,4 @@
-import { Paddle } from '@paddle/paddle-node-sdk';
+import { Environment, Paddle, type Subscription } from '@paddle/paddle-node-sdk';
 import crypto from 'crypto';
 import {
   ACTIVE_CHECKOUT_PLAN_TYPES,
@@ -73,45 +73,61 @@ export function getMissingPaddlePriceIds(): string[] {
 export function getPaddleClient(): Paddle | null {
   const config = getPaddleConfig();
   if (!config) return null;
-  // Type assertion to work around SDK type limitations
   return new Paddle(config.apiKey, {
-    environment: config.environment as any,
+    environment:
+      config.environment === 'production' ? Environment.production : Environment.sandbox,
   });
 }
 
-/** Verify Paddle webhook signature */
+/** Reject webhook replays older than 5 minutes (Paddle SDK default of 5s is too tight for serverless). */
+export const PADDLE_WEBHOOK_MAX_AGE_SEC = 300;
+
+function parsePaddleSignatureHeader(
+  signature: string,
+): { ts: number; hashes: string[] } | null {
+  let ts: number | null = null;
+  const hashes: string[] = [];
+  for (const part of signature.split(';')) {
+    const eq = part.indexOf('=');
+    if (eq <= 0) continue;
+    const key = part.slice(0, eq).trim();
+    const value = part.slice(eq + 1).trim();
+    if (!value) continue;
+    if (key === 'ts') {
+      const parsed = Number.parseInt(value, 10);
+      if (Number.isFinite(parsed)) ts = parsed;
+    } else if (key === 'h1') {
+      hashes.push(value);
+    }
+  }
+  if (ts === null || hashes.length === 0) return null;
+  return { ts, hashes };
+}
+
+/** Verify Paddle webhook signature and reject stale timestamps. */
 export function verifyPaddleSignature(
   rawBody: string,
   signature: string | null,
   secret: string,
+  nowSec = Math.floor(Date.now() / 1000),
 ): boolean {
   if (!signature || !secret) return false;
 
   try {
-    // Paddle signature format: ts=<timestamp>;h1=<signature>
-    const parts = signature.split(';');
-    const tsMatch = parts[0]?.match(/^ts=(\d+)$/);
-    const h1Match = parts[1]?.match(/^h1=(.+)$/);
+    const parsed = parsePaddleSignatureHeader(signature);
+    if (!parsed) return false;
+    if (Math.abs(nowSec - parsed.ts) > PADDLE_WEBHOOK_MAX_AGE_SEC) return false;
 
-    if (!tsMatch || !h1Match) return false;
-
-    const timestamp = tsMatch[1];
-    const receivedSignature = h1Match[1];
-
-    // Create payload string: ts:body
-    const payload = `${timestamp}:${rawBody}`;
-
-    // Compute HMAC-SHA256
     const expectedSignature = crypto
       .createHmac('sha256', secret)
-      .update(payload)
+      .update(`${parsed.ts}:${rawBody}`)
       .digest('hex');
+    const expected = Buffer.from(expectedSignature);
 
-    // Compare signatures
-    return crypto.timingSafeEqual(
-      Buffer.from(expectedSignature),
-      Buffer.from(receivedSignature),
-    );
+    return parsed.hashes.some((receivedSignature) => {
+      const received = Buffer.from(receivedSignature);
+      return received.length === expected.length && crypto.timingSafeEqual(expected, received);
+    });
   } catch {
     return false;
   }
@@ -130,38 +146,28 @@ export async function createPaddleCheckout(
   paddle: Paddle,
   params: CreateCheckoutParams,
 ): Promise<string> {
-  // Paddle SDK requires specific structure
-  const transactionRequest: any = {
-    items: [
-      {
-        priceId: params.priceId,
-        quantity: 1,
-      },
-    ],
-    customData: params.metadata,
-    checkoutSettings: {
-      successUrl: params.successUrl,
+  const transaction = await paddle.transactions.create({
+    items: [{ priceId: params.priceId, quantity: 1 }],
+    customData: {
+      ...params.metadata,
+      ...(params.email ? { customer_email: params.email } : {}),
+      success_url: params.successUrl,
     },
-  };
+  });
 
-  // Only add customerEmail if provided
-  if (params.email) {
-    transactionRequest.customerEmail = params.email;
-  }
-
-  const response: any = await paddle.transactions.create(transactionRequest);
-
-  if (!response?.checkoutUrl) {
+  const checkoutUrl = transaction.checkout?.url;
+  if (!checkoutUrl) {
     throw new Error('Paddle checkout missing URL');
   }
 
-  return response.checkoutUrl;
+  return checkoutUrl;
 }
 
 export type PaddleSubscriptionSummary = {
   id: string;
   status: string;
   priceId: string | null;
+  customerId: string | null;
   customerEmail: string | null;
   currentBillingPeriodEndsAt: string | null;
   scheduledChange: {
@@ -208,17 +214,36 @@ function membershipTierForPlan(
   return null;
 }
 
-export function parsePaddleSubscription(sub: any): PaddleSubscriptionSummary {
-  const priceId = sub.items?.[0]?.price?.id ?? null;
+function readString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() ? value : null;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+}
+
+export function parsePaddleSubscription(
+  sub: Subscription | Record<string, unknown>,
+): PaddleSubscriptionSummary {
+  const record = asRecord(sub);
+  const items = Array.isArray(record.items) ? record.items : [];
+  const firstItem = asRecord(items[0]);
+  const price = asRecord(firstItem.price);
+  const priceId = readString(price.id);
+  const period = asRecord(record.currentBillingPeriod ?? record.current_billing_period);
+  const change = asRecord(record.scheduledChange ?? record.scheduled_change);
+  const action = readString(change.action);
+  const effectiveAt = readString(change.effectiveAt ?? change.effective_at);
   const planType = priceId ? planTypeFromPaddlePriceId(priceId) : null;
 
   return {
-    id: sub.id,
-    status: sub.status,
+    id: readString(record.id) ?? '',
+    status: readString(record.status) ?? '',
     priceId,
-    customerEmail: sub.customerId ? null : sub.customerEmail ?? null,
-    currentBillingPeriodEndsAt: sub.currentBillingPeriod?.endsAt ?? null,
-    scheduledChange: sub.scheduledChange ?? null,
+    customerId: readString(record.customerId ?? record.customer_id),
+    customerEmail: readString(record.customerEmail ?? record.customer_email),
+    currentBillingPeriodEndsAt: readString(period.endsAt ?? period.ends_at),
+    scheduledChange: action && effectiveAt ? { action, effectiveAt } : null,
     planType,
     membershipTier: membershipTierForPlan(planType),
   };
@@ -308,26 +333,18 @@ export async function listPaddleSubscriptionsForEmail(
   email: string,
 ): Promise<PaddleSubscriptionSummary[]> {
   try {
-    // Search for customer by email
-    const customersResponse: any = await paddle.customers.list({
-      email: [email] as any, // Paddle expects string[] for email filter
-    });
+    const customers = await paddle.customers.list({
+      email: [email],
+      perPage: 25,
+    }).next();
 
-    const customers = customersResponse?.data ?? [];
-    if (customers.length === 0) {
-      return [];
-    }
-
-    // Get subscriptions for all customers with this email
     const allSubs: PaddleSubscriptionSummary[] = [];
-
     for (const customer of customers) {
-      const subsResponse: any = await paddle.subscriptions.list({
-        customerId: customer.id as any,
-      });
-
-      const subs = subsResponse?.data ?? [];
-      allSubs.push(...subs.map(parsePaddleSubscription));
+      const subs = await paddle.subscriptions.list({
+        customerId: [customer.id],
+        perPage: 25,
+      }).next();
+      allSubs.push(...subs.map((row) => parsePaddleSubscription(row)));
     }
 
     return allSubs;
@@ -344,9 +361,7 @@ export async function retrievePaddleSubscription(
 ): Promise<PaddleSubscriptionSummary> {
   const id = subscriptionId.trim();
   if (!id) throw new Error('Missing Paddle subscription id');
-
-  const response: any = await paddle.subscriptions.get(id);
-  return parsePaddleSubscription(response);
+  return parsePaddleSubscription(await paddle.subscriptions.get(id));
 }
 
 /** Cancel at period end. Access continues until current_billing_period_ends_at. */
@@ -356,22 +371,28 @@ export async function cancelPaddleSubscription(
 ): Promise<PaddleSubscriptionSummary> {
   const id = subscriptionId.trim();
   if (!id) throw new Error('Missing Paddle subscription id');
-
-  const response: any = await paddle.subscriptions.cancel(id, {
-    effectiveFrom: 'next_billing_period' as any,
-  });
-
-  return parsePaddleSubscription(response);
+  return parsePaddleSubscription(
+    await paddle.subscriptions.cancel(id, { effectiveFrom: 'next_billing_period' }),
+  );
 }
 
-/** Get Paddle customer portal URL */
+/** Authenticated Paddle customer portal session for one subscription. */
+export async function createPaddleCustomerPortalUrl(
+  paddle: Paddle,
+  customerId: string,
+  subscriptionId: string,
+): Promise<string> {
+  const session = await paddle.customerPortalSessions.create(customerId, [subscriptionId]);
+  const url = session.urls.general.overview;
+  if (!url) throw new Error('Paddle customer portal missing URL');
+  return url;
+}
+
+/** Fallback generic portal host (not signed-in). Prefer createPaddleCustomerPortalUrl. */
 export function getPaddleCustomerPortalUrl(
   environment: 'sandbox' | 'production',
 ): string {
-  const baseUrl =
-    environment === 'production'
-      ? 'https://customer-portal.paddle.com'
-      : 'https://sandbox-customer-portal.paddle.com';
-  
-  return baseUrl;
+  return environment === 'production'
+    ? 'https://customer-portal.paddle.com'
+    : 'https://sandbox-customer-portal.paddle.com';
 }

@@ -5,7 +5,7 @@ import { ensureProfile } from '@/lib/profiles';
 import {
   getPaddleClient,
   getPaddleConfig,
-  getPaddleCustomerPortalUrl,
+  createPaddleCustomerPortalUrl,
   listPaddleSubscriptionsForEmail,
   pickManageablePaddleSubscription,
 } from '@/lib/paddle';
@@ -72,11 +72,22 @@ export async function GET() {
     );
   }
 
-  // Paddle Customer Portal - users manage their subscription directly
-  const url = getPaddleCustomerPortalUrl(paddleConfig.environment);
-  
-  return NextResponse.json({ 
-    url,
-    note: 'Please use your subscription email to access the Paddle Customer Portal.',
-  });
+  if (!chosen.customerId) {
+    return NextResponse.json(
+      { error: 'Paddle customer id missing on subscription', errorCode: 'PADDLE_ERROR' },
+      { status: 502 },
+    );
+  }
+
+  try {
+    const url = await createPaddleCustomerPortalUrl(paddle, chosen.customerId, chosen.id);
+    return NextResponse.json({ url });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Paddle error';
+    console.error('[billing-portal] portal session', message);
+    return NextResponse.json(
+      { error: message, errorCode: 'PADDLE_ERROR' },
+      { status: 502 },
+    );
+  }
 }

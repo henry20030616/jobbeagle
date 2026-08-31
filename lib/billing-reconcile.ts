@@ -140,14 +140,23 @@ export async function reconcilePaddleBilling(
     throw new Error('Paddle is not configured');
   }
 
-  // List recent completed Paddle transactions
-  let paddleTransactions: any[] = [];
+  let paddleTransactions: Array<{
+    id: string;
+    customerEmail: string | null;
+    total: string | null;
+    createdAt: string | null;
+  }> = [];
   try {
-    const response: any = await paddle.transactions.list({
-      status: ['completed'] as any,
-      perPage: 50 as any,
-    });
-    paddleTransactions = response?.data ?? [];
+    const page = await paddle.transactions.list({
+      status: ['completed'],
+      perPage: 50,
+    }).next();
+    paddleTransactions = page.map((txn) => ({
+      id: txn.id,
+      customerEmail: txn.customer?.email ?? null,
+      total: txn.details?.totals?.total ?? null,
+      createdAt: txn.createdAt,
+    }));
   } catch (err) {
     console.error('[reconcile-paddle] list transactions error:', err);
     paddleTransactions = [];
@@ -189,16 +198,16 @@ export async function reconcilePaddleBilling(
     if (!local) {
       paidMissingLocal.push({
         paddle_transaction_id: txnId,
-        customer_email: txn.customer_email ?? null,
-        total: txn.details?.totals?.total ?? null,
-        created_at: txn.created_at ?? null,
+        customer_email: txn.customerEmail,
+        total: txn.total,
+        created_at: txn.createdAt,
       });
     } else if (local.status !== 'succeeded') {
       paidMissingLocal.push({
         paddle_transaction_id: txnId,
         local_order_id: local.id,
         local_status: local.status,
-        customer_email: txn.customer_email ?? null,
+        customer_email: txn.customerEmail,
       });
     }
   }

@@ -94,6 +94,7 @@ describe('Paddle subscription lifecycle webhook', () => {
         id: 'sub-1',
         status: 'canceled',
         priceId: 'pri_123',
+        customerId: 'ctm_1',
         customerEmail: 'user@example.com',
         currentBillingPeriodEndsAt: null,
         scheduledChange: null,

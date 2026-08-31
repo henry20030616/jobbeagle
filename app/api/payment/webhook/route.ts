@@ -3,7 +3,6 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import {
   applyMembershipFromPaddleSubscriptions,
   fulfillOrder,
-  fulfillSubscriptionRenewal,
 } from '@/lib/fulfill-order';
 import { findAuthUserIdByEmail } from '@/lib/auth-admin-lookup';
 import {
@@ -11,13 +10,13 @@ import {
   getPaddleConfig,
   verifyPaddleSignature,
   listPaddleSubscriptionsForEmail,
-  parsePaddleSubscription,
   type PaddleSubscriptionSummary,
 } from '@/lib/paddle';
 import {
   isCheckoutPlanType,
   normalizeCheckoutPlanType,
 } from '@/constants/checkout-plans';
+import { clientIpFromRequest, rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -28,6 +27,23 @@ const FULFILL_EVENTS = new Set([
 const LIFECYCLE_EVENTS = new Set([
   'subscription.canceled',
 ]);
+
+type PaddleWebhookPayload = {
+  event_type?: unknown;
+  data?: unknown;
+};
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+}
+
+function stringMap(value: unknown): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [key, entry] of Object.entries(asRecord(value))) {
+    if (typeof entry === 'string') out[key] = entry;
+  }
+  return out;
+}
 
 async function resolveWebhookUserId(
   admin: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
@@ -52,6 +68,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'PADDLE_WEBHOOK_SECRET not set' }, { status: 503 });
   }
 
+  const { allowed } = await rateLimit('paddle-webhook', clientIpFromRequest(request), 120, 60);
+  if (!allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   const rawBody = await request.text();
   const signature = request.headers.get('paddle-signature');
 
@@ -61,22 +82,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  let event: any;
+  let event: PaddleWebhookPayload;
   try {
-    event = JSON.parse(rawBody);
+    event = JSON.parse(rawBody) as PaddleWebhookPayload;
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const eventType = event.event_type;
+  const eventType = typeof event.event_type === 'string' ? event.event_type : '';
+  const eventData = asRecord(event.data);
 
   // Handle subscription lifecycle events
   if (LIFECYCLE_EVENTS.has(eventType)) {
     if (eventType === 'subscription.canceled') {
-      const subscriptionData = event.data;
-      const customerEmail = subscriptionData.customer_email ?? null;
+      const customerEmail =
+        typeof eventData.customer_email === 'string' ? eventData.customer_email : null;
 
-      const customData = subscriptionData.custom_data ?? {};
+      const customData = stringMap(eventData.custom_data);
       const userId = await resolveWebhookUserId(admin, customerEmail, customData);
       if (!userId) {
         console.error('[webhook] lifecycle missing user', { eventType });
@@ -113,13 +135,17 @@ export async function POST(request: NextRequest) {
 
   // Handle transaction.completed
   if (eventType === 'transaction.completed') {
-    const transaction = event.data;
+    const transaction = eventData;
+    const status = typeof transaction.status === 'string' ? transaction.status : '';
     
-    if (transaction.status !== 'completed') {
-      return NextResponse.json({ received: true, skipped: `status_${transaction.status}` });
+    if (status !== 'completed') {
+      return NextResponse.json({ received: true, skipped: `status_${status || 'unknown'}` });
     }
 
-    const externalId = transaction.id;
+    const externalId = typeof transaction.id === 'string' ? transaction.id : '';
+    if (!externalId) {
+      return NextResponse.json({ error: 'Missing transaction id' }, { status: 400 });
+    }
     const { data: existingByExternal } = await admin
       .from('orders')
       .select('id, status')
@@ -130,7 +156,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true, idempotent: true });
     }
 
-    const customData = transaction.custom_data ?? {};
+    const customData = stringMap(transaction.custom_data);
     const orderId = customData.order_id;
     const userId = customData.user_id;
     const planTypeRaw = customData.plan_type;
@@ -173,33 +199,6 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true, provider: 'paddle' });
-  }
-
-  // Handle subscription.updated (for renewals)
-  if (eventType === 'subscription.updated') {
-    const subscription = event.data;
-    
-    // Check if this is a renewal (billing cycle change)
-    if (!subscription.billing_cycle) {
-      return NextResponse.json({ received: true, skipped: 'not_renewal' });
-    }
-
-    const customerEmail = subscription.customer_email ?? null;
-    const customData = subscription.custom_data ?? {};
-    const userId = await resolveWebhookUserId(admin, customerEmail, customData);
-    
-    if (!userId) {
-      console.error('[webhook] renewal missing user', { eventType });
-      return NextResponse.json({ received: true, skipped: 'no_user' });
-    }
-
-    const subSummary = parsePaddleSubscription(subscription);
-    if (!subSummary.membershipTier) {
-      return NextResponse.json({ received: true, skipped: 'not_monthly_plan' });
-    }
-
-    await fulfillSubscriptionRenewal(admin, userId, subSummary.membershipTier);
-    return NextResponse.json({ received: true, renewal: true });
   }
 
   return NextResponse.json({ received: true, provider: 'paddle' });

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
-import { reconcileLemonBilling, reconcilePaddleBilling } from '@/lib/billing-reconcile';
+import { reconcileLemonBilling, reconcilePaddleBilling, type BillingReconcileReport } from '@/lib/billing-reconcile';
 
 /**
  * Cron: Paddle & Lemon Squeezy ↔ orders reconcile (+ optional Resend alert).
@@ -19,8 +19,8 @@ export async function GET(request: NextRequest) {
   }
 
   const results: {
-    paddle?: any;
-    lemonSqueezy?: any;
+    paddle?: BillingReconcileReport;
+    lemonSqueezy?: BillingReconcileReport;
     errors: string[];
   } = { errors: [] };
 

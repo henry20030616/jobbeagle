@@ -18,7 +18,7 @@ describe('generated-code review', () => {
   it('blocks server secret names added to a client component', () => {
     const diff = [
       '+++ b/components/InputForm.tsx',
-      '+const k = process.env.GEMINI_API_KEY;',
+      '+const k = process.env.PADDLE_API_KEY;',
     ].join('\n');
     const blocked = blockingFindings(reviewGeneratedDiff(diff));
     expect(blocked.some((f) => f.file === 'components/InputForm.tsx')).toBe(true);
