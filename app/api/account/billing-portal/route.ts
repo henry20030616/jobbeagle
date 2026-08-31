@@ -3,20 +3,22 @@ import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
 import {
-  getLemonSqueezyConfig,
-  listLemonSubscriptionsForEmail,
-  pickManageableLemonSubscription,
-  retrieveLemonSubscription,
-} from '@/lib/lemonsqueezy';
+  getStripeClient,
+  getStripeConfig,
+  listStripeSubscriptionsForEmail,
+  pickManageableStripeSubscription,
+  createStripeBillingPortalSession,
+} from '@/lib/stripe';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-/** Fresh signed Lemon Squeezy customer portal URL (card, invoices, pause). */
+/** Fresh signed Stripe billing portal URL (card, invoices, cancel). */
 export async function GET() {
-  const ls = getLemonSqueezyConfig();
+  const stripeConfig = getStripeConfig();
+  const stripe = getStripeClient();
   const admin = getSupabaseAdmin();
-  if (!ls || !admin) {
+  if (!stripeConfig || !stripe || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -49,17 +51,17 @@ export async function GET() {
 
   let subscriptions;
   try {
-    subscriptions = await listLemonSubscriptionsForEmail(ls.apiKey, ls.storeId, user.email);
+    subscriptions = await listStripeSubscriptionsForEmail(stripe, user.email);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
+    const message = err instanceof Error ? err.message : 'Stripe error';
     console.error('[billing-portal]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
+      { error: message, errorCode: 'STRIPE_ERROR' },
       { status: 502 },
     );
   }
 
-  const chosen = pickManageableLemonSubscription(subscriptions);
+  const chosen = pickManageableStripeSubscription(subscriptions);
   if (!chosen) {
     return NextResponse.json(
       {
@@ -71,23 +73,20 @@ export async function GET() {
   }
 
   try {
-    const fresh = await retrieveLemonSubscription(ls.apiKey, chosen.id);
-    const url = fresh.customerPortalUrl;
-    if (!url) {
-      return NextResponse.json(
-        {
-          error: 'Billing portal URL is not available yet. Try again in a moment.',
-          errorCode: 'PORTAL_UNAVAILABLE',
-        },
-        { status: 502 },
-      );
-    }
+    // Get fresh subscription to find customer ID
+    const sub = await stripe.subscriptions.retrieve(chosen.id);
+    const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id;
+    
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jobbeagle.com';
+    const returnUrl = `${origin}/account`;
+    
+    const url = await createStripeBillingPortalSession(stripe, customerId, returnUrl);
     return NextResponse.json({ url });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
-    console.error('[billing-portal] retrieve', message);
+    const message = err instanceof Error ? err.message : 'Stripe error';
+    console.error('[billing-portal] create session', message);
     return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
+      { error: message, errorCode: 'STRIPE_ERROR' },
       { status: 502 },
     );
   }

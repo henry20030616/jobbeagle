@@ -2,25 +2,27 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
-import { applyMembershipFromLemonSubscriptions } from '@/lib/fulfill-order';
+import { applyMembershipFromStripeSubscriptions } from '@/lib/fulfill-order';
 import {
-  getLemonSqueezyConfig,
-  listLemonSubscriptionsForEmail,
-  pickManageableLemonSubscription,
-  toLemonSubscriptionBillingView,
-} from '@/lib/lemonsqueezy';
+  getStripeClient,
+  getStripeConfig,
+  listStripeSubscriptionsForEmail,
+  pickManageableStripeSubscription,
+  toStripeSubscriptionBillingView,
+} from '@/lib/stripe';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 /**
  * Current monthly subscription for the signed-in email (read-only view).
- * Downgrades a stale paid tier if Lemon Squeezy already shows the sub expired.
+ * Downgrades a stale paid tier if Stripe already shows the sub expired.
  */
 export async function GET() {
-  const ls = getLemonSqueezyConfig();
+  const stripeConfig = getStripeConfig();
+  const stripe = getStripeClient();
   const admin = getSupabaseAdmin();
-  if (!ls || !admin) {
+  if (!stripeConfig || !stripe || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -53,18 +55,18 @@ export async function GET() {
 
   let subscriptions;
   try {
-    subscriptions = await listLemonSubscriptionsForEmail(ls.apiKey, ls.storeId, user.email);
+    subscriptions = await listStripeSubscriptionsForEmail(stripe, user.email);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
+    const message = err instanceof Error ? err.message : 'Stripe error';
     console.error('[account/subscription]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
+      { error: message, errorCode: 'STRIPE_ERROR' },
       { status: 502 },
     );
   }
 
   try {
-    await applyMembershipFromLemonSubscriptions(admin, user.id, subscriptions, {
+    await applyMembershipFromStripeSubscriptions(admin, user.id, subscriptions, {
       mode: 'downgrade-only',
     });
   } catch (err) {
@@ -72,8 +74,8 @@ export async function GET() {
     console.error('[account/subscription] reconcile', message);
   }
 
-  const chosen = pickManageableLemonSubscription(subscriptions);
+  const chosen = pickManageableStripeSubscription(subscriptions);
   return NextResponse.json({
-    subscription: toLemonSubscriptionBillingView(chosen),
+    subscription: toStripeSubscriptionBillingView(chosen),
   });
 }

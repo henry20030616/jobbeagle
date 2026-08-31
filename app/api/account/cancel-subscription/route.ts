@@ -3,24 +3,26 @@ import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
 import {
-  cancelLemonSubscription,
-  getLemonSqueezyConfig,
-  listLemonSubscriptionsForEmail,
-  pickCancellableLemonSubscription,
-  toLemonSubscriptionBillingView,
-} from '@/lib/lemonsqueezy';
+  cancelStripeSubscription,
+  getStripeClient,
+  getStripeConfig,
+  listStripeSubscriptionsForEmail,
+  pickCancellableStripeSubscription,
+  toStripeSubscriptionBillingView,
+} from '@/lib/stripe';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 /**
  * Cancel the signed-in user's Standard/Advanced subscription at period end.
- * Does not strip credits or membership until Lemon Squeezy `ends_at`.
+ * Does not strip credits or membership until Stripe `current_period_end`.
  */
 export async function POST() {
-  const ls = getLemonSqueezyConfig();
+  const stripeConfig = getStripeConfig();
+  const stripe = getStripeClient();
   const admin = getSupabaseAdmin();
-  if (!ls || !admin) {
+  if (!stripeConfig || !stripe || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -53,17 +55,17 @@ export async function POST() {
 
   let subscriptions;
   try {
-    subscriptions = await listLemonSubscriptionsForEmail(ls.apiKey, ls.storeId, user.email);
+    subscriptions = await listStripeSubscriptionsForEmail(stripe, user.email);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
+    const message = err instanceof Error ? err.message : 'Stripe error';
     console.error('[cancel-subscription]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
+      { error: message, errorCode: 'STRIPE_ERROR' },
       { status: 502 },
     );
   }
 
-  const chosen = pickCancellableLemonSubscription(subscriptions);
+  const chosen = pickCancellableStripeSubscription(subscriptions);
   if (!chosen) {
     return NextResponse.json(
       {
@@ -75,17 +77,17 @@ export async function POST() {
   }
 
   try {
-    const cancelled = await cancelLemonSubscription(ls.apiKey, chosen.id);
+    const cancelled = await cancelStripeSubscription(stripe, chosen.id);
     return NextResponse.json({
       cancelled: true,
-      ends_at: cancelled.endsAt,
-      subscription: toLemonSubscriptionBillingView(cancelled),
+      current_period_end: cancelled.currentPeriodEnd,
+      subscription: toStripeSubscriptionBillingView(cancelled),
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Lemon Squeezy error';
-    console.error('[cancel-subscription] delete', message);
+    const message = err instanceof Error ? err.message : 'Stripe error';
+    console.error('[cancel-subscription] update', message);
     return NextResponse.json(
-      { error: message, errorCode: 'LEMONSQUEEZY_ERROR' },
+      { error: message, errorCode: 'STRIPE_ERROR' },
       { status: 502 },
     );
   }
