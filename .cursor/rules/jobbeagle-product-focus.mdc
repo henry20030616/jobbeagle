@@ -5,10 +5,10 @@ alwaysApply: true
 
 # JobBeagle — Product Focus & Launch Reminder
 
-## Chrome Web Store status (2026-08-28)
-- **Submitted for review** (JobBeagle 1.3.2, item `pceknhembhfnljhpajkpdbihfbpfolpm`). Status was **待審查**. Owner asked to pause CWS work.
-- `/extension` stays zip download until listing is live. Then paste store URL into `.env.local` / Vercel `NEXT_PUBLIC_CHROME_WEBSTORE_URL` and sync.
-- **Every conversation wrap-up while listing is not live:** remind owner to check Developer Dashboard / Gmail for review result, then paste the `chromewebstore.google.com/detail/...` URL. Do **not** nag mid-Lemon-Squeezy work unless they ask.
+## Chrome Web Store status (2026-09-02)
+- **Published, public** (JobBeagle 1.3.2, item `pceknhembhfnljhpajkpdbihfbpfolpm`).
+- Listing: `https://chromewebstore.google.com/detail/jobbeagle-headhunter-leve/pceknhembhfnljhpajkpdbihfbpfolpm`
+- `/extension` uses `PUBLISHED_CHROME_WEBSTORE_URL` / `NEXT_PUBLIC_CHROME_WEBSTORE_URL` for one-click Add to Chrome. Zip remains a fallback download.
 
 ## P0 now — Lemon Squeezy live payments
 - Store **Jobbeagle** (`424272`) is still **Test mode**. Products/webhooks/API key are test. **0 live sales.**

@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { EXTENSION_ZIP_HREF, getChromeWebStoreUrl } from '@/lib/chrome-webstore';
+import {
+  EXTENSION_ZIP_HREF,
+  PUBLISHED_CHROME_WEBSTORE_URL,
+  getChromeWebStoreUrl,
+} from '@/lib/chrome-webstore';
 
 describe('getChromeWebStoreUrl', () => {
-  it('returns null when unset', () => {
-    expect(getChromeWebStoreUrl(undefined)).toBeNull();
+  it('falls back to the published listing when unset', () => {
+    expect(getChromeWebStoreUrl(undefined)).toBe(PUBLISHED_CHROME_WEBSTORE_URL);
     expect(getChromeWebStoreUrl('')).toBeNull();
     expect(getChromeWebStoreUrl('  ')).toBeNull();
   });

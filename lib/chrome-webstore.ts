@@ -1,12 +1,14 @@
 /**
- * Chrome Web Store listing URL for one-click “Add to Chrome”.
- * Set NEXT_PUBLIC_CHROME_WEBSTORE_URL after the item exists in the developer dashboard.
+ * Chrome Web Store listing (JobBeagle 1.3.2, public).
+ * Override with NEXT_PUBLIC_CHROME_WEBSTORE_URL if the listing URL changes.
  */
 export const EXTENSION_ZIP_HREF = '/downloads/jobbeagle-extension.zip';
 
+export const PUBLISHED_CHROME_WEBSTORE_URL =
+  'https://chromewebstore.google.com/detail/jobbeagle-headhunter-leve/pceknhembhfnljhpajkpdbihfbpfolpm';
 
 export function getChromeWebStoreUrl(
-  raw: string | undefined = process.env.NEXT_PUBLIC_CHROME_WEBSTORE_URL,
+  raw: string | undefined = process.env.NEXT_PUBLIC_CHROME_WEBSTORE_URL ?? PUBLISHED_CHROME_WEBSTORE_URL,
 ): string | null {
   const trimmed = raw?.trim() ?? '';
   if (!trimmed) return null;
