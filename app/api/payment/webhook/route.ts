@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import {
   applyMembershipFromPaddleSubscriptions,
+  downgradeExpiredSubscription,
   fulfillOrder,
+  fulfillPaidOrderById,
+  fulfillSubscriptionRenewal,
 } from '@/lib/fulfill-order';
 import { findAuthUserIdByEmail } from '@/lib/auth-admin-lookup';
 import {
@@ -13,6 +16,15 @@ import {
   type PaddleSubscriptionSummary,
 } from '@/lib/paddle';
 import {
+  getPayPalConfig,
+  isPayPalWebhookRequest,
+  parsePayPalWebhookEvent,
+  readPayPalWebhookHeaders,
+  verifyPayPalWebhook,
+  captureOrLoadPayPalOrder,
+} from '@/lib/paypal';
+import {
+  CHECKOUT_PLANS,
   isCheckoutPlanType,
   normalizeCheckoutPlanType,
 } from '@/constants/checkout-plans';
@@ -55,7 +67,160 @@ async function resolveWebhookUserId(
   return findAuthUserIdByEmail(admin, email);
 }
 
+async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
+  const admin = getSupabaseAdmin();
+  const paypal = getPayPalConfig();
+  if (!admin || !paypal) {
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 503 });
+  }
+  if (!paypal.webhookId) {
+    return NextResponse.json({ error: 'PAYPAL_WEBHOOK_ID not set' }, { status: 503 });
+  }
+
+  const { allowed } = await rateLimit('paypal-webhook', clientIpFromRequest(request), 120, 60);
+  if (!allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
+  const headerMap: Record<string, string | null> = {
+    'paypal-auth-algo': request.headers.get('paypal-auth-algo'),
+    'paypal-cert-url': request.headers.get('paypal-cert-url'),
+    'paypal-transmission-id': request.headers.get('paypal-transmission-id'),
+    'paypal-transmission-sig': request.headers.get('paypal-transmission-sig'),
+    'paypal-transmission-time': request.headers.get('paypal-transmission-time'),
+  };
+  const paypalHeaders = readPayPalWebhookHeaders(headerMap);
+  if (!paypalHeaders) {
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+  }
+
+  const isValid = await verifyPayPalWebhook({ headers: paypalHeaders, rawBody });
+  if (!isValid) {
+    console.error('[webhook] PayPal signature invalid');
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawBody) as unknown;
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const event = parsePayPalWebhookEvent(parsed);
+
+  if (event.eventType === 'BILLING.SUBSCRIPTION.CANCELLED' || event.eventType === 'BILLING.SUBSCRIPTION.EXPIRED') {
+    const orderId = event.customId;
+    if (!orderId) {
+      return NextResponse.json({ received: true, skipped: 'no_custom_id' });
+    }
+    const { data: order } = await admin
+      .from('orders')
+      .select('user_id')
+      .eq('id', orderId)
+      .maybeSingle();
+    const userId = typeof order?.user_id === 'string' ? order.user_id : null;
+    if (!userId) {
+      return NextResponse.json({ received: true, skipped: 'no_user' });
+    }
+    try {
+      await downgradeExpiredSubscription(admin, userId);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'downgrade failed';
+      console.error('[webhook] paypal cancel downgrade', message);
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
+    return NextResponse.json({ received: true, provider: 'paypal', lifecycle: event.eventType });
+  }
+
+  if (event.eventType === 'PAYMENT.SALE.COMPLETED' && event.billingAgreementId) {
+    const { data: order } = await admin
+      .from('orders')
+      .select('user_id, plan_type')
+      .eq('external_checkout_id', event.billingAgreementId)
+      .maybeSingle();
+    const userId = typeof order?.user_id === 'string' ? order.user_id : null;
+    const planType = typeof order?.plan_type === 'string' ? normalizeCheckoutPlanType(order.plan_type) : null;
+    const tier = planType ? CHECKOUT_PLANS[planType]?.membershipTier : undefined;
+    if (userId && (tier === 'standard_sub' || tier === 'advanced_sub')) {
+      try {
+        await fulfillSubscriptionRenewal(admin, userId, tier);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'renewal failed';
+        console.error('[webhook] paypal renewal', message);
+        return NextResponse.json({ error: message }, { status: 500 });
+      }
+    }
+    return NextResponse.json({ received: true, provider: 'paypal', renewal: true });
+  }
+
+  const fulfillTypes = new Set([
+    'PAYMENT.CAPTURE.COMPLETED',
+    'BILLING.SUBSCRIPTION.ACTIVATED',
+  ]);
+  if (event.eventType === 'CHECKOUT.ORDER.APPROVED' && event.resourceId) {
+    try {
+      const captured = await captureOrLoadPayPalOrder(event.resourceId);
+      const orderId = captured.customId ?? event.customId;
+      const externalId = captured.captureId ?? event.resourceId;
+      if (!orderId) {
+        return NextResponse.json({ received: true, skipped: 'missing_ids' });
+      }
+      const result = await fulfillPaidOrderById(admin, orderId, externalId, 'paypal');
+      if (result === 'missing') {
+        return NextResponse.json({ error: 'Unknown order' }, { status: 400 });
+      }
+      return NextResponse.json({
+        received: true,
+        provider: 'paypal',
+        idempotent: result === 'idempotent',
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Capture failed';
+      console.error('[webhook] paypal capture-on-approve', message);
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
+  }
+  if (!fulfillTypes.has(event.eventType)) {
+    return NextResponse.json({ received: true, skipped: event.eventType, provider: 'paypal' });
+  }
+
+  const orderId = event.customId;
+  const externalId = event.resourceId ?? event.customId;
+  if (!orderId || !externalId) {
+    return NextResponse.json({ received: true, skipped: 'missing_ids' });
+  }
+
+  try {
+    const result = await fulfillPaidOrderById(admin, orderId, externalId, 'paypal');
+    if (result === 'missing') {
+      return NextResponse.json({ error: 'Unknown order' }, { status: 400 });
+    }
+    return NextResponse.json({
+      received: true,
+      provider: 'paypal',
+      idempotent: result === 'idempotent',
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Fulfillment failed';
+    console.error('[webhook] paypal fulfill error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
+  const rawBody = await request.text();
+  const paypalHeaderMap: Record<string, string | null> = {
+    'paypal-transmission-id': request.headers.get('paypal-transmission-id'),
+    'paypal-transmission-sig': request.headers.get('paypal-transmission-sig'),
+    'paypal-auth-algo': request.headers.get('paypal-auth-algo'),
+    'paypal-cert-url': request.headers.get('paypal-cert-url'),
+    'paypal-transmission-time': request.headers.get('paypal-transmission-time'),
+  };
+  if (isPayPalWebhookRequest(paypalHeaderMap)) {
+    return handlePayPalWebhook(request, rawBody);
+  }
+
   const paddleConfig = getPaddleConfig();
   const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
@@ -73,7 +238,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const rawBody = await request.text();
   const signature = request.headers.get('paddle-signature');
 
   const isValid = verifyPaddleSignature(rawBody, signature, paddleConfig.webhookSecret);

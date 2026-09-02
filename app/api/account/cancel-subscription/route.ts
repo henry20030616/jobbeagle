@@ -10,6 +10,11 @@ import {
   pickCancellablePaddleSubscription,
   toPaddleSubscriptionBillingView,
 } from '@/lib/paddle';
+import {
+  cancelPayPalSubscription,
+  findLivePayPalSubscription,
+  getPayPalConfig,
+} from '@/lib/paypal';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -19,10 +24,11 @@ export const runtime = 'nodejs';
  * Does not strip credits or membership until Paddle billing period ends.
  */
 export async function POST() {
+  const paypal = getPayPalConfig();
   const paddleConfig = getPaddleConfig();
   const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if (!paddleConfig || !paddle || !admin) {
+  if ((!paypal && (!paddleConfig || !paddle)) || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -52,6 +58,60 @@ export async function POST() {
     full_name: user.user_metadata?.full_name ?? user.user_metadata?.name,
     avatar_url: user.user_metadata?.avatar_url,
   });
+
+  if (paypal) {
+    let live;
+    try {
+      live = await findLivePayPalSubscription(admin, user.id);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'PayPal error';
+      console.error('[cancel-subscription]', message);
+      return NextResponse.json(
+        { error: message, errorCode: 'PAYPAL_ERROR' },
+        { status: 502 },
+      );
+    }
+    if (!live) {
+      return NextResponse.json(
+        {
+          error: 'No cancellable monthly subscription found.',
+          errorCode: 'NO_SUBSCRIPTION',
+        },
+        { status: 404 },
+      );
+    }
+    try {
+      await cancelPayPalSubscription(live.id);
+      return NextResponse.json({
+        cancelled: true,
+        current_billing_period_ends_at: null,
+        subscription: {
+          id: live.id,
+          status: 'CANCELLED',
+          planType: null,
+          membershipTier: null,
+          currentBillingPeriodEndsAt: null,
+          scheduledForCancellation: false,
+          canCancel: false,
+          canManage: true,
+        },
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'PayPal error';
+      console.error('[cancel-subscription] paypal', message);
+      return NextResponse.json(
+        { error: message, errorCode: 'PAYPAL_ERROR' },
+        { status: 502 },
+      );
+    }
+  }
+
+  if (!paddle) {
+    return NextResponse.json(
+      { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
+      { status: 503 },
+    );
+  }
 
   let subscriptions;
   try {

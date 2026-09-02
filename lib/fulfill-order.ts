@@ -3,6 +3,7 @@ import type { CheckoutPlanType } from '@/constants/checkout-plans';
 import {
   CHECKOUT_PLANS,
   SUBSCRIPTION_ALLOWANCES,
+  isCheckoutPlanType,
   normalizeCheckoutPlanType,
 } from '@/constants/checkout-plans';
 import {
@@ -123,6 +124,43 @@ export async function fulfillOrder(
     .eq('id', orderId);
 
   if (orderErr) throw new Error(orderErr.message);
+}
+
+export async function fulfillPaidOrderById(
+  admin: SupabaseClient,
+  orderId: string,
+  externalPaymentId: string,
+  provider: 'paypal' | 'paddle',
+): Promise<'fulfilled' | 'idempotent' | 'missing'> {
+  const { data: order } = await admin
+    .from('orders')
+    .select('id, user_id, plan_type, report_id, status')
+    .eq('id', orderId)
+    .maybeSingle();
+
+  if (!order) return 'missing';
+  if (order.status === 'succeeded') return 'idempotent';
+
+  const planRaw = typeof order.plan_type === 'string' ? order.plan_type : '';
+  const planType = normalizeCheckoutPlanType(planRaw);
+  if (!planType || !isCheckoutPlanType(planType)) {
+    throw new Error('Invalid plan_type on order');
+  }
+
+  const userId = typeof order.user_id === 'string' ? order.user_id : '';
+  if (!userId) throw new Error('Order missing user_id');
+
+  await admin
+    .from('orders')
+    .update({
+      external_checkout_id: externalPaymentId,
+      payment_provider: provider,
+    })
+    .eq('id', orderId);
+
+  const reportId = typeof order.report_id === 'string' ? order.report_id : null;
+  await fulfillOrder(admin, order.id, userId, planType, reportId, externalPaymentId);
+  return 'fulfilled';
 }
 
 export async function fulfillSubscriptionRenewal(

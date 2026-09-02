@@ -9,16 +9,22 @@ import {
   listPaddleSubscriptionsForEmail,
   pickManageablePaddleSubscription,
 } from '@/lib/paddle';
+import {
+  findLivePayPalSubscription,
+  getPayPalConfig,
+  paypalBillingPortalUrl,
+} from '@/lib/paypal';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 /** Paddle customer portal URL for managing subscriptions. */
 export async function GET() {
+  const paypal = getPayPalConfig();
   const paddleConfig = getPaddleConfig();
   const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if (!paddleConfig || !paddle || !admin) {
+  if ((!paypal && (!paddleConfig || !paddle)) || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -48,6 +54,36 @@ export async function GET() {
     full_name: user.user_metadata?.full_name ?? user.user_metadata?.name,
     avatar_url: user.user_metadata?.avatar_url,
   });
+
+  if (paypal) {
+    try {
+      const live = await findLivePayPalSubscription(admin, user.id);
+      if (!live) {
+        return NextResponse.json(
+          {
+            error: 'No monthly subscription found.',
+            errorCode: 'NO_SUBSCRIPTION',
+          },
+          { status: 404 },
+        );
+      }
+      return NextResponse.json({ url: paypalBillingPortalUrl(paypal.environment) });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'PayPal error';
+      console.error('[billing-portal]', message);
+      return NextResponse.json(
+        { error: message, errorCode: 'PAYPAL_ERROR' },
+        { status: 502 },
+      );
+    }
+  }
+
+  if (!paddle) {
+    return NextResponse.json(
+      { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
+      { status: 503 },
+    );
+  }
 
   let subscriptions;
   try {

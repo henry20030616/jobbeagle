@@ -10,6 +10,10 @@ import {
   pickManageablePaddleSubscription,
   toPaddleSubscriptionBillingView,
 } from '@/lib/paddle';
+import {
+  findLivePayPalSubscription,
+  getPayPalConfig,
+} from '@/lib/paypal';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -19,10 +23,11 @@ export const runtime = 'nodejs';
  * Downgrades a stale paid tier if Paddle already shows the sub expired.
  */
 export async function GET() {
+  const paypal = getPayPalConfig();
   const paddleConfig = getPaddleConfig();
   const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if (!paddleConfig || !paddle || !admin) {
+  if ((!paypal && (!paddleConfig || !paddle)) || !admin) {
     return NextResponse.json(
       { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
@@ -52,6 +57,42 @@ export async function GET() {
     full_name: user.user_metadata?.full_name ?? user.user_metadata?.name,
     avatar_url: user.user_metadata?.avatar_url,
   });
+
+  if (paypal) {
+    try {
+      const live = await findLivePayPalSubscription(admin, user.id);
+      if (!live) {
+        return NextResponse.json({ subscription: null });
+      }
+      const canCancel = live.status === 'ACTIVE';
+      return NextResponse.json({
+        subscription: {
+          id: live.id,
+          status: live.status,
+          planType: null,
+          membershipTier: null,
+          currentBillingPeriodEndsAt: null,
+          scheduledForCancellation: false,
+          canCancel,
+          canManage: true,
+        },
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'PayPal error';
+      console.error('[account/subscription]', message);
+      return NextResponse.json(
+        { error: message, errorCode: 'PAYPAL_ERROR' },
+        { status: 502 },
+      );
+    }
+  }
+
+  if (!paddle) {
+    return NextResponse.json(
+      { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
+      { status: 503 },
+    );
+  }
 
   let subscriptions;
   try {
