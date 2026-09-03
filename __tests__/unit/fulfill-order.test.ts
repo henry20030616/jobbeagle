@@ -101,6 +101,28 @@ describe('fulfillOrder idempotency', () => {
     const orderUpdate = calls.find((c) => c.op === 'update' && c.table === 'orders');
     expect(orderUpdate?.payload).toMatchObject({ status: 'succeeded' });
   });
+
+  it('adds subscription allowance instead of replacing leftover credits', async () => {
+    const { admin, calls } = createFulfillMock({ orderStatus: 'pending' });
+    await fulfillOrder(
+      admin,
+      'order-sub',
+      'user-sub',
+      'advanced_subscription',
+      null,
+      'paypal-sub-1',
+    );
+    const rpc = calls.find((c) => c.op === 'rpc' && c.rpc === 'increment_profile_credits');
+    expect(rpc?.payload).toMatchObject({
+      p_user_id: 'user-sub',
+      p_job_fit_snapshot: 300,
+      p_interview_strategy_guide: 15,
+    });
+    const profileUpdates = calls.filter((c) => c.op === 'update' && c.table === 'profiles');
+    expect(profileUpdates).toHaveLength(1);
+    expect(profileUpdates[0]?.payload).toMatchObject({ membership_tier: 'advanced_sub' });
+    expect(profileUpdates[0]?.payload).not.toHaveProperty('available_job_fit_snapshot_credits');
+  });
 });
 
 describe('fulfillSubscriptionRenewal', () => {

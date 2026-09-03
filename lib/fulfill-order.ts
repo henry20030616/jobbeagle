@@ -48,25 +48,29 @@ export async function fulfillOrder(
   // Grant entitlements BEFORE marking succeeded so webhook retries can recover.
   if (plan.membershipTier) {
     const allowance = SUBSCRIPTION_ALLOWANCES[plan.membershipTier];
-    const patchNew = {
-      membership_tier: plan.membershipTier,
-      available_job_fit_snapshot_credits: allowance.job_fit_snapshot,
-      available_interview_strategy_guide_credits: allowance.interview_strategy_guide,
-      updated_at: new Date().toISOString(),
-    };
-    let { error } = await admin.from('profiles').update(patchNew).eq('id', userId);
+    let { error } = await admin.rpc('increment_profile_credits', {
+      p_user_id: userId,
+      p_job_fit_snapshot: allowance.job_fit_snapshot,
+      p_interview_strategy_guide: allowance.interview_strategy_guide,
+    });
     if (error) {
-      const retry = await admin
-        .from('profiles')
-        .update({
-          membership_tier: plan.membershipTier,
-          available_lite_credits: allowance.job_fit_snapshot,
-          available_full_credits: allowance.interview_strategy_guide,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userId);
-      if (retry.error) throw new Error(retry.error.message);
+      const retry = await admin.rpc('increment_profile_credits', {
+        p_user_id: userId,
+        p_lite: allowance.job_fit_snapshot,
+        p_full: allowance.interview_strategy_guide,
+      });
+      error = retry.error;
     }
+    if (error) throw new Error(error.message);
+
+    const { error: tierErr } = await admin
+      .from('profiles')
+      .update({
+        membership_tier: plan.membershipTier,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId);
+    if (tierErr) throw new Error(tierErr.message);
   } else {
     const snapshot = plan.jobFitSnapshotCredits ?? plan.liteCredits ?? 0;
     const strategy = plan.interviewStrategyGuideCredits ?? plan.fullCredits ?? 0;

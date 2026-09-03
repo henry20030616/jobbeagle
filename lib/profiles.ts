@@ -24,20 +24,24 @@ export interface ProfileRow {
   career_context: CareerContext;
 }
 
+function creditFromPair(primary: unknown, legacy: unknown): number {
+  const nums = [primary, legacy]
+    .map((value) => (value == null || value === '' ? null : Number(value)))
+    .filter((n): n is number => n != null && !Number.isNaN(n));
+  if (nums.length === 0) return 0;
+  return Math.max(...nums);
+}
+
 /** Normalize DB row that may still use legacy lite/full column names. */
 export function coerceProfileRow(raw: Record<string, unknown>): ProfileRow {
-  const snapshot =
-    Number(
-      raw.available_job_fit_snapshot_credits
-        ?? raw.available_lite_credits
-        ?? 0,
-    ) || 0;
-  const strategy =
-    Number(
-      raw.available_interview_strategy_guide_credits
-        ?? raw.available_full_credits
-        ?? 0,
-    ) || 0;
+  const snapshot = creditFromPair(
+    raw.available_job_fit_snapshot_credits,
+    raw.available_lite_credits,
+  );
+  const strategy = creditFromPair(
+    raw.available_interview_strategy_guide_credits,
+    raw.available_full_credits,
+  );
 
   return {
     id: String(raw.id),

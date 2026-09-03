@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { canAffordReport, canAffordUserProfile } from '@/lib/profiles';
+import { canAffordReport, canAffordUserProfile, coerceProfileRow } from '@/lib/profiles';
 import type { ProfileRow } from '@/lib/profiles';
 import { REPORT_CODES } from '@/constants/report-products';
 
@@ -67,5 +67,18 @@ describe('canAffordReport', () => {
         REPORT_CODES.JOB_FIT_SNAPSHOT,
       ),
     ).toBe(true);
+  });
+
+  it('coerceProfileRow keeps leftover credits when the new column is zero', () => {
+    const row = coerceProfileRow({
+      id: 'u1',
+      membership_tier: 'advanced_sub',
+      available_job_fit_snapshot_credits: 0,
+      available_lite_credits: 5,
+      available_interview_strategy_guide_credits: 0,
+      available_full_credits: 2,
+    });
+    expect(row.available_job_fit_snapshot_credits).toBe(5);
+    expect(row.available_interview_strategy_guide_credits).toBe(2);
   });
 });
