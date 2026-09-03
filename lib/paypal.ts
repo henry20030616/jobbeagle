@@ -301,14 +301,20 @@ export async function getPayPalSubscription(subscriptionId: string): Promise<{
   id: string;
   status: string;
   customId: string | null;
+  nextBillingTime: string | null;
 }> {
   const config = getPayPalConfig();
   if (!config) throw new Error('PayPal is not configured');
   const sub = await paypalFetch(config, `/v1/billing/subscriptions/${subscriptionId}`);
+  const billingInfo = asRecord(sub.billing_info);
+  const nextBillingTime = typeof billingInfo.next_billing_time === 'string'
+    ? billingInfo.next_billing_time
+    : null;
   return {
     id: typeof sub.id === 'string' ? sub.id : subscriptionId,
     status: typeof sub.status === 'string' ? sub.status : '',
     customId: typeof sub.custom_id === 'string' ? sub.custom_id : null,
+    nextBillingTime,
   };
 }
 
@@ -349,7 +355,7 @@ export async function listUserPayPalSubscriptionIds(
 export async function findLivePayPalSubscription(
   admin: SupabaseClient,
   userId: string,
-): Promise<{ id: string; status: string; customId: string | null } | null> {
+): Promise<{ id: string; status: string; customId: string | null; nextBillingTime: string | null } | null> {
   const ids = await listUserPayPalSubscriptionIds(admin, userId);
   for (const id of ids) {
     const sub = await getPayPalSubscription(id);

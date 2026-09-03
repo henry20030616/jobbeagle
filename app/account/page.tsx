@@ -529,9 +529,13 @@ export default function AccountPage() {
                 sub.membershipTier === 'standard_sub' || sub.membershipTier === 'advanced_sub'
                   ? sub.membershipTier
                   : null,
-              renewsAt: typeof sub.renewsAt === 'string' ? sub.renewsAt : null,
-              endsAt: typeof sub.endsAt === 'string' ? sub.endsAt : null,
-              cancelled: Boolean(sub.cancelled),
+              renewsAt: typeof sub.currentBillingPeriodEndsAt === 'string' 
+                ? sub.currentBillingPeriodEndsAt 
+                : (typeof sub.renewsAt === 'string' ? sub.renewsAt : null),
+              endsAt: typeof sub.currentBillingPeriodEndsAt === 'string'
+                ? sub.currentBillingPeriodEndsAt
+                : (typeof sub.endsAt === 'string' ? sub.endsAt : null),
+              cancelled: Boolean(sub.cancelled || sub.scheduledForCancellation),
               canCancel: Boolean(sub.canCancel),
               canManage: Boolean(sub.canManage),
             }

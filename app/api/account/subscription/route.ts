@@ -71,7 +71,7 @@ export async function GET() {
           status: live.status,
           planType: null,
           membershipTier: null,
-          currentBillingPeriodEndsAt: null,
+          currentBillingPeriodEndsAt: live.nextBillingTime,
           scheduledForCancellation: false,
           canCancel,
           canManage: true,
