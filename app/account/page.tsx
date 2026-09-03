@@ -502,8 +502,6 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyPlan, setBusyPlan] = useState<CheckoutPlanType | null>(null);
-  const [syncBusy, setSyncBusy] = useState(false);
-  const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [billing, setBilling] = useState<BillingView | null>(null);
   const [billingLoaded, setBillingLoaded] = useState(false);
   const [portalBusy, setPortalBusy] = useState(false);
@@ -591,30 +589,6 @@ export default function AccountPage() {
     const result = await startCheckout(plan);
     if (!result.ok) setError(result.error);
     setBusyPlan(null);
-  };
-
-  const handleSyncSubscription = async () => {
-    setSyncBusy(true);
-    setError(null);
-    setSyncMessage(null);
-    try {
-      const res = await fetch('/api/account/sync-subscription', { method: 'POST' });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setError(typeof body.error === 'string' ? body.error : t.actionError);
-        return;
-      }
-      if (body.synced) {
-        setSyncMessage(t.syncOk);
-        await load();
-      } else {
-        setSyncMessage(t.syncNone);
-      }
-    } catch {
-      setError(t.actionError);
-    } finally {
-      setSyncBusy(false);
-    }
   };
 
   const handleManageBilling = async () => {
@@ -818,17 +792,6 @@ export default function AccountPage() {
                   >
                     {cancelBusy ? t.cancelling : t.cancelSub}
                   </button>
-                ) : null}
-                <button
-                  type="button"
-                  disabled={syncBusy || deactivated}
-                  onClick={() => void handleSyncSubscription()}
-                  className="px-5 py-2.5 text-lg font-bold rounded-lg border border-indigo-400/50 bg-indigo-500/15 text-indigo-100 hover:bg-indigo-500/25 disabled:opacity-50 transition-colors"
-                >
-                  {syncBusy ? t.syncing : t.syncSub}
-                </button>
-                {syncMessage ? (
-                  <p className="text-lg text-slate-400">{syncMessage}</p>
                 ) : null}
               </div>
               {billingLoaded && billing ? (
