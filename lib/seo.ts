@@ -4,6 +4,9 @@ import { isShortsEnabled } from '@/constants/features';
 
 export const SITE_URL = 'https://www.jobbeagle.com';
 
+/** Stable IndexNow key (Bing / Yandex / others). File must live at /{key}.txt */
+export const INDEXNOW_KEY = 'c3f8a1e9d0b24f6a9e7c1d8b5a4e3f21';
+
 export const SITE_NAME = 'JobBeagle';
 
 export const DEFAULT_TITLE = 'JobBeagle | Job Fit Snapshot & Interview Strategy';

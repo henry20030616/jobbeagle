@@ -2,6 +2,10 @@
  * @vitest-environment jsdom
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('@vercel/analytics', () => ({
+  track: vi.fn(),
+}));
 import {
   ANALYTICS_EVENTS,
   checkoutValueUsd,

@@ -41,20 +41,37 @@ function clipParam(value: AnalyticsParam): AnalyticsParam {
   return value;
 }
 
+function cleanParams(
+  params?: Record<string, AnalyticsParam | null | undefined>,
+): Record<string, AnalyticsParam> {
+  const cleaned: Record<string, AnalyticsParam> = {};
+  if (!params) return cleaned;
+  for (const [key, value] of Object.entries(params)) {
+    if (value === null || value === undefined) continue;
+    cleaned[key] = clipParam(value);
+  }
+  return cleaned;
+}
+
+function trackVercel(name: string, params: Record<string, AnalyticsParam>): void {
+  if (typeof window === 'undefined') return;
+  void import('@vercel/analytics')
+    .then(({ track }) => {
+      track(name, params);
+    })
+    .catch(() => {
+      /* analytics package missing in some test envs */
+    });
+}
+
 export function trackEvent(
   name: AnalyticsEventName | string,
   params?: Record<string, AnalyticsParam | null | undefined>,
 ): void {
+  const cleaned = cleanParams(params);
   const send = gtagFn();
-  if (!send) return;
-  const cleaned: Record<string, AnalyticsParam> = {};
-  if (params) {
-    for (const [key, value] of Object.entries(params)) {
-      if (value === null || value === undefined) continue;
-      cleaned[key] = clipParam(value);
-    }
-  }
-  send('event', name, cleaned);
+  if (send) send('event', name, cleaned);
+  trackVercel(name, cleaned);
 }
 
 export function trackPageView(path: string): void {
