@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/browser';
 import {
+  enableGaDebug,
   shouldTrackAuthOnce,
   trackAuthSuccess,
   trackException,
@@ -15,6 +16,7 @@ export default function AnalyticsProvider() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    if (searchParams.get('ga_debug') === '1') enableGaDebug();
     const query = searchParams.toString();
     const path = query ? `${pathname}?${query}` : pathname;
     trackPageView(path);

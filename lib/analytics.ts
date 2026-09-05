@@ -27,6 +27,7 @@ export const ANALYTICS_EVENTS = {
   analyzeStart: 'analyze_start',
   analyzeComplete: FUNNEL.jobAnalyzed.event,
   analyzeError: 'analyze_error',
+  reportView: 'view_report',
   paywallView: FUNNEL.paywall.event,
   beginCheckout: FUNNEL.beginCheckout.event,
   purchase: FUNNEL.purchase.event,
@@ -49,6 +50,7 @@ type EventParams = Record<string, AnalyticsParam | AnalyticsItem[] | null | unde
 
 const PENDING_CHECKOUT_KEY = 'jb_pending_checkout';
 const AUTH_TRACK_PREFIX = 'jb_auth_ev_';
+const DEBUG_KEY = 'jb_ga_debug';
 
 type PendingCheckout = {
   planType: string;
@@ -131,11 +133,32 @@ function trackVercel(name: string, params: Record<string, AnalyticsParam | Analy
     });
 }
 
+export function enableGaDebug(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.sessionStorage.setItem(DEBUG_KEY, '1');
+  } catch {
+    /* private mode */
+  }
+}
+
+export function isGaDebugEnabled(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.sessionStorage.getItem(DEBUG_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 export function trackEvent(name: AnalyticsEventName | string, params?: EventParams): void {
   const cleaned = cleanParams(params);
   const step = funnelStepFor(name);
   if (step !== undefined && cleaned.funnel_step === undefined) {
     cleaned.funnel_step = step;
+  }
+  if (isGaDebugEnabled() && cleaned.debug_mode === undefined) {
+    cleaned.debug_mode = true;
   }
   const send = gtagFn();
   if (send) send('event', name, cleaned);

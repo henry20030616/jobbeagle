@@ -19,6 +19,7 @@ import { Loader2, Home, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getGuideUiCopy, getSnapshotUiCopy } from '@/lib/report-ui-copy';
+import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 
 export default function ReportPage() {
   const router = useRouter();
@@ -30,6 +31,11 @@ export default function ReportPage() {
     const stored = loadReportSession();
     setPayload(stored);
     setReady(true);
+    if (stored) {
+      trackEvent(ANALYTICS_EVENTS.reportView, {
+        report_type: stored.report_type,
+      });
+    }
   }, []);
 
   const handleNewAnalysis = () => {

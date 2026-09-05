@@ -11,6 +11,7 @@ import {
   FUNNEL,
   checkoutValueUsd,
   consumePendingCheckout,
+  enableGaDebug,
   rememberPendingCheckout,
   trackAuthSuccess,
   trackCheckoutReturn,
@@ -97,6 +98,14 @@ describe('analytics funnel', () => {
       item_id: 'advanced_subscription',
     });
     expect(gtag.mock.calls.some((call) => call[1] === 'purchase')).toBe(false);
+  });
+
+  it('adds debug_mode only after enableGaDebug', () => {
+    trackEvent('view_report', { report_type: 'job_fit_snapshot' });
+    expect(gtag.mock.calls.at(-1)?.[2]).not.toMatchObject({ debug_mode: true });
+    enableGaDebug();
+    trackEvent('view_report', { report_type: 'job_fit_snapshot' });
+    expect(gtag.mock.calls.at(-1)?.[2]).toMatchObject({ debug_mode: true });
   });
 
   it('treats a brand-new account as sign_up', () => {
