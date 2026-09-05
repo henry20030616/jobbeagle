@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 import { startCheckout } from '@/lib/checkout-client';
+import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
 import type { AppLanguage } from '@/lib/language-context';
 import { LogIn, Sparkles, X, Loader2 } from 'lucide-react';
@@ -126,9 +127,16 @@ export default function QuotaPaywallCard({
   const [busy, setBusy] = useState<CheckoutPlanType | 'login' | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
+  useEffect(() => {
+    trackEvent(ANALYTICS_EVENTS.paywallView, {
+      logged_in: isLoggedIn,
+    });
+  }, [isLoggedIn]);
+
   const handleLogin = async () => {
     setBusy('login');
     setErr(null);
+    trackEvent(ANALYTICS_EVENTS.loginClick, { source: 'paywall' });
     try {
       const supabase = createClient();
       const callbackUrl = new URL(`${window.location.origin}/auth/callback`);

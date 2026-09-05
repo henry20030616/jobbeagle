@@ -9,6 +9,7 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/e2e/**', '**/.next/**'],
     environmentMatchGlobs: [
       ['__tests__/unit/shorts-view-role.test.ts', 'jsdom'],
+      ['__tests__/unit/analytics.test.ts', 'jsdom'],
     ],
   },
   resolve: {

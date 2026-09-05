@@ -24,6 +24,7 @@ import ReferralCard from '@/components/ReferralCard';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import type { UserProfile } from '@/types';
 import { isShortsEnabled, isHomepageShortsBannerEnabled } from '@/constants/features';
+import { ANALYTICS_EVENTS, trackCheckoutReturn, trackEvent } from '@/lib/analytics';
 import {
   decodePayloadParamForPreFlight,
   formatCapturedJd,
@@ -313,6 +314,7 @@ export default function Home() {
 
       const checkout = urlParams.get('checkout');
       if (checkout === 'success') {
+        trackCheckoutReturn('success');
         const notice =
           language === 'zh-TW' || language === 'zh-CN'
             ? '付款成功！額度已更新，可立即重新分析。'
@@ -320,10 +322,14 @@ export default function Home() {
         setCheckoutNotice(notice);
         await loadProfile();
         window.history.replaceState({}, '', '/');
-      } else if (checkout === 'cancelled') {
+      } else if (checkout === 'cancelled' || checkout === 'cancel') {
+        trackCheckoutReturn('cancel');
         setCheckoutNotice(
           language === 'zh-TW' || language === 'zh-CN' ? '已取消付款。' : 'Checkout cancelled.',
         );
+        window.history.replaceState({}, '', '/');
+      } else if (checkout === 'error') {
+        trackCheckoutReturn('error');
         window.history.replaceState({}, '', '/');
       }
     };
@@ -413,6 +419,10 @@ export default function Home() {
     setErrorCode(null);
     setReport(null);
     startProgressSimulation(language);
+    trackEvent(ANALYTICS_EVENTS.analyzeStart, {
+      report_type: reportType,
+      source: 'home',
+    });
     try {
       const fingerprint = await getDeviceFingerprint();
       const response = await fetch('/api/analyze', {
@@ -446,12 +456,22 @@ export default function Home() {
           return;
         }
 
+        trackEvent(ANALYTICS_EVENTS.analyzeError, {
+          report_type: reportType,
+          source: 'home',
+          error_code: code || 'ANALYSIS_ERROR',
+        });
         setError(
           result.error
             || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗' : 'Analysis failed'),
         );
         return;
       }
+
+      trackEvent(ANALYTICS_EVENTS.analyzeComplete, {
+        report_type: reportType,
+        source: 'home',
+      });
 
       const normalizedType = normalizeReportType(result.report_type);
       if (
@@ -487,6 +507,11 @@ export default function Home() {
       await loadProfile();
     } catch (err: unknown) {
       console.error('❌ [Frontend Error]', err);
+      trackEvent(ANALYTICS_EVENTS.analyzeError, {
+        report_type: reportType,
+        source: 'home',
+        error_code: 'CLIENT_EXCEPTION',
+      });
       const message = err instanceof Error ? err.message : 'Unknown error';
       setError(message);
     } finally {

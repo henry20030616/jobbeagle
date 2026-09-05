@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { noIndexMetadata } from '@/lib/seo';
+
+export const metadata: Metadata = {
+  title: 'Confirm | JobBeagle',
+  ...noIndexMetadata(),
+};
 
 export default function ConfirmLayout({
   children,

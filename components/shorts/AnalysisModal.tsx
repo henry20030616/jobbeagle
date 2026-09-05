@@ -15,6 +15,7 @@ import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
+import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 
 interface SavedResume {
   id: string;
@@ -228,6 +229,10 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     setAnalyzedResumeId(savedResumeId ?? null);
     setStep('analyzing');
     startProgress();
+    trackEvent(ANALYTICS_EVENTS.analyzeStart, {
+      report_type: reportType,
+      source: 'shorts',
+    });
     try {
       const jdText = `${jobTitle} at ${companyName}\nLocation: ${location}${salary ? `\nSalary: ${salary}` : ''}\n\n${jobDescription}`;
       const fingerprint = await getDeviceFingerprint();
@@ -245,6 +250,13 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
       const result = await res.json();
       if (!res.ok) {
         const code = (result.code || result.errorCode) as string | undefined;
+        if (code !== 'PAYMENT_REQUIRED' && code !== 'AUTH_REQUIRED') {
+          trackEvent(ANALYTICS_EVENTS.analyzeError, {
+            report_type: reportType,
+            source: 'shorts',
+            error_code: code || 'ANALYSIS_ERROR',
+          });
+        }
         setErrorCode(code ?? null);
         setErrorMsg(
           result.error
@@ -260,12 +272,21 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         setLiteReport(normalizeLiteReport(result.report as LiteReport));
         setFullReport(null);
       }
+      trackEvent(ANALYTICS_EVENTS.analyzeComplete, {
+        report_type: reportType,
+        source: 'shorts',
+      });
       if (result.report_id) {
         setLastReportId(result.report_id);
         setSaveState('saved');
       }
       setStep('result');
     } catch (err: unknown) {
+      trackEvent(ANALYTICS_EVENTS.analyzeError, {
+        report_type: reportType,
+        source: 'shorts',
+        error_code: 'CLIENT_EXCEPTION',
+      });
       setErrorMsg(err instanceof Error ? err.message : '分析失敗，請稍後再試');
       setStep('error');
     } finally {

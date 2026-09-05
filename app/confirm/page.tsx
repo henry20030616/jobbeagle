@@ -28,6 +28,7 @@ import { AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
 import { FitStage } from '@/components/FitStage';
 import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
+import { ANALYTICS_EVENTS, trackCheckoutReturn, trackEvent } from '@/lib/analytics';
 
 interface JobDisplayData {
   company_name: string;
@@ -166,8 +167,21 @@ export default function ConfirmPage() {
   }, [sidParam, payloadParam, scrapeErrorKey, loadSession, embedded, language]);
 
   useEffect(() => {
-    if (searchParams.get('checkout') === 'success') {
+    trackEvent(ANALYTICS_EVENTS.confirmView, {
+      has_sid: Boolean(sidParam),
+      embedded: Boolean(embedded),
+    });
+  }, [sidParam, embedded]);
+
+  useEffect(() => {
+    const checkout = searchParams.get('checkout');
+    if (checkout === 'success') {
+      trackCheckoutReturn('success');
       loadSession();
+    } else if (checkout === 'cancel' || checkout === 'cancelled') {
+      trackCheckoutReturn('cancel');
+    } else if (checkout === 'error') {
+      trackCheckoutReturn('error');
     }
   }, [searchParams, loadSession]);
 
@@ -203,7 +217,12 @@ export default function ConfirmPage() {
     setError(null);
     setErrorCode(null);
     startProgressSimulation();
+    trackEvent(ANALYTICS_EVENTS.analyzeStart, {
+      report_type: reportType,
+      source: 'confirm',
+    });
 
+    let failedAfterTrack = false;
     try {
       const fingerprint = await getDeviceFingerprint();
 
@@ -244,6 +263,12 @@ export default function ConfirmPage() {
       }
 
       if (!res.ok) {
+        failedAfterTrack = true;
+        trackEvent(ANALYTICS_EVENTS.analyzeError, {
+          report_type: reportType,
+          source: 'confirm',
+          error_code: typeof data.code === 'string' ? data.code : 'ANALYSIS_ERROR',
+        });
         throw new Error(
           typeof data.error === 'string'
             ? data.error
@@ -251,6 +276,10 @@ export default function ConfirmPage() {
         );
       }
 
+      trackEvent(ANALYTICS_EVENTS.analyzeComplete, {
+        report_type: reportType,
+        source: 'confirm',
+      });
       const normalizedType = normalizeReportType(data.report_type);
       const report =
         normalizedType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
@@ -266,6 +295,13 @@ export default function ConfirmPage() {
       await loadSession();
       router.push('/report');
     } catch (e: unknown) {
+      if (!failedAfterTrack) {
+        trackEvent(ANALYTICS_EVENTS.analyzeError, {
+          report_type: reportType,
+          source: 'confirm',
+          error_code: 'CLIENT_EXCEPTION',
+        });
+      }
       setError(e instanceof Error ? e.message : 'Analysis failed');
     } finally {
       stopProgressSimulation();

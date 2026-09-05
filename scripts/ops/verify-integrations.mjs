@@ -105,5 +105,16 @@ try {
   failed = true;
 }
 
+try {
+  const health = await fetch(`${site}/api/health`);
+  const body = await health.json().catch(() => ({}));
+  const ok = health.ok && body.ok === true;
+  console.log(ok ? `OK  /api/health HTTP ${health.status}` : `FAIL /api/health HTTP ${health.status}`);
+  if (!ok) failed = true;
+} catch (e) {
+  console.error('FAIL /api/health:', e.message);
+  failed = true;
+}
+
 console.log(failed ? '\nRESULT: SOME CHECKS FAILED' : '\nRESULT: ALL CHECKS PASSED');
 process.exit(failed ? 1 : 0);

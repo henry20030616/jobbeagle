@@ -1,5 +1,18 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import SampleReportClient from './SampleReportClient';
+
+export const metadata: Metadata = {
+  title: 'Sample Reports | JobBeagle',
+  description:
+    'Preview a Job Fit Snapshot and an Interview Strategy Guide. Same report format as a live JobBeagle analysis.',
+  alternates: { canonical: '/samples' },
+  openGraph: {
+    title: 'JobBeagle sample reports',
+    description: 'See the Job Fit Snapshot and Interview Strategy Guide before you run one.',
+    url: '/samples',
+  },
+};
 
 export default function SamplesPage() {
   return (

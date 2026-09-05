@@ -3,10 +3,6 @@
     {
       "path": "/api/cron/purge-reports",
       "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/reconcile-billing",
-      "schedule": "0 14 * * *"
     }
   ]
 }

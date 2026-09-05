@@ -1,44 +1,39 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/language-context";
+import AnalyticsProvider from "@/components/AnalyticsProvider";
+import { GA_MEASUREMENT_ID } from "@/lib/analytics";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, SITE_URL, buildJsonLdGraph } from "@/lib/seo";
 
-// 優先使用環境變數；若 Vercel build 時未帶入則使用預設 ID，確保 GA 一定會載入
-const GA_MEASUREMENT_ID =
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-5EV9NSSJRW";
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
 
 export const metadata: Metadata = {
-  title: "Jobbeagle | AI Job Match Analysis",
-  description: "AI-powered job match analysis and interview preparation for job seekers. Chrome extension for LinkedIn, Indeed, ZipRecruiter, and more.",
-  keywords: ["job search", "AI job analysis", "job matching", "interview preparation", "career", "resume analysis"],
-  authors: [{ name: "JobBeagle" }],
-  creator: "JobBeagle",
-  publisher: "JobBeagle",
-  metadataBase: new URL('https://www.jobbeagle.com'),
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
+  keywords: ["job search", "AI job analysis", "job matching", "interview preparation", "career", "resume analysis", "LinkedIn"],
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Jobbeagle | AI Job Match Analysis",
-    description: "AI-powered job match analysis and interview preparation for job seekers.",
-    url: 'https://www.jobbeagle.com',
-    siteName: 'Jobbeagle',
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     locale: 'en_US',
     type: 'website',
-    images: [
-      {
-        url: '/icon.svg',
-        width: 512,
-        height: 512,
-        alt: 'JobBeagle Logo',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Jobbeagle | AI Job Match Analysis",
-    description: "AI-powered job match analysis and interview preparation for job seekers.",
-    images: ['/icon.svg'],
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
   },
   robots: {
     index: true,
@@ -55,13 +50,19 @@ export const metadata: Metadata = {
     icon: '/icon.svg',
     apple: '/icon.svg',
   },
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = buildJsonLdGraph();
+
   return (
     <html lang="en" className="h-full w-full overflow-x-hidden" suppressHydrationWarning>
       {/* Never use max-w-[100vw] — scrollbar gutter inflates width past the viewport */}
       <body className="min-h-screen w-full overflow-x-hidden antialiased" suppressHydrationWarning>
+        <Script id="jobbeagle-jsonld" type="application/ld+json" strategy="beforeInteractive">
+          {JSON.stringify(jsonLd)}
+        </Script>
         <LanguageProvider>
           {/* items-stretch: pages without w-full (e.g. /extension) collapse to a phone sliver if this is items-center */}
           <div className="flex min-h-screen w-full flex-col items-stretch">
@@ -79,11 +80,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${GA_MEASUREMENT_ID}');
+                gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false, anonymize_ip: true });
               `}
             </Script>
           </>
         ) : null}
+        <Suspense fallback={null}>
+          <AnalyticsProvider />
+        </Suspense>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
