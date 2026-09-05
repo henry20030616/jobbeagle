@@ -9,13 +9,6 @@ import {
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 import {
-  createPaddleCheckout,
-  getPaddleClient,
-  getPaddleConfig,
-  getMissingPaddlePriceIds,
-  resolvePaddlePriceId,
-} from '@/lib/paddle';
-import {
   createPayPalCheckout,
   getMissingPayPalPlanIds,
   getPayPalConfig,
@@ -23,19 +16,13 @@ import {
 } from '@/lib/paypal';
 import { ensureProfile } from '@/lib/profiles';
 
-function activeProvider(): 'paypal' | 'paddle' | null {
-  if (getPayPalConfig()) return 'paypal';
-  if (getPaddleConfig() && getPaddleClient()) return 'paddle';
-  return null;
-}
-
 export async function POST(request: NextRequest) {
-  const provider = activeProvider();
-  if (!provider) {
+  const paypalConfig = getPayPalConfig();
+  if (!paypalConfig) {
     return NextResponse.json(
       {
-        error: 'Payments are not configured. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET.',
-        errorCode: 'PAYMENTS_NOT_CONFIGURED',
+        error: 'PayPal is not configured. Set PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, and PAYPAL_ENVIRONMENT.',
+        errorCode: 'PAYPAL_NOT_CONFIGURED',
       },
       { status: 503 },
     );
@@ -76,35 +63,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (provider === 'paypal') {
-    const plan = CHECKOUT_PLANS[planType as CheckoutPlanType];
-    if (plan.isSubscription && !resolvePayPalPlanId(planType as CheckoutPlanType)) {
-      const missing = getMissingPayPalPlanIds();
-      return NextResponse.json(
-        {
-          error: `PayPal plan not configured for "${planType}". Set: ${missing.join(', ')}`,
-          errorCode: 'PAYPAL_PLAN_MISSING',
-          missing,
-        },
-        { status: 503 },
-      );
-    }
-  } else {
-    const priceId = resolvePaddlePriceId(planType);
-    if (!priceId) {
-      const missing = getMissingPaddlePriceIds();
-      return NextResponse.json(
-        {
-          error: `Paddle price not configured for plan "${planType}". Set: ${missing.join(', ')}`,
-          errorCode: 'PADDLE_PRICE_MISSING',
-          missing,
-        },
-        { status: 503 },
-      );
-    }
+  const plan = CHECKOUT_PLANS[planType as CheckoutPlanType];
+  if (plan.isSubscription && !resolvePayPalPlanId(planType as CheckoutPlanType)) {
+    const missing = getMissingPayPalPlanIds();
+    return NextResponse.json(
+      {
+        error: `PayPal plan not configured for "${planType}". Set: ${missing.join(', ')}`,
+        errorCode: 'PAYPAL_PLAN_MISSING',
+        missing,
+      },
+      { status: 503 },
+    );
   }
 
-  const plan = CHECKOUT_PLANS[planType as CheckoutPlanType];
   const reportId: string | null = body.reportId ?? null;
   const amount = plan.amountCents / 100;
 
@@ -128,7 +99,7 @@ export async function POST(request: NextRequest) {
       amount,
       currency: 'usd',
       status: 'pending',
-      payment_provider: provider,
+      payment_provider: 'paypal',
       metadata: { plan_label: plan.labelEn },
     })
     .select('id')
@@ -143,47 +114,24 @@ export async function POST(request: NextRequest) {
   }
 
   const origin = request.nextUrl.origin;
-  const successUrl = `${origin}/?checkout=success`;
   const cancelUrl = `${origin}/?checkout=cancel`;
   const paypalReturnUrl = `${origin}/api/payment/paypal-return`;
 
   try {
-    if (provider === 'paypal') {
-      const checkoutUrl = await createPayPalCheckout({
-        planType: planType as CheckoutPlanType,
-        orderId: order.id,
-        email: user.email ?? undefined,
-        returnUrl: paypalReturnUrl,
-        cancelUrl,
-      });
-      return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'paypal' });
-    }
-
-    const paddle = getPaddleClient();
-    const priceId = resolvePaddlePriceId(planType);
-    if (!paddle || !priceId) {
-      throw new Error('Paddle is not configured');
-    }
-    const metadata: Record<string, string> = {
-      order_id: order.id,
-      user_id: user.id,
-      plan_type: planType,
-    };
-    if (reportId) metadata.report_id = reportId;
-    const checkoutUrl = await createPaddleCheckout(paddle, {
+    const checkoutUrl = await createPayPalCheckout({
       planType: planType as CheckoutPlanType,
-      priceId,
+      orderId: order.id,
       email: user.email ?? undefined,
-      successUrl,
-      metadata,
+      returnUrl: paypalReturnUrl,
+      cancelUrl,
     });
-    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'paddle' });
+    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'paypal' });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Checkout error';
+    const message = err instanceof Error ? err.message : 'PayPal checkout error';
     console.error('[checkout] create failed:', message);
     await admin.from('orders').update({ status: 'failed' }).eq('id', order.id);
     return NextResponse.json(
-      { error: message, errorCode: provider === 'paypal' ? 'PAYPAL_ERROR' : 'PADDLE_ERROR' },
+      { error: message, errorCode: 'PAYPAL_ERROR' },
       { status: 500 },
     );
   }
@@ -191,30 +139,23 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   const paypal = getPayPalConfig();
-  if (paypal) {
-    const missing = getMissingPayPalPlanIds();
+  if (!paypal) {
     return NextResponse.json({
       provider: 'paypal',
-      configured: true,
-      environment: paypal.environment,
-      missingPrices: missing,
-      plans: ACTIVE_CHECKOUT_PLAN_TYPES.map((t) => ({
-        ...CHECKOUT_PLANS[t],
-        priceConfigured: CHECKOUT_PLANS[t].isSubscription ? !!resolvePayPalPlanId(t) : true,
-      })),
+      configured: false,
+      error: 'PayPal not configured',
     });
   }
 
-  const paddleConfig = getPaddleConfig();
-  const missing = getMissingPaddlePriceIds();
+  const missing = getMissingPayPalPlanIds();
   return NextResponse.json({
-    provider: 'paddle',
-    configured: !!paddleConfig,
-    environment: paddleConfig?.environment ?? 'sandbox',
+    provider: 'paypal',
+    configured: true,
+    environment: paypal.environment,
     missingPrices: missing,
     plans: ACTIVE_CHECKOUT_PLAN_TYPES.map((t) => ({
       ...CHECKOUT_PLANS[t],
-      priceConfigured: !!resolvePaddlePriceId(t),
+      priceConfigured: CHECKOUT_PLANS[t].isSubscription ? !!resolvePayPalPlanId(t) : true,
     })),
   });
 }
