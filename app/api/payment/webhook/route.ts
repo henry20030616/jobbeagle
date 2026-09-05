@@ -64,11 +64,11 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
     return NextResponse.json({ error: 'Invalid PayPal webhook body' }, { status: 400 });
   }
 
-  const eventType = event.event_type;
+  const eventType = event.eventType;
   console.log('[webhook] PayPal event:', eventType, event.id);
 
   if (eventType === 'PAYMENT.CAPTURE.COMPLETED' || eventType === 'PAYMENT.SALE.COMPLETED') {
-    const resource = asRecord(event.resource);
+    const resource = event.resource as Record<string, unknown>;
     const customId = typeof resource.custom_id === 'string' ? resource.custom_id : null;
     if (!customId) {
       return NextResponse.json({ error: 'Missing custom_id in resource' }, { status: 400 });
@@ -124,7 +124,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
   }
 
   if (eventType === 'BILLING.SUBSCRIPTION.ACTIVATED') {
-    const resource = asRecord(event.resource);
+    const resource = event.resource as Record<string, unknown>;
     const customId = typeof resource.custom_id === 'string' ? resource.custom_id : null;
     if (!customId) {
       return NextResponse.json({ error: 'Missing custom_id in resource' }, { status: 400 });
