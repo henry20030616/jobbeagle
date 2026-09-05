@@ -2,14 +2,6 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { ensureProfile } from '@/lib/profiles';
-import { applyMembershipFromPaddleSubscriptions } from '@/lib/fulfill-order';
-import {
-  getPaddleClient,
-  getPaddleConfig,
-  listPaddleSubscriptionsForEmail,
-  pickManageablePaddleSubscription,
-  toPaddleSubscriptionBillingView,
-} from '@/lib/paddle';
 import {
   findLivePayPalSubscription,
   getPayPalConfig,
@@ -20,16 +12,13 @@ export const runtime = 'nodejs';
 
 /**
  * Current monthly subscription for the signed-in email (read-only view).
- * Downgrades a stale paid tier if Paddle already shows the sub expired.
  */
 export async function GET() {
   const paypal = getPayPalConfig();
-  const paddleConfig = getPaddleConfig();
-  const paddle = getPaddleClient();
   const admin = getSupabaseAdmin();
-  if ((!paypal && (!paddleConfig || !paddle)) || !admin) {
+  if (!paypal || !admin) {
     return NextResponse.json(
-      { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
+      { error: 'PayPal is not configured', errorCode: 'SERVER_CONFIG' },
       { status: 503 },
     );
   }
@@ -58,65 +47,30 @@ export async function GET() {
     avatar_url: user.user_metadata?.avatar_url,
   });
 
-  if (paypal) {
-    try {
-      const live = await findLivePayPalSubscription(admin, user.id);
-      if (!live) {
-        return NextResponse.json({ subscription: null });
-      }
-      const canCancel = live.status === 'ACTIVE';
-      return NextResponse.json({
-        subscription: {
-          id: live.id,
-          status: live.status,
-          planType: null,
-          membershipTier: null,
-          currentBillingPeriodEndsAt: live.nextBillingTime,
-          scheduledForCancellation: false,
-          canCancel,
-          canManage: true,
-        },
-      });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'PayPal error';
-      console.error('[account/subscription]', message);
-      return NextResponse.json(
-        { error: message, errorCode: 'PAYPAL_ERROR' },
-        { status: 502 },
-      );
-    }
-  }
-
-  if (!paddle) {
-    return NextResponse.json(
-      { error: 'Billing is not configured', errorCode: 'SERVER_CONFIG' },
-      { status: 503 },
-    );
-  }
-
-  let subscriptions;
   try {
-    subscriptions = await listPaddleSubscriptionsForEmail(paddle, user.email);
+    const live = await findLivePayPalSubscription(admin, user.id);
+    if (!live) {
+      return NextResponse.json({ subscription: null });
+    }
+    const canCancel = live.status === 'ACTIVE';
+    return NextResponse.json({
+      subscription: {
+        id: live.id,
+        status: live.status,
+        planType: null,
+        membershipTier: null,
+        currentBillingPeriodEndsAt: live.nextBillingTime,
+        scheduledForCancellation: false,
+        canCancel,
+        canManage: true,
+      },
+    });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Paddle error';
+    const message = err instanceof Error ? err.message : 'PayPal error';
     console.error('[account/subscription]', message);
     return NextResponse.json(
-      { error: message, errorCode: 'PADDLE_ERROR' },
+      { error: message, errorCode: 'PAYPAL_ERROR' },
       { status: 502 },
     );
   }
-
-  try {
-    await applyMembershipFromPaddleSubscriptions(admin, user.id, subscriptions, {
-      mode: 'downgrade-only',
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Profile update failed';
-    console.error('[account/subscription] reconcile', message);
-  }
-
-  const chosen = pickManageablePaddleSubscription(subscriptions);
-  return NextResponse.json({
-    subscription: toPaddleSubscriptionBillingView(chosen),
-  });
 }
