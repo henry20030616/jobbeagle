@@ -1,6 +1,7 @@
 import type { CheckoutPlanType } from '@/constants/checkout-plans';
 import {
   ANALYTICS_EVENTS,
+  checkoutItem,
   checkoutValueUsd,
   rememberPendingCheckout,
   trackEvent,
@@ -16,7 +17,7 @@ export async function startCheckout(
   trackEvent(ANALYTICS_EVENTS.beginCheckout, {
     currency: 'USD',
     value,
-    item_id: planType,
+    items: [checkoutItem(planType, value)],
   });
 
   const res = await fetch('/api/checkout', {

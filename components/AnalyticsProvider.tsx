@@ -2,7 +2,13 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { trackException, trackPageView } from '@/lib/analytics';
+import { createClient } from '@/lib/supabase/browser';
+import {
+  shouldTrackAuthOnce,
+  trackAuthSuccess,
+  trackException,
+  trackPageView,
+} from '@/lib/analytics';
 
 export default function AnalyticsProvider() {
   const pathname = usePathname();
@@ -13,6 +19,18 @@ export default function AnalyticsProvider() {
     const path = query ? `${pathname}?${query}` : pathname;
     trackPageView(path);
   }, [pathname, searchParams]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== 'SIGNED_IN' || !session?.user) return;
+      if (!shouldTrackAuthOnce(session.user.id)) return;
+      trackAuthSuccess(session.user.created_at);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const onError = (event: ErrorEvent) => {

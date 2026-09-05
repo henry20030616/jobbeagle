@@ -129,6 +129,8 @@ export default function QuotaPaywallCard({
 
   useEffect(() => {
     trackEvent(ANALYTICS_EVENTS.paywallView, {
+      item_list_id: 'paywall',
+      item_list_name: 'Quota paywall',
       logged_in: isLoggedIn,
     });
   }, [isLoggedIn]);
@@ -136,7 +138,6 @@ export default function QuotaPaywallCard({
   const handleLogin = async () => {
     setBusy('login');
     setErr(null);
-    trackEvent(ANALYTICS_EVENTS.loginClick, { source: 'paywall' });
     try {
       const supabase = createClient();
       const callbackUrl = new URL(`${window.location.origin}/auth/callback`);

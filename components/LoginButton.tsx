@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/browser';
-import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 import { LogIn, LogOut, User } from 'lucide-react';
 
 const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
@@ -32,7 +31,6 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
   }, []);
 
   const handleLogin = async () => {
-    trackEvent(ANALYTICS_EVENTS.loginClick, { source: 'header' });
     try {
       const supabase = createClient();
       

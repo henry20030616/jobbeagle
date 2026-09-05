@@ -8,41 +8,57 @@ vi.mock('@vercel/analytics', () => ({
 }));
 import {
   ANALYTICS_EVENTS,
+  FUNNEL,
   checkoutValueUsd,
   consumePendingCheckout,
   rememberPendingCheckout,
+  trackAuthSuccess,
   trackCheckoutReturn,
   trackEvent,
 } from '@/lib/analytics';
 
-describe('analytics', () => {
+describe('analytics funnel', () => {
   const gtag = vi.fn();
 
   beforeEach(() => {
     gtag.mockReset();
-    (window as Window & { gtag?: typeof gtag }).gtag = gtag;
+    window.gtag = gtag;
     window.sessionStorage.clear();
   });
 
   afterEach(() => {
-    delete (window as Window & { gtag?: typeof gtag }).gtag;
+    delete window.gtag;
     window.sessionStorage.clear();
   });
 
-  it('sends cleaned event params through gtag', () => {
-    trackEvent(ANALYTICS_EVENTS.analyzeStart, {
+  it('exposes seven conversion nodes in order', () => {
+    expect(Object.values(FUNNEL).map((node) => `${node.step}:${node.event}`)).toEqual([
+      '1:sign_up',
+      '1:login',
+      '2:add_extension',
+      '3:preflight',
+      '4:job_analyzed',
+      '5:view_item_list',
+      '6:begin_checkout',
+      '7:purchase',
+    ]);
+  });
+
+  it('stamps funnel_step on conversion events', () => {
+    trackEvent(ANALYTICS_EVENTS.analyzeComplete, {
       report_type: 'job_fit_snapshot',
       source: 'home',
       skip: null,
     });
-    expect(gtag).toHaveBeenCalledWith('event', 'analyze_start', {
+    expect(gtag).toHaveBeenCalledWith('event', 'job_analyzed', {
       report_type: 'job_fit_snapshot',
       source: 'home',
+      funnel_step: 4,
     });
   });
 
   it('does not throw when gtag is missing', () => {
-    delete (window as Window & { gtag?: typeof gtag }).gtag;
+    delete window.gtag;
     expect(() => trackEvent('purchase', { value: 3 })).not.toThrow();
   });
 
@@ -61,7 +77,14 @@ describe('analytics', () => {
       expect.objectContaining({
         currency: 'USD',
         value: 3,
-        item_id: 'single_job_fit_snapshot',
+        funnel_step: 7,
+        items: [
+          expect.objectContaining({
+            item_id: 'single_job_fit_snapshot',
+            price: 3,
+            quantity: 1,
+          }),
+        ],
       }),
     );
     expect(consumePendingCheckout()).toBeNull();
@@ -74,5 +97,14 @@ describe('analytics', () => {
       item_id: 'advanced_subscription',
     });
     expect(gtag.mock.calls.some((call) => call[1] === 'purchase')).toBe(false);
+  });
+
+  it('treats a brand-new account as sign_up', () => {
+    trackAuthSuccess(new Date().toISOString());
+    expect(gtag).toHaveBeenCalledWith(
+      'event',
+      'sign_up',
+      expect.objectContaining({ method: 'google', funnel_step: 1 }),
+    );
   });
 });

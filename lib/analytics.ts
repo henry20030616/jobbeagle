@@ -3,17 +3,33 @@ import { CHECKOUT_PLANS, type CheckoutPlanType } from '@/constants/checkout-plan
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || 'G-5EV9NSSJRW';
 
+/**
+ * Conversion funnel — these seven names are the only nodes worth optimizing.
+ * GA4 recommended events keep login / paywall / checkout / purchase in standard reports.
+ */
+export const FUNNEL = {
+  signUp: { event: 'sign_up', step: 1 },
+  login: { event: 'login', step: 1 },
+  addExtension: { event: 'add_extension', step: 2 },
+  preflight: { event: 'preflight', step: 3 },
+  jobAnalyzed: { event: 'job_analyzed', step: 4 },
+  paywall: { event: 'view_item_list', step: 5 },
+  beginCheckout: { event: 'begin_checkout', step: 6 },
+  purchase: { event: 'purchase', step: 7 },
+} as const;
+
 export const ANALYTICS_EVENTS = {
   pageView: 'page_view',
-  loginClick: 'login_click',
-  extensionInstallClick: 'extension_install_click',
-  confirmView: 'confirm_view',
+  login: FUNNEL.login.event,
+  signUp: FUNNEL.signUp.event,
+  extensionInstallClick: FUNNEL.addExtension.event,
+  confirmView: FUNNEL.preflight.event,
   analyzeStart: 'analyze_start',
-  analyzeComplete: 'analyze_complete',
+  analyzeComplete: FUNNEL.jobAnalyzed.event,
   analyzeError: 'analyze_error',
-  paywallView: 'paywall_view',
-  beginCheckout: 'begin_checkout',
-  purchase: 'purchase',
+  paywallView: FUNNEL.paywall.event,
+  beginCheckout: FUNNEL.beginCheckout.event,
+  purchase: FUNNEL.purchase.event,
   checkoutCancel: 'checkout_cancel',
   exception: 'exception',
 } as const;
@@ -22,12 +38,27 @@ export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTIC
 
 export type AnalyticsParam = string | number | boolean;
 
+export type AnalyticsItem = {
+  item_id: string;
+  item_name: string;
+  price: number;
+  quantity: number;
+};
+
+type EventParams = Record<string, AnalyticsParam | AnalyticsItem[] | null | undefined>;
+
 const PENDING_CHECKOUT_KEY = 'jb_pending_checkout';
+const AUTH_TRACK_PREFIX = 'jb_auth_ev_';
 
 type PendingCheckout = {
   planType: string;
   value: number;
 };
+
+type QueuedEvent = { name: string; params: Record<string, AnalyticsParam | AnalyticsItem[]> };
+
+const queue: QueuedEvent[] = [];
+let flushTimer: number | null = null;
 
 function gtagFn(): ((...args: unknown[]) => void) | null {
   if (typeof window === 'undefined') return null;
@@ -41,47 +72,85 @@ function clipParam(value: AnalyticsParam): AnalyticsParam {
   return value;
 }
 
-function cleanParams(
-  params?: Record<string, AnalyticsParam | null | undefined>,
-): Record<string, AnalyticsParam> {
-  const cleaned: Record<string, AnalyticsParam> = {};
+function cleanParams(params?: EventParams): Record<string, AnalyticsParam | AnalyticsItem[]> {
+  const cleaned: Record<string, AnalyticsParam | AnalyticsItem[]> = {};
   if (!params) return cleaned;
   for (const [key, value] of Object.entries(params)) {
     if (value === null || value === undefined) continue;
+    if (Array.isArray(value)) {
+      cleaned[key] = value;
+      continue;
+    }
     cleaned[key] = clipParam(value);
   }
   return cleaned;
 }
 
-function trackVercel(name: string, params: Record<string, AnalyticsParam>): void {
+function funnelStepFor(name: string): number | undefined {
+  for (const node of Object.values(FUNNEL)) {
+    if (node.event === name) return node.step;
+  }
+  return undefined;
+}
+
+function flushQueue(): void {
+  const send = gtagFn();
+  if (!send) return;
+  while (queue.length > 0) {
+    const next = queue.shift();
+    if (next) send('event', next.name, next.params);
+  }
+}
+
+function scheduleFlush(): void {
+  if (typeof window === 'undefined' || flushTimer != null) return;
+  const started = Date.now();
+  flushTimer = window.setInterval(() => {
+    if (gtagFn() || Date.now() - started > 8000) {
+      if (flushTimer != null) window.clearInterval(flushTimer);
+      flushTimer = null;
+      flushQueue();
+    }
+  }, 200);
+}
+
+function trackVercel(name: string, params: Record<string, AnalyticsParam | AnalyticsItem[]>): void {
   if (typeof window === 'undefined') return;
+  const vercelParams: Record<string, AnalyticsParam> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      vercelParams[key] = value;
+    }
+  }
   void import('@vercel/analytics')
     .then(({ track }) => {
-      track(name, params);
+      track(name, vercelParams);
     })
     .catch(() => {
       /* analytics package missing in some test envs */
     });
 }
 
-export function trackEvent(
-  name: AnalyticsEventName | string,
-  params?: Record<string, AnalyticsParam | null | undefined>,
-): void {
+export function trackEvent(name: AnalyticsEventName | string, params?: EventParams): void {
   const cleaned = cleanParams(params);
+  const step = funnelStepFor(name);
+  if (step !== undefined && cleaned.funnel_step === undefined) {
+    cleaned.funnel_step = step;
+  }
   const send = gtagFn();
   if (send) send('event', name, cleaned);
+  else {
+    queue.push({ name, params: cleaned });
+    scheduleFlush();
+  }
   trackVercel(name, cleaned);
 }
 
 export function trackPageView(path: string): void {
-  const send = gtagFn();
-  if (!send || !GA_MEASUREMENT_ID) return;
-  send('event', ANALYTICS_EVENTS.pageView, {
-    page_path: clipParam(path),
-    page_location: clipParam(`${window.location.origin}${path}`),
-    page_title: typeof document !== 'undefined' ? clipParam(document.title) : path,
-    send_to: GA_MEASUREMENT_ID,
+  trackEvent(ANALYTICS_EVENTS.pageView, {
+    page_path: path,
+    page_location: typeof window !== 'undefined' ? `${window.location.origin}${path}` : path,
+    page_title: typeof document !== 'undefined' ? document.title : path,
   });
 }
 
@@ -98,6 +167,16 @@ export function checkoutValueUsd(planType: CheckoutPlanType, amountUsd?: string)
     if (Number.isFinite(parsed) && parsed > 0) return Math.round(parsed * 100) / 100;
   }
   return CHECKOUT_PLANS[planType].amountCents / 100;
+}
+
+export function checkoutItem(planType: string, value: number): AnalyticsItem {
+  const known = planType in CHECKOUT_PLANS ? CHECKOUT_PLANS[planType as CheckoutPlanType] : null;
+  return {
+    item_id: planType,
+    item_name: known?.labelEn ?? planType,
+    price: value,
+    quantity: 1,
+  };
 }
 
 export function rememberPendingCheckout(planType: CheckoutPlanType, value: number): void {
@@ -131,18 +210,41 @@ export function consumePendingCheckout(): PendingCheckout | null {
 
 export function trackCheckoutReturn(status: 'success' | 'cancel' | 'error'): void {
   const pending = consumePendingCheckout();
+  const planType = pending?.planType ?? 'unknown';
+  const value = pending?.value ?? 0;
   if (status === 'success') {
     trackEvent(ANALYTICS_EVENTS.purchase, {
       currency: 'USD',
-      value: pending?.value ?? 0,
-      item_id: pending?.planType ?? 'unknown',
-      transaction_id: pending?.planType ?? 'paypal',
+      value,
+      transaction_id: `paypal_${planType}`,
+      items: [checkoutItem(planType, value)],
     });
     return;
   }
   if (status === 'cancel') {
     trackEvent(ANALYTICS_EVENTS.checkoutCancel, {
-      item_id: pending?.planType ?? 'unknown',
+      item_id: planType,
     });
+  }
+}
+
+export function trackAuthSuccess(createdAtIso?: string | null): void {
+  if (typeof window === 'undefined') return;
+  const createdMs = createdAtIso ? Date.parse(createdAtIso) : Number.NaN;
+  const isNew = Number.isFinite(createdMs) && Date.now() - createdMs < 15 * 60 * 1000;
+  trackEvent(isNew ? ANALYTICS_EVENTS.signUp : ANALYTICS_EVENTS.login, {
+    method: 'google',
+  });
+}
+
+export function shouldTrackAuthOnce(userId: string): boolean {
+  if (typeof window === 'undefined') return false;
+  const key = `${AUTH_TRACK_PREFIX}${userId}`;
+  try {
+    if (window.sessionStorage.getItem(key)) return false;
+    window.sessionStorage.setItem(key, '1');
+    return true;
+  } catch {
+    return true;
   }
 }
