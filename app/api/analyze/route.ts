@@ -43,6 +43,7 @@ import { tryActivateReferralMilestone } from '@/lib/referrals';
 import { upsertResumeForUser } from '@/lib/resumes';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
 import { validateJobDescription } from '@/lib/validate-job-description';
+import { notifyFailure } from '@/lib/transactional-email';
 import {
   REPORT_CODES,
   isInterviewStrategyGuide,
@@ -344,11 +345,26 @@ export async function POST(request: NextRequest) {
         modelUsed = result.model;
       }
     } catch (analysisErr) {
+      let refunded = true;
       try {
         await refundCredit(admin, user.id, reportType);
       } catch (refundErr) {
+        refunded = false;
         console.error('[Analyze] Credit refund failed:', refundErr);
       }
+      const productLabel =
+        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+          ? 'Job Fit Snapshot'
+          : 'Interview Strategy Guide';
+      await notifyFailure({
+        scenario: 'analysis_failed',
+        userEmail: user.email,
+        userId: user.id,
+        jobLabel: `${input.job_title} at ${input.company_name}`,
+        planLabel: productLabel,
+        refunded,
+        technicalDetail: analysisErr instanceof Error ? analysisErr.message : 'Analysis failed',
+      });
       throw analysisErr;
     }
 

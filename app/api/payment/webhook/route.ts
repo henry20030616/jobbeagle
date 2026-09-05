@@ -10,8 +10,27 @@ import {
 } from '@/lib/paypal';
 import { isCheckoutPlanType, normalizeCheckoutPlanType } from '@/constants/checkout-plans';
 import { clientIpFromRequest, rateLimit } from '@/lib/rate-limit';
+import { lookupUserEmail, notifyFailure } from '@/lib/transactional-email';
 
 export const runtime = 'nodejs';
+
+async function notifyFulfillFailure(
+  admin: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
+  userId: string,
+  orderId: string,
+  technicalDetail: string,
+  planLabel?: string,
+): Promise<void> {
+  const userEmail = await lookupUserEmail(admin, userId);
+  await notifyFailure({
+    scenario: 'payment_fulfill_failed',
+    userEmail,
+    userId,
+    orderId,
+    planLabel,
+    technicalDetail,
+  });
+}
 
 async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
   const admin = getSupabaseAdmin();
@@ -98,6 +117,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Fulfillment failed';
       console.error('[webhook] fulfill error:', message);
+      await notifyFulfillFailure(admin, orderRow.user_id, orderRow.id, message, planType);
       return NextResponse.json({ error: message }, { status: 500 });
     }
 
@@ -155,10 +175,43 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Fulfillment failed';
       console.error('[webhook] fulfill subscription error:', message);
+      await notifyFulfillFailure(admin, orderRow.user_id, orderRow.id, message, planType);
       return NextResponse.json({ error: message }, { status: 500 });
     }
 
     return NextResponse.json({ received: true, provider: 'paypal', subscription: true });
+  }
+
+  if (eventType === 'BILLING.SUBSCRIPTION.PAYMENT.FAILED') {
+    const customId = event.customId;
+    let orderId = customId;
+    let userId: string | null = null;
+    if (customId) {
+      const { data } = await admin
+        .from('orders')
+        .select('id, user_id, plan_type')
+        .eq('id', customId)
+        .maybeSingle();
+      userId = typeof data?.user_id === 'string' ? data.user_id : null;
+    }
+    if (!userId && event.resourceId) {
+      const { data } = await admin
+        .from('orders')
+        .select('id, user_id, plan_type')
+        .eq('external_checkout_id', event.resourceId)
+        .maybeSingle();
+      userId = typeof data?.user_id === 'string' ? data.user_id : null;
+      if (typeof data?.id === 'string') orderId = data.id;
+    }
+    const userEmail = userId ? await lookupUserEmail(admin, userId) : null;
+    await notifyFailure({
+      scenario: 'subscription_payment_failed',
+      userEmail,
+      userId,
+      orderId,
+      technicalDetail: eventType,
+    });
+    return NextResponse.json({ received: true, notified: true });
   }
 
   if (

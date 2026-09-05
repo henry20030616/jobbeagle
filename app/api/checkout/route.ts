@@ -16,6 +16,7 @@ import {
   resolvePayPalPlanId,
 } from '@/lib/paypal';
 import { ensureProfile } from '@/lib/profiles';
+import { notifyFailure } from '@/lib/transactional-email';
 
 export async function POST(request: NextRequest) {
   const paypalConfig = getPayPalConfig();
@@ -126,6 +127,13 @@ export async function POST(request: NextRequest) {
 
   if (orderErr || !order) {
     console.error('[checkout] order insert failed:', orderErr?.message);
+    await notifyFailure({
+      scenario: 'checkout_create_failed',
+      userEmail: user.email,
+      userId: user.id,
+      planLabel: plan.labelEn,
+      technicalDetail: orderErr?.message ?? 'order insert failed',
+    });
     return NextResponse.json(
       { error: 'Could not create order', errorCode: 'ORDER_CREATE_FAILED' },
       { status: 500 },
@@ -150,6 +158,14 @@ export async function POST(request: NextRequest) {
     const message = err instanceof Error ? err.message : 'PayPal checkout error';
     console.error('[checkout] create failed:', message);
     await admin.from('orders').update({ status: 'failed' }).eq('id', order.id);
+    await notifyFailure({
+      scenario: 'checkout_create_failed',
+      userEmail: user.email,
+      userId: user.id,
+      planLabel: plan.labelEn,
+      orderId: order.id,
+      technicalDetail: message,
+    });
     return NextResponse.json(
       { error: message, errorCode: 'PAYPAL_ERROR' },
       { status: 500 },
