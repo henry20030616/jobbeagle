@@ -16,7 +16,7 @@
 - **UI 框架**：React 19 + Tailwind CSS
 - **AI 服務**：Google Gemini 3.1 Flash-Lite Preview
 - **資料庫**：Supabase (PostgreSQL)
-- **付款系統**：Paddle (訂閱 + 單次購買)
+- **付款系統**：PayPal (訂閱 + 單次購買)
 - **圖表庫**：Recharts
 
 ## 安裝步驟
@@ -37,10 +37,8 @@
    - `GEMINI_API_KEY`: 您的 Google Gemini API Key
    - `NEXT_PUBLIC_SUPABASE_URL`: 您的 Supabase 專案 URL
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: 您的 Supabase Anon Key
-   - `PADDLE_API_KEY`: Paddle API 金鑰
-   - `PADDLE_ENVIRONMENT`: Paddle 環境 (sandbox 或 production)
-   
-   完整設定指南請參考：[docs/PADDLE_SETUP.md](docs/PADDLE_SETUP.md)
+   - `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET`: PayPal Live 憑證
+   - `PAYPAL_ENVIRONMENT`: `live` 或 `sandbox`
 
 3. **設定 Supabase 資料庫**
    

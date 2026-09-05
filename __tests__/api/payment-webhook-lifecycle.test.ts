@@ -1,125 +1,40 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createHmac } from 'crypto';
 import { NextRequest } from 'next/server';
 
-const mockApply = vi.fn();
-const mockFulfill = vi.fn();
-const mockRenew = vi.fn();
-const mockList = vi.fn();
-const mockGetAdmin = vi.fn();
-
-vi.mock('@/lib/fulfill-order', () => ({
-  fulfillOrder: (...args: unknown[]) => mockFulfill(...args),
-  fulfillSubscriptionRenewal: (...args: unknown[]) => mockRenew(...args),
-  applyMembershipFromPaddleSubscriptions: (...args: unknown[]) => mockApply(...args),
-}));
-
 vi.mock('@/lib/supabase/admin', () => ({
-  getSupabaseAdmin: () => mockGetAdmin(),
+  getSupabaseAdmin: () => ({ from: vi.fn() }),
 }));
 
-vi.mock('@/lib/paddle', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/paddle')>();
+vi.mock('@/lib/paypal', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/paypal')>();
   return {
     ...actual,
-    getPaddleConfig: () => ({
-      apiKey: 'test-key',
-      environment: 'sandbox' as const,
-      webhookSecret: 'whsec',
-      priceIds: {},
+    getPayPalConfig: () => ({
+      clientId: 'id',
+      clientSecret: 'secret',
+      environment: 'live' as const,
+      webhookId: 'wh',
+      planIds: { standard_subscription: 'P-1', advanced_subscription: 'P-2' },
     }),
-    getPaddleClient: () => ({}),
-    listPaddleSubscriptionsForEmail: (...args: unknown[]) => mockList(...args),
   };
 });
 
 import { POST } from '@/app/api/payment/webhook/route';
 
-function signedPaddleRequest(body: object, secret = 'whsec') {
-  const raw = JSON.stringify(body);
-  const timestamp = Math.floor(Date.now() / 1000);
-  const payload = `${timestamp}:${raw}`;
-  const signature = createHmac('sha256', secret).update(payload).digest('hex');
-  const paddleSignature = `ts=${timestamp};h1=${signature}`;
-  
-  return new NextRequest('http://localhost/api/payment/webhook', {
-    method: 'POST',
-    headers: { 'paddle-signature': paddleSignature, 'content-type': 'application/json' },
-    body: raw,
-  });
-}
-
-describe('Paddle subscription lifecycle webhook', () => {
+describe('PayPal webhook routing', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetAdmin.mockReturnValue({
-      from: vi.fn(),
-      auth: { admin: { listUsers: vi.fn() } },
-    });
-    mockList.mockResolvedValue([]);
-    mockApply.mockResolvedValue('free');
   });
 
-  it('rejects an invalid signature', async () => {
+  it('rejects requests without PayPal transmission headers', async () => {
     const res = await POST(
-      signedPaddleRequest({ event_type: 'subscription.canceled' }, 'wrong'),
+      new NextRequest('http://localhost/api/payment/webhook', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ event_type: 'BILLING.SUBSCRIPTION.CANCELLED' }),
+      }),
     );
     expect(res.status).toBe(400);
-    expect(mockApply).not.toHaveBeenCalled();
-  });
-
-  it('does not downgrade on subscription_canceled', async () => {
-    const res = await POST(
-      signedPaddleRequest({
-        event_type: 'subscription.canceled',
-        data: {
-          id: 'sub-1',
-          status: 'canceled',
-          customer_email: 'user@example.com',
-          custom_data: { user_id: 'u-1', plan_type: 'standard_subscription' },
-        },
-      }),
-    );
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({
-      received: true,
-      lifecycle: 'subscription.canceled',
-    });
-    expect(mockApply).toHaveBeenCalled();
-  });
-
-  it('handles subscription lifecycle events', async () => {
-    mockList.mockResolvedValue([
-      {
-        id: 'sub-1',
-        status: 'canceled',
-        priceId: 'pri_123',
-        customerId: 'ctm_1',
-        customerEmail: 'user@example.com',
-        currentBillingPeriodEndsAt: null,
-        scheduledChange: null,
-        planType: 'standard_subscription',
-        membershipTier: 'standard_sub',
-      },
-    ]);
-
-    const res = await POST(
-      signedPaddleRequest({
-        event_type: 'subscription.canceled',
-        data: {
-          id: 'sub-1',
-          status: 'canceled',
-          customer_email: 'user@example.com',
-          custom_data: { user_id: 'u-1', plan_type: 'standard_subscription' },
-        },
-      }),
-    );
-    expect(res.status).toBe(200);
-    expect(mockApply).toHaveBeenCalledWith(
-      expect.anything(),
-      'u-1',
-      expect.any(Array),
-      { emptyMeans: 'free' },
-    );
+    expect(await res.json()).toEqual({ error: 'Unknown webhook provider' });
   });
 });

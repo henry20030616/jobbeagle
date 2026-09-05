@@ -41,7 +41,7 @@ const PRIVACY_EN: LegalDocument = {
       title: 'How We Use Your Information',
       paragraphs: [
         'Provide AI job-match analysis (Lite / Full reports) and Pre-Flight confirmation.',
-        'Process payments and credit balances via Lemon Squeezy.',
+        'Process payments and credit balances via PayPal.',
         'Prevent abuse through rate limits, credit checks, and device-fingerprint Sybil controls.',
         'Improve the product based on aggregated usage patterns.',
       ],
@@ -49,7 +49,7 @@ const PRIVACY_EN: LegalDocument = {
     {
       title: 'Sharing Your Information',
       paragraphs: [
-        'We use third-party processors: Supabase (database & auth), Google Gemini (AI analysis), Lemon Squeezy (payments), Vercel (hosting), Resend (email, if enabled), Google Analytics (if enabled).',
+        'We use third-party processors: Supabase (database & auth), Google Gemini (AI analysis), PayPal (payments), Vercel (hosting), Resend (email, if enabled), Google Analytics (if enabled).',
         'We do not sell your personal information to third parties.',
         'We may disclose information if required by law or to protect our rights and users.',
       ],
@@ -118,7 +118,7 @@ const PRIVACY_ZH_TW: LegalDocument = {
       title: '我們如何使用您的資訊',
       paragraphs: [
         '提供 AI 職缺分析（Lite／Full）與 Pre-Flight 確認。',
-        '透過 Lemon Squeezy 處理付款與額度。',
+        '透過 PayPal 處理付款與額度。',
         '透過限流、額度檢查與裝置指紋防止濫用。',
         '依彙總使用模式改善產品。',
       ],
@@ -126,7 +126,7 @@ const PRIVACY_ZH_TW: LegalDocument = {
     {
       title: '資訊分享',
       paragraphs: [
-        '我們使用第三方處理者：Supabase、Google Gemini、Lemon Squeezy、Vercel、Resend（若啟用）、Google Analytics（若啟用）。',
+        '我們使用第三方處理者：Supabase、Google Gemini、PayPal、Vercel、Resend（若啟用）、Google Analytics（若啟用）。',
         '我們不會將您的個人資料出售給第三方。',
         '若法律要求或為保護權益，我們可能依法揭露資訊。',
       ],
@@ -188,9 +188,9 @@ const TERMS_EN: LegalDocument = {
       title: 'Accounts & Credits',
       paragraphs: [
         'You must provide accurate information and keep your account secure. Analysis requires Google sign-in.',
-        'Free accounts receive a limited lifetime Lite allowance. Paid credits and subscriptions are fulfilled via Lemon Squeezy after successful payment.',
+        'Free accounts receive a limited lifetime Lite allowance. Paid credits and subscriptions are fulfilled via PayPal after successful payment.',
         'You can cancel a monthly Standard or Advanced subscription from Account management with one click. Access continues until the end of the current billing period; leftover credits remain.',
-        'Credits are non-transferable. Refunds follow Lemon Squeezy and applicable law.',
+        'Credits are non-transferable. Refunds follow PayPal and applicable law.',
       ],
     },
     {
@@ -259,9 +259,9 @@ const TERMS_ZH_TW: LegalDocument = {
       title: '帳號與額度',
       paragraphs: [
         '您應提供正確資訊並妥善保管帳號。分析需 Google 登入。',
-        '免費帳號享有有限終身 Lite 額度；付費額度與訂閱於 Lemon Squeezy 付款成功後發放。',
+        '免費帳號享有有限終身 Lite 額度；付費額度與訂閱於 PayPal 付款成功後發放。',
         '您可在帳戶管理頁一鍵取消月費 Standard／Advanced 訂閱。本期結束前仍可使用；剩餘額度會保留。',
-        '額度不可轉讓；退款依 Lemon Squeezy 與適用法律辦理。',
+        '額度不可轉讓；退款依 PayPal 與適用法律辦理。',
       ],
     },
     {

@@ -7,10 +7,9 @@
 ## 💰 付費與訂閱
 
 ### Q1: 如何付款？
-**A:** 我們使用 Lemon Squeezy 作為支付平台，接受：
-- 信用卡 / 簽帳卡
-- PayPal
-- Apple Pay / Google Pay
+**A:** 我們使用 PayPal 作為支付平台，接受：
+- PayPal 帳戶
+- 信用卡 / 簽帳卡（PayPal 結帳頁）
 
 ### Q2: 可以隨時取消訂閱嗎？
 **A:** 可以！
@@ -32,7 +31,7 @@
 
 ### Q5: 發票在哪裡？
 **A:** 
-- 購買後會收到 Lemon Squeezy 寄送的發票 Email
+- 購買後會收到 PayPal 寄送的收據 Email
 - 或前往 `/account` → 點擊「Manage billing」→ 查看所有發票
 
 ---
@@ -188,7 +187,7 @@
 **A:** 
 - **Email：** support@jobbeagle.com
 - **網站問題：** 在網站右下角點擊「Report Issue」
-- **付款問題：** 聯絡 Lemon Squeezy 客服
+- **付款問題：** 聯絡 PayPal 客服或 henry061680@gmail.com
 
 ### Q25: 可以客製化報告內容嗎？
 **A:** 

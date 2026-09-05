@@ -7,7 +7,7 @@ import {
   normalizeCheckoutPlanType,
 } from '@/constants/checkout-plans';
 
-/** Idempotent post-payment fulfillment (Lemon Squeezy). */
+/** Idempotent post-payment fulfillment. */
 export async function fulfillOrder(
   admin: SupabaseClient,
   orderId: string,
@@ -198,19 +198,4 @@ export async function downgradeExpiredSubscription(
     })
     .eq('id', userId);
   if (error) throw new Error(error.message);
-}
-
-// Deprecated - Lemon Squeezy support removed
-export async function applyMembershipFromLemonSubscriptions() {
-  return 'unchanged' as const;
-}
-
-// Deprecated - Stripe support removed  
-export async function applyMembershipFromStripeSubscriptions() {
-  return 'unchanged' as const;
-}
-
-// Deprecated - Paddle support removed
-export async function applyMembershipFromPaddleSubscriptions() {
-  return 'unchanged' as const;
 }

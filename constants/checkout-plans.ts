@@ -1,5 +1,5 @@
 /**
- * Checkout plans — Lemon Squeezy
+ * Checkout plans — PayPal
  * Canonical plan codes use Job Fit Snapshot / Interview Strategy Guide terminology.
  */
 

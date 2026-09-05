@@ -106,10 +106,6 @@ const copy: Record<
     subUnmatched: string;
     buy: string;
     buying: string;
-    syncSub: string;
-    syncing: string;
-    syncOk: string;
-    syncNone: string;
     billing: string;
     billingEmpty: string;
     date: string;
@@ -166,10 +162,6 @@ const copy: Record<
       'Your account still shows a paid plan, but PayPal has no live subscription for this email. Sandbox or cancelled tests can leave this badge. Buy again below if you want a live plan.',
     buy: 'Buy',
     buying: 'Redirecting…',
-    syncSub: 'Sync subscription credits',
-    syncing: 'Syncing…',
-    syncOk: 'Subscription synced — monthly credits refreshed.',
-    syncNone: 'No active Standard/Advanced subscription found for this email.',
     billing: 'Billing history',
     billingEmpty: 'No orders yet.',
     date: 'Date',
@@ -227,10 +219,6 @@ const copy: Record<
       '帳戶仍顯示付費方案，但 PayPal 沒有此信箱的正式訂閱。沙盒測試或已取消的訂閱常會留下這個狀態。若要正式方案，請在下方重新購買。',
     buy: '購買',
     buying: '跳轉中…',
-    syncSub: '同步訂閱額度',
-    syncing: '同步中…',
-    syncOk: '已同步訂閱，月額度已刷新。',
-    syncNone: '此信箱沒有進行中的 Standard／Advanced 訂閱。',
     billing: '帳單紀錄',
     billingEmpty: '尚無訂單。',
     date: '日期',
@@ -284,10 +272,6 @@ const copy: Record<
       '账户仍显示付费方案，但 PayPal 没有此邮箱的正式订阅。沙盒测试或已取消的订阅常会留下这个状态。若要正式方案，请在下方重新购买。',
     buy: '购买',
     buying: '跳转中…',
-    syncSub: '同步订阅额度',
-    syncing: '同步中…',
-    syncOk: '已同步订阅，月额度已刷新。',
-    syncNone: '此邮箱没有进行中的 Standard／Advanced 订阅。',
     billing: '账单记录',
     billingEmpty: '暂无订单。',
     date: '日期',
@@ -343,10 +327,6 @@ const copy: Record<
       'Tu cuenta sigue mostrando un plan de pago, pero PayPal no tiene una suscripción en vivo para este email. Pruebas sandbox o canceladas pueden dejar este estado. Compra de nuevo abajo si quieres un plan real.',
     buy: 'Comprar',
     buying: 'Redirigiendo…',
-    syncSub: 'Sincronizar créditos de suscripción',
-    syncing: 'Sincronizando…',
-    syncOk: 'Suscripción sincronizada — créditos mensuales actualizados.',
-    syncNone: 'No hay suscripción Standard/Advanced activa para este email.',
     billing: 'Historial de facturación',
     billingEmpty: 'Sin pedidos aún.',
     date: 'Fecha',
@@ -404,10 +384,6 @@ const copy: Record<
       'खाते में अभी भी पेड प्लान दिख रहा है, लेकिन इस ईमेल पर PayPal की लाइव सदस्यता नहीं मिली। सैंडबॉक्स या रद्द टेस्ट से यह रह सकता है। लाइव प्लान के लिए नीचे फिर खरीदें।',
     buy: 'खरीदें',
     buying: 'रीडायरेक्ट…',
-    syncSub: 'सदस्यता क्रेडिट सिंक करें',
-    syncing: 'सिंक हो रहा है…',
-    syncOk: 'सदस्यता सिंक हो गई — मासिक क्रेडिट रिफ्रेश।',
-    syncNone: 'इस ईमेल पर सक्रिय Standard/Advanced सदस्यता नहीं मिली।',
     billing: 'बिलिंग इतिहास',
     billingEmpty: 'अभी कोई ऑर्डर नहीं।',
     date: 'तारीख',
@@ -464,10 +440,6 @@ const copy: Record<
       'حسابك ما زال يظهر خطة مدفوعة، لكن PayPal لا يجد اشتراكًا حيًا لهذا البريد. تجارب الصندوق الرمل أو الاشتراكات الملغاة تترك هذه الحالة. اشترِ من جديد أدناه إن أردت خطة رسمية.',
     buy: 'شراء',
     buying: 'جارٍ التحويل…',
-    syncSub: 'مزامنة رصيد الاشتراك',
-    syncing: 'جارٍ المزامنة…',
-    syncOk: 'تمت مزامنة الاشتراك — تم تحديث الرصيد الشهري.',
-    syncNone: 'لا يوجد اشتراك Standard/Advanced نشط لهذا البريد.',
     billing: 'سجل الفوترة',
     billingEmpty: 'لا طلبات بعد.',
     date: 'التاريخ',
