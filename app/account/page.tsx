@@ -163,7 +163,7 @@ const copy: Record<
     subEnds: 'Access until {date}',
     subCancelledNote: 'Billing has stopped.',
     subUnmatched:
-      'No Lemon Squeezy subscription matched this email. If you still pay monthly, use the cancel link in your receipt.',
+      'Your account still shows a paid plan, but PayPal has no live subscription for this email. Sandbox or cancelled tests can leave this badge. Buy again below if you want a live plan.',
     buy: 'Buy',
     buying: 'Redirecting…',
     syncSub: 'Sync subscription credits',
@@ -224,7 +224,7 @@ const copy: Record<
     subEnds: '可用至 {date}',
     subCancelledNote: '已停止扣款。',
     subUnmatched:
-      '找不到與此信箱對應的 Lemon Squeezy 訂閱。若仍在扣款，請用訂單確認信中的取消連結。',
+      '帳戶仍顯示付費方案，但 PayPal 沒有此信箱的正式訂閱。沙盒測試或已取消的訂閱常會留下這個狀態。若要正式方案，請在下方重新購買。',
     buy: '購買',
     buying: '跳轉中…',
     syncSub: '同步訂閱額度',
@@ -281,7 +281,7 @@ const copy: Record<
     subEnds: '可用至 {date}',
     subCancelledNote: '已停止扣款。',
     subUnmatched:
-      '找不到与此邮箱对应的 Lemon Squeezy 订阅。若仍在扣款，请用订单确认信中的取消链接。',
+      '账户仍显示付费方案，但 PayPal 没有此邮箱的正式订阅。沙盒测试或已取消的订阅常会留下这个状态。若要正式方案，请在下方重新购买。',
     buy: '购买',
     buying: '跳转中…',
     syncSub: '同步订阅额度',
@@ -340,7 +340,7 @@ const copy: Record<
     subEnds: 'Acceso hasta {date}',
     subCancelledNote: 'El cobro se detuvo.',
     subUnmatched:
-      'No hay una suscripción de Lemon Squeezy para este email. Si aún te cobran, usa el enlace del recibo.',
+      'Tu cuenta sigue mostrando un plan de pago, pero PayPal no tiene una suscripción en vivo para este email. Pruebas sandbox o canceladas pueden dejar este estado. Compra de nuevo abajo si quieres un plan real.',
     buy: 'Comprar',
     buying: 'Redirigiendo…',
     syncSub: 'Sincronizar créditos de suscripción',
@@ -401,7 +401,7 @@ const copy: Record<
     subEnds: '{date} तक ऐक्सेस',
     subCancelledNote: 'बिलिंग बंद हो गई।',
     subUnmatched:
-      'इस ईमेल से Lemon Squeezy सदस्यता नहीं मिली। अगर अभी भी शुल्क कट रहा है तो रसीद वाला लिंक उपयोग करें।',
+      'खाते में अभी भी पेड प्लान दिख रहा है, लेकिन इस ईमेल पर PayPal की लाइव सदस्यता नहीं मिली। सैंडबॉक्स या रद्द टेस्ट से यह रह सकता है। लाइव प्लान के लिए नीचे फिर खरीदें।',
     buy: 'खरीदें',
     buying: 'रीडायरेक्ट…',
     syncSub: 'सदस्यता क्रेडिट सिंक करें',
@@ -461,7 +461,7 @@ const copy: Record<
     subEnds: 'الوصول حتى {date}',
     subCancelledNote: 'توقفت الفوترة.',
     subUnmatched:
-      'لا يوجد اشتراك Lemon Squeezy لهذا البريد. إن استمر الخصم فاستخدم رابط رسالة الطلب.',
+      'حسابك ما زال يظهر خطة مدفوعة، لكن PayPal لا يجد اشتراكًا حيًا لهذا البريد. تجارب الصندوق الرمل أو الاشتراكات الملغاة تترك هذه الحالة. اشترِ من جديد أدناه إن أردت خطة رسمية.',
     buy: 'شراء',
     buying: 'جارٍ التحويل…',
     syncSub: 'مزامنة رصيد الاشتراك',
