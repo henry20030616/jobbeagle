@@ -6,6 +6,7 @@ import {
   isCheckoutPlanType,
   normalizeCheckoutPlanType,
   ACTIVE_CHECKOUT_PLAN_TYPES,
+  parseSponsorAmountCents,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 import {
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: { planType?: string; reportId?: string };
+  let body: { planType?: string; reportId?: string; amountUsd?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -76,8 +77,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let amountCents = plan.amountCents;
+  if (planType === 'author_sponsor') {
+    const parsed = parseSponsorAmountCents(body.amountUsd);
+    if (parsed == null) {
+      return NextResponse.json(
+        {
+          error: 'Sponsor amount must be between $0.50 and $1,000.00 USD.',
+          errorCode: 'INVALID_SPONSOR_AMOUNT',
+        },
+        { status: 400 },
+      );
+    }
+    amountCents = parsed;
+  }
+
   const reportId: string | null = body.reportId ?? null;
-  const amount = plan.amountCents / 100;
+  const amount = amountCents / 100;
 
   const profile = await ensureProfile(admin, user.id);
   if (profile.deactivated_at) {
@@ -100,7 +116,10 @@ export async function POST(request: NextRequest) {
       currency: 'usd',
       status: 'pending',
       payment_provider: 'paypal',
-      metadata: { plan_label: plan.labelEn },
+      metadata: {
+        plan_label: plan.labelEn,
+        ...(planType === 'author_sponsor' ? { amount_cents: amountCents } : {}),
+      },
     })
     .select('id')
     .single();
@@ -124,6 +143,7 @@ export async function POST(request: NextRequest) {
       email: user.email ?? undefined,
       returnUrl: paypalReturnUrl,
       cancelUrl,
+      ...(planType === 'author_sponsor' ? { amountCents } : {}),
     });
     return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'paypal' });
   } catch (err: unknown) {

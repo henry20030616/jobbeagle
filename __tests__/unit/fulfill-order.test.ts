@@ -123,6 +123,14 @@ describe('fulfillOrder idempotency', () => {
     expect(profileUpdates[0]?.payload).toMatchObject({ membership_tier: 'advanced_sub' });
     expect(profileUpdates[0]?.payload).not.toHaveProperty('available_job_fit_snapshot_credits');
   });
+
+  it('author_sponsor marks the order paid without granting credits', async () => {
+    const { admin, calls } = createFulfillMock({ orderStatus: 'pending' });
+    await fulfillOrder(admin, 'order-tip', 'user-tip', 'author_sponsor', null, 'paypal-tip-1');
+    expect(calls.filter((c) => c.op === 'rpc')).toHaveLength(0);
+    const orderUpdate = calls.find((c) => c.op === 'update' && c.table === 'orders');
+    expect(orderUpdate?.payload).toMatchObject({ status: 'succeeded' });
+  });
 });
 
 describe('fulfillSubscriptionRenewal', () => {

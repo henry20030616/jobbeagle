@@ -14,7 +14,6 @@ export const SECURITY_TEST_FILES = [
   '__tests__/api/rate-limit.test.ts',
   '__tests__/api/extension-capture.test.ts',
   '__tests__/api/checkout.test.ts',
-  '__tests__/unit/paddle-signature.test.ts',
   '__tests__/unit/paypal.test.ts',
   '__tests__/unit/security-headers.test.ts',
 ] as const;

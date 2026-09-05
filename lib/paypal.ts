@@ -177,6 +177,7 @@ export async function createPayPalCheckout(params: {
   email?: string;
   returnUrl: string;
   cancelUrl: string;
+  amountCents?: number;
 }): Promise<string> {
   const config = getPayPalConfig();
   if (!config) throw new Error('PayPal is not configured');
@@ -221,7 +222,7 @@ export async function createPayPalCheckout(params: {
           description: plan.labelEn.slice(0, 127),
           amount: {
             currency_code: 'USD',
-            value: usdAmountFromCents(plan.amountCents),
+            value: usdAmountFromCents(params.amountCents ?? plan.amountCents),
           },
         },
       ],

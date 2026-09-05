@@ -21,6 +21,7 @@ import { startCheckout } from '@/lib/checkout-client';
 import {
   ACTIVE_CHECKOUT_PLAN_TYPES,
   CHECKOUT_PLANS,
+  parseSponsorAmountCents,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 import type { CareerContext, MembershipTier, UserProfile } from '@/types';
@@ -126,6 +127,11 @@ const copy: Record<
     careerContextBlurb: string;
     careerContextCta: string;
     careerContextEdit: string;
+    sponsorTitle: string;
+    sponsorNote: string;
+    sponsorAmount: string;
+    sponsorCta: string;
+    sponsorInvalid: string;
   }
 > = {
   en: {
@@ -182,6 +188,12 @@ const copy: Record<
       'Optional floors for fit and offer targeting. Lives on its own page — not mixed with billing.',
     careerContextCta: 'Set Career Context →',
     careerContextEdit: 'Edit Career Context →',
+    sponsorTitle: 'Sponsor the author',
+    sponsorNote:
+      'Any amount from $0.50 to $1,000. Does not add credits — a thank-you only.',
+    sponsorAmount: 'USD amount',
+    sponsorCta: 'Sponsor',
+    sponsorInvalid: 'Enter an amount between $0.50 and $1,000.00.',
   },
   'zh-TW': {
     title: '帳戶管理',
@@ -236,6 +248,11 @@ const copy: Record<
     careerContextBlurb: '選填底線，用來對齊 fit 與薪資目標。獨立頁設定，不跟買額度混在一起。',
     careerContextCta: '設定 Career Context →',
     careerContextEdit: '編輯 Career Context →',
+    sponsorTitle: '贊助作者',
+    sponsorNote: '金額 $0.50–$1,000，不會增加額度，僅作為支持。',
+    sponsorAmount: '美元金額',
+    sponsorCta: '贊助',
+    sponsorInvalid: '請輸入 $0.50 到 $1,000.00 之間的金額。',
   },
   'zh-CN': {
     title: '账户管理',
@@ -288,6 +305,11 @@ const copy: Record<
     careerContextBlurb: '可选底线，用于对齐 fit 与薪酬目标。在独立页设置，不和买额度混在一起。',
     careerContextCta: '设置 Career Context →',
     careerContextEdit: '编辑 Career Context →',
+    sponsorTitle: '赞助作者',
+    sponsorNote: '金额 $0.50–$1,000，不会增加额度，仅作为支持。',
+    sponsorAmount: '美元金额',
+    sponsorCta: '赞助',
+    sponsorInvalid: '请输入 $0.50 到 $1,000.00 之间的金额。',
   },
   es: {
     title: 'Gestión de cuenta',
@@ -343,6 +365,12 @@ const copy: Record<
       'Pisos opcionales para fit y compensación. En su propia página, no mezclado con facturación.',
     careerContextCta: 'Configurar Career Context →',
     careerContextEdit: 'Editar Career Context →',
+    sponsorTitle: 'Patrocinar al autor',
+    sponsorNote:
+      'Cualquier monto de $0.50 a $1,000. No suma créditos — solo un agradecimiento.',
+    sponsorAmount: 'Monto en USD',
+    sponsorCta: 'Patrocinar',
+    sponsorInvalid: 'Ingresa un monto entre $0.50 y $1,000.00.',
   },
   hi: {
     title: 'खाता प्रबंधन',
@@ -398,6 +426,11 @@ const copy: Record<
       'Fit और ऑफर के लिए वैकल्पिक floors। अलग पेज पर सेट करें — बिलिंग के साथ नहीं।',
     careerContextCta: 'Career Context सेट करें →',
     careerContextEdit: 'Career Context संपादित करें →',
+    sponsorTitle: 'लेखक को स्पॉन्सर करें',
+    sponsorNote: '$0.50 से $1,000 तक। क्रेडिट नहीं मिलते — सिर्फ़ समर्थन।',
+    sponsorAmount: 'USD राशि',
+    sponsorCta: 'स्पॉन्सर',
+    sponsorInvalid: '$0.50 से $1,000.00 के बीच राशि दर्ज करें।',
   },
   ar: {
     title: 'إدارة الحساب',
@@ -453,6 +486,11 @@ const copy: Record<
       'حدود اختيارية للملاءمة والعرض. صفحة مستقلة — ليست مع الفوترة.',
     careerContextCta: 'تعيين Career Context →',
     careerContextEdit: 'تعديل Career Context →',
+    sponsorTitle: 'ادعم المؤلف',
+    sponsorNote: 'أي مبلغ من $0.50 إلى $1,000. لا يضيف رصيدًا — شكر فقط.',
+    sponsorAmount: 'المبلغ بالدولار',
+    sponsorCta: 'ادعم',
+    sponsorInvalid: 'أدخل مبلغًا بين $0.50 و $1,000.00.',
   },
 };
 
@@ -502,6 +540,7 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyPlan, setBusyPlan] = useState<CheckoutPlanType | null>(null);
+  const [sponsorAmount, setSponsorAmount] = useState('0.50');
   const [billing, setBilling] = useState<BillingView | null>(null);
   const [billingLoaded, setBillingLoaded] = useState(false);
   const [portalBusy, setPortalBusy] = useState(false);
@@ -583,12 +622,20 @@ export default function AccountPage() {
     });
   }, [load]);
 
-  const handleCheckout = async (plan: CheckoutPlanType) => {
+  const handleCheckout = async (plan: CheckoutPlanType, amountUsd?: string) => {
     setBusyPlan(plan);
     setError(null);
-    const result = await startCheckout(plan);
+    const result = await startCheckout(plan, undefined, amountUsd);
     if (!result.ok) setError(result.error);
     setBusyPlan(null);
+  };
+
+  const handleSponsor = async () => {
+    if (parseSponsorAmountCents(sponsorAmount) == null) {
+      setError(t.sponsorInvalid);
+      return;
+    }
+    await handleCheckout('author_sponsor', sponsorAmount);
   };
 
   const handleManageBilling = async () => {
@@ -828,6 +875,39 @@ export default function AccountPage() {
                   );
                 })}
               </ul>
+              <div className="rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4 space-y-3">
+                <div>
+                  <p className="text-lg font-semibold text-amber-100">{t.sponsorTitle}</p>
+                  <p className="text-base text-slate-400 mt-1">{t.sponsorNote}</p>
+                </div>
+                <div className="flex flex-wrap items-end gap-3">
+                  <label className="flex flex-col gap-1">
+                    <span className="text-sm text-slate-400">{t.sponsorAmount}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg text-slate-300">$</span>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0.50"
+                        max="1000"
+                        step="0.01"
+                        value={sponsorAmount}
+                        disabled={Boolean(busyPlan) || deactivated}
+                        onChange={(e) => setSponsorAmount(e.target.value)}
+                        className="w-32 rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-lg text-slate-100"
+                      />
+                    </div>
+                  </label>
+                  <button
+                    type="button"
+                    disabled={Boolean(busyPlan) || deactivated}
+                    onClick={() => void handleSponsor()}
+                    className="px-5 py-2.5 text-lg font-bold rounded-lg bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors"
+                  >
+                    {busyPlan === 'author_sponsor' ? t.buying : t.sponsorCta}
+                  </button>
+                </div>
+              </div>
             </section>
 
             <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4">

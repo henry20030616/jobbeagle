@@ -8,6 +8,7 @@ export type CheckoutPlanType =
   | 'single_interview_strategy_guide'
   | 'standard_subscription'
   | 'advanced_subscription'
+  | 'author_sponsor'
   /** @deprecated aliases — normalize via normalizeCheckoutPlanType() */
   | 'single_lite'
   | 'single_full'
@@ -115,6 +116,13 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanType, CheckoutPlan> = {
     jobFitSnapshotCredits: 30,
     isSubscription: true,
   }),
+  author_sponsor: withCreditAliases({
+    type: 'author_sponsor',
+    amountCents: 50,
+    labelEn: 'Sponsor the author',
+    labelZhTW: '贊助作者',
+    isSubscription: false,
+  }),
 };
 
 export const ACTIVE_CHECKOUT_PLAN_TYPES: CheckoutPlanType[] = [
@@ -142,3 +150,23 @@ export const SUBSCRIPTION_ALLOWANCES = {
   standard_sub: { job_fit_snapshot: 100, interview_strategy_guide: 5 },
   advanced_sub: { job_fit_snapshot: 300, interview_strategy_guide: 15 },
 } as const;
+
+/** PayPal USD one-time orders: $0.50 avoids many card-minimum failures. */
+export const SPONSOR_AMOUNT_MIN_CENTS = 50;
+export const SPONSOR_AMOUNT_MAX_CENTS = 100_000;
+
+/** Parse a buyer-entered USD amount for `author_sponsor`. */
+export function parseSponsorAmountCents(raw: unknown): number | null {
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    const cents = Math.round(raw * 100);
+    if (cents < SPONSOR_AMOUNT_MIN_CENTS || cents > SPONSOR_AMOUNT_MAX_CENTS) return null;
+    return cents;
+  }
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!/^\d+(\.\d{1,2})?$/.test(trimmed)) return null;
+  const cents = Math.round(Number(trimmed) * 100);
+  if (!Number.isFinite(cents)) return null;
+  if (cents < SPONSOR_AMOUNT_MIN_CENTS || cents > SPONSOR_AMOUNT_MAX_CENTS) return null;
+  return cents;
+}
