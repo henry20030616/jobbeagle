@@ -93,4 +93,16 @@ describe('parsePayPalWebhookEvent', () => {
     expect(parsed.customId).toBe('order-uuid');
     expect(parsed.resourceId).toBe('PAYPAL-ORDER');
   });
+
+  it('parses a JSON string webhook body', () => {
+    const parsed = parsePayPalWebhookEvent(
+      JSON.stringify({
+        event_type: 'PAYMENT.CAPTURE.COMPLETED',
+        resource: { id: 'CAP-2', custom_id: 'order-json' },
+      }),
+    );
+    expect(parsed.eventType).toBe('PAYMENT.CAPTURE.COMPLETED');
+    expect(parsed.customId).toBe('order-json');
+    expect(parsed.resourceId).toBe('CAP-2');
+  });
 });

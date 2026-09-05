@@ -1,30 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
-import {
-  fulfillOrder,
-  fulfillPaidOrderById,
-  fulfillSubscriptionRenewal,
-} from '@/lib/fulfill-order';
+import { fulfillOrder } from '@/lib/fulfill-order';
 import {
   getPayPalConfig,
   isPayPalWebhookRequest,
   parsePayPalWebhookEvent,
   readPayPalWebhookHeaders,
   verifyPayPalWebhook,
-  captureOrLoadPayPalOrder,
 } from '@/lib/paypal';
-import {
-  CHECKOUT_PLANS,
-  isCheckoutPlanType,
-  normalizeCheckoutPlanType,
-} from '@/constants/checkout-plans';
+import { isCheckoutPlanType, normalizeCheckoutPlanType } from '@/constants/checkout-plans';
 import { clientIpFromRequest, rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
-}
 
 async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
   const admin = getSupabaseAdmin();
@@ -60,16 +47,11 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
   }
 
   const event = parsePayPalWebhookEvent(rawBody);
-  if (!event) {
-    return NextResponse.json({ error: 'Invalid PayPal webhook body' }, { status: 400 });
-  }
-
   const eventType = event.eventType;
-  console.log('[webhook] PayPal event:', eventType, event.id);
+  console.log('[webhook] PayPal event:', eventType, event.resourceId);
 
   if (eventType === 'PAYMENT.CAPTURE.COMPLETED' || eventType === 'PAYMENT.SALE.COMPLETED') {
-    const resource = event.resource as Record<string, unknown>;
-    const customId = typeof resource.custom_id === 'string' ? resource.custom_id : null;
+    const customId = event.customId;
     if (!customId) {
       return NextResponse.json({ error: 'Missing custom_id in resource' }, { status: 400 });
     }
@@ -94,8 +76,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
       return NextResponse.json({ error: 'Invalid plan_type' }, { status: 400 });
     }
 
-    const externalId =
-      typeof resource.id === 'string' ? resource.id : orderRow.external_checkout_id;
+    const externalId = event.resourceId ?? orderRow.external_checkout_id;
 
     await admin
       .from('orders')
@@ -124,8 +105,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
   }
 
   if (eventType === 'BILLING.SUBSCRIPTION.ACTIVATED') {
-    const resource = event.resource as Record<string, unknown>;
-    const customId = typeof resource.custom_id === 'string' ? resource.custom_id : null;
+    const customId = event.customId;
     if (!customId) {
       return NextResponse.json({ error: 'Missing custom_id in resource' }, { status: 400 });
     }
@@ -150,7 +130,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
       return NextResponse.json({ error: 'Invalid plan_type' }, { status: 400 });
     }
 
-    const subscriptionId = typeof resource.id === 'string' ? resource.id : null;
+    const subscriptionId = event.resourceId ?? event.billingAgreementId;
     if (!subscriptionId) {
       return NextResponse.json({ error: 'Missing subscription id' }, { status: 400 });
     }
@@ -182,9 +162,9 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
   }
 
   if (
-    eventType === 'BILLING.SUBSCRIPTION.CANCELLED' ||
-    eventType === 'BILLING.SUBSCRIPTION.EXPIRED' ||
-    eventType === 'BILLING.SUBSCRIPTION.SUSPENDED'
+    eventType === 'BILLING.SUBSCRIPTION.CANCELLED'
+    || eventType === 'BILLING.SUBSCRIPTION.EXPIRED'
+    || eventType === 'BILLING.SUBSCRIPTION.SUSPENDED'
   ) {
     console.log('[webhook] subscription lifecycle event:', eventType);
     return NextResponse.json({ received: true, lifecycle: eventType });
@@ -195,8 +175,15 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
+  const headerMap: Record<string, string | null> = {
+    'paypal-transmission-id': request.headers.get('paypal-transmission-id'),
+    'paypal-transmission-sig': request.headers.get('paypal-transmission-sig'),
+    'paypal-auth-algo': request.headers.get('paypal-auth-algo'),
+    'paypal-cert-url': request.headers.get('paypal-cert-url'),
+    'paypal-transmission-time': request.headers.get('paypal-transmission-time'),
+  };
 
-  if (isPayPalWebhookRequest(request)) {
+  if (isPayPalWebhookRequest(headerMap)) {
     return handlePayPalWebhook(request, rawBody);
   }
 

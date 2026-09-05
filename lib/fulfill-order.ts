@@ -200,13 +200,6 @@ export async function downgradeExpiredSubscription(
   if (error) throw new Error(error.message);
 }
 
-function isPaidMembershipTier(
-  tier: string | null | undefined,
-): tier is 'standard_sub' | 'advanced_sub' {
-  return tier === 'standard_sub' || tier === 'advanced_sub';
-}
-
-
 // Deprecated - Lemon Squeezy support removed
 export async function applyMembershipFromLemonSubscriptions() {
   return 'unchanged' as const;

@@ -428,7 +428,15 @@ export type PayPalWebhookEvent = {
 };
 
 export function parsePayPalWebhookEvent(raw: unknown): PayPalWebhookEvent {
-  const event = asRecord(raw);
+  let parsed: unknown = raw;
+  if (typeof raw === 'string') {
+    try {
+      parsed = JSON.parse(raw) as unknown;
+    } catch {
+      parsed = {};
+    }
+  }
+  const event = asRecord(parsed);
   const resource = asRecord(event.resource);
   const supplementary = asRecord(resource.supplementary_data);
   const related = asRecord(supplementary.related_ids);
