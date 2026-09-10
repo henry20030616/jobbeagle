@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import InputForm from '@/components/InputForm';
+import InputFormWrapper from '@/components/InputFormWrapper';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
 import DogLoading from '@/components/DogLoading';
 import FooterSection from '@/components/FooterSection';
@@ -734,8 +734,8 @@ export default function Home() {
 
         {!report ? (
           <div className="w-full min-w-0">
-            <InputForm
-              onSubmit={handleGenerate} 
+            <InputFormWrapper
+              onSubmit={handleGenerate}
               isLoading={loading}
               language={language}
               onLanguageChange={undefined}
