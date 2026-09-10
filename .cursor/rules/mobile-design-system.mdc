@@ -1,0 +1,310 @@
+# Mobile Design System — JobBeagle
+
+## Purpose
+
+定義手機版 UI/UX 設計規範，確保：
+1. 桌面版 (`InputForm.tsx`) 完全不動
+2. 手機版 (`InputFormMobile.tsx`) 獨立優化
+3. 兩者透過 `InputFormWrapper.tsx` 在 `lg` 斷點切換
+
+---
+
+## Responsive Breakpoints
+
+```typescript
+// Tailwind default breakpoints (do NOT change)
+const BREAKPOINTS = {
+  sm: '640px',   // Small tablets
+  md: '768px',   // Tablets
+  lg: '1024px',  // Desktop (切換點)
+  xl: '1280px',  // Large desktop
+  '2xl': '1536px' // Extra large
+};
+
+// Usage in components
+<div className="hidden lg:block">  {/* Desktop */}
+<div className="block lg:hidden">  {/* Mobile */}
+```
+
+**關鍵規則**：
+- Mobile = `< 1024px` (使用 `InputFormMobile`)
+- Desktop = `≥ 1024px` (使用 `InputForm`)
+- 絕對不使用 `md:` 斷點在這兩個組件間切換
+
+---
+
+## Mobile Design Constraints
+
+### 1. Layout & Spacing
+
+```typescript
+// ✅ Mobile (固定值)
+const MOBILE_CONTAINER_PADDING = 'px-4 py-6';
+const MOBILE_GAP_MAJOR = 'space-y-6';   // 步驟間距 24px
+const MOBILE_GAP_MINOR = 'space-y-3';   // 內部元素 12px
+const MOBILE_CARD_PADDING = 'p-4';      // 16px 統一
+
+// ❌ Desktop (複雜響應式 - 勿用於 Mobile)
+const DESKTOP_PADDING = 'p-5 sm:p-8 lg:p-10 xl:p-12';
+```
+
+**原則**：手機版用固定值，不用響應式類別（例如 `sm:` / `md:`）
+
+### 2. Typography
+
+```typescript
+// ✅ Mobile 固定字體
+const MOBILE_FONTS = {
+  hero: 'text-2xl font-black',       // Hero logo (32px)
+  title: 'text-lg font-bold',        // 步驟標題 (18px)
+  body: 'text-base',                 // 正文 (16px)
+  label: 'text-sm font-medium',      // Label (14px)
+  caption: 'text-xs text-slate-400', // 次要文字 (12px)
+};
+
+// ❌ Desktop 響應式字體 (勿用於 Mobile)
+const DESKTOP_FONTS = {
+  title: 'text-xl sm:text-2xl lg:text-3xl xl:text-4xl',
+};
+```
+
+**可讀性標準**：
+- 最小字體 12px (`text-xs`)
+- 主要內容 ≥ 16px (`text-base`)
+- 行高至少 1.5 (`leading-normal` 或 `leading-relaxed`)
+
+### 3. Touch Targets
+
+```typescript
+// WCAG 2.1 Level AAA 標準
+const MIN_TOUCH_TARGET = {
+  width: '44px',
+  height: '44px',
+};
+
+// ✅ 正確實作
+<button className="min-h-[44px] min-w-[44px] p-3">
+  <Icon className="w-5 h-5" />
+</button>
+
+// ❌ 錯誤（太小）
+<button className="p-1">
+  <Icon className="w-4 h-4" />
+</button>
+```
+
+**例外情況**：
+- 內嵌在更大容器內的圖示（整個容器是觸控區域）
+
+### 4. Card Heights
+
+```typescript
+// ✅ Mobile: 自適應高度（NO min-h 限制）
+const MOBILE_CARD = 'rounded-xl p-4 space-y-3';
+
+// ❌ Desktop: 固定最小高度（對齊用）
+const DESKTOP_STEP_BODY_MIN = 'min-h-[28rem] sm:min-h-[35rem] lg:min-h-[42rem]';
+```
+
+**關鍵原則**：
+- 手機版：內容決定高度（`space-y-*` 控制間距）
+- 桌面版：高度對齊優先（`min-h-[42rem]` 必要）
+
+### 5. Form Inputs
+
+```typescript
+// TextArea 最小高度
+const MOBILE_JD_INPUT = 'min-h-[200px]';  // Job description
+const DESKTOP_JD_INPUT = 'min-h-[42rem]'; // 對齊其他步驟
+
+// Upload area 最小高度
+const MOBILE_UPLOAD = 'min-h-[120px]';
+const DESKTOP_UPLOAD = 'min-h-[42rem]';
+```
+
+---
+
+## Color System (共用)
+
+```typescript
+// 與桌面版一致，不分手機/桌面
+const COLORS = {
+  background: {
+    primary: 'bg-slate-950',
+    card: 'bg-slate-800/80',
+    input: 'bg-slate-900/30',
+  },
+  border: {
+    default: 'border-slate-600',
+    active: 'border-blue-500',
+    success: 'border-emerald-500',
+  },
+  text: {
+    primary: 'text-white',
+    secondary: 'text-slate-300',
+    muted: 'text-slate-400',
+  },
+  steps: {
+    job: 'indigo-500',
+    resume: 'violet-500',
+    reportType: 'emerald-500',
+    launch: 'indigo-400',
+  },
+};
+```
+
+---
+
+## Component-Specific Rules
+
+### InputFormMobile.tsx
+
+```typescript
+// 結構原則
+✅ DO:
+- 垂直堆疊所有步驟 (space-y-6)
+- 固定字體大小 (text-base, text-lg)
+- 統一 padding (p-4)
+- 無最小高度限制
+- Launch 按鈕 w-full
+
+❌ DON'T:
+- 使用 sm:/md: breakpoint classes
+- 使用 min-h-[28rem] 或更高
+- 使用 grid 橫向佈局
+- 複雜的響應式間距
+```
+
+### InputForm.tsx (Desktop - 勿改動)
+
+```typescript
+// 保持原樣
+✅ 保留：
+- lg:grid-cols-4 並列佈局
+- min-h-[42rem] 對齊高度
+- 複雜響應式字體
+- STEP_CONNECTOR 步驟箭頭
+- Feature cards hover 展開
+
+❌ 禁止修改（會破壞桌面版）
+```
+
+---
+
+## Agent Review Checklist
+
+當修改以下檔案時自動觸發審查：
+
+### InputFormMobile.tsx
+- [ ] 無使用 `min-h-[28rem]` 或更高的固定高度
+- [ ] 無使用 `sm:` / `md:` breakpoint classes
+- [ ] 所有按鈕 ≥ 44×44px
+- [ ] 字體大小 12-20px (text-xs ~ text-lg)
+- [ ] 使用 `space-y-*` 而非複雜 gap
+
+### InputForm.tsx
+- [ ] 與 git HEAD 無差異（不應被修改）
+- [ ] 若有修改，必須是 bugfix 且不影響佈局
+
+### InputFormWrapper.tsx
+- [ ] 正確使用 `lg:` 斷點
+- [ ] 正確傳遞所有 InputFormProps
+- [ ] 無邏輯處理（純 UI 切換）
+
+---
+
+## Testing Requirements
+
+### Visual Regression
+```bash
+# 必須通過的測試裝置
+- iPhone 14 Pro (393×852, Safari)
+- Pixel 7 (412×915, Chrome)
+- iPad Mini (768×1024, Safari) → 應顯示桌面版
+
+# Playwright visual testing
+npx playwright test --project=mobile
+```
+
+### Manual Checklist
+```
+手機版 (< 1024px):
+□ 無橫向滾動
+□ 所有文字不需放大即可閱讀
+□ 按鈕不會誤觸
+□ 表單首屏高度 ≤ 850px
+□ Launch 按鈕清楚可見
+
+桌面版 (≥ 1024px):
+□ 與之前截圖完全一致
+□ 4步驟橫向並列
+□ 所有 E2E tests pass
+```
+
+---
+
+## File Structure
+
+```
+components/
+├── InputForm.tsx              # Desktop (997 lines) - DO NOT TOUCH
+├── InputFormMobile.tsx        # Mobile (~400 lines) - NEW
+└── InputFormWrapper.tsx       # Switcher (~30 lines) - NEW
+
+lib/
+└── input-form-shared.ts       # Shared logic - NEW
+    ├── useFileUpload()
+    ├── useResumeHistory()
+    └── validateInputs()
+
+.cursor/rules/
+└── mobile-design-system.mdc   # THIS FILE
+
+.agents/skills/
+└── review-mobile-ux/
+    └── SKILL.md               # Auto-review on file change
+```
+
+---
+
+## Approval Workflow
+
+```mermaid
+graph LR
+  A[Code Change] --> B{File?}
+  B -->|InputFormMobile| C[Check constraints]
+  B -->|InputForm| D[Block if layout change]
+  B -->|Wrapper| E[Check props passing]
+  C --> F{Pass?}
+  D --> F
+  E --> F
+  F -->|Yes| G[Allow commit]
+  F -->|No| H[Block + show violations]
+```
+
+---
+
+## Migration Path
+
+```bash
+# Phase 1: 建立基礎 (當前階段)
+1. 建立 InputFormMobile.tsx
+2. 建立 InputFormWrapper.tsx
+3. 抽取 lib/input-form-shared.ts
+
+# Phase 2: 切換 (謹慎)
+1. 更新 app/page.tsx 使用 InputFormWrapper
+2. 部署到 staging
+3. 真機測試
+4. 桌面版回歸測試
+5. 部署到 production
+
+# Phase 3: 監控
+1. 監控 error rate (Sentry)
+2. 蒐集手機使用者反饋
+3. A/B testing conversion rate
+```
+
+---
+
+**此設計系統為最高優先級規範，任何衝突以此為準。**
