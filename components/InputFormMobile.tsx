@@ -25,13 +25,12 @@ import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import BrandLogo from '@/components/BrandLogo';
 
-// Mobile-specific constants (NO responsive classes) - Ultra compact
+// Mobile-specific constants (NO responsive classes) - Ultra compact v2
 const MOBILE_CONTAINER = 'w-full space-y-3 px-3 py-4';
-const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-3 space-y-2 shadow-lg';
-const MOBILE_STEP_TITLE = 'flex items-center gap-2 text-base font-bold text-white';
-const MOBILE_STEP_BADGE = 'h-6 w-1.5 rounded-full shrink-0';
-const MOBILE_INPUT_AREA = 'min-h-[200px]';
-const MOBILE_BUTTON_PRIMARY = 'w-full py-3.5 text-base font-bold rounded-xl transition-all active:scale-[0.98]';
+const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-3 space-y-2.5 shadow-lg';
+const MOBILE_STEP_TITLE = 'flex items-center gap-2 text-sm font-bold text-white/90';
+const MOBILE_STEP_BADGE = 'h-5 w-1 rounded-full shrink-0';
+const MOBILE_BUTTON_PRIMARY = 'w-full py-4 text-base font-bold rounded-xl transition-all active:scale-[0.98] shadow-lg';
 const MOBILE_PILL = 'inline-flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/50 px-2.5 py-1 text-xs text-slate-300 font-medium';
 
 interface SavedResume extends ResumeInput {
@@ -431,7 +430,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             disabled={isLoading}
             compact
             hideExtensionHint
-            placeholder={t.jobUrlPlaceholder}
+            placeholder={zh ? '貼上完整職缺內容…' : 'Paste full job description…'}
           />
         </div>
 
@@ -501,9 +500,9 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           {/* Upload area */}
           {!resume ? (
             <label className="block w-full min-h-[100px] border-2 border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:bg-slate-700/30 transition-colors">
-              <Upload className="w-7 h-7 mx-auto mb-1.5 text-slate-400" />
-              <p className="text-xs font-bold text-slate-300 mb-0.5">{t.upload}</p>
-              <p className="text-[10px] text-slate-500">{t.uploadSupport}</p>
+              <Upload className="w-6 h-6 mx-auto mb-1.5 text-slate-400" />
+              <p className="text-sm font-bold text-slate-200 mb-0.5">{zh ? '點擊上傳履歷' : 'Tap to upload'}</p>
+              <p className="text-[10px] text-slate-400 leading-tight">PDF, Word, Text (Max 4MB)</p>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -514,19 +513,19 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             </label>
           ) : (
             <div className="flex items-center gap-2 p-2.5 bg-indigo-900/20 border border-indigo-500/50 rounded-lg">
-              <div className="shrink-0 rounded-lg bg-indigo-500 p-1">
-                <FileText className="h-3.5 w-3.5 text-white" />
+              <div className="shrink-0 rounded-lg bg-indigo-500 p-1.5">
+                <FileText className="h-4 w-4 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-white truncate">{resume.fileName}</p>
-                <p className="text-[10px] text-indigo-300">Ready</p>
+                <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
+                <p className="text-xs text-indigo-300">✓ {zh ? '已準備' : 'Ready'}</p>
               </div>
               <button
                 type="button"
                 onClick={clearFile}
-                className="shrink-0 rounded-full p-1 text-slate-400 hover:bg-white/10"
+                className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-white/10"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           )}
@@ -557,43 +556,43 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               <button
                 type="button"
                 onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                className={`w-full p-2.5 rounded-lg border-2 text-left transition-all ${
+                className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                     ? 'border-blue-500 bg-blue-500/10'
                     : 'border-slate-600 hover:border-slate-500'
                 }`}
               >
-                <div className="flex items-center justify-between mb-0.5">
+                <div className="flex items-center justify-between mb-1">
                   <p className="font-bold text-sm text-white">
                     {reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                   </p>
                   {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT && (
-                    <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
+                    <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
                   )}
                 </div>
-                <p className="text-[10px] text-slate-400">{t.snapshotBlurb}</p>
+                <p className="text-xs text-slate-300 leading-snug">{t.snapshotBlurb}</p>
               </button>
 
               {/* Strategy Guide card */}
               <button
                 type="button"
                 onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                className={`w-full p-2.5 rounded-lg border-2 text-left transition-all ${
+                className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                     ? 'border-blue-500 bg-blue-500/10'
                     : 'border-slate-600 hover:border-slate-500'
                 }`}
               >
-                <div className="flex items-center justify-between mb-0.5">
+                <div className="flex items-center justify-between mb-1">
                   <p className="font-bold text-sm text-white flex items-center gap-1">
                     {reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                    <Sparkles className="h-3.5 w-3.5 text-violet-400" />
+                    <Sparkles className="h-4 w-4 text-violet-400" />
                   </p>
                   {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE && (
-                    <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
+                    <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
                   )}
                 </div>
-                <p className="text-[10px] text-slate-400">{t.strategyBlurb}</p>
+                <p className="text-xs text-slate-300 leading-snug">{t.strategyBlurb}</p>
               </button>
             </div>
           ) : (
@@ -601,28 +600,33 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           )}
         </div>
 
-        {/* Step 4: Launch button */}
-        <button
-          type="submit"
-          disabled={submitDisabled}
-          className={`${MOBILE_BUTTON_PRIMARY} ${
-            submitDisabled
-              ? 'bg-indigo-600/35 text-white/55 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30'
-          }`}
-        >
-          {isLoading || isParsingUrl ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {isParsingUrl ? (zh ? '解析中…' : 'Parsing…') : t.generating}
-            </span>
-          ) : (
-            submitLabel
-          )}
-        </button>
+        {/* Step 4: Launch button with clear instruction */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={submitDisabled}
+            className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-1 ${
+              submitDisabled
+                ? 'bg-indigo-600/35 text-white/55 cursor-not-allowed'
+                : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 active:from-indigo-700 active:to-indigo-600 text-white'
+            }`}
+          >
+            {isLoading || isParsingUrl ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span className="text-sm">{isParsingUrl ? (zh ? '解析中…' : 'Parsing…') : (zh ? '分析中…' : 'Analyzing…')}</span>
+              </span>
+            ) : (
+              <>
+                <span className="text-base font-bold">{submitLabel}</span>
+                <span className="text-xs text-white/80">{zh ? '👆 點此開始 AI 分析' : '👆 Tap to start analysis'}</span>
+              </>
+            )}
+          </button>
+        </div>
       </form>
     </div>
   );
