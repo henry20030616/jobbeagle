@@ -25,14 +25,14 @@ import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import BrandLogo from '@/components/BrandLogo';
 
-// Mobile-specific constants (NO responsive classes)
-const MOBILE_CONTAINER = 'w-full space-y-6 px-4 py-6';
-const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-4 space-y-3 shadow-lg';
-const MOBILE_STEP_TITLE = 'flex items-center gap-3 text-lg font-bold text-white';
-const MOBILE_STEP_BADGE = 'h-8 w-1.5 rounded-full shrink-0';
+// Mobile-specific constants (NO responsive classes) - Ultra compact
+const MOBILE_CONTAINER = 'w-full space-y-3 px-3 py-4';
+const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-3 space-y-2 shadow-lg';
+const MOBILE_STEP_TITLE = 'flex items-center gap-2 text-base font-bold text-white';
+const MOBILE_STEP_BADGE = 'h-6 w-1.5 rounded-full shrink-0';
 const MOBILE_INPUT_AREA = 'min-h-[200px]';
-const MOBILE_BUTTON_PRIMARY = 'w-full py-4 text-lg font-bold rounded-xl transition-all active:scale-[0.98]';
-const MOBILE_PILL = 'inline-flex items-center gap-2 rounded-full border border-slate-600 bg-slate-700/50 px-3 py-1.5 text-sm text-slate-300 font-medium';
+const MOBILE_BUTTON_PRIMARY = 'w-full py-3.5 text-base font-bold rounded-xl transition-all active:scale-[0.98]';
+const MOBILE_PILL = 'inline-flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/50 px-2.5 py-1 text-xs text-slate-300 font-medium';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -387,14 +387,14 @@ const InputFormMobile: React.FC<InputFormProps> = ({
   return (
     <div className={MOBILE_CONTAINER}>
       {/* Hero: Simplified mobile version */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-1">
         <BrandLogo size="nav" showIcon as="h1" className="justify-center" />
-        <p className="text-sm text-slate-400 leading-snug px-2">
+        <p className="text-xs text-slate-400 leading-snug px-2">
           {t.description}
         </p>
         {extensionCapture && (
-          <p className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300">
-            <Puzzle className="h-3.5 w-3.5 shrink-0" />
+          <p className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-300">
+            <Puzzle className="h-3 w-3 shrink-0" />
             <span className="truncate">
               {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
             </span>
@@ -404,7 +404,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
 
       {/* Feature cards: Hidden on mobile to save space */}
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         {/* Step 1: Job */}
         <div className={MOBILE_STEP_CARD}>
           <h2 className={MOBILE_STEP_TITLE}>
@@ -412,9 +412,9 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             <span>{t.jobData}</span>
           </h2>
           {extensionCapture && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
-              <Puzzle className="h-4 w-4 shrink-0 text-emerald-400" />
-              <span className="text-sm text-emerald-300 font-medium truncate">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
+              <Puzzle className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+              <span className="text-xs text-emerald-300 font-medium truncate">
                 {extensionCapture.company_name} · {extensionCapture.job_title}
               </span>
             </div>
@@ -460,12 +460,12 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="fixed inset-0 z-40"
                   onClick={() => setShowHistoryDropdown(false)}
                 />
-                <div className="absolute left-0 top-full z-50 mt-2 w-full max-h-64 overflow-y-auto rounded-lg border border-slate-600 bg-slate-800 shadow-2xl">
-                  <div className="sticky top-0 bg-slate-900/95 px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-700">
+                <div className="absolute left-0 top-full z-50 mt-1.5 w-full max-h-60 overflow-y-auto rounded-lg border border-slate-600 bg-slate-800 shadow-2xl">
+                  <div className="sticky top-0 bg-slate-900/95 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-700">
                     {t.resumeLibrary}
                   </div>
                   {resumeHistory.length === 0 ? (
-                    <div className="p-4 text-center text-sm text-slate-500">
+                    <div className="p-3 text-center text-xs text-slate-500">
                       {t.noResume}
                     </div>
                   ) : (
@@ -473,22 +473,22 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       <div
                         key={historyItem.id}
                         onClick={() => handleSelectResume(historyItem)}
-                        className="flex items-start gap-2 border-b border-slate-700/50 px-3 py-2.5 cursor-pointer hover:bg-slate-700 transition-colors last:border-0"
+                        className="flex items-start gap-1.5 border-b border-slate-700/50 px-2.5 py-2 cursor-pointer hover:bg-slate-700 transition-colors last:border-0"
                       >
-                        <FileText className="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" />
+                        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-indigo-400" />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-bold text-slate-200">{historyItem.fileName}</p>
-                          <p className="flex items-center text-xs text-slate-400 mt-0.5">
-                            <Clock className="mr-1 h-3 w-3" />
+                          <p className="truncate text-xs font-bold text-slate-200">{historyItem.fileName}</p>
+                          <p className="flex items-center text-[10px] text-slate-400 mt-0.5">
+                            <Clock className="mr-1 h-2.5 w-2.5" />
                             {formatDateTime(historyItem.timestamp)}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={(e) => handleDeleteResume(e, historyItem.id)}
-                          className="rounded p-1 text-slate-500 hover:bg-white/10 hover:text-red-400"
+                          className="rounded p-0.5 text-slate-500 hover:bg-white/10 hover:text-red-400"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     ))
@@ -500,10 +500,10 @@ const InputFormMobile: React.FC<InputFormProps> = ({
 
           {/* Upload area */}
           {!resume ? (
-            <label className="block w-full min-h-[120px] border-2 border-dashed border-slate-600 rounded-lg p-4 text-center cursor-pointer hover:bg-slate-700/30 transition-colors">
-              <Upload className="w-8 h-8 mx-auto mb-2 text-slate-400" />
-              <p className="text-sm font-bold text-slate-300 mb-1">{t.upload}</p>
-              <p className="text-xs text-slate-500">{t.uploadSupport}</p>
+            <label className="block w-full min-h-[100px] border-2 border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:bg-slate-700/30 transition-colors">
+              <Upload className="w-7 h-7 mx-auto mb-1.5 text-slate-400" />
+              <p className="text-xs font-bold text-slate-300 mb-0.5">{t.upload}</p>
+              <p className="text-[10px] text-slate-500">{t.uploadSupport}</p>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -513,20 +513,20 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               />
             </label>
           ) : (
-            <div className="flex items-center gap-3 p-3 bg-indigo-900/20 border border-indigo-500/50 rounded-lg">
-              <div className="shrink-0 rounded-lg bg-indigo-500 p-1.5">
-                <FileText className="h-4 w-4 text-white" />
+            <div className="flex items-center gap-2 p-2.5 bg-indigo-900/20 border border-indigo-500/50 rounded-lg">
+              <div className="shrink-0 rounded-lg bg-indigo-500 p-1">
+                <FileText className="h-3.5 w-3.5 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
-                <p className="text-xs text-indigo-300">Ready</p>
+                <p className="text-xs font-bold text-white truncate">{resume.fileName}</p>
+                <p className="text-[10px] text-indigo-300">Ready</p>
               </div>
               <button
                 type="button"
                 onClick={clearFile}
-                className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-white/10"
+                className="shrink-0 rounded-full p-1 text-slate-400 hover:bg-white/10"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
@@ -552,52 +552,52 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           )}
 
           {onReportTypeChange ? (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {/* Snapshot card */}
               <button
                 type="button"
                 onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
-                className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                className={`w-full p-2.5 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                     ? 'border-blue-500 bg-blue-500/10'
                     : 'border-slate-600 hover:border-slate-500'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <p className="font-bold text-base text-white">
+                <div className="flex items-center justify-between mb-0.5">
+                  <p className="font-bold text-sm text-white">
                     {reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                   </p>
                   {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT && (
-                    <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
+                    <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
                   )}
                 </div>
-                <p className="text-xs text-slate-400">{t.snapshotBlurb}</p>
+                <p className="text-[10px] text-slate-400">{t.snapshotBlurb}</p>
               </button>
 
               {/* Strategy Guide card */}
               <button
                 type="button"
                 onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
-                className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                className={`w-full p-2.5 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                     ? 'border-blue-500 bg-blue-500/10'
                     : 'border-slate-600 hover:border-slate-500'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <p className="font-bold text-base text-white flex items-center gap-1.5">
+                <div className="flex items-center justify-between mb-0.5">
+                  <p className="font-bold text-sm text-white flex items-center gap-1">
                     {reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                    <Sparkles className="h-4 w-4 text-violet-400" />
+                    <Sparkles className="h-3.5 w-3.5 text-violet-400" />
                   </p>
                   {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE && (
-                    <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
+                    <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
                   )}
                 </div>
-                <p className="text-xs text-slate-400">{t.strategyBlurb}</p>
+                <p className="text-[10px] text-slate-400">{t.strategyBlurb}</p>
               </button>
             </div>
           ) : (
-            <div className="text-sm text-slate-500">—</div>
+            <div className="text-xs text-slate-500">—</div>
           )}
         </div>
 
