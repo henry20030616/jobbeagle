@@ -16,26 +16,26 @@ import { SAMPLE_LINK_BTN } from '@/constants/report-frame';
 import BrandLogo from '@/components/BrandLogo';
 
 const PILL =
-  'inline-flex items-center gap-3 text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-6 py-3 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
+  'inline-flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  'relative flex min-h-0 min-w-0 flex-col rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 p-10 sm:p-12 shadow-xl';
+  'relative flex min-h-0 min-w-0 flex-col rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 p-5 sm:p-8 lg:p-10 xl:p-12 shadow-xl';
 const STEP_TITLE =
-  'step-title flex min-h-[6.375rem] shrink-0 items-center pb-5 text-3xl sm:text-4xl font-bold text-white';
-const STEP_PILL_ROW = 'mb-6 flex min-h-[7rem] shrink-0 items-center';
+  'step-title flex min-h-[4rem] sm:min-h-[5rem] lg:min-h-[6.375rem] shrink-0 items-center pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+const STEP_PILL_ROW = 'mb-4 sm:mb-5 lg:mb-6 flex min-h-[4rem] sm:min-h-[5.5rem] lg:min-h-[7rem] shrink-0 items-center';
 /** Shared content shell height — steps 1–4 bottom boxes align */
-const STEP_BODY_MIN = 'min-h-[42rem]';
+const STEP_BODY_MIN = 'min-h-[28rem] sm:min-h-[35rem] lg:min-h-[42rem]';
 const STEP_BODY = `flex ${STEP_BODY_MIN} flex-1 flex-col`;
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
-const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} flex-1 grid-rows-3 gap-5`;
-const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} flex-1 grid-rows-2 gap-5`;
+const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} flex-1 grid-rows-3 gap-3 sm:gap-4 lg:gap-5`;
+const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5`;
 const REPORT_CARD_IDLE =
   'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50';
 const REPORT_CARD_ACTIVE =
   'border-solid border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
 const REPORT_CARD =
-  'w-full min-h-0 h-full rounded-xl border-2 px-6 py-5 text-left transition flex flex-col justify-center gap-3';
+  'w-full min-h-0 h-full rounded-xl border-2 px-3 sm:px-4 lg:px-5 xl:px-6 py-3 sm:py-4 lg:py-5 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
 
 function StepSequenceMark() {
   return (
@@ -564,7 +564,7 @@ const InputForm: React.FC<InputFormProps> = ({
     (!publicAts && !resume);
 
   return (
-    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-20'}`}>
+    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-8 sm:gap-12 lg:gap-16 xl:gap-20'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
       <div className={`w-full min-w-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'py-4 sm:py-6'}`}>
         <BrandLogo
@@ -590,9 +590,9 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-20'}`}>
+      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-8 sm:gap-12 lg:gap-16 xl:gap-20'}`}>
         {!compactChrome && (
-          <div className="homepage-features grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
+          <div className="homepage-features grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-4 lg:gap-8">
             {([
               {
                 id: 'fit',
@@ -639,22 +639,22 @@ const InputForm: React.FC<InputFormProps> = ({
                     onFocus={() => setExpandedFeature(item.id)}
                     onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
                     onClick={() => setExpandedFeature(open ? null : item.id)}
-                    className="flex w-full items-center gap-5 rounded-2xl border border-slate-700 bg-slate-800/80 p-6 text-left shadow-xl backdrop-blur-sm transition-colors hover:bg-slate-700/40 sm:p-8"
+                    className="flex w-full items-center gap-3 sm:gap-4 lg:gap-5 rounded-2xl border border-slate-700 bg-slate-800/80 p-4 sm:p-6 lg:p-8 text-left shadow-xl backdrop-blur-sm transition-colors hover:bg-slate-700/40"
                   >
-                    <div className={`shrink-0 rounded-xl bg-gradient-to-br p-5 shadow-inner ring-1 ${item.iconWrap}`}>
-                      <Icon className={`h-10 w-10 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
+                    <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 sm:p-4 lg:p-5 shadow-inner ring-1 ${item.iconWrap}`}>
+                      <Icon className={`h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="feature-title text-3xl font-bold leading-snug text-slate-200">{item.title}</span>
+                        <span className="feature-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold leading-snug text-slate-200">{item.title}</span>
                         <ChevronDown
-                          className={`mt-0.5 h-6 w-6 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          className={`mt-0.5 h-5 w-5 sm:h-6 sm:w-6 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
                         />
                       </div>
                       <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                         <div className="overflow-hidden">
-                          <p className="feature-desc pb-0.5 pt-2.5 text-2xl leading-normal text-slate-400">
+                          <p className="feature-desc pb-0.5 pt-2 sm:pt-2.5 text-sm sm:text-base lg:text-lg xl:text-2xl leading-normal text-slate-400">
                             {item.desc}
                           </p>
                         </div>
@@ -667,11 +667,11 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
 
         {/* Classic 1→4 operator: separate cards with sequence arrows */}
-        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4">
+        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4 lg:gap-y-6">
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-indigo-500" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-500" />
                 <span className="leading-snug">{t.jobData}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
@@ -735,7 +735,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 2. Resume — overflow-visible so Saved Resumes dropdown can open */}
             <div className={`${STEP_COL} overflow-visible`}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-violet-500" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-violet-500" />
                 <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
               <div className={`relative z-40 ${STEP_PILL_ROW} overflow-visible`}>
@@ -806,12 +806,12 @@ const InputForm: React.FC<InputFormProps> = ({
                       htmlFor="resume-file-input"
                       className="group relative z-10 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl px-3 py-4 hover:bg-slate-700/30"
                     >
-                      <div className="rounded-full border border-slate-700 bg-slate-800 p-4 transition-colors group-hover:border-indigo-500/30 group-hover:bg-indigo-500/20">
-                        <Upload className="h-9 w-9 text-slate-400 group-hover:text-indigo-400" />
+                      <div className="rounded-full border border-slate-700 bg-slate-800 p-3 sm:p-4 transition-colors group-hover:border-indigo-500/30 group-hover:bg-indigo-500/20">
+                        <Upload className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="min-w-0 text-center">
-                        <p className="upload-prompt text-3xl sm:text-4xl font-bold text-slate-300">{t.upload}</p>
-                        <p className="upload-support mt-2 text-2xl font-medium leading-snug text-slate-500">{t.uploadSupport}</p>
+                        <p className="upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-slate-300">{t.upload}</p>
+                        <p className="upload-support mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl font-medium leading-snug text-slate-500">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input
@@ -825,14 +825,14 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                   </div>
                 ) : (
-                  <div className="flex h-full w-full flex-1 animate-fade-in flex-col justify-center gap-2 rounded-xl border border-indigo-500/50 bg-indigo-900/20 p-3">
+                  <div className="flex h-full w-full flex-1 animate-fade-in flex-col justify-center gap-2 rounded-xl border border-indigo-500/50 bg-indigo-900/20 p-3 sm:p-4">
                     <div className="flex min-w-0 items-center gap-2">
                       <div className="shrink-0 rounded-lg bg-indigo-500 p-1.5">
-                        <FileText className="h-4 w-4 text-white" />
+                        <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
                       <div className="min-w-0 text-left">
-                        <p className="truncate text-2xl font-bold text-white">{resume.fileName}</p>
-                        <p className="text-lg text-indigo-300">Ready for Analysis</p>
+                        <p className="truncate text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-white">{resume.fileName}</p>
+                        <p className="text-sm sm:text-base lg:text-lg text-indigo-300">Ready for Analysis</p>
                       </div>
                       <button
                         type="button"
@@ -864,7 +864,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 3. Report type — Snapshot + Guide + Compare (3 equal boxes) */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-emerald-500" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-emerald-500" />
                 <span className="leading-snug">{t.reportTypeStep}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
@@ -887,10 +887,10 @@ const InputForm: React.FC<InputFormProps> = ({
                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                       className="w-full min-w-0 text-left"
                     >
-                      <p className="text-3xl font-bold text-white">
+                      <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
                         {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                       </p>
-                      <p className="mt-2 text-2xl leading-snug text-slate-400">{t.snapshotBlurb}</p>
+                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-slate-400">{t.snapshotBlurb}</p>
                     </button>
                     <Link
                       href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
@@ -912,11 +912,11 @@ const InputForm: React.FC<InputFormProps> = ({
                       onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                       className="w-full min-w-0 text-left"
                     >
-                      <p className="flex flex-wrap items-center gap-2 text-3xl font-bold text-white">
+                      <p className="flex flex-wrap items-center gap-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
                         {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                        <Sparkles className="h-8 w-8 shrink-0 text-violet-400" />
+                        <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 shrink-0 text-violet-400" />
                       </p>
-                      <p className="mt-2 text-2xl leading-snug text-slate-400">{t.strategyBlurb}</p>
+                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-slate-400">{t.strategyBlurb}</p>
                     </button>
                     <Link
                       href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
@@ -941,7 +941,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 4. Launch — same title/pill spacers so content box aligns */}
             <div className={`${STEP_COL} relative z-0 bg-slate-700/30`}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-5 h-10 w-2.5 shrink-0 rounded-full bg-indigo-400" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
                 <span className="leading-snug">{t.launchStep}</span>
               </h2>
               <div className={STEP_PILL_ROW} aria-hidden />
@@ -956,7 +956,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-6 rounded-xl px-10 py-10 text-center text-3xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all sm:text-4xl ${
+                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all ${
                     submitDisabled
                       ? 'cursor-not-allowed bg-indigo-600/35 text-white/55 shadow-none'
                       : publicAts
