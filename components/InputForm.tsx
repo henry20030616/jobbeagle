@@ -566,7 +566,7 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-20'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
-      <div className={`w-full min-w-0 space-y-4 px-2 text-center ${compactChrome ? 'py-1' : 'py-6'}`}>
+      <div className={`w-full min-w-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'py-4 sm:py-6'}`}>
         <BrandLogo
           size={compactChrome ? 'nav' : 'hero'}
           showIcon
@@ -574,8 +574,8 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`mx-auto w-full max-w-[160rem] break-words font-semibold leading-relaxed text-zinc-400 ${
-            compactChrome ? 'text-lg md:text-xl' : 'text-2xl md:text-3xl'
+          className={`mx-auto w-full max-w-[160rem] break-words font-semibold leading-snug sm:leading-relaxed text-zinc-400 ${
+            compactChrome ? 'text-base sm:text-lg md:text-xl' : 'text-base sm:text-xl md:text-2xl lg:text-3xl'
           }`}
         >
           {t.description}
