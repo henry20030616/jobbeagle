@@ -20,12 +20,15 @@ export default function PredictedLandSquircle({
 }) {
   const frame =
     size === 'sm'
-      ? 'w-28 h-28 sm:w-32 sm:h-32 rounded-[34%] border-[5px]'
-      : 'w-36 h-36 sm:w-48 sm:h-48 rounded-[34%] border-[6px] sm:border-8';
-  const amount =
-    size === 'sm'
-      ? 'text-xl sm:text-2xl'
-      : 'text-2xl sm:text-4xl';
+      ? 'w-32 h-32 sm:w-36 sm:h-36 rounded-[34%] border-[5px]'
+      : 'w-40 h-40 sm:w-52 sm:h-52 rounded-[34%] border-[6px] sm:border-8';
+  
+  // Dynamic font sizing based on value length
+  const baseSize = size === 'sm' ? 'text-xl sm:text-2xl' : 'text-xl sm:text-3xl';
+  const scaleFactor = 
+    value.length > 15 ? 0.65 :
+    value.length > 12 ? 0.75 :
+    value.length > 10 ? 0.85 : 1.0;
   
   return (
     <div className="flex flex-col items-center justify-center shrink-0 self-center gap-1.5">
@@ -33,14 +36,16 @@ export default function PredictedLandSquircle({
         {label}
       </p>
       <div
-        className={`relative flex items-center justify-center border-emerald-400/90 bg-slate-950/40 overflow-hidden px-2 sm:px-3 ${frame}`}
+        className={`relative flex items-center justify-center border-emerald-400/90 bg-slate-950/40 px-2 sm:px-3 ${frame}`}
         aria-label={`${label} ${value}`}
       >
         <span
-          className={`relative z-10 text-center font-black text-emerald-100 tabular-nums leading-[1.1] tracking-tighter whitespace-nowrap ${amount}`}
+          className={`relative z-10 text-center font-black text-emerald-100 tabular-nums leading-tight tracking-tight ${baseSize}`}
           style={{ 
-            fontSize: value.length > 12 ? '0.85em' : undefined,
-            wordBreak: 'keep-all'
+            fontSize: scaleFactor !== 1.0 ? `${scaleFactor}em` : undefined,
+            wordBreak: 'keep-all',
+            whiteSpace: 'nowrap',
+            maxWidth: '95%'
           }}
         >
           {value}
