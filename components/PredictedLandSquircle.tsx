@@ -18,17 +18,18 @@ export default function PredictedLandSquircle({
   /** @deprecated label is always above */
   labelPosition?: 'above' | 'below';
 }) {
+  // Match the score circle size on the left (w-40 h-40) for visual balance
   const frame =
     size === 'sm'
-      ? 'w-32 h-32 sm:w-36 sm:h-36 rounded-[34%] border-[5px]'
-      : 'w-40 h-40 sm:w-52 sm:h-52 rounded-[34%] border-[6px] sm:border-8';
+      ? 'w-28 h-28 sm:w-32 sm:h-32 rounded-[34%] border-[4px]'
+      : 'w-36 h-36 sm:w-40 sm:h-40 rounded-[34%] border-[5px] sm:border-6';
   
   // Dynamic font sizing based on value length
-  const baseSize = size === 'sm' ? 'text-xl sm:text-2xl' : 'text-xl sm:text-3xl';
+  const baseSize = size === 'sm' ? 'text-base sm:text-lg' : 'text-lg sm:text-2xl';
   const scaleFactor = 
-    value.length > 15 ? 0.65 :
-    value.length > 12 ? 0.75 :
-    value.length > 10 ? 0.85 : 1.0;
+    value.length > 15 ? 0.62 :
+    value.length > 12 ? 0.72 :
+    value.length > 10 ? 0.82 : 1.0;
   
   return (
     <div className="flex flex-col items-center justify-center shrink-0 self-center gap-1.5">

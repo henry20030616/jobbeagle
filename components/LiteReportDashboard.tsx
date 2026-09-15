@@ -303,7 +303,7 @@ export default function LiteReportDashboard({
                 </p>
                 {offerRange ? (
                   <>
-                    <p className="text-5xl font-black text-white tracking-tight leading-none break-words">
+                    <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight break-words">
                       {offerRange}
                     </p>
                     {offer?.candidate_position_label && (
