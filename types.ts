@@ -678,3 +678,166 @@ export enum AppMode {
   FEED = 'FEED',
   CREATOR = 'CREATOR'
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Trinity Architecture: Guide Strategy Payload (Page 2-5 Refactor)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * GuideStrategyPayload — The Constitution (Layer 1)
+ * 
+ * Strict schema for Interview Strategy Guide Pages 2-5.
+ * Enforces array lengths, enum boundaries, and prevents LLM hallucinations.
+ * 
+ * @see Layer 2: /lib/prompts/full.ts (System prompts with search operators)
+ * @see Layer 3: UI components (Bento Grid + Dark Slate theme)
+ */
+export interface GuideStrategyPayload {
+  // ─── PAGE 2: Micro (Team & Role) ───
+  page2_team_and_role: {
+    role_overview: {
+      /** STRICT: 3-4 items. High-density bullet points. NO JD copy-pasting. */
+      responsibilities_high_density: string[];
+      /** STRICT: 3-4 items. Hard requirements / must-haves. */
+      hard_requirements: string[];
+      /** e.g., "Hybrid 3 days/week", "Fully Remote", "Onsite 5 days" */
+      rto_policy: string;
+      wlb_assessment: {
+        /** e.g., "Healthy" / "Demanding but manageable" / "High burnout risk" */
+        work_life_balance_rating: string;
+        /** Short summary of team vibe / culture signals */
+        team_vibe_summary: string;
+        /** Source of WLB assessment */
+        source_type: 'jd_official' | 'web_grounded';
+      };
+    };
+    career_path_and_growth: {
+      /** 1-2 next step role titles (e.g., "Senior BA → Lead BA → Product Owner") */
+      next_step_roles: string[];
+      /** Growth trajectory description. NO numeric salary ranges. Only drivers (e.g., "Strong upward mobility in fintech ops") */
+      salary_growth_trajectory: string;
+    };
+    role_reviews: {
+      /** 2-3 pros */
+      pros: string[];
+      /** 2-3 cons */
+      cons: string[];
+    };
+  };
+
+  // ─── PAGE 3: Macro (Company Truth & Risks) ───
+  page3_company_truth: {
+    /** Flag to trigger fallback UI when public data is insufficient */
+    data_status: 'sufficient' | 'insufficient_public_data';
+    company_macro: {
+      /** Industry positioning / competitive stance */
+      industry_positioning: string;
+      /** CEO's strategic focus / current priorities */
+      ceo_strategic_focus: string;
+      /** 2-3 top competitors (real company names) */
+      top_competitors: string[];
+    };
+    risk_and_reputation_audit: {
+      /** Layoff history summary. If none: "無顯著近期裁員紀錄" */
+      layoff_history: string;
+      /** Legal/news red flags. If none: ["無顯著公開違法紀錄"] */
+      legal_or_news_red_flags: string[];
+      /** Internal rumors from Glassdoor/Blind/Reddit */
+      internal_rumors_summary: string;
+    };
+    /**
+     * ONLY populated when data_status === 'insufficient_public_data'
+     * Provides fallback verification questions for candidate to ask recruiter
+     */
+    fallback_verification?: {
+      /** 2-3 questions candidate should ask interviewer */
+      recruiter_questions: string[];
+      /** Recommended search query for candidate to try */
+      recommended_search_query: string;
+    };
+  };
+
+  // ─── PAGE 4: Tactical (Interview & Negotiation) ───
+  page4_interview_and_comp: {
+    /**
+     * STRICT: EXACTLY 4 items (2 behavioral + 2 technical)
+     * UI will render 2x2 grid
+     */
+    interview_questions: [
+      {
+        category: 'behavioral' | 'technical_case';
+        question: string;
+        /** Interviewer's intent / what they're assessing */
+        intent: string;
+        suggested_answer: {
+          /** STAR framework guidance (Situation, Task, Action, Result) */
+          star_framework: string;
+          /** Critical dos and don'ts */
+          dos_and_donts: string;
+        };
+      },
+      {
+        category: 'behavioral' | 'technical_case';
+        question: string;
+        intent: string;
+        suggested_answer: {
+          star_framework: string;
+          dos_and_donts: string;
+        };
+      },
+      {
+        category: 'behavioral' | 'technical_case';
+        question: string;
+        intent: string;
+        suggested_answer: {
+          star_framework: string;
+          dos_and_donts: string;
+        };
+      },
+      {
+        category: 'behavioral' | 'technical_case';
+        question: string;
+        intent: string;
+        suggested_answer: {
+          star_framework: string;
+          dos_and_donts: string;
+        };
+      }
+    ];
+    tc_negotiation_script: {
+      tc_breakdown: {
+        /** Base salary insights / market positioning */
+        base_salary_insight: string;
+        /** Equity/RSU insights / vesting schedules */
+        equity_rsu_insight: string;
+        /** Sign-on bonus insights / negotiation leverage */
+        sign_on_bonus_insight: string;
+      };
+      negotiation_playbook: {
+        /** Anchoring strategy — setting the floor */
+        prepare: string;
+        /** Pitch script — actual dialogue candidate can use verbatim */
+        pitch: string;
+        /** Counter strategy — handling rejection / lowball offers */
+        counter_strategy: string;
+      };
+    };
+  };
+
+  // ─── PAGE 5: Audit (References) ───
+  /**
+   * Reference sources with evidence tier classification
+   * UI renders as high-density data table with color-coded tiers
+   */
+  page5_references: Array<{
+    source_type: 'Glassdoor' | 'Blind' | 'Reddit' | 'Levels.fyi' | 'Layoff.fyi' | 'News/SEC';
+    /** Short description of what this source provides */
+    description: string;
+    /** ISO date string when data was retrieved */
+    date_retrieved: string;
+    /** Full URL (may be empty string if no direct link) */
+    url: string;
+    /** Evidence quality tier for UI color coding */
+    evidence_tier: 'Tier 1 (Official)' | 'Tier 2 (Multi-source)' | 'Tier 3 (Forum Wind)';
+  }>;
+}
