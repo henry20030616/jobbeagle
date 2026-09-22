@@ -285,6 +285,19 @@ function QuestionList({
 function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   const t = roleTeamOrEmpty(report, copy);
 
+  // Trinity: Extract new schema fields or fallback to legacy
+  const nextTitle = t.next_title_1_3yr || '—';
+  const salaryGrowth = (t as any).salary_growth_trajectory || copy.nextTitleBasisFallback;
+  const responsibilities = (t as any).responsibilities_high_density || t.role_content_refined || [];
+  const requirements = (t as any).hard_requirements || t.requirements_refined || [];
+  const rtoPolicy = (t as any).rto_policy || t.rto_official || '—';
+  const wlbAssessment = (t as any).wlb_assessment || {
+    work_life_balance_rating: t.rto_employee_reality || '—',
+    team_vibe_summary: t.department_fallback_note || '—',
+    source_type: 'jd_official',
+  };
+  const roleReviews = (t as any).role_reviews || { pros: [], cons: [] };
+
   return (
     <GuideSlideShell>
       <PageHeaderBar
@@ -293,105 +306,183 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         badge={t.team_sample_insufficient ? copy.badgeSampleThin : copy.badgeTeamSignals}
         badgeTone={t.team_sample_insufficient ? 'amber' : 'sky'}
       />
-      <HeroDualRow
-        left={
-          <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.roleContent}</p>
-            <p className={`${META} text-slate-500 mb-2`}>{copy.roleContentHint}</p>
-            <BulletList
-              items={
-                t.role_content_refined.length
-                  ? t.role_content_refined
-                  : [copy.emptyRoleContent]
-              }
-              tone="indigo"
-            />
-          </>
-        }
-        right={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.requirements}</p>
-            <p className={`${META} text-slate-500 mb-2`}>{copy.requirementsHint}</p>
-            <BulletList
-              items={
-                t.requirements_refined.length
-                  ? t.requirements_refined
-                  : [copy.emptyRequirements]
-              }
-              tone="emerald"
-            />
-          </>
-        }
-      />
-      <DetailDualRow
-        left={
-          <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.rtoOfficial}</p>
-            <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
-              {t.rto_official || '—'}
+
+      {/* Trinity Top Banner: Career Path & Growth */}
+      <div className="border-b border-slate-700/90 bg-gradient-to-r from-emerald-950/40 to-indigo-950/40 px-5 py-5">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20">
+            <CheckCircle2 className="h-6 w-6 text-emerald-300" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>
+              {copy.nextTitle || 'Career Path & Growth'}
             </p>
-            <p className={`${BODY_MUTED} mt-2`}>{copy.rtoOfficialSource}</p>
-          </>
-        }
-        right={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>{copy.rtoReality}</p>
+            <p className="text-2xl sm:text-3xl font-black text-white leading-tight mb-2">
+              {nextTitle}
+            </p>
+            <p className={`${BODY} text-slate-300 leading-relaxed`}>
+              {salaryGrowth}
+            </p>
+            {t.career_path_basis ? (
+              <p className={`${META} text-slate-500 mt-2`}>
+                {copy.nextTitleBasisFallback || 'Basis'}: {t.career_path_basis}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Trinity Bento Grid: Left 60% + Right 40% */}
+      <div className="grid lg:grid-cols-[60%_40%] gap-0 border-b border-slate-700/90">
+        {/* Left Column: Role Overview (High-Density) */}
+        <div className="border-r border-slate-700/90 px-5 py-4 space-y-4">
+          {/* RTO Badge (Top Right Corner) */}
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className={`${SECTION_TITLE} text-indigo-400`}>
+              {copy.roleContent || 'Role Overview'}
+            </h3>
+            <div className="flex items-center gap-2 rounded-lg border border-sky-400/40 bg-sky-500/10 px-3 py-1.5">
+              <span className="text-sm font-bold text-sky-100">{rtoPolicy}</span>
+            </div>
+          </div>
+
+          {/* Responsibilities (High-Density Bullets) */}
+          <div>
+            <p className={`${META} text-slate-500 mb-2`}>
+              {copy.roleContentHint || 'High-density responsibilities'}
+            </p>
+            <ul className="space-y-1.5">
+              {(responsibilities.length > 0 ? responsibilities : [copy.emptyRoleContent || '—']).slice(0, 4).map((item: string, i: number) => (
+                <li key={i} className="flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
+                  <span className={`${BODY} text-slate-200 leading-snug`}>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Hard Requirements */}
+          <div>
+            <p className={`${SECTION_TITLE} text-emerald-400 mb-2`}>
+              {copy.requirements || 'Hard Requirements'}
+            </p>
+            <p className={`${META} text-slate-500 mb-2`}>
+              {copy.requirementsHint || 'Must-haves'}
+            </p>
+            <ul className="space-y-1.5">
+              {(requirements.length > 0 ? requirements : [copy.emptyRequirements || '—']).slice(0, 4).map((item: string, i: number) => (
+                <li key={i} className="flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className={`${BODY} text-slate-200 leading-snug`}>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Right Column: WLB Dashboard + Pros/Cons */}
+        <div className="px-5 py-4 space-y-4 bg-slate-900/30">
+          {/* WLB Assessment */}
+          <div>
+            <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center gap-2`}>
+              {copy.rtoReality || 'WLB Reality Check'}
+            </h3>
             {t.team_sample_insufficient ? (
-              <div className="mb-2">
-                <InsufficientDataBadge label={copy.teamSampleInsufficient} />
+              <div className="mb-2 rounded-md border border-amber-400/40 bg-amber-500/10 px-3 py-2">
+                <p className="text-sm font-bold text-amber-200">
+                  {copy.teamSampleInsufficient || 'Limited team reviews'}
+                </p>
               </div>
             ) : null}
-            <p className={`${BODY} text-slate-200 leading-relaxed`}>
-              {t.rto_employee_reality}
-            </p>
-            {t.department_fallback_note ? (
-              <p className={`${BODY_MUTED} mt-2`}>{t.department_fallback_note}</p>
+            <div className="rounded-lg border border-violet-400/30 bg-black/20 px-4 py-3 space-y-2">
+              <div>
+                <p className={`${META} text-slate-400 mb-0.5`}>
+                  {copy.rtoReality || 'WLB Rating'}
+                </p>
+                <p className={`${BODY} font-semibold text-violet-100`}>
+                  {wlbAssessment.work_life_balance_rating}
+                </p>
+              </div>
+              <div>
+                <p className={`${META} text-slate-400 mb-0.5`}>
+                  Team Vibe
+                </p>
+                <p className={`${BODY} text-slate-200 leading-snug`}>
+                  {wlbAssessment.team_vibe_summary}
+                </p>
+              </div>
+              <p className={`${META} text-slate-500 text-xs`}>
+                Source: {wlbAssessment.source_type === 'web_grounded' ? 'Blind/Reddit' : 'JD Official'}
+              </p>
+            </div>
+          </div>
+
+          {/* Role Reviews: Pros (Green) + Cons (Red) */}
+          <div className="space-y-3">
+            {/* Pros */}
+            {roleReviews.pros?.length > 0 ? (
+              <div>
+                <p className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center gap-1.5`}>
+                  <CheckCircle2 className="h-4 w-4" />
+                  Pros
+                </p>
+                <ul className="space-y-1.5">
+                  {roleReviews.pros.slice(0, 3).map((pro: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-emerald-400 font-bold">🟢</span>
+                      <span className={`${BODY} text-slate-200 leading-snug`}>{pro}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : null}
-            <p className={`${META} text-slate-500 mt-2`}>{copy.rtoRealitySource}</p>
-          </>
-        }
-      />
-      <ContrastDualRow
-        left={
-          <>
-            <h3 className={`${SECTION_TITLE} text-emerald-400 mb-2 flex items-center`}>
-              <CheckCircle2 className="w-5 h-5 mr-1.5" />
-              {copy.nextTitle}
-            </h3>
-            <p className="text-2xl font-black text-white leading-snug">
-              {t.next_title_1_3yr || '—'}
-            </p>
-            <p className={`${BODY_MUTED} mt-2`}>
-              {t.career_path_basis?.trim() || copy.nextTitleBasisFallback}
-            </p>
-            <p className={`${META} text-slate-500 mt-2`}>{copy.noSalaryOnPage}</p>
-          </>
-        }
-        right={
-          <>
-            <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
-              <AlertTriangle className="w-5 h-5 mr-1.5" />
-              {copy.promotionGaps}
-            </h3>
-            <BulletList
-              items={
-                t.promotion_skill_gaps.length
-                  ? t.promotion_skill_gaps
-                  : ['—']
-              }
-              tone="violet"
-            />
-          </>
-        }
-      />
-      <ActionDualRow
-        fullWidth={
-          <>
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.downgradeTitle}</p>
-            <p className={`${BODY_MUTED} leading-relaxed`}>{copy.downgradeNote}</p>
-          </>
-        }
-      />
+
+            {/* Cons */}
+            {roleReviews.cons?.length > 0 ? (
+              <div>
+                <p className={`${SECTION_TITLE} text-red-400 mb-2 flex items-center gap-1.5`}>
+                  <AlertTriangle className="h-4 w-4" />
+                  Cons
+                </p>
+                <ul className="space-y-1.5">
+                  {roleReviews.cons.slice(0, 3).map((con: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-red-400 font-bold">🔴</span>
+                      <span className={`${BODY} text-slate-200 leading-snug`}>{con}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Promotion Skill Gaps (Bottom Full-Width) */}
+      <div className="border-b border-slate-700/90 px-5 py-4">
+        <p className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center gap-1.5`}>
+          <AlertTriangle className="h-5 w-5" />
+          {copy.promotionGaps || 'Skills to Close for Next Title'}
+        </p>
+        <ul className="grid sm:grid-cols-2 gap-2">
+          {(t.promotion_skill_gaps.length > 0 ? t.promotion_skill_gaps : ['—']).map((skill, i) => (
+            <li
+              key={i}
+              className="flex items-start gap-2 rounded-md border border-violet-400/30 bg-violet-500/5 px-3 py-2"
+            >
+              <span className="text-violet-400 font-bold">→</span>
+              <span className={`${BODY} text-slate-200`}>{skill}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Downgrade Note */}
+      <div className="px-5 py-3 bg-slate-900/40">
+        <p className={`${META} text-slate-500 leading-relaxed`}>
+          {copy.downgradeNote || copy.noSalaryOnPage || 'No salary figures on this page. Compensation details on Page 4.'}
+        </p>
+      </div>
     </GuideSlideShell>
   );
 }
