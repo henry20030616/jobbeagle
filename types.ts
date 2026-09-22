@@ -304,6 +304,19 @@ export interface AtsWarning {
  * 嚴禁任何具體薪資金額；團隊無公開樣本時必須誠實降級。
  */
 export interface RoleTeamInsights {
+  /** 
+   * ATS Critical Gaps Analysis (新增：兑现 Page 1 付费墙承诺)
+   */
+  ats_critical_gaps?: {
+    detected_count: 2 | 3;
+    gaps: Array<{
+      gap_type: 'keyword_missing' | 'quantification_weak' | 'experience_unclear';
+      jd_requirement: string;
+      resume_weakness: string;
+      fix_strategy: string;
+      severity: 'critical' | 'major';
+    }>;
+  };
   /** 職位重點（改寫濃縮，非 JD 原文貼上） */
   role_content_refined: string[];
   /** 錄取關鍵條件（改寫濃縮） */

@@ -438,6 +438,52 @@ const FULL_STRATEGY_PROPERTIES = {
     },
     required: ['hire_thesis', 'top_facts'],
   },
+  role_team_insights: {
+    type: Type.OBJECT,
+    properties: {
+      ats_critical_gaps: {
+        type: Type.OBJECT,
+        properties: {
+          detected_count: { type: Type.INTEGER, minimum: 2, maximum: 3 },
+          gaps: {
+            type: Type.ARRAY,
+            minItems: 2,
+            maxItems: 3,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                gap_type: { type: Type.STRING, enum: ['keyword_missing', 'quantification_weak', 'experience_unclear'] },
+                jd_requirement: { type: Type.STRING },
+                resume_weakness: { type: Type.STRING },
+                fix_strategy: { type: Type.STRING },
+                severity: { type: Type.STRING, enum: ['critical', 'major'] },
+              },
+              required: ['gap_type', 'jd_requirement', 'resume_weakness', 'fix_strategy', 'severity'],
+            },
+          },
+        },
+        required: ['detected_count', 'gaps'],
+      },
+      role_content_refined: { type: Type.ARRAY, items: { type: Type.STRING } },
+      requirements_refined: { type: Type.ARRAY, items: { type: Type.STRING } },
+      rto_official: { type: Type.STRING },
+      rto_employee_reality: { type: Type.STRING },
+      next_title_1_3yr: { type: Type.STRING },
+      career_path_basis: { type: Type.STRING, nullable: true },
+      promotion_skill_gaps: { type: Type.ARRAY, items: { type: Type.STRING } },
+      team_sample_insufficient: { type: Type.BOOLEAN },
+      department_fallback_note: { type: Type.STRING, nullable: true },
+    },
+    required: [
+      'role_content_refined',
+      'requirements_refined',
+      'rto_official',
+      'rto_employee_reality',
+      'next_title_1_3yr',
+      'promotion_skill_gaps',
+      'team_sample_insufficient',
+    ],
+  },
 };
 
 /** Single-pass Guide: Snapshot fields + strategy intel (Pro only) */
