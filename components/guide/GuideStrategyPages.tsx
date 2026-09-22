@@ -489,11 +489,88 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
 
 function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   const c = companyTruthOrEmpty(report);
+  
+  // Trinity: Extract new schema fields
+  const dataStatus = (c as any).data_status || 'public_data_available';
+  const fallbackVerification = (c as any).fallback_verification || {
+    recruiter_questions: c.interviewer_strategy_questions || [],
+  };
+  const riskAudit = (c as any).risk_and_reputation_audit || {
+    layoff_history: c.layoff_legal_flags.length > 0 ? 'verified' : 'none',
+    legal_flags: 'none',
+    glassdoor_rating: c.forum_sample_thin ? 'insufficient' : 'neutral',
+  };
+
   const layoffDisplay =
     c.layoff_legal_flags.length > 0
       ? c.layoff_legal_flags
       : [copy.noLayoffRecord];
 
+  // Trinity Fallback: If insufficient data, show warning panel instead
+  if (dataStatus === 'insufficient_public_data') {
+    return (
+      <GuideSlideShell>
+        <PageHeaderBar
+          pageOf={copy.page3Of}
+          title={copy.page3Title}
+          badge="Data Insufficient"
+          badgeTone="amber"
+        />
+        
+        {/* Fallback Warning Panel */}
+        <div className="px-5 py-8">
+          <div className="max-w-3xl mx-auto rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-950/40 to-slate-900 p-8 space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-500/20">
+                <AlertTriangle className="h-7 w-7 text-amber-300" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-amber-200 mb-2">
+                  {copy.companyOverviewEmpty || 'Insufficient Public Data'}
+                </h3>
+                <p className={`${BODY} text-slate-300 leading-relaxed`}>
+                  This company has minimal public information (stealth startup, no Glassdoor reviews, no news coverage). 
+                  We cannot provide verified insights on company strategy, culture, or risks without fabricating data.
+                </p>
+              </div>
+            </div>
+
+            {/* Recruiter Validation Questions (Copy-Friendly Cards) */}
+            {fallbackVerification.recruiter_questions.length > 0 ? (
+              <div className="space-y-3">
+                <p className={`${SECTION_TITLE} text-indigo-300`}>
+                  {copy.strategyQuestions || 'Questions to Ask Your Recruiter'}
+                </p>
+                <p className={`${META} text-slate-400`}>
+                  {copy.strategyQuestionsNote || 'Click to copy each question'}
+                </p>
+                <ul className="space-y-2">
+                  {fallbackVerification.recruiter_questions.map((q: string, i: number) => (
+                    <li
+                      key={i}
+                      onClick={() => {
+                        navigator.clipboard.writeText(q);
+                      }}
+                      className="cursor-pointer rounded-lg border border-indigo-400/40 bg-indigo-500/10 px-4 py-3 hover:bg-indigo-500/20 transition-colors"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-sm font-bold text-indigo-300 tabular-nums shrink-0">
+                          {i + 1}.
+                        </span>
+                        <span className={`${BODY} text-slate-200 leading-snug`}>{q}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </GuideSlideShell>
+    );
+  }
+
+  // Normal flow: Show full company truth
   return (
     <GuideSlideShell>
       <PageHeaderBar
@@ -502,6 +579,85 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         badge={c.forum_sample_thin ? copy.badgeForumThin : copy.badgeRiskAudit}
         badgeTone={c.forum_sample_thin ? 'amber' : 'emerald'}
       />
+
+      {/* Trinity Risk Radar: Top 3 Badges */}
+      <div className="border-b border-slate-700/90 px-5 py-4">
+        <p className={`${SECTION_TITLE} text-amber-300 mb-3`}>
+          {copy.layoffLegal || 'Risk & Reputation Radar'}
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {/* Layoff Risk Badge */}
+          <div
+            className={`flex items-center gap-2 rounded-lg px-4 py-2.5 ${
+              riskAudit.layoff_history === 'verified'
+                ? 'border border-red-400/40 bg-red-500/10'
+                : 'border border-emerald-400/40 bg-emerald-500/10'
+            }`}
+          >
+            {riskAudit.layoff_history === 'verified' ? (
+              <AlertTriangle className="h-5 w-5 text-red-400" />
+            ) : (
+              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+            )}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Layoff History
+              </p>
+              <p className={`text-sm font-bold ${riskAudit.layoff_history === 'verified' ? 'text-red-200' : 'text-emerald-200'}`}>
+                {riskAudit.layoff_history === 'verified' ? 'Verified' : 'None Found'}
+              </p>
+            </div>
+          </div>
+
+          {/* Legal Flags Badge */}
+          <div
+            className={`flex items-center gap-2 rounded-lg px-4 py-2.5 ${
+              riskAudit.legal_flags === 'verified'
+                ? 'border border-red-400/40 bg-red-500/10'
+                : 'border border-emerald-400/40 bg-emerald-500/10'
+            }`}
+          >
+            {riskAudit.legal_flags === 'verified' ? (
+              <AlertTriangle className="h-5 w-5 text-red-400" />
+            ) : (
+              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+            )}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Legal Issues
+              </p>
+              <p className={`text-sm font-bold ${riskAudit.legal_flags === 'verified' ? 'text-red-200' : 'text-emerald-200'}`}>
+                {riskAudit.legal_flags === 'verified' ? 'Flagged' : 'Clean'}
+              </p>
+            </div>
+          </div>
+
+          {/* Glassdoor Rating Badge */}
+          <div
+            className={`flex items-center gap-2 rounded-lg px-4 py-2.5 ${
+              riskAudit.glassdoor_rating === 'insufficient'
+                ? 'border border-amber-400/40 bg-amber-500/10'
+                : 'border border-sky-400/40 bg-sky-500/10'
+            }`}
+          >
+            {riskAudit.glassdoor_rating === 'insufficient' ? (
+              <AlertTriangle className="h-5 w-5 text-amber-400" />
+            ) : (
+              <CheckCircle2 className="h-5 w-5 text-sky-400" />
+            )}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Reviews
+              </p>
+              <p className={`text-sm font-bold ${riskAudit.glassdoor_rating === 'insufficient' ? 'text-amber-200' : 'text-sky-200'}`}>
+                {riskAudit.glassdoor_rating === 'insufficient' ? 'Thin Sample' : 'Available'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Company Overview */}
       <div className="border-b border-slate-700/90 px-5 py-4">
         <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>{copy.companyOverview}</p>
         <p className={`${META} text-slate-500 mb-2`}>{copy.companyOverviewHint}</p>
@@ -510,6 +666,8 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
             || copy.companyOverviewEmpty}
         </p>
       </div>
+
+      {/* Recent Developments */}
       <div className="border-b border-slate-700/90 px-5 py-4">
         <p className={`${SECTION_TITLE} text-sky-300 mb-2`}>{copy.recentDevelopments}</p>
         <p className={`${META} text-slate-500 mb-3`}>{copy.recentDevelopmentsHint}</p>
@@ -555,44 +713,44 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
           <p className={`${BODY} text-slate-400`}>{copy.recentDevelopmentsEmpty}</p>
         )}
       </div>
-      <HeroDualRow
-        left={
-          <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.currentStrategy}</p>
-            <p className={`${META} text-slate-500 mb-2`}>{copy.currentStrategyHint}</p>
-            <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
-              {c.current_strategy}
-            </p>
-          </>
-        }
-        right={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.competitors}</p>
-            <p className={`${META} text-slate-500 mb-2`}>{copy.competitorsHint}</p>
-            {c.competitors.length > 0 ? (
-              <ul className="space-y-2.5">
-                {c.competitors.slice(0, 3).map((comp, i) => (
-                  <li key={i} className={`${BODY} text-slate-200`}>
-                    <span className="font-bold text-emerald-100">{comp.name}</span>
-                    {comp.strengths ? (
-                      <span className="block text-slate-300 mt-0.5">
-                        {copy.strengthLabel}{comp.strengths}
-                      </span>
-                    ) : null}
-                    {comp.weaknesses ? (
-                      <span className="block text-slate-400 mt-0.5">
-                        {copy.weaknessLabel}{comp.weaknesses}
-                      </span>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={`${BODY} text-slate-500`}>—</p>
-            )}
-          </>
-        }
-      />
+
+      {/* Trinity Bento: CEO Strategy (Left) vs Competitors (Right) */}
+      <div className="grid lg:grid-cols-2 gap-0 border-b border-slate-700/90">
+        <div className="border-r border-slate-700/90 px-5 py-4">
+          <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.currentStrategy}</p>
+          <p className={`${META} text-slate-500 mb-2`}>{copy.currentStrategyHint}</p>
+          <p className={`${BODY} text-slate-100 font-semibold leading-relaxed`}>
+            {c.current_strategy}
+          </p>
+        </div>
+        <div className="px-5 py-4 bg-slate-900/30">
+          <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.competitors}</p>
+          <p className={`${META} text-slate-500 mb-2`}>{copy.competitorsHint}</p>
+          {c.competitors.length > 0 ? (
+            <ul className="space-y-2.5">
+              {c.competitors.slice(0, 3).map((comp, i) => (
+                <li key={i} className={`${BODY} text-slate-200`}>
+                  <span className="font-bold text-emerald-100">{comp.name}</span>
+                  {comp.strengths ? (
+                    <span className="block text-slate-300 mt-0.5">
+                      {copy.strengthLabel}{comp.strengths}
+                    </span>
+                  ) : null}
+                  {comp.weaknesses ? (
+                    <span className="block text-slate-400 mt-0.5">
+                      {copy.weaknessLabel}{comp.weaknesses}
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={`${BODY} text-slate-500`}>—</p>
+          )}
+        </div>
+      </div>
+
+      {/* Insider Voice + Layoff Flags */}
       <DetailDualRow
         leftAccent="violet"
         rightAccent="amber"
@@ -622,6 +780,8 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
           </>
         }
       />
+
+      {/* Strategy Questions */}
       <ActionDualRow
         fullWidth={
           <>
