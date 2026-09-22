@@ -16,6 +16,8 @@ import type {
   RoleTeamInsights,
 } from '@/types';
 import { CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';
+import GuidePage4Trinity from './GuidePage4Trinity';
+import GuidePage5Trinity from './GuidePage5Trinity';
 import {
   ActionDualRow,
   BODY,
@@ -857,7 +859,7 @@ function enrichQuestionCard(
 }
 
 /** Exactly 5 cards per column: reported (full STAR) first, then system analysis. */
-function takeFiveForCategory(
+function takeTwoForCategory(
   enriched: InterviewQuestionCard[],
   category: 'behavioral' | 'technical',
   pads: InterviewQuestionCard[],
@@ -865,11 +867,11 @@ function takeFiveForCategory(
   const primary = enriched.filter((q) => q.category === category);
   const out = [...primary];
   for (const pad of pads) {
-    if (out.length >= 5) break;
+    if (out.length >= 2) break;
     if (out.some((q) => q.question === pad.question)) continue;
     out.push({ ...pad, category, predicted: true });
   }
-  return out.slice(0, 5);
+  return out.slice(0, 2);
 }
 
 function Page4({
@@ -957,8 +959,8 @@ function Page4({
     ];
 
     return {
-      behavioral: takeFiveForCategory(merged, 'behavioral', pads),
-      technical: takeFiveForCategory(merged, 'technical', pads),
+      behavioral: takeTwoForCategory(merged, 'behavioral', pads),
+      technical: takeTwoForCategory(merged, 'technical', pads),
     };
   }, [
     playbook,
@@ -979,248 +981,18 @@ function Page4({
   ).filter(([, v]) => Boolean(v?.trim()));
 
   return (
-    <GuideSlideShell>
-      <PageHeaderBar
-        pageOf={copy.page4Of}
-        title={copy.page4Title}
-        badge={copy.page4Badge}
-        badgeTone="violet"
-      />
-      <HeroDualRow
-        left={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>
-              {copy.offerRangeTitle}
-            </p>
-            <p className={`${BODY_MUTED} mb-2 break-words leading-snug`}>
-              {[expected?.region, expected?.currency].filter(Boolean).join(' · ') || 'USD'}
-              {expected?.evidence_tier
-                ? ` · ${evidenceTierLabel(expected.evidence_tier, language)}`
-                : ''}
-            </p>
-            <div className="flex items-center gap-3 min-w-0 mb-3">
-              <div className="min-w-0 flex-1">
-                {offerRange ? (
-                  <>
-                    <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-none break-words">
-                      {offerRange}
-                    </p>
-                    {seatMedian ? (
-                      <p className={`${BODY} text-emerald-100/90 mt-2`}>
-                        <span className="text-slate-400 font-semibold">
-                          {copy.offerMedianLabel}:{' '}
-                        </span>
-                        <span className="font-bold tabular-nums text-emerald-50">
-                          {seatMedian}
-                        </span>
-                      </p>
-                    ) : null}
-                    {expected?.candidate_position_label ? (
-                      <p className={`${BODY_MUTED} mt-1.5 leading-snug line-clamp-2`}>
-                        {expected.candidate_position_label}
-                      </p>
-                    ) : null}
-                  </>
-                ) : (
-                  <p className="text-xl font-bold text-slate-200">{copy.noOfferBand}</p>
-                )}
-              </div>
-              {predictedOffer ? (
-                <PredictedLandSquircle
-                  value={predictedOffer}
-                  label={copy.predictedLandLabel}
-                  size="sm"
-                />
-              ) : null}
-            </div>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-1.5`}>{copy.tcBreakdown}</p>
-            <p className={`${META} text-slate-500 mb-2`}>{copy.tcHint}</p>
-            {tcRows.length > 0 ? (
-              <div className="grid grid-cols-2 gap-2">
-                {tcRows.map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="rounded-md border border-indigo-400/30 bg-black/20 px-3 py-2.5"
-                  >
-                    <p className={`${META} text-slate-400 mb-0.5`}>{label}</p>
-                    <p className={`${BODY} font-semibold text-indigo-50 tabular-nums`}>{value}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className={`${BODY} text-slate-500`}>—</p>
-            )}
-          </>
-        }
-        right={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.negotiateScript}</p>
-            <ol className="space-y-2">
-              {[
-                {
-                  step: copy.prepareStep,
-                  body:
-                    offer?.discovery_questions?.[0]
-                    || offer?.target
-                    || '—',
-                },
-                {
-                  step: copy.pitchStep,
-                  body:
-                    offer?.script?.slice(0, 280)
-                    || offer?.acceptable
-                    || '—',
-                },
-                {
-                  step: copy.counterStep,
-                  body:
-                    offer?.walk_away
-                    || (offer?.structured_levers?.[0]
-                      ? `${offer.structured_levers[0].name}: ${offer.structured_levers[0].note}`
-                      : '—'),
-                },
-              ].map((s) => (
-                <li
-                  key={s.step}
-                  className="rounded-lg border border-emerald-500/25 bg-black/20 px-3 py-2"
-                >
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-                    {s.step}
-                  </p>
-                  <p className={`${BODY} text-slate-200 mt-1 leading-snug`}>{s.body}</p>
-                </li>
-              ))}
-            </ol>
-          </>
-        }
-      />
-      <DetailDualRow
-        leftAccent="violet"
-        rightAccent="indigo"
-        left={
-          <QuestionList
-            items={behavioral}
-            title={copy.behavioralTitle}
-            titleClass="text-violet-300"
-            categoryLabel={copy.categoryBehavioral}
-            copy={copy}
-          />
-        }
-        right={
-          <QuestionList
-            items={technical}
-            title={copy.technicalTitle}
-            titleClass="text-indigo-300"
-            categoryLabel={copy.categoryTechnical}
-            copy={copy}
-          />
-        }
-      />
-    </GuideSlideShell>
+    <GuidePage4Trinity
+      report={report}
+      copy={copy}
+      language={language}
+      behavioral={behavioral}
+      technical={technical}
+    />
   );
 }
 
 function Page5({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
-  const citations = citationsOrEmpty(report);
-
-  return (
-    <GuideSlideShell>
-      <PageHeaderBar
-        pageOf={copy.page5Of}
-        title={copy.page5Title}
-        badge={copy.page5Badge}
-        badgeTone="sky"
-      />
-      <HeroDualRow
-        left={
-          <>
-            <p className={`${SECTION_TITLE} text-indigo-400 mb-2`}>{copy.ragCount}</p>
-            <p className="text-5xl font-black text-white tabular-nums leading-none">
-              {citations.length}
-            </p>
-            <p className={`${BODY_MUTED} mt-2`}>{copy.ragSourcesHint}</p>
-          </>
-        }
-        right={
-          <>
-            <p className={`${SECTION_TITLE} text-emerald-400/90 mb-2`}>{copy.invalidLinkTitle}</p>
-            <p className={`${BODY} text-slate-200 leading-relaxed`}>
-              {copy.invalidLinkBody}
-              <strong className="text-amber-200">{copy.neverFakeUrl}</strong>
-            </p>
-            {report.provenance?.invalid_url_count ? (
-              <p className={`${BODY} text-amber-200/90 mt-3`}>
-                {report.provenance.invalid_url_count}
-              </p>
-            ) : null}
-          </>
-        }
-      />
-      <div className="border-t border-slate-700/90 px-5 py-3.5">
-        <div className="w-full min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>{copy.webReferences}</p>
-          {citations.length === 0 ? (
-            <div>
-              <InsufficientDataBadge label={copy.noDirectUrl} />
-              <p className={`${BODY_MUTED} mt-3`}>
-                {copy.manualVerifyPrefix}{' '}
-                <span className="text-slate-300 font-semibold">
-                  {report.company_name} Glassdoor Blind Levels.fyi layoff
-                </span>
-              </p>
-            </div>
-          ) : (
-            <ul className="space-y-2 max-h-[24rem] overflow-y-auto pr-1">
-              {citations.map((c, i) => (
-                <li
-                  key={i}
-                  className="rounded-lg border border-slate-700/80 bg-black/20 px-3 py-2.5"
-                >
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="rounded border border-sky-400/40 bg-sky-500/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-sky-200">
-                      {c.source_badge}
-                    </span>
-                    <span className={`${META} text-slate-500`}>{c.date}</span>
-                  </div>
-                  <p className={`${BODY} text-slate-200`}>{c.description}</p>
-                  {c.url ? (
-                    <a
-                      href={c.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-flex max-w-full items-center gap-1 truncate text-sm font-semibold text-violet-300 underline underline-offset-2"
-                      title={c.url}
-                    >
-                      <span className="truncate">{c.url}</span>
-                      <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-                    </a>
-                  ) : (
-                    <p className={`${META} text-amber-200/90 mt-1`}>
-                      {copy.manualVerifyPrefix}
-                      {c.manual_verify_keywords
-                        ? c.manual_verify_keywords
-                        : copy.noDirectLinkParen}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-      <ActionDualRow
-        fullWidth={
-          <p className={`${BODY_MUTED} leading-relaxed`}>
-            Report version: {report.report_version || 'v3'}
-            {report.provenance?.validated_at
-              ? ` · validated ${report.provenance.validated_at}`
-              : ''}
-            . {copy.provenanceFooter}
-          </p>
-        }
-      />
-    </GuideSlideShell>
-  );
+  return <GuidePage5Trinity report={report} copy={copy} />;
 }
 
 export default function GuideStrategyPages({
