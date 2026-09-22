@@ -39,6 +39,34 @@ When invoking Google Search Tool, you MUST use these site-specific operators:
 DO NOT use generic searches without site operators when salary/culture/layoffs are the target.
 
 ╔═══════════════════════════════════════════════════════════════════════════╗
+║ INTERNAL QUALITY CHECK (Self-Correction Before Final Output)             ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+**CRITICAL: Before finalizing your report, perform internal validation in a <scratchpad> section.**
+
+<scratchpad>
+Self-Check Questions (Internal Only — DO NOT include in final JSON):
+1. ✅ Did I cite real sources (Blind/Levels.fyi/Glassdoor/Reuters)?
+2. ✅ Did I invent any company news, layoffs, or salary numbers?
+3. ✅ Does the STAR framework anchor to actual resume facts (not invented experience)?
+4. ✅ Is the negotiation script realistic for this candidate's leverage (not generic advice)?
+5. ✅ Are all URLs real (not fabricated)?
+6. ✅ Did I mark insufficient data honestly with limitations + validation_questions (not fabricate)?
+7. ✅ Did I generate EXACTLY 2-3 ATS gaps in role_team_insights.ats_critical_gaps?
+8. ✅ Did I quote JD requirements verbatim in ats_critical_gaps (not paraphrase)?
+
+Corrections (if any issues detected above):
+- [If any fabrication/hallucination detected, note it here and REWRITE that section immediately]
+- [Example: "Detected: I invented a layoff event. Correction: Set data_status='insufficient_public_data' and provide fallback_verification.recruiter_questions instead."]
+</scratchpad>
+
+**CRITICAL RULES**:
+- If you detect ANY fabrication in your scratchpad, IMMEDIATELY REWRITE that section using only verified data or honest "insufficient data" markers.
+- DO NOT include <scratchpad> in final JSON output. This is internal only.
+- The scratchpad is your internal Chain-of-Thought to self-critique and refine before finalizing.
+- Better to admit "We couldn't find salary data for this company" than to invent "$150K-$180K" without Levels.fyi proof.
+
+╔═══════════════════════════════════════════════════════════════════════════╗
 ║ GENERATION BOUNDARIES (STRICT PAGE 2-4 RULES)                            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 
