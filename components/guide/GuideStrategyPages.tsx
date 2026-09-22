@@ -299,6 +299,9 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
     source_type: 'jd_official',
   };
   const roleReviews = (t as any).role_reviews || { pros: [], cons: [] };
+  
+  // ATS Critical Gaps (新增)
+  const atsGaps = (t as any).ats_critical_gaps;
 
   return (
     <GuideSlideShell>
@@ -308,6 +311,77 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         badge={t.team_sample_insufficient ? copy.badgeSampleThin : copy.badgeTeamSignals}
         badgeTone={t.team_sample_insufficient ? 'amber' : 'sky'}
       />
+
+      {/* ATS Resolution Box - 兑现 Page 1 承诺 */}
+      {atsGaps && atsGaps.gaps && atsGaps.gaps.length > 0 && (
+        <div className="border-2 border-amber-500/60 rounded-xl bg-gradient-to-r from-amber-500/10 to-red-500/10 px-5 py-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/20">
+              <AlertTriangle className="h-6 w-6 text-amber-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-black text-amber-300 mb-2">
+                ⚠️ ATS Risk Analysis (From Your Paywall Promise)
+              </h3>
+              <p className="text-sm text-slate-300 mb-4">
+                As promised on Page 1, here are the{' '}
+                <strong className="text-amber-200">{atsGaps.detected_count} items</strong> that may
+                cause ATS rejection — and how to address them in your interview.
+              </p>
+
+              {atsGaps.gaps.map((gap: any, i: number) => (
+                <div
+                  key={i}
+                  className="mb-3 last:mb-0 rounded-lg border border-amber-400/40 bg-black/30 px-4 py-3"
+                >
+                  {/* Gap Header */}
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/30 text-sm font-black text-amber-100">
+                      {i + 1}
+                    </span>
+                    <span className="rounded border border-amber-400/50 bg-amber-500/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-amber-200">
+                      {gap.gap_type?.replace('_', ' ')}
+                    </span>
+                    <span
+                      className={`rounded px-2 py-0.5 text-xs font-bold uppercase ${
+                        gap.severity === 'critical'
+                          ? 'bg-red-500/20 text-red-300 border border-red-400/50'
+                          : 'bg-amber-500/20 text-amber-300 border border-amber-400/50'
+                      }`}
+                    >
+                      {gap.severity}
+                    </span>
+                  </div>
+
+                  {/* Gap Details */}
+                  <div className="space-y-2">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+                        JD Requires
+                      </p>
+                      <p className="text-sm text-slate-200 leading-snug">"{gap.jd_requirement}"</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+                        Resume Weakness
+                      </p>
+                      <p className="text-sm text-red-200/90 leading-snug">{gap.resume_weakness}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-0.5">
+                        ✅ How to Fix in Interview
+                      </p>
+                      <p className="text-sm text-emerald-100 leading-snug font-medium">
+                        {gap.fix_strategy}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Trinity Top Banner: Career Path & Growth */}
       <div className="border-b border-slate-700/90 bg-gradient-to-r from-emerald-950/40 to-indigo-950/40 px-5 py-5">

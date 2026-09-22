@@ -695,6 +695,24 @@ export enum AppMode {
 export interface GuideStrategyPayload {
   // ─── PAGE 2: Micro (Team & Role) ───
   page2_team_and_role: {
+    /** 
+     * ATS Critical Gaps Analysis (MANDATORY SECTION)
+     * Fulfills promise from Page 1's paywall
+     */
+    ats_critical_gaps: {
+      /** Must be 2 or 3 to match Page 1 promise */
+      detected_count: 2 | 3;
+      gaps: Array<{
+        gap_type: 'keyword_missing' | 'quantification_weak' | 'experience_unclear';
+        /** Verbatim quote from JD (no invention) */
+        jd_requirement: string;
+        /** Specific weakness in resume */
+        resume_weakness: string;
+        /** Tactical interview talking point to address gap */
+        fix_strategy: string;
+        severity: 'critical' | 'major';
+      }>;
+    };
     role_overview: {
       /** STRICT: 3-4 items. High-density bullet points. NO JD copy-pasting. */
       responsibilities_high_density: string[];

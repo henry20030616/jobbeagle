@@ -42,7 +42,54 @@ DO NOT use generic searches without site operators when salary/culture/layoffs a
 ║ GENERATION BOUNDARIES (STRICT PAGE 2-4 RULES)                            ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 
-**[Page 2 — Team & Role]:**
+**[Page 2 — ATS Critical Gaps (MANDATORY SECTION — HIGHEST PRIORITY)]:**
+This section MUST fulfill the promise made in Page 1's paywall UI: 
+"⚠️ System detected 2 items that may cause ATS rejection"
+
+**Generation Rules**:
+1. **Cross-Reference Requirement**: Compare JD's hard requirements (exact keywords, years, tools) against Resume's actual phrasing and quantification.
+2. **Generate EXACTLY 2-3 Gaps**: Each gap MUST have:
+   - \`gap_type\`: 
+     * "keyword_missing" — JD requires "SQL", resume says "database queries"
+     * "quantification_weak" — JD wants "5+ years", resume says "extensive experience"
+     * "experience_unclear" — JD requires "team leadership", resume only shows IC work
+   - \`jd_requirement\`: VERBATIM quote from JD (e.g., "Must have ACH returns ownership")
+   - \`resume_weakness\`: Specific issue (e.g., "Resume never uses 'ACH' keyword, only says 'banking ops'")
+   - \`fix_strategy\`: Tactical interview talking point (e.g., "In interview, bridge: 'My reconciliation work was adjacent to ACH settlement. Here's how I'd ramp ACH returns using the same SQL muscle.'")
+   - \`severity\`: "critical" (likely auto-reject) or "major" (human review)
+
+3. **STRICT CONSTRAINTS**:
+   - NEVER invent JD requirements (quote verbatim)
+   - NEVER fabricate resume content
+   - Focus on fixable gaps (not unchangeable facts like visa status)
+   - Provide tactical talking points (not generic advice like "emphasize your skills")
+
+4. **Example Output**:
+\`\`\`json
+{
+  "ats_critical_gaps": {
+    "detected_count": 2,
+    "gaps": [
+      {
+        "gap_type": "keyword_missing",
+        "jd_requirement": "Experience with ACH payment reconciliation (Direct quote from JD)",
+        "resume_weakness": "Resume describes 'banking operations' but never uses the specific keyword 'ACH'",
+        "fix_strategy": "In interview: 'While my resume says banking ops, specifically I managed ACH settlement flows worth $45M monthly. Let me walk you through how I'd apply that here.'",
+        "severity": "critical"
+      },
+      {
+        "gap_type": "quantification_weak",
+        "jd_requirement": "5+ years of SQL (Direct quote from JD)",
+        "resume_weakness": "Resume says 'proficient in SQL' but no year count stated",
+        "fix_strategy": "In interview: 'I've used SQL for 6 years across 3 companies, most recently optimizing queries that reduced report runtime from 4 hours to 12 minutes.'",
+        "severity": "major"
+      }
+    ]
+  }
+}
+\`\`\`
+
+**[Page 2 — Team & Role (Other Fields)]:**
 - \`salary_growth_trajectory\`: STRICTLY FORBIDDEN to include numeric salary ranges (e.g., "$150K-$200K"). Only describe growth drivers (e.g., "Strong upward mobility in fintech ops", "Limited promotion velocity due to flat org structure").
 - If you cannot find specific team reviews on Blind/Glassdoor, set \`team_sample_insufficient: true\` and write a fallback note. DO NOT fabricate team gossip.
 
