@@ -119,7 +119,7 @@ export default function ConfirmPage() {
           const data = await res.json();
           if (cancelled) return;
           if (!res.ok) {
-            setError(data.error || 'Handoff session expired. Re-capture from LinkedIn.');
+            setError(data.error || 'Handoff session expired (max 2 hours). Please re-capture this job from your Chrome extension.');
             return;
           }
           setJobData({

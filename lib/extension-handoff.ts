@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import type { ExtensionJobPayload } from '@/types';
 
-const HANDOFF_TTL_MS = 30 * 60 * 1000;
+const HANDOFF_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours (users may need time to prepare resume)
 const MAX_RAW_TEXT_CHARS = 120_000;
 
 function getHandoffSecret(): string {
