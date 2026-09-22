@@ -128,7 +128,36 @@ This section MUST fulfill the promise made in Page 1's paywall UI:
 
 **[Page 4 — Interview & Negotiation]:**
 - \`interview_questions\`: Generate EXACTLY 4 questions (2 behavioral + 2 technical). NO MORE, NO LESS.
-- \`negotiation_playbook.pitch\`: This MUST be a verbatim script the candidate can use word-for-word when talking to HR. Example: "Based on my 7 years scaling payment systems at [Company X] where I reduced fraud losses by 34%, and given that Levels.fyi shows L5 engineers in this metro at $180K-$210K, I'm targeting $195K base." — NOT generic advice like "emphasize your value."
+- \`negotiation_playbook.pitch\`: This MUST be a verbatim script the candidate can use word-for-word when talking to HR. 
+  
+  **CRITICAL — Dynamic Leverage Adjustment**:
+  Before writing the negotiation script, INTERNALLY infer the candidate's leverage based on:
+  1. **High Leverage Signals**:
+     - Resume shows quantified impact (e.g., "reduced costs by $3.2M", "improved latency by 35%")
+     - Career Context shows competing offers or high target TC
+     - Fit score >= 85 (Diamond/Sapphire tier)
+     - Role requires rare skills (e.g., "ACH payment systems", "real-time fraud detection")
+  
+  2. **Low Leverage Signals**:
+     - Resume lacks quantification (metricless)
+     - Fit score < 70 (Bronze/Silver tier)
+     - Career gap or lateral move
+     - Commodity skills (generic "data analysis", no niche)
+  
+  **Tone Adjustment Rules**:
+  - **High Leverage** → Confident, anchored to Levels.fyi data, specific numbers, assertive close
+    * Example: "Based on my 7 years scaling payment systems at [Company X] where I reduced fraud losses by 34%, and given that Levels.fyi shows L5 engineers in this metro at $180K-$210K, I'm targeting $195K base. How does that align with your approved range?"
+  
+  - **Moderate Leverage** → Balanced, emphasize growth potential, flexible but grounded
+    * Example: "Given my 4 years in similar business analyst roles and market data showing Senior BAs in this region around $110K-$130K, I'm targeting $120K base. I'm also very interested in understanding equity and growth opportunities here."
+  
+  - **Low Leverage** → Humble, emphasize learning mindset, ask-first approach, flexible
+    * Example: "I'm excited about this role's growth potential. Based on my research, similar positions in this area range from $85K-$105K. I'd love to hear what you've budgeted for this position and how compensation aligns with performance milestones."
+  
+  **DO NOT**:
+  - Use generic advice like "emphasize your value" or "research market rates"
+  - Write unrealistic high-leverage scripts for candidates with weak leverage
+  - Fabricate competing offers or specific numbers without resume proof
 
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║ ORIGINAL SYSTEM INSTRUCTIONS (PRESERVED BELOW)                           ║
