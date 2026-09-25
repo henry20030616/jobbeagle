@@ -1,0 +1,87 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Senior Software Engineer",
+  "company_name": "Meta",
+  "fit_score": {
+    "score": 92,
+    "band": "Excellent",
+    "evidence_coverage": "High"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 2,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with React 18+ concurrent features and Server Components",
+          "resume_weakness": "Resume mentions 'React development' but doesn't specify version 18+ or Server Components keyword",
+          "fix_strategy": "In interview: 'While my resume says React development, I've specifically worked with React 18's concurrent rendering in my last project where we migrated 40+ components to Server Components, reducing initial load time by 45%.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "5+ years of distributed systems experience",
+          "resume_weakness": "Resume says 'extensive distributed systems experience' but no specific year count",
+          "fix_strategy": "In interview: 'I have 6 years of distributed systems experience across 3 companies, most recently architecting a microservices platform handling 2M requests/second with 99.99% uptime.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Design and implement scalable microservices architecture",
+      "Lead technical design reviews and mentor junior engineers",
+      "Optimize system performance and reliability at scale"
+    ],
+    "requirements_refined": [
+      "5+ years backend engineering",
+      "Proficiency in distributed systems",
+      "Strong system design skills"
+    ],
+    "rto_official": "Hybrid 3 days/week",
+    "rto_employee_reality": "Flexible, core collaboration hours enforced",
+    "next_title_1_3yr": "Staff Software Engineer",
+    "career_path_basis": "Meta engineering ladder progression verified via Levels.fyi",
+    "promotion_skill_gaps": [
+      "Cross-team technical leadership",
+      "Architecture documentation and RFCs",
+      "Production incident ownership"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$240K",
+    "p75": "$280K",
+    "candidate_predicted_offer": "$265K",
+    "tc_breakdown": {
+      "base": "$195K",
+      "equity": "$60K/yr (RSUs)",
+      "bonus": "$10K sign-on",
+      "total": "$265K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$270K total comp",
+    "acceptable": "$250K total comp",
+    "walk_away": "Below $230K or non-negotiable equity",
+    "script": "Based on my 6 years scaling distributed systems where I reduced infrastructure costs by $2.1M annually and improved system reliability to 99.99%, and given that Levels.fyi shows L5 engineers at Meta in Bay Area ranging $240K-$310K, I'm targeting $270K total compensation. How does that align with your approved range for this E5 position?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Tell me about a time you had to make a difficult architectural trade-off",
+        "category": "behavioral",
+        "interviewer_intent": "Assessing system design thinking and decision-making under constraints",
+        "star_blueprint": "When migrating our monolith to microservices, I faced a trade-off between consistency and availability. I chose eventual consistency with idempotent operations, which increased complexity but enabled 99.99% uptime.",
+        "resume_anchor": "Architected microservices migration reducing latency by 60%"
+      },
+      {
+        "question": "How would you design a URL shortener that handles 1B requests/day?",
+        "category": "technical",
+        "interviewer_intent": "Testing distributed systems knowledge and scalability thinking",
+        "star_blueprint": "I'd use consistent hashing for sharding, Redis for caching hot URLs, and PostgreSQL with read replicas. Key design points: base62 encoding, TTL-based cleanup, and geographic routing for latency.",
+        "resume_anchor": "Designed high-throughput systems handling 2M+ req/sec"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

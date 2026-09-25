@@ -1,0 +1,87 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Product Manager",
+  "company_name": "Adobe",
+  "fit_score": {
+    "score": 71,
+    "band": "Good",
+    "evidence_coverage": "Medium"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 2,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with SaaS B2B product management",
+          "resume_weakness": "Resume mentions 'product management' but doesn't specify SaaS or B2B keywords",
+          "fix_strategy": "In interview: 'My product work was specifically in B2B SaaS—I managed enterprise features for 200+ customers, handling complex procurement cycles and multi-stakeholder decision processes.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "4+ years product management experience",
+          "resume_weakness": "Resume shows 'product manager' title but no explicit tenure stated",
+          "fix_strategy": "In interview: 'I have 4.5 years of product management experience. In my current role, I grew MRR from $2M to $5.5M through feature prioritization and GTM strategy.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Define product vision and roadmap for creative tools",
+      "Conduct user research and validate hypotheses",
+      "Collaborate with design and engineering on feature development"
+    ],
+    "requirements_refined": [
+      "4+ years product management",
+      "B2B SaaS experience",
+      "Data-driven decision making"
+    ],
+    "rto_official": "Hybrid 2 days/week",
+    "rto_employee_reality": "Flexible hybrid, mostly remote acceptable",
+    "next_title_1_3yr": "Senior Product Manager",
+    "career_path_basis": "Adobe career progression per Levels.fyi",
+    "promotion_skill_gaps": [
+      "Strategic vision and roadmap ownership",
+      "Executive communication and influence",
+      "Team leadership or mentorship"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$145K",
+    "p75": "$165K",
+    "candidate_predicted_offer": "$152K",
+    "tc_breakdown": {
+      "base": "$140K",
+      "equity": "$10K/yr (RSUs)",
+      "bonus": "$2K sign-on",
+      "total": "$152K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$160K total comp",
+    "acceptable": "$150K total comp",
+    "walk_away": "Below $140K or unclear growth path",
+    "script": "Based on my 4.5 years in product management where I grew MRR from $2M to $5.5M and shipped features adopted by 85% of enterprise customers, and given market data showing PMs at Adobe ranging $135K-$175K, I'm targeting $160K total compensation. I'm also interested in understanding career progression to Senior PM. How does that align with your budget?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Tell me about a feature you decided NOT to build and why",
+        "category": "behavioral",
+        "interviewer_intent": "Testing prioritization skills and saying no to stakeholders",
+        "star_blueprint": "Our sales team pushed for a white-label feature. After analyzing, only 3 of 200 customers would use it, requiring 6 engineering months. I proposed a partnership model instead, preserving eng capacity for features with 40%+ adoption potential.",
+        "resume_anchor": "Prioritized features driving 85% enterprise adoption"
+      },
+      {
+        "question": "How would you prioritize between fixing technical debt vs building new features?",
+        "category": "technical",
+        "interviewer_intent": "Assessing product-engineering balance and technical fluency",
+        "star_blueprint": "I'd quantify both: if tech debt is slowing velocity by 30% or causing customer churn, it outweighs new features. I use a framework: customer pain (high/low) × business impact (high/low) × eng effort (high/low).",
+        "resume_anchor": "Balanced technical debt reduction with feature velocity"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

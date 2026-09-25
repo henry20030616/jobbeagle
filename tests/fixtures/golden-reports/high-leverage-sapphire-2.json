@@ -1,0 +1,94 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Principal Product Manager",
+  "company_name": "Stripe",
+  "fit_score": {
+    "score": 88,
+    "band": "Excellent",
+    "evidence_coverage": "High"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 3,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with payment processing and PCI compliance",
+          "resume_weakness": "Resume mentions 'fintech product leadership' but never uses 'PCI' or 'payment processing' keywords",
+          "fix_strategy": "In interview: 'While my resume describes fintech product work, I specifically led PCI DSS Level 1 certification for our payment gateway, implementing tokenization and reducing fraud by 34%.'",
+          "severity": "critical"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "10+ years product management experience",
+          "resume_weakness": "Resume says 'senior product leader' but no explicit year count",
+          "fix_strategy": "In interview: 'I have 11 years of product management experience, with 7 years in payments specifically. Most recently, I scaled a payment platform from $50M to $420M GMV.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "experience_unclear",
+          "jd_requirement": "Led teams of 5+ product managers",
+          "resume_weakness": "Resume shows 'product leadership' but doesn't quantify team size",
+          "fix_strategy": "In interview: 'I've managed product teams of up to 8 PMs across 3 squads, defining roadmaps and coaching 2 PMs to senior promotions.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Define multi-year product vision and strategy for payments infrastructure",
+      "Lead cross-functional teams across engineering, design, and operations",
+      "Drive GTM strategy and partnership with sales/success teams"
+    ],
+    "requirements_refined": [
+      "10+ years product management",
+      "Payments/fintech domain expertise",
+      "Team leadership experience"
+    ],
+    "rto_official": "Remote-first (office optional)",
+    "rto_employee_reality": "Fully remote, quarterly offsites",
+    "next_title_1_3yr": "VP Product or Group PM",
+    "career_path_basis": "Stripe career ladder verified via internal sources and Levels.fyi",
+    "promotion_skill_gaps": [
+      "P&L ownership and business case development",
+      "Executive-level stakeholder management",
+      "Multi-product portfolio strategy"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$320K",
+    "p75": "$380K",
+    "candidate_predicted_offer": "$350K",
+    "tc_breakdown": {
+      "base": "$240K",
+      "equity": "$100K/yr (options)",
+      "bonus": "$10K sign-on",
+      "total": "$350K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$370K total comp",
+    "acceptable": "$340K total comp",
+    "walk_away": "Below $320K or insufficient equity stake",
+    "script": "Based on my 11 years scaling payments products where I grew GMV from $50M to $420M and led PCI compliance that reduced fraud losses by 34%, and given that Levels.fyi shows Principal PMs at Stripe ranging $310K-$450K, I'm targeting $370K total compensation. Given the strategic nature of this infrastructure role, how does that align with your range?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Tell me about a time you had to kill a product you personally championed",
+        "category": "behavioral",
+        "interviewer_intent": "Testing judgment, ego management, and data-driven decision making",
+        "star_blueprint": "I championed a white-label payment solution but after 6 months of metrics showing 12% adoption vs 40% target, I recommended sunsetting it. We reallocated engineering to our API product, which grew 180%.",
+        "resume_anchor": "Led product portfolio rationalization saving $2.3M annually"
+      },
+      {
+        "question": "How would you prioritize between reducing fraud vs improving conversion?",
+        "category": "technical",
+        "interviewer_intent": "Assessing payments domain expertise and trade-off thinking",
+        "star_blueprint": "I'd model both impacts financially: if fraud is 2% of GMV and conversion improvement is 15%, the conversion win is likely bigger unless fraud is accelerating. I'd run parallel experiments and monitor velocity vs security balance.",
+        "resume_anchor": "Balanced fraud reduction (34% drop) with conversion optimization (8% lift)"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

@@ -1,0 +1,87 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Staff Data Scientist",
+  "company_name": "Airbnb",
+  "fit_score": {
+    "score": 90,
+    "band": "Excellent",
+    "evidence_coverage": "High"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 2,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Causal inference and experimentation platform experience",
+          "resume_weakness": "Resume mentions 'A/B testing' but doesn't use 'causal inference' or 'experimentation platform' keywords",
+          "fix_strategy": "In interview: 'My A/B testing work specifically involved causal inference methods—I built an experimentation platform using difference-in-differences and propensity score matching that increased statistical power by 40%.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "7+ years data science experience with business impact",
+          "resume_weakness": "Resume shows 'senior data scientist' but no explicit tenure or quantified business metrics",
+          "fix_strategy": "In interview: 'I have 8 years of data science experience. My recommendation systems drove $18M incremental revenue, and my churn prediction model saved $4.2M in retention costs annually.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Design and implement ML models for pricing and demand forecasting",
+      "Lead causal inference studies to evaluate product interventions",
+      "Partner with product/eng on experimentation platform architecture"
+    ],
+    "requirements_refined": [
+      "7+ years data science experience",
+      "Strong ML and causal inference skills",
+      "Python/SQL/Spark proficiency"
+    ],
+    "rto_official": "Hybrid 2 days/week in SF office",
+    "rto_employee_reality": "Flexible remote, core hours 10am-3pm PT enforced",
+    "next_title_1_3yr": "Senior Staff Data Scientist or ML Lead",
+    "career_path_basis": "Airbnb IC ladder progression per Levels.fyi and Blind",
+    "promotion_skill_gaps": [
+      "Cross-functional ML platform leadership",
+      "Research publication or external thought leadership",
+      "Mentoring data science team (3+ reports)"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$280K",
+    "p75": "$330K",
+    "candidate_predicted_offer": "$305K",
+    "tc_breakdown": {
+      "base": "$215K",
+      "equity": "$80K/yr (RSUs)",
+      "bonus": "$10K sign-on",
+      "total": "$305K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$320K total comp",
+    "acceptable": "$295K total comp",
+    "walk_away": "Below $275K or non-competitive equity refresh",
+    "script": "Based on my 8 years in data science where I built recommendation systems that generated $18M incremental revenue and churn models that saved $4.2M annually, and given that Levels.fyi shows Staff DS at Airbnb ranging $270K-$360K, I'm targeting $320K total compensation. How does that align with your approved range for this L6 role?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Describe a time when your model failed in production and how you handled it",
+        "category": "behavioral",
+        "interviewer_intent": "Assessing production ownership, debugging skills, and accountability",
+        "star_blueprint": "My pricing model over-discounted by 15% due to a data pipeline bug. I caught it within 4 hours via monitoring alerts, rolled back, and implemented stricter validation. We recovered 90% of lost margin within a week.",
+        "resume_anchor": "Built monitoring and alerting for ML models in production"
+      },
+      {
+        "question": "How would you design an experiment to measure the impact of a new search ranking algorithm?",
+        "category": "technical",
+        "interviewer_intent": "Testing experimentation design and causal inference expertise",
+        "star_blueprint": "I'd use stratified randomization by user segments, run for 2 weeks to capture weekly patterns, and measure conversion rate as primary metric with booking value as secondary. Key: check for network effects and use delta method for variance.",
+        "resume_anchor": "Led 40+ A/B tests with rigorous causal inference methodology"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

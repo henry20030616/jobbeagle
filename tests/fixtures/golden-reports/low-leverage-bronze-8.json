@@ -1,0 +1,94 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Junior Data Analyst",
+  "company_name": "State Farm",
+  "fit_score": {
+    "score": 58,
+    "band": "Borderline",
+    "evidence_coverage": "Low"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 3,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with insurance claims data and fraud detection",
+          "resume_weakness": "Resume mentions 'data analysis internship' but doesn't use 'insurance', 'claims', or 'fraud detection' keywords",
+          "fix_strategy": "In interview: 'During my internship, I analyzed customer data that included claims patterns. I'm eager to learn insurance-specific domain knowledge and apply my analytical skills to fraud detection use cases.'",
+          "severity": "critical"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "1-2 years data analysis experience",
+          "resume_weakness": "Resume shows '6-month internship' which falls short of 1 year minimum",
+          "fix_strategy": "In interview: 'I have 6 months of intensive data analysis experience through my internship, where I worked full-time on production projects. I also completed 2 relevant Coursera certifications in SQL and data visualization.'",
+          "severity": "critical"
+        },
+        {
+          "gap_type": "experience_unclear",
+          "jd_requirement": "Proficiency in SQL and Excel pivot tables",
+          "resume_weakness": "Resume mentions 'data tools' without specifying SQL or Excel proficiency",
+          "fix_strategy": "In interview: 'I'm comfortable with SQL for basic queries and joins, and I use Excel pivot tables regularly for ad-hoc analysis. I'm actively improving my skills through daily practice and online courses.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Analyze insurance claims data for patterns",
+      "Create basic reports and dashboards",
+      "Support senior analysts on data requests"
+    ],
+    "requirements_refined": [
+      "1-2 years data analysis or internship",
+      "Basic SQL and Excel skills",
+      "Strong learning aptitude"
+    ],
+    "rto_official": "Onsite 5 days/week",
+    "rto_employee_reality": "Fully onsite, traditional office environment",
+    "next_title_1_3yr": "Data Analyst",
+    "career_path_basis": "Entry-level progression typical in insurance industry",
+    "promotion_skill_gaps": [
+      "Deeper SQL proficiency (advanced queries)",
+      "Domain knowledge in insurance and claims",
+      "Independent project ownership"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$55K",
+    "p75": "$62K",
+    "candidate_predicted_offer": "$57K",
+    "tc_breakdown": {
+      "base": "$55K",
+      "equity": "N/A",
+      "bonus": "$2K performance bonus",
+      "total": "$57K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$60K total comp",
+    "acceptable": "$55K total comp",
+    "walk_away": "Below $52K or no training/mentorship support",
+    "script": "I'm excited about this opportunity to apply my analytical skills to insurance and grow in this field. Based on my 6-month internship where I delivered multiple analytics projects and my ongoing learning through certifications, and given market data showing Junior Data Analysts ranging $52K-$65K, I'm hoping for $60K. I'm particularly interested in mentorship and learning opportunities. Would that be possible within your budget?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Tell me about your most challenging analytics project",
+        "category": "behavioral",
+        "interviewer_intent": "Assessing problem-solving and learning ability",
+        "star_blueprint": "In my internship, I was asked to clean a messy dataset with 40% missing values. I researched imputation methods, consulted my mentor, and used median imputation. The clean dataset enabled forecasting analysis that informed a $200K budget decision.",
+        "resume_anchor": "Cleaned and analyzed datasets supporting business decisions"
+      },
+      {
+        "question": "How would you approach analyzing claims data to identify potential fraud?",
+        "category": "technical",
+        "interviewer_intent": "Testing analytical thinking and domain adaptability",
+        "star_blueprint": "I'd start by identifying outliers: claims significantly higher than average, multiple claims in short time periods, or unusual patterns. I'd use SQL to flag these and visualize with Excel. Then I'd work with domain experts to validate which patterns indicate actual fraud.",
+        "resume_anchor": "Analyzed customer patterns identifying data anomalies"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

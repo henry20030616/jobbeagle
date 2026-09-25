@@ -1,0 +1,87 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Customer Success Associate",
+  "company_name": "HubSpot",
+  "fit_score": {
+    "score": 62,
+    "band": "Borderline",
+    "evidence_coverage": "Low"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 2,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with SaaS customer onboarding and CRM platforms",
+          "resume_weakness": "Resume mentions 'customer service' but doesn't use 'SaaS', 'onboarding', or 'CRM' keywords",
+          "fix_strategy": "In interview: 'While my resume says customer service, I've onboarded 50+ clients to our software platform and used CRM systems daily to track customer health metrics. I'm eager to deepen my SaaS expertise.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "experience_unclear",
+          "jd_requirement": "1-2 years customer-facing experience with renewals/upsells",
+          "resume_weakness": "Resume shows 1 year customer service but doesn't mention renewals or upsells",
+          "fix_strategy": "In interview: 'I have 1 year of customer-facing experience. While my role didn't include formal renewals ownership, I frequently identified upsell opportunities and referred them to account managers, resulting in $80K in pipeline.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Onboard new customers and drive product adoption",
+      "Monitor customer health and engagement metrics",
+      "Identify upsell and expansion opportunities"
+    ],
+    "requirements_refined": [
+      "1-2 years customer-facing experience",
+      "SaaS or tech industry background preferred",
+      "Strong communication and problem-solving skills"
+    ],
+    "rto_official": "Hybrid 2 days/week",
+    "rto_employee_reality": "Flexible hybrid, mostly remote for individual contributors",
+    "next_title_1_3yr": "Customer Success Manager",
+    "career_path_basis": "HubSpot career ladder per Glassdoor and company site",
+    "promotion_skill_gaps": [
+      "Renewals and upsell quota ownership",
+      "Strategic account planning",
+      "Product expertise and advanced features"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$58K",
+    "p75": "$68K",
+    "candidate_predicted_offer": "$62K",
+    "tc_breakdown": {
+      "base": "$55K",
+      "equity": "$5K/yr (RSUs)",
+      "bonus": "$2K performance bonus",
+      "total": "$62K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$68K total comp",
+    "acceptable": "$62K total comp",
+    "walk_away": "Below $58K or no clear growth path",
+    "script": "I'm very excited about joining HubSpot and growing in customer success. Based on my 1 year of customer-facing experience where I onboarded 50+ clients and identified $80K in upsell opportunities, and given research showing Customer Success Associates ranging $55K-$72K, I'm hoping for $68K. I'm particularly interested in learning about the path to CSM roles. Would that work within your range?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Tell me about a time you turned around an unhappy customer",
+        "category": "behavioral",
+        "interviewer_intent": "Assessing customer empathy and problem-solving",
+        "star_blueprint": "A client was frustrated with implementation delays. I scheduled a call within 2 hours, acknowledged their concerns, and created a detailed recovery plan with weekly check-ins. They renewed 2 months later and gave us a 5-star review.",
+        "resume_anchor": "Resolved customer issues maintaining 92% satisfaction rate"
+      },
+      {
+        "question": "How would you identify when a customer is at risk of churning?",
+        "category": "technical",
+        "interviewer_intent": "Testing customer success thinking and data awareness",
+        "star_blueprint": "I'd monitor engagement metrics: login frequency, feature usage, support ticket volume, and NPS scores. Red flags include: no logins in 2 weeks, increased support tickets with frustration, or delayed renewals discussions. Early outreach is key.",
+        "resume_anchor": "Tracked customer engagement and proactively addressed concerns"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

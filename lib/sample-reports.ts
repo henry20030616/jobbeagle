@@ -439,6 +439,25 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
   },
   report_version: 'v3-sample',
   role_team_insights: {
+    ats_critical_gaps: {
+      detected_count: 2,
+      gaps: [
+        {
+          gap_type: 'keyword_missing',
+          jd_requirement: 'Experience with ACH payment reconciliation and settlement workflows',
+          resume_weakness: 'Resume mentions "banking operations" but never uses the specific keyword "ACH" or "settlement"',
+          fix_strategy: 'In interview: "While my resume describes banking operations, I specifically managed ACH settlement flows worth $45M monthly. Let me walk you through how I\'d apply that experience to your returns and reconciliation needs."',
+          severity: 'critical',
+        },
+        {
+          gap_type: 'quantification_weak',
+          jd_requirement: '5+ years of business analysis experience in payments or fintech',
+          resume_weakness: 'Resume says "extensive fintech experience" but doesn\'t state exact year count',
+          fix_strategy: 'In interview: "I have 6 years of fintech operations experience across 2 companies, most recently optimizing payment reconciliation cycles that reduced errors by 28%."',
+          severity: 'major',
+        },
+      ],
+    },
     role_content_refined: [
       'Own requirements for payments-ops improvements end to end',
       'Translate ops pain into a prioritized eng backlog',

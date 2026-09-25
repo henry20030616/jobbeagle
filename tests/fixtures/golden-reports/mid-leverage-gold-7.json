@@ -1,0 +1,87 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Marketing Analyst",
+  "company_name": "Target",
+  "fit_score": {
+    "score": 70,
+    "band": "Good",
+    "evidence_coverage": "Medium"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 2,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with marketing attribution and customer segmentation",
+          "resume_weakness": "Resume mentions 'marketing analytics' but doesn't use 'attribution' or 'customer segmentation' keywords",
+          "fix_strategy": "In interview: 'My marketing analytics work included multi-touch attribution modeling—I built models that allocated $5M in ad spend across channels and segmented customers into 8 cohorts for targeted campaigns.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "3+ years marketing analytics experience",
+          "resume_weakness": "Resume shows 'marketing analyst' but no specific tenure",
+          "fix_strategy": "In interview: 'I have 3 years of marketing analytics experience. I've managed campaigns with $15M total budget and improved ROAS from 2.1x to 3.4x through data-driven optimization.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Analyze marketing campaign performance and ROI",
+      "Build customer segmentation models for targeting",
+      "Support marketing strategy with data insights"
+    ],
+    "requirements_refined": [
+      "3+ years marketing analytics",
+      "Google Analytics and SQL proficiency",
+      "Campaign measurement expertise"
+    ],
+    "rto_official": "Hybrid 3 days/week",
+    "rto_employee_reality": "Flexible 2-3 days, team-dependent",
+    "next_title_1_3yr": "Senior Marketing Analyst or Marketing Manager",
+    "career_path_basis": "Target career progression per Glassdoor",
+    "promotion_skill_gaps": [
+      "Advanced statistical modeling (regression, clustering)",
+      "Marketing strategy development",
+      "Cross-functional leadership"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$82K",
+    "p75": "$95K",
+    "candidate_predicted_offer": "$87K",
+    "tc_breakdown": {
+      "base": "$83K",
+      "equity": "N/A",
+      "bonus": "$4K performance bonus",
+      "total": "$87K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$92K total comp",
+    "acceptable": "$85K total comp",
+    "walk_away": "Below $80K or limited analytics tools",
+    "script": "Based on my 3 years in marketing analytics where I improved ROAS from 2.1x to 3.4x and managed $15M in campaign budgets, and market data showing Marketing Analysts at Target ranging $78K-$98K, I'm targeting $92K total compensation. I'm excited about growth toward senior analyst or manager roles. How does that align with your budget?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Tell me about a time when a marketing campaign underperformed and what you did",
+        "category": "behavioral",
+        "interviewer_intent": "Testing problem-solving and analytical troubleshooting",
+        "star_blueprint": "A holiday campaign had 40% lower CTR than historical average. I analyzed by channel and found creative fatigue. I recommended refreshing ad creative and adjusting targeting. CTR recovered to normal levels within 5 days.",
+        "resume_anchor": "Optimized underperforming campaigns improving ROAS by 60%"
+      },
+      {
+        "question": "How would you measure the incrementality of a new marketing channel?",
+        "category": "technical",
+        "interviewer_intent": "Testing causal inference and experimentation knowledge",
+        "star_blueprint": "I'd run a geo-holdout test: launch the new channel in 70% of markets, keep 30% as control. Measure lift in conversions vs control group using difference-in-differences. Key: ensure markets are matched on key attributes.",
+        "resume_anchor": "Built attribution models allocating $5M ad spend across channels"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

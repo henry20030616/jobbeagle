@@ -1,0 +1,94 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Operations Coordinator",
+  "company_name": "FedEx",
+  "fit_score": {
+    "score": 55,
+    "band": "Borderline",
+    "evidence_coverage": "Low"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 3,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with logistics operations and warehouse management systems",
+          "resume_weakness": "Resume mentions 'administrative coordinator' but doesn't use 'logistics', 'warehouse', or 'WMS' keywords",
+          "fix_strategy": "In interview: 'While my resume says administrative work, I supported operations teams coordinating shipments and tracking inventory. I'm eager to learn warehouse management systems and logistics best practices.'",
+          "severity": "critical"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "1-2 years operations or logistics experience",
+          "resume_weakness": "Resume shows '9 months administrative experience' which falls short",
+          "fix_strategy": "In interview: 'I have 9 months of administrative experience supporting operations workflows. While I haven't formally owned logistics processes, I've coordinated cross-functional teams and am a fast learner ready to take on more operational responsibility.'",
+          "severity": "critical"
+        },
+        {
+          "gap_type": "experience_unclear",
+          "jd_requirement": "Proficiency in Microsoft Excel and operational reporting",
+          "resume_weakness": "Resume mentions 'Microsoft Office' but doesn't specify Excel proficiency level",
+          "fix_strategy": "In interview: 'I'm comfortable with Excel for data entry, basic formulas, and creating simple reports. I'm actively improving through online tutorials and can quickly learn advanced functions needed for this role.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Coordinate daily logistics operations and shipment tracking",
+      "Maintain operational reports and dashboards",
+      "Support warehouse teams with administrative needs"
+    ],
+    "requirements_refined": [
+      "1-2 years operations experience",
+      "Basic Excel and systems proficiency",
+      "Strong organizational skills"
+    ],
+    "rto_official": "Onsite 5 days/week",
+    "rto_employee_reality": "Fully onsite, warehouse/office environment",
+    "next_title_1_3yr": "Operations Specialist or Supervisor",
+    "career_path_basis": "Entry-level operations progression typical in logistics",
+    "promotion_skill_gaps": [
+      "Warehouse management system expertise",
+      "Process improvement methodologies (Lean/Six Sigma basics)",
+      "Team coordination and leadership fundamentals"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$42K",
+    "p75": "$48K",
+    "candidate_predicted_offer": "$44K",
+    "tc_breakdown": {
+      "base": "$42K",
+      "equity": "N/A",
+      "bonus": "$2K performance bonus",
+      "total": "$44K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$48K total comp",
+    "acceptable": "$44K total comp",
+    "walk_away": "Below $40K or no advancement opportunities",
+    "script": "I'm very interested in transitioning to operations and building my logistics career with FedEx. Based on my 9 months coordinating administrative workflows supporting operations teams and my strong organizational skills, and given that Operations Coordinators typically range $40K-$50K, I'm hoping for $48K. I'm committed to learning and growing into specialist or supervisor roles. Would that fit your budget?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Describe a time you had to coordinate multiple tasks under tight deadlines",
+        "category": "behavioral",
+        "interviewer_intent": "Assessing multitasking and prioritization under pressure",
+        "star_blueprint": "I managed 3 concurrent projects during quarter-end. I created a priority matrix, delegated where possible, and communicated proactively with stakeholders about timeline trade-offs. All projects delivered on time with no critical issues.",
+        "resume_anchor": "Coordinated cross-functional administrative tasks meeting deadlines"
+      },
+      {
+        "question": "How would you handle a situation where a shipment is delayed and customers are waiting?",
+        "category": "technical",
+        "interviewer_intent": "Testing problem-solving and customer service orientation",
+        "star_blueprint": "I'd immediately assess the delay cause and estimated resolution time. Then I'd proactively notify affected customers with transparent updates and alternative solutions if available. I'd document the issue and escalate to management if needed for systemic fix.",
+        "resume_anchor": "Supported operations teams resolving workflow bottlenecks"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

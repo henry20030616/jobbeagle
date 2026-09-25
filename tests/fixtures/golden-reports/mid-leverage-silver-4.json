@@ -1,0 +1,94 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Senior Business Analyst",
+  "company_name": "Capital One",
+  "fit_score": {
+    "score": 74,
+    "band": "Good",
+    "evidence_coverage": "Medium"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 3,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with credit risk modeling and regulatory compliance",
+          "resume_weakness": "Resume mentions 'financial analysis' but doesn't use 'credit risk' or 'regulatory compliance' keywords",
+          "fix_strategy": "In interview: 'My financial analysis work involved credit risk assessment—I built scorecards that improved approval rates by 12% while maintaining default rates below 2%. I'm familiar with FCRA and ECOA requirements.'",
+          "severity": "critical"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "5+ years business analysis experience",
+          "resume_weakness": "Resume says 'experienced business analyst' but no specific year count",
+          "fix_strategy": "In interview: 'I have 5.5 years of business analysis experience across 2 companies. My most recent role involved stakeholder management for a $15M project delivered on time.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "experience_unclear",
+          "jd_requirement": "SQL and data visualization tools (Tableau/PowerBI)",
+          "resume_weakness": "Resume mentions 'data analysis' but doesn't specify SQL proficiency or visualization tools",
+          "fix_strategy": "In interview: 'I'm proficient in SQL with 4 years of daily use—I write complex queries with window functions and CTEs. I've built 20+ Tableau dashboards used by executives for monthly reviews.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Analyze credit risk data and build scoring models",
+      "Create executive dashboards and reporting",
+      "Partner with product and risk teams on requirements"
+    ],
+    "requirements_refined": [
+      "5+ years business analysis",
+      "SQL and data visualization",
+      "Financial services domain knowledge"
+    ],
+    "rto_official": "Hybrid 3 days/week",
+    "rto_employee_reality": "Flexible 2-3 days, manager-dependent",
+    "next_title_1_3yr": "Lead Business Analyst or Product Analyst",
+    "career_path_basis": "Capital One career ladder per Glassdoor and internal sources",
+    "promotion_skill_gaps": [
+      "Project management and stakeholder leadership",
+      "Advanced statistical modeling skills",
+      "Cross-functional influence without authority"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$115K",
+    "p75": "$135K",
+    "candidate_predicted_offer": "$122K",
+    "tc_breakdown": {
+      "base": "$115K",
+      "equity": "N/A",
+      "bonus": "$7K performance bonus",
+      "total": "$122K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$130K total comp",
+    "acceptable": "$120K total comp",
+    "walk_away": "Below $110K or no growth opportunities",
+    "script": "Given my 5.5 years in business analysis where I improved credit approval rates by 12% and delivered a $15M project on time, and based on Glassdoor showing Senior BAs at Capital One ranging $110K-$140K, I'm targeting $130K total compensation. I'm also interested in understanding growth trajectory and potential for lead roles. How does that align with your range?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Tell me about a time you had to influence stakeholders without having direct authority",
+        "category": "behavioral",
+        "interviewer_intent": "Assessing stakeholder management and persuasion skills",
+        "star_blueprint": "When implementing a new reporting framework, I had resistance from ops managers. I ran a pilot with one willing team, showed 40% time savings, and used data to convince the rest. Full rollout happened within 3 months.",
+        "resume_anchor": "Led cross-functional initiatives with engineering and operations"
+      },
+      {
+        "question": "How would you analyze the impact of a new credit scoring model?",
+        "category": "technical",
+        "interviewer_intent": "Testing analytical thinking and credit risk domain knowledge",
+        "star_blueprint": "I'd compare approval rates, default rates, and profitability across models using a holdout test. Key metrics: approval lift, risk-adjusted return, and adverse action rates by demographic to ensure fairness.",
+        "resume_anchor": "Built credit risk scorecards improving approval rates by 12%"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}

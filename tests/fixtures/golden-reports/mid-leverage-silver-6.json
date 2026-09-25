@@ -1,0 +1,94 @@
+{
+  "report_type": "interview_strategy_guide",
+  "job_title": "Data Analyst",
+  "company_name": "Walmart",
+  "fit_score": {
+    "score": 68,
+    "band": "Fair",
+    "evidence_coverage": "Medium"
+  },
+  "role_team_insights": {
+    "ats_critical_gaps": {
+      "detected_count": 3,
+      "gaps": [
+        {
+          "gap_type": "keyword_missing",
+          "jd_requirement": "Experience with supply chain analytics and inventory optimization",
+          "resume_weakness": "Resume mentions 'retail analytics' but doesn't use 'supply chain' or 'inventory optimization' keywords",
+          "fix_strategy": "In interview: 'My retail analytics work included supply chain optimization—I analyzed inventory turnover and forecasted demand, reducing stockouts by 18% across 50 SKUs.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "quantification_weak",
+          "jd_requirement": "3+ years data analysis experience",
+          "resume_weakness": "Resume says 'data analyst' but no year count specified",
+          "fix_strategy": "In interview: 'I have 3.5 years of data analysis experience. I've built dashboards tracking $120M in annual sales and conducted weekly forecasting for operations teams.'",
+          "severity": "major"
+        },
+        {
+          "gap_type": "experience_unclear",
+          "jd_requirement": "Advanced SQL and Python for data manipulation",
+          "resume_weakness": "Resume mentions 'data tools' but doesn't specify SQL/Python proficiency level",
+          "fix_strategy": "In interview: 'I'm proficient in SQL with complex queries including joins and window functions. I use Python daily for data cleaning with pandas and visualization with matplotlib.'",
+          "severity": "major"
+        }
+      ]
+    },
+    "role_content_refined": [
+      "Analyze supply chain data and identify optimization opportunities",
+      "Build reports and dashboards for operations teams",
+      "Support forecasting and demand planning processes"
+    ],
+    "requirements_refined": [
+      "3+ years data analysis",
+      "SQL and Python proficiency",
+      "Retail or supply chain domain knowledge"
+    ],
+    "rto_official": "Onsite 5 days/week",
+    "rto_employee_reality": "Fully onsite, standard corporate hours",
+    "next_title_1_3yr": "Senior Data Analyst or Analytics Manager",
+    "career_path_basis": "Walmart career ladder per Glassdoor",
+    "promotion_skill_gaps": [
+      "Stakeholder management and executive presentations",
+      "Predictive modeling and machine learning basics",
+      "Project management and initiative ownership"
+    ],
+    "team_sample_insufficient": false
+  },
+  "expected_offer": {
+    "p50": "$75K",
+    "p75": "$88K",
+    "candidate_predicted_offer": "$78K",
+    "tc_breakdown": {
+      "base": "$75K",
+      "equity": "N/A",
+      "bonus": "$3K performance bonus",
+      "total": "$78K"
+    }
+  },
+  "offer_strategy": {
+    "target": "$85K total comp",
+    "acceptable": "$78K total comp",
+    "walk_away": "Below $72K or no career development support",
+    "script": "Given my 3.5 years in data analysis where I reduced stockouts by 18% and built dashboards tracking $120M in sales, and based on research showing Data Analysts at Walmart ranging $70K-$90K, I'm targeting $85K total compensation. I'm particularly interested in growth opportunities toward senior or management roles. How does that fit with your range?"
+  },
+  "interview_playbook": {
+    "questions": [
+      {
+        "question": "Describe a time when your analysis led to a significant business decision",
+        "category": "behavioral",
+        "interviewer_intent": "Assessing business impact and analytical influence",
+        "star_blueprint": "I analyzed inventory data and found 30% of stockouts occurred in 3 product categories. I recommended increasing safety stock for those items. After implementation, stockouts dropped 18% and customer satisfaction improved 4 points.",
+        "resume_anchor": "Reduced stockouts by 18% through data-driven recommendations"
+      },
+      {
+        "question": "How would you approach analyzing sales trends across 500 store locations?",
+        "category": "technical",
+        "interviewer_intent": "Testing analytical approach and technical skills",
+        "star_blueprint": "I'd segment stores by region, size, and demographics. Use SQL to aggregate sales by segment, identify outliers with z-scores, and visualize trends over time. Key metrics: YoY growth, basket size, and foot traffic correlation.",
+        "resume_anchor": "Built dashboards analyzing $120M in sales data"
+      }
+    ]
+  },
+  "report_version": "v3-golden-dataset"
+}
