@@ -959,7 +959,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   ) : (
                     <>
                       <span className="px-1 leading-snug">{submitLabel}</span>
-                      <Pointer className="h-10 w-10 shrink-0" aria-hidden />
+                      <Pointer className="h-[3.75rem] w-[3.75rem] shrink-0" aria-hidden />
                     </>
                   )}
                 </button>

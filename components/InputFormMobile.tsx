@@ -782,7 +782,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               <span className="text-sm text-white/70">{t.waitingSave}</span>
             ) : (
               <>
-                <Pointer className="h-6 w-6" aria-hidden />
+                <Pointer className="h-9 w-9" aria-hidden />
                 <span className="text-base font-bold">{submitLabel}</span>
               </>
             )}
