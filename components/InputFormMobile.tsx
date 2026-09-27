@@ -737,7 +737,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                 className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-600 bg-slate-900/40 px-3 py-2 text-sm font-semibold text-slate-100 hover:border-slate-500 transition-colors"
               >
                 <FileText className="h-4 w-4 shrink-0 text-indigo-300" aria-hidden />
-                {zh ? '範例' : 'Sample'}
+                {t.sampleLink}
               </Link>
             </div>
           ) : (
