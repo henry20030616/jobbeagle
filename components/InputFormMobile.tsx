@@ -4,17 +4,13 @@
  * InputFormMobile - Mobile-optimized job analysis form (<1024px)
  * 
  * Key differences from InputForm (desktop):
- * - Fixed typography (no responsive scaling)
- * - Fixed spacing (no sm:/lg: breakpoints)
- * - No min-height constraints
- * - Vertical stacking only
- * - Same actions as desktop (Grab JD, credits, samples, compare, save)
- * - Compact stacked layout
+ * - Compact stacked layout only (same copy and actions)
+ * - Shared strings from constants/homepage-form-copy.ts
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, Save, Puzzle, CreditCard, Sparkles, Check, Pointer } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, Save, Puzzle, CreditCard, Sparkles, Check, Pointer, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -23,6 +19,7 @@ import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
+import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import BrandLogo from '@/components/BrandLogo';
 
 // Mobile-specific constants (NO responsive classes) - Ultra compact v2
@@ -74,6 +71,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [jdError, setJdError] = useState<string | null>(null);
   const [isParsingUrl, setIsParsingUrl] = useState(false);
+  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -381,18 +379,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
     }
   };
 
-  type TKeys = { title: string; upload: string; generate: string; resumeLibrary: string; noResume: string; jobData: string; resume: string; reportTypeStep: string; launchStep: string; snapshotBlurb: string; strategyBlurb: string; uploadSupport: string; generating: string; fileTooLarge: string; description: string; jobUrlPlaceholder: string };
-  
-  const translations: Record<AppLanguage, TKeys> = {
-    'zh-TW': { title: 'Jobbeagle', upload: '點擊上傳 PDF 或文字檔', generate: 'AI戰略分析', resumeLibrary: '已存履歷', noResume: '尚未儲存任何履歷', jobData: '1. 職缺資訊', resume: '2. 我的履歷', reportTypeStep: '3. 選擇報告類型', launchStep: '4. 啟動分析', snapshotBlurb: '一頁適配判斷：這職該不該投？給匹配分數、缺口，以及依履歷與職缺估的薪酬區間（不聯網）。', strategyBlurb: '面試作戰本：含完整適配快照，再加上即時公司情報、可能考題與 STAR 答法，以及談薪腳本。', uploadSupport: '支援 .pdf, .doc, .docx, .txt, .md (Max 4MB)', generating: '生成深度戰略報告...', fileTooLarge: '檔案大小超過 4MB，請上傳較小的檔案。', description: '專家級 AI 職缺戰略分析', jobUrlPlaceholder: '請貼上完整職缺：公司名稱、職缺名稱及內容…' },
-    'zh-CN': { title: 'Jobbeagle', upload: '点击上传 PDF 或文本文件', generate: 'AI战略分析', resumeLibrary: '已存简历', noResume: '尚未保存任何简历', jobData: '1. 职位信息', resume: '2. 我的简历', reportTypeStep: '3. 选择报告类型', launchStep: '4. 启动分析', snapshotBlurb: '一页适配判断：这份工作该不该投？给出匹配分数、缺口，以及按简历与职位估的薪酬区间（不联网）。', strategyBlurb: '面试作战本：含完整适配快照，再加上即时公司情报、可能考题与 STAR 答法，以及谈薪脚本。', uploadSupport: '支持 .pdf, .doc, .docx, .txt, .md (最大 4MB)', generating: '生成深度战略报告...', fileTooLarge: '文件大小超过 4MB，请上传较小的文件。', description: '专家级 AI 职位战略分析', jobUrlPlaceholder: '请粘贴完整职位：公司名称、职位名称及内容…' },
-    en: { title: 'Jobbeagle', upload: 'Click to upload PDF or text file', generate: 'AI Strategy Analysis', resumeLibrary: 'Saved Resumes', noResume: 'No resumes saved yet', jobData: '1. Job Information', resume: '2. My Resume', reportTypeStep: '3. Report type', launchStep: '4. Launch', snapshotBlurb: 'A one-page fit check: should you apply? Score, gaps, and a salary range from your resume and JD — no web search.', strategyBlurb: 'Interview playbook: includes the Fit Snapshot, plus live company intel, likely questions with STAR answers, and a negotiation script.', uploadSupport: 'Supports .pdf, .doc, .docx, .txt, .md (Max 4MB)', generating: 'Generating in-depth strategic report...', fileTooLarge: 'File size exceeds 4MB, please upload a smaller file.', description: 'Expert-level AI Job Strategy Analysis', jobUrlPlaceholder: 'Paste the full job posting: company, title, description…' },
-    es: { title: 'Jobbeagle', upload: 'Haz clic para subir PDF o archivo de texto', generate: 'Análisis de Estrategia IA', resumeLibrary: 'CVs guardados', noResume: 'No hay CV guardados aún', jobData: '1. Información del Puesto', resume: '2. Mi CV', reportTypeStep: '3. Tipo de informe', launchStep: '4. Iniciar', snapshotBlurb: 'Una página para decidir si postularte: puntuación de encaje, brechas y un rango salarial a partir de tu CV y la oferta — sin búsqueda web.', strategyBlurb: 'Guía de entrevista: incluye el Fit Snapshot, más inteligencia de la empresa, preguntas probables con respuestas STAR y un guion de negociación.', uploadSupport: 'Compatible con .pdf, .doc, .docx, .txt, .md (Máx 4MB)', generating: 'Generando informe estratégico en profundidad...', fileTooLarge: 'El tamaño del archivo supera los 4MB, por favor sube un archivo más pequeño.', description: 'Análisis de estrategia laboral con IA', jobUrlPlaceholder: 'Pega la oferta completa: empresa, puesto, descripción…' },
-    hi: { title: 'Jobbeagle', upload: 'PDF या टेक्स्ट फ़ाइल अपलोड करने के लिए क्लिक करें', generate: 'AI रणनीति विश्लेषण', resumeLibrary: 'सहेजे गए CV', noResume: 'अभी तक कोई CV नहीं सहेजा गया', jobData: '1. नौकरी की जानकारी', resume: '2. मेरा CV', reportTypeStep: '3. रिपोर्ट प्रकार', launchStep: '4. शुरू करें', snapshotBlurb: 'एक पेज का फ़िट चेक: आवेदन करें या नहीं? स्कोर, गैप, और रिज़्यूमे + JD से सैलरी रेंज — बिना वेब सर्च।', strategyBlurb: 'इंटरव्यू प्लेबुक: Fit Snapshot के साथ लाइव कंपनी जानकारी, संभावित सवालों के STAR जवाब, और बातचीत स्क्रिप्ट।', uploadSupport: '.pdf, .doc, .docx, .txt, .md सपोर्ट करता है (अधिकतम 4MB)', generating: 'गहन रणनीतिक रिपोर्ट तैयार की जा रही है...', fileTooLarge: 'फ़ाइल का आकार 4MB से अधिक है, कृपया छोटी फ़ाइल अपलोड करें।', description: 'विशेषज्ञ-स्तरीय AI नौकरी रणनीति विश्लेषण', jobUrlPlaceholder: 'पूरी जॉब पोस्टिंग पेस्ट करें: कंपनी, पदनाम, विवरण…' },
-    ar: { title: 'Jobbeagle', upload: 'انقر لرفع ملف PDF أو ملف نصي', generate: 'تحليل استراتيجية الذكاء الاصطناعي', resumeLibrary: 'السير المحفوظة', noResume: 'لا توجد سير ذاتية محفوظة بعد', jobData: '1. معلومات الوظيفة', resume: '2. سيرتي الذاتية', reportTypeStep: '3. نوع التقرير', launchStep: '4. الإطلاق', snapshotBlurb: 'صفحة واحدة لتقرر هل تتقدم: درجة التوافق والفجوات ونطاق الراتب من سيرتك والوصف — دون بحث على الويب.', strategyBlurb: 'دليل المقابلة: يشمل Fit Snapshot مع معلومات الشركة الحية وأسئلة محتملة بإجابات STAR ونص تفاوض.', uploadSupport: 'يدعم .pdf و .doc و .docx و .txt و .md (حتى 4MB)', generating: 'جارٍ إنشاء التقرير الاستراتيجي المتعمق...', fileTooLarge: 'حجم الملف يتجاوز 4MB، يرجى رفع ملف أصغر.', description: 'مركز تحليل استراتيجية الوظائف بالذكاء الاصطناعي', jobUrlPlaceholder: 'الصق إعلان الوظيفة بالكامل: الشركة والمسمى والوصف…' },
-  };
-
-  const t = translations[currentLanguage];
+  const t = getHomepageFormCopy(currentLanguage);
   const zh = currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN';
   
   const snapshotCredits =
@@ -450,15 +437,78 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           <p className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-300">
             <Puzzle className="h-3 w-3 shrink-0" />
             <span className="truncate">
-              {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
+              {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
             </span>
           </p>
         )}
       </div>
 
-      {/* Feature cards: Hidden on mobile to save space */}
-      
       <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="space-y-2">
+          {([
+            {
+              id: 'fit',
+              icon: ScanSearch,
+              iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
+              iconColor: 'text-amber-300',
+              title: t.matchAnalysis,
+              desc: t.matchAnalysisDesc,
+            },
+            {
+              id: 'offer',
+              icon: BadgeDollarSign,
+              iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
+              iconColor: 'text-emerald-300',
+              title: t.salaryResearch,
+              desc: t.salaryResearchDesc,
+            },
+            {
+              id: 'defenses',
+              icon: ShieldAlert,
+              iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
+              iconColor: 'text-sky-300',
+              title: t.industryAnalysis,
+              desc: t.industryAnalysisDesc,
+            },
+            {
+              id: 'playbook',
+              icon: MessageSquare,
+              iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
+              iconColor: 'text-violet-300',
+              title: t.interviewPrep,
+              desc: t.interviewPrepDesc,
+            },
+          ] as const).map((item) => {
+            const open = expandedFeature === item.id;
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                aria-expanded={open}
+                onClick={() => setExpandedFeature(open ? null : item.id)}
+                className="flex w-full items-start gap-2.5 rounded-xl border border-slate-700 bg-slate-800/80 p-3 text-left"
+              >
+                <div className={`shrink-0 rounded-lg bg-gradient-to-br p-2 shadow-inner ring-1 ${item.iconWrap}`}>
+                  <Icon className={`h-5 w-5 ${item.iconColor}`} strokeWidth={1.75} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-sm font-bold leading-snug text-slate-200">{item.title}</span>
+                    <ChevronDown
+                      className={`mt-0.5 h-4 w-4 shrink-0 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`}
+                      aria-hidden
+                    />
+                  </div>
+                  {open && (
+                    <p className="pt-1.5 text-xs leading-normal text-slate-400">{item.desc}</p>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Step 1: Job */}
         <div className={MOBILE_STEP_CARD}>
           <h2 className={MOBILE_STEP_TITLE}>
@@ -469,7 +519,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
               <Puzzle className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
               <span className="text-xs text-emerald-300 font-medium truncate">
-                {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
+                {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
                 {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).length > 0
                   ? ` · ${[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ')}`
                   : ''}
@@ -499,7 +549,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             disabled={isLoading}
             compact
             hideExtensionHint
-            placeholder={zh ? '貼上完整職缺內容…' : 'Paste full job description…'}
+            placeholder={t.jobUrlPlaceholder}
           />
         </div>
 
@@ -570,8 +620,8 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           {!resume ? (
             <label className="block w-full min-h-[100px] border-2 border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:bg-slate-700/30 transition-colors">
               <Upload className="w-6 h-6 mx-auto mb-1.5 text-slate-400" />
-              <p className="text-sm font-bold text-slate-400 mb-0.5">{zh ? '點擊上傳履歷' : 'Tap to upload'}</p>
-              <p className="text-xs text-slate-400 leading-tight">PDF, Word, Text (Max 4MB)</p>
+              <p className="text-sm font-bold text-slate-400 mb-0.5">{t.upload}</p>
+              <p className="text-xs text-slate-400 leading-tight">{t.uploadSupport}</p>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -609,7 +659,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                 }`}
               >
                 <Save className="h-3.5 w-3.5" />
-                {isSaving ? (zh ? '儲存中...' : 'Saving...') : showSaveSuccess ? (zh ? '✓ 已儲存' : '✓ Saved') : (zh ? '儲存' : 'Save')}
+                {isSaving ? t.saving : showSaveSuccess ? t.saved : t.save}
               </button>
             </>
           )}
@@ -644,14 +694,14 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="w-full text-left"
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <p className="font-bold text-sm text-white">
+                    <p className="whitespace-normal text-sm font-bold text-white">
                       {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                     </p>
                     {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT && (
                       <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
                     )}
                   </div>
-                  <p className="text-xs text-slate-300 leading-snug">{t.snapshotBlurb}</p>
+                  <p className="whitespace-normal text-xs leading-snug text-slate-300">{t.snapshotBlurb}</p>
                 </button>
               </div>
 
@@ -668,7 +718,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="w-full text-left"
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <p className="font-bold text-sm text-white flex items-center gap-1">
+                    <p className="flex items-center gap-1 whitespace-normal text-sm font-bold text-white">
                       {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
                       <Sparkles className="h-4 w-4 text-violet-400" />
                     </p>
@@ -676,7 +726,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
                     )}
                   </div>
-                  <p className="text-xs text-slate-300 leading-snug">{t.strategyBlurb}</p>
+                  <p className="whitespace-normal text-xs leading-snug text-slate-300">{t.strategyBlurb}</p>
                 </button>
               </div>
 
@@ -695,15 +745,29 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           )}
         </div>
 
-        {/* Step 4: Launch button with clear instruction */}
-        <div className="pt-2">
+        <div className={MOBILE_STEP_CARD}>
+          <h2 className={MOBILE_STEP_TITLE}>
+            <span className={`${MOBILE_STEP_BADGE} bg-indigo-400`} />
+            <span>{t.launchStep}</span>
+          </h2>
           <button
             type="submit"
             disabled={submitDisabled}
-            className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-1 ${
+            title={
+              submitDisabled
+                ? zh
+                  ? '請先貼上完整職缺並上傳履歷'
+                  : 'Paste the full job posting and upload a resume first'
+                : undefined
+            }
+            className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-2 ${
               submitDisabled
                 ? 'bg-indigo-600/35 text-white/55 cursor-not-allowed'
-                : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 active:from-indigo-700 active:to-indigo-600 text-white'
+                : publicAts
+                  ? 'bg-emerald-600 text-white'
+                  : jdError
+                    ? 'bg-red-600 text-white'
+                    : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 active:from-indigo-700 active:to-indigo-600 text-white'
             }`}
           >
             {isLoading || isParsingUrl ? (
@@ -712,13 +776,14 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span className="text-sm">{isParsingUrl ? (zh ? '解析中…' : 'Parsing…') : (zh ? '分析中…' : 'Analyzing…')}</span>
+                <span className="text-sm">{isParsingUrl ? (zh ? '解析中…' : 'Parsing…') : t.generating}</span>
               </span>
+            ) : isSaving ? (
+              <span className="text-sm text-white/70">{t.waitingSave}</span>
             ) : (
               <>
                 <Pointer className="h-6 w-6" aria-hidden />
                 <span className="text-base font-bold">{submitLabel}</span>
-                <span className="text-xs text-white/80">{zh ? '點此開始 AI 分析' : 'Tap to start analysis'}</span>
               </>
             )}
           </button>
