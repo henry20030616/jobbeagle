@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, ArrowRight, Save, Puzzle, CreditCard, Sparkles, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, Pointer, Save, Puzzle, CreditCard, Sparkles, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -969,7 +969,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   ) : (
                     <>
                       <span className="px-1 leading-snug">{submitLabel}</span>
-                      <ArrowRight className="h-10 w-10 shrink-0" />
+                      <Pointer className="h-10 w-10 shrink-0" aria-hidden />
                     </>
                   )}
                 </button>

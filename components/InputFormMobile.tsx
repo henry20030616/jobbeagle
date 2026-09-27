@@ -14,7 +14,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, Save, Puzzle, CreditCard, Sparkles, Check } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, Save, Puzzle, CreditCard, Sparkles, Check, Pointer } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -716,8 +716,9 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               </span>
             ) : (
               <>
+                <Pointer className="h-6 w-6" aria-hidden />
                 <span className="text-base font-bold">{submitLabel}</span>
-                <span className="text-xs text-white/80">{zh ? '👆 點此開始 AI 分析' : '👆 Tap to start analysis'}</span>
+                <span className="text-xs text-white/80">{zh ? '點此開始 AI 分析' : 'Tap to start analysis'}</span>
               </>
             )}
           </button>
