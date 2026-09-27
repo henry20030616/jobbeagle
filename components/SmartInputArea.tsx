@@ -109,7 +109,7 @@ export default function SmartInputArea({
 
         <textarea
           disabled={disabled || parsing}
-          className={`upload-prompt w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 font-medium leading-relaxed' : 'p-5 leading-relaxed'} text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-zinc-100 placeholder:text-zinc-400 placeholder:font-medium focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+          className={`upload-prompt w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 font-medium leading-relaxed' : 'p-5 leading-relaxed'} text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-zinc-100 placeholder:text-slate-400 placeholder:font-bold placeholder:opacity-100 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={resolvedPlaceholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
