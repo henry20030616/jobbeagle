@@ -153,9 +153,9 @@ main input {
   height: 0;
 }
 
-/* Language + Google + History: half the homepage type-scale size */
+/* Language + History + account: 150% of the previous 50% header scale */
 .homepage-font-large .homepage-header-controls {
-  zoom: 0.5;
+  zoom: 0.75;
 }
 
 /* Message JobBeagle + legal footer: half the homepage type-scale size.
