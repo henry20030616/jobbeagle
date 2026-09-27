@@ -23,8 +23,8 @@ import BrandLogo from '@/components/BrandLogo';
 type ReportCompareModalProps = {
   language?: string;
   className?: string;
-  /** link = text; button = samples chrome size; panel = full-width under Guide card */
-  variant?: 'link' | 'button' | 'panel';
+  /** link = text; button = samples chrome size; panel = full-width under Guide card; compact = mobile */
+  variant?: 'link' | 'button' | 'panel' | 'compact';
 };
 
 /**
@@ -65,12 +65,16 @@ export default function ReportCompareModal({
       ? `${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 ${className}`
       : variant === 'panel'
         ? `compare-panel-label flex h-full w-full min-h-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-2xl font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50 ${className}`
+        : variant === 'compact'
+          ? `inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm font-semibold text-indigo-300 hover:text-indigo-200 hover:border-slate-500 transition-colors ${className}`
         : `inline-flex items-center gap-2.5 ${REPORT_ACTION_TEXT} text-indigo-300 hover:text-indigo-200 transition-colors ${className}`;
 
   const iconClass =
-    variant === 'button' || variant === 'panel'
-      ? SAMPLE_HEADER_ICON
-      : REPORT_ACTION_ICON;
+    variant === 'compact'
+      ? 'w-4 h-4 shrink-0'
+      : variant === 'button' || variant === 'panel'
+        ? SAMPLE_HEADER_ICON
+        : REPORT_ACTION_ICON;
 
   const drawer =
     open && mounted

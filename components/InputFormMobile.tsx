@@ -8,8 +8,8 @@
  * - Fixed spacing (no sm:/lg: breakpoints)
  * - No min-height constraints
  * - Vertical stacking only
- * - Simplified visual decorations
- * - Feature cards hidden to save space
+ * - Same actions as desktop (Grab JD, credits, samples, compare, save)
+ * - Compact stacked layout
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -24,6 +24,7 @@ import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import BrandLogo from '@/components/BrandLogo';
+import ReportCompareModal from '@/components/ReportCompareModal';
 
 // Mobile-specific constants (NO responsive classes) - Ultra compact v2
 const MOBILE_CONTAINER = 'w-full space-y-3 px-3 py-4';
@@ -71,6 +72,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
   const [resumeHistory, setResumeHistory] = useState<SavedResume[]>([]);
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [jdError, setJdError] = useState<string | null>(null);
   const [isParsingUrl, setIsParsingUrl] = useState(false);
   
@@ -279,6 +281,44 @@ const InputFormMobile: React.FC<InputFormProps> = ({
     }
   };
 
+  const saveResumeToHistory = async (newResume: ResumeInput) => {
+    const zhLang = currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN';
+    try {
+      const supabase = createClient();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user?.id) {
+        alert(zhLang ? '請先登入才能儲存履歷' : 'Sign in to save a resume');
+        return;
+      }
+      const res = await fetch('/api/resumes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resume: newResume }),
+      });
+      const data: { error?: string } = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errText = data.error ?? 'unknown error';
+        alert(zhLang ? `儲存失敗: ${errText}` : `Save failed: ${errText}`);
+        return;
+      }
+      await loadResumeHistory();
+      setShowSaveSuccess(true);
+      setTimeout(() => setShowSaveSuccess(false), 2000);
+    } catch {
+      alert(zhLang ? '儲存履歷失敗，請稍後再試' : 'Could not save resume. Try again.');
+    }
+  };
+
+  const handleManualSave = async () => {
+    if (!resume || isSaving) return;
+    setIsSaving(true);
+    try {
+      await saveResumeToHistory(resume);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSelectResume = (saved: SavedResume) => {
     if (
       saved.mimeType === 'application/pdf'
@@ -364,6 +404,22 @@ const InputFormMobile: React.FC<InputFormProps> = ({
     userProfile?.available_interview_strategy_guide_credits
     ?? userProfile?.available_full_credits
     ?? null;
+  const creditsPillLabel = (() => {
+    if (snapshotCredits == null || strategyCredits == null) {
+      return zh ? '額度與方案 →' : 'Credits & plans →';
+    }
+    if (snapshotCredits <= 0 && strategyCredits <= 0) {
+      return zh ? '加購額度 →' : 'Buy credits →';
+    }
+    const snap = reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage);
+    const strat = reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage);
+    return zh
+      ? `額度：${snap} (${snapshotCredits}) + ${strat} (${strategyCredits}) →`
+      : `Credits: ${snap} (${snapshotCredits}) + ${strat} (${strategyCredits}) →`;
+  })();
+  const creditsPillTitle = zh
+    ? '剩餘額度：適配快照 / 面試指南（點此加購或管理帳戶）'
+    : 'Remaining credits: Fit Snapshot / Interview Guide (buy more or manage account)';
 
   const jobInputKind = classifyJobInput(jobDescription);
   const blocked = jobInputKind.kind === 'blocked_board';
@@ -410,13 +466,27 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             <span className={`${MOBILE_STEP_BADGE} bg-indigo-500`} />
             <span>{t.jobData}</span>
           </h2>
-          {extensionCapture && (
+          {extensionCapture ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
               <Puzzle className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
               <span className="text-xs text-emerald-300 font-medium truncate">
-                {extensionCapture.company_name} · {extensionCapture.job_title}
+                {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
+                {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).length > 0
+                  ? ` · ${[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ')}`
+                  : ''}
               </span>
             </div>
+          ) : (
+            <Link
+              href="/extension"
+              className={MOBILE_PILL}
+              title={zh ? '職缺頁可一鍵抓 JD，免手動貼上' : 'On a job page? Grab the JD in one click — no paste'}
+            >
+              <Puzzle className="h-4 w-4 shrink-0" />
+              <span className="font-bold">
+                {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
+              </span>
+            </Link>
           )}
           <SmartInputArea
             value={jobDescription}
@@ -512,22 +582,37 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               />
             </label>
           ) : (
-            <div className="flex items-center gap-2 p-2.5 bg-indigo-900/20 border border-indigo-500/50 rounded-lg">
-              <div className="shrink-0 rounded-lg bg-indigo-500 p-1.5">
-                <FileText className="h-4 w-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
-                <p className="text-xs text-indigo-300">✓ {zh ? '已準備' : 'Ready'}</p>
+            <>
+              <div className="flex items-center gap-2 p-2.5 bg-indigo-900/20 border border-indigo-500/50 rounded-lg">
+                <div className="shrink-0 rounded-lg bg-indigo-500 p-1.5">
+                  <FileText className="h-4 w-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
+                  <p className="text-xs text-indigo-300">✓ {zh ? '已準備' : 'Ready'}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearFile}
+                  className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-white/10"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
               <button
                 type="button"
-                onClick={clearFile}
-                className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-white/10"
+                onClick={handleManualSave}
+                disabled={isSaving}
+                className={`inline-flex items-center justify-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-bold transition-all ${
+                  isSaving
+                    ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400/50'
+                    : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                }`}
               >
-                <X className="h-4 w-4" />
+                <Save className="h-3.5 w-3.5" />
+                {isSaving ? (zh ? '儲存中...' : 'Saving...') : showSaveSuccess ? (zh ? '✓ 已儲存' : '✓ Saved') : (zh ? '儲存' : 'Save')}
               </button>
-            </div>
+            </>
           )}
         </div>
 
@@ -538,62 +623,83 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             <span>{t.reportTypeStep}</span>
           </h2>
           
-          {/* Credits pill */}
-          {onReportTypeChange && userProfile && (
-            <Link href="/account" className={MOBILE_PILL}>
+          {onReportTypeChange ? (
+            <Link href="/account" className={MOBILE_PILL} title={creditsPillTitle}>
               <CreditCard className="h-4 w-4 shrink-0" />
-              <span className="truncate">
-                {snapshotCredits != null && strategyCredits != null
-                  ? `快照 (${snapshotCredits}) + 策略 (${strategyCredits})`
-                  : '額度與方案'}
-              </span>
+              <span className="truncate font-bold">{creditsPillLabel}</span>
             </Link>
-          )}
+          ) : null}
 
           {onReportTypeChange ? (
             <div className="space-y-1.5">
-              {/* Snapshot card */}
-              <button
-                type="button"
-                onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+              <div
                 className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
                     ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-600 hover:border-slate-500'
+                    : 'border-slate-600'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <p className="font-bold text-sm text-white">
-                    {reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
-                  </p>
-                  {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT && (
-                    <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
-                  )}
-                </div>
-                <p className="text-xs text-slate-300 leading-snug">{t.snapshotBlurb}</p>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
+                  className="w-full text-left"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="font-bold text-sm text-white">
+                      {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
+                    </p>
+                    {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT && (
+                      <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-300 leading-snug">{t.snapshotBlurb}</p>
+                </button>
+                <Link
+                  href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex text-xs font-bold text-indigo-300 underline underline-offset-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  View sample →
+                </Link>
+              </div>
 
-              {/* Strategy Guide card */}
-              <button
-                type="button"
-                onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+              <div
                 className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
                     ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-600 hover:border-slate-500'
+                    : 'border-slate-600'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <p className="font-bold text-sm text-white flex items-center gap-1">
-                    {reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                    <Sparkles className="h-4 w-4 text-violet-400" />
-                  </p>
-                  {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE && (
-                    <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
-                  )}
-                </div>
-                <p className="text-xs text-slate-300 leading-snug">{t.strategyBlurb}</p>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
+                  className="w-full text-left"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="font-bold text-sm text-white flex items-center gap-1">
+                      {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
+                      <Sparkles className="h-4 w-4 text-violet-400" />
+                    </p>
+                    {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE && (
+                      <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-300 leading-snug">{t.strategyBlurb}</p>
+                </button>
+                <Link
+                  href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex text-xs font-bold text-indigo-300 underline underline-offset-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  View sample →
+                </Link>
+              </div>
+
+              <ReportCompareModal language={currentLanguage} variant="compact" />
             </div>
           ) : (
             <div className="text-xs text-slate-500">—</div>
