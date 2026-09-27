@@ -108,9 +108,8 @@ export default function SmartInputArea({
         )}
 
         <textarea
-          required
           disabled={disabled || parsing}
-          className={`w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 text-sm font-medium leading-relaxed' : 'p-5 text-sm leading-relaxed'} text-zinc-100 placeholder:text-zinc-400 placeholder:font-medium focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+          className={`upload-prompt w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 font-medium leading-relaxed' : 'p-5 leading-relaxed'} text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-zinc-100 placeholder:text-zinc-400 placeholder:font-medium focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
           placeholder={resolvedPlaceholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -119,7 +118,7 @@ export default function SmartInputArea({
 
         {parsing && (
           <div className="absolute inset-0 top-10 flex items-center justify-center rounded-xl bg-slate-950/50 backdrop-blur-[1px]">
-            <div className="flex items-center gap-2 text-sm font-semibold text-emerald-200">
+            <div className="upload-prompt flex items-center gap-2 text-sm lg:text-lg font-semibold text-emerald-200">
               <Loader2 className="w-5 h-5 animate-spin" />
               {zh ? '正在解析公開職缺頁…' : 'Fetching public job page…'}
             </div>
@@ -144,7 +143,7 @@ export default function SmartInputArea({
       </div>
 
       {classification.kind === 'other_url' && (
-        <p className="mt-3 text-sm text-blue-200/90 bg-blue-950/40 border border-blue-500/30 rounded-lg px-3 py-2.5 transition-all">
+        <p className="upload-prompt mt-3 text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-blue-200/90 bg-blue-950/40 border border-blue-500/30 rounded-lg px-3 py-2.5 transition-all">
           {zh
             ? '偵測到一般網址。目前僅支援自動解析 Greenhouse / Lever；LinkedIn 等請用外掛或貼完整 JD 文字。'
             : 'URL detected. Auto-fetch supports Greenhouse / Lever only. For LinkedIn and similar boards, use the extension or paste the full JD text.'}
@@ -152,7 +151,7 @@ export default function SmartInputArea({
       )}
 
       {error && (
-        <div className="mt-3 flex items-start gap-2 p-3 bg-red-900/30 border border-red-500/50 rounded-xl text-sm text-red-300 animate-fade-in">
+        <div className="upload-prompt mt-3 flex items-start gap-2 p-3 bg-red-900/30 border border-red-500/50 rounded-xl text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-red-300 animate-fade-in">
           <span>{error}</span>
         </div>
       )}
