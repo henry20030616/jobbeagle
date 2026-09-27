@@ -31,6 +31,10 @@ const PLACEHOLDER_ZH =
 const PLACEHOLDER_EN =
   'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…). Do not paste only a URL or a short excerpt…';
 
+/** Same type scale as InputForm “Click to upload PDF or text file”. */
+const JD_PROMPT_TYPE =
+  'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold leading-snug';
+
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
  */
@@ -107,23 +111,36 @@ export default function SmartInputArea({
           )
         )}
 
-        <textarea
-          disabled={disabled || parsing}
-          className={`upload-prompt w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3 font-medium leading-relaxed' : 'p-5 leading-relaxed'} text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-zinc-100 placeholder:text-slate-400 placeholder:font-bold placeholder:opacity-100 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
-          placeholder={resolvedPlaceholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onBlur={onBlurValidate}
-        />
-
-        {parsing && (
-          <div className="absolute inset-0 top-10 flex items-center justify-center rounded-xl bg-slate-950/50 backdrop-blur-[1px]">
-            <div className="upload-prompt flex items-center gap-2 text-sm lg:text-lg font-semibold text-emerald-200">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {zh ? '正在解析公開職缺頁…' : 'Fetching public job page…'}
+        <div className={`relative min-w-0 max-w-full ${compact ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
+          <textarea
+            disabled={disabled || parsing}
+            className={`${JD_PROMPT_TYPE} w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+            placeholder={resolvedPlaceholder}
+            aria-label={resolvedPlaceholder}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={onBlurValidate}
+          />
+          {!value && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden rounded-xl px-6 py-5"
+            >
+              <p className={`${JD_PROMPT_TYPE} w-full min-w-0 max-w-full text-center text-slate-400`}>
+                {resolvedPlaceholder}
+              </p>
             </div>
-          </div>
-        )}
+          )}
+
+          {parsing && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate-950/50 backdrop-blur-[1px]">
+              <div className={`${JD_PROMPT_TYPE} flex items-center gap-2 text-emerald-200`}>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {zh ? '正在解析公開職缺頁…' : 'Fetching public job page…'}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div
