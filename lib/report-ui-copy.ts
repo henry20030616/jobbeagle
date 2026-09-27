@@ -71,6 +71,16 @@ export interface GuideUiCopy {
   promotionGaps: string;
   downgradeTitle: string;
   downgradeNote: string;
+  atsBoxTitle: string;
+  atsBoxIntro: (count: number) => string;
+  atsJdRequires: string;
+  atsResumeWeakness: string;
+  atsFixInInterview: string;
+  atsGapKeywordMissing: string;
+  atsGapQuantificationWeak: string;
+  atsGapExperienceUnclear: string;
+  atsSeverityCritical: string;
+  atsSeverityMajor: string;
   // Page 3
   page3Of: string;
   page3Title: string;
@@ -416,6 +426,17 @@ const GUIDE: Dict<GuideUiCopy> = {
     downgradeTitle: 'When team data is thin',
     downgradeNote:
       'If this specific team has no public reviews: use same department/level signals, or mark “public sample for this team is insufficient”. Never invent team gossip. Next-title still uses market career paths.',
+    atsBoxTitle: 'ATS screening risk (from Snapshot)',
+    atsBoxIntro: (count) =>
+      `These ${count} items can trigger auto-reject — and how to close them in the interview.`,
+    atsJdRequires: 'JD requires',
+    atsResumeWeakness: 'Resume weakness',
+    atsFixInInterview: 'How to fix in the interview',
+    atsGapKeywordMissing: 'Missing keyword',
+    atsGapQuantificationWeak: 'Weak quantification',
+    atsGapExperienceUnclear: 'Unclear experience',
+    atsSeverityCritical: 'Critical',
+    atsSeverityMajor: 'Major',
     page3Of: 'PAGE 3 OF 5',
     page3Title: 'Company truth & risk',
     badgeForumThin: 'Thin forum signal',
@@ -542,6 +563,17 @@ const GUIDE: Dict<GuideUiCopy> = {
     downgradeTitle: '團隊資訊不足時怎麼辦',
     downgradeNote:
       '若該特定團隊在網路上無公開評價：改看同部門／同職等整體風向，或標註「該團隊公開樣本不足」。不得編造八卦。下一職銜仍會用市場職涯路徑推估，不會空白。',
+    atsBoxTitle: 'ATS 篩選風險（對應快照缺口）',
+    atsBoxIntro: (count) =>
+      `快照提到的自動篩選風險，這裡拆成 ${count} 項——以及面試時怎麼補。`,
+    atsJdRequires: '職缺要求',
+    atsResumeWeakness: '履歷弱點',
+    atsFixInInterview: '面試時怎麼補',
+    atsGapKeywordMissing: '缺關鍵字',
+    atsGapQuantificationWeak: '量化不足',
+    atsGapExperienceUnclear: '經驗寫不清',
+    atsSeverityCritical: '關鍵',
+    atsSeverityMajor: '重要',
     page3Of: '第 3 / 5 頁',
     page3Title: '公司真相與風險',
     badgeForumThin: '論壇聲量少',
@@ -663,6 +695,17 @@ const GUIDE: Dict<GuideUiCopy> = {
     downgradeTitle: '团队信息不足时怎么办',
     downgradeNote:
       '若该特定团队在网上无公开评价：改看同部门／同职等整体风向，或标注「该团队公开样本不足」。不得编造八卦。下一职衔仍会用市场职涯路径推估，不会空白。',
+    atsBoxTitle: 'ATS 筛选风险（对应快照缺口）',
+    atsBoxIntro: (count) =>
+      `快照提到的自动筛选风险，这里拆成 ${count} 项——以及面试时怎么补。`,
+    atsJdRequires: '职位要求',
+    atsResumeWeakness: '简历弱点',
+    atsFixInInterview: '面试时怎么补',
+    atsGapKeywordMissing: '缺关键字',
+    atsGapQuantificationWeak: '量化不足',
+    atsGapExperienceUnclear: '经验写不清',
+    atsSeverityCritical: '关键',
+    atsSeverityMajor: '重要',
     page3Of: '第 3 / 5 页',
     page3Title: '公司真相与风险',
     badgeForumThin: '论坛声量少',
@@ -787,6 +830,17 @@ const GUIDE: Dict<GuideUiCopy> = {
     downgradeTitle: 'Cuando faltan datos del equipo',
     downgradeNote:
       'Si no hay reseñas públicas de este equipo: usa señales del mismo departamento/nivel, o marca “muestra pública insuficiente”. No inventes chismes. El siguiente título igual se infiere del mercado.',
+    atsBoxTitle: 'Riesgo ATS (desde el Snapshot)',
+    atsBoxIntro: (count) =>
+      `Estos ${count} puntos pueden causar rechazo automático — y cómo cerrarlos en la entrevista.`,
+    atsJdRequires: 'El JD pide',
+    atsResumeWeakness: 'Debilidad del CV',
+    atsFixInInterview: 'Cómo resolverlo en la entrevista',
+    atsGapKeywordMissing: 'Falta keyword',
+    atsGapQuantificationWeak: 'Poca cuantificación',
+    atsGapExperienceUnclear: 'Experiencia poco clara',
+    atsSeverityCritical: 'Crítico',
+    atsSeverityMajor: 'Mayor',
     page3Of: 'PÁGINA 3 DE 5',
     page3Title: 'Verdad y riesgo de la empresa',
     badgeForumThin: 'Poco señal en foros',
@@ -915,6 +969,17 @@ const GUIDE: Dict<GuideUiCopy> = {
     downgradeTitle: 'जब टीम डेटा पतला हो',
     downgradeNote:
       'यदि इस टीम की कोई सार्वजनिक समीक्षा नहीं: विभाग/लेवल सिग्नल पर जाएँ, या “नमूना अपर्याप्त” चिह्नित करें। अफवाह न गढ़ें। अगला टाइटल फिर भी बाज़ार पाथ से आता है।',
+    atsBoxTitle: 'ATS स्क्रीनिंग जोखिम (Snapshot से)',
+    atsBoxIntro: (count) =>
+      `ये ${count} बिंदु ऑटो-रिजेक्ट कर सकते हैं — और इंटरव्यू में कैसे बंद करें।`,
+    atsJdRequires: 'JD माँग',
+    atsResumeWeakness: 'रिज़्यूमे कमज़ोरी',
+    atsFixInInterview: 'इंटरव्यू में कैसे ठीक करें',
+    atsGapKeywordMissing: 'कीवर्ड गायब',
+    atsGapQuantificationWeak: 'मात्रा कमज़ोर',
+    atsGapExperienceUnclear: 'अनुभव अस्पष्ट',
+    atsSeverityCritical: 'गंभीर',
+    atsSeverityMajor: 'महत्वपूर्ण',
     page3Of: 'पेज 3 / 5',
     page3Title: 'कंपनी सच और जोखिम',
     badgeForumThin: 'कम फोरम सिग्नल',
@@ -1042,6 +1107,17 @@ const GUIDE: Dict<GuideUiCopy> = {
     downgradeTitle: 'عند نقص بيانات الفريق',
     downgradeNote:
       'إن لم توجد تقييمات عامة لهذا الفريق: استخدم إشارات نفس القسم/المستوى، أو علّم «عينة غير كافية». لا تختلق شائعات. اللقب التالي يبقى مُستنتجًا من السوق.',
+    atsBoxTitle: 'مخاطر ATS (من اللقطة)',
+    atsBoxIntro: (count) =>
+      `هذه ${count} نقاط قد تسبب رفضًا آليًا — وكيف تعالجها في المقابلة.`,
+    atsJdRequires: 'الوظيفة تطلب',
+    atsResumeWeakness: 'ضعف السيرة',
+    atsFixInInterview: 'كيف تعالجها في المقابلة',
+    atsGapKeywordMissing: 'كلمة مفتاحية ناقصة',
+    atsGapQuantificationWeak: 'تقدير ضعيف',
+    atsGapExperienceUnclear: 'خبرة غير واضحة',
+    atsSeverityCritical: 'حرج',
+    atsSeverityMajor: 'مهم',
     page3Of: 'الصفحة 3 من 5',
     page3Title: 'حقيقة الشركة والمخاطر',
     badgeForumThin: 'إشارة منتدى ضعيفة',

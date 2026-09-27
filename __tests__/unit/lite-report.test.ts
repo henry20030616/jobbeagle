@@ -290,6 +290,71 @@ describe('FullReport Spec v3', () => {
     expect(isFullReport(full)).toBe(true);
   });
 
+  it('keeps ATS critical gaps on role_team_insights after normalize', () => {
+    const full = normalizeFullReport({
+      job_title: 'Senior Business Analyst',
+      company_name: 'Northstar Payments',
+      fit_score: {
+        score: 78,
+        band: 'Strong',
+        evidence_coverage: 'High',
+        sharp_verdict: 'Strong BA fit with ACH gap',
+        breakdown: [],
+      },
+      proof_map: {
+        strengths: [{ point: 'SQL', description: 'Looker dashboards' }],
+        gaps: [{ gap: 'ACH', description: 'Adjacent banking ops' }],
+        resume_actions: [],
+        screenability_note: '',
+      },
+      expected_offer: {
+        posted_range: null,
+        p25: '$145K',
+        p50: '$165K',
+        p75: '$190K',
+        currency: 'USD',
+        region: 'US',
+        target_gap: 'Confirm range',
+        evidence_tier: 'C',
+        sources: [],
+      },
+      role_team_insights: {
+        ats_critical_gaps: {
+          detected_count: 2,
+          gaps: [
+            {
+              gap_type: 'keyword_missing',
+              jd_requirement: 'ACH settlement experience',
+              resume_weakness: 'Resume never says ACH',
+              fix_strategy: 'In interview: name the ACH volume you owned.',
+              severity: 'critical',
+            },
+            {
+              gap_type: 'quantification_weak',
+              jd_requirement: '5+ years business analysis',
+              resume_weakness: 'Resume says extensive experience',
+              fix_strategy: 'In interview: state six years at two companies.',
+              severity: 'major',
+            },
+          ],
+        },
+        role_content_refined: ['Own payments-ops requirements'],
+        requirements_refined: ['SQL literacy'],
+        rto_official: 'Hybrid 3 days',
+        rto_employee_reality: 'Overtime near close',
+        next_title_1_3yr: 'Lead BA',
+        promotion_skill_gaps: ['Named ACH ownership'],
+        team_sample_insufficient: false,
+      },
+    });
+
+    expect(full.role_team_insights?.ats_critical_gaps?.detected_count).toBe(2);
+    expect(full.role_team_insights?.ats_critical_gaps?.gaps).toHaveLength(2);
+    expect(full.role_team_insights?.ats_critical_gaps?.gaps[0]?.jd_requirement).toMatch(
+      /ACH/,
+    );
+  });
+
   it('coerces legacy string STAR bank into structured templates', () => {
     const full = normalizeFullReport({
       match_score: 70,

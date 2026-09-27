@@ -423,6 +423,27 @@ const ZH_TW: SampleLocalePack = {
       ],
     },
     role_team_insights: {
+      ats_critical_gaps: {
+        detected_count: 2,
+        gaps: [
+          {
+            gap_type: 'keyword_missing',
+            jd_requirement: '具備 ACH 付款對帳與清算流程經驗',
+            resume_weakness: '履歷寫「banking operations」，但從沒出現 ACH 或 settlement 關鍵字',
+            fix_strategy:
+              '面試時：「履歷寫的是銀行營運，但我實際管過每月約 $45M 的 ACH 清算流。我可以對照你們的退票與對帳需求，說明怎麼套用。」',
+            severity: 'critical',
+          },
+          {
+            gap_type: 'quantification_weak',
+            jd_requirement: '5 年以上支付或金融科技商業分析經驗',
+            resume_weakness: '履歷寫「extensive fintech experience」，沒寫明確年資',
+            fix_strategy:
+              '面試時：「我有 6 年金融科技營運經驗、待過兩家公司；最近一輪對帳優化把錯誤率降了 28%。」',
+            severity: 'major',
+          },
+        ],
+      },
       role_content_refined: [
         '端到端擁有支付營運改善的需求',
         '把營運痛點轉成優先工程 backlog',
@@ -930,6 +951,27 @@ const ZH_CN: SampleLocalePack = {
       ],
     },
     role_team_insights: {
+      ats_critical_gaps: {
+        detected_count: 2,
+        gaps: [
+          {
+            gap_type: 'keyword_missing',
+            jd_requirement: '具备 ACH 付款对账与清算流程经验',
+            resume_weakness: '简历写「banking operations」，但从未出现 ACH 或 settlement 关键字',
+            fix_strategy:
+              '面试时：「简历写的是银行运营，但我实际管过每月约 $45M 的 ACH 清算流。我可以对照你们的退票与对账需求，说明怎么套用。」',
+            severity: 'critical',
+          },
+          {
+            gap_type: 'quantification_weak',
+            jd_requirement: '5 年以上支付或金融科技商业分析经验',
+            resume_weakness: '简历写「extensive fintech experience」，没写明确年资',
+            fix_strategy:
+              '面试时：「我有 6 年金融科技运营经验、待过两家公司；最近一轮对账优化把错误率降了 28%。」',
+            severity: 'major',
+          },
+        ],
+      },
       role_content_refined: [
         '端到端拥有支付运营改善的需求',
         '把运营痛点转成优先工程 backlog',

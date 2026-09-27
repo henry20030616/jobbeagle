@@ -60,6 +60,37 @@ function asStringArray(v: unknown, max?: number): string[] {
   return typeof max === 'number' ? out.slice(0, max) : out;
 }
 
+const ATS_GAP_TYPES = ['keyword_missing', 'quantification_weak', 'experience_unclear'] as const;
+
+function normalizeAtsCriticalGaps(
+  raw: unknown,
+): RoleTeamInsights['ats_critical_gaps'] | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const o = raw as Record<string, unknown>;
+  if (!Array.isArray(o.gaps)) return undefined;
+
+  const gaps = o.gaps
+    .filter((item): item is Record<string, unknown> => !!item && typeof item === 'object')
+    .map((item) => {
+      const gapType = ATS_GAP_TYPES.includes(item.gap_type as (typeof ATS_GAP_TYPES)[number])
+        ? (item.gap_type as (typeof ATS_GAP_TYPES)[number])
+        : 'keyword_missing';
+      return {
+        gap_type: gapType,
+        jd_requirement: asString(item.jd_requirement),
+        resume_weakness: asString(item.resume_weakness),
+        fix_strategy: asString(item.fix_strategy),
+        severity: item.severity === 'critical' ? ('critical' as const) : ('major' as const),
+      };
+    })
+    .filter((gap) => gap.jd_requirement && gap.resume_weakness && gap.fix_strategy)
+    .slice(0, 3);
+
+  if (gaps.length < 2) return undefined;
+  const detected_count = (gaps.length === 3 ? 3 : 2) as 2 | 3;
+  return { detected_count, gaps: gaps.slice(0, detected_count) };
+}
+
 function mapLegacyHardStatus(status: unknown): HardFilterStatus | HardRequirementStatus {
   if (typeof status !== 'string') return 'Unknown';
   if (HARD_STATUSES.includes(status as HardFilterStatus)) return status as HardFilterStatus;
@@ -580,6 +611,7 @@ function normalizeRoleTeamInsights(
       || typeof o.next_title_1_3yr === 'string';
     if (hasNew) {
       return {
+        ats_critical_gaps: normalizeAtsCriticalGaps(o.ats_critical_gaps),
         role_content_refined: asStringArray(o.role_content_refined, 8),
         requirements_refined: asStringArray(o.requirements_refined, 8),
         rto_official: asString(o.rto_official, 'Not stated on JD'),
@@ -610,6 +642,7 @@ function normalizeRoleTeamInsights(
       || asString(traj.current_label)
       || inferMarketNextTitle(snapshot.job_title);
     return {
+      ats_critical_gaps: normalizeAtsCriticalGaps(o.ats_critical_gaps),
       role_content_refined: asStringArray(o.role_core, 8),
       requirements_refined: asStringArray(o.hard_requirements, 8),
       rto_official: asString(work.mode, 'Not stated on JD'),

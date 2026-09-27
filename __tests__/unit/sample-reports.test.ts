@@ -26,6 +26,11 @@ describe('sample reports', () => {
     expect(report.ats_warning?.missing_keyword_count).toBe(4);
     expect(report.role_team_insights?.next_title_1_3yr).toContain('Lead BA');
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels\.fyi|LinkedIn|market/i);
+    expect(report.role_team_insights?.ats_critical_gaps?.detected_count).toBe(2);
+    expect(report.role_team_insights?.ats_critical_gaps?.gaps).toHaveLength(2);
+    expect(report.role_team_insights?.ats_critical_gaps?.gaps[0]?.gap_type).toBe(
+      'keyword_missing',
+    );
     expect(report.company_truth?.company_overview).toMatch(/fintech|Payments|merchant|清算|支付/i);
     expect(report.company_truth?.company_overview).not.toMatch(/Wikipedia|encyclopedic|百科|維基/i);
     expect(report.company_truth?.recent_developments?.length).toBe(5);
@@ -72,6 +77,12 @@ describe('sample reports', () => {
     const report = getSampleStrategyGuideReport('zh-TW');
     expect(report.role_team_insights?.role_content_refined[0]).toMatch(/支付|需求/);
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels|LinkedIn|職涯|推估/);
+    expect(report.role_team_insights?.ats_critical_gaps?.gaps[0]?.jd_requirement).toMatch(
+      /ACH|清算/,
+    );
+    expect(report.role_team_insights?.ats_critical_gaps?.gaps[0]?.fix_strategy).toMatch(
+      /面試/,
+    );
     expect(report.company_truth?.company_overview).toMatch(/金融科技|清算|商戶|Northstar/);
     expect(report.company_truth?.recent_developments?.[0]?.headline).toMatch(/清算|AI|可靠度|ACH/);
     expect(report.company_truth?.current_strategy).toMatch(/清算|自動化|ACH/);
@@ -102,6 +113,8 @@ describe('guide page copy', () => {
     expect(zh.newsCatLeadership).toMatch(/經營層/);
     expect(zh.resumeAnchorLabel).toMatch(/履歷錨點/);
     expect(zh.starLabel).toMatch(/履歷/);
+    expect(zh.atsBoxTitle).toMatch(/ATS/);
+    expect(zh.atsBoxIntro(2)).toMatch(/2/);
     expect(zh.page4Badge).toBe('準備最划算');
     expect(zh.page4Badge).not.toMatch(/ROI|HIGH/i);
     expect(zh.page5Badge).toBe('來源可查證');

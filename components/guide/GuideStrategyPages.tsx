@@ -300,8 +300,7 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
   };
   const roleReviews = (t as any).role_reviews || { pros: [], cons: [] };
   
-  // ATS Critical Gaps (新增)
-  const atsGaps = (t as any).ats_critical_gaps;
+  const atsGaps = t.ats_critical_gaps;
 
   return (
     <GuideSlideShell>
@@ -321,15 +320,13 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-black text-amber-300 mb-2">
-                ⚠️ ATS Risk Analysis (From Your Paywall Promise)
+                {copy.atsBoxTitle}
               </h3>
               <p className="text-sm text-slate-300 mb-4">
-                As promised on Page 1, here are the{' '}
-                <strong className="text-amber-200">{atsGaps.detected_count} items</strong> that may
-                cause ATS rejection — and how to address them in your interview.
+                {copy.atsBoxIntro(atsGaps.detected_count)}
               </p>
 
-              {atsGaps.gaps.map((gap: any, i: number) => (
+              {atsGaps.gaps.map((gap, i) => (
                 <div
                   key={i}
                   className="mb-3 last:mb-0 rounded-lg border border-amber-400/40 bg-black/30 px-4 py-3"
@@ -340,7 +337,11 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
                       {i + 1}
                     </span>
                     <span className="rounded border border-amber-400/50 bg-amber-500/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-amber-200">
-                      {gap.gap_type?.replace('_', ' ')}
+                      {gap.gap_type === 'quantification_weak'
+                        ? copy.atsGapQuantificationWeak
+                        : gap.gap_type === 'experience_unclear'
+                          ? copy.atsGapExperienceUnclear
+                          : copy.atsGapKeywordMissing}
                     </span>
                     <span
                       className={`rounded px-2 py-0.5 text-xs font-bold uppercase ${
@@ -349,7 +350,9 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
                           : 'bg-amber-500/20 text-amber-300 border border-amber-400/50'
                       }`}
                     >
-                      {gap.severity}
+                      {gap.severity === 'critical'
+                        ? copy.atsSeverityCritical
+                        : copy.atsSeverityMajor}
                     </span>
                   </div>
 
@@ -357,19 +360,19 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
                   <div className="space-y-2">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">
-                        JD Requires
+                        {copy.atsJdRequires}
                       </p>
                       <p className="text-sm text-slate-200 leading-snug">"{gap.jd_requirement}"</p>
                     </div>
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">
-                        Resume Weakness
+                        {copy.atsResumeWeakness}
                       </p>
                       <p className="text-sm text-red-200/90 leading-snug">{gap.resume_weakness}</p>
                     </div>
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-0.5">
-                        ✅ How to Fix in Interview
+                        {copy.atsFixInInterview}
                       </p>
                       <p className="text-sm text-emerald-100 leading-snug font-medium">
                         {gap.fix_strategy}
