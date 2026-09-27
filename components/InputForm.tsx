@@ -562,8 +562,8 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`mx-auto w-full max-w-[160rem] break-words font-semibold leading-snug sm:leading-relaxed text-zinc-400 ${
-            compactChrome ? 'text-base sm:text-lg md:text-xl' : 'text-base sm:text-xl md:text-2xl lg:text-3xl'
+          className={`homepage-hero-desc mx-auto w-full max-w-[160rem] text-center font-semibold leading-snug text-zinc-400 ${
+            compactChrome ? 'text-sm sm:text-base md:text-lg' : ''
           }`}
         >
           {t.description}

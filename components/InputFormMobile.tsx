@@ -430,7 +430,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
       {/* Hero: Simplified mobile version */}
       <div className="text-center space-y-1">
         <BrandLogo size="nav" showIcon as="h1" className="justify-center" />
-        <p className="text-xs text-slate-400 leading-snug px-2">
+        <p className="homepage-hero-desc px-2 text-center text-[0.6rem] font-semibold leading-snug text-slate-400">
           {t.description}
         </p>
         {extensionCapture && (

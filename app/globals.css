@@ -170,6 +170,11 @@ main input {
   .homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
 }
 
+.homepage-hero-desc {
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
 /*
  * Desktop operator type scale only (≥1024px).
  * Phone/tablet keep authored Tailwind sizes so InputFormMobile is not inflated.
@@ -203,6 +208,12 @@ main input {
 .homepage-font-large .text-xl { font-size: 2.8125rem !important; line-height: 3.5625rem !important; }
 .homepage-font-large .text-2xl { font-size: 3.375rem !important; line-height: 4.125rem !important; }
 .homepage-font-large .text-3xl { font-size: 4.21875rem !important; line-height: 4.875rem !important; }
+
+/* Hero tagline: 80% of the previous lg:text-3xl display size; keep to two lines */
+.homepage-font-large .homepage-hero-desc {
+  font-size: 3.375rem !important;
+  line-height: 1.3 !important;
+}
 .homepage-font-large .text-4xl { font-size: 4.21875rem !important; line-height: 4.6875rem !important; }
 .homepage-font-large .text-5xl { font-size: 5.625rem !important; line-height: 1 !important; }
 .homepage-font-large .text-6xl { font-size: 7.03125rem !important; line-height: 1 !important; }
