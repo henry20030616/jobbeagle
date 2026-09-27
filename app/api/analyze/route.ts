@@ -354,8 +354,8 @@ export async function POST(request: NextRequest) {
       }
       const productLabel =
         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-          ? 'Job Fit Snapshot'
-          : 'Interview Strategy Guide';
+          ? 'Fit Snapshot'
+          : 'Interview Guide';
       await notifyFailure({
         scenario: 'analysis_failed',
         userEmail: user.email,

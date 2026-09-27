@@ -1,7 +1,7 @@
 /**
  * Canonical product terminology — frontend + backend share these codes.
- * Display: Job Fit Snapshot / Interview Strategy Guide
- * API/DB:  job_fit_snapshot / interview_strategy_guide
+ * Display: Fit Snapshot / Interview Guide（適配快照 / 面試指南）
+ * API/DB codes stay job_fit_snapshot / interview_strategy_guide (credits, orders).
  */
 
 export const REPORT_CODES = {
@@ -19,24 +19,26 @@ export type LegacyReportType = 'lite' | 'full';
 export const REPORT_PRODUCT = {
   job_fit_snapshot: {
     code: REPORT_CODES.JOB_FIT_SNAPSHOT as ReportType,
-    labelEn: 'Job Fit Snapshot',
-    labelZhTW: 'Job Fit Snapshot',
-    shortEn: 'Snapshot',
-    shortZh: '匹配快照',
-    blurbEn: 'No web search · Match score · Comp positioning',
-    blurbZh: '無網搜 · 匹配分數 · 薪酬定位',
+    labelEn: 'Fit Snapshot',
+    labelZhTW: '適配快照',
+    labelZhCN: '适配快照',
+    shortEn: 'Fit Snapshot',
+    shortZh: '適配快照',
+    blurbEn: 'No web search · Decide whether to apply',
+    blurbZh: '無網搜 · 決定要不要投',
     legacyCodes: ['lite'] as const,
     creditField: 'job_fit_snapshot_credits' as const,
     dbCreditColumn: 'available_job_fit_snapshot_credits' as const,
   },
   interview_strategy_guide: {
     code: REPORT_CODES.INTERVIEW_STRATEGY_GUIDE as ReportType,
-    labelEn: 'Interview Strategy Guide',
-    labelZhTW: 'Interview Strategy Guide',
-    shortEn: 'Strategy Guide',
-    shortZh: '面試策略',
-    blurbEn: 'Everything in Snapshot + live intel · STAR bank · Negotiation',
-    blurbZh: '含完整 Snapshot · 即時情報 · STAR 題庫 · 談判腳本',
+    labelEn: 'Interview Guide',
+    labelZhTW: '面試指南',
+    labelZhCN: '面试指南',
+    shortEn: 'Interview Guide',
+    shortZh: '面試指南',
+    blurbEn: 'Includes Fit Snapshot + live intel · interview · negotiate',
+    blurbZh: '含適配快照 · 即時情報 · 面試與談薪',
     legacyCodes: ['full'] as const,
     creditField: 'interview_strategy_guide_credits' as const,
     dbCreditColumn: 'available_interview_strategy_guide_credits' as const,
@@ -72,20 +74,25 @@ export function isInterviewStrategyGuide(type: ReportType | string): boolean {
   return normalizeReportType(type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE;
 }
 
+function reportProduct(type: ReportType | string) {
+  return isInterviewStrategyGuide(type)
+    ? REPORT_PRODUCT.interview_strategy_guide
+    : REPORT_PRODUCT.job_fit_snapshot;
+}
+
 export function reportLabel(type: ReportType | string, lang: string = 'en'): string {
-  const code = normalizeReportType(type);
-  const p = REPORT_PRODUCT[code];
-  return lang === 'zh-TW' || lang === 'zh-CN' ? p.labelZhTW : p.labelEn;
+  const p = reportProduct(type);
+  if (lang === 'zh-TW') return p.labelZhTW;
+  if (lang === 'zh-CN') return p.labelZhCN;
+  return p.labelEn;
 }
 
 export function reportBlurb(type: ReportType | string, lang: string = 'en'): string {
-  const code = normalizeReportType(type);
-  const p = REPORT_PRODUCT[code];
+  const p = reportProduct(type);
   return lang === 'zh-TW' || lang === 'zh-CN' ? p.blurbZh : p.blurbEn;
 }
 
 export function reportShortLabel(type: ReportType | string, lang: string = 'en'): string {
-  const code = normalizeReportType(type);
-  const p = REPORT_PRODUCT[code];
+  const p = reportProduct(type);
   return lang === 'zh-TW' || lang === 'zh-CN' ? p.shortZh : p.shortEn;
 }

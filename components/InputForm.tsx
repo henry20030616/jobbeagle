@@ -541,8 +541,8 @@ const InputForm: React.FC<InputFormProps> = ({
       : `Credits: ${snap} (${snapshotCredits}) + ${strat} (${strategyCredits}) →`;
   })();
   const creditsPillTitle = zh
-    ? '剩餘額度：匹配快照 / 面試策略（點此加購或管理帳戶）'
-    : 'Remaining credits: Snapshot / Strategy Guide (buy more or manage account)';
+    ? '剩餘額度：適配快照 / 面試指南（點此加購或管理帳戶）'
+    : 'Remaining credits: Fit Snapshot / Interview Guide (buy more or manage account)';
 
   const blocked = jobInputKind.kind === 'blocked_board';
   const publicAts = jobInputKind.kind === 'public_ats';

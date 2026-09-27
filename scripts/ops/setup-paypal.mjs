@@ -83,7 +83,7 @@ const product = await paypalFetch(token, '/v1/catalogs/products', {
   body: {
     name: 'JobBeagle Reports',
     type: 'SERVICE',
-    description: 'SaaS digital AI reports: Job Fit Snapshot and Interview Strategy Guide credits.',
+    description: 'SaaS digital AI reports: Fit Snapshot and Interview Guide credits.',
   },
 });
 console.log(`  product ${product.id}`);

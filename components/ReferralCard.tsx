@@ -22,37 +22,37 @@ const copy: Record<
   }
 > = {
   'zh-TW': {
-    title: '推薦好友 · +1 Job Fit Snapshot',
-    desc: '好友註冊並完成首次 Snapshot 後，你獲得 1 次額度。',
+    title: '推薦好友 · +1 適配快照',
+    desc: '好友註冊並完成首次適配快照後，你獲得 1 次額度。',
     copied: '已複製',
     copy: '複製推薦連結',
   },
   'zh-CN': {
-    title: '推荐好友 · +1 Job Fit Snapshot',
-    desc: '好友注册并完成首次 Snapshot 后，你获得 1 次额度。',
+    title: '推荐好友 · +1 适配快照',
+    desc: '好友注册并完成首次适配快照后，你获得 1 次额度。',
     copied: '已复制',
     copy: '复制推荐链接',
   },
   en: {
-    title: 'Refer a friend · +1 Job Fit Snapshot',
+    title: 'Refer a friend · +1 Fit Snapshot',
     desc: 'Earn +1 Snapshot when they sign up and finish their first Snapshot.',
     copied: 'Copied',
     copy: 'Copy referral link',
   },
   es: {
-    title: 'Invita · +1 Job Fit Snapshot',
+    title: 'Invita · +1 Fit Snapshot',
     desc: 'Ganas +1 Snapshot cuando completen su primer análisis.',
     copied: 'Copiado',
     copy: 'Copiar enlace',
   },
   hi: {
-    title: 'रेफर करें · +1 Job Fit Snapshot',
+    title: 'रेफर करें · +1 Fit Snapshot',
     desc: 'पहला Snapshot पूरा करने पर +1 मिलता है।',
     copied: 'कॉपी हो गया',
     copy: 'लिंक कॉपी करें',
   },
   ar: {
-    title: 'أحِل صديقًا · +1 Job Fit Snapshot',
+    title: 'أحِل صديقًا · +1 Fit Snapshot',
     desc: 'تحصل على +1 عند إكمال أول Snapshot.',
     copied: 'تم النسخ',
     copy: 'نسخ رابط الإحالة',

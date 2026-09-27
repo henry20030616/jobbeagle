@@ -45,15 +45,15 @@ function t(
 }
 
 export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
-  en: 'Snapshot vs Strategy Guide',
-  'zh-TW': 'Snapshot 與 Strategy Guide 比較',
-  'zh-CN': 'Snapshot 与 Strategy Guide 比较',
+  en: 'Fit Snapshot vs Interview Guide',
+  'zh-TW': '適配快照與面試指南比較',
+  'zh-CN': '适配快照与面试指南比较',
 };
 
 export const REPORT_COMPARE_SUBTITLE: Record<ReportCompareLang, string> = {
-  en: 'Snapshot: decide whether to apply. Guide: win interviews & negotiate — includes full Snapshot.',
-  'zh-TW': 'Snapshot：決定要不要投。Guide：怎麼打贏面試、怎麼談錢——含完整 Snapshot。',
-  'zh-CN': 'Snapshot：决定要不要投。Guide：怎么打赢面试、怎么谈钱——含完整 Snapshot。',
+  en: 'Fit Snapshot: decide whether to apply. Interview Guide: how to interview and negotiate — includes the Snapshot.',
+  'zh-TW': '適配快照：決定要不要投。面試指南：怎麼面、怎麼談——含完整適配快照。',
+  'zh-CN': '适配快照：决定要不要投。面试指南：怎么面、怎么谈——含完整适配快照。',
 };
 
 /** Callout under the title — what Pro model + deep report means in practice. */
@@ -62,7 +62,7 @@ export const REPORT_COMPARE_WHY_PRO: {
   bullets: Record<ReportCompareLang, string>[];
 } = {
   title: {
-    en: 'Why Strategy Guide feels “professional”',
+    en: 'Why Interview Guide feels “professional”',
     'zh-TW': '專業級強在哪？',
     'zh-CN': '专业级强在哪？',
   },
@@ -73,9 +73,9 @@ export const REPORT_COMPARE_WHY_PRO: {
       'zh-CN': '更强模型：少空话，能把 JD、简历与市场脉络串成连贯的录取／谈薪故事。',
     },
     {
-      en: 'Live search: real company/role reviews, interview Qs, salary posts, market signals, industry & HR reports — cited with URL + date when available (Snapshot cannot see the web).',
-      'zh-TW': '即時網搜：公司／職位評價、真實面試題、薪資貼文、市場現況、產業與人資報告——盡量附網址＋日期（Snapshot 看不到網路）。',
-      'zh-CN': '即时网搜：公司／职位评价、真实面试题、薪资贴文、市场现况、产业与人资报告——尽量附网址＋日期（Snapshot 看不到网络）。',
+      en: 'Live search: real company/role reviews, interview Qs, salary posts, market signals, industry & HR reports — cited with URL + date when available (Fit Snapshot cannot see the web).',
+      'zh-TW': '即時網搜：公司／職位評價、真實面試題、薪資貼文、市場現況、產業與人資報告——盡量附網址＋日期（適配快照看不到網路）。',
+      'zh-CN': '即时网搜：公司／职位评价、真实面试题、薪资贴文、市场现况、产业与人资报告——尽量附网址＋日期（适配快照看不到网络）。',
     },
     {
       en: 'Depth = usable scripts: recruiter concerns + defenses, STAR outlines from YOUR resume, and a copy-ready negotiation path.',
@@ -83,9 +83,9 @@ export const REPORT_COMPARE_WHY_PRO: {
       'zh-CN': '深度＝可照做：招募疑虑＋答辩、依你简历的 STAR 大纲、可直接用的谈薪路径。',
     },
     {
-      en: 'Snapshot is triage speed; Guide is CHRO-level prep when this role is worth the fight.',
-      'zh-TW': 'Snapshot 是快速分流；Guide 是這間值得拚時的 CHRO 級備戰。',
-      'zh-CN': 'Snapshot 是快速分流；Guide 是这家值得拼时的 CHRO 级备战。',
+      en: 'Fit Snapshot is triage speed; Interview Guide is prep when this role is worth the fight.',
+      'zh-TW': '適配快照是快速分流；面試指南是這間值得拚時的備戰。',
+      'zh-CN': '适配快照是快速分流；面试指南是这家值得拼时的备战。',
     },
   ],
 };
@@ -96,14 +96,14 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
 > = {
   best_for: null,
   shared: {
-    en: 'Stars = depth (out of 5). Same building blocks — Guide goes deeper and more actionable.',
-    'zh-TW': '星星＝深度（滿分 5）。積木相同——Guide 更深、更可照做。',
-    'zh-CN': '星星＝深度（满分 5）。积木相同——Guide 更深、更可照做。',
+    en: 'Stars = depth (out of 5). Same building blocks — Interview Guide goes deeper and more actionable.',
+    'zh-TW': '星星＝深度（滿分 5）。積木相同——面試指南更深、更可照做。',
+    'zh-CN': '星星＝深度（满分 5）。积木相同——面试指南更深、更可照做。',
   },
   guide_only: {
-    en: 'Guide-only: live web intel (reviews, interview Qs, salary, market, industry/HR reports) + interview/offer playbooks.',
-    'zh-TW': '僅 Guide：即時網搜情報（評價、面試題、薪資、市場、產業／人資報告）＋面試／談薪手冊。',
-    'zh-CN': '仅 Guide：即时网搜情报（评价、面试题、薪资、市场、产业／人资报告）＋面试／谈薪手册。',
+    en: 'Interview Guide only: live web intel (reviews, interview Qs, salary, market, industry/HR reports) + interview/offer playbooks.',
+    'zh-TW': '僅面試指南：即時網搜情報（評價、面試題、薪資、市場、產業／人資報告）＋面試／談薪。',
+    'zh-CN': '仅面试指南：即时网搜情报（评价、面试题、薪资、市场、产业／人资报告）＋面试／谈薪。',
   },
   meta: null,
 };
@@ -147,9 +147,9 @@ export const REPORT_COMPARE_SECTION_LABEL: Record<
     'zh-CN': '两者都有（深度不同）',
   },
   guide_only: {
-    en: 'Strategy Guide only',
-    'zh-TW': '僅 Strategy Guide',
-    'zh-CN': '仅 Strategy Guide',
+    en: 'Interview Guide only',
+    'zh-TW': '僅面試指南',
+    'zh-CN': '仅面试指南',
   },
   meta: {
     en: 'Price',
@@ -169,14 +169,14 @@ export const REPORT_COMPARE_COL: {
     'zh-CN': '项目',
   },
   snapshot: {
-    en: 'Job Fit Snapshot',
-    'zh-TW': 'Job Fit Snapshot',
-    'zh-CN': 'Job Fit Snapshot',
+    en: 'Fit Snapshot',
+    'zh-TW': '適配快照',
+    'zh-CN': '适配快照',
   },
   guide: {
-    en: 'Interview Strategy Guide',
-    'zh-TW': 'Interview Strategy Guide',
-    'zh-CN': 'Interview Strategy Guide',
+    en: 'Interview Guide',
+    'zh-TW': '面試指南',
+    'zh-CN': '面试指南',
   },
 };
 

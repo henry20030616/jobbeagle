@@ -9,10 +9,10 @@ export const INDEXNOW_KEY = 'c3f8a1e9d0b24f6a9e7c1d8b5a4e3f21';
 
 export const SITE_NAME = 'JobBeagle';
 
-export const DEFAULT_TITLE = 'JobBeagle | Job Fit Snapshot & Interview Strategy';
+export const DEFAULT_TITLE = 'JobBeagle | Fit Snapshot & Interview Guide';
 
 export const DEFAULT_DESCRIPTION =
-  'See if a role is worth applying for. JobBeagle turns your resume and a job post into a Job Fit Snapshot or Interview Strategy Guide — Chrome extension for LinkedIn, Indeed, ZipRecruiter, and more.';
+  'See if a role is worth applying for. JobBeagle turns your resume and a job post into a Fit Snapshot or Interview Guide — Chrome extension for LinkedIn, Indeed, ZipRecruiter, and more.';
 
 export function absoluteUrl(path: string): string {
   if (path.startsWith('http://') || path.startsWith('https://')) return path;

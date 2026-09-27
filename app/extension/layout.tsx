@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Chrome Extension | JobBeagle',
   description:
-    'Add JobBeagle to Chrome. Capture LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs, and 104 postings in one click, then run a Job Fit Snapshot or Interview Strategy Guide.',
+    'Add JobBeagle to Chrome. Capture LinkedIn, Indeed, ZipRecruiter, Glassdoor, GovernmentJobs, and 104 postings in one click, then run a Fit Snapshot or Interview Guide.',
   alternates: { canonical: '/extension' },
   openGraph: {
     title: 'JobBeagle Chrome Extension',

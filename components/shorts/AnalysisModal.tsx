@@ -358,8 +358,8 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
               ) : !isLoggedIn ? (
                 <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-200 mb-1">
                   {(language === 'zh-TW' || language === 'zh-CN')
-                    ? '請先 Google 登入才能分析（註冊送 3 次 Job Fit Snapshot）'
-                    : 'Sign in with Google to analyze (3 free Job Fit Snapshot credits on signup)'}
+                    ? '請先 Google 登入才能分析（註冊送 3 次適配快照）'
+                    : 'Sign in with Google to analyze (3 free Fit Snapshot credits on signup)'}
                 </div>
               ) : null}
 

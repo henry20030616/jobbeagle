@@ -9,7 +9,7 @@
 
 ## 1. 一句話定位
 
-**JobBeagle** 是給求職者用的 **AI 職缺分流／獵頭級職缺分析 SaaS**：從職缺網一鍵抓取（或手動貼上）JD + 履歷 → 產出 **Job Fit Snapshot** 或 **Interview Strategy Guide** → 以額度制收費。
+**JobBeagle** 是給求職者用的 **AI 職缺分流／獵頭級職缺分析 SaaS**：從職缺網一鍵抓取（或手動貼上）JD + 履歷 → 產出 **適配快照（Fit Snapshot）** 或 **面試指南（Interview Guide）** → 以額度制收費。
 
 - **市場重心：** 美國求職市場（英文 JD、US recruiter 視角）
 - **金流：** **Lemon Squeezy only**（已棄用 Stripe）
@@ -33,10 +33,10 @@
 
 | 顯示名稱 | API / DB code | 舊別名（相容） |
 |----------|---------------|----------------|
-| **Job Fit Snapshot** | `job_fit_snapshot` | Lite |
-| **Interview Strategy Guide** | `interview_strategy_guide` | Full |
+| **Fit Snapshot／適配快照** | `job_fit_snapshot` | Lite |
+| **Interview Guide／面試指南** | `interview_strategy_guide` | Full |
 
-短標籤：Snapshot / Strategy Guide（中文：匹配快照／面試策略）。
+短標籤與正式名稱相同。API／DB code 維持舊值以免弄壞額度與訂單。
 
 ---
 

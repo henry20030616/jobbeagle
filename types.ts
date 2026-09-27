@@ -133,7 +133,7 @@ export interface UserInputs {
   language?: 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
 }
 
-// ─── Report products: Job Fit Snapshot / Interview Strategy Guide ───
+// ─── Report products: Fit Snapshot / Interview Guide ───
 
 export type { ReportType } from '@/constants/report-products';
 export { REPORT_CODES, normalizeReportType } from '@/constants/report-products';

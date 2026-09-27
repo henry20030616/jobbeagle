@@ -6,10 +6,10 @@
  * Note (2026-07): gemini-2.5-pro returns 404 for new API keys ("no longer available to new users").
  */
 
-/** Job Fit Snapshot — flash-lite (pure reasoning, no web search) */
+/** Fit Snapshot — flash-lite (pure reasoning, no web search) */
 export const GEMINI_LITE_MODEL = 'gemini-3.1-flash-lite';
 
-/** Interview Strategy Guide — full report in one Pro pass (+ Search) */
+/** Interview Guide — full report in one Pro pass (+ Search) */
 export const GEMINI_FULL_MODEL = 'gemini-3.1-pro-preview';
 
 /** Token count gate model */

@@ -17,14 +17,14 @@ export const REPORT_PRODUCT_LABELS = {
   lite: {
     en: REPORT_PRODUCT.job_fit_snapshot.labelEn,
     'zh-TW': REPORT_PRODUCT.job_fit_snapshot.labelZhTW,
-    'zh-CN': REPORT_PRODUCT.job_fit_snapshot.labelZhTW,
+    'zh-CN': REPORT_PRODUCT.job_fit_snapshot.labelZhCN,
     shortEn: REPORT_PRODUCT.job_fit_snapshot.shortEn,
     shortZh: REPORT_PRODUCT.job_fit_snapshot.shortZh,
   },
   full: {
     en: REPORT_PRODUCT.interview_strategy_guide.labelEn,
     'zh-TW': REPORT_PRODUCT.interview_strategy_guide.labelZhTW,
-    'zh-CN': REPORT_PRODUCT.interview_strategy_guide.labelZhTW,
+    'zh-CN': REPORT_PRODUCT.interview_strategy_guide.labelZhCN,
     shortEn: REPORT_PRODUCT.interview_strategy_guide.shortEn,
     shortZh: REPORT_PRODUCT.interview_strategy_guide.shortZh,
   },

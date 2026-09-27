@@ -156,7 +156,7 @@ async function main() {
       token,
       subscriptionProductId,
       'JobBeagle Standard',
-      'Standard plan: 100 Job Fit Snapshots + 5 Interview Strategy Guides per month',
+      'Standard plan: 100 Fit Snapshots + 5 Interview Guides per month',
       '19.99'
     );
     console.log(`  ✅ Standard Plan ID: ${standardPlanId}`);
@@ -166,7 +166,7 @@ async function main() {
       token,
       subscriptionProductId,
       'JobBeagle Advanced',
-      'Advanced plan: 300 Job Fit Snapshots + 15 Interview Strategy Guides per month',
+      'Advanced plan: 300 Fit Snapshots + 15 Interview Guides per month',
       '39.99'
     );
     console.log(`  ✅ Advanced Plan ID: ${advancedPlanId}\n`);

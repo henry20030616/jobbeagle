@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'JobBeagle — Job Fit Snapshot and Interview Strategy Guide';
+export const alt = 'JobBeagle — Fit Snapshot and Interview Guide';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -26,7 +26,7 @@ export default function OpenGraphImage() {
           Know if the job is worth it
         </div>
         <div style={{ fontSize: 32, color: '#cbd5e1', marginTop: 28 }}>
-          Job Fit Snapshot · Interview Strategy Guide
+          Fit Snapshot · Interview Guide
         </div>
       </div>
     ),

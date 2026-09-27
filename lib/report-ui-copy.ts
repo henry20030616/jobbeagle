@@ -166,7 +166,7 @@ type Dict<T> = Record<AppLanguage, T>;
 
 const SNAPSHOT: Dict<SnapshotUiCopy> = {
   en: {
-    productTitle: 'Job Fit Snapshot',
+    productTitle: 'Fit Snapshot',
     company: 'Company',
     posted: 'Posted',
     fit: 'Fit',
@@ -201,7 +201,7 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     unknownCompany: 'Unknown Company',
   },
   'zh-TW': {
-    productTitle: '職缺適配快照',
+    productTitle: '適配快照',
     company: '公司',
     posted: '刊登',
     fit: '適配',
@@ -236,7 +236,7 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     unknownCompany: '未知公司',
   },
   'zh-CN': {
-    productTitle: '职位适配快照',
+    productTitle: '适配快照',
     company: '公司',
     posted: '发布',
     fit: '适配',
@@ -379,7 +379,7 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
 
 const GUIDE: Dict<GuideUiCopy> = {
   en: {
-    productTitle: 'Interview Strategy Guide',
+    productTitle: 'Interview Guide',
     productSubtitle: 'Snapshot + playbook — switch pages from the top nav',
     backHome: 'Back to Home',
     newAnalysis: 'New Analysis',
@@ -519,7 +519,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     emptyRequirements: 'Requirements not extracted in this run.',
   },
   'zh-TW': {
-    productTitle: '面試策略指南',
+    productTitle: '面試指南',
     productSubtitle: '快照 + 作戰手冊 — 用上方導覽切換頁面',
     backHome: '回首頁',
     newAnalysis: '重新分析',
@@ -651,7 +651,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     emptyRequirements: '本次未抽出要求條件。',
   },
   'zh-CN': {
-    productTitle: '面试策略指南',
+    productTitle: '面试指南',
     productSubtitle: '快照 + 作战手册 — 用上方导航切换页面',
     backHome: '回首页',
     newAnalysis: '重新分析',

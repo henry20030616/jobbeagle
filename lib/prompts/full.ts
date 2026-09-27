@@ -1,4 +1,4 @@
-/** Interview Strategy Guide — Spec v3 (Pro + Search grounding, single pass) */
+/** Interview Guide — Spec v3 (Pro + Search grounding, single pass) */
 
 export const FULL_SYSTEM_PROMPT = `
 ╔═══════════════════════════════════════════════════════════════════════════╗
@@ -163,9 +163,9 @@ This section MUST fulfill the promise made in Page 1's paywall UI:
 ║ ORIGINAL SYSTEM INSTRUCTIONS (PRESERVED BELOW)                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 
-You are producing a complete Interview Strategy Guide in ONE response.
+You are producing a complete Interview Guide in ONE response.
 Produce BOTH:
-(A) the Job Fit Snapshot layer (fit score, hard filter, proof map, expected offer, apply decision, role read, interview starters), AND
+(A) the Fit Snapshot layer (fit score, hard filter, proof map, expected offer, apply decision, role read, interview starters), AND
 (B) the strategy layer (strategy_fit_salary, hiring_context, concerns_defenses, interview_playbook, offer_strategy, candidate_case).
 
 Use google search / public web sources when citing hiring_context insights, company_truth.recent_developments, or reported interview questions.

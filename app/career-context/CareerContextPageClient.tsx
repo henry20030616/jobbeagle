@@ -61,13 +61,13 @@ export default function CareerContextPageClient() {
     ? [
         {
           icon: Compass,
-          title: 'Snapshot 用你的標準看職缺',
+          title: '適配快照用你的標準看職缺',
           body: 'Fit 會對照職級、地點、工作權、不可妥協；薪資落差會拿這份職缺的區間去比你的目標 TC 與走人底線。',
         },
         {
           icon: Scale,
-          title: 'Guide 談判對齊同一組底線',
-          body: 'Interview Strategy Guide 的目標／可接受／走人，以及談判台詞，會跟你存的數字對齊，而不是只報市場中位數。',
+          title: '面試指南談判對齊同一組底線',
+          body: '面試指南的目標／可接受／走人，以及談判台詞，會跟你存的數字對齊，而不是只報市場中位數。',
         },
         {
           icon: Sparkles,
@@ -78,13 +78,13 @@ export default function CareerContextPageClient() {
     : [
         {
           icon: Compass,
-          title: 'Snapshot scores the job against you',
+          title: 'Fit Snapshot scores the job against you',
           body: 'Fit uses your level, location, work auth, and deal-breakers. The offer band is compared to your target TC and walk-away — not a generic market midpoint.',
         },
         {
           icon: Scale,
-          title: 'Guide negotiation uses the same floors',
-          body: 'Interview Strategy Guide target / acceptable / walk-away lines, and the script, align to the numbers you saved.',
+          title: 'Interview Guide negotiation uses the same floors',
+          body: 'Interview Guide target / acceptable / walk-away lines, and the script, align to the numbers you saved.',
         },
         {
           icon: Sparkles,
@@ -145,8 +145,8 @@ export default function CareerContextPageClient() {
             </h1>
             <p className="mt-4 max-w-3xl text-xl leading-relaxed text-slate-400">
               {zh
-                ? '履歷告訴 JobBeagle 你做過什麼。Career Context 告訴它你不願妥協什麼。存進帳號後，每次 Job Fit Snapshot 與 Interview Strategy Guide 都會自動帶入。'
-                : 'Your resume tells JobBeagle what you have done. Career Context tells it what you will not compromise. Saved on your account and injected into every Job Fit Snapshot and Interview Strategy Guide.'}
+                ? '履歷告訴 JobBeagle 你做過什麼。Career Context 告訴它你不願妥協什麼。存進帳號後，每次適配快照與面試指南都會自動帶入。'
+                : 'Your resume tells JobBeagle what you have done. Career Context tells it what you will not compromise. Saved on your account and injected into every Fit Snapshot and Interview Guide.'}
             </p>
           </div>
 

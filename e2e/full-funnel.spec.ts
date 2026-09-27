@@ -21,8 +21,8 @@ test.describe('Full funnel — public surfaces', () => {
     await expect(page.getByRole('button', { name: /Saved Resumes/i })).toBeVisible();
     await expect(page.getByText(/Click to upload PDF or text file/i)).toBeVisible();
 
-    await expect(page.getByRole('button', { name: /Job Fit Snapshot/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Interview Strategy Guide/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Fit Snapshot|適配快照/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Interview Guide|面試指南/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /View sample/i })).toHaveCount(2);
 
     const launch = page.getByRole('button', { name: /Launch AI Strategy Analysis/i });
@@ -71,13 +71,13 @@ test.describe('Full funnel — public surfaces', () => {
     await popup.waitForLoadState('domcontentloaded');
     await expect(popup).toHaveURL(/\/samples/);
     await expect(popup.getByText('SAMPLE').first()).toBeVisible({ timeout: 15_000 });
-    await expect(popup.getByText(/Job Fit Snapshot/i).first()).toBeVisible();
+    await expect(popup.getByText(/Fit Snapshot|適配快照/i).first()).toBeVisible();
   });
 
-  test('Strategy Guide sample page renders', async ({ page }) => {
+  test('Interview Guide sample page renders', async ({ page }) => {
     await page.goto('/samples?type=interview_strategy_guide');
     await expect(page.getByText('SAMPLE').first()).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText(/Interview Strategy Guide/i).first()).toBeVisible();
+    await expect(page.getByText(/Interview Guide|面試指南/i).first()).toBeVisible();
   });
 
   test('extension install page renders', async ({ page }) => {

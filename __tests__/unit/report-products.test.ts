@@ -17,8 +17,10 @@ describe('report terminology', () => {
   });
 
   it('labels match product names', () => {
-    expect(reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)).toBe('Job Fit Snapshot');
-    expect(reportLabel('full')).toBe('Interview Strategy Guide');
+    expect(reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT)).toBe('Fit Snapshot');
+    expect(reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, 'zh-TW')).toBe('適配快照');
+    expect(reportLabel('full')).toBe('Interview Guide');
+    expect(reportLabel('full', 'zh-TW')).toBe('面試指南');
   });
 
   it('normalizes checkout plan codes', () => {

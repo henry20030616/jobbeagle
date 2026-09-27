@@ -22,6 +22,12 @@ import {
   normalizeReportLanguage,
   type AppLanguage,
 } from '@/lib/report-language';
+import {
+  autoCorrectFullReport,
+  autoCorrectLiteReport,
+  formatQualityRetryHint,
+  needsQualityRetry,
+} from '@/lib/report-auto-correct';
 
 function getApiKey(): string {
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
@@ -571,6 +577,32 @@ export async function executeLiteAnalysis(
     );
   }
 
+  const firstPass = autoCorrectLiteReport(report);
+  report = firstPass.report;
+  if (needsQualityRetry(firstPass.corrections)) {
+    const retry = await ai.models.generateContent({
+      model,
+      contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl) }],
+      config: {
+        systemInstruction: `${systemBase}\n\n${formatQualityRetryHint(firstPass.corrections)}`,
+        temperature: 0.2,
+        maxOutputTokens: 8192,
+        responseMimeType: 'application/json',
+        responseSchema: LITE_RESPONSE_SCHEMA,
+      },
+    });
+    if (retry.text) {
+      report = autoCorrectLiteReport(
+        applyJobSourceFallback(
+          normalizeLiteReport(parseJsonResponse<LiteReport>(retry.text), opts),
+          pageUrl,
+        ),
+      ).report;
+    }
+  } else {
+    report = firstPass.report;
+  }
+
   return { report, model };
 }
 
@@ -594,7 +626,7 @@ export async function executeFullAnalysis(
   const intro = [
     companyName ? wrapUntrusted('company_hint', companyName) : null,
     jobTitle ? wrapUntrusted('job_title_hint', jobTitle) : null,
-    'Produce the complete Interview Strategy Guide (Snapshot layer + strategy layer) in one JSON object.',
+    'Produce the complete Interview Guide (Fit Snapshot layer + strategy layer) in one JSON object.',
     'Use public web sources when citing hiring_context or reported interview questions.',
     'If public sources are thin, return limitations + validation_questions — that is success, not failure.',
     'Include candidate_case (hire_thesis + top_facts) and offer_strategy.tc_breakdown when estimable.',
@@ -625,7 +657,7 @@ export async function executeFullAnalysis(
       },
     });
     const text = response.text;
-    if (!text) throw new Error('Interview Strategy Guide returned empty response');
+    if (!text) throw new Error('Interview Guide returned empty response');
     return applyJobSourceFallback(
       normalizeFullReport(parseJsonResponse<FullReport>(text), opts),
       pageUrl,
@@ -653,6 +685,21 @@ export async function executeFullAnalysis(
       report = await run(
         false,
         'CRITICAL: Return COMPLETE valid JSON only. Search tools unavailable — set hiring_context.insights=[] and explain in limitations + validation_questions. Do not invent citations.',
+      );
+    }
+  }
+
+  const firstPass = autoCorrectFullReport(report);
+  report = firstPass.report;
+  if (needsQualityRetry(firstPass.corrections)) {
+    try {
+      report = autoCorrectFullReport(
+        await run(true, formatQualityRetryHint(firstPass.corrections)),
+      ).report;
+    } catch (qualityErr) {
+      console.warn(
+        '[Full] Quality correction retry failed; returning auto-corrected first pass:',
+        qualityErr instanceof Error ? qualityErr.message : qualityErr,
       );
     }
   }
