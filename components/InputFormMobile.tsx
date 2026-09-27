@@ -24,7 +24,6 @@ import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import BrandLogo from '@/components/BrandLogo';
-import ReportCompareModal from '@/components/ReportCompareModal';
 
 // Mobile-specific constants (NO responsive classes) - Ultra compact v2
 const MOBILE_CONTAINER = 'w-full space-y-3 px-3 py-4';
@@ -654,15 +653,6 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   </div>
                   <p className="text-xs text-slate-300 leading-snug">{t.snapshotBlurb}</p>
                 </button>
-                <Link
-                  href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-flex text-xs font-bold text-indigo-300 underline underline-offset-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  View sample →
-                </Link>
               </div>
 
               <div
@@ -688,18 +678,17 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   </div>
                   <p className="text-xs text-slate-300 leading-snug">{t.strategyBlurb}</p>
                 </button>
-                <Link
-                  href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-flex text-xs font-bold text-indigo-300 underline underline-offset-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  View sample →
-                </Link>
               </div>
 
-              <ReportCompareModal language={currentLanguage} variant="compact" />
+              <Link
+                href="/samples"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-600 bg-slate-900/40 px-3 py-2 text-sm font-semibold text-slate-100 hover:border-slate-500 transition-colors"
+              >
+                <FileText className="h-4 w-4 shrink-0 text-indigo-300" aria-hidden />
+                {zh ? '範例' : 'Sample'}
+              </Link>
             </div>
           ) : (
             <div className="text-xs text-slate-500">—</div>

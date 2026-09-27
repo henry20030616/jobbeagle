@@ -23,7 +23,7 @@ test.describe('Full funnel — public surfaces', () => {
 
     await expect(page.getByRole('button', { name: /Fit Snapshot|適配快照/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Interview Guide|面試指南/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /View sample/i })).toHaveCount(2);
+    await expect(page.getByRole('link', { name: /^Sample$|範例/ })).toBeVisible();
 
     const launch = page.getByRole('button', { name: /Launch AI Strategy Analysis/i });
     await expect(launch).toBeVisible();
@@ -60,9 +60,9 @@ test.describe('Full funnel — public surfaces', () => {
     await expect(page).not.toHaveURL(/error=no_job_page/);
   });
 
-  test('View sample opens the Snapshot sample report', async ({ page }) => {
+  test('Sample opens the sample reports', async ({ page }) => {
     await page.goto('/');
-    const sample = page.getByRole('link', { name: /View sample/i }).first();
+    const sample = page.getByRole('link', { name: /^Sample$|範例/ });
     await expect(sample).toBeVisible({ timeout: 15_000 });
 
     const popupPromise = page.waitForEvent('popup');

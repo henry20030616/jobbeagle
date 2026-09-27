@@ -8,11 +8,9 @@ import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
-import ReportCompareModal from '@/components/ReportCompareModal';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
-import { SAMPLE_LINK_BTN } from '@/constants/report-frame';
 import BrandLogo from '@/components/BrandLogo';
 
 const PILL =
@@ -892,15 +890,6 @@ const InputForm: React.FC<InputFormProps> = ({
                       </p>
                       <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-slate-400">{t.snapshotBlurb}</p>
                     </button>
-                    <Link
-                      href={`/samples?type=${REPORT_CODES.JOB_FIT_SNAPSHOT}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={SAMPLE_LINK_BTN}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      View sample →
-                    </Link>
                   </div>
                   <div
                     className={`${REPORT_CARD} ${
@@ -918,18 +907,17 @@ const InputForm: React.FC<InputFormProps> = ({
                       </p>
                       <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-slate-400">{t.strategyBlurb}</p>
                     </button>
-                    <Link
-                      href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={SAMPLE_LINK_BTN}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      View sample →
-                    </Link>
                   </div>
                   {!compactChrome && (
-                    <ReportCompareModal language={currentLanguage} variant="panel" className="min-h-0" />
+                    <Link
+                      href="/samples"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="compare-panel-label flex h-full w-full min-h-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-2xl font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50"
+                    >
+                      <FileText className="h-8 w-8 shrink-0 text-indigo-300" aria-hidden />
+                      {zh ? '範例' : 'Sample'}
+                    </Link>
                   )}
                 </div>
               ) : (
