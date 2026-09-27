@@ -35,6 +35,9 @@ const PLACEHOLDER_EN =
 const JD_PROMPT_TYPE =
   'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold leading-snug';
 
+/** Mobile compact: match InputFormMobile upload prompt (text-sm). */
+const JD_PROMPT_TYPE_COMPACT = 'upload-prompt text-sm font-semibold leading-snug';
+
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
  */
@@ -66,6 +69,7 @@ export default function SmartInputArea({
           : 'border-slate-600 focus:ring-indigo-500/40';
 
   const resolvedPlaceholder = placeholder ?? (zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN);
+  const promptType = compact ? JD_PROMPT_TYPE_COMPACT : JD_PROMPT_TYPE;
 
   return (
     <div className={`min-w-0 max-w-full ${compact ? 'flex h-full min-h-0 flex-1 flex-col gap-2' : 'space-y-0'}`}>
@@ -114,7 +118,7 @@ export default function SmartInputArea({
         <div className={`relative min-w-0 max-w-full ${compact ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
           <textarea
             disabled={disabled || parsing}
-            className={`${JD_PROMPT_TYPE} w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+            className={`${promptType} w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
             placeholder={resolvedPlaceholder}
             aria-label={resolvedPlaceholder}
             value={value}
@@ -124,9 +128,9 @@ export default function SmartInputArea({
           {!value && (
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden rounded-xl px-6 py-5"
+              className={`pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
             >
-              <p className={`${JD_PROMPT_TYPE} w-full min-w-0 max-w-full text-center text-slate-400`}>
+              <p className={`${promptType} w-full min-w-0 max-w-full text-center text-slate-400`}>
                 {resolvedPlaceholder}
               </p>
             </div>
@@ -134,7 +138,7 @@ export default function SmartInputArea({
 
           {parsing && (
             <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate-950/50 backdrop-blur-[1px]">
-              <div className={`${JD_PROMPT_TYPE} flex items-center gap-2 text-emerald-200`}>
+              <div className={`${promptType} flex items-center gap-2 text-emerald-200`}>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 {zh ? '正在解析公開職缺頁…' : 'Fetching public job page…'}
               </div>

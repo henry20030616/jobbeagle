@@ -71,7 +71,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [jdError, setJdError] = useState<string | null>(null);
   const [isParsingUrl, setIsParsingUrl] = useState(false);
-  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
+  const [featuresOpen, setFeaturesOpen] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -444,69 +444,72 @@ const InputFormMobile: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="space-y-2">
-          {([
-            {
-              id: 'fit',
-              icon: ScanSearch,
-              iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
-              iconColor: 'text-amber-300',
-              title: t.matchAnalysis,
-              desc: t.matchAnalysisDesc,
-            },
-            {
-              id: 'offer',
-              icon: BadgeDollarSign,
-              iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
-              iconColor: 'text-emerald-300',
-              title: t.salaryResearch,
-              desc: t.salaryResearchDesc,
-            },
-            {
-              id: 'defenses',
-              icon: ShieldAlert,
-              iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
-              iconColor: 'text-sky-300',
-              title: t.industryAnalysis,
-              desc: t.industryAnalysisDesc,
-            },
-            {
-              id: 'playbook',
-              icon: MessageSquare,
-              iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
-              iconColor: 'text-violet-300',
-              title: t.interviewPrep,
-              desc: t.interviewPrepDesc,
-            },
-          ] as const).map((item) => {
-            const open = expandedFeature === item.id;
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                aria-expanded={open}
-                onClick={() => setExpandedFeature(open ? null : item.id)}
-                className="flex w-full items-start gap-2.5 rounded-xl border border-slate-700 bg-slate-800/80 p-3 text-left"
-              >
-                <div className={`shrink-0 rounded-lg bg-gradient-to-br p-2 shadow-inner ring-1 ${item.iconWrap}`}>
-                  <Icon className={`h-5 w-5 ${item.iconColor}`} strokeWidth={1.75} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="text-sm font-bold leading-snug text-slate-200">{item.title}</span>
-                    <ChevronDown
-                      className={`mt-0.5 h-4 w-4 shrink-0 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`}
-                      aria-hidden
-                    />
+        <div className="rounded-xl border border-slate-700 bg-slate-800/80 overflow-hidden">
+          <button
+            type="button"
+            aria-expanded={featuresOpen}
+            onClick={() => setFeaturesOpen((open) => !open)}
+            className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
+          >
+            <span className="text-sm font-bold text-slate-200">
+              {zh ? '你會得到' : 'What you get'}
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${featuresOpen ? 'rotate-180' : ''}`}
+              aria-hidden
+            />
+          </button>
+          {featuresOpen && (
+            <div className="space-y-2 border-t border-slate-700 px-3 py-2.5">
+              {([
+                {
+                  id: 'fit',
+                  icon: ScanSearch,
+                  iconWrap: 'from-amber-500/25 to-amber-900/30 ring-amber-400/25',
+                  iconColor: 'text-amber-300',
+                  title: t.matchAnalysis,
+                  desc: t.matchAnalysisDesc,
+                },
+                {
+                  id: 'offer',
+                  icon: BadgeDollarSign,
+                  iconWrap: 'from-emerald-500/25 to-emerald-900/30 ring-emerald-400/25',
+                  iconColor: 'text-emerald-300',
+                  title: t.salaryResearch,
+                  desc: t.salaryResearchDesc,
+                },
+                {
+                  id: 'defenses',
+                  icon: ShieldAlert,
+                  iconWrap: 'from-sky-500/25 to-sky-900/30 ring-sky-400/25',
+                  iconColor: 'text-sky-300',
+                  title: t.industryAnalysis,
+                  desc: t.industryAnalysisDesc,
+                },
+                {
+                  id: 'playbook',
+                  icon: MessageSquare,
+                  iconWrap: 'from-violet-500/25 to-violet-900/30 ring-violet-400/25',
+                  iconColor: 'text-violet-300',
+                  title: t.interviewPrep,
+                  desc: t.interviewPrepDesc,
+                },
+              ] as const).map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.id} className="flex items-start gap-2.5">
+                    <div className={`shrink-0 rounded-lg bg-gradient-to-br p-1.5 shadow-inner ring-1 ${item.iconWrap}`}>
+                      <Icon className={`h-4 w-4 ${item.iconColor}`} strokeWidth={1.75} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold leading-snug text-slate-200">{item.title}</p>
+                      <p className="pt-0.5 text-[11px] leading-normal text-slate-400">{item.desc}</p>
+                    </div>
                   </div>
-                  {open && (
-                    <p className="pt-1.5 text-xs leading-normal text-slate-400">{item.desc}</p>
-                  )}
-                </div>
-              </button>
-            );
-          })}
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Step 1: Job */}
