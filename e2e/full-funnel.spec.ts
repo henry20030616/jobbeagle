@@ -25,7 +25,7 @@ test.describe('Full funnel — public surfaces', () => {
     await expect(page.getByRole('button', { name: /Interview Guide|面試指南/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /^Sample$|範例/ })).toBeVisible();
 
-    const launch = page.getByRole('button', { name: /Launch AI Strategy Analysis/i });
+    const launch = page.getByRole('button', { name: /AI Strategy Analysis/i });
     await expect(launch).toBeVisible();
     await expect(launch).toBeDisabled();
   });
