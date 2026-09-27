@@ -175,16 +175,20 @@ main input {
  * Phone/tablet keep authored Tailwind sizes so InputFormMobile is not inflated.
  */
 @media (min-width: 1024px) {
-/* Message JobBeagle + legal footer: half the homepage type-scale size. */
-.homepage-font-large .homepage-footer .text-xs { font-size: 0.84375rem !important; line-height: 1.03125rem !important; }
-.homepage-font-large .homepage-footer .text-sm { font-size: 0.984375rem !important; line-height: 1.21875rem !important; }
-.homepage-font-large .homepage-footer .text-base { font-size: 1.125rem !important; line-height: 1.40625rem !important; }
-.homepage-font-large .homepage-footer .text-lg { font-size: 1.265625rem !important; line-height: 1.59375rem !important; }
-.homepage-font-large .homepage-footer .text-xl { font-size: 1.40625rem !important; line-height: 1.78125rem !important; }
-.homepage-font-large .homepage-footer .text-2xl { font-size: 1.6875rem !important; line-height: 2.0625rem !important; }
+/* Desktop header chrome: 200% of the compact type used on phone/tablet. */
+.homepage-font-large .homepage-header-controls .text-xs { font-size: 1.5rem !important; line-height: 2rem !important; }
+.homepage-font-large .homepage-header-controls .text-sm { font-size: 1.75rem !important; line-height: 2.25rem !important; }
+.homepage-font-large .homepage-header-controls .text-base { font-size: 2rem !important; line-height: 2.5rem !important; }
+.homepage-font-large .homepage-header-controls .text-lg { font-size: 2.25rem !important; line-height: 2.75rem !important; }
+.homepage-font-large .homepage-header-controls .text-xl { font-size: 2.5rem !important; line-height: 3rem !important; }
+.homepage-font-large .homepage-header-controls .text-2xl { font-size: 3rem !important; line-height: 3.5rem !important; }
+.homepage-font-large .homepage-header-controls .sm\:text-base { font-size: 2rem !important; line-height: 2.5rem !important; }
+.homepage-font-large .homepage-header-controls .sm\:text-lg { font-size: 2.25rem !important; line-height: 2.75rem !important; }
+.homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: 2.5rem !important; line-height: 3rem !important; }
 
 /*
  * Homepage type scale. !important beats Tailwind utilities that load later.
+ * Footer inherits this map (200% of the previous desktop footer type).
  * Current display size is 75% of the previous 3× / 2.5× map.
  */
 .homepage-font-large .text-xs { font-size: 1.6875rem !important; line-height: 2.0625rem !important; }

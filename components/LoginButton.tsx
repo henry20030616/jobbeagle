@@ -140,25 +140,25 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
             <img 
               src={avatarUrl} 
               alt={displayName}
-              className="h-7 w-7 sm:h-8 sm:w-8 shrink-0 rounded-full border border-slate-600 object-cover hover:border-indigo-500 transition-colors"
+              className="h-7 w-7 sm:h-8 sm:w-8 lg:h-14 lg:w-14 shrink-0 rounded-full border border-slate-600 object-cover hover:border-indigo-500 transition-colors"
             />
           ) : (
-            <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 border border-slate-600 hover:border-indigo-500 transition-colors">
-              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+            <div className="flex h-7 w-7 sm:h-8 sm:w-8 lg:h-14 lg:w-14 shrink-0 items-center justify-center rounded-full bg-indigo-600 border border-slate-600 hover:border-indigo-500 transition-colors">
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-7 lg:h-7 text-white" />
             </div>
           )}
           <div className="min-w-0 hidden min-[420px]:flex flex-col">
-            <span className="text-sm font-semibold text-white truncate max-w-[7.5rem] sm:max-w-[10rem] lg:max-w-[12rem]">{displayName}</span>
+            <span className="text-sm font-semibold text-white truncate max-w-[7.5rem] sm:max-w-[10rem] lg:max-w-[18rem]">{displayName}</span>
             {displayEmail && (
-              <span className="hidden lg:block text-xs text-slate-400 truncate max-w-[12rem]">{displayEmail}</span>
+              <span className="hidden lg:block text-xs text-slate-400 truncate max-w-[18rem]">{displayEmail}</span>
             )}
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="inline-flex h-9 sm:h-10 shrink-0 items-center gap-1.5 px-2.5 sm:px-3 bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-semibold"
+          className="inline-flex h-9 sm:h-10 lg:h-16 shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-semibold"
         >
-          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-6 lg:h-6" />
           <span>登出</span>
         </button>
       </div>
@@ -169,9 +169,9 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
     <div className="flex items-center">
       <button
         onClick={handleLogin}
-        className="inline-flex h-9 sm:h-10 items-center gap-2 px-2.5 sm:px-3 bg-white hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-semibold border border-gray-300"
+        className="inline-flex h-9 sm:h-10 lg:h-16 items-center gap-2 lg:gap-3 px-2.5 sm:px-3 lg:px-5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-semibold border border-gray-300"
       >
-        <svg className="w-4 h-4" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 lg:w-7 lg:h-7" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

@@ -545,10 +545,10 @@ export default function Home() {
             {currentUser && (
               <button
                 onClick={() => { setShowHistory(true); loadHistory(); }}
-                className="inline-flex h-9 sm:h-10 items-center gap-1.5 px-2.5 sm:px-3 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
+                className="inline-flex h-9 sm:h-10 lg:h-16 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
                 title={t.historyTitle}
               >
-                <History className="w-4 h-4 shrink-0" />
+                <History className="w-4 h-4 lg:w-7 lg:h-7 shrink-0" />
                 <span className="hidden sm:inline">{t.history}</span>
               </button>
             )}
