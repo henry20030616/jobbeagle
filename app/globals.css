@@ -153,6 +153,11 @@ main input {
   height: 0;
 }
 
+/* Language + Google + History: half the homepage type-scale size */
+.homepage-font-large .homepage-header-controls {
+  zoom: 0.5;
+}
+
 /*
  * Homepage type scale. !important beats Tailwind utilities that load later.
  * Current display size is 75% of the previous 3× / 2.5× map.

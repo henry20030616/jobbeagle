@@ -540,7 +540,7 @@ export default function Home() {
         <div className="flex items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8 min-w-0 w-full">
           {/* Only show header logo when report is visible; InputForm has its own hero logo */}
           {report && <BrandLogo size="nav" showIcon />}
-          <div className={`flex items-center gap-3 sm:gap-5 md:gap-6 shrink-0 min-w-0 ${!report ? 'ml-auto' : ''}`}>
+          <div className={`homepage-header-controls flex items-center gap-3 sm:gap-5 md:gap-6 shrink-0 min-w-0 ${!report ? 'ml-auto' : ''}`}>
             <LanguageSwitcher variant="dark" size="lg" />
             {currentUser && (
               <button
