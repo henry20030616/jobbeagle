@@ -158,10 +158,15 @@ main input {
   zoom: 0.5;
 }
 
-/* Message JobBeagle + legal footer: half the homepage type-scale size */
-.homepage-font-large .homepage-footer {
-  zoom: 0.5;
-}
+/* Message JobBeagle + legal footer: half the homepage type-scale size.
+ * More specific than the map below so Send Message / links actually shrink
+ * (zoom is ignored in some browsers). */
+.homepage-font-large .homepage-footer .text-xs { font-size: 0.84375rem !important; line-height: 1.03125rem !important; }
+.homepage-font-large .homepage-footer .text-sm { font-size: 0.984375rem !important; line-height: 1.21875rem !important; }
+.homepage-font-large .homepage-footer .text-base { font-size: 1.125rem !important; line-height: 1.40625rem !important; }
+.homepage-font-large .homepage-footer .text-lg { font-size: 1.265625rem !important; line-height: 1.59375rem !important; }
+.homepage-font-large .homepage-footer .text-xl { font-size: 1.40625rem !important; line-height: 1.78125rem !important; }
+.homepage-font-large .homepage-footer .text-2xl { font-size: 1.6875rem !important; line-height: 2.0625rem !important; }
 
 /*
  * Homepage type scale. !important beats Tailwind utilities that load later.
