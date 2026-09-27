@@ -552,9 +552,9 @@ const InputForm: React.FC<InputFormProps> = ({
     (!publicAts && !resume);
 
   return (
-    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-8 sm:gap-12 lg:gap-16 xl:gap-20'}`}>
+    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-3 sm:gap-4 lg:gap-5'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
-      <div className={`w-full min-w-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'py-4 sm:py-6'}`}>
+      <div className={`w-full min-w-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'pt-2 sm:pt-3 pb-0'}`}>
         <BrandLogo
           size={compactChrome ? 'nav' : 'hero'}
           showIcon
