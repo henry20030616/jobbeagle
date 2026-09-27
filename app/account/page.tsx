@@ -671,10 +671,10 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen w-full bg-slate-950 text-slate-200">
       <FitStage designWidth={ACCOUNT_DESIGN_WIDTH} minScale={1} maxScale={2} className="w-full">
-      <main className="mx-auto w-full px-8 py-10 space-y-10" data-fit-ref="account">
-        <div className="flex items-center justify-between gap-4">
+      <main className="mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 space-y-8 sm:space-y-10" data-fit-ref="account">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <BrandLogo size="nav" showIcon />
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <LanguageSwitcher variant="dark" size="lg" />
             <LoginButton redirectTo="/account" />
           </div>

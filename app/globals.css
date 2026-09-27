@@ -153,14 +153,29 @@ main input {
   height: 0;
 }
 
-/* Language + History + account: 150% of the previous 50% header scale */
-.homepage-font-large .homepage-header-controls {
-  zoom: 0.75;
+/*
+ * Header chrome stays product-sized on every breakpoint.
+ * More specific than the desktop type scale so Language / History / account
+ * never inherit 2–3rem operator type.
+ */
+.homepage-font-large .homepage-header-controls .text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
+.homepage-font-large .homepage-header-controls .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+.homepage-font-large .homepage-header-controls .text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+.homepage-font-large .homepage-header-controls .text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+.homepage-font-large .homepage-header-controls .text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+.homepage-font-large .homepage-header-controls .text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+@media (min-width: 640px) {
+  .homepage-font-large .homepage-header-controls .sm\:text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+  .homepage-font-large .homepage-header-controls .sm\:text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+  .homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
 }
 
-/* Message JobBeagle + legal footer: half the homepage type-scale size.
- * More specific than the map below so Send Message / links actually shrink
- * (zoom is ignored in some browsers). */
+/*
+ * Desktop operator type scale only (≥1024px).
+ * Phone/tablet keep authored Tailwind sizes so InputFormMobile is not inflated.
+ */
+@media (min-width: 1024px) {
+/* Message JobBeagle + legal footer: half the homepage type-scale size. */
 .homepage-font-large .homepage-footer .text-xs { font-size: 0.84375rem !important; line-height: 1.03125rem !important; }
 .homepage-font-large .homepage-footer .text-sm { font-size: 0.984375rem !important; line-height: 1.21875rem !important; }
 .homepage-font-large .homepage-footer .text-base { font-size: 1.125rem !important; line-height: 1.40625rem !important; }
@@ -315,6 +330,7 @@ main input {
   .homepage-font-large .homepage-steps .lg\:text-2xl { font-size: 2.7rem !important; line-height: 3.3rem !important; }
   .homepage-font-large .homepage-steps .lg\:text-3xl { font-size: 3.375rem !important; line-height: 3.9rem !important; }
 }
+} /* end desktop-only homepage-font-large */
 
 /*
  * Compare overlay (portaled to body — does not inherit homepage type).

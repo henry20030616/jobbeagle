@@ -117,12 +117,12 @@ export default function CareerContextPageClient() {
     <div className="min-h-screen w-full bg-slate-950 text-slate-100">
       <FitStage designWidth={ACCOUNT_DESIGN_WIDTH} minScale={1} maxScale={2} className="w-full">
         <div
-          className="mx-auto w-full space-y-10 px-8 py-10"
+          className="mx-auto w-full space-y-8 sm:space-y-10 px-4 sm:px-8 py-6 sm:py-10"
           data-fit-ref="career-context"
         >
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <BrandLogo size="nav" showIcon />
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               <LanguageSwitcher variant="dark" size="lg" />
               <LoginButton redirectTo="/career-context" />
             </div>

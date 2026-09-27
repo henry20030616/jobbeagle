@@ -502,7 +502,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             <label className="block w-full min-h-[100px] border-2 border-dashed border-slate-600 rounded-lg p-3 text-center cursor-pointer hover:bg-slate-700/30 transition-colors">
               <Upload className="w-6 h-6 mx-auto mb-1.5 text-slate-400" />
               <p className="text-sm font-bold text-slate-400 mb-0.5">{zh ? '點擊上傳履歷' : 'Tap to upload'}</p>
-              <p className="text-[15px] text-slate-400 leading-tight">PDF, Word, Text (Max 4MB)</p>
+              <p className="text-xs text-slate-400 leading-tight">PDF, Word, Text (Max 4MB)</p>
               <input
                 type="file"
                 ref={fileInputRef}

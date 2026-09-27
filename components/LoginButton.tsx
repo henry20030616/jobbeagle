@@ -115,9 +115,9 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center space-x-3 text-slate-400">
-        <div className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-lg">載入中...</span>
+      <div className="flex items-center gap-2 text-slate-400">
+        <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-sm">載入中...</span>
       </div>
     );
   }
@@ -134,31 +134,31 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
     const displayEmail = user.email || '';
 
     return (
-      <div className="flex items-center space-x-5">
-        <div className="flex items-center space-x-4 text-slate-300 group relative">
+      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-slate-300 min-w-0">
           {avatarUrl ? (
             <img 
               src={avatarUrl} 
               alt={displayName}
-              className="w-12 h-12 rounded-full border-2 border-slate-600 object-cover hover:border-indigo-500 transition-colors"
+              className="h-7 w-7 sm:h-8 sm:w-8 shrink-0 rounded-full border border-slate-600 object-cover hover:border-indigo-500 transition-colors"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center border-2 border-slate-600 hover:border-indigo-500 transition-colors">
-              <User className="w-7 h-7 text-white" />
+            <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 border border-slate-600 hover:border-indigo-500 transition-colors">
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
             </div>
           )}
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold text-white">{displayName}</span>
+          <div className="min-w-0 hidden min-[420px]:flex flex-col">
+            <span className="text-sm font-semibold text-white truncate max-w-[7.5rem] sm:max-w-[10rem] lg:max-w-[12rem]">{displayName}</span>
             {displayEmail && (
-              <span className="text-base text-slate-400">{displayEmail}</span>
+              <span className="hidden lg:block text-xs text-slate-400 truncate max-w-[12rem]">{displayEmail}</span>
             )}
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-2.5 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-colors text-lg font-semibold"
+          className="inline-flex h-9 sm:h-10 shrink-0 items-center gap-1.5 px-2.5 sm:px-3 bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-semibold"
         >
-          <LogOut className="w-6 h-6" />
+          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>登出</span>
         </button>
       </div>
@@ -166,12 +166,12 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
   }
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center">
       <button
         onClick={handleLogin}
-        className="flex items-center space-x-3 px-6 py-3 bg-white hover:bg-gray-100 text-gray-700 rounded-xl transition-colors text-lg font-semibold border border-gray-300"
+        className="inline-flex h-9 sm:h-10 items-center gap-2 px-2.5 sm:px-3 bg-white hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-semibold border border-gray-300"
       >
-        <svg className="w-6 h-6" viewBox="0 0 24 24">
+        <svg className="w-4 h-4" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

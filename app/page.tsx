@@ -537,18 +537,18 @@ export default function Home() {
     <div className="homepage-font-large flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
       {/* Centered canvas with proper constraints */}
       <main className="mx-auto w-full min-w-0 max-w-[96vw] sm:max-w-[92vw] xl:max-w-[88vw] px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-8 md:py-10">
-        <div className="flex items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8 min-w-0 w-full">
+        <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-8 min-w-0 w-full">
           {/* Only show header logo when report is visible; InputForm has its own hero logo */}
           {report && <BrandLogo size="nav" showIcon />}
-          <div className={`homepage-header-controls flex items-center gap-3 sm:gap-5 md:gap-6 shrink-0 min-w-0 ${!report ? 'ml-auto' : ''}`}>
+          <div className={`homepage-header-controls flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 lg:gap-3 min-w-0 max-w-full ${!report ? 'ml-auto' : ''}`}>
             <LanguageSwitcher variant="dark" size="lg" />
             {currentUser && (
               <button
                 onClick={() => { setShowHistory(true); loadHistory(); }}
-                className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-4 text-base sm:text-xl rounded-xl bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
+                className="inline-flex h-9 sm:h-10 items-center gap-1.5 px-2.5 sm:px-3 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all"
                 title={t.historyTitle}
               >
-                <History className="w-5 h-5 sm:w-7 sm:h-7" />
+                <History className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">{t.history}</span>
               </button>
             )}
