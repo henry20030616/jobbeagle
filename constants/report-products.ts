@@ -24,8 +24,9 @@ export const REPORT_PRODUCT = {
     labelZhCN: '适配快照',
     shortEn: 'Fit Snapshot',
     shortZh: '適配快照',
-    blurbEn: 'No web search · Decide whether to apply',
-    blurbZh: '無網搜 · 決定要不要投',
+    blurbEn:
+      'A one-page fit check: should you apply? Score, gaps, and a salary range from your resume and JD — no web search.',
+    blurbZh: '一頁適配判斷：這職該不該投？給匹配分數、缺口，以及依履歷與職缺估的薪酬區間（不聯網）。',
     legacyCodes: ['lite'] as const,
     creditField: 'job_fit_snapshot_credits' as const,
     dbCreditColumn: 'available_job_fit_snapshot_credits' as const,
@@ -37,8 +38,9 @@ export const REPORT_PRODUCT = {
     labelZhCN: '面试指南',
     shortEn: 'Interview Guide',
     shortZh: '面試指南',
-    blurbEn: 'Includes Fit Snapshot + live intel · interview · negotiate',
-    blurbZh: '含適配快照 · 即時情報 · 面試與談薪',
+    blurbEn:
+      'Interview playbook: includes the Fit Snapshot, plus live company intel, likely questions with STAR answers, and a negotiation script.',
+    blurbZh: '面試作戰本：含完整適配快照，再加上即時公司情報、可能考題與 STAR 答法，以及談薪腳本。',
     legacyCodes: ['full'] as const,
     creditField: 'interview_strategy_guide_credits' as const,
     dbCreditColumn: 'available_interview_strategy_guide_credits' as const,
