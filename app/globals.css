@@ -175,16 +175,21 @@ main input {
  * Phone/tablet keep authored Tailwind sizes so InputFormMobile is not inflated.
  */
 @media (min-width: 1024px) {
-/* Desktop header chrome: 200% of the compact type used on phone/tablet. */
-.homepage-font-large .homepage-header-controls .text-xs { font-size: 1.5rem !important; line-height: 2rem !important; }
-.homepage-font-large .homepage-header-controls .text-sm { font-size: 1.75rem !important; line-height: 2.25rem !important; }
-.homepage-font-large .homepage-header-controls .text-base { font-size: 2rem !important; line-height: 2.5rem !important; }
-.homepage-font-large .homepage-header-controls .text-lg { font-size: 2.25rem !important; line-height: 2.75rem !important; }
-.homepage-font-large .homepage-header-controls .text-xl { font-size: 2.5rem !important; line-height: 3rem !important; }
-.homepage-font-large .homepage-header-controls .text-2xl { font-size: 3rem !important; line-height: 3.5rem !important; }
-.homepage-font-large .homepage-header-controls .sm\:text-base { font-size: 2rem !important; line-height: 2.5rem !important; }
-.homepage-font-large .homepage-header-controls .sm\:text-lg { font-size: 2.25rem !important; line-height: 2.75rem !important; }
-.homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: 2.5rem !important; line-height: 3rem !important; }
+/* Desktop header chrome: 150% of the previous desktop header type. */
+.homepage-font-large .homepage-header-controls .text-xs { font-size: 2.25rem !important; line-height: 3rem !important; }
+.homepage-font-large .homepage-header-controls .text-sm { font-size: 2.625rem !important; line-height: 3.375rem !important; }
+.homepage-font-large .homepage-header-controls .text-base { font-size: 3rem !important; line-height: 3.75rem !important; }
+.homepage-font-large .homepage-header-controls .text-lg { font-size: 3.375rem !important; line-height: 4.125rem !important; }
+.homepage-font-large .homepage-header-controls .text-xl { font-size: 3.75rem !important; line-height: 4.5rem !important; }
+.homepage-font-large .homepage-header-controls .text-2xl { font-size: 4.5rem !important; line-height: 5.25rem !important; }
+.homepage-font-large .homepage-header-controls .sm\:text-base { font-size: 3rem !important; line-height: 3.75rem !important; }
+.homepage-font-large .homepage-header-controls .sm\:text-lg { font-size: 3.375rem !important; line-height: 4.125rem !important; }
+.homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: 3.75rem !important; line-height: 4.5rem !important; }
+.homepage-font-large .homepage-header-controls .lg\:h-16 { height: 6rem !important; }
+.homepage-font-large .homepage-header-controls .lg\:px-5 {
+  padding-left: 1.875rem !important;
+  padding-right: 1.875rem !important;
+}
 
 /*
  * Homepage type scale. !important beats Tailwind utilities that load later.
