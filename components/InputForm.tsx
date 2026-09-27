@@ -810,8 +810,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         <Upload className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="min-w-0 text-center">
-                        <p className="upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-slate-300">{t.upload}</p>
-                        <p className="upload-support mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl font-medium leading-snug text-slate-500">{t.uploadSupport}</p>
+                        <p className="upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-slate-400">{t.upload}</p>
+                        <p className="upload-support mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl font-medium leading-snug text-slate-400">{t.uploadSupport}</p>
                       </div>
                     </label>
                     <input

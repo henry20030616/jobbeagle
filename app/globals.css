@@ -158,6 +158,11 @@ main input {
   zoom: 0.5;
 }
 
+/* Message JobBeagle + legal footer: half the homepage type-scale size */
+.homepage-font-large .homepage-footer {
+  zoom: 0.5;
+}
+
 /*
  * Homepage type scale. !important beats Tailwind utilities that load later.
  * Current display size is 75% of the previous 3× / 2.5× map.
