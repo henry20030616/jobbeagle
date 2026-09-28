@@ -515,7 +515,7 @@ const InputForm: React.FC<InputFormProps> = ({
     userProfile?.available_interview_strategy_guide_credits
     ?? userProfile?.available_full_credits
     ?? null;
-  const creditsPillShort = zh ? '報告額度' : 'Reports credits';
+  const creditsPillShort = zh ? '報告額度' : 'Report credits';
   const creditsPillDetail = (() => {
     if (snapshotCredits == null || strategyCredits == null) {
       return zh ? '與方案' : '& plans';
