@@ -18,14 +18,13 @@ import {
 } from '@/constants/report-products';
 import {
   SAMPLE_NOTICE_SURFACE,
-  SAMPLE_HEADER_BTN,
   SAMPLE_RAIL_TEXT,
   SAMPLE_RAIL_ICON,
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
   REPORT_SLIDE_DESIGN_WIDTH,
-  REPORT_TYPE_CARD_ACTIVE,
-  REPORT_TYPE_CARD_IDLE,
+  SAMPLE_REPORT_TAB_ACTIVE,
+  SAMPLE_REPORT_TAB_IDLE,
 } from '@/constants/report-frame';
 import ReportCompareModal from '@/components/ReportCompareModal';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -59,8 +58,8 @@ export default function SampleReportClient() {
   };
 
   const sampleTabClass = (active: boolean) =>
-    `${SAMPLE_HEADER_BTN} h-full w-full justify-center text-center leading-snug whitespace-normal ${
-      active ? REPORT_TYPE_CARD_ACTIVE : REPORT_TYPE_CARD_IDLE
+    `inline-flex h-full w-full items-center justify-center gap-5 px-8 py-6 ${SAMPLE_RAIL_TEXT} shrink-0 text-center leading-snug whitespace-normal transition-colors ${
+      active ? SAMPLE_REPORT_TAB_ACTIVE : SAMPLE_REPORT_TAB_IDLE
     }`;
 
   const snapshotLabel = reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language);

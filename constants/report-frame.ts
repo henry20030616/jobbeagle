@@ -36,12 +36,25 @@ export const SAMPLE_HEADER_BTN =
 export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 
 /**
- * Homepage report-type cards (step 3) — reused on /samples rail tabs.
+ * Homepage report-type cards (step 3) — Snapshot / Guide pickers on the form.
  */
 export const REPORT_TYPE_CARD_IDLE =
   'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50 text-slate-100';
 export const REPORT_TYPE_CARD_ACTIVE =
   'border-solid border-blue-500 bg-blue-500/10 text-blue-50 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
+
+/**
+ * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.
+ * /samples Fit Snapshot + Interview Guide tabs match this — not the step-3 report cards.
+ */
+export const HOMEPAGE_STEP_COL_SURFACE =
+  'rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl';
+
+/** /samples report tabs — same paint as homepage step 4 column */
+export const SAMPLE_REPORT_TAB_IDLE =
+  `${HOMEPAGE_STEP_COL_SURFACE} bg-slate-700/30 text-white hover:from-slate-500/50 hover:to-slate-600/75`;
+export const SAMPLE_REPORT_TAB_ACTIVE =
+  `${HOMEPAGE_STEP_COL_SURFACE} bg-slate-700/30 text-white border-slate-400 from-slate-500/55 to-slate-600/80`;
 
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =

@@ -14,6 +14,7 @@ import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-
 import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import BrandLogo from '@/components/BrandLogo';
 import {
+  HOMEPAGE_STEP_COL_SURFACE,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_IDLE,
 } from '@/constants/report-frame';
@@ -23,7 +24,7 @@ const PILL =
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  'relative flex min-h-0 min-w-0 flex-col rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 p-5 sm:p-8 lg:p-10 xl:p-12 shadow-xl';
+  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-8 lg:p-10 xl:p-12`;
 const STEP_TITLE =
   'step-title flex min-h-[4rem] sm:min-h-[5rem] lg:min-h-[6.375rem] shrink-0 items-center pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW = 'mb-4 sm:mb-5 lg:mb-6 flex min-h-[4rem] sm:min-h-[5.5rem] lg:min-h-[7rem] shrink-0 items-center';
