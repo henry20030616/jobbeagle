@@ -27,9 +27,9 @@ export interface SmartInputAreaProps {
 }
 
 const PLACEHOLDER_ZH =
-  '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。勿只貼網址或片段…';
+  '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。\n勿只貼網址或片段…';
 const PLACEHOLDER_EN =
-  'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…). Do not paste only a URL or a short excerpt…';
+  'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…).\nDo not paste only a URL or a short excerpt…';
 
 /** Same type scale as InputForm “Click to upload Resume”. */
 const JD_PROMPT_TYPE =
@@ -130,7 +130,7 @@ export default function SmartInputArea({
               aria-hidden="true"
               className={`pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
             >
-              <p className={`${promptType} w-full min-w-0 max-w-full text-center text-slate-400`}>
+              <p className={`${promptType} w-full min-w-0 max-w-full whitespace-pre-line text-center text-slate-400`}>
                 {resolvedPlaceholder}
               </p>
             </div>
