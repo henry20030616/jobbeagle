@@ -206,7 +206,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
         )}
       </div>
 
-      <p className="text-center text-[11px] sm:text-xs lg:text-base text-slate-500 pb-4">
+      <p className="text-center text-xs sm:text-sm lg:text-lg text-slate-500 pb-4">
         © {new Date().getFullYear()} Jobbeagle. All rights reserved.
       </p>
     </div>

@@ -464,7 +464,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               <span className="block text-sm font-bold text-slate-100">
                 {t.featuresAccordion}
               </span>
-              <span className="mt-0.5 block text-[11px] font-medium text-indigo-300/90">
+              <span className="mt-0.5 block text-xs font-medium text-indigo-300/90">
                 {featuresOpen
                   ? zh
                     ? '點此收合'
@@ -527,7 +527,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-bold leading-snug text-slate-200">{item.title}</p>
-                      <p className="pt-0.5 text-[11px] leading-normal text-slate-400">{item.desc}</p>
+                      <p className="pt-0.5 text-xs leading-normal text-slate-400">{item.desc}</p>
                     </div>
                   </div>
                 );
