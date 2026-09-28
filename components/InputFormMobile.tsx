@@ -444,20 +444,44 @@ const InputFormMobile: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="rounded-xl border border-slate-700 bg-slate-800/80 overflow-hidden">
+        <div className="rounded-xl border border-indigo-500/30 bg-slate-800/80 overflow-hidden shadow-sm">
           <button
             type="button"
             aria-expanded={featuresOpen}
+            aria-label={
+              featuresOpen
+                ? zh
+                  ? '收合 Jobbeagle 優點'
+                  : 'Collapse Jobbeagle advantages'
+                : zh
+                  ? '展開 Jobbeagle 優點'
+                  : 'Expand Jobbeagle advantages'
+            }
             onClick={() => setFeaturesOpen((open) => !open)}
-            className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
+            className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left active:bg-slate-700/50"
           >
-            <span className="text-sm font-bold text-slate-200">
-              {t.featuresAccordion}
+            <span className="min-w-0">
+              <span className="block text-sm font-bold text-slate-100">
+                {t.featuresAccordion}
+              </span>
+              <span className="mt-0.5 block text-[11px] font-medium text-indigo-300/90">
+                {featuresOpen
+                  ? zh
+                    ? '點此收合'
+                    : 'Tap to collapse'
+                  : zh
+                    ? '點此展開 ▼'
+                    : 'Tap to expand ▼'}
+              </span>
             </span>
-            <ChevronDown
-              className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${featuresOpen ? 'rotate-180' : ''}`}
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-indigo-400/40 bg-indigo-500/15 transition-transform ${
+                featuresOpen ? 'rotate-180' : ''
+              }`}
               aria-hidden
-            />
+            >
+              <ChevronDown className="h-5 w-5 text-indigo-300" strokeWidth={2.5} />
+            </span>
           </button>
           {featuresOpen && (
             <div className="space-y-2 border-t border-slate-700 px-3 py-2.5">
