@@ -35,8 +35,8 @@ const PLACEHOLDER_EN =
 const JD_PROMPT_TYPE =
   'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold leading-snug';
 
-/** Mobile compact: match InputFormMobile upload prompt (text-sm). */
-const JD_PROMPT_TYPE_COMPACT = 'upload-prompt text-sm font-semibold leading-snug';
+/** Desktop Step 1 paste prompt — 43px (2.6875rem), not upload-prompt 54px. */
+const JD_PROMPT_TYPE_COMPACT = 'jd-paste-prompt text-sm font-semibold leading-snug';
 
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
