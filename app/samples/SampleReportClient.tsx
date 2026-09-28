@@ -27,10 +27,9 @@ import {
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_IDLE,
 } from '@/constants/report-frame';
-import { SampleMark } from '@/components/SampleMark';
 import ReportCompareModal from '@/components/ReportCompareModal';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { ArrowLeft, Home, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowLeft, Home, RotateCcw } from 'lucide-react';
 import { useLanguage, type AppLanguage } from '@/lib/language-context';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 
@@ -89,10 +88,6 @@ export default function SampleReportClient() {
           <div
             className={`${SAMPLE_NOTICE_SURFACE} w-full px-6 py-5 flex flex-col gap-3 rounded-xl`}
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <SampleMark variant="notice" />
-              <Sparkles className={`${SAMPLE_RAIL_ICON} text-slate-100`} aria-hidden />
-            </div>
             <p className={`${SAMPLE_RAIL_TEXT} text-slate-100`}>
               {isGuide ? guideLabel : snapshotLabel}
             </p>
