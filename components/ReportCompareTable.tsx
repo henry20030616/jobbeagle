@@ -10,7 +10,7 @@ import {
   REPORT_COMPARE_ROWS,
   REPORT_COMPARE_SECTION_LABEL,
   REPORT_COMPARE_STAR_MAX,
-  REPORT_COMPARE_SUBTITLE,
+  REPORT_COMPARE_SUBTITLE_LINES,
   REPORT_COMPARE_TITLE,
   resolveCompareLang,
   type ReportCompareCell,
@@ -138,7 +138,11 @@ export default function ReportCompareTable({
             {REPORT_COMPARE_TITLE[lang]}
           </h2>
           <p className="text-sm text-slate-400 mt-1 leading-snug">
-            {REPORT_COMPARE_SUBTITLE[lang]}
+            {REPORT_COMPARE_SUBTITLE_LINES[lang].map((line) => (
+              <span key={line} className="block">
+                {line}
+              </span>
+            ))}
           </p>
         </div>
       ) : null}

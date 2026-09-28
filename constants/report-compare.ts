@@ -50,10 +50,29 @@ export const REPORT_COMPARE_TITLE: Record<ReportCompareLang, string> = {
   'zh-CN': '适配快照与面试指南比较',
 };
 
+export const REPORT_COMPARE_SUBTITLE_LINES: Record<
+  ReportCompareLang,
+  readonly [string, string]
+> = {
+  en: [
+    'Fit Snapshot: decide whether to apply.',
+    'Interview Guide: how to interview and negotiate — includes the Snapshot.',
+  ],
+  'zh-TW': [
+    '適配快照：決定要不要投。',
+    '面試指南：怎麼面、怎麼談——含完整適配快照。',
+  ],
+  'zh-CN': [
+    '适配快照：决定要不要投。',
+    '面试指南：怎么面、怎么谈——含完整适配快照。',
+  ],
+};
+
+/** Single-line join for a11y / legacy callers. */
 export const REPORT_COMPARE_SUBTITLE: Record<ReportCompareLang, string> = {
-  en: 'Fit Snapshot: decide whether to apply. Interview Guide: how to interview and negotiate — includes the Snapshot.',
-  'zh-TW': '適配快照：決定要不要投。面試指南：怎麼面、怎麼談——含完整適配快照。',
-  'zh-CN': '适配快照：决定要不要投。面试指南：怎么面、怎么谈——含完整适配快照。',
+  en: REPORT_COMPARE_SUBTITLE_LINES.en.join(' '),
+  'zh-TW': REPORT_COMPARE_SUBTITLE_LINES['zh-TW'].join(''),
+  'zh-CN': REPORT_COMPARE_SUBTITLE_LINES['zh-CN'].join(''),
 };
 
 /** Callout under the title — what Pro model + deep report means in practice. */

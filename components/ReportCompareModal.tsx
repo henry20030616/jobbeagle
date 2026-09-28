@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { GitCompareArrows, X } from 'lucide-react';
 import {
   REPORT_COMPARE_CLOSE,
-  REPORT_COMPARE_SUBTITLE,
+  REPORT_COMPARE_SUBTITLE_LINES,
   REPORT_COMPARE_TITLE,
   REPORT_COMPARE_TRIGGER,
   resolveCompareLang,
@@ -102,7 +102,11 @@ export default function ReportCompareModal({
                     {REPORT_COMPARE_TITLE[lang]}
                   </h2>
                   <p className="text-base sm:text-lg text-slate-400 mt-1.5 leading-snug">
-                    {REPORT_COMPARE_SUBTITLE[lang]}
+                    {REPORT_COMPARE_SUBTITLE_LINES[lang].map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
                   </p>
                 </div>
                 <button
