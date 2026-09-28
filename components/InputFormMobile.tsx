@@ -803,7 +803,9 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   ? 'bg-emerald-600 text-white'
                   : jdError
                     ? 'bg-red-600 text-white'
-                    : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 active:from-indigo-700 active:to-indigo-600 text-white'
+                    : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                      ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-[0_0_28px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80'
+                      : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 active:from-indigo-700 active:to-indigo-600 text-white'
             }`}
           >
             {isLoading || isParsingUrl ? (

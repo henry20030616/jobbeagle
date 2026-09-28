@@ -216,8 +216,12 @@ export interface FitScoreBreakdownItem {
   note: string;
 }
 
+export type DogType = 'Diamond' | 'Gold' | 'Silver' | 'Bronze';
+
 export interface FitScoreBlock {
   score: number;
+  /** Derived from score for the Beagle scale. Does not replace `score`. */
+  dog_type?: DogType;
   band: FitBand;
   evidence_coverage: EvidenceCoverage;
   /** Prose fallback / joined form of sharp_verdict_points */
@@ -448,6 +452,12 @@ export interface HiringContext {
   insights: HiringInsight[];
   limitations: string[];
   validation_questions: string[];
+  /** What this seat is hired to fix. Null when search found nothing. */
+  company_current_pain_point?: string | null;
+  /** 30-second intro the candidate can say. Not a resume rewrite. */
+  strategic_alignment_pitch?: string | null;
+  /** Layoff or material negative news. Null when none is citable. */
+  macro_risk_warnings?: string | null;
 }
 
 export interface ConcernDefense {
@@ -491,9 +501,23 @@ export interface StarTemplate {
   resume_anchor: string;
 }
 
+export interface InterviewerProfiling {
+  communication_style: string;
+  /** 2–3 icebreakers. Empty when unknown — do not invent. */
+  icebreaker_hooks: string[];
+}
+
+export interface AssignmentBlueprint {
+  likely_format: string;
+  /** Exactly 3 hidden grading points when known. */
+  hidden_grading_rubric: string[];
+}
+
 export interface InterviewPlaybook {
   reported: InterviewQuestionCard[];
   predicted: InterviewQuestionCard[];
+  interviewer_profiling?: InterviewerProfiling | null;
+  assignment_blueprint?: AssignmentBlueprint | null;
   /** 3–4 copy-ready STAR practice templates */
   star_templates: StarTemplate[];
   /** @deprecated flat strings; prefer star_templates */
@@ -502,10 +526,23 @@ export interface InterviewPlaybook {
   validate_before_join: string[];
 }
 
+export interface NegotiationScriptParts {
+  prepare: string;
+  pitch: string;
+  counter: string;
+}
+
+export interface TimelineLeverageTemplates {
+  stalling_for_time_email: string;
+  competing_offer_leverage_email: string;
+}
+
 export interface OfferStrategy {
   target: string;
   acceptable: string;
   walk_away: string;
+  negotiation_script?: NegotiationScriptParts;
+  timeline_leverage_templates?: TimelineLeverageTemplates;
   levers: string[];
   /** Structured levers when present (D24); UI prefers these over levers[] */
   structured_levers?: OfferLever[];
@@ -596,6 +633,63 @@ export interface StrategyIntelFields {
  * Interview Strategy Guide = Snapshot + strategy layer.
  */
 export type FullReport = LiteReport & StrategyIntelFields;
+
+/**
+ * View of the Snapshot heroes. Live storage remains `LiteReport`
+ * (`job_fit_snapshot`). Do not replace that type.
+ * Scores are clamped to 50–100 in `normalizeFitScore`.
+ */
+export interface FitSnapshotPayload {
+  /** 50–100 */
+  fit_score: number;
+  dog_type: DogType;
+  score_summary: {
+    strengths: string[];
+    critical_gaps: string[];
+  };
+  market_value_range: { min: number; max: number; currency: string };
+}
+
+export interface GuideSuggestedAnswer {
+  star_framework: string;
+  dos_and_donts: string;
+}
+
+export interface GuideQuestionCard {
+  category: 'behavioral' | 'technical_case';
+  question: string;
+  intent: string;
+  suggested_answer: GuideSuggestedAnswer;
+}
+
+/**
+ * View of Guide tactics layered on the Snapshot heroes.
+ * Live storage remains `FullReport` (`interview_strategy_guide`).
+ * Older saved reports may omit optional tactic fields.
+ */
+export interface InterviewGuidePayload extends FitSnapshotPayload {
+  hiring_context: {
+    company_current_pain_point: string | null;
+    strategic_alignment_pitch: string | null;
+    macro_risk_warnings: string | null;
+  };
+  interview_playbook: {
+    interviewer_profiling: InterviewerProfiling | null;
+    assignment_blueprint: AssignmentBlueprint;
+    /** Up to 4 resume-anchored questions */
+    questions: GuideQuestionCard[];
+    reverse_interview_questions: string[];
+  };
+  comp_intelligence: {
+    tc_breakdown: { base: string; equity: string; sign_on: string };
+    negotiation_script: NegotiationScriptParts;
+    timeline_leverage_templates: TimelineLeverageTemplates;
+  };
+  provenance: {
+    sources: Array<{ title: string; url: string; relevance: string }>;
+    limitations: string[];
+  };
+}
 
 export interface UserProfile {
   id: string;

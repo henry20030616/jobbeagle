@@ -951,7 +951,9 @@ const InputForm: React.FC<InputFormProps> = ({
                         ? 'bg-emerald-600 shadow-emerald-500/30 hover:-translate-y-1 hover:bg-emerald-500 active:translate-y-0 active:bg-emerald-700'
                         : jdError
                           ? 'bg-red-600 shadow-red-500/30 hover:-translate-y-1 hover:bg-red-500 active:translate-y-0 active:bg-red-700'
-                          : 'bg-indigo-600 hover:-translate-y-1 hover:bg-indigo-500 active:translate-y-0 active:bg-indigo-700'
+                          : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                            ? 'bg-indigo-600 shadow-[0_0_42px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80 hover:-translate-y-1 hover:bg-indigo-500 active:translate-y-0 active:bg-indigo-700'
+                            : 'bg-indigo-600 hover:-translate-y-1 hover:bg-indigo-500 active:translate-y-0 active:bg-indigo-700'
                   }`}
                 >
                   {isLoading || isParsingUrl ? (

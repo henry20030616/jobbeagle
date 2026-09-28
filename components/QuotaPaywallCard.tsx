@@ -25,6 +25,7 @@ type PaywallCopy = {
   standard: string;
   advanced: string;
   footnote: string;
+  unlockPaypal: string;
   checkoutError: string;
   loggingIn: string;
 };
@@ -40,6 +41,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     standard: '標準版 · $19.99/月',
     advanced: '高級版 · $39.99/月',
     footnote: '免費額度為終身固定，不會每日重置',
+    unlockPaypal: '用 PayPal 解鎖面試指南與談薪腳本。',
     checkoutError: '無法啟動付款，請稍後再試。',
     loggingIn: '正在跳轉登入…',
   },
@@ -53,6 +55,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     standard: '标准版 · $19.99/月',
     advanced: '高级版 · $39.99/月',
     footnote: '免费额度为终身固定，不会每日重置',
+    unlockPaypal: '用 PayPal 解锁面试指南与谈薪脚本。',
     checkoutError: '无法启动付款，请稍后再试。',
     loggingIn: '正在跳转登录…',
   },
@@ -66,6 +69,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     standard: 'Standard · $19.99/mo',
     advanced: 'Advanced · $39.99/mo',
     footnote: 'Free credits are lifetime-fixed — no daily reset',
+    unlockPaypal: 'Unlock your Interview Guide and negotiation scripts with PayPal.',
     checkoutError: 'Could not start checkout.',
     loggingIn: 'Redirecting to sign in…',
   },
@@ -79,6 +83,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     standard: 'Estándar · $19.99/mes',
     advanced: 'Avanzado · $39.99/mes',
     footnote: 'Los créditos gratis son de por vida',
+    unlockPaypal: 'Desbloquea Interview Guide y scripts de negociación con PayPal.',
     checkoutError: 'No se pudo iniciar el pago.',
     loggingIn: 'Redirigiendo…',
   },
@@ -92,6 +97,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     standard: 'Standard · $19.99/mo',
     advanced: 'Advanced · $39.99/mo',
     footnote: 'मुफ़्त क्रेडिट जीवनभर के लिए',
+    unlockPaypal: 'PayPal से Interview Guide और बातचीत स्क्रिप्ट अनलॉक करें।',
     checkoutError: 'चेकआउट शुरू नहीं हो सका।',
     loggingIn: 'साइन इन…',
   },
@@ -105,6 +111,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     standard: 'قياسي · $19.99/شهر',
     advanced: 'متقدم · $39.99/شهر',
     footnote: 'الرصيد المجاني مدى الحياة',
+    unlockPaypal: 'Unlock your Interview Guide and negotiation scripts with PayPal.',
     checkoutError: 'تعذر بدء الدفع.',
     loggingIn: 'جارٍ التحويل…',
   },
@@ -167,7 +174,21 @@ export default function QuotaPaywallCard({
   };
 
   return (
-    <div className="mb-6 relative overflow-hidden rounded-2xl border border-indigo-500/40 bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 p-6 shadow-xl shadow-indigo-900/20">
+    <div className="relative mb-6 overflow-hidden rounded-2xl border border-zinc-800/50 bg-zinc-950 shadow-xl">
+      <div aria-hidden className="pointer-events-none absolute inset-0 p-6 opacity-70">
+        <div className="space-y-3 blur-md">
+          <div className="h-4 w-1/3 rounded bg-indigo-400/40" />
+          <div className="h-16 rounded-xl border border-zinc-700 bg-zinc-900" />
+          <div className="grid grid-cols-3 gap-2">
+            <div className="h-10 rounded bg-emerald-500/30" />
+            <div className="h-10 rounded bg-amber-400/30" />
+            <div className="h-10 rounded bg-indigo-400/30" />
+          </div>
+          <div className="h-8 w-2/3 rounded bg-zinc-700" />
+          <p className="font-mono text-xs text-slate-400">$185K base · negotiation script · STAR</p>
+        </div>
+      </div>
+      <div className="relative bg-zinc-900/40 p-6 backdrop-blur-md">
       <button
         type="button"
         onClick={onDismiss}
@@ -186,6 +207,7 @@ export default function QuotaPaywallCard({
           <p className="mt-2 text-sm leading-relaxed text-slate-300">
             {message || t.subtitle}
           </p>
+          <p className="mt-2 text-sm font-medium text-indigo-200">{t.unlockPaypal}</p>
           {!isLoggedIn && (
             <p className="mt-2 text-xs text-amber-200/90">{t.loginHint}</p>
           )}
@@ -223,6 +245,7 @@ export default function QuotaPaywallCard({
       <p className="mt-4 text-center text-xs text-slate-500">{t.footnote}</p>
 
       {err && <p className="mt-3 text-center text-xs text-red-400">{err}</p>}
+      </div>
     </div>
   );
 }

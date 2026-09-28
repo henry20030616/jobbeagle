@@ -429,9 +429,11 @@ export default function LiteReportDashboard({
                 </ul>
               </section>
               <section className="p-4 min-w-0">
-                <h3 className={`${SECTION_TITLE} text-violet-300 mb-2 flex items-center`}>
+                <h3 className={`${SECTION_TITLE} text-amber-400 mb-2 flex items-center`}>
                   <AlertTriangle className="w-5 h-5 mr-1.5" />
-                  {t.criticalGaps}
+                  <span className="rounded-md bg-slate-800 px-2 py-0.5 text-amber-400">
+                    {t.criticalGaps}
+                  </span>
                 </h3>
                 {report.ats_warning ? (
                   <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 mb-3">
@@ -472,7 +474,7 @@ export default function LiteReportDashboard({
                             [{item.skill_kind === 'hard' ? t.hardSkill : t.softSkill}]
                           </span>
                         ) : null}
-                        <span className="font-semibold text-slate-100">{item.gap}</span>
+                        <span className="rounded-md bg-slate-800 px-2 py-0.5 font-semibold text-amber-400">{item.gap}</span>
                         {item.description ? (
                           <span className="text-slate-400">: {item.description}</span>
                         ) : null}

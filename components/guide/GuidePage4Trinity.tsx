@@ -11,6 +11,7 @@ import { ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
 import type { FullReport, InterviewQuestionCard } from '@/types';
 import type { AppLanguage } from '@/lib/language-context';
 import type { GuideUiCopy } from '@/lib/report-ui-copy';
+import { CopyScriptButton } from '@/components/CopyScriptButton';
 import {
   GuideSlideShell,
   PageHeaderBar,
@@ -113,7 +114,7 @@ function AccordionQuestions({
                   <ChevronRight className="h-4 w-4 text-slate-400 shrink-0" />
                 )}
               </div>
-              <p className={`${BODY} font-semibold text-slate-100 mb-1.5`}>
+              <p className={`${BODY} mb-1.5 max-w-[95%] rounded-2xl rounded-tl-md border border-zinc-800/50 bg-zinc-900/80 px-3 py-2 font-semibold text-slate-100`}>
                 {q.question}
               </p>
               <p className={`${BODY_MUTED} text-sm`}>
@@ -165,13 +166,16 @@ function AccordionQuestions({
 
                 {/* STAR Blueprint */}
                 <div>
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <p
+                      className={`${META} font-bold uppercase tracking-wider text-indigo-300`}
+                    >
+                      {copy.starLabel || 'STAR Framework'}
+                    </p>
+                    <CopyScriptButton text={blueprint} />
+                  </div>
                   <p
-                    className={`${META} font-bold uppercase tracking-wider text-indigo-300 mb-1`}
-                  >
-                    {copy.starLabel || 'STAR Framework'}
-                  </p>
-                  <p
-                    className={`${BODY} text-slate-200 leading-relaxed whitespace-pre-wrap`}
+                    className={`${BODY} whitespace-pre-wrap rounded-lg border border-slate-700 bg-black/50 px-3 py-2 font-mono text-sm leading-relaxed text-slate-300`}
                   >
                     {blueprint}
                   </p>
@@ -193,11 +197,14 @@ function AccordionQuestions({
 
                 {/* Dos & Don'ts */}
                 <div>
-                  <p
-                    className={`${META} font-bold uppercase tracking-wider text-amber-300 mb-1`}
-                  >
-                    {copy.dosDontsLabel || "Dos & Don'ts"}
-                  </p>
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <p
+                      className={`${META} font-bold uppercase tracking-wider text-amber-300`}
+                    >
+                      {copy.dosDontsLabel || "Dos & Don'ts"}
+                    </p>
+                    {q.dos_donts ? <CopyScriptButton text={q.dos_donts} /> : null}
+                  </div>
                   <p className={`${BODY} text-slate-200 leading-relaxed`}>
                     {q.dos_donts || '—'}
                   </p>
@@ -219,6 +226,10 @@ export default function GuidePage4Trinity({
   technical,
 }: Page4Props) {
   const offer = report.offer_strategy;
+  const playbook = report.interview_playbook;
+  const rubric = (playbook?.assignment_blueprint?.hidden_grading_rubric ?? []).filter(
+    (item) => item.trim().length > 0,
+  ).slice(0, 3);
   const expected = report.expected_offer;
   const offerRange = formatOfferRange(expected);
   const predictedOffer = formatPredictedOffer(expected);
@@ -247,6 +258,22 @@ export default function GuidePage4Trinity({
         badge={copy.page4Badge}
         badgeTone="violet"
       />
+
+      {rubric.length > 0 ? (
+        <div className="border-b border-slate-700/90 px-5 py-4">
+          <p className={`${SECTION_TITLE} mb-2 text-amber-300`}>Hidden grading rubric</p>
+          <ul className="flex flex-wrap gap-2">
+            {rubric.map((item) => (
+              <li
+                key={item}
+                className="rounded-md bg-slate-800 px-2.5 py-1 text-sm font-semibold text-amber-400"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {/* Trinity Top Dashboard: TC Breakdown Visualization */}
       <div className="border-b border-slate-700/90 px-5 py-5 bg-gradient-to-r from-indigo-950/40 to-emerald-950/40">
@@ -328,43 +355,57 @@ export default function GuidePage4Trinity({
             {[
               {
                 step: copy.prepareStep || '1. Prepare',
-                body:
-                  offer?.discovery_questions?.[0] || offer?.target || '—',
+                body: offer?.negotiation_script?.prepare || offer?.discovery_questions?.[0] || offer?.target || '—',
               },
               {
                 step: copy.pitchStep || '2. Pitch (Verbatim)',
-                body:
-                  offer?.script?.slice(0, 320) || offer?.acceptable || '—',
+                body: offer?.negotiation_script?.pitch || offer?.script || offer?.acceptable || '—',
                 highlight: true,
               },
               {
                 step: copy.counterStep || '3. Counter',
                 body:
-                  offer?.walk_away ||
-                  (offer?.structured_levers?.[0]
+                  offer?.negotiation_script?.counter
+                  || offer?.walk_away
+                  || (offer?.structured_levers?.[0]
                     ? `${offer.structured_levers[0].name}: ${offer.structured_levers[0].note}`
                     : '—'),
               },
             ].map((s) => (
               <li
                 key={s.step}
-                className={`rounded-lg border px-4 py-3 ${
-                  s.highlight
-                    ? 'border-emerald-500/40 bg-emerald-500/10'
-                    : 'border-emerald-500/25 bg-black/20'
-                }`}
+                className="rounded-lg border border-slate-700 bg-black/50 px-4 py-3 font-mono text-sm text-slate-300"
               >
-                <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-1.5">
-                  {s.step}
-                </p>
-                <p
-                  className={`${BODY} text-slate-200 leading-snug whitespace-pre-wrap`}
-                >
+                <div className="mb-1.5 flex items-center justify-between gap-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                    {s.step}
+                  </p>
+                  <CopyScriptButton text={s.body} />
+                </div>
+                <p className="whitespace-pre-wrap leading-snug text-slate-300">
                   {s.body}
                 </p>
               </li>
             ))}
           </ol>
+          {offer?.timeline_leverage_templates?.stalling_for_time_email ? (
+            <div className="mt-4 rounded-lg border border-slate-700 bg-black/50 px-4 py-3 font-mono text-sm text-slate-300">
+              <div className="mb-1.5 flex items-center justify-between gap-2">
+                <p className="text-xs font-bold uppercase tracking-wider text-amber-300">Stalling email</p>
+                <CopyScriptButton text={offer.timeline_leverage_templates.stalling_for_time_email} />
+              </div>
+              <p className="whitespace-pre-wrap">{offer.timeline_leverage_templates.stalling_for_time_email}</p>
+            </div>
+          ) : null}
+          {offer?.timeline_leverage_templates?.competing_offer_leverage_email ? (
+            <div className="mt-3 rounded-lg border border-slate-700 bg-black/50 px-4 py-3 font-mono text-sm text-slate-300">
+              <div className="mb-1.5 flex items-center justify-between gap-2">
+                <p className="text-xs font-bold uppercase tracking-wider text-amber-300">Competing-offer email</p>
+                <CopyScriptButton text={offer.timeline_leverage_templates.competing_offer_leverage_email} />
+              </div>
+              <p className="whitespace-pre-wrap">{offer.timeline_leverage_templates.competing_offer_leverage_email}</p>
+            </div>
+          ) : null}
 
           {/* Offer Range Reference */}
           {offerRange ? (

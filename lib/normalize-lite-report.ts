@@ -9,6 +9,7 @@ import type {
   FitBand,
   FitScoreBlock,
   FitScoreBreakdownItem,
+  DogType,
   FullReport,
   HardFilter,
   HardFilterItem,
@@ -145,6 +146,13 @@ function defaultBreakdown(score: number): FitScoreBreakdownItem[] {
   ];
 }
 
+function dogTypeFromScore(score: number): DogType {
+  if (score >= 90) return 'Diamond';
+  if (score >= 80) return 'Gold';
+  if (score >= 65) return 'Silver';
+  return 'Bronze';
+}
+
 function normalizeFitScore(raw: Partial<LiteReport>): FitScoreBlock {
   const legacyScore =
     typeof raw.match_score === 'number'
@@ -152,7 +160,7 @@ function normalizeFitScore(raw: Partial<LiteReport>): FitScoreBlock {
       : typeof raw.fit_score?.score === 'number'
         ? raw.fit_score.score
         : 50;
-  const score = Math.max(0, Math.min(100, Math.round(raw.fit_score?.score ?? legacyScore)));
+  const score = Math.max(50, Math.min(100, Math.round(raw.fit_score?.score ?? legacyScore)));
   const band =
     raw.fit_score?.band && FIT_BANDS.includes(raw.fit_score.band)
       ? raw.fit_score.band
@@ -184,6 +192,7 @@ function normalizeFitScore(raw: Partial<LiteReport>): FitScoreBlock {
 
   return {
     score,
+    dog_type: dogTypeFromScore(score),
     band,
     evidence_coverage,
     sharp_verdict:
@@ -854,6 +863,9 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
         ),
         limitations: asStringArray(raw.hiring_context.limitations),
         validation_questions: asStringArray(raw.hiring_context.validation_questions),
+        company_current_pain_point: asString(raw.hiring_context.company_current_pain_point) || null,
+        strategic_alignment_pitch: asString(raw.hiring_context.strategic_alignment_pitch) || null,
+        macro_risk_warnings: asString(raw.hiring_context.macro_risk_warnings) || null,
       }
     : {
         ...emptyHiringContext(),
@@ -942,6 +954,20 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
         star_outlines: asStringArray(raw.interview_playbook.star_outlines),
         reverse_questions: asStringArray(raw.interview_playbook.reverse_questions),
         validate_before_join: asStringArray(raw.interview_playbook.validate_before_join),
+        interviewer_profiling: raw.interview_playbook.interviewer_profiling?.communication_style
+          ? {
+              communication_style: asString(raw.interview_playbook.interviewer_profiling.communication_style),
+              icebreaker_hooks: asStringArray(raw.interview_playbook.interviewer_profiling.icebreaker_hooks).slice(0, 3),
+            }
+          : null,
+        assignment_blueprint: raw.interview_playbook.assignment_blueprint?.likely_format
+          ? {
+              likely_format: asString(raw.interview_playbook.assignment_blueprint.likely_format),
+              hidden_grading_rubric: asStringArray(
+                raw.interview_playbook.assignment_blueprint.hidden_grading_rubric,
+              ).slice(0, 3),
+            }
+          : null,
       }
     : emptyPlaybook();
 
@@ -1000,6 +1026,25 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
         tc_breakdown: offerTc,
         script: asString(raw.offer_strategy.script),
         discovery_questions: asStringArray(raw.offer_strategy.discovery_questions),
+        negotiation_script: raw.offer_strategy.negotiation_script?.pitch
+          ? {
+              prepare: asString(raw.offer_strategy.negotiation_script.prepare),
+              pitch: asString(raw.offer_strategy.negotiation_script.pitch),
+              counter: asString(raw.offer_strategy.negotiation_script.counter),
+            }
+          : undefined,
+        timeline_leverage_templates:
+          raw.offer_strategy.timeline_leverage_templates?.stalling_for_time_email
+          || raw.offer_strategy.timeline_leverage_templates?.competing_offer_leverage_email
+            ? {
+                stalling_for_time_email: asString(
+                  raw.offer_strategy.timeline_leverage_templates.stalling_for_time_email,
+                ),
+                competing_offer_leverage_email: asString(
+                  raw.offer_strategy.timeline_leverage_templates.competing_offer_leverage_email,
+                ),
+              }
+            : undefined,
       }
     : {
         ...emptyOffer(),

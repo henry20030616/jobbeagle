@@ -534,7 +534,7 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="homepage-font-large flex min-h-screen w-full flex-col items-stretch justify-start overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
+    <div className="homepage-font-large flex min-h-screen w-full flex-col items-stretch justify-start overflow-x-hidden overscroll-x-none bg-zinc-950 text-slate-200">
       {/* Proportional side gutters (~6–8vw each) so the operator row isn’t edge-to-edge */}
       <main className="mx-auto w-full min-w-0 px-[5vw] sm:px-[6vw] lg:px-[7vw] xl:px-[8vw] py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-8 min-w-0 w-full">

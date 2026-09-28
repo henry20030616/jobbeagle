@@ -178,6 +178,7 @@ const LITE_RESPONSE_SCHEMA = {
             required: ['dimension', 'weight_pct', 'score', 'note'],
           },
         },
+        dog_type: { type: Type.STRING, enum: ['Diamond', 'Gold', 'Silver', 'Bronze'] },
       },
       required: [
         'score',
@@ -306,6 +307,9 @@ const FULL_STRATEGY_PROPERTIES = {
       },
       limitations: { type: Type.ARRAY, items: { type: Type.STRING } },
       validation_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      company_current_pain_point: { type: Type.STRING, nullable: true },
+      strategic_alignment_pitch: { type: Type.STRING, nullable: true },
+      macro_risk_warnings: { type: Type.STRING, nullable: true },
     },
     required: ['insights', 'limitations', 'validation_questions'],
   },
@@ -388,6 +392,24 @@ const FULL_STRATEGY_PROPERTIES = {
       star_outlines: { type: Type.ARRAY, items: { type: Type.STRING } },
       reverse_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
       validate_before_join: { type: Type.ARRAY, items: { type: Type.STRING } },
+      interviewer_profiling: {
+        type: Type.OBJECT,
+        nullable: true,
+        properties: {
+          communication_style: { type: Type.STRING },
+          icebreaker_hooks: { type: Type.ARRAY, items: { type: Type.STRING } },
+        },
+        required: ['communication_style', 'icebreaker_hooks'],
+      },
+      assignment_blueprint: {
+        type: Type.OBJECT,
+        nullable: true,
+        properties: {
+          likely_format: { type: Type.STRING },
+          hidden_grading_rubric: { type: Type.ARRAY, items: { type: Type.STRING } },
+        },
+        required: ['likely_format', 'hidden_grading_rubric'],
+      },
     },
     required: [
       'reported',
@@ -426,6 +448,23 @@ const FULL_STRATEGY_PROPERTIES = {
       },
       script: { type: Type.STRING },
       discovery_questions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      negotiation_script: {
+        type: Type.OBJECT,
+        properties: {
+          prepare: { type: Type.STRING },
+          pitch: { type: Type.STRING },
+          counter: { type: Type.STRING },
+        },
+        required: ['prepare', 'pitch', 'counter'],
+      },
+      timeline_leverage_templates: {
+        type: Type.OBJECT,
+        properties: {
+          stalling_for_time_email: { type: Type.STRING },
+          competing_offer_leverage_email: { type: Type.STRING },
+        },
+        required: ['stalling_for_time_email', 'competing_offer_leverage_email'],
+      },
     },
     required: [
       'target',
