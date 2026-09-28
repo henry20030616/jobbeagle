@@ -85,7 +85,7 @@ DB／API code 維持舊值，以免弄壞額度與訂單。正在賣的方案代
 
 - `/samples?type=job_fit_snapshot` 或 `interview_strategy_guide`
 - 左欄：通知框、Fit Snapshot、Interview Guide、Compare the two reports
-- 通知框：目前報告名稱 + 左箭頭 + **立刻AI分析**（各語系目前都是這句）。顏色與 Compare 相同（深底、淺灰邊）。沒有 SAMPLE 字樣與 sparkles
+- 通知框：目前報告名稱 + 左箭頭 + 依介面語言顯示（英文 **Analyze now with AI**、繁中／簡中 **立刻AI分析**）。顏色與 Compare 相同（深底、淺灰邊）。沒有 SAMPLE 字樣與 sparkles
 - 兩個報告切換框：顏色對齊 **首頁第 4 步欄**（slate 漸層），不是第 3 步的藍框／虛線卡
 - 右欄用正式報告元件加 sample 資料。外框 `border-blue-500`。報告本體仍可有 SAMPLE 浮水印
 
