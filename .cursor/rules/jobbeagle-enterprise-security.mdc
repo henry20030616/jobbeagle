@@ -11,9 +11,9 @@ When changing APIs, auth, payments, or storage, enforce all six:
 - `POST /api/analyze` and `POST /api/extension-capture` must rate-limit by IP and/or user id (in-memory Map or Upstash Redis).
 - Preserve device-fingerprint Sybil checks for free Lite credits (`lib/profiles.ts`).
 
-## 2. Payment integrity (Lemon Squeezy)
-- Webhook `POST /api/payment/webhook`: verify `x-signature` with HMAC-SHA256 vs `LEMONSQUEEZY_WEBHOOK_SECRET` (`crypto`) **before** mutating credits.
-- Idempotency: if `order_id` already processed → return 200, do not grant twice.
+## 2. Payment integrity (PayPal)
+- Webhook `POST /api/payment/webhook`: verify with PayPal `verify-webhook-signature` (`PAYPAL_WEBHOOK_ID` + transmission headers) **before** mutating credits.
+- Idempotency: if the order is already fulfilled → return 200, do not grant twice.
 
 ## 3. Data privacy / PII
 - Resume PDF/DOCX: prefer in-memory parse. Storage uploads need strict RLS (owner-only) + 30-day purge via `/api/cron/purge-reports`.
@@ -21,9 +21,9 @@ When changing APIs, auth, payments, or storage, enforce all six:
 - Account delete (`/api/account/delete`) must hard-delete profile, reports, and stored resume files (CCPA).
 
 ## 4. Secrets & architecture
-- No service-role / Gemini / LS API keys in Client Components.
+- No service-role / Gemini / PayPal secret keys in Client Components.
 - Keep RLS enabled on `profiles`, `analysis_reports`, and related tables.
-- Profile credits / `membership_tier`: never client-writable. Lock via migration `011_lock_profile_credit_mutations.sql` (narrow UPDATE grants + entitlement trigger). Mutations only via `service_role` or SECURITY DEFINER RPCs (`decrement_*`, `increment_profile_credits`) and verified Lemon Squeezy webhook.
+- Profile credits / `membership_tier`: never client-writable. Lock via migration `011_lock_profile_credit_mutations.sql` (narrow UPDATE grants + entitlement trigger). Mutations only via `service_role` or SECURITY DEFINER RPCs (`decrement_*`, `increment_profile_credits`) and a verified PayPal webhook.
 
 ## 5. Scraping safety
 - Extension scrapers: try/catch, delays, graceful degrade to “paste JD manually” — never crash the SW.

@@ -10,10 +10,10 @@ alwaysApply: true
 - Listing: `https://chromewebstore.google.com/detail/jobbeagle-headhunter-leve/pceknhembhfnljhpajkpdbihfbpfolpm`
 - `/extension` uses `PUBLISHED_CHROME_WEBSTORE_URL` / `NEXT_PUBLIC_CHROME_WEBSTORE_URL` for one-click Add to Chrome. Zip remains a fallback download.
 
-## P0 now — Lemon Squeezy live payments
-- Store **Jobbeagle** (`424272`) is still **Test mode**. Products/webhooks/API key are test. **0 live sales.**
-- Owner must in LS dashboard: identity verification → business details / Activate store → Payouts → Copy products to Live → live API key + webhook.
-- After they paste live keys/variant IDs, Agent syncs Vercel and sets `LEMONSQUEEZY_TEST_MODE=false` **only when live variants exist**.
+## Payments — PayPal (live)
+- Checkout and credit grants go through **PayPal**, not Lemon Squeezy.
+- Env: `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_ENVIRONMENT=live`, `PAYPAL_WEBHOOK_ID`, `PAYPAL_PLAN_STANDARD_SUB`, `PAYPAL_PLAN_ADVANCED_SUB`.
+- Do not describe the store as Lemon Squeezy test mode or “0 live sales”.
 
 ## Already in code
 1. Legal: `/privacy` + `/terms` whitelist + no sale of data
@@ -23,7 +23,7 @@ alwaysApply: true
 ## Product focus (do / don't)
 - **DO** invest in: extension → `/confirm` → analyze → Job Fit Snapshot / Interview Strategy Guide → paywall/checkout.
 - **Shorts / employer video:** routes enabled by default (`NEXT_PUBLIC_SHORTS_ENABLED=false` to freeze). Homepage **"Explore Job Shorts" banner is temporarily hidden** via `isHomepageShortsBannerEnabled()` — when doing detailed Shorts work, **remind user / re-enable** that banner.
-- **Stripe:** removed from code; do not reintroduce.
+- **Stripe / Lemon Squeezy:** not the payment path. Do not reintroduce them.
 
 ## Conversion UX
 - Pre-Flight → `QuotaPaywallCard` funnel must stay clear for $3 / $9.99 / $19.99 (100 Snapshot + 5 Guide) / $39.99 (300 Snapshot + 15 Guide).

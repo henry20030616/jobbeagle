@@ -19,7 +19,7 @@ alwaysApply: true
 
 | 腳本 | 用途 |
 |------|------|
-| `bash scripts/ops/bootstrap-remote.sh` | migration + GitHub auth + Lemon Squeezy + Vercel（需 token） |
+| `bash scripts/ops/bootstrap-remote.sh` | migration + GitHub auth + PayPal + Vercel（需 token） |
 | `bash scripts/ops/sync-all.sh` | Vercel env 同步 → 驗證 → production redeploy |
 | `bash scripts/ops/sync-vercel-env.sh` | 僅同步 env |
 | `node scripts/ops/verify-integrations.mjs` | GitHub / Supabase / Vercel 健康檢查 |
@@ -59,12 +59,12 @@ alwaysApply: true
 |------|------|
 | Supabase | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` |
 | Gemini | `GEMINI_API_KEY` 或 `GOOGLE_GEMINI_API_KEY`（分析 API 必備） |
-| Lemon Squeezy | `LEMONSQUEEZY_API_KEY`, `STORE_ID`, `WEBHOOK_SECRET`, `TEST_MODE`, 各 `VARIANT_*` |
+| PayPal | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_ENVIRONMENT`（正式為 `live`）, `PAYPAL_WEBHOOK_ID`, `PAYPAL_PLAN_STANDARD_SUB`, `PAYPAL_PLAN_ADVANCED_SUB` |
 | Cron / 外掛 handoff | `CRON_SECRET`（簽名 extension `sid`；可選 `EXTENSION_HANDOFF_SECRET`） |
 | 其他 | `RESEND_API_KEY`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` |
 
 **Gemini：** 金鑰在 [Google AI Studio](https://aistudio.google.com/apikey)；Agent 寫入 `.env.local` 後執行 sync + redeploy。  
-**Lemon Squeezy：** Agent 跑 `setup-lemonsqueezy.mjs`；使用者僅在 LS 後台確認產品價格（若腳本失敗）。
+**PayPal：** 收款路徑。正式環境 `PAYPAL_ENVIRONMENT=live`。不要再跑 Lemon Squeezy 設定腳本。
 
 ## Chrome 外掛 — Agent vs 使用者
 

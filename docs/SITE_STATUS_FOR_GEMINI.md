@@ -60,7 +60,7 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
         ↓
   /report 顯示 Snapshot 或 Guide
         ↓
-  額度不足 → QuotaPaywallCard → Lemon Squeezy Checkout
+  額度不足 → QuotaPaywallCard → PayPal Checkout
 ```
 
 公開 ATS（Greenhouse／Lever）可嘗試從網址抓頁。LinkedIn 等求職板 **不能靠伺服器硬爬**，要外掛或使用者貼全文。
@@ -181,15 +181,19 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 | 額度寫入 | **客戶端不可改** credits／`membership_tier`。只經 service role、SECURITY DEFINER RPC、或已驗簽的 webhook |
 | Rate limit | `POST /api/analyze`、`POST /api/extension-capture` 依 IP／user |
 | 免費濫用 | 裝置指紋等 Sybil 檢查（`lib/profiles.ts`） |
-| Webhook | `POST /api/payment/webhook` 先用 HMAC-SHA256 驗 `x-signature`，再改額度；同一 `order_id` 不發兩次 |
+| Webhook | `POST /api/payment/webhook` 只收 PayPal。先呼叫 PayPal `verify-webhook-signature`（要有 `PAYPAL_WEBHOOK_ID` 與 transmission headers），通過才發額度。同一筆訂單不發兩次。單次：`PAYMENT.CAPTURE.COMPLETED`／`PAYMENT.SALE.COMPLETED`。訂閱：`BILLING.SUBSCRIPTION.ACTIVATED`，以及失敗／取消／過期／暫停 |
 | Prompt injection | JD／履歷／搜尋文字必須包起來，不可拼進 `systemInstruction` |
-| 秘密 | `SUPABASE_SERVICE_ROLE_KEY`、`GEMINI_API_KEY`、`LEMONSQUEEZY_*` 不得出現在 Client Component。只有 `NEXT_PUBLIC_*` 可進瀏覽器 |
+| 秘密 | `SUPABASE_SERVICE_ROLE_KEY`、`GEMINI_API_KEY`、`PAYPAL_CLIENT_SECRET` 不得出現在 Client Component。只有 `NEXT_PUBLIC_*` 可進瀏覽器 |
 
 ---
 
 ## 10. 定價與金流
 
-**收款只有 Lemon Squeezy。** Stripe 已從產品移除，不要接回去。程式裡仍有舊 PayPal／Paddle 檔名或註解殘留，**不是現在的收款路徑**。
+**收款是 PayPal。** 結帳 `POST /api/checkout` 建立 PayPal 訂單或訂閱，使用者到 PayPal 核准。回來走 `/api/payment/paypal-return`。額度由 webhook 發放（`lib/paypal.ts`、`lib/fulfill-order.ts`）。`/account` 可取消訂閱，帳單入口是 PayPal Autopay。法律頁寫的處理者也是 PayPal。
+
+Stripe、Lemon Squeezy、Paddle **都不是現在的收款路徑**。不要建議接回去，也不要把它們寫成現況。舊文件（例如 2026-07 的 `PRODUCT_OVERVIEW.md`）若仍寫 Lemon Squeezy，以本檔為準。
+
+本機 `.env.local`（2026-09-28）：`PAYPAL_ENVIRONMENT=live`，且 client、webhook id、Standard／Advanced 兩個 plan id 都有設定。程式在 `PAYPAL_ENVIRONMENT` 不是 `live` 時會走 sandbox。
 
 ### 免費
 
@@ -206,19 +210,11 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 | Standard 月訂 | $19.99 | 100 Snapshot + 5 Guide |
 | Advanced 月訂 | $39.99 | 300 Snapshot + 15 Guide |
 
-付費牆元件：`QuotaPaywallCard`。這四個價格必須在漏斗裡講清楚。
+付費牆元件：`QuotaPaywallCard`。這四個價格必須在漏斗裡講清楚。程式裡正在賣的方案是 `ACTIVE_CHECKOUT_PLAN_TYPES` 這四檔。
 
 推薦：`?ref=`。好友達成條件後發獎勵。
 
-### 金流上線狀態（重要）
-
-- Lemon Squeezy 商店 **Jobbeagle**（store `424272`）在基準日仍是 **Test mode**
-- 商品、webhook、API key 是測試用
-- **還沒有正式環境的真實銷售**（0 live sales）
-- 要上線：店主在 LS 後台完成身份／商業資料、開通收款、把商品複製到 Live、換 live API key 與 webhook。程式只有在 live variant 存在時才把 `LEMONSQUEEZY_TEST_MODE=false`
-- 站內已有：取消訂閱、billing portal（`/account`）
-
-`constants/checkout-plans.ts` 裡還有 deprecated 別名與舊價（例如 $4.99 unlock、$8.99 monthly）。**對外漏斗以上面四檔為準**，不要把它們當成現售方案。
+`constants/checkout-plans.ts` 裡還有 deprecated 別名與舊價（例如 $4.99 unlock、$8.99 monthly、贊助作者）。**對外漏斗以上面四檔為準**。訂閱要對到 PayPal plan id：`PAYPAL_PLAN_STANDARD_SUB`、`PAYPAL_PLAN_ADVANCED_SUB`。
 
 ---
 
@@ -230,7 +226,7 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 | Host | Vercel → www.jobbeagle.com |
 | Auth / DB / Storage | Supabase（Google OAuth、Postgres、RLS、Storage）。專案 ref `yvzorfeespljbitxxufo` |
 | AI | `@google/genai` |
-| 金流 | Lemon Squeezy |
+| 金流 | PayPal（`PAYPAL_ENVIRONMENT=live`） |
 | Email（選用） | Resend |
 | Analytics（選用） | Google Analytics |
 | 測試 | Vitest；Playwright e2e 可選。改完要過 `npm run gate:generated`（diff 審查 + security tests） |
@@ -276,7 +272,7 @@ Next.js on Vercel (jobbeagle.com)
         ├─ Gemini Flash-Lite（Snapshot，無 Search）
         ├─ Gemini Pro + Search（Guide）
         ├─ Supabase Auth + Postgres + Storage（RLS）
-        └─ Lemon Squeezy Checkout + webhook（目前 Test mode）
+        └─ PayPal Checkout + webhook（環境設為 live）
 ```
 
 ---
@@ -287,7 +283,7 @@ Next.js on Vercel (jobbeagle.com)
 |------|------|
 | 給 Snapshot 加 Google Search | 成本與定位：Snapshot 是閉卷分流 |
 | Guide 改成先跑 Flash 再跑 Pro，或拆很多階段管線 | 產品決定單次 Pro |
-| 接回 Stripe | 已移除 |
+| 接回 Stripe 或 Lemon Squeezy | 收款已是 PayPal |
 | 用 LinkedIn OAuth 當登入 | 外掛只抓職缺；登入是 Google |
 | 把 Shorts 當主產品 | 主線是分析漏斗 |
 | 兩種報告合成一次扣款的同一份 | 分開選、分開扣額度；Guide 內容上包含 Snapshot |
@@ -324,9 +320,9 @@ Next.js on Vercel (jobbeagle.com)
 若你（Gemini）要提產品、UX、成長或技術建議，請先接受下面這些是**已決定的現況**，不要建議把它們推翻，除非明確標成「改變商業模式」：
 
 1. 兩種報告、兩種模型、兩種額度，Snapshot 不上網。
-2. 收款只有 Lemon Squeezy，且 live 尚未打開。
+2. 收款是 PayPal（live）。不要改回 Lemon Squeezy 或 Stripe。
 3. 主漏斗是：外掛或貼 JD → 確認 → 分析 → 付費牆。Shorts 不是主線。
 4. 不教改履歷、不編造事實。
 5. 外掛已在 Chrome Web Store 公開（1.3.2）。
 
-適合建議的方向例子：轉換文案、比較表可讀性、付費牆、確認頁、live 金流上線順序、Guide 情報品質、留存。不適合的方向例子：把兩種報告合併、給免費 Snapshot 加 Search、接 Stripe、重寫整個前端框架。
+適合建議的方向例子：轉換文案、比較表可讀性、付費牆、確認頁、PayPal 訂閱體驗、Guide 情報品質、留存。不適合的方向例子：把兩種報告合併、給免費 Snapshot 加 Search、換成 Stripe 或 Lemon Squeezy、重寫整個前端框架。
