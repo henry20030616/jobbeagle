@@ -142,7 +142,7 @@ export default function ReportCompareTable({
         </div>
       ) : null}
 
-      <div className={`${large ? 'px-5 sm:px-8 py-5 sm:py-6' : 'px-3 sm:px-5 py-3 sm:py-4'} overflow-x-auto`}>
+      <div className={`${large ? 'px-2 sm:px-4 py-2 sm:py-3' : 'px-3 sm:px-5 py-3 sm:py-4'} overflow-x-auto`}>
         <table
           className={`w-full text-left border-collapse table-fixed ${
             large ? 'text-base sm:text-lg min-w-[52rem]' : 'text-xs sm:text-sm min-w-[36rem]'
@@ -150,7 +150,11 @@ export default function ReportCompareTable({
         >
           <thead>
             <tr className="border-b border-slate-700">
-              <th className={`py-3 px-3 sm:px-4 font-semibold text-slate-400 w-[26%]`}>
+              <th
+                className={`font-semibold text-slate-400 w-[26%] ${
+                  large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'
+                }`}
+              >
                 <span className="block">{REPORT_COMPARE_COL.feature[lang]}</span>
                 <span
                   className={`mt-0.5 block font-medium normal-case tracking-normal text-slate-500 ${
@@ -160,10 +164,18 @@ export default function ReportCompareTable({
                   {REPORT_COMPARE_FIELD_HELP_HINT[lang]}
                 </span>
               </th>
-              <th className="py-3 px-3 sm:px-4 font-semibold text-violet-300 w-[37%]">
+              <th
+                className={`font-semibold text-violet-300 w-[37%] ${
+                  large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'
+                }`}
+              >
                 {REPORT_COMPARE_COL.snapshot[lang]}
               </th>
-              <th className="py-3 px-3 sm:px-4 font-semibold text-emerald-300 w-[37%]">
+              <th
+                className={`font-semibold text-emerald-300 w-[37%] ${
+                  large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'
+                }`}
+              >
                 {REPORT_COMPARE_COL.guide[lang]}
               </th>
             </tr>
@@ -175,8 +187,10 @@ export default function ReportCompareTable({
                   <tr>
                     <td
                       colSpan={3}
-                      className={`pt-5 pb-2 px-3 sm:px-4 font-bold uppercase tracking-wider ${
-                        large ? 'text-sm' : 'text-[10px] sm:text-xs'
+                      className={`font-bold uppercase tracking-wider ${
+                        large
+                          ? 'pt-6 pb-3 px-4 sm:px-6 text-sm'
+                          : 'pt-5 pb-2 px-3 sm:px-4 text-[10px] sm:text-xs'
                       } ${
                         section.id === 'guide_only'
                           ? 'text-emerald-400'
@@ -194,7 +208,7 @@ export default function ReportCompareTable({
                     key={row.feature.en}
                     className="border-b border-slate-800/80 align-middle"
                   >
-                    <td className="py-3 px-3 sm:px-4">
+                    <td className={large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'}>
                       <button
                         type="button"
                         className="group inline-flex items-start gap-1.5 text-left font-medium text-slate-200 hover:text-white transition-colors max-w-full"
@@ -212,10 +226,10 @@ export default function ReportCompareTable({
                         </span>
                       </button>
                     </td>
-                    <td className="py-3 px-3 sm:px-4">
+                    <td className={large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'}>
                       <CompareCell cell={row.snapshot} lang={lang} large={large} />
                     </td>
-                    <td className="py-3 px-3 sm:px-4">
+                    <td className={large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'}>
                       <CompareCell cell={row.guide} lang={lang} large={large} />
                     </td>
                   </tr>
