@@ -19,7 +19,7 @@ test.describe('Full funnel — public surfaces', () => {
     await expect(page.locator('textarea').first()).toBeVisible();
 
     await expect(page.getByRole('button', { name: /Saved Resumes/i })).toBeVisible();
-    await expect(page.getByText(/Click to upload PDF or text file/i)).toBeVisible();
+    await expect(page.getByText(/Click to upload Resume/i)).toBeVisible();
 
     await expect(page.getByRole('button', { name: /Fit Snapshot|適配快照/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Interview Guide|面試指南/i })).toBeVisible();

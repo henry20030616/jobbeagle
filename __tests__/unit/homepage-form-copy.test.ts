@@ -8,7 +8,7 @@ describe('homepage form copy', () => {
   it('keeps desktop and mobile on the same English strings', () => {
     const t = getHomepageFormCopy('en');
     expect(t.generate).toBe('AI Strategy Analysis');
-    expect(t.upload).toBe('Click to upload PDF or text file');
+    expect(t.upload).toBe('Click to upload Resume');
     expect(t.reportTypeStep).toBe('3. Report type');
     expect(t.launchStep).toBe('4. Launch');
     expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');

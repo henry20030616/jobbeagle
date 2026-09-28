@@ -31,7 +31,7 @@ const PLACEHOLDER_ZH =
 const PLACEHOLDER_EN =
   'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…). Do not paste only a URL or a short excerpt…';
 
-/** Same type scale as InputForm “Click to upload PDF or text file”. */
+/** Same type scale as InputForm “Click to upload Resume”. */
 const JD_PROMPT_TYPE =
   'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold leading-snug';
 
