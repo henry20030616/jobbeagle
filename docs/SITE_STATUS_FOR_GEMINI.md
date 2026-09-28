@@ -6,7 +6,7 @@
 > **這份文件的用途：** 讓另一個模型（例如 Gemini）在沒有看過程式碼的情況下，了解產品、流程、技術、商業與刻意限制。  
 > **不要做的事：** 這不是任務單。不要假設要改架構、換金流、或把 Snapshot 加上網搜。
 
-較細的報告欄位規格見 `docs/REPORT_CONTENT_SPEC_V3.md`（2026-07-19）。本檔若與該規格衝突，**以本檔的「現況」為準**（UI 與上線狀態已往前走）；報告欄位語意仍以 Spec v3 為準。
+完整現況以根目錄 `PRODUCT_OVERVIEW.md`（2026-09-28，對過程式）為準。本檔是同一事實的簡報。報告欄位語意見 `docs/REPORT_CONTENT_SPEC_V3.md`；頁籤顯示文字以 `lib/report-ui-copy.ts` 為準。
 
 ---
 
@@ -143,8 +143,8 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 
 ### Guide 畫面
 
-- 上方橫向頁籤：Snapshot · Hiring Context · Interview · Salary · Provenance
-- 沒有左側目錄。預設開在 Snapshot，且這頁用與獨立 Snapshot 相同的 slide 框
+- 上方橫向頁籤（英文）：Snapshot · Role & team · Company truth · Interview & offer · Evidence chain
+- 沒有左側目錄。預設開在 Snapshot
 - DefenseCard：風險與履歷證據並排
 
 ### Career Context
@@ -162,7 +162,7 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 | 商店 | **已公開**。Listing：https://chromewebstore.google.com/detail/jobbeagle-headhunter-leve/pceknhembhfnljhpajkpdbihfbpfolpm |
 | 站內安裝 | `/extension` 用商店一鍵安裝；zip 只是備用下載 |
 | 支援站 | LinkedIn、Indeed、ZipRecruiter、Glassdoor、GovernmentJobs／SchoolJobs、台灣 104 |
-| 流程 | 點工具列 → scrape → `POST /api/extension-capture` → 開 `/confirm?sid=…`（簽名、短時效） |
+| 流程 | 點工具列 → scrape → `POST /api/extension-capture` → 新分頁開首頁 `/?sid=…`。側欄 iframe 另開 `/confirm?sid=…&embedded=1` |
 | 失敗 | try/catch、降級成「請手動貼 JD」，不要讓 service worker 崩掉 |
 | 改外掛後 | 使用者必須自己到 `chrome://extensions` 重新載入。Agent 無法代按 |
 
@@ -191,7 +191,7 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 
 **收款是 PayPal。** 結帳 `POST /api/checkout` 建立 PayPal 訂單或訂閱，使用者到 PayPal 核准。回來走 `/api/payment/paypal-return`。額度由 webhook 發放（`lib/paypal.ts`、`lib/fulfill-order.ts`）。`/account` 可取消訂閱，帳單入口是 PayPal Autopay。法律頁寫的處理者也是 PayPal。
 
-Stripe、Lemon Squeezy、Paddle **都不是現在的收款路徑**。不要建議接回去，也不要把它們寫成現況。舊文件（例如 2026-07 的 `PRODUCT_OVERVIEW.md`）若仍寫 Lemon Squeezy，以本檔為準。
+Stripe、Lemon Squeezy、Paddle **都不是現在的收款路徑**。不要建議接回去，也不要把它們寫成現況。完整說明見 `PRODUCT_OVERVIEW.md`。
 
 本機 `.env.local`（2026-09-28）：`PAYPAL_ENVIRONMENT=live`，且 client、webhook id、Standard／Advanced 兩個 plan id 都有設定。程式在 `PAYPAL_ENVIRONMENT` 不是 `live` 時會走 sandbox。
 
@@ -243,7 +243,7 @@ Stripe、Lemon Squeezy、Paddle **都不是現在的收款路徑**。不要建�
 | `/extension` | 安裝外掛 |
 | `/privacy`、`/terms` | 法律 |
 | `/career-context` | 個人底線 |
-| `/shorts`、`/shorts/upload`、`/employer/*` | 短影片／雇主。預設可被 `NEXT_PUBLIC_SHORTS_ENABLED=false` 凍結；首頁 banner 另外寫死關閉 |
+| `/shorts`、`/shorts/upload`、`/employer/*` | 短影片／雇主。只有 `NEXT_PUBLIC_SHORTS_ENABLED=true` 才開；首頁 banner 寫死關閉 |
 
 ### 主要 API
 

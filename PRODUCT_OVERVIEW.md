@@ -1,19 +1,28 @@
 # JobBeagle — 網站現況完整介紹
 
-> **基準日：** 2026-07-18  
+> **基準日：** 2026-09-28  
 > **正式網域：** https://www.jobbeagle.com  
-> **程式庫：** GitHub `henry20030616/jobbeagle`（分支 `main`）  
-> **用途：** 可貼給 Gemini／顧問，完整說明目前網站現況（不含特定任務指派）。
+> **程式庫：** GitHub `henry20030616/jobbeagle`（分支 `main`，push 後 Vercel 自動部署）  
+> **用途：** 可貼給 Gemini／顧問。這不是任務單。  
+> **怎麼寫的：** 本版對過程式，不沿用 2026-07-18 那份稿。舊稿把收款寫成 Lemon Squeezy、外掛寫成未上架、首頁寫成三步驟，都已過期。
+
+報告欄位語意見 `docs/REPORT_CONTENT_SPEC_V3.md`（2026-07-19）。若 Spec 的頁籤名稱和下面第 4.3 節不同，**以程式 `lib/report-ui-copy.ts` 的顯示文字為準**。
 
 ---
 
 ## 1. 一句話定位
 
-**JobBeagle** 是給求職者用的 **AI 職缺分流／獵頭級職缺分析 SaaS**：從職缺網一鍵抓取（或手動貼上）JD + 履歷 → 產出 **適配快照（Fit Snapshot）** 或 **面試指南（Interview Guide）** → 以額度制收費。
+**JobBeagle** 是給求職者的 **AI 職缺決策工具**：Chrome 外掛或手動貼上 JD + 履歷 → 產出兩種額度制報告。
 
-- **市場重心：** 美國求職市場（英文 JD、US recruiter 視角）
-- **金流：** **Lemon Squeezy only**（已棄用 Stripe）
+1. **Fit Snapshot（適配快照）** — 要不要投。便宜、快、**不看網**。
+2. **Interview Guide（面試指南）** — 怎麼面、怎麼談。較貴、較深、**會即時搜網**，且內含完整 Snapshot。
+
+- **市場敘事：** 美國求職（英文 JD、recruiter 視角）
+- **介面語言：** en、zh-TW、zh-CN、es、hi、ar
+- **收款：** **PayPal**，且本機與正式設定是 `PAYPAL_ENVIRONMENT=live`（不是 sandbox，也不是 Lemon Squeezy）
 - **品牌：** `Job`（白）+ `beagle`（藍）
+
+JobBeagle **不是履歷教練**。Snapshot 只解釋匹配／不匹配，不教怎麼改履歷。
 
 ---
 
@@ -22,21 +31,21 @@
 | 面向 | 現況 |
 |------|------|
 | 主要用戶 | 求職者（尤其美區科技／專業職） |
-| 次要用戶 | 雇主（Shorts 職缺短影片；非主投資線） |
-| 痛點 | JD 又長又雜、難判斷適不適合投、缺薪酬與面試情報 |
-| 價值 | 「值不值得投」分流 + 匹配分數 + 薪酬定位 + 缺口 + 面試準備 |
-| 差異化 | Chrome 外掛多站抓取 → `/confirm` 確認資料 → 再扣額度分析 |
+| 次要用戶 | 雇主短影片（Shorts）。程式預設關閉，不是現在的投資線 |
+| 痛點 | JD 又長又雜、難判斷要不要投、缺薪酬與面試情報 |
+| 價值 | 分流（投不投）+ 匹配分數 + 薪酬定位 + 面試／談薪腳本 |
+| 差異化 | 外掛多站抓 JD → 首頁帶入後再分析；兩種報告分開扣額度，免費路徑不燒貴模型 |
 
 ---
 
 ## 3. 產品術語
 
-| 顯示名稱 | API / DB code | 舊別名（相容） |
-|----------|---------------|----------------|
-| **Fit Snapshot／適配快照** | `job_fit_snapshot` | Lite |
-| **Interview Guide／面試指南** | `interview_strategy_guide` | Full |
+| 使用者看到的 | API / DB code | 舊別名（只為相容，不是新產品） |
+|--------------|---------------|--------------------------------|
+| Fit Snapshot／適配快照 | `job_fit_snapshot` | Lite |
+| Interview Guide／面試指南 | `interview_strategy_guide` | Full |
 
-短標籤與正式名稱相同。API／DB code 維持舊值以免弄壞額度與訂單。
+DB／API code 維持舊值，以免弄壞額度與訂單。正在賣的方案代碼見 `ACTIVE_CHECKOUT_PLAN_TYPES`。
 
 ---
 
@@ -45,61 +54,92 @@
 ```
 職缺頁（Chrome 外掛）或首頁手動貼 JD
         ↓
-  /confirm 確認公司／職稱／JD／履歷
-  （舊路徑 /pre-flight 會 redirect 到 /confirm）
+  外掛：POST /api/extension-capture → 開首頁 /?sid=…
+  首頁用 sid 把 JD 填進第 1 步
         ↓
-  選擇 Snapshot 或 Strategy Guide → Google 登入
+  選報告類型、備妥履歷 → Google 登入
         ↓
-  POST /api/analyze（檢查額度 → 扣額度 → Gemini → 存報告）
+  POST /api/analyze（額度檢查 → 扣額度 → Gemini → 存報告）
         ↓
-  Snapshot 或 Strategy Guide 報告畫面
+  /report 顯示 Snapshot 或 Guide
         ↓
-  額度不足 → 付費牆 → Lemon Squeezy Checkout
+  額度不足 → QuotaPaywallCard → PayPal Checkout
 ```
 
-### 4.1 首頁 `/`
+- 舊網址 `/pre-flight` 會 **server redirect** 到 `/confirm`（query 保留）。`/confirm` 仍在，外掛側欄 iframe 會開它。
+- 工具列外掛成功後開的是 **首頁 `/?sid=`**（`browser-extension/background.js` 的 `openPreFlight`），不是直接開 `/confirm`。
+- 公開 ATS（Greenhouse／Lever）可嘗試從網址抓頁。LinkedIn 等求職板不能靠伺服器硬爬，要外掛或使用者貼全文。
 
-三步驟：
+### 4.1 首頁 `/`（四步驟，不是三步）
 
-1. **Job Information** — 貼完整職缺（需含公司名、職稱、內文），或用 Chrome 外掛抓取
-2. **My Resume** — 上傳履歷（PDF／DOCX／文字）；Saved Resumes 庫
-3. **Report type** — 選 Snapshot 或 Strategy Guide；額度顯示如  
-   `Credits: Snapshot (n) + Strategy Guide (n) →`（連到 `/account`）
+文案在 `constants/homepage-form-copy.ts`。英文標題：
 
-另支援：公開 ATS（Greenhouse／Lever）嘗試自動抓頁；LinkedIn 等需外掛或手動貼全文。
+1. **1. Job Information** — 貼完整 JD（公司名、職稱、條件、職責）。「勿只貼網址或片段」另起一行。
+2. **2. My Resume** — 按鈕文案是 **Click to upload Resume**。已存履歷最多 **3** 筆（`RESUME_LIBRARY_LIMIT`）。
+3. **3. Report type** — Fit Snapshot、Interview Guide 兩張卡，加上 Compare the two reports。未選是灰虛線；選中是藍實線。每張卡有 sample 連結。額度 pill 連到 `/account`，預設短字，滑過才展開；英文是 **Report credits**。
+4. **4. Launch** — 送出鈕文案 **AI Strategy Analysis**。外框是 slate 灰漸層欄；按鈕本體 indigo。JD 或履歷不足時變淡不可按。
 
-### 4.2 確認頁 `/confirm`
+桌面字級放大（`homepage-font-large`），全寬加左右 gutter，不是置中小島。特色標題與 hero 那句 Expert-level tagline 同級。手機把特色收成預設關閉的手風琴，標題是 **Jobbeagle advantages**／**Jobbeagle 優點**。
 
-- 外掛 handoff 用簽名 `sid`（短時效）
-- 確認 JD、選履歷、選報告類型、Launch
-- 帳戶停用時會提示，且無法分析／結帳
+### 4.2 範例頁 `/samples`
+
+- `/samples?type=job_fit_snapshot` 或 `interview_strategy_guide`
+- 左欄：通知框、Fit Snapshot、Interview Guide、Compare the two reports
+- 通知框：目前報告名稱 + 左箭頭 + **立刻AI分析**（各語系目前都是這句）。顏色與 Compare 相同（深底、淺灰邊）。沒有 SAMPLE 字樣與 sparkles
+- 兩個報告切換框：顏色對齊 **首頁第 4 步欄**（slate 漸層），不是第 3 步的藍框／虛線卡
+- 右欄用正式報告元件加 sample 資料。外框 `border-blue-500`。報告本體仍可有 SAMPLE 浮水印
+
+比較 overlay（首頁與 samples 共用）：
+
+- 副標兩行（Snapshot 一句、Guide 一句）
+- 字級比先前 overlay 小約 20%（`.compare-font-large`）
+- 視窗外緣與框內都有留白；左右比上下更寬
+- Fit Snapshot 欄靠右，靠近 Interview Guide
+- 有的功能：綠色勾在文字前面、垂直置中、大小跟字一樣，後面不要破折號。沒有的功能仍用「—」
+- 單次價：$3 / $9.99
 
 ### 4.3 兩種報告
 
-| | **Job Fit Snapshot** | **Interview Strategy Guide** |
-|--|----------------------|------------------------------|
-| 模型 | `gemini-3.1-flash-lite` | `gemini-3.1-pro-preview`（單次完整產出，**不**先跑 Lite） |
-| 網搜 | 無 | Google Search grounding |
-| 內容 | 匹配分數、硬性條件、優劣勢／缺口、薪酬定位、簡短面試準備 | Snapshot 層 + 即時情報、STAR 題庫、談判腳本等（同一 Pro 回應） |
-| 額度池 | Snapshot credits | Strategy Guide credits（分開扣） |
-| 單次價 | $3 | $9.99 |
+| | Fit Snapshot | Interview Guide |
+|--|--------------|-----------------|
+| 模型 | `gemini-3.1-flash-lite` | `gemini-3.1-pro-preview`（一次產出，不先跑 Flash） |
+| 網路 | 禁止 Search | Google Search grounding 可以 |
+| 結論 | 要不要投：分數、Apply Decision、五維、閉卷薪酬粗估 | 怎麼面、怎麼談；內含完整 Snapshot |
+| 引用 | 不要求網址 | 網頁聲明要有出處；後端驗 URL |
+| 單價 | $3 | $9.99 |
+| 額度 | Snapshot credits | Guide credits（分開扣） |
 
-模型定義：`constants/models.ts`。
+定義：`constants/models.ts`。分析：`lib/gemini-analyze.ts`。
+
+Guide 上方橫向頁籤（英文顯示，`lib/report-ui-copy.ts`；內部 id 仍是 snapshot / hiring / interview / salary / provenance）：
+
+1. Snapshot
+2. Role & team
+3. Company truth
+4. Interview & offer
+5. Evidence chain
+
+預設開在 Snapshot。繁中對應：快照、職位與團隊、公司真相、面試與談薪、證據鏈。
+
+零幻覺：不發明經歷、簽證、雇主 offer，或沒有來源的面試題。沒有情報就留空／標限制，不要編。STAR 與答辯只用履歷上的事實。
+
+`/account` 與 `/career-context` 可填個人底線（層級、地點、工作授權、目標 TC、walk-away）。分析時注入，offer 敘述要尊重這些底線。
 
 ---
 
 ## 5. Chrome 外掛
 
-| 項目 | 內容 |
-|------|------|
+| 項目 | 現況（對過 `browser-extension/manifest.json`） |
+|------|-----------------------------------------------|
 | 名稱 | JobBeagle - Headhunter-Level Job Triage |
-| 版本 | **1.3.0**（Manifest V3） |
-| 支援站 | LinkedIn、Indeed、ZipRecruiter、Glassdoor、GovernmentJobs、台灣 104 |
-| 流程 | 點工具列 → scrape → `POST /api/extension-capture` → 開 `/confirm?sid=…` |
-| 商店 | **尚未送審 Chrome Web Store**（刻意暫緩）；本機「載入未封裝」 |
-| 更新後 | 使用者需到 `chrome://extensions` 重新載入 |
-
-草稿素材：`browser-extension/STORE_LISTING.md`。
+| 版本 | **1.3.2**（Manifest V3） |
+| 商店 | **已公開**。https://chromewebstore.google.com/detail/jobbeagle-headhunter-leve/pceknhembhfnljhpajkpdbihfbpfolpm |
+| 站內安裝 | `/extension` 一鍵進商店；zip 只是備用 |
+| 支援站 | LinkedIn、Indeed、ZipRecruiter、Glassdoor、GovernmentJobs／SchoolJobs、台灣 104 |
+| 工具列流程 | scrape → `POST /api/extension-capture` → 新分頁開 `https://www.jobbeagle.com/?sid=…` |
+| 側欄 | iframe 開 `/confirm?sid=…&embedded=1` |
+| 失敗 | 降級成手動貼 JD，不要讓 service worker 崩掉 |
+| 改外掛後 | 使用者自己到 `chrome://extensions` 重新載入 |
 
 ---
 
@@ -107,142 +147,164 @@
 
 | 功能 | 說明 |
 |------|------|
-| 登入 | Google OAuth（Supabase）；分析／付款需登入 |
-| `/account` | 額度、方案、帳單、推薦、停用／重新啟用、硬刪帳戶 |
-| 停用 | `deactivated_at`；停用後無法 analyze／checkout |
-| 硬刪 | `POST /api/account/delete`（CCPA） |
-| 法律頁 | `/privacy`、`/terms` |
-| 報告保存 | Supabase；部分類型約 30 天 cron 清除 |
+| 登入 | Supabase Google OAuth。分析與結帳要登入 |
+| `/account` | 額度、四檔方案、PayPal 帳單入口、取消訂閱、推薦、停用／重新啟用 |
+| 停用 | `deactivated_at` 後不能 analyze／checkout |
+| 硬刪 | `POST /api/account/delete`（profile、報告、履歷檔；CCPA）。另有 `/account/danger` |
+| 法律 | `/privacy`、`/terms`。付款處理者寫的是 **PayPal**，不是 Lemon Squeezy |
+| 報告保存 | Supabase；`/api/cron/purge-reports` 清過期 |
+| 額度寫入 | 客戶端不可改 credits／`membership_tier`。只經 service role、SECURITY DEFINER RPC，或已驗簽的 PayPal webhook |
+
+新帳號：終身 **3** 次 Fit Snapshot（`FREE_LIFETIME_JOB_FIT_SNAPSHOT_CREDITS`），Interview Guide **0**（`lib/profiles.ts`）。不按日／月重置。有裝置指紋等反濫用。
 
 ---
 
-## 7. 商業模式與定價
+## 7. 定價與金流
 
-### 免費
+**收款路徑是 PayPal。** 對過的程式：
 
-- 終身 **3 次 Job Fit Snapshot**（不按日／月重置）
-- Strategy Guide 預設 **0**
-- 有裝置指紋等反濫用邏輯
+- `POST /api/checkout` → `createPayPalCheckout`（`lib/paypal.ts`）
+- 訂單列 `payment_provider: 'paypal'`
+- 回來：`/api/payment/paypal-return`
+- 發額度：`POST /api/payment/webhook` 先呼叫 PayPal `verify-webhook-signature`，通過才 `fulfillOrder`
+- 單次事件：`PAYMENT.CAPTURE.COMPLETED`、`PAYMENT.SALE.COMPLETED`
+- 訂閱事件：`BILLING.SUBSCRIPTION.ACTIVATED`，以及失敗、取消、過期、暫停
+- 帳單入口：live 時 `https://www.paypal.com/myaccount/autopay/`
+- 同一筆訂單不發兩次
 
-### 付費（Lemon Squeezy，USD）
+環境變數：`PAYPAL_CLIENT_ID`、`PAYPAL_CLIENT_SECRET`、`PAYPAL_ENVIRONMENT`、`PAYPAL_WEBHOOK_ID`、`PAYPAL_PLAN_STANDARD_SUB`、`PAYPAL_PLAN_ADVANCED_SUB`。  
+2026-09-28 本機 `.env.local`：`PAYPAL_ENVIRONMENT=live`，client、webhook、兩個訂閱 plan id 都有。`PAYPAL_ENVIRONMENT` 不是 `live` 時程式走 sandbox。
 
-| 方案 | 價格 | 內容 |
-|------|------|------|
-| Single Snapshot | $3 | +1 Snapshot |
-| Single Strategy Guide | $9.99 | +1 Strategy Guide |
-| Standard 訂閱 | $19.99/月 | 100 Snapshot + 5 Strategy Guide |
-| Advanced 訂閱 | $39.99/月 | 300 Snapshot + 15 Strategy Guide |
+Stripe、Lemon Squeezy、Paddle **不是現在的收款路徑**。程式裡已沒有 Lemon Squeezy 結帳。不要把它們寫成現況，也不要建議接回去。
 
-推薦裂變：`?ref=` 推薦碼；好友完成條件後發放獎勵。
+### 正在賣的四檔（USD）
 
-**金流注意：** 程式已移除 Stripe；收款／提款走 Lemon Squeezy。
+| 方案 code | 價格 | 內容 |
+|-----------|------|------|
+| `single_job_fit_snapshot` | $3 | +1 Snapshot |
+| `single_interview_strategy_guide` | $9.99 | +1 Guide |
+| `standard_subscription` | $19.99/月 | 100 Snapshot + 5 Guide |
+| `advanced_subscription` | $39.99/月 | 300 Snapshot + 15 Guide |
+
+`constants/checkout-plans.ts` 還留著舊別名與舊價（$4.99、$8.99、贊助作者）。對外漏斗只講上面四檔。
+
+推薦：`?ref=`。
 
 ---
 
-## 8. 技術堆棧
+## 8. 技術堆疊
 
 | 層 | 技術 |
 |----|------|
-| App | Next.js 15（App Router）、React 19、TypeScript 5、Tailwind |
-| Host | Vercel → jobbeagle.com |
-| Auth / DB / Storage | Supabase（Google OAuth、Postgres、RLS、Storage） |
-| AI | Google Gemini（`@google/genai`） |
-| 金流 | Lemon Squeezy |
+| App | Next.js 15 App Router、React 19、TypeScript 5、Tailwind |
+| Host | Vercel → www.jobbeagle.com |
+| Auth / DB / Storage | Supabase（Google OAuth、Postgres、RLS、Storage）。專案 ref `yvzorfeespljbitxxufo` |
+| AI | `@google/genai` |
+| 金流 | PayPal（live） |
 | Email（選用） | Resend |
 | Analytics（選用） | Google Analytics |
-| 測試 | Vitest；Playwright（e2e 可選） |
+| 測試 | Vitest；Playwright 可選。改程式要過 `npm run gate:generated` |
+
+### 主要路由
+
+| 路徑 | 用途 |
+|------|------|
+| `/` | 四步驟漏斗；也接收外掛 `?sid=` |
+| `/confirm` | 確認頁；舊 `/pre-flight` 轉來這裡；外掛側欄 iframe |
+| `/report` | 分析結果 |
+| `/samples` | 兩種報告範例 + 比較 |
+| `/account`、`/account/danger` | 帳戶與刪除 |
+| `/extension` | 安裝外掛 |
+| `/privacy`、`/terms` | 法律 |
+| `/career-context` | 個人底線 |
+| `/shorts`、`/employer/*` | 短影片。`isShortsEnabled()` 只有 `NEXT_PUBLIC_SHORTS_ENABLED=true` 才開。首頁 banner `isHomepageShortsBannerEnabled()` **寫死 false** |
 
 ### 主要 API
 
 | API | 用途 |
 |-----|------|
-| `POST /api/analyze` | 核心分析（auth、額度、rate limit、Gemini、存檔） |
-| `POST/GET /api/extension-capture` | 外掛 handoff |
-| `POST/GET /api/checkout` | 建立結帳／方案 |
-| `POST /api/payment/webhook` | 發放額度（驗簽＋等冪） |
-| `/api/account/*` | 帳戶讀取／停用／啟用／刪除 |
+| `POST /api/analyze` | 核心分析（登入、額度、rate limit、Gemini、存檔） |
+| `POST/GET /api/extension-capture` | 外掛 handoff。GET 回傳的 `preflightUrl` 是 `/?sid=` |
+| `POST/GET /api/checkout` | 建立 PayPal 結帳；GET 回傳四檔方案 |
+| `POST /api/payment/webhook` | PayPal 驗簽後發額度 |
+| `POST /api/payment/paypal-return` | PayPal 返回 |
+| `/api/account/*` | 讀取／停用／啟用／刪除／帳單入口 |
 | `/api/resumes` | 履歷庫 |
 | `GET /api/reports/[id]` | 讀報告 |
-| `GET /api/cron/purge-reports` | 清除過期報告 |
-| `/api/shorts/*` | Shorts 相關 |
+| `GET /api/cron/purge-reports` | 清過期報告 |
 
-### 安全重點
+### 安全
 
-- analyze／extension-capture 有 rate limit
-- webhook 先驗簽再改額度；訂單不重複發放
-- 服務端金鑰不上 Client；RLS 開啟
-- 外掛 scraper 失敗可降級為手動貼 JD
+- analyze、extension-capture、PayPal webhook 有 rate limit
+- webhook 先向 PayPal 驗簽再改額度
+- `SUPABASE_SERVICE_ROLE_KEY`、`GEMINI_API_KEY`、`PAYPAL_CLIENT_SECRET` 不上 Client。只有 `NEXT_PUBLIC_*` 可進瀏覽器
+- JD／履歷／搜尋文字要包起來，不可拼進 `systemInstruction`
+- RLS 開在 profiles、analysis_reports 等表
 
 ---
 
-## 9. 次要產品線：Shorts／雇主
+## 9. Shorts／雇主
 
 路徑含 `/shorts`、`/shorts/upload`、`/employer/*`。  
-**策略上非優先**；主投資線是「外掛 → confirm → 分析 → 付費」。首頁 Shorts banner 目前暫時隱藏。
+預設關。主線是「外掛或貼 JD → 分析 → PayPal」。
 
 ---
 
-## 10. 系統架構簡圖
+## 10. 架構簡圖
 
 ```
-┌──────────────────┐    scrape     ┌─────────────────────────────┐
-│ Chrome Extension │ ────────────► │ LinkedIn / Indeed / Zip /   │
-│     v1.3.0       │               │ Glassdoor / GovJobs / 104   │
-└────────┬─────────┘               └─────────────────────────────┘
-         │ POST /api/extension-capture
-         ▼
-┌──────────────────┐    sid     ┌──────────────┐
-│ Next.js (Vercel) │◄──────────►│   /confirm   │
-└────────┬─────────┘            └──────┬───────┘
-         │                             │ POST /api/analyze
-         ├─────────────────────────────▼────────────────┐
-         │                    Google Gemini             │
-         ├──────────────────── Supabase Auth + DB       │
-         └──────────────────── Lemon Squeezy Checkout   │
+Chrome Extension 1.3.2（Chrome Web Store 已公開）
+  LinkedIn / Indeed / ZipRecruiter / Glassdoor / GovernmentJobs / 104
+        │ POST /api/extension-capture
+        ▼
+  新分頁 https://www.jobbeagle.com/?sid=…
+        │
+Next.js on Vercel
+        ├─ 首頁四步驟 → POST /api/analyze
+        ├─ Gemini Flash-Lite（Snapshot，無 Search）
+        ├─ Gemini Pro + Search（Guide，單次）
+        ├─ Supabase Auth + Postgres + Storage（RLS）
+        └─ PayPal Checkout + webhook（PAYPAL_ENVIRONMENT=live）
 ```
 
 ---
 
-## 11. 已完成與刻意不做
+## 11. 刻意不做
 
-### 已完成
-
-- 雙報告產品 + Dashboard
-- Google 登入、額度、付費牆、Lemon Squeezy 四方案
-- 外掛多站 → `/confirm`
-- 帳戶管理（停用／硬刪）、推薦、法律頁
-- Rate limit、webhook 安全、報告 purge
-- Stripe 已從程式移除
-
-### 刻意不做／暫緩
-
-| 項目 | 說明 |
+| 項目 | 原因 |
 |------|------|
-| Chrome Web Store 送審 | 暫緩；正式公開時再送審 |
-| Stripe | 不接回；只用 Lemon Squeezy |
-| LinkedIn OAuth 登入 | 只抓職缺，不用來登入 |
-| Shorts 當主產品 | 低優先 |
-| 兩種報告合併同一畫面 | 目前分開選、分開扣額度 |
+| 給 Snapshot 加 Google Search | Snapshot 是閉卷分流 |
+| Guide 先跑 Flash 再跑 Pro，或拆多階段管線 | 產品決定單次 Pro |
+| 接回 Stripe、Lemon Squeezy、Paddle | 收款已是 PayPal |
+| 用 LinkedIn OAuth 當登入 | 外掛只抓職缺；登入是 Google |
+| 把 Shorts 當主產品 | 主線是分析漏斗 |
+| 兩種報告合成一次扣款 | 分開選、分開扣；Guide 內容含 Snapshot |
+| 履歷 builder／改履歷教練 | 明確排除 |
+| 無來源的面試題、文化契合分數、假裝雇主 offer | 零幻覺 |
+| 客戶端直接改額度 | 安全 |
 
 ---
 
-## 12. 關鍵檔案索引
+## 12. 關鍵檔案
 
 | 主題 | 路徑 |
 |------|------|
-| 產品術語 | `constants/report-products.ts` |
+| 產品 code | `constants/report-products.ts` |
 | 模型 | `constants/models.ts` |
-| 額度 | `constants/credits.ts` |
+| 免費額度 | `constants/credits.ts`、`lib/profiles.ts` |
 | 定價 | `constants/checkout-plans.ts` |
-| 首頁漏斗 | `components/InputForm.tsx` |
-| 確認頁 | `app/confirm/page.tsx` |
-| 帳戶頁 | `app/account/page.tsx` |
-| 分析 API | `app/api/analyze/route.ts` |
-| Prompt | `lib/prompts/`、`lib/gemini-analyze.ts` |
-| 外掛 | `browser-extension/` |
+| PayPal | `lib/paypal.ts`、`app/api/checkout/route.ts`、`app/api/payment/webhook/route.ts` |
+| 首頁文案 | `constants/homepage-form-copy.ts` |
+| 首頁表單 | `components/InputForm.tsx`、`components/InputFormMobile.tsx` |
+| 比較表 | `constants/report-compare.ts`、`components/ReportCompareModal.tsx` |
+| 報告 UI 文案 | `lib/report-ui-copy.ts` |
+| Snapshot / Guide 畫面 | `components/LiteReportDashboard.tsx`、`components/FullReportDashboard.tsx` |
+| 範例頁 | `app/samples/SampleReportClient.tsx`、`lib/sample-reports.ts` |
+| 外掛 | `browser-extension/manifest.json`、`browser-extension/background.js` |
+| 報告規格 | `docs/REPORT_CONTENT_SPEC_V3.md` |
 
 ---
 
 ## 13. 現況總結
 
-JobBeagle 是已上線的 **Next.js 15 + Supabase + Gemini + Lemon Squeezy** 求職分析 SaaS。核心是 **額度制 Job Fit Snapshot／Interview Strategy Guide**，搭配 **Chrome 外掛多站抓取 → `/confirm`**。市場敘事偏美國職缺網；Shorts 為次要線；Chrome Web Store 尚未送審。
+JobBeagle 是已上線的 **Next.js 15 + Supabase + Gemini + PayPal** 求職分析站。核心是額度制 **Fit Snapshot**（Flash-Lite、不上網、$3、免費終身 3 次）與 **Interview Guide**（Pro + Search、$9.99、起始 0 次），另有 $19.99／$39.99 月訂。外掛 **1.3.2 已在 Chrome Web Store**，抓完 JD 開首頁 `/?sid=`。Shorts 預設關閉。
