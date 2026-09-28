@@ -515,18 +515,17 @@ const InputForm: React.FC<InputFormProps> = ({
     userProfile?.available_interview_strategy_guide_credits
     ?? userProfile?.available_full_credits
     ?? null;
-  const creditsPillLabel = (() => {
+  const creditsPillShort = zh ? '報告額度' : 'Reports credits';
+  const creditsPillDetail = (() => {
     if (snapshotCredits == null || strategyCredits == null) {
-      return zh ? '額度與方案 →' : 'Credits & plans →';
+      return zh ? '與方案' : '& plans';
     }
     if (snapshotCredits <= 0 && strategyCredits <= 0) {
-      return zh ? '加購額度 →' : 'Buy credits →';
+      return zh ? '：加購' : ': buy more';
     }
     const snap = reportShortLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage);
     const strat = reportShortLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage);
-    return zh
-      ? `額度：${snap} (${snapshotCredits}) + ${strat} (${strategyCredits}) →`
-      : `Credits: ${snap} (${snapshotCredits}) + ${strat} (${strategyCredits}) →`;
+    return `: ${snap} (${snapshotCredits}) + ${strat} (${strategyCredits})`;
   })();
   const creditsPillTitle = zh
     ? '剩餘額度：適配快照 / 面試指南（點此加購或管理帳戶）'
@@ -859,11 +858,17 @@ const InputForm: React.FC<InputFormProps> = ({
                 {onReportTypeChange ? (
                   <Link
                     href="/account"
-                    className={`${PILL} max-w-none whitespace-normal`}
-                    title={creditsPillTitle}
+                    className={`${PILL} group max-w-full`}
+                    title={`${creditsPillShort}${creditsPillDetail} → — ${creditsPillTitle}`}
                   >
                     <CreditCard className="h-5 w-5 shrink-0" />
-                    <span className="font-bold leading-snug">{creditsPillLabel}</span>
+                    <span className="font-bold leading-snug">
+                      {creditsPillShort}
+                      <span className="hidden group-hover:inline group-focus-within:inline">
+                        {creditsPillDetail}
+                      </span>
+                      {' →'}
+                    </span>
                   </Link>
                 ) : null}
               </div>
