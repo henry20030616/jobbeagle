@@ -239,10 +239,10 @@ main input {
   line-height: 1.25 !important;
 }
 
-/* Four feature cards: title matches level-3 (tagline / Report samples = 3.375rem) */
+/* Four feature cards: title matches homepage-hero-desc (size + zinc-400) */
 .homepage-font-large .feature-title {
   font-size: 3.375rem !important;
-  line-height: 1.25 !important;
+  line-height: 1.3 !important;
 }
 .homepage-font-large .feature-desc {
   font-size: 2.53125rem !important;

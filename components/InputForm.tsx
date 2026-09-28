@@ -633,7 +633,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="feature-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold leading-snug text-slate-200">{item.title}</span>
+                        <span className="feature-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-400">{item.title}</span>
                         <ChevronDown
                           className={`mt-0.5 h-5 w-5 sm:h-6 sm:w-6 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
