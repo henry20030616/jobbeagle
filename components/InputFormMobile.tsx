@@ -452,7 +452,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
           >
             <span className="text-sm font-bold text-slate-200">
-              {zh ? '你會得到' : 'What you get'}
+              {t.featuresAccordion}
             </span>
             <ChevronDown
               className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${featuresOpen ? 'rotate-180' : ''}`}

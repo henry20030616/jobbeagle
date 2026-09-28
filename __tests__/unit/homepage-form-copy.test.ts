@@ -14,6 +14,7 @@ describe('homepage form copy', () => {
     expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');
     expect(t.snapshotBlurb).toContain('one-page fit check');
     expect(t.sampleLink).toBe('Reports sample');
+    expect(t.featuresAccordion).toBe('Jobbeagle advantages');
   });
 
   it('covers every app language', () => {
