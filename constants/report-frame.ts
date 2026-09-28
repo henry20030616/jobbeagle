@@ -50,11 +50,11 @@ export const REPORT_TYPE_CARD_ACTIVE =
 export const HOMEPAGE_STEP_COL_SURFACE =
   'rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl';
 
-/** /samples report tabs — same paint as homepage step 4 column */
+/** /samples Fit Snapshot + Interview Guide — same indigo fill as the Launch “AI Strategy Analysis” button */
 export const SAMPLE_REPORT_TAB_IDLE =
-  `${HOMEPAGE_STEP_COL_SURFACE} bg-slate-700/30 text-white hover:from-slate-500/50 hover:to-slate-600/75`;
+  'rounded-2xl border border-indigo-400/50 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-500';
 export const SAMPLE_REPORT_TAB_ACTIVE =
-  `${HOMEPAGE_STEP_COL_SURFACE} bg-slate-700/30 text-white border-slate-400 from-slate-500/55 to-slate-600/80`;
+  'rounded-2xl border border-indigo-200/80 bg-indigo-600 text-white shadow-[0_0_42px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80';
 
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =
