@@ -90,9 +90,9 @@ export default function ReportCompareModal({
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
-              className="compare-font-large absolute inset-6 sm:inset-10 lg:inset-14 z-10 flex w-auto max-w-none flex-col rounded-2xl border border-slate-500 bg-slate-950 shadow-2xl animate-slide-in-right overflow-hidden"
+              className="compare-font-large absolute inset-y-6 inset-x-12 sm:inset-y-10 sm:inset-x-20 lg:inset-y-14 lg:inset-x-28 z-10 flex w-auto max-w-none flex-col rounded-2xl border border-slate-500 bg-slate-950 shadow-2xl animate-slide-in-right overflow-hidden"
             >
-              <header className="flex items-start justify-between gap-6 border-b border-slate-800 px-10 py-8 sm:px-16 sm:py-10 shrink-0">
+              <header className="flex items-start justify-between gap-6 border-b border-slate-800 px-20 py-8 sm:px-32 sm:py-10 shrink-0">
                 <div className="min-w-0">
                   <BrandLogo size="nav" showIcon href={null} className="compare-brand-logo mb-2" />
                   <h2
@@ -115,11 +115,11 @@ export default function ReportCompareModal({
                 </button>
               </header>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-10 py-8 sm:px-16 sm:py-10">
+              <div className="min-h-0 flex-1 overflow-y-auto px-20 py-8 sm:px-32 sm:py-10">
                 <ReportCompareTable language={language} showHeader={false} size="lg" />
               </div>
 
-              <footer className="shrink-0 border-t border-slate-800 px-10 py-8 sm:px-16 sm:py-10 flex justify-end">
+              <footer className="shrink-0 border-t border-slate-800 px-20 py-8 sm:px-32 sm:py-10 flex justify-end">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
