@@ -700,9 +700,13 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           </h2>
           
           {onReportTypeChange ? (
-            <Link href="/account" className={MOBILE_PILL} title={creditsPillTitle}>
+            <Link
+              href="/account"
+              className={`${MOBILE_PILL} max-w-none whitespace-normal`}
+              title={creditsPillTitle}
+            >
               <CreditCard className="h-4 w-4 shrink-0" />
-              <span className="truncate font-bold">{creditsPillLabel}</span>
+              <span className="font-bold leading-snug">{creditsPillLabel}</span>
             </Link>
           ) : null}
 

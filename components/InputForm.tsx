@@ -857,9 +857,13 @@ const InputForm: React.FC<InputFormProps> = ({
               </h2>
               <div className={STEP_PILL_ROW}>
                 {onReportTypeChange ? (
-                  <Link href="/account" className={PILL} title={creditsPillTitle}>
+                  <Link
+                    href="/account"
+                    className={`${PILL} max-w-none whitespace-normal`}
+                    title={creditsPillTitle}
+                  >
                     <CreditCard className="h-5 w-5 shrink-0" />
-                    <span className="truncate font-bold leading-snug">{creditsPillLabel}</span>
+                    <span className="font-bold leading-snug">{creditsPillLabel}</span>
                   </Link>
                 ) : null}
               </div>
