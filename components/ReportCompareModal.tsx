@@ -90,9 +90,9 @@ export default function ReportCompareModal({
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
-              className="compare-font-large absolute inset-2 sm:inset-4 z-10 flex w-auto max-w-none flex-col rounded-2xl border border-slate-500 bg-slate-950 shadow-2xl animate-slide-in-right overflow-hidden"
+              className="compare-font-large absolute inset-4 sm:inset-6 lg:inset-8 z-10 flex w-auto max-w-none flex-col rounded-2xl border border-slate-500 bg-slate-950 shadow-2xl animate-slide-in-right overflow-hidden"
             >
-              <header className="flex items-start justify-between gap-4 border-b border-slate-800 px-5 py-4 sm:px-8 sm:py-5 shrink-0">
+              <header className="flex items-start justify-between gap-4 border-b border-slate-800 px-6 py-5 sm:px-10 sm:py-6 shrink-0">
                 <div className="min-w-0">
                   <BrandLogo size="nav" showIcon href={null} className="compare-brand-logo mb-2" />
                   <h2
@@ -115,11 +115,11 @@ export default function ReportCompareModal({
                 </button>
               </header>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-5">
+              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-10 sm:py-6">
                 <ReportCompareTable language={language} showHeader={false} size="lg" />
               </div>
 
-              <footer className="shrink-0 border-t border-slate-800 px-5 py-4 sm:px-8 flex justify-end">
+              <footer className="shrink-0 border-t border-slate-800 px-6 py-5 sm:px-10 flex justify-end">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
