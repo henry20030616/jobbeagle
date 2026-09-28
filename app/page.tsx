@@ -534,9 +534,9 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="homepage-font-large flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
-      {/* Centered canvas with proper constraints */}
-      <main className="mx-auto w-full min-w-0 max-w-[96vw] sm:max-w-[92vw] xl:max-w-[88vw] px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-8 md:py-10">
+    <div className="homepage-font-large flex min-h-screen w-full flex-col items-stretch justify-start overflow-x-hidden overscroll-x-none bg-slate-950 text-slate-200">
+      {/* Full-bleed operator canvas — no centered max-width island */}
+      <main className="w-full min-w-0 px-3 sm:px-5 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-8 min-w-0 w-full">
           {/* Only show header logo when report is visible; InputForm has its own hero logo */}
           {report && <BrandLogo size="nav" showIcon />}
