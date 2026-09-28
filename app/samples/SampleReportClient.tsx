@@ -24,6 +24,8 @@ import {
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
   REPORT_SLIDE_DESIGN_WIDTH,
+  REPORT_TYPE_CARD_ACTIVE,
+  REPORT_TYPE_CARD_IDLE,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 import ReportCompareModal from '@/components/ReportCompareModal';
@@ -59,9 +61,7 @@ export default function SampleReportClient() {
 
   const sampleTabClass = (active: boolean) =>
     `${SAMPLE_HEADER_BTN} h-full w-full justify-center text-center leading-snug whitespace-normal ${
-      active
-        ? 'border-solid border-violet-500 bg-violet-500/20 text-violet-100'
-        : 'border-dashed border-slate-500 bg-slate-900/60 text-slate-100 hover:bg-slate-800/80 hover:border-slate-400'
+      active ? REPORT_TYPE_CARD_ACTIVE : REPORT_TYPE_CARD_IDLE
     }`;
 
   const snapshotLabel = reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, language);
@@ -91,14 +91,14 @@ export default function SampleReportClient() {
           >
             <div className="flex items-center gap-3 min-w-0">
               <SampleMark variant="notice" />
-              <Sparkles className={`${SAMPLE_RAIL_ICON} text-white`} aria-hidden />
+              <Sparkles className={`${SAMPLE_RAIL_ICON} text-slate-100`} aria-hidden />
             </div>
-            <p className={`${SAMPLE_RAIL_TEXT} text-white`}>
+            <p className={`${SAMPLE_RAIL_TEXT} text-slate-100`}>
               {isGuide ? guideLabel : snapshotLabel}
             </p>
             <Link
               href="/"
-              className={`inline-flex items-center gap-2 ${SAMPLE_RAIL_TEXT} text-white hover:text-blue-50`}
+              className={`inline-flex items-center gap-2 ${SAMPLE_RAIL_TEXT} text-slate-100 hover:text-white`}
             >
               <ArrowLeft className={SAMPLE_RAIL_ICON} />
               {ANALYZE_LABEL[language] ?? ANALYZE_LABEL.en}

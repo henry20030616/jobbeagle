@@ -13,6 +13,10 @@ import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import BrandLogo from '@/components/BrandLogo';
+import {
+  REPORT_TYPE_CARD_ACTIVE,
+  REPORT_TYPE_CARD_IDLE,
+} from '@/constants/report-frame';
 
 const PILL =
   'inline-flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
@@ -29,10 +33,6 @@ const STEP_BODY = `flex ${STEP_BODY_MIN} flex-1 flex-col`;
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
 const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} flex-1 grid-rows-3 gap-3 sm:gap-4 lg:gap-5`;
 const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5`;
-const REPORT_CARD_IDLE =
-  'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50';
-const REPORT_CARD_ACTIVE =
-  'border-solid border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
 const REPORT_CARD =
   'w-full min-h-0 h-full rounded-xl border-2 px-3 sm:px-4 lg:px-5 xl:px-6 py-3 sm:py-4 lg:py-5 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
 
@@ -876,7 +876,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 <div className={compactChrome ? STEP_BODY_CARDS_COMPACT : STEP_BODY_CARDS}>
                   <div
                     className={`${REPORT_CARD} ${
-                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? REPORT_CARD_ACTIVE : REPORT_CARD_IDLE
+                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? REPORT_TYPE_CARD_ACTIVE : REPORT_TYPE_CARD_IDLE
                     }`}
                   >
                     <button
@@ -892,7 +892,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   </div>
                   <div
                     className={`${REPORT_CARD} ${
-                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? REPORT_CARD_ACTIVE : REPORT_CARD_IDLE
+                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? REPORT_TYPE_CARD_ACTIVE : REPORT_TYPE_CARD_IDLE
                     }`}
                   >
                     <button

@@ -35,9 +35,17 @@ export const SAMPLE_HEADER_BTN =
  */
 export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 
-/** Sample notice — thin light-grey frame, bright blue fill */
+/**
+ * Homepage report-type cards (step 3) — reused on /samples rail tabs.
+ */
+export const REPORT_TYPE_CARD_IDLE =
+  'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50 text-slate-100';
+export const REPORT_TYPE_CARD_ACTIVE =
+  'border-solid border-blue-500 bg-blue-500/10 text-blue-50 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
+
+/** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =
-  'rounded-lg border border-slate-400 bg-sky-500';
+  'rounded-xl border-2 border-slate-400 bg-slate-900/80';
 
 export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate-950`;
 
