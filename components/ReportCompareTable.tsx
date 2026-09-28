@@ -80,7 +80,8 @@ function CompareCell({
 
   const match = /^(Yes|有)\s*(.*)$/i.exec(text.trim());
   if (match) {
-    const suffix = match[2].trim();
+    // Drop leading dash after the checkmark (copy uses "Yes — …" / "有 — …").
+    const suffix = match[2].replace(/^[\s—–−-]+/u, '').trim();
     return (
       <span className="inline-flex items-start gap-2">
         <Check
