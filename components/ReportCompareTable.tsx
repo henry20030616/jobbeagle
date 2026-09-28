@@ -152,7 +152,7 @@ export default function ReportCompareTable({
           <thead>
             <tr className="border-b border-slate-700">
               <th
-                className={`font-semibold text-slate-400 w-[26%] ${
+                className={`font-semibold text-slate-400 w-[30%] ${
                   large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'
                 }`}
               >
@@ -166,15 +166,15 @@ export default function ReportCompareTable({
                 </span>
               </th>
               <th
-                className={`font-semibold text-violet-300 w-[37%] ${
-                  large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'
+                className={`font-semibold text-violet-300 w-[32%] text-right ${
+                  large ? 'py-4 pl-4 pr-2 sm:pl-6 sm:pr-3' : 'py-3 pl-3 pr-2 sm:pl-4 sm:pr-2'
                 }`}
               >
                 {REPORT_COMPARE_COL.snapshot[lang]}
               </th>
               <th
-                className={`font-semibold text-emerald-300 w-[37%] ${
-                  large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'
+                className={`font-semibold text-emerald-300 w-[38%] ${
+                  large ? 'py-4 pl-2 pr-4 sm:pl-3 sm:pr-6' : 'py-3 pl-2 pr-3 sm:pl-2 sm:pr-4'
                 }`}
               >
                 {REPORT_COMPARE_COL.guide[lang]}
@@ -227,10 +227,20 @@ export default function ReportCompareTable({
                         </span>
                       </button>
                     </td>
-                    <td className={large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'}>
-                      <CompareCell cell={row.snapshot} lang={lang} large={large} />
+                    <td
+                      className={`text-right ${
+                        large ? 'py-4 pl-4 pr-2 sm:pl-6 sm:pr-3' : 'py-3 pl-3 pr-2 sm:pl-4 sm:pr-2'
+                      }`}
+                    >
+                      <span className="inline-block text-left max-w-full">
+                        <CompareCell cell={row.snapshot} lang={lang} large={large} />
+                      </span>
                     </td>
-                    <td className={large ? 'py-4 px-4 sm:px-6' : 'py-3 px-3 sm:px-4'}>
+                    <td
+                      className={
+                        large ? 'py-4 pl-2 pr-4 sm:pl-3 sm:pr-6' : 'py-3 pl-2 pr-3 sm:pl-2 sm:pr-4'
+                      }
+                    >
                       <CompareCell cell={row.guide} lang={lang} large={large} />
                     </td>
                   </tr>
