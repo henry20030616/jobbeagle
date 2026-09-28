@@ -83,14 +83,14 @@ function CompareCell({
     // Drop leading dash after the checkmark (copy uses "Yes — …" / "有 — …").
     const suffix = match[2].replace(/^[\s—–−-]+/u, '').trim();
     return (
-      <span className="inline-flex items-start gap-2">
+      <span className={`inline-flex items-center gap-2.5 min-w-0 ${body}`}>
         <Check
-          className={`${large ? 'w-5 h-5' : 'w-4 h-4'} text-emerald-400 shrink-0 mt-0.5`}
+          className="compare-check w-[1em] h-[1em] text-emerald-400 shrink-0"
           strokeWidth={2.75}
           aria-hidden
         />
         <span className="sr-only">Yes</span>
-        {suffix ? <span className={`text-slate-300 ${body}`}>{suffix}</span> : null}
+        {suffix ? <span className="text-slate-300">{suffix}</span> : null}
       </span>
     );
   }
