@@ -33,12 +33,12 @@ import { useLanguage, type AppLanguage } from '@/lib/language-context';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 
 const ANALYZE_LABEL: Record<AppLanguage, string> = {
-  en: 'Analyze',
-  'zh-TW': '開始分析',
-  'zh-CN': '开始分析',
-  es: 'Analizar',
-  hi: 'विश्लेषण',
-  ar: 'حلّل',
+  en: '立刻AI分析',
+  'zh-TW': '立刻AI分析',
+  'zh-CN': '立刻AI分析',
+  es: '立刻AI分析',
+  hi: '立刻AI分析',
+  ar: '立刻AI分析',
 };
 
 export default function SampleReportClient() {
