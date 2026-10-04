@@ -751,15 +751,6 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       ) : null}
                     </span>
                   </div>
-                  <span
-                    className={`mb-1 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${
-                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                        ? 'bg-white text-[#3d3c7c]'
-                        : 'bg-white/15 text-white'
-                    }`}
-                  >
-                    {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? t.reportSelected : t.reportChoose}
-                  </span>
                   <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                 </button>
               </div>
@@ -795,15 +786,6 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       ) : null}
                     </span>
                   </div>
-                  <span
-                    className={`mb-1 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${
-                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                        ? 'bg-white text-[#3d3c7c]'
-                        : 'bg-white/15 text-white'
-                    }`}
-                  >
-                    {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? t.reportSelected : t.reportChoose}
-                  </span>
                   <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.strategyBlurb}</p>
                 </button>
               </div>

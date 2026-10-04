@@ -31,7 +31,6 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { ArrowLeft, Check, Home, RotateCcw } from 'lucide-react';
 import { useLanguage, type AppLanguage } from '@/lib/language-context';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
-import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 
 const ANALYZE_LABEL: Record<AppLanguage, string> = {
   en: 'Analyze now with AI',
@@ -46,7 +45,6 @@ export default function SampleReportClient() {
   const searchParams = useSearchParams();
   const { language } = useLanguage();
   const chrome = getSnapshotUiCopy(language);
-  const formCopy = getHomepageFormCopy(language);
   const rawType = searchParams.get('type') || REPORT_CODES.JOB_FIT_SNAPSHOT;
   const reportType =
     normalizeReportType(rawType) ?? REPORT_CODES.JOB_FIT_SNAPSHOT;
@@ -115,12 +113,7 @@ export default function SampleReportClient() {
               >
                 {!isGuide ? <Check className="h-10 w-10" strokeWidth={3} /> : null}
               </span>
-              <span className="flex min-w-0 flex-col items-start gap-2 text-left">
-                <span>{snapshotLabel}</span>
-                <span className={`rounded-full px-4 py-1 text-3xl font-bold ${!isGuide ? 'bg-white text-[#3d3c7c]' : 'bg-white/15 text-white'}`}>
-                  {!isGuide ? formCopy.reportSelected : formCopy.reportChoose}
-                </span>
-              </span>
+              <span className="min-w-0 text-left">{snapshotLabel}</span>
             </Link>
             <Link
               href={`/samples?type=${REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}`}
@@ -135,12 +128,7 @@ export default function SampleReportClient() {
               >
                 {isGuide ? <Check className="h-10 w-10" strokeWidth={3} /> : null}
               </span>
-              <span className="flex min-w-0 flex-col items-start gap-2 text-left">
-                <span>{guideLabel}</span>
-                <span className={`rounded-full px-4 py-1 text-3xl font-bold ${isGuide ? 'bg-white text-[#3d3c7c]' : 'bg-white/15 text-white'}`}>
-                  {isGuide ? formCopy.reportSelected : formCopy.reportChoose}
-                </span>
-              </span>
+              <span className="min-w-0 text-left">{guideLabel}</span>
             </Link>
             <ReportCompareModal language={language} variant="button" className="h-full w-full min-h-0 justify-center text-center whitespace-normal" />
           </div>

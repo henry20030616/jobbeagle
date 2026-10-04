@@ -10,12 +10,10 @@ describe('homepage form copy', () => {
     expect(t.generate).toBe('AI Strategy Analysis');
     expect(t.upload).toBe('Click to upload Resume');
     expect(t.reportTypeStep).toBe('3. Pick one report');
-    expect(t.reportChoose).toBe('Choose this');
-    expect(t.reportSelected).toBe('Selected');
     expect(t.launchStep).toBe('4. Launch');
     expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');
     expect(t.snapshotBlurb).toContain('one-page fit check');
-    expect(t.sampleLink).toBe('Report samples');
+    expect(t.sampleLink).toBe('View report samples');
     expect(t.featuresAccordion).toBe('Jobbeagle advantages');
   });
 

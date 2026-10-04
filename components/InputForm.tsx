@@ -905,15 +905,6 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT} />
                       </span>
-                      <span
-                        className={`mt-2 inline-flex rounded-full px-3 py-1 text-sm sm:text-base lg:text-lg font-bold ${
-                          reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                            ? 'bg-white text-[#3d3c7c]'
-                            : 'bg-white/15 text-white'
-                        }`}
-                      >
-                        {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? t.reportSelected : t.reportChoose}
-                      </span>
                       <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                     </button>
                   </div>
@@ -934,15 +925,6 @@ const InputForm: React.FC<InputFormProps> = ({
                           <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 shrink-0 text-indigo-100" />
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE} />
-                      </span>
-                      <span
-                        className={`mt-2 inline-flex rounded-full px-3 py-1 text-sm sm:text-base lg:text-lg font-bold ${
-                          reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                            ? 'bg-white text-[#3d3c7c]'
-                            : 'bg-white/15 text-white'
-                        }`}
-                      >
-                        {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? t.reportSelected : t.reportChoose}
                       </span>
                       <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.strategyBlurb}</p>
                     </button>
