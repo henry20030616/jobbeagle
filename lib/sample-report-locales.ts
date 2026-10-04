@@ -176,6 +176,63 @@ const ZH_TW: SampleLocalePack = {
       '工程產能不足時，你如何排優先級？',
       '請說說利害關係人真正會用的儀表板經驗。',
     ],
+    competency_map: [
+      {
+        competency: 'SQL 與儀表板擁有權',
+        weight: 'core',
+        proficiency: 'demonstrated',
+        resume_evidence: '以 SQL + Looker 流程將對帳週期縮短 28%。',
+      },
+      {
+        competency: '需求與 PRD 擁有權',
+        weight: 'core',
+        proficiency: 'demonstrated',
+        resume_evidence: '主導三次平台上線的 PRD 與驗收標準。',
+      },
+      {
+        competency: 'ACH 退件與清算',
+        weight: 'core',
+        proficiency: 'adjacent',
+        resume_evidence: '銀行營運對帳經驗；無明確 ACH 或退件擁有權。',
+      },
+      {
+        competency: '跨部門協作',
+        weight: 'supporting',
+        proficiency: 'demonstrated',
+        resume_evidence: '18 個月每週與工程、風控、客服進行問題分流。',
+      },
+      {
+        competency: '支付處理商與 NACHA 合規',
+        weight: 'supporting',
+        proficiency: 'absent',
+        resume_evidence: null,
+      },
+    ],
+    market_positioning: {
+      seniority_alignment: 'at_level',
+      rationale: '六年金融科技營運經驗對上 5 年以上的資深 BA 門檻：落在區間內，但無 Staff 級範疇的證據。',
+      differentiator: '以 SQL 與 Looker（而非增加人力）將對帳週期縮短 28% 的量化成果。',
+    },
+    risk_assessment: [
+      {
+        category: 'competency',
+        severity: 'high',
+        statement: 'JD 將 ACH 退件與清算列為核心；履歷僅顯示相鄰的銀行營運經驗。',
+        basis: 'resume',
+      },
+      {
+        category: 'compensation',
+        severity: 'medium',
+        statement: '未公布薪資範圍，薪酬區間仰賴市場基準（C 級），現金底線尚未確認。',
+        basis: 'inferred',
+      },
+      {
+        category: 'seniority',
+        severity: 'low',
+        statement: '無高於資深 BA 的範疇證據，因此不支持 Staff 級的上行空間。',
+        basis: 'inferred',
+      },
+    ],
   },
   guide: {
     strategy_fit_salary: {
@@ -582,6 +639,59 @@ const ZH_TW: SampleLocalePack = {
         '過去一年營運人數如何變化？',
       ],
     },
+    leverage_analysis: {
+      candidate_leverage: 'moderate',
+      factors: [
+        {
+          factor: '量化營運成果',
+          direction: 'for_candidate',
+          evidence: '履歷列出對帳週期下降 28%、錯誤外溢下降 15%。',
+          source_url: null,
+        },
+        {
+          factor: '支付軌道經驗缺口',
+          direction: 'for_employer',
+          evidence: 'JD 將 ACH 退件列為核心；履歷為相鄰的銀行營運。',
+          source_url: null,
+        },
+        {
+          factor: '未公布薪資範圍',
+          direction: 'neutral',
+          evidence: '無公布範圍（C 級），在確認前由雇主掌握薪酬區間。',
+          source_url: null,
+        },
+        {
+          factor: '工資申報高於基準中位數',
+          direction: 'for_candidate',
+          evidence: '範例：同類 Business Analyst 申報落在基準區間的上半段。',
+          source_url: 'https://h1bdata.info',
+        },
+      ],
+      bargaining_posture: '平衡：先確認核准範圍，錨定在區間中段，以明確職責範疇換取現金上的彈性。',
+    },
+    insider_signals: [
+      {
+        source: 'h1bdata',
+        finding: '範例：同類美國支付雇主的 Business Analyst H-1B 工資申報集中在 $145K–$190K 基準區間的上半段。',
+        url: 'https://h1bdata.info',
+        date: '2026-05',
+        evidence_tier: 1,
+      },
+      {
+        source: 'sec_filing',
+        finding: '範例：同業公開支付公司在近期 10-K 風險因素中提到營運自動化投入與人力紀律。',
+        url: 'https://www.sec.gov',
+        date: '2026-03',
+        evidence_tier: 1,
+      },
+      {
+        source: 'blind',
+        finding: '範例：論壇貼文提到遠端營運分析職位對書面狀態報告的要求很高。',
+        url: 'https://www.teamblind.com',
+        date: '2026-04',
+        evidence_tier: 3,
+      },
+    ],
   },
 };
 
@@ -753,6 +863,63 @@ const ZH_CN: SampleLocalePack = {
       '请分享你改善对账或清算流程的一次经验。',
       '工程产能不足时，你如何排优先级？',
       '请说说利益相关者真正会用的仪表板经验。',
+    ],
+    competency_map: [
+      {
+        competency: 'SQL 与仪表板所有权',
+        weight: 'core',
+        proficiency: 'demonstrated',
+        resume_evidence: '以 SQL + Looker 流程将对账周期缩短 28%。',
+      },
+      {
+        competency: '需求与 PRD 所有权',
+        weight: 'core',
+        proficiency: 'demonstrated',
+        resume_evidence: '主导三次平台上线的 PRD 与验收标准。',
+      },
+      {
+        competency: 'ACH 退件与清算',
+        weight: 'core',
+        proficiency: 'adjacent',
+        resume_evidence: '银行运营对账经验；无明确 ACH 或退件所有权。',
+      },
+      {
+        competency: '跨部门协作',
+        weight: 'supporting',
+        proficiency: 'demonstrated',
+        resume_evidence: '18 个月每周与工程、风控、客服进行问题分流。',
+      },
+      {
+        competency: '支付处理商与 NACHA 合规',
+        weight: 'supporting',
+        proficiency: 'absent',
+        resume_evidence: null,
+      },
+    ],
+    market_positioning: {
+      seniority_alignment: 'at_level',
+      rationale: '六年金融科技运营经验对上 5 年以上的资深 BA 门槛：落在区间内，但无 Staff 级范围的证据。',
+      differentiator: '以 SQL 与 Looker（而非增加人力）将对账周期缩短 28% 的量化成果。',
+    },
+    risk_assessment: [
+      {
+        category: 'competency',
+        severity: 'high',
+        statement: 'JD 将 ACH 退件与清算列为核心；简历仅显示相邻的银行运营经验。',
+        basis: 'resume',
+      },
+      {
+        category: 'compensation',
+        severity: 'medium',
+        statement: '未公布薪资范围，薪酬区间依赖市场基准（C 级），现金底线尚未确认。',
+        basis: 'inferred',
+      },
+      {
+        category: 'seniority',
+        severity: 'low',
+        statement: '无高于资深 BA 的范围证据，因此不支持 Staff 级的上行空间。',
+        basis: 'inferred',
+      },
     ],
   },
   guide: {
@@ -1144,6 +1311,59 @@ const ZH_CN: SampleLocalePack = {
         '过去一年运营人数如何变化？',
       ],
     },
+    leverage_analysis: {
+      candidate_leverage: 'moderate',
+      factors: [
+        {
+          factor: '量化运营成果',
+          direction: 'for_candidate',
+          evidence: '简历列出对账周期下降 28%、错误外溢下降 15%。',
+          source_url: null,
+        },
+        {
+          factor: '支付轨道经验缺口',
+          direction: 'for_employer',
+          evidence: 'JD 将 ACH 退件列为核心；简历为相邻的银行运营。',
+          source_url: null,
+        },
+        {
+          factor: '未公布薪资范围',
+          direction: 'neutral',
+          evidence: '无公布范围（C 级），在确认前由雇主掌握薪酬区间。',
+          source_url: null,
+        },
+        {
+          factor: '工资申报高于基准中位数',
+          direction: 'for_candidate',
+          evidence: '示例：同类 Business Analyst 申报落在基准区间的上半段。',
+          source_url: 'https://h1bdata.info',
+        },
+      ],
+      bargaining_posture: '平衡：先确认核准范围，锚定在区间中段，以明确职责范围换取现金上的弹性。',
+    },
+    insider_signals: [
+      {
+        source: 'h1bdata',
+        finding: '示例：同类美国支付雇主的 Business Analyst H-1B 工资申报集中在 $145K–$190K 基准区间的上半段。',
+        url: 'https://h1bdata.info',
+        date: '2026-05',
+        evidence_tier: 1,
+      },
+      {
+        source: 'sec_filing',
+        finding: '示例：同业公开支付公司在近期 10-K 风险因素中提到运营自动化投入与人力纪律。',
+        url: 'https://www.sec.gov',
+        date: '2026-03',
+        evidence_tier: 1,
+      },
+      {
+        source: 'blind',
+        finding: '示例：论坛帖子提到远程运营分析职位对书面状态报告的要求很高。',
+        url: 'https://www.teamblind.com',
+        date: '2026-04',
+        evidence_tier: 3,
+      },
+    ],
   },
 };
 
@@ -1318,6 +1538,63 @@ const ES: SampleLocalePack = {
       'Cuéntame una vez que mejoraste un workflow de reconciliación o settlement.',
       '¿Cómo priorizas cuando la capacidad de eng es escasa?',
       'Háblame de un dashboard que los stakeholders sí usaron.',
+    ],
+    competency_map: [
+      {
+        competency: 'Propiedad de SQL y paneles',
+        weight: 'core',
+        proficiency: 'demonstrated',
+        resume_evidence: 'Redujo el ciclo de conciliación un 28% con un flujo de SQL + Looker.',
+      },
+      {
+        competency: 'Propiedad de requisitos y PRD',
+        weight: 'core',
+        proficiency: 'demonstrated',
+        resume_evidence: 'Fue responsable de PRD y criterios de aceptación en tres lanzamientos de plataforma.',
+      },
+      {
+        competency: 'Devoluciones y liquidación ACH',
+        weight: 'core',
+        proficiency: 'adjacent',
+        resume_evidence: 'Conciliación en operaciones bancarias; sin responsabilidad explícita sobre ACH o devoluciones.',
+      },
+      {
+        competency: 'Facilitación multifuncional',
+        weight: 'supporting',
+        proficiency: 'demonstrated',
+        resume_evidence: 'Triaje semanal con ingeniería, riesgo y CX durante 18 meses.',
+      },
+      {
+        competency: 'Procesadores y cumplimiento NACHA',
+        weight: 'supporting',
+        proficiency: 'absent',
+        resume_evidence: null,
+      },
+    ],
+    market_positioning: {
+      seniority_alignment: 'at_level',
+      rationale: 'Seis años en operaciones fintech frente a un mínimo de 5+ años para Senior BA: dentro del rango, sin evidencia de alcance Staff.',
+      differentiator: 'Mejora cuantificada de la conciliación (ciclo 28% más rápido) lograda con SQL y Looker, sin añadir personal.',
+    },
+    risk_assessment: [
+      {
+        category: 'competency',
+        severity: 'high',
+        statement: 'El JD trata las devoluciones y la liquidación ACH como núcleo; el CV solo muestra operaciones bancarias adyacentes.',
+        basis: 'resume',
+      },
+      {
+        category: 'compensation',
+        severity: 'medium',
+        statement: 'No hay rango publicado: la banda se apoya en un benchmark de mercado (nivel C) y el piso en efectivo no está confirmado.',
+        basis: 'inferred',
+      },
+      {
+        category: 'seniority',
+        severity: 'low',
+        statement: 'No hay evidencia de alcance superior a Senior BA, por lo que el potencial Staff no está respaldado.',
+        basis: 'inferred',
+      },
     ],
   },
   guide: {
@@ -1699,6 +1976,59 @@ const ES: SampleLocalePack = {
         '¿Cómo cambió el headcount de ops el último año?',
       ],
     },
+    leverage_analysis: {
+      candidate_leverage: 'moderate',
+      factors: [
+        {
+          factor: 'Resultados operativos cuantificados',
+          direction: 'for_candidate',
+          evidence: 'El CV muestra un ciclo de conciliación 28% menor y 15% menos errores.',
+          source_url: null,
+        },
+        {
+          factor: 'Brecha en rieles de pago',
+          direction: 'for_employer',
+          evidence: 'El JD trata las devoluciones ACH como núcleo; el CV es de operaciones bancarias adyacentes.',
+          source_url: null,
+        },
+        {
+          factor: 'Banda salarial no publicada',
+          direction: 'neutral',
+          evidence: 'Sin rango publicado (nivel C): el empleador controla la banda hasta que se confirme.',
+          source_url: null,
+        },
+        {
+          factor: 'Registros salariales sobre la mediana del benchmark',
+          direction: 'for_candidate',
+          evidence: 'Ejemplo: los registros de Business Analyst comparables se sitúan en la mitad superior de la banda.',
+          source_url: 'https://h1bdata.info',
+        },
+      ],
+      bargaining_posture: 'Equilibrada: confirmar primero el rango aprobado, anclar a mitad de banda y ceder claridad de alcance a cambio de flexibilidad en efectivo.',
+    },
+    insider_signals: [
+      {
+        source: 'h1bdata',
+        finding: 'Ejemplo: los registros salariales H-1B de Business Analyst en empleadores de pagos comparables en EE. UU. se concentran en la mitad superior del benchmark de $145K–$190K.',
+        url: 'https://h1bdata.info',
+        date: '2026-05',
+        evidence_tier: 1,
+      },
+      {
+        source: 'sec_filing',
+        finding: 'Ejemplo: pares públicos de pagos citan gasto en automatización operativa y disciplina de plantilla en factores de riesgo recientes del 10-K.',
+        url: 'https://www.sec.gov',
+        date: '2026-03',
+        evidence_tier: 1,
+      },
+      {
+        source: 'blind',
+        finding: 'Ejemplo: publicaciones en foros describen una fuerte exigencia de informes de estado escritos en roles remotos de analítica de operaciones.',
+        url: 'https://www.teamblind.com',
+        date: '2026-04',
+        evidence_tier: 3,
+      },
+    ],
   },
 };
 

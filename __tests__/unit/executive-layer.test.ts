@@ -163,8 +163,17 @@ describe('report wiring', () => {
   });
 
   it('leaves legacy reports untouched (fields stay undefined)', () => {
-    const full = normalizeFullReport(getSampleStrategyGuideReport());
+    const full = normalizeFullReport({
+      ...getSampleStrategyGuideReport(),
+      competency_map: undefined,
+      market_positioning: undefined,
+      risk_assessment: undefined,
+      leverage_analysis: undefined,
+      insider_signals: undefined,
+    });
     expect(full.competency_map).toBeUndefined();
+    expect(full.market_positioning).toBeUndefined();
+    expect(full.risk_assessment).toBeUndefined();
     expect(full.leverage_analysis).toBeUndefined();
     expect(full.insider_signals).toBeUndefined();
   });

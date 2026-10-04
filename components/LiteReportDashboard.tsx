@@ -32,6 +32,7 @@ import {
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { SampleMark } from '@/components/SampleMark';
 import PredictedLandSquircle from '@/components/PredictedLandSquircle';
+import { ExecutiveSnapshotRow } from '@/components/ExecutiveSnapshotPanels';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
@@ -486,6 +487,9 @@ export default function LiteReportDashboard({
             </div>
           </div>
         </div>
+
+        {/* Executive layer: Competency Map | Risk Assessment (absent on older reports) */}
+        <ExecutiveSnapshotRow report={report} language={lang} />
 
         {/* Score Summary | Apply decision — parallel to Strengths | Gaps */}
         <div className="border-t border-slate-700/90 px-5 py-3.5">

@@ -19,10 +19,12 @@ import {
   META,
   InsufficientDataBadge,
 } from '@/components/guide/GuideSlideChrome';
+import { InsiderSignalsTable } from '@/components/guide/GuideExecutivePanels';
 
 interface Page5Props {
   report: FullReport;
   copy: GuideUiCopy;
+  language?: string;
 }
 
 function citationsOrEmpty(report: FullReport): ReferenceCitation[] {
@@ -108,7 +110,7 @@ function EvidenceTierBadge({ tier }: { tier: 1 | 2 | 3 }) {
   );
 }
 
-export default function GuidePage5Trinity({ report, copy }: Page5Props) {
+export default function GuidePage5Trinity({ report, copy, language = 'en' }: Page5Props) {
   const citations = citationsOrEmpty(report);
   const citationCount = citations.length;
   const invalidCount = report.provenance?.invalid_url_count ?? 0;
@@ -151,12 +153,15 @@ export default function GuidePage5Trinity({ report, copy }: Page5Props) {
             </p>
             {invalidCount > 0 ? (
               <p className={`${BODY} text-amber-200/90 mt-2`}>
-                ⚠️ {invalidCount} URL(s) flagged during validation
+                {invalidCount} URL(s) flagged during validation
               </p>
             ) : null}
           </div>
         </div>
       </div>
+
+      {/* Executive layer: sourced insider data points (absent on older reports) */}
+      <InsiderSignalsTable report={report} language={language} />
 
       {/* Trinity Data Table: High-Density Citations */}
       <div className="px-5 py-5">

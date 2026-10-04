@@ -12,6 +12,9 @@ import type { FullReport, InterviewQuestionCard } from '@/types';
 import type { AppLanguage } from '@/lib/language-context';
 import type { GuideUiCopy } from '@/lib/report-ui-copy';
 import { CopyScriptButton } from '@/components/CopyScriptButton';
+import { TerminalWindow } from '@/components/TerminalWindow';
+import { LeverageAnalysisCard } from '@/components/guide/GuideExecutivePanels';
+import { getExecutiveUiCopy } from '@/lib/executive-ui-copy';
 import {
   GuideSlideShell,
   PageHeaderBar,
@@ -225,6 +228,7 @@ export default function GuidePage4Trinity({
   behavioral,
   technical,
 }: Page4Props) {
+  const executiveCopy = getExecutiveUiCopy(language);
   const offer = report.offer_strategy;
   const playbook = report.interview_playbook;
   const rubric = (playbook?.assignment_blueprint?.hidden_grading_rubric ?? []).filter(
@@ -377,12 +381,14 @@ export default function GuidePage4Trinity({
 
         {/* Right Column: Negotiation Script (Sticky) */}
         <div className="px-5 py-4 bg-slate-900/30 lg:sticky lg:top-0 lg:self-start lg:max-h-screen lg:overflow-y-auto">
+          <LeverageAnalysisCard report={report} language={language} />
           <p className={`${SECTION_TITLE} text-emerald-400 mb-3`}>
             {copy.negotiateScript || 'Negotiation Playbook'}
           </p>
           <p className={`${META} text-slate-400 mb-4`}>
             Word-for-word script you can use with HR
           </p>
+          <TerminalWindow title={executiveCopy.terminalTitle}>
           <ol className="space-y-3">
             {[
               {
@@ -421,7 +427,7 @@ export default function GuidePage4Trinity({
             ))}
           </ol>
           {offer?.timeline_leverage_templates?.stalling_for_time_email ? (
-            <div className="mt-4 rounded-lg border border-slate-700 bg-black/50 px-4 py-3 font-mono text-sm text-slate-300">
+            <div className="rounded-lg border border-slate-700 bg-black/50 px-4 py-3 font-mono text-sm text-slate-300">
               <div className="mb-1.5 flex items-center justify-between gap-2">
                 <p className="text-xs font-bold uppercase tracking-wider text-amber-300">Stalling email</p>
                 <CopyScriptButton text={offer.timeline_leverage_templates.stalling_for_time_email} />
@@ -430,7 +436,7 @@ export default function GuidePage4Trinity({
             </div>
           ) : null}
           {offer?.timeline_leverage_templates?.competing_offer_leverage_email ? (
-            <div className="mt-3 rounded-lg border border-slate-700 bg-black/50 px-4 py-3 font-mono text-sm text-slate-300">
+            <div className="rounded-lg border border-slate-700 bg-black/50 px-4 py-3 font-mono text-sm text-slate-300">
               <div className="mb-1.5 flex items-center justify-between gap-2">
                 <p className="text-xs font-bold uppercase tracking-wider text-amber-300">Competing-offer email</p>
                 <CopyScriptButton text={offer.timeline_leverage_templates.competing_offer_leverage_email} />
@@ -438,6 +444,7 @@ export default function GuidePage4Trinity({
               <p className="whitespace-pre-wrap">{offer.timeline_leverage_templates.competing_offer_leverage_email}</p>
             </div>
           ) : null}
+          </TerminalWindow>
 
           {/* Offer Range Reference */}
           {offerRange ? (

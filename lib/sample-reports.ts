@@ -182,12 +182,130 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     'How do you prioritize when eng capacity is scarce?',
     'Tell me about a dashboard stakeholders actually used.',
   ],
+  competency_map: [
+    {
+      competency: 'SQL and dashboard ownership',
+      weight: 'core',
+      proficiency: 'demonstrated',
+      resume_evidence: 'Cut reconciliation cycle time 28% with a SQL + Looker workflow.',
+    },
+    {
+      competency: 'Requirements and PRD ownership',
+      weight: 'core',
+      proficiency: 'demonstrated',
+      resume_evidence: 'Owned PRDs and acceptance criteria for three platform launches.',
+    },
+    {
+      competency: 'ACH returns and settlement',
+      weight: 'core',
+      proficiency: 'adjacent',
+      resume_evidence: 'Banking-ops reconciliation; no named ACH or returns ownership.',
+    },
+    {
+      competency: 'Cross-functional facilitation',
+      weight: 'supporting',
+      proficiency: 'demonstrated',
+      resume_evidence: 'Weekly eng, risk, and CX triage for 18 months.',
+    },
+    {
+      competency: 'Processor and NACHA compliance',
+      weight: 'supporting',
+      proficiency: 'absent',
+      resume_evidence: null,
+    },
+  ],
+  market_positioning: {
+    seniority_alignment: 'at_level',
+    rationale:
+      'Six years of fintech ops against a 5+ year Senior BA bar: inside the band, with no evidence of Staff-level scope.',
+    differentiator:
+      'Quantified reconciliation gain (28% faster cycle time) delivered with SQL and Looker rather than added headcount.',
+  },
+  risk_assessment: [
+    {
+      category: 'competency',
+      severity: 'high',
+      statement:
+        'The JD treats ACH returns and settlement as core; the resume shows only adjacent banking ops.',
+      basis: 'resume',
+    },
+    {
+      category: 'compensation',
+      severity: 'medium',
+      statement:
+        'No posted range, so the offer band rests on a market benchmark (tier C) and the cash floor is unconfirmed.',
+      basis: 'inferred',
+    },
+    {
+      category: 'seniority',
+      severity: 'low',
+      statement: 'No evidence of scope above Senior BA, so Staff-level upside is not supported.',
+      basis: 'inferred',
+    },
+  ],
   match_score: 78,
 };
 
 /** Public demo Strategy Guide — Snapshot + strategy layer. */
 const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
   ...SAMPLE_SNAPSHOT_RAW,
+  leverage_analysis: {
+    candidate_leverage: 'moderate',
+    factors: [
+      {
+        factor: 'Quantified ops outcomes',
+        direction: 'for_candidate',
+        evidence: 'Cycle time down 28% and error escapes down 15% are on the resume.',
+        source_url: null,
+      },
+      {
+        factor: 'Payments-rails gap',
+        direction: 'for_employer',
+        evidence: 'The JD treats ACH returns as core; the resume is adjacent banking ops.',
+        source_url: null,
+      },
+      {
+        factor: 'Unposted pay band',
+        direction: 'neutral',
+        evidence: 'No posted range (tier C), so the employer controls the band until it is confirmed.',
+        source_url: null,
+      },
+      {
+        factor: 'Wage filings above benchmark midpoint',
+        direction: 'for_candidate',
+        evidence: 'Sample: comparable Business Analyst filings sit in the upper half of the benchmark band.',
+        source_url: 'https://h1bdata.info',
+      },
+    ],
+    bargaining_posture:
+      'Balanced: confirm the approved range first, anchor at mid-band, and trade scope clarity for flexibility on cash.',
+  },
+  insider_signals: [
+    {
+      source: 'h1bdata',
+      finding:
+        'Sample: H-1B wage filings for Business Analyst titles at comparable US payments employers cluster in the upper half of the $145K–$190K benchmark.',
+      url: 'https://h1bdata.info',
+      date: '2026-05',
+      evidence_tier: 1,
+    },
+    {
+      source: 'sec_filing',
+      finding:
+        'Sample: public payments peers cite ops-automation spend and headcount discipline in recent 10-K risk factors.',
+      url: 'https://www.sec.gov',
+      date: '2026-03',
+      evidence_tier: 1,
+    },
+    {
+      source: 'blind',
+      finding:
+        'Sample: forum posts describe a heavy written status-pack expectation for remote ops-analytics roles.',
+      url: 'https://www.teamblind.com',
+      date: '2026-04',
+      evidence_tier: 3,
+    },
+  ],
   strategy_fit_salary: {
     score_implications:
       'At 78 you should clear most screens if ACH adjacency is framed clearly; expect a domain deep-dive in round 2.',

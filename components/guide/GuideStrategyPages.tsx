@@ -1103,8 +1103,16 @@ function Page4({
   );
 }
 
-function Page5({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
-  return <GuidePage5Trinity report={report} copy={copy} />;
+function Page5({
+  report,
+  copy,
+  language,
+}: {
+  report: FullReport;
+  copy: GuideUiCopy;
+  language: string;
+}) {
+  return <GuidePage5Trinity report={report} copy={copy} language={language} />;
 }
 
 export default function GuideStrategyPages({
@@ -1121,5 +1129,5 @@ export default function GuideStrategyPages({
   if (tab === 'hiring') return <Page2 report={report} copy={copy} />;
   if (tab === 'interview') return <Page3 report={report} copy={copy} />;
   if (tab === 'salary') return <Page4 report={report} copy={copy} language={lang} />;
-  return <Page5 report={report} copy={copy} />;
+  return <Page5 report={report} copy={copy} language={lang} />;
 }
