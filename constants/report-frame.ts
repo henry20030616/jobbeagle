@@ -36,12 +36,14 @@ export const SAMPLE_HEADER_BTN =
 export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 
 /**
- * Homepage report-type cards (step 3) — Snapshot / Guide pickers on the form.
+ * Homepage report-type cards (step 3).
+ * Fill matches the step-4 Launch button as it sits on that column
+ * (indigo-600 at 35% → about #3d3c7c). Selected card keeps the same fill.
  */
 export const REPORT_TYPE_CARD_IDLE =
-  'border-solid border-indigo-400/50 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-500';
+  'border-solid border-[#5a598f] bg-[#3d3c7c] text-white hover:bg-[#4a498e]';
 export const REPORT_TYPE_CARD_ACTIVE =
-  'border-solid border-indigo-200/80 bg-indigo-600 text-white shadow-[0_0_42px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80';
+  'border-solid border-[#c7c6e8] bg-[#3d3c7c] text-white';
 
 /**
  * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.
@@ -50,11 +52,11 @@ export const REPORT_TYPE_CARD_ACTIVE =
 export const HOMEPAGE_STEP_COL_SURFACE =
   'rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl';
 
-/** /samples Fit Snapshot + Interview Guide — same indigo fill as the Launch “AI Strategy Analysis” button */
+/** /samples Fit Snapshot + Interview Guide — same fill as the step-4 Launch button */
 export const SAMPLE_REPORT_TAB_IDLE =
-  'rounded-2xl border border-indigo-400/50 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-500';
+  'rounded-2xl border border-[#5a598f] bg-[#3d3c7c] text-white hover:bg-[#4a498e]';
 export const SAMPLE_REPORT_TAB_ACTIVE =
-  'rounded-2xl border border-indigo-200/80 bg-indigo-600 text-white shadow-[0_0_42px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80';
+  'rounded-2xl border border-[#c7c6e8] bg-[#3d3c7c] text-white';
 
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =
