@@ -293,6 +293,80 @@ export interface CandidateCase {
   top_facts: string[];
 }
 
+// ─── Executive-assessment layer (additive, all optional) ───
+
+/** Where a claim comes from. Forces the model to separate fact from inference. */
+export type AssessmentBasis = 'resume' | 'jd' | 'inferred';
+
+export type CompetencyWeight = 'core' | 'supporting';
+export type CompetencyProficiency = 'demonstrated' | 'adjacent' | 'absent';
+
+/** One JD competency mapped against resume evidence. Describes evidence; never coaches the resume. */
+export interface CompetencyMapItem {
+  competency: string;
+  weight: CompetencyWeight;
+  proficiency: CompetencyProficiency;
+  /** Verbatim-anchored resume fact. Null when proficiency is `absent`. Never invented. */
+  resume_evidence: string | null;
+}
+
+export type SeniorityAlignment = 'under_level' | 'at_level' | 'over_level' | 'unclear';
+
+/** Closed-book read of how the candidate sits against the seat's level. */
+export interface MarketPositioning {
+  seniority_alignment: SeniorityAlignment;
+  rationale: string;
+  /** What sets this candidate apart for this seat. Null when nothing is evidenced. */
+  differentiator: string | null;
+}
+
+export type RiskCategory =
+  | 'competency'
+  | 'seniority'
+  | 'compensation'
+  | 'eligibility'
+  | 'role_stability';
+export type RiskSeverity = 'low' | 'medium' | 'high';
+
+export interface RiskAssessmentItem {
+  category: RiskCategory;
+  severity: RiskSeverity;
+  statement: string;
+  basis: AssessmentBasis;
+  /** Guide only: citable URL for external claims. Null/absent for Snapshot. */
+  source_url?: string | null;
+}
+
+export type LeverageDirection = 'for_candidate' | 'for_employer' | 'neutral';
+export type LeverageStrength = 'strong' | 'moderate' | 'weak' | 'unknown';
+
+export interface LeverageFactor {
+  factor: string;
+  direction: LeverageDirection;
+  evidence: string;
+  /** Null when no citable URL — never invent. */
+  source_url: string | null;
+}
+
+/** Guide-only: who holds the bargaining power and why. */
+export interface LeverageAnalysis {
+  candidate_leverage: LeverageStrength;
+  factors: LeverageFactor[];
+  bargaining_posture: string;
+}
+
+export type InsiderSignalSource = 'h1bdata' | 'sec_filing' | 'blind' | 'levels_fyi' | 'other';
+
+/** Guide-only: a single sourced insider data point (wage filings, SEC, forums). */
+export interface InsiderSignal {
+  source: InsiderSignalSource;
+  finding: string;
+  /** Empty string when no direct link — never invent. */
+  url: string;
+  date: string;
+  evidence_tier: ReferenceEvidenceTier;
+}
+
 /** Snapshot Page 1 — ATS rejection hook (surgical UI addition). */
 export interface AtsWarning {
   /** Estimated ATS pass rate 0–100; null when unknown */
@@ -579,6 +653,10 @@ export interface LiteReport {
   interview_starters: string[];
   /** ATS rejection warning hook — Page 1 Critical Gaps */
   ats_warning?: AtsWarning | null;
+  /** Executive layer — closed-book, derived from CV + JD only (max ~6 items) */
+  competency_map?: CompetencyMapItem[];
+  market_positioning?: MarketPositioning | null;
+  risk_assessment?: RiskAssessmentItem[];
 
   /** @deprecated use fit_score.score */
   match_score: number;
@@ -618,6 +696,9 @@ export interface StrategyIntelFields {
   company_truth?: CompanyTruth;
   /** Guide Page 5 — structured citations (falls back to provenance) */
   reference_citations?: ReferenceCitation[];
+  /** Guide executive layer — open-book, every external claim needs a URL or null */
+  leverage_analysis?: LeverageAnalysis | null;
+  insider_signals?: InsiderSignal[];
 
   /** @deprecated mapped into hiring_context / validate_before_join */
   online_intel_warning?: string;
