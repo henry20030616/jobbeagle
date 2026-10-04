@@ -44,6 +44,7 @@ import { fitBandFromScore, resolveApplyDecision } from '@/lib/report-rules';
 import { enrichTargetGapWithCareerContext } from '@/lib/career-context';
 import { buildProvenanceRecord, scrubInsightUrls } from '@/lib/provenance';
 import { scoreSummaryPoints } from '@/lib/score-summary';
+import { calibrateLiteReport, rescaleBreakdownWeights } from '@/lib/report-calibration';
 import {
   normalizeCompetencyMap,
   normalizeInsiderSignals,
@@ -196,6 +197,7 @@ function normalizeFitScore(raw: Partial<LiteReport>): FitScoreBlock {
           note: asString(b.note),
         }))
       : defaultBreakdown(score);
+  const calibratedBreakdown = rescaleBreakdownWeights(breakdown);
 
   return {
     score,
@@ -207,7 +209,7 @@ function normalizeFitScore(raw: Partial<LiteReport>): FitScoreBlock {
         ? sharp_verdict_points.join(' ')
         : sharp_verdict,
     sharp_verdict_points,
-    breakdown,
+    breakdown: calibratedBreakdown,
   };
 }
 
@@ -435,7 +437,7 @@ export function normalizeLiteReport(
     })),
   };
 
-  return report;
+  return calibrateLiteReport(report);
 }
 
 export function isEnrichedLiteReport(raw: unknown): boolean {

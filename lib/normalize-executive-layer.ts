@@ -61,8 +61,11 @@ function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : '';
 }
 
+/** Enum values arrive as free-text (the Gemini schema is intentionally loose); match case-insensitively. */
 function pick<T extends string>(v: unknown, allowed: readonly T[], fallback: T): T {
-  return typeof v === 'string' && (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
+  if (typeof v !== 'string') return fallback;
+  const key = v.trim().toLowerCase();
+  return allowed.find((a) => a === key) ?? fallback;
 }
 
 function urlOrNull(v: unknown): string | null {
@@ -112,9 +115,10 @@ export function normalizeRiskAssessment(raw: unknown): RiskAssessmentItem[] | un
     if (!isRecord(entry)) continue;
     const statement = str(entry.statement);
     if (!statement) continue;
-    if (!(RISK_CATEGORIES as readonly string[]).includes(String(entry.category))) continue;
+    const category = pick<RiskCategory | ''>(entry.category, [...RISK_CATEGORIES, ''], '');
+    if (!category) continue;
     items.push({
-      category: entry.category as RiskCategory,
+      category,
       severity: pick(entry.severity, SEVERITIES, 'medium'),
       statement,
       basis: pick(entry.basis, BASES, 'inferred'),
@@ -169,7 +173,8 @@ function inferSignalSource(url: string, declared: InsiderSignalSource): InsiderS
 }
 
 function toEvidenceTier(v: unknown): ReferenceEvidenceTier {
-  return v === 1 || v === 2 || v === 3 ? v : 3;
+  const n = typeof v === 'string' ? Number(v.trim()) : v;
+  return n === 1 || n === 2 || n === 3 ? n : 3;
 }
 
 export function normalizeInsiderSignals(raw: unknown): InsiderSignal[] | undefined {
@@ -192,4 +197,39 @@ export function normalizeInsiderSignals(raw: unknown): InsiderSignal[] | undefin
     if (items.length >= MAX_INSIDER_SIGNALS) break;
   }
   return items.length > 0 ? items : undefined;
+}
+
+const EXECUTIVE_KEYS = [
+  'competency_map',
+  'market_positioning',
+  'risk_assessment',
+  'leverage_analysis',
+  'insider_signals',
+] as const;
+
+/**
+ * The Guide carries the executive layer as one JSON string
+ * (`executive_layer_json`). Unpack it onto the report; malformed JSON is
+ * ignored so a bad carrier can never fail the whole report.
+ */
+export function mergeExecutiveLayerJson<T extends object>(
+  raw: T,
+): T & Partial<Record<(typeof EXECUTIVE_KEYS)[number], unknown>> {
+  const carrier = (raw as { executive_layer_json?: unknown }).executive_layer_json;
+  if (typeof carrier !== 'string' || !carrier.trim()) return raw;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(carrier.replace(/^```(?:json)?\s*|\s*```$/g, ''));
+  } catch {
+    return raw;
+  }
+  if (!isRecord(parsed)) return raw;
+  const merged: Record<string, unknown> = Object.fromEntries(Object.entries(raw));
+  delete merged.executive_layer_json;
+  for (const key of EXECUTIVE_KEYS) {
+    // Top-level values (if the model also emitted them) win over the carrier.
+    if (merged[key] === undefined && parsed[key] !== undefined) merged[key] = parsed[key];
+  }
+  // Safe: only the optional executive keys were added to a copy of the caller's object.
+  return merged as T;
 }

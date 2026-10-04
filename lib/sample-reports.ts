@@ -36,18 +36,23 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
         status: 'Risk',
         evidence: 'Banking ops adjacent; ACH not explicit',
       },
+      {
+        requirement: 'Processor / vendor management',
+        status: 'Risk',
+        evidence: 'No named processor or vendor ownership on resume',
+      },
     ],
   },
   fit_score: {
     score: 78,
-    band: 'Strong',
+    band: 'Viable',
     evidence_coverage: 'High',
     sharp_verdict:
-      'Strong analytical and stakeholder story for this Senior BA seat. Level and tenure line up for senior ownership. Main gap is ACH/settlement depth versus adjacent banking ops.',
+      'Core fit: SQL/Looker ownership, a 28% reconciliation cycle-time cut, and cross-functional triage map to the JD’s core scope. Level/tenure: six years of fintech ops against a 5+ year requirement; no evidence of scope above Senior BA. Main gap: ACH returns and settlement ownership is a core JD requirement; the resume shows adjacent banking ops only.',
     sharp_verdict_points: [
-      'Strong BA fit: SQL/Looker ownership, quantified ops wins, and cross-functional facilitation map to this JD’s core scope.',
-      'Level/tenure align: six years of fintech ops is a natural step into senior ownership, not a stretch title.',
-      'Main gap: payments ACH/settlement depth; resume is adjacent banking ops, so screeners may probe returns and rails fluency.',
+      'Core fit: SQL/Looker ownership, a 28% reconciliation cycle-time cut, and cross-functional triage map to the JD’s core scope.',
+      'Level/tenure: six years of fintech ops against a 5+ year requirement; no evidence of scope above Senior BA.',
+      'Main gap: ACH returns and settlement ownership is a core JD requirement; the resume shows adjacent banking ops only.',
     ],
     breakdown: [
       {
@@ -160,7 +165,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
   apply_decision: {
     label: 'Apply after fixes',
     reason:
-      'You clear the senior BA bar on requirements ownership, quantified ops impact, and stakeholder facilitation, so this seat is worth pursuing. The main competitiveness risk is thin ACH/payments-rails proof versus a JD that treats payment operations depth as core. Apply after you confirm how hard that domain requirement is — otherwise screeners may park you below stronger payments-native peers.',
+      'Six years of fintech ops and quantified reconciliation results clear the Senior BA bar on requirements ownership. The JD treats ACH returns and settlement as core, and the resume shows adjacent banking ops only. The label reflects an unconfirmed core requirement, not a weak profile.',
     next_best_action:
       'Clarify with the recruiter whether ACH/returns ownership is required or preferred before investing a full application cycle.',
   },
@@ -308,7 +313,7 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
   ],
   strategy_fit_salary: {
     score_implications:
-      'At 78 you should clear most screens if ACH adjacency is framed clearly; expect a domain deep-dive in round 2.',
+      'At 78 the profile clears most screens. Expect a domain deep-dive on ACH returns in round 2, because that core requirement is adjacent on the resume, not evidenced.',
     offer_implications:
       'Evidence tier C — use discovery before anchoring. Target mid-band once payments ownership is credible.',
     validate_with_recruiter: [

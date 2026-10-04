@@ -32,18 +32,23 @@ const ZH_TW: SampleLocalePack = {
           status: 'Risk',
           evidence: '偏銀行營運相鄰經驗；ACH 未明示',
         },
+        {
+          requirement: '支付處理商／供應商管理',
+          status: 'Risk',
+          evidence: '履歷未明示處理商或供應商擁有權',
+        },
       ],
     },
     fit_score: {
       score: 78,
-      band: 'Strong',
+      band: 'Viable',
       evidence_coverage: 'High',
       sharp_verdict:
-        '分析與跨部門協作故事對此 Senior BA 職缺很強。職級與年資對齊高階擁有權。主要缺口是 ACH／清算深度相對銀行營運相鄰經驗。',
+        '核心適配：SQL／Looker 擁有權、對帳週期縮短 28%、跨職能分流，對齊此 JD 核心範疇。 職級／年資：六年金融科技營運經驗對上 5 年以上要求；無高於 Senior BA 範疇的證據。 主要缺口：ACH 退件與清算擁有權是 JD 核心要求；履歷僅顯示相鄰的銀行營運經驗。',
       sharp_verdict_points: [
-        '核心適配：SQL／Looker 擁有權、可量化營運成果、跨職能協調，對齊此 JD 核心範疇。',
-        '職級／年資對齊：六年金融科技營運經驗，是進入高階擁有權的自然一步，而非硬衝職稱。',
-        '主要缺口：支付 ACH／清算深度；履歷偏銀行營運相鄰，篩選者可能深挖退票與支付軌道熟悉度。',
+        '核心適配：SQL／Looker 擁有權、對帳週期縮短 28%、跨職能分流，對齊此 JD 核心範疇。',
+        '職級／年資：六年金融科技營運經驗對上 5 年以上要求；無高於 Senior BA 範疇的證據。',
+        '主要缺口：ACH 退件與清算擁有權是 JD 核心要求；履歷僅顯示相鄰的銀行營運經驗。',
       ],
       breakdown: [
         {
@@ -155,7 +160,7 @@ const ZH_TW: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        '你在需求擁有權、可量化營運影響力與利害關係人協調上已過 Senior BA 門檻，此職缺值得推進。主要競爭風險是 ACH／支付軌道證據偏薄，而 JD 把支付營運深度當核心。先確認該領域要求有多硬再投——否則篩選者可能把你排在支付原生候選人後面。',
+        '六年金融科技營運經驗與可量化的對帳成果，在需求擁有權上已過 Senior BA 門檻。JD 將 ACH 退件與清算列為核心，而履歷僅顯示相鄰的銀行營運經驗。此標籤反映核心要求尚未確認，而非履歷薄弱。',
       next_best_action: '先向招募確認 ACH／退票擁有權是必備還是加分，再投入完整投遞週期。',
     },
     role_read: {
@@ -237,7 +242,7 @@ const ZH_TW: SampleLocalePack = {
   guide: {
     strategy_fit_salary: {
       score_implications:
-        '78 分若清楚表述 ACH 相鄰經驗，多半能過多數篩選；預期第二輪會有領域深挖。',
+        '78 分可通過多數篩選；第二輪預期會有 ACH 退件的領域深挖，因為該核心要求在履歷上只是相鄰經驗，尚無證據。',
       offer_implications: '證據等級 C——先探索再錨定。支付擁有權可信後再瞄準中帶。',
       validate_with_recruiter: [
         'ACH／退票經驗是必備還是加分？',
@@ -720,18 +725,23 @@ const ZH_CN: SampleLocalePack = {
           status: 'Risk',
           evidence: '偏银行运营相邻经验；ACH 未明示',
         },
+        {
+          requirement: '支付处理商／供应商管理',
+          status: 'Risk',
+          evidence: '简历未明示处理商或供应商所有权',
+        },
       ],
     },
     fit_score: {
       score: 78,
-      band: 'Strong',
+      band: 'Viable',
       evidence_coverage: 'High',
       sharp_verdict:
-        '分析与跨部门协作故事对此 Senior BA 职位很强。职级与年资对齐高阶所有权。主要缺口是 ACH／清算深度相对银行运营相邻经验。',
+        '核心适配：SQL／Looker 所有权、对账周期缩短 28%、跨职能分流，对齐此 JD 核心范围。 职级／年资：六年金融科技运营经验对上 5 年以上要求；无高于 Senior BA 范围的证据。 主要缺口：ACH 退件与清算所有权是 JD 核心要求；简历仅显示相邻的银行运营经验。',
       sharp_verdict_points: [
-        '核心适配：SQL／Looker 所有权、可量化运营成果、跨职能协调，对齐此 JD 核心范畴。',
-        '职级／年资对齐：六年金融科技运营经验，是进入高阶所有权的自然一步，而非硬冲职称。',
-        '主要缺口：支付 ACH／清算深度；简历偏银行运营相邻，筛选者可能深挖退票与支付轨道熟悉度。',
+        '核心适配：SQL／Looker 所有权、对账周期缩短 28%、跨职能分流，对齐此 JD 核心范围。',
+        '职级／年资：六年金融科技运营经验对上 5 年以上要求；无高于 Senior BA 范围的证据。',
+        '主要缺口：ACH 退件与清算所有权是 JD 核心要求；简历仅显示相邻的银行运营经验。',
       ],
       breakdown: [
         {
@@ -843,7 +853,7 @@ const ZH_CN: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        '你在需求所有权、可量化运营影响力与利益相关者协调上已过 Senior BA 门槛，此职位值得推进。主要竞争风险是 ACH／支付轨道证据偏薄，而 JD 把支付运营深度当核心。先确认该领域要求有多硬再投——否则筛选者可能把你排在支付原生候选人后面。',
+        '六年金融科技运营经验与可量化的对账成果，在需求所有权上已过 Senior BA 门槛。JD 将 ACH 退件与清算列为核心，而简历仅显示相邻的银行运营经验。此标签反映核心要求尚未确认，而非简历薄弱。',
       next_best_action: '先向招聘确认 ACH／退票所有权是必备还是加分，再投入完整投递周期。',
     },
     role_read: {
@@ -925,7 +935,7 @@ const ZH_CN: SampleLocalePack = {
   guide: {
     strategy_fit_salary: {
       score_implications:
-        '78 分若清楚表述 ACH 相邻经验，多半能过多数筛选；预期第二轮会有领域深挖。',
+        '78 分可通过多数筛选；第二轮预期会有 ACH 退件的领域深挖，因为该核心要求在简历上只是相邻经验，尚无证据。',
       offer_implications: '证据等级 C——先探索再锚定。支付所有权可信后再瞄准中带。',
       validate_with_recruiter: [
         'ACH／退票经验是必备还是加分？',
@@ -1393,18 +1403,23 @@ const ES: SampleLocalePack = {
           status: 'Risk',
           evidence: 'Ops bancarias adyacentes; ACH no explícito',
         },
+        {
+          requirement: 'Gestión de procesadores / proveedores',
+          status: 'Risk',
+          evidence: 'El CV no indica responsabilidad sobre procesadores ni proveedores',
+        },
       ],
     },
     fit_score: {
       score: 78,
-      band: 'Strong',
+      band: 'Viable',
       evidence_coverage: 'High',
       sharp_verdict:
-        'Historia analítica y de stakeholders fuerte para este Senior BA. Nivel y tenure alinean con ownership sénior. Brecha principal: profundidad ACH/settlement vs ops bancarias adyacentes.',
+        'Encaje central: propiedad de SQL/Looker, reducción del 28% en el ciclo de conciliación y triaje multifuncional encajan con el alcance principal del JD. Nivel/antigüedad: seis años en operaciones fintech frente a un requisito de 5+; sin evidencia de alcance superior a Senior BA. Brecha principal: la responsabilidad sobre devoluciones y liquidación ACH es un requisito central del JD; el CV solo muestra operaciones bancarias adyacentes.',
       sharp_verdict_points: [
-        'Encaje BA fuerte: ownership SQL/Looker, wins cuantificados y facilitación cross-funcional mapean al alcance del JD.',
-        'Nivel/tenure alinean: seis años de ops fintech son un paso natural a ownership sénior.',
-        'Brecha principal: profundidad ACH/settlement; el CV es ops bancarias adyacentes, así que pedirán fluidez en returns/rails.',
+        'Encaje central: propiedad de SQL/Looker, reducción del 28% en el ciclo de conciliación y triaje multifuncional encajan con el alcance principal del JD.',
+        'Nivel/antigüedad: seis años en operaciones fintech frente a un requisito de 5+; sin evidencia de alcance superior a Senior BA.',
+        'Brecha principal: la responsabilidad sobre devoluciones y liquidación ACH es un requisito central del JD; el CV solo muestra operaciones bancarias adyacentes.',
       ],
       breakdown: [
         {
@@ -1517,7 +1532,7 @@ const ES: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        'Superas el listón Senior BA en ownership de requisitos, impacto de ops cuantificado y facilitación de stakeholders, así que vale la pena. El riesgo principal es prueba fina de ACH/rails frente a un JD que trata profundidad de pagos como core. Postula tras confirmar qué tan duro es ese requisito — o te dejarán detrás de peers payments-native.',
+        'Seis años en operaciones fintech y resultados de conciliación cuantificados superan el listón de Senior BA en propiedad de requisitos. El JD trata las devoluciones y la liquidación ACH como núcleo, y el CV solo muestra operaciones bancarias adyacentes. La etiqueta refleja un requisito central sin confirmar, no un perfil débil.',
       next_best_action:
         'Aclara con el reclutador si ownership ACH/returns es required o preferred antes de invertir un ciclo completo.',
     },
@@ -1600,7 +1615,7 @@ const ES: SampleLocalePack = {
   guide: {
     strategy_fit_salary: {
       score_implications:
-        'Con 78 deberías pasar la mayoría de screens si enmarcas bien la adyacencia ACH; espera deep-dive de dominio en ronda 2.',
+        'Con 78 el perfil supera la mayoría de filtros. Espere un análisis de dominio sobre devoluciones ACH en la segunda ronda, porque ese requisito central es adyacente en el CV, no está evidenciado.',
       offer_implications:
         'Evidencia tier C — discovery antes de anclar. Apunta mid-band cuando ownership de pagos sea creíble.',
       validate_with_recruiter: [
@@ -2038,14 +2053,14 @@ const HI: SampleLocalePack = {
     ...ES.snapshot,
     fit_score: {
       score: 78,
-      band: 'Strong',
+      band: 'Viable',
       evidence_coverage: 'High',
       sharp_verdict:
-        'इस Senior BA सीट के लिए मजबूत एनालिटिकल और स्टेकहोल्डर कहानी। लेवल/tenure सीनियर ownership से मेल खाते हैं। मुख्य गैप: ACH/settlement गहराई बनाम आसन्न बैंकिंग ops।',
+        'मुख्य फिट: SQL/Looker ownership, reconciliation cycle time में 28% कटौती और क्रॉस-फंक्शनल triage JD के core scope से मेल खाते हैं। लेवल/tenure: 5+ साल की आवश्यकता के सामने छह साल fintech ops; Senior BA से ऊपर के स्कोप का सबूत नहीं। मुख्य गैप: ACH returns और settlement ownership JD की core आवश्यकता है; रिज़्यूमे में केवल आसन्न बैंकिंग ops दिखती है।',
       sharp_verdict_points: [
-        'मज़बूत BA फिट: SQL/Looker ownership, मापित ops wins, और क्रॉस-फंक्शनल facilitation इस JD के core से मैप होते हैं।',
-        'लेवल/tenure अलाइन: छह साल fintech ops सीनियर ownership की ओर स्वाभाविक कदम है।',
-        'मुख्य गैप: payments ACH/settlement गहराई; रिज़्यूमे आसन्न बैंकिंग ops है, इसलिए screeners returns/rails पूछेंगे।',
+        'मुख्य फिट: SQL/Looker ownership, reconciliation cycle time में 28% कटौती और क्रॉस-फंक्शनल triage JD के core scope से मेल खाते हैं।',
+        'लेवल/tenure: 5+ साल की आवश्यकता के सामने छह साल fintech ops; Senior BA से ऊपर के स्कोप का सबूत नहीं।',
+        'मुख्य गैप: ACH returns और settlement ownership JD की core आवश्यकता है; रिज़्यूमे में केवल आसन्न बैंकिंग ops दिखती है।',
       ],
       breakdown: ES.snapshot.fit_score!.breakdown!.map((b) => ({
         ...b,
@@ -2126,7 +2141,7 @@ const HI: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        'आप requirements ownership, मापित ops प्रभाव और stakeholder facilitation पर Senior BA बार पार करते हैं — यह सीट worth pursuing है। मुख्य जोखिम पतली ACH/payments-rails proof है जबकि JD payment ops गहराई को core मानता है। डोमेन आवश्यकता कितनी सख़्त है पुष्टि करके apply करें।',
+        'छह साल का fintech ops अनुभव और मापित reconciliation नतीजे requirements ownership पर Senior BA बार पार करते हैं। JD ACH returns और settlement को core मानता है, जबकि रिज़्यूमे में केवल आसन्न बैंकिंग ops दिखती है। यह लेबल अपुष्ट core आवश्यकता दर्शाता है, कमज़ोर प्रोफ़ाइल नहीं।',
       next_best_action:
         'पूरा आवेदन चक्र लगाने से पहले रिक्रूटर से पूछें ACH/returns ownership required है या preferred।',
     },
@@ -2193,14 +2208,14 @@ const AR: SampleLocalePack = {
     ...ES.snapshot,
     fit_score: {
       score: 78,
-      band: 'Strong',
+      band: 'Viable',
       evidence_coverage: 'High',
       sharp_verdict:
-        'قصة تحليلية وتواصل أصحاب مصلحة قوية لمقعد Senior BA هذا. المستوى والخبرة يتوافقان مع ملكية أقدم. الفجوة الرئيسية: عمق ACH/التسوية مقابل عمليات مصرفية مجاورة.',
+        'الملاءمة الأساسية: ملكية SQL/Looker وخفض دورة المطابقة بنسبة 28% والفرز متعدد الوظائف تطابق نطاق الـ JD الأساسي. المستوى/الخبرة: ست سنوات في عمليات fintech مقابل شرط 5+ سنوات؛ لا دليل على نطاق يفوق Senior BA. الفجوة الرئيسية: ملكية مرتجعات ACH والتسوية شرط أساسي في الـ JD؛ السيرة تُظهر عمليات مصرفية مجاورة فقط.',
       sharp_verdict_points: [
-        'ملاءمة BA قوية: ملكية SQL/Looker وإنجازات تشغيلية مُقاسة وتسهيل متعدد الوظائف تطابق نطاق الـ JD.',
-        'المستوى/الخبرة متوافقان: ست سنوات ops fintech خطوة طبيعية نحو ملكية أقدم.',
-        'الفجوة الرئيسية: عمق ACH/التسوية؛ السيرة مجاورة لعمليات مصرفية، لذا سيُسأل عن returns والمسارات.',
+        'الملاءمة الأساسية: ملكية SQL/Looker وخفض دورة المطابقة بنسبة 28% والفرز متعدد الوظائف تطابق نطاق الـ JD الأساسي.',
+        'المستوى/الخبرة: ست سنوات في عمليات fintech مقابل شرط 5+ سنوات؛ لا دليل على نطاق يفوق Senior BA.',
+        'الفجوة الرئيسية: ملكية مرتجعات ACH والتسوية شرط أساسي في الـ JD؛ السيرة تُظهر عمليات مصرفية مجاورة فقط.',
       ],
       breakdown: ES.snapshot.fit_score!.breakdown!.map((b) => ({
         ...b,
@@ -2281,7 +2296,7 @@ const AR: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        'تجتاز عتبة Senior BA في ملكية المتطلبات والأثر التشغيلي المُقاس وتسهيل أصحاب المصلحة — المقعد يستحق المتابعة. الخطر الرئيسي إثبات ACH/مسارات ضعيف بينما الـ JD يعتبر عمق عمليات الدفع أساسيًا. قدّم بعد تأكيد مدى صرامة متطلب المجال.',
+        'ست سنوات في عمليات fintech ونتائج مطابقة مُقاسة تجتاز عتبة Senior BA في ملكية المتطلبات. يعتبر الـ JD مرتجعات ACH والتسوية أساسيين، بينما تُظهر السيرة عمليات مصرفية مجاورة فقط. التسمية تعكس شرطًا أساسيًا غير مؤكد وليس ملفًا ضعيفًا.',
       next_best_action:
         'وضّح مع المسؤول إن كانت ملكية ACH/returns مطلوبة أم مفضلة قبل استثمار دورة تقديم كاملة.',
     },

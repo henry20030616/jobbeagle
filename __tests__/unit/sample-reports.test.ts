@@ -4,8 +4,21 @@ import {
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
 import { isFullReport, isLiteReport } from '@/lib/normalize-lite-report';
+import { fitBandFromScore } from '@/lib/report-rules';
 
 describe('sample reports', () => {
+  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+    'keeps band consistent with score and avoids praise wording (%s)',
+    (lang) => {
+      const report = getSampleSnapshotReport(lang);
+      expect(report.fit_score.band).toBe(fitBandFromScore(report.fit_score.score));
+      expect(report.apply_decision.reason).not.toMatch(/^Strong\b|\bnatural step\b/i);
+      expect(report.fit_score.sharp_verdict).not.toMatch(/\bStrong (BA|analytical)\b/);
+      const hardFilterItems = report.hard_filter?.items ?? [];
+      expect(hardFilterItems.length).toBeGreaterThanOrEqual(4);
+    },
+  );
+
   it('builds a valid Snapshot sample', () => {
     const report = getSampleSnapshotReport('en');
     expect(isLiteReport(report)).toBe(true);
@@ -73,7 +86,7 @@ describe('sample reports', () => {
     const report = getSampleSnapshotReport('zh-TW');
     expect(report.proof_map.strengths[0]?.point).toMatch(/可量化/);
     expect(report.ats_warning?.summary).toMatch(/履歷|關鍵字/);
-    expect(report.apply_decision.reason).toMatch(/職缺|投遞|補強/);
+    expect(report.apply_decision.reason).toMatch(/核心要求|JD/);
     // No leftover English ATS summary from the EN base
     expect(report.ats_warning?.summary).not.toMatch(/Resume is light/);
   });

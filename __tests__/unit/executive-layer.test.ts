@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  mergeExecutiveLayerJson,
   normalizeCompetencyMap,
   normalizeInsiderSignals,
   normalizeLeverageAnalysis,
@@ -176,5 +177,39 @@ describe('report wiring', () => {
     expect(full.risk_assessment).toBeUndefined();
     expect(full.leverage_analysis).toBeUndefined();
     expect(full.insider_signals).toBeUndefined();
+  });
+});
+
+describe('mergeExecutiveLayerJson', () => {
+  it('unpacks the carrier string and drops it from the report', () => {
+    const merged = mergeExecutiveLayerJson({
+      job_title: 'x',
+      executive_layer_json: JSON.stringify({
+        competency_map: [{ competency: 'SQL', weight: 'core', proficiency: 'adjacent', resume_evidence: 'e' }],
+        leverage_analysis: { candidate_leverage: 'weak', factors: [], bargaining_posture: 'Ask first.' },
+      }),
+    });
+    expect('executive_layer_json' in merged).toBe(false);
+    expect(Array.isArray(merged.competency_map)).toBe(true);
+    expect(normalizeLeverageAnalysis(merged.leverage_analysis)?.candidate_leverage).toBe('weak');
+  });
+
+  it('tolerates fenced JSON, malformed JSON, and missing carriers', () => {
+    const fenced = mergeExecutiveLayerJson({
+      executive_layer_json: '```json\n{"insider_signals":[{"source":"blind","finding":"f","url":"","date":"","evidence_tier":"1"}]}\n```',
+    });
+    expect(normalizeInsiderSignals(fenced.insider_signals)?.[0].evidence_tier).toBe(3);
+    const bad = { executive_layer_json: '{not json' };
+    expect(mergeExecutiveLayerJson(bad)).toBe(bad);
+    const none = { job_title: 'x' };
+    expect(mergeExecutiveLayerJson(none)).toBe(none);
+  });
+
+  it('matches enum text case-insensitively', () => {
+    expect(
+      normalizeRiskAssessment([
+        { category: ' Competency ', severity: 'HIGH', statement: 's', basis: 'JD' },
+      ])?.[0],
+    ).toMatchObject({ category: 'competency', severity: 'high', basis: 'jd' });
   });
 });
