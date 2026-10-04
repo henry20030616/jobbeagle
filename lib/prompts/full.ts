@@ -36,6 +36,12 @@ When invoking Google Search Tool, you MUST use these site-specific operators:
 4. **General News / Company Developments:**
    - FORCE: \`site:sec.gov\` OR \`site:reuters.com\` OR \`site:techcrunch.com\`
 
+5. **Insider Intelligence (feeds \`insider_signals\` + \`leverage_analysis\`):**
+   - H-1B / LCA wage filings (what the employer actually pays this title): \`site:h1bdata.info\` — e.g. "Acme Corp Data Analyst site:h1bdata.info"
+   - SEC filings (headcount trend, restructuring, risk factors, segment growth): \`site:sec.gov\` — 10-K / 10-Q / 8-K
+   - Employee-side signals (comp, on-call load, reorg chatter): \`site:teamblind.com\`
+   - Run these ONLY for the named employer. Private company with no filings → say so in \`hiring_context.limitations\`; do not substitute a different company.
+
 DO NOT use generic searches without site operators when salary/culture/layoffs are the target.
 
 ╔═══════════════════════════════════════════════════════════════════════════╗
@@ -234,6 +240,9 @@ GUIDE-ONLY RULES (this model may use Search):
    - layoff_legal_flags[]: Use \`site:layoffs.fyi\` to check verified layoff history. Layoff.fyi / litigation / controversy. If none: EMPTY array (UI shows the localized "no public layoff/legal flags" phrase) and fill interviewer_strategy_questions with 2–3 company strategy questions for the interviewer. NEVER invent layoffs.
 9) interview_playbook Page 4 depth: **STRICT 4-QUESTION TRINITY RULE** — Generate EXACTLY 4 interview questions total (2 behavioral + 2 technical/case), NOT 5+5=10. This aligns with the new \`GuideStrategyPayload\` Tuple constraint. Prefer putting every citable real question into reported[] WITH full STAR fields — do NOT create a separate "list-only" dump. If fewer than 2 real questions exist in a category, fill the remainder with predicted=true system-analyzed most-likely questions from resume↔JD gaps (UI labels these as system analysis, not vague "guess"). Every card's star_blueprint + resume_anchor must be resume-specific (see rule 4). offer_strategy.tc_breakdown MUST try Base + equity/RSU + sign_on (+ total) from \`site:levels.fyi\` sources when possible. **Negotiation script = Prepare(anchor) → Pitch → Counter** — **Pitch MUST be verbatim dialogue** the candidate can speak word-for-word to HR, citing THIS candidate's quantified resume wins and Levels.fyi comp data. NOT generic advice like "emphasize your value" — actual spoken lines.
 10) reference_citations (Guide Page 5 / Excel E) — RAG source list: Reddit/Blind threads, Levels.fyi, Layoff, news. If no direct URL: url="" and manual_verify_keywords set — NEVER invent URLs.
+11) Executive assessment layer — Snapshot-layer fields (competency_map, market_positioning, risk_assessment) follow the same rules as the Snapshot: resume/JD-derived, evidence-only, no resume coaching. Guide differences for risk_assessment: you MAY include a role_stability item sourced from search (layoffs.fyi, SEC filings, reputable news) with basis "inferred" and a real source_url; without a citable URL, role_stability must not be asserted. Cold, objective, data-dense tone — no encouragement or filler.
+12) leverage_analysis — who holds the bargaining power for THIS offer. candidate_leverage = strong | moderate | weak | unknown (use unknown when evidence is thin; never default to strong). factors[] (2–6): each = { factor, direction (for_candidate | for_employer | neutral), evidence, source_url }. evidence must be a resume fact or a cited external fact (e.g. an h1bdata.info wage filing above the posted band, an SEC-disclosed hiring freeze, a long-open posting). source_url = real http(s) URL or null — never invented. bargaining_posture = 1–2 sentences stating the stance this implies; it MUST be consistent with the tone of offer_strategy.negotiation_script. Do not fabricate competing offers.
+13) insider_signals[] (0–6) — sourced data points from Search Rule 5 (Insider Intelligence). Each = { source (h1bdata | sec_filing | blind | levels_fyi | other), finding (one factual sentence with the number/quote), url, date (YYYY-MM or YYYY-MM-DD), evidence_tier (1 = filing/official record, 2 = multi-source corroborated, 3 = single forum post) }. Blind posts are tier 3 unless corroborated. url must be a real http(s) address from search; if you cannot cite it, OMIT the signal rather than emitting an empty url. Empty array is a valid, honest result.
 
 Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
 Output valid JSON only. No markdown fences.`;
@@ -440,6 +449,43 @@ export const FULL_INTEL_JSON_SCHEMA = {
       },
       required: ['hire_thesis', 'top_facts'],
     },
+    leverage_analysis: {
+      type: ['object', 'null'],
+      properties: {
+        candidate_leverage: { type: 'string', enum: ['strong', 'moderate', 'weak', 'unknown'] },
+        factors: {
+          type: 'array',
+          maxItems: 6,
+          items: {
+            type: 'object',
+            properties: {
+              factor: { type: 'string' },
+              direction: { type: 'string', enum: ['for_candidate', 'for_employer', 'neutral'] },
+              evidence: { type: 'string' },
+              source_url: { type: ['string', 'null'] },
+            },
+            required: ['factor', 'direction', 'evidence', 'source_url'],
+          },
+        },
+        bargaining_posture: { type: 'string' },
+      },
+      required: ['candidate_leverage', 'factors', 'bargaining_posture'],
+    },
+    insider_signals: {
+      type: 'array',
+      maxItems: 6,
+      items: {
+        type: 'object',
+        properties: {
+          source: { type: 'string', enum: ['h1bdata', 'sec_filing', 'blind', 'levels_fyi', 'other'] },
+          finding: { type: 'string' },
+          url: { type: 'string' },
+          date: { type: 'string' },
+          evidence_tier: { type: 'integer', minimum: 1, maximum: 3 },
+        },
+        required: ['source', 'finding', 'url', 'date', 'evidence_tier'],
+      },
+    },
     role_team_insights: {
       type: 'object',
       properties: {
@@ -550,6 +596,8 @@ export const FULL_JSON_SCHEMA = FULL_INTEL_JSON_SCHEMA;
 /** Preferred public domains for grounding (not exclusive) */
 export const GROUNDING_SEARCH_DOMAINS = [
   'sec.gov',
+  'h1bdata.info',
+  'levels.fyi',
   'reuters.com',
   'bloomberg.com',
   'techcrunch.com',

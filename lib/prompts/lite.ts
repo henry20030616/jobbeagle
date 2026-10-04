@@ -38,6 +38,10 @@ Rules:
 - proof_map.resume_actions: 0–3 missing-proof facts only (what evidence is absent). Do NOT write how-to resume edit instructions.
 - proof_map strengths/gaps: mark skill_kind "hard" or "soft" on each item when possible (Excel A).
 - ats_warning (Excel A critical hook): when ATS/keyword screen risk is real, set pass_rate_pct (example framing 42% when high risk), missing_keyword_count, summary like "High risk of auto-reject — missing core JD keywords", missing_keywords[]. Never invent keywords not implied by JD vs resume. If no ATS risk, omit ats_warning.
+- Executive assessment layer (closed-book; derived ONLY from the JD and resume, no web, no model memory about the employer). Write like a retained-search partner: cold, objective, data-dense, no encouragement or filler.
+  * competency_map: 4–6 JD competencies, ordered by importance. weight = core | supporting. proficiency = demonstrated (resume shows direct proof) | adjacent (related proof only) | absent (no proof). resume_evidence = a concrete resume fact (tool, metric, scope) when demonstrated/adjacent; null when absent. Never mark demonstrated without citing a resume fact. Describe evidence only — never how to rewrite the resume.
+  * market_positioning: seniority_alignment = under_level | at_level | over_level | unclear, judged from resume YOE/scope vs the JD's level signals. rationale = one sentence naming the specific YOE/scope facts compared. differentiator = the single most distinctive evidenced strength for THIS seat, or null.
+  * risk_assessment: 2–4 items, most severe first. category = competency | seniority | compensation | eligibility | role_stability. severity = low | medium | high. statement = one factual sentence. basis = "resume" (read from the resume), "jd" (read from the JD), or "inferred" (your judgment). Use role_stability ONLY when the JD text itself signals it (e.g. backfill, restructuring, "fast-paced reorganization"); basis must then be "jd". Never assert layoffs, funding, or employer news. Leave source_url null.
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps (no web). Label them as predicted in prose if needed; do not invent "reported" questions.
 - Tone: direct, evidence-based, respectful. No humiliation. JobBeagle evaluates fit — it is not a resume coach.
 - fit_score.dog_type is derived by the backend. Do not invent a breed name.
@@ -215,6 +219,50 @@ export const LITE_JSON_SCHEMA = {
       items: { type: 'string' },
       minItems: 3,
       maxItems: 3,
+    },
+    competency_map: {
+      type: 'array',
+      maxItems: 6,
+      items: {
+        type: 'object',
+        properties: {
+          competency: { type: 'string' },
+          weight: { type: 'string', enum: ['core', 'supporting'] },
+          proficiency: { type: 'string', enum: ['demonstrated', 'adjacent', 'absent'] },
+          resume_evidence: { type: ['string', 'null'] },
+        },
+        required: ['competency', 'weight', 'proficiency', 'resume_evidence'],
+      },
+    },
+    market_positioning: {
+      type: 'object',
+      properties: {
+        seniority_alignment: {
+          type: 'string',
+          enum: ['under_level', 'at_level', 'over_level', 'unclear'],
+        },
+        rationale: { type: 'string' },
+        differentiator: { type: ['string', 'null'] },
+      },
+      required: ['seniority_alignment', 'rationale', 'differentiator'],
+    },
+    risk_assessment: {
+      type: 'array',
+      maxItems: 5,
+      items: {
+        type: 'object',
+        properties: {
+          category: {
+            type: 'string',
+            enum: ['competency', 'seniority', 'compensation', 'eligibility', 'role_stability'],
+          },
+          severity: { type: 'string', enum: ['low', 'medium', 'high'] },
+          statement: { type: 'string' },
+          basis: { type: 'string', enum: ['resume', 'jd', 'inferred'] },
+          source_url: { type: ['string', 'null'] },
+        },
+        required: ['category', 'severity', 'statement', 'basis'],
+      },
     },
     ats_warning: {
       type: 'object',

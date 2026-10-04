@@ -44,6 +44,13 @@ import { fitBandFromScore, resolveApplyDecision } from '@/lib/report-rules';
 import { enrichTargetGapWithCareerContext } from '@/lib/career-context';
 import { buildProvenanceRecord, scrubInsightUrls } from '@/lib/provenance';
 import { scoreSummaryPoints } from '@/lib/score-summary';
+import {
+  normalizeCompetencyMap,
+  normalizeInsiderSignals,
+  normalizeLeverageAnalysis,
+  normalizeMarketPositioning,
+  normalizeRiskAssessment,
+} from '@/lib/normalize-executive-layer';
 
 const HARD_STATUSES: HardFilterStatus[] = ['Pass', 'Risk', 'Blocked', 'Unknown'];
 const FIT_BANDS: FitBand[] = ['Strong', 'Viable', 'Stretch', 'Mismatch'];
@@ -405,6 +412,9 @@ export function normalizeLiteReport(
     role_read,
     interview_starters,
     ats_warning: normalizeAtsWarning(raw.ats_warning, proof_map),
+    competency_map: normalizeCompetencyMap(raw.competency_map),
+    market_positioning: normalizeMarketPositioning(raw.market_positioning) ?? undefined,
+    risk_assessment: normalizeRiskAssessment(raw.risk_assessment),
     match_score: fit_score.score,
     recruiter_verdict: asString(raw.recruiter_verdict) || fit_score.sharp_verdict,
     one_sentence_sharp_critique:
@@ -1183,6 +1193,8 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
     role_team_insights,
     company_truth,
     reference_citations,
+    leverage_analysis: normalizeLeverageAnalysis(raw.leverage_analysis) ?? undefined,
+    insider_signals: normalizeInsiderSignals(raw.insider_signals),
     online_intel_warning: asString(raw.online_intel_warning),
     corporate_culture_blackbox:
       asString(raw.corporate_culture_blackbox)
