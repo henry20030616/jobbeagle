@@ -27,6 +27,10 @@ describe('checkout plans (Unified Master Spec 2026)', () => {
   it('normalizes legacy plan codes', () => {
     expect(normalizeCheckoutPlanType('single_lite')).toBe('single_job_fit_snapshot');
     expect(normalizeCheckoutPlanType('single_full')).toBe('single_interview_strategy_guide');
+    expect(normalizeCheckoutPlanType('premium_report')).toBeNull();
+    expect(normalizeCheckoutPlanType('monthly_subscription')).toBeNull();
+    expect(isCheckoutPlanType('premium_report')).toBe(false);
+    expect(isCheckoutPlanType('monthly_subscription')).toBe(false);
   });
 
   it('author_sponsor is a checkout plan but not a product paywall SKU', () => {

@@ -222,6 +222,12 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
       'Why is this role open now — backfill or new scope?',
       'What does 90-day success look like for this hire?',
     ],
+    company_current_pain_point:
+      'This seat is posted to own ACH returns and settlement exceptions the ops team is still handling ad hoc. The posting asks for someone who can turn that queue into a weekly ritual with engineering and risk.',
+    strategic_alignment_pitch:
+      'I cut reconciliation cycle time 28% with SQL and Looker, and I ran a weekly eng, risk, and CX triage for 18 months. I would start by mapping your returns queue the same way: owners, the SLA, and the five metrics executives already open.',
+    macro_risk_warnings:
+      'This demo does not cite a layoff or a negative filing. Ask what changed in the last two quarters before you treat the seat as stable.',
   },
   concerns_defenses: [
     {
@@ -363,6 +369,23 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
         dos_donts: 'Do not invent capacity numbers you cannot defend; cite your requirements/acceptance-criteria ownership.',
       },
     ],
+    interviewer_profiling: {
+      communication_style:
+        'Written here as direct and metric-first: they will ask for the number before the story.',
+      icebreaker_hooks: [
+        'Which queue hurts more this quarter: returns, settlement breaks, or dispute aging?',
+        'What does a good first 30 days look like for the person who owns that queue?',
+      ],
+    },
+    assignment_blueprint: {
+      likely_format:
+        'A live walkthrough of a returns queue: prioritize it, name the KPI, and say what you would not automate yet.',
+      hidden_grading_rubric: [
+        'Names a resume fact (the 28% cycle-time cut or the weekly triage) before proposing a fix.',
+        'Separates what the posting states from what still has to be confirmed with the recruiter.',
+        'Gives a next step an engineer could start this week.',
+      ],
+    },
     star_templates: [
       {
         title: 'Reconciliation cycle-time win',
@@ -416,6 +439,20 @@ const SAMPLE_GUIDE_RAW: Partial<FullReport> = {
     target: 'Mid-band of the approved cash range once confirmed',
     acceptable: 'Low-mid if equity / remote flexibility is strong',
     walk_away: 'Below documented floor after discovery, or scope below Senior BA',
+    negotiation_script: {
+      prepare:
+        'Before the call, write the approved-band question and your walk-away: below the documented floor, or scope below Senior BA.',
+      pitch:
+        'Thanks — before I share a number, what is the approved cash band for this level in this location? Based on similar Senior BA fintech ops roles and my cycle-time ownership, I am targeting the mid-band once we confirm scope.',
+      counter:
+        'If cash lands low-mid, I would look at sign-on or remote flexibility before moving the base. I will not anchor a company total that was not in the posting.',
+    },
+    timeline_leverage_templates: {
+      stalling_for_time_email:
+        'Subject: Timing on the Senior BA conversation\n\nHi [Name],\n\nThank you for the update. I am wrapping one other conversation this week and want to give you a clear answer. Could I come back by [day]? I remain interested in the settlement scope we discussed.\n\nBest,\n[Your name]',
+      competing_offer_leverage_email:
+        'Subject: Update before I decide\n\nHi [Name],\n\nAnother process is moving to a decision this week. I am not asking you to match a number I have not seen in writing. If you can confirm the approved cash band and whether sign-on is available, I can decide by [day].\n\nBest,\n[Your name]',
+    },
     levers: ['Scope', 'Sign-on', 'Remote flexibility', 'Title leveling'],
     structured_levers: [
       { name: 'Scope', note: 'Confirm Senior BA ownership vs ticket triage' },

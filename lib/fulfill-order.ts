@@ -80,10 +80,7 @@ export async function fulfillOrder(
     }
   }
 
-  if (
-    (canonical === 'single_interview_strategy_guide' || planType === 'premium_report')
-    && reportId
-  ) {
+  if (canonical === 'single_interview_strategy_guide' && reportId) {
     await admin
       .from('analysis_reports')
       .update({ is_premium: true })
@@ -94,13 +91,6 @@ export async function fulfillOrder(
   if (planType === 'basic_overage') {
     try {
       await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 1 });
-    } catch {
-      /* legacy RPC may be absent */
-    }
-  }
-  if (planType === 'monthly_subscription') {
-    try {
-      await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 30 });
     } catch {
       /* legacy RPC may be absent */
     }

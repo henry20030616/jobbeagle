@@ -39,9 +39,9 @@ export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
  * Homepage report-type cards (step 3) — Snapshot / Guide pickers on the form.
  */
 export const REPORT_TYPE_CARD_IDLE =
-  'border-dashed border-slate-600 bg-slate-900/30 hover:border-slate-500 hover:bg-slate-900/50 text-slate-100';
+  'border-solid border-indigo-400/50 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-500';
 export const REPORT_TYPE_CARD_ACTIVE =
-  'border-solid border-blue-500 bg-blue-500/10 text-blue-50 shadow-[0_0_0_1px_rgba(59,130,246,0.35)]';
+  'border-solid border-indigo-200/80 bg-indigo-600 text-white shadow-[0_0_42px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80';
 
 /**
  * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.

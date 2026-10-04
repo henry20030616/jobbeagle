@@ -23,6 +23,11 @@ describe('sample reports', () => {
     expect(report.concerns_defenses).toHaveLength(3);
     expect(report.interview_playbook.star_templates.length).toBeGreaterThanOrEqual(3);
     expect(report.offer_strategy.script.length).toBeGreaterThan(20);
+    expect(report.hiring_context?.company_current_pain_point).toMatch(/ACH/);
+    expect(report.hiring_context?.strategic_alignment_pitch).toMatch(/28%/);
+    expect(report.interview_playbook.assignment_blueprint?.hidden_grading_rubric).toHaveLength(3);
+    expect(report.offer_strategy.negotiation_script?.pitch.length).toBeGreaterThan(20);
+    expect(report.offer_strategy.timeline_leverage_templates?.stalling_for_time_email).toMatch(/Subject:/);
     expect(report.ats_warning?.missing_keyword_count).toBe(4);
     expect(report.role_team_insights?.next_title_1_3yr).toContain('Lead BA');
     expect(report.role_team_insights?.career_path_basis).toMatch(/Levels\.fyi|LinkedIn|market/i);
@@ -91,6 +96,9 @@ describe('sample reports', () => {
       true,
     );
     expect(report.interview_playbook.predicted[0]?.question).toMatch(/改善|流程/);
+    expect(report.hiring_context?.strategic_alignment_pitch).toMatch(/28%/);
+    expect(report.hiring_context?.strategic_alignment_pitch).toMatch(/對帳/);
+    expect(report.offer_strategy.negotiation_script?.counter).toMatch(/簽約金/);
   });
 });
 

@@ -888,7 +888,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
                         {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                       </p>
-                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-slate-400">{t.snapshotBlurb}</p>
+                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                     </button>
                   </div>
                   <div
@@ -903,9 +903,9 @@ const InputForm: React.FC<InputFormProps> = ({
                     >
                       <p className="flex flex-wrap items-center gap-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
                         {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                        <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 shrink-0 text-violet-400" />
+                        <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 shrink-0 text-indigo-100" />
                       </p>
-                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-slate-400">{t.strategyBlurb}</p>
+                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.strategyBlurb}</p>
                     </button>
                   </div>
                   {!compactChrome && (

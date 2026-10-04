@@ -19,6 +19,10 @@ import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
+import {
+  REPORT_TYPE_CARD_ACTIVE,
+  REPORT_TYPE_CARD_IDLE,
+} from '@/constants/report-frame';
 import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import BrandLogo from '@/components/BrandLogo';
 
@@ -720,8 +724,8 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               <div
                 className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-600'
+                    ? REPORT_TYPE_CARD_ACTIVE
+                    : REPORT_TYPE_CARD_IDLE
                 }`}
               >
                 <button
@@ -737,15 +741,15 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
                     )}
                   </div>
-                  <p className="whitespace-normal text-xs leading-snug text-slate-300">{t.snapshotBlurb}</p>
+                  <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                 </button>
               </div>
 
               <div
                 className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                   reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-600'
+                    ? REPORT_TYPE_CARD_ACTIVE
+                    : REPORT_TYPE_CARD_IDLE
                 }`}
               >
                 <button
@@ -756,13 +760,13 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   <div className="flex items-center justify-between mb-1">
                     <p className="flex items-center gap-1 whitespace-normal text-sm font-bold text-white">
                       {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                      <Sparkles className="h-4 w-4 text-violet-400" />
+                      <Sparkles className="h-4 w-4 text-indigo-100" />
                     </p>
                     {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE && (
                       <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
                     )}
                   </div>
-                  <p className="whitespace-normal text-xs leading-snug text-slate-300">{t.strategyBlurb}</p>
+                  <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.strategyBlurb}</p>
                 </button>
               </div>
 

@@ -16,6 +16,7 @@ import type {
   RoleTeamInsights,
 } from '@/types';
 import { CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';
+import { CopyScriptButton } from '@/components/CopyScriptButton';
 import GuidePage4Trinity from './GuidePage4Trinity';
 import GuidePage5Trinity from './GuidePage5Trinity';
 import {
@@ -310,6 +311,31 @@ function Page2({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         badge={t.team_sample_insufficient ? copy.badgeSampleThin : copy.badgeTeamSignals}
         badgeTone={t.team_sample_insufficient ? 'amber' : 'sky'}
       />
+
+      {(report.hiring_context?.company_current_pain_point?.trim()
+        || report.hiring_context?.strategic_alignment_pitch?.trim()) ? (
+        <div className="space-y-4 border-b border-slate-700/90 px-5 py-4">
+          {report.hiring_context?.company_current_pain_point?.trim() ? (
+            <div>
+              <p className={`${SECTION_TITLE} mb-2 text-amber-300`}>{copy.seatPainLabel}</p>
+              <p className="rounded-2xl rounded-tl-md border border-zinc-800/50 bg-zinc-900/80 px-4 py-3 text-sm leading-relaxed text-slate-100">
+                {report.hiring_context.company_current_pain_point.trim()}
+              </p>
+            </div>
+          ) : null}
+          {report.hiring_context?.strategic_alignment_pitch?.trim() ? (
+            <div className="rounded-lg border border-slate-700 bg-black/50 px-4 py-3">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className={`${SECTION_TITLE} text-indigo-200`}>{copy.thirtySecondPitchLabel}</p>
+                <CopyScriptButton text={report.hiring_context.strategic_alignment_pitch} />
+              </div>
+              <p className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200">
+                {report.hiring_context.strategic_alignment_pitch.trim()}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {/* ATS Resolution Box - 兑现 Page 1 承诺 */}
       {atsGaps && atsGaps.gaps && atsGaps.gaps.length > 0 && (
@@ -658,6 +684,15 @@ function Page3({ report, copy }: { report: FullReport; copy: GuideUiCopy }) {
         badge={c.forum_sample_thin ? copy.badgeForumThin : copy.badgeRiskAudit}
         badgeTone={c.forum_sample_thin ? 'amber' : 'emerald'}
       />
+
+      {report.hiring_context?.macro_risk_warnings?.trim() ? (
+        <div className="border-b border-slate-700/90 px-5 py-4">
+          <p className={`${SECTION_TITLE} mb-2 text-amber-300`}>{copy.macroRiskLabel}</p>
+          <p className="text-sm leading-relaxed text-amber-100/90">
+            {report.hiring_context.macro_risk_warnings.trim()}
+          </p>
+        </div>
+      ) : null}
 
       {/* Trinity Risk Radar: Top 3 Badges */}
       <div className="border-b border-slate-700/90 px-5 py-4">

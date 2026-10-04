@@ -12,9 +12,7 @@ export type CheckoutPlanType =
   /** @deprecated aliases — normalize via normalizeCheckoutPlanType() */
   | 'single_lite'
   | 'single_full'
-  | 'basic_overage'
-  | 'premium_report'
-  | 'monthly_subscription';
+  | 'basic_overage';
 
 export interface CheckoutPlan {
   type: CheckoutPlanType;
@@ -101,21 +99,6 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanType, CheckoutPlan> = {
     jobFitSnapshotCredits: 1,
     isSubscription: false,
   }),
-  premium_report: {
-    type: 'premium_report',
-    amountCents: 499,
-    labelEn: 'Unlock Interview Guide — $4.99',
-    labelZhTW: '解鎖面試指南 — $4.99',
-    isSubscription: false,
-  },
-  monthly_subscription: withCreditAliases({
-    type: 'monthly_subscription',
-    amountCents: 899,
-    labelEn: 'Monthly Pro — $8.99/mo',
-    labelZhTW: '月費專業版 — $8.99/月',
-    jobFitSnapshotCredits: 30,
-    isSubscription: true,
-  }),
   author_sponsor: withCreditAliases({
     type: 'author_sponsor',
     amountCents: 50,
@@ -137,7 +120,8 @@ export const CHECKOUT_PLAN_TYPES = Object.keys(CHECKOUT_PLANS) as CheckoutPlanTy
 export function normalizeCheckoutPlanType(value: string): CheckoutPlanType | null {
   const v = value.trim();
   if (v === 'single_lite' || v === 'basic_overage') return 'single_job_fit_snapshot';
-  if (v === 'single_full' || v === 'premium_report') return 'single_interview_strategy_guide';
+  if (v === 'single_full') return 'single_interview_strategy_guide';
+  if (v === 'premium_report' || v === 'monthly_subscription') return null;
   if (isCheckoutPlanType(v)) return v;
   return null;
 }

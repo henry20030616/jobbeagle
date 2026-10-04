@@ -214,7 +214,7 @@ Stripe、Lemon Squeezy、Paddle **都不是現在的收款路徑**。不要建�
 
 推薦：`?ref=`。好友達成條件後發獎勵。
 
-`constants/checkout-plans.ts` 裡還有 deprecated 別名與舊價（例如 $4.99 unlock、$8.99 monthly、贊助作者）。**對外漏斗以上面四檔為準**。訂閱要對到 PayPal plan id：`PAYPAL_PLAN_STANDARD_SUB`、`PAYPAL_PLAN_ADVANCED_SUB`。
+同價舊名會對到現在的 $3 / $9.99。$4.99 與 $8.99 已從結帳方案拿掉。`author_sponsor` 是帳戶頁小費，不加點數，也不在 `ACTIVE_CHECKOUT_PLAN_TYPES`。**對外漏斗以上面四檔為準**。訂閱要對到 PayPal plan id：`PAYPAL_PLAN_STANDARD_SUB`、`PAYPAL_PLAN_ADVANCED_SUB`。
 
 ---
 

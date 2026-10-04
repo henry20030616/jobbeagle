@@ -211,6 +211,12 @@ const ZH_TW: SampleLocalePack = {
         '此職缺為何現在開缺——補缺還是新範疇？',
         '這次任用 90 天成功長什麼樣？',
       ],
+      company_current_pain_point:
+        '這席是要有人接手 ACH 退票與清算例外，營運團隊目前仍在臨時處理。職缺要的是能把這個佇列做成與工程、風險的每週節奏。',
+      strategic_alignment_pitch:
+        '我用 SQL 和 Looker 把對帳週期縮短 28%，並連續 18 個月主持工程、風險、客服的每週 triage。我會先用同一套方法畫出你們的退票佇列：負責人、SLA，以及高階已經在看的五個指標。',
+      macro_risk_warnings:
+        '這份示範沒有引用裁員或負面申報。加入前先問過去兩季改變了什麼，再判斷這個位子穩不穩。',
     },
     concerns_defenses: [
       {
@@ -378,6 +384,21 @@ const ZH_TW: SampleLocalePack = {
         },
       ],
       star_outlines: [],
+      interviewer_profiling: {
+        communication_style: '這裡寫成直接、先要數字再聽故事。',
+        icebreaker_hooks: [
+          '這一季最痛的佇列是退票、清算中斷，還是爭議帳齡？',
+          '負責這條佇列的人，前 30 天怎樣算好？',
+        ],
+      },
+      assignment_blueprint: {
+        likely_format: '現場走一遍退票佇列：排優先、點名 KPI，並說你暫時不會自動化什麼。',
+        hidden_grading_rubric: [
+          '提出解法前先點出履歷事實（28% 週期縮短或每週 triage）。',
+          '分清楚職缺寫了什麼，以及還要跟招募確認什麼。',
+          '給出工程師這週就能開始的下一步。',
+        ],
+      },
       reverse_questions: [
         '這次任用未來兩季要解決什麼問題？',
         '前 90 天成功如何衡量？',
@@ -401,6 +422,19 @@ const ZH_TW: SampleLocalePack = {
       target: '確認後瞄準核定現金區間中帶',
       acceptable: '若股票／遠端彈性強，可接受中下帶',
       walk_away: '探索後低於書面底線，或範疇低於 Senior BA',
+      negotiation_script: {
+        prepare: '通話前先寫好「核定區間」的問題，以及你的底線：低於書面底線，或範疇低於 Senior BA。',
+        pitch:
+          '謝謝——在我報數字前，這個地點這個職級的核定現金區間是多少？根據相近的 Senior BA 金融科技營運職缺，以及我的週期擁有權，確認範疇後我會瞄準中帶。',
+        counter:
+          '若現金落在中下帶，我會先看簽約金或遠端彈性，再動底薪。職缺沒寫的公司總額，我不會自己錨定。',
+      },
+      timeline_leverage_templates: {
+        stalling_for_time_email:
+          '主旨：Senior BA 對話的時間\n\n[Name] 你好，\n\n謝謝更新。我這週還有一場對話要收尾，想給你一個清楚的答覆。我可以在 [day] 前回來嗎？我仍對我們談過的清算範疇有興趣。\n\n[Your name]',
+        competing_offer_leverage_email:
+          '主旨：決定前的更新\n\n[Name] 你好，\n\n另一個流程這週會進入決定。我不是要請你對一個我還沒看到書面數字的條件。若你能確認核定現金區間，以及是否有簽約金，我可以在 [day] 前決定。\n\n[Your name]',
+      },
       levers: ['範疇', '簽約金', '遠端彈性', '職級定級'],
       structured_levers: [
         { name: '範疇', note: '確認是 Senior BA 擁有權而非工單分流' },
@@ -755,6 +789,12 @@ const ZH_CN: SampleLocalePack = {
         '此职位为何现在开缺——补缺还是新范畴？',
         '这次任用 90 天成功长什么样？',
       ],
+      company_current_pain_point:
+        '这席是要有人接手 ACH 退票与清算例外，运营团队目前仍在临时处理。职位要的是能把这个队列做成与工程、风险的每周节奏。',
+      strategic_alignment_pitch:
+        '我用 SQL 和 Looker 把对账周期缩短 28%，并连续 18 个月主持工程、风险、客服的每周 triage。我会先用同一套方法画出你们的退票队列：负责人、SLA，以及高管已经在看的五个指标。',
+      macro_risk_warnings:
+        '这份示范没有引用裁员或负面申报。加入前先问过去两季改变了什么，再判断这个位子稳不稳。',
     },
     concerns_defenses: [
       {
@@ -906,6 +946,21 @@ const ZH_CN: SampleLocalePack = {
         },
       ],
       star_outlines: [],
+      interviewer_profiling: {
+        communication_style: '这里写成直接、先要数字再听故事。',
+        icebreaker_hooks: [
+          '这一季最痛的队列是退票、清算中断，还是争议账龄？',
+          '负责这条队列的人，前 30 天怎样算好？',
+        ],
+      },
+      assignment_blueprint: {
+        likely_format: '现场走一遍退票队列：排优先、点名 KPI，并说你暂时不会自动化什么。',
+        hidden_grading_rubric: [
+          '提出解法前先点出简历事实（28% 周期缩短或每周 triage）。',
+          '分清楚职位写了什么，以及还要跟招聘确认什么。',
+          '给出工程师这周就能开始的下一步。',
+        ],
+      },
       reverse_questions: [
         '这次任用未来两季要解决什么问题？',
         '前 90 天成功如何衡量？',
@@ -929,6 +984,19 @@ const ZH_CN: SampleLocalePack = {
       target: '确认后瞄准核定现金区间中带',
       acceptable: '若股票／远程弹性强，可接受中下带',
       walk_away: '探索后低于书面底线，或范畴低于 Senior BA',
+      negotiation_script: {
+        prepare: '通话前先写好「核定区间」的问题，以及你的底线：低于书面底线，或范畴低于 Senior BA。',
+        pitch:
+          '谢谢——在我报数字前，这个地点这个职级的核定现金区间是多少？根据相近的 Senior BA 金融科技运营职位，以及我的周期所有权，确认范畴后我会瞄准中带。',
+        counter:
+          '若现金落在中下带，我会先看签约金或远程弹性，再动底薪。职位没写的公司总额，我不会自己锚定。',
+      },
+      timeline_leverage_templates: {
+        stalling_for_time_email:
+          '主题：Senior BA 对话的时间\n\n[Name] 你好，\n\n谢谢更新。我这周还有一场对话要收尾，想给你一个清楚的答复。我可以在 [day] 前回来吗？我仍对我们谈过的清算范畴有兴趣。\n\n[Your name]',
+        competing_offer_leverage_email:
+          '主题：决定前的更新\n\n[Name] 你好，\n\n另一个流程这周会进入决定。我不是要请你对一个我还没看到书面数字的条件。若你能确认核定现金区间，以及是否有签约金，我可以在 [day] 前决定。\n\n[Your name]',
+      },
       levers: ['范畴', '签约金', '远程弹性', '职级定级'],
       structured_levers: [
         { name: '范畴', note: '确认是 Senior BA 所有权而非工单分流' },
@@ -1287,6 +1355,12 @@ const ES: SampleLocalePack = {
         '¿Por qué está abierto este rol ahora — backfill o nuevo alcance?',
         '¿Cómo se ve el éxito a 90 días para este hire?',
       ],
+      company_current_pain_point:
+        'Este puesto existe para que alguien tome las excepciones de ACH returns y settlement que ops sigue resolviendo de forma ad hoc. El anuncio pide convertir esa cola en un ritual semanal con ingeniería y riesgo.',
+      strategic_alignment_pitch:
+        'Reduje el cycle time de reconciliación un 28% con SQL y Looker, y durante 18 meses dirigí un triage semanal de eng, riesgo y CX. Empezaría mapeando su cola de returns igual: dueños, el SLA y las cinco métricas que los ejecutivos ya abren.',
+      macro_risk_warnings:
+        'Este demo no cita un layoff ni un filing negativo. Pregunta qué cambió en los últimos dos trimestres antes de tratar el puesto como estable.',
     },
     concerns_defenses: [
       {
@@ -1440,6 +1514,22 @@ const ES: SampleLocalePack = {
         },
       ],
       star_outlines: [],
+      interviewer_profiling: {
+        communication_style: 'Escrito aquí como directo y primero el número, después la historia.',
+        icebreaker_hooks: [
+          '¿Qué cola duele más este trimestre: returns, cortes de settlement o antigüedad de disputes?',
+          '¿Cómo se ve un buen primer mes para quien es dueño de esa cola?',
+        ],
+      },
+      assignment_blueprint: {
+        likely_format:
+          'Un recorrido en vivo de la cola de returns: priorizar, nombrar el KPI y decir qué no automatizarías todavía.',
+        hidden_grading_rubric: [
+          'Nombra un hecho del CV (el recorte del 28% o el triage semanal) antes de proponer el arreglo.',
+          'Separa lo que dice el anuncio de lo que aún hay que confirmar con el recruiter.',
+          'Da un siguiente paso que un ingeniero pueda empezar esta semana.',
+        ],
+      },
       reverse_questions: [
         '¿Qué problema debe resolver este hire en los próximos dos trimestres?',
         '¿Cómo se medirá el éxito en los primeros 90 días?',
@@ -1463,6 +1553,20 @@ const ES: SampleLocalePack = {
       target: 'Mid-band del rango de cash aprobado una vez confirmado',
       acceptable: 'Low-mid si equity / flexibilidad remota es fuerte',
       walk_away: 'Bajo el piso documentado tras discovery, o alcance bajo Senior BA',
+      negotiation_script: {
+        prepare:
+          'Antes de la llamada, escribe la pregunta del rango aprobado y tu límite: bajo el piso documentado, o un alcance menor que Senior BA.',
+        pitch:
+          'Gracias — antes de dar un número, ¿cuál es el rango de cash aprobado para este nivel en esta ubicación? Por roles similares de Senior BA en ops fintech y por mi ownership de cycle time, apunto a la mitad del rango cuando confirmemos el alcance.',
+        counter:
+          'Si el cash cae en low-mid, miraría sign-on o flexibilidad remota antes de mover la base. No anclo un total de la empresa que no estaba en el anuncio.',
+      },
+      timeline_leverage_templates: {
+        stalling_for_time_email:
+          'Asunto: Tiempo para la conversación de Senior BA\n\nHola [Name],\n\nGracias por la actualización. Esta semana cierro otra conversación y quiero darte una respuesta clara. ¿Puedo volver antes del [day]? Sigo interesado en el alcance de settlement que comentamos.\n\n[Your name]',
+        competing_offer_leverage_email:
+          'Asunto: Actualización antes de decidir\n\nHola [Name],\n\nOtro proceso llega a decisión esta semana. No te pido igualar un número que no he visto por escrito. Si puedes confirmar el rango de cash aprobado y si hay sign-on, puedo decidir antes del [day].\n\n[Your name]',
+      },
       levers: ['Alcance', 'Sign-on', 'Flexibilidad remota', 'Leveling de título'],
       structured_levers: [
         { name: 'Alcance', note: 'Confirmar ownership Senior BA vs triage de tickets' },

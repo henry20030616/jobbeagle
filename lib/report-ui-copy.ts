@@ -54,6 +54,12 @@ export interface GuideUiCopy {
   // Page 2
   page2Of: string;
   page2Title: string;
+  seatPainLabel: string;
+  thirtySecondPitchLabel: string;
+  macroRiskLabel: string;
+  interviewerStyleLabel: string;
+  icebreakerLabel: string;
+  hiddenRubricLabel: string;
   badgeSampleThin: string;
   badgeTeamSignals: string;
   roleContent: string;
@@ -407,6 +413,12 @@ const GUIDE: Dict<GuideUiCopy> = {
     },
     page2Of: 'PAGE 2 OF 5',
     page2Title: 'Role & team reality',
+    seatPainLabel: 'What this seat is hired to fix',
+    thirtySecondPitchLabel: '30-second intro',
+    macroRiskLabel: 'Material risk',
+    interviewerStyleLabel: 'How this interviewer talks',
+    icebreakerLabel: 'Icebreakers',
+    hiddenRubricLabel: 'Hidden grading rubric',
     badgeSampleThin: 'Thin sample',
     badgeTeamSignals: 'TEAM SIGNALS',
     roleContent: 'What this job actually does',
@@ -544,6 +556,12 @@ const GUIDE: Dict<GuideUiCopy> = {
     },
     page2Of: '第 2 / 5 頁',
     page2Title: '職位與團隊現況',
+    seatPainLabel: '這席要補的洞',
+    thirtySecondPitchLabel: '30 秒自介',
+    macroRiskLabel: '重大風險',
+    interviewerStyleLabel: '面試官怎麼說話',
+    icebreakerLabel: '破冰',
+    hiddenRubricLabel: '隱藏評分標準',
     badgeSampleThin: '樣本不足',
     badgeTeamSignals: '團隊訊號',
     roleContent: '這份工作在做什麼',
@@ -676,6 +694,12 @@ const GUIDE: Dict<GuideUiCopy> = {
     },
     page2Of: '第 2 / 5 页',
     page2Title: '职位与团队现况',
+    seatPainLabel: '这席要补的洞',
+    thirtySecondPitchLabel: '30 秒自介',
+    macroRiskLabel: '重大风险',
+    interviewerStyleLabel: '面试官怎么说话',
+    icebreakerLabel: '破冰',
+    hiddenRubricLabel: '隐藏评分标准',
     badgeSampleThin: '样本不足',
     badgeTeamSignals: '团队信号',
     roleContent: '这份工作在做什么',
@@ -811,6 +835,12 @@ const GUIDE: Dict<GuideUiCopy> = {
     },
     page2Of: 'PÁGINA 2 DE 5',
     page2Title: 'Rol y realidad del equipo',
+    seatPainLabel: 'Qué hueco cubre este puesto',
+    thirtySecondPitchLabel: 'Presentación de 30 segundos',
+    macroRiskLabel: 'Riesgo material',
+    interviewerStyleLabel: 'Cómo habla este entrevistador',
+    icebreakerLabel: 'Rompehielos',
+    hiddenRubricLabel: 'Rúbrica oculta',
     badgeSampleThin: 'Muestra insuficiente',
     badgeTeamSignals: 'SEÑALES DEL EQUIPO',
     roleContent: 'Qué hace este trabajo',
@@ -950,6 +980,12 @@ const GUIDE: Dict<GuideUiCopy> = {
     },
     page2Of: 'पेज 2 / 5',
     page2Title: 'रोल और टीम की हकीकत',
+    seatPainLabel: 'यह भूमिका किस कमी को भरती है',
+    thirtySecondPitchLabel: '30 सेकंड का परिचय',
+    macroRiskLabel: 'गंभीर जोखिम',
+    interviewerStyleLabel: 'इंटरव्यूअर कैसे बात करता है',
+    icebreakerLabel: 'आइसब्रेकर',
+    hiddenRubricLabel: 'छिपी ग्रेडिंग',
     badgeSampleThin: 'नमूना अपर्याप्त',
     badgeTeamSignals: 'टीम संकेत',
     roleContent: 'यह जॉब वास्तव में क्या करती है',
@@ -1088,6 +1124,12 @@ const GUIDE: Dict<GuideUiCopy> = {
     },
     page2Of: 'الصفحة 2 من 5',
     page2Title: 'واقع الدور والفريق',
+    seatPainLabel: 'الفجوة التي يسدّها هذا الدور',
+    thirtySecondPitchLabel: 'تعريف خلال 30 ثانية',
+    macroRiskLabel: 'خطر جوهري',
+    interviewerStyleLabel: 'كيف يتحدث هذا المُقابِل',
+    icebreakerLabel: 'افتتاحيات',
+    hiddenRubricLabel: 'معايير التقييم الخفية',
     badgeSampleThin: 'عينة غير كافية',
     badgeTeamSignals: 'إشارات الفريق',
     roleContent: 'ماذا تفعل هذه الوظيفة فعليًا',

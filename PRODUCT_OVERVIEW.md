@@ -186,7 +186,7 @@ Stripe、Lemon Squeezy、Paddle **不是現在的收款路徑**。程式裡已�
 | `standard_subscription` | $19.99/月 | 100 Snapshot + 5 Guide |
 | `advanced_subscription` | $39.99/月 | 300 Snapshot + 15 Guide |
 
-`constants/checkout-plans.ts` 還留著舊別名與舊價（$4.99、$8.99、贊助作者）。對外漏斗只講上面四檔。
+同價舊名 `single_lite`、`single_full`、`basic_overage` 會對到現在的 $3 / $9.99，不再另開一檔。$4.99 與 $8.99 已從結帳方案拿掉。`author_sponsor` 是帳戶頁小費，不進這四檔、不加點數。對外漏斗只講上面四檔。
 
 推薦：`?ref=`。
 

@@ -230,6 +230,11 @@ export default function GuidePage4Trinity({
   const rubric = (playbook?.assignment_blueprint?.hidden_grading_rubric ?? []).filter(
     (item) => item.trim().length > 0,
   ).slice(0, 3);
+  const interviewerStyle = playbook?.interviewer_profiling?.communication_style?.trim() ?? '';
+  const icebreakers = (playbook?.interviewer_profiling?.icebreaker_hooks ?? [])
+    .map((hook) => hook.trim())
+    .filter((hook) => hook.length > 0)
+    .slice(0, 3);
   const expected = report.expected_offer;
   const offerRange = formatOfferRange(expected);
   const predictedOffer = formatPredictedOffer(expected);
@@ -261,7 +266,7 @@ export default function GuidePage4Trinity({
 
       {rubric.length > 0 ? (
         <div className="border-b border-slate-700/90 px-5 py-4">
-          <p className={`${SECTION_TITLE} mb-2 text-amber-300`}>Hidden grading rubric</p>
+          <p className={`${SECTION_TITLE} mb-2 text-amber-300`}>{copy.hiddenRubricLabel}</p>
           <ul className="flex flex-wrap gap-2">
             {rubric.map((item) => (
               <li
@@ -272,6 +277,33 @@ export default function GuidePage4Trinity({
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {interviewerStyle || icebreakers.length > 0 ? (
+        <div className="space-y-3 border-b border-slate-700/90 px-5 py-4">
+          {interviewerStyle ? (
+            <div>
+              <p className={`${SECTION_TITLE} mb-2 text-sky-300`}>{copy.interviewerStyleLabel}</p>
+              <p className="text-sm leading-relaxed text-slate-200">{interviewerStyle}</p>
+            </div>
+          ) : null}
+          {icebreakers.length > 0 ? (
+            <div>
+              <p className={`${SECTION_TITLE} mb-2 text-sky-300`}>{copy.icebreakerLabel}</p>
+              <ul className="space-y-2">
+                {icebreakers.map((hook) => (
+                  <li
+                    key={hook}
+                    className="flex items-start justify-between gap-2 rounded-lg border border-slate-700 bg-black/40 px-3 py-2"
+                  >
+                    <p className="text-sm leading-relaxed text-slate-200">{hook}</p>
+                    <CopyScriptButton text={hook} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
