@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, InterviewReport, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, Pointer, Save, Puzzle, CreditCard, Sparkles, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, Pointer, Save, Puzzle, CreditCard, Sparkles, Check, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -36,6 +36,19 @@ const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} flex-1 grid-rows-3 gap-3 sm:gap-4
 const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5`;
 const REPORT_CARD =
   'w-full min-h-0 h-full rounded-xl border-2 px-3 sm:px-4 lg:px-5 xl:px-6 py-3 sm:py-4 lg:py-5 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
+
+function ReportChoiceMark({ selected }: { selected: boolean }) {
+  return (
+    <span
+      className={`flex h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 shrink-0 items-center justify-center rounded-full border-2 ${
+        selected ? 'border-white bg-white text-[#3d3c7c]' : 'border-white/80 bg-transparent'
+      }`}
+      aria-hidden
+    >
+      {selected ? <Check className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" strokeWidth={3} /> : null}
+    </span>
+  );
+}
 
 function StepSequenceMark() {
   return (
@@ -882,12 +895,25 @@ const InputForm: React.FC<InputFormProps> = ({
                   >
                     <button
                       type="button"
+                      aria-pressed={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT}
                       onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                       className="w-full min-w-0 text-left"
                     >
-                      <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
-                        {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
-                      </p>
+                      <span className="flex items-start justify-between gap-3">
+                        <span className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
+                          {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
+                        </span>
+                        <ReportChoiceMark selected={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT} />
+                      </span>
+                      <span
+                        className={`mt-2 inline-flex rounded-full px-3 py-1 text-sm sm:text-base lg:text-lg font-bold ${
+                          reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                            ? 'bg-white text-[#3d3c7c]'
+                            : 'bg-white/15 text-white'
+                        }`}
+                      >
+                        {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? t.reportSelected : t.reportChoose}
+                      </span>
                       <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                     </button>
                   </div>
@@ -898,13 +924,26 @@ const InputForm: React.FC<InputFormProps> = ({
                   >
                     <button
                       type="button"
+                      aria-pressed={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}
                       onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                       className="w-full min-w-0 text-left"
                     >
-                      <p className="flex flex-wrap items-center gap-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
-                        {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                        <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 shrink-0 text-indigo-100" />
-                      </p>
+                      <span className="flex items-start justify-between gap-3">
+                        <span className="flex flex-wrap items-center gap-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
+                          {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
+                          <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 shrink-0 text-indigo-100" />
+                        </span>
+                        <ReportChoiceMark selected={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE} />
+                      </span>
+                      <span
+                        className={`mt-2 inline-flex rounded-full px-3 py-1 text-sm sm:text-base lg:text-lg font-bold ${
+                          reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                            ? 'bg-white text-[#3d3c7c]'
+                            : 'bg-white/15 text-white'
+                        }`}
+                      >
+                        {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? t.reportSelected : t.reportChoose}
+                      </span>
                       <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.strategyBlurb}</p>
                     </button>
                   </div>

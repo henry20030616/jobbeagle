@@ -43,7 +43,7 @@ export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 export const REPORT_TYPE_CARD_IDLE =
   'border-solid border-[#5a598f] bg-[#3d3c7c] text-white hover:bg-[#4a498e]';
 export const REPORT_TYPE_CARD_ACTIVE =
-  'border-solid border-[#c7c6e8] bg-[#3d3c7c] text-white';
+  'border-solid border-white bg-[#3d3c7c] text-white ring-4 ring-white/90';
 
 /**
  * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.
@@ -56,7 +56,7 @@ export const HOMEPAGE_STEP_COL_SURFACE =
 export const SAMPLE_REPORT_TAB_IDLE =
   'rounded-2xl border border-[#5a598f] bg-[#3d3c7c] text-white hover:bg-[#4a498e]';
 export const SAMPLE_REPORT_TAB_ACTIVE =
-  'rounded-2xl border border-[#c7c6e8] bg-[#3d3c7c] text-white';
+  'rounded-2xl border border-white bg-[#3d3c7c] text-white ring-4 ring-white/90';
 
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =

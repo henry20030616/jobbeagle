@@ -730,17 +730,36 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               >
                 <button
                   type="button"
+                  aria-pressed={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT}
                   onClick={() => onReportTypeChange(REPORT_CODES.JOB_FIT_SNAPSHOT)}
                   className="w-full text-left"
                 >
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="mb-1 flex items-center justify-between gap-2">
                     <p className="whitespace-normal text-sm font-bold text-white">
                       {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                     </p>
-                    {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT && (
-                      <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
-                    )}
+                    <span
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
+                        reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                          ? 'border-white bg-white text-[#3d3c7c]'
+                          : 'border-white/80'
+                      }`}
+                      aria-hidden
+                    >
+                      {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? (
+                        <Check className="h-4 w-4" strokeWidth={3} />
+                      ) : null}
+                    </span>
                   </div>
+                  <span
+                    className={`mb-1 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${
+                      reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
+                        ? 'bg-white text-[#3d3c7c]'
+                        : 'bg-white/15 text-white'
+                    }`}
+                  >
+                    {reportType === REPORT_CODES.JOB_FIT_SNAPSHOT ? t.reportSelected : t.reportChoose}
+                  </span>
                   <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                 </button>
               </div>
@@ -754,18 +773,37 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               >
                 <button
                   type="button"
+                  aria-pressed={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE}
                   onClick={() => onReportTypeChange(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE)}
                   className="w-full text-left"
                 >
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="mb-1 flex items-center justify-between gap-2">
                     <p className="flex items-center gap-1 whitespace-normal text-sm font-bold text-white">
                       {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
                       <Sparkles className="h-4 w-4 text-indigo-100" />
                     </p>
-                    {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE && (
-                      <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
-                    )}
+                    <span
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
+                        reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                          ? 'border-white bg-white text-[#3d3c7c]'
+                          : 'border-white/80'
+                      }`}
+                      aria-hidden
+                    >
+                      {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? (
+                        <Check className="h-4 w-4" strokeWidth={3} />
+                      ) : null}
+                    </span>
                   </div>
+                  <span
+                    className={`mb-1 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${
+                      reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
+                        ? 'bg-white text-[#3d3c7c]'
+                        : 'bg-white/15 text-white'
+                    }`}
+                  >
+                    {reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? t.reportSelected : t.reportChoose}
+                  </span>
                   <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.strategyBlurb}</p>
                 </button>
               </div>
