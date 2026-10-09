@@ -14,6 +14,7 @@ import { FileText, Upload, X, History, Clock, Save, Puzzle, CreditCard, Sparkles
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
+import { jdLaunchBlockedTitle, jdUrlOnlyMessage } from '@/lib/jd-paste-help';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
@@ -159,11 +160,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
     }
 
     if (classification.kind === 'other_url') {
-      setJdError(
-        currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
-          ? '⚠️ 請勿只貼網址。請貼完整 JD 或使用外掛。'
-          : '⚠️ URL only is not accepted. Paste full JD or use extension.',
-      );
+      setJdError(jdUrlOnlyMessage(currentLanguage));
       return;
     }
 
@@ -815,9 +812,11 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             disabled={submitDisabled}
             title={
               submitDisabled
-                ? zh
-                  ? '請先貼上完整職缺並上傳履歷'
-                  : 'Paste the full job posting and upload a resume first'
+                ? blocked
+                  ? jdLaunchBlockedTitle(currentLanguage)
+                  : zh
+                    ? '請先貼上完整職缺並上傳履歷'
+                    : 'Paste the full job posting and upload a resume first'
                 : undefined
             }
             className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-2 ${

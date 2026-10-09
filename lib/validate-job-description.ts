@@ -1,4 +1,5 @@
 import { MAX_JD_CHARS } from '@/constants/models';
+import { jdTooShortMessage, jdUrlOnlyMessage, MIN_JD_CHARS } from '@/lib/jd-paste-help';
 
 export type JdValidationCode =
   | 'JD_EMPTY'
@@ -77,23 +78,15 @@ export function validateJobDescription(
     return {
       valid: false,
       code: 'JD_URL_ONLY',
-      message: msg(
-        lang,
-        '⚠️ 請勿只貼網址。請到職缺頁複製「完整職缺內容」後貼上。',
-        '⚠️ URL only is not accepted. Copy the full job text from the posting page.',
-      ),
+      message: jdUrlOnlyMessage(language),
     };
   }
 
-  if (trimmed.length < 40) {
+  if (trimmed.length < MIN_JD_CHARS) {
     return {
       valid: false,
       code: 'JD_TOO_SHORT',
-      message: msg(
-        lang,
-        '⚠️ 職缺描述太短（至少 40 字），請貼上完整 JD。',
-        '⚠️ Job description is too short (min 40 characters). Paste the full posting.',
-      ),
+      message: jdTooShortMessage(language, trimmed.length),
     };
   }
 

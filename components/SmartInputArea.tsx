@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Loader2, Puzzle } from 'lucide-react';
-import {
-  classifyJobInput,
-  type JobInputClassification,
-} from '@/lib/url-parser-logic';
+import { classifyJobInput } from '@/lib/url-parser-logic';
 import ErrorStateUI from '@/components/ErrorStateUI';
+import {
+  jdCharProgress,
+  jdEmptyHint,
+  jdUrlOnlyMessage,
+  MIN_JD_CHARS,
+} from '@/lib/jd-paste-help';
 
 export interface SmartInputAreaProps {
   value: string;
@@ -68,8 +71,14 @@ export default function SmartInputArea({
           ? 'border-blue-500/40 focus:ring-blue-500/30'
           : 'border-slate-600 focus:ring-indigo-500/40';
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const focusPaste = () => textareaRef.current?.focus();
+
   const resolvedPlaceholder = placeholder ?? (zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN);
   const promptType = compact ? JD_PROMPT_TYPE_COMPACT : JD_PROMPT_TYPE;
+  const trimmedLen = value.trim().length;
+  const showCharProgress =
+    classification.kind === 'plain' && trimmedLen > 0 && trimmedLen < MIN_JD_CHARS;
 
   return (
     <div className={`min-w-0 max-w-full ${compact ? 'flex h-full min-h-0 flex-1 flex-col gap-2' : 'space-y-0'}`}>
@@ -117,6 +126,7 @@ export default function SmartInputArea({
 
         <div className={`relative min-w-0 max-w-full ${compact ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
           <textarea
+            ref={textareaRef}
             disabled={disabled || parsing}
             className={`${promptType} w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
             placeholder={resolvedPlaceholder}
@@ -150,7 +160,7 @@ export default function SmartInputArea({
       <div
         className={`transition-all duration-300 ease-out ${
           classification.kind === 'blocked_board'
-            ? 'max-h-[480px] opacity-100'
+            ? 'max-h-[40rem] opacity-100'
             : 'max-h-0 opacity-0 overflow-hidden'
         }`}
       >
@@ -159,16 +169,30 @@ export default function SmartInputArea({
             boardLabel={classification.boardLabel}
             language={language}
             extensionHref="/extension"
+            onPasteHere={focusPaste}
           />
         )}
       </div>
 
+      {!value.trim() && classification.kind !== 'blocked_board' && (
+        <p className="mt-2 text-xs leading-snug text-slate-500">{jdEmptyHint(language)}</p>
+      )}
+
+      {showCharProgress && (
+        <p className="mt-2 text-xs leading-snug text-amber-200/90">{jdCharProgress(language, trimmedLen)}</p>
+      )}
+
       {classification.kind === 'other_url' && (
-        <p className="upload-prompt mt-3 text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-blue-200/90 bg-blue-950/40 border border-blue-500/30 rounded-lg px-3 py-2.5 transition-all">
-          {zh
-            ? '偵測到一般網址。目前僅支援自動解析 Greenhouse / Lever；LinkedIn 等請用外掛或貼完整 JD 文字。'
-            : 'URL detected. Auto-fetch supports Greenhouse / Lever only. For LinkedIn and similar boards, use the extension or paste the full JD text.'}
-        </p>
+        <div className="upload-prompt mt-3 space-y-2 rounded-lg border border-blue-500/30 bg-blue-950/40 px-3 py-2.5 text-sm text-blue-200/90 transition-all lg:text-lg xl:text-2xl 2xl:text-3xl">
+          <p>{jdUrlOnlyMessage(language)}</p>
+          <button
+            type="button"
+            onClick={focusPaste}
+            className="font-bold text-indigo-300 underline-offset-2 hover:underline"
+          >
+            {zh ? '貼上職缺文字' : 'Paste job text here'}
+          </button>
+        </div>
       )}
 
       {error && (

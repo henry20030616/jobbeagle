@@ -6,6 +6,7 @@ import { FileText, Upload, X, History, Clock, Pointer, Save, Puzzle, CreditCard,
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
+import { jdLaunchBlockedTitle, jdUrlOnlyMessage } from '@/lib/jd-paste-help';
 import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
@@ -342,11 +343,7 @@ const InputForm: React.FC<InputFormProps> = ({
     }
 
     if (classification.kind === 'other_url') {
-      setJdError(
-        currentLanguage === 'zh-TW' || currentLanguage === 'zh-CN'
-          ? '⚠️ 請勿只貼網址。Greenhouse / Lever 可自動解析；其他請貼完整 JD 或使用外掛。'
-          : '⚠️ URL only is not accepted. Greenhouse / Lever can auto-fetch; otherwise paste full JD or use the extension.',
-      );
+      setJdError(jdUrlOnlyMessage(currentLanguage));
       return;
     }
 
@@ -960,9 +957,11 @@ const InputForm: React.FC<InputFormProps> = ({
                   disabled={submitDisabled}
                   title={
                     submitDisabled
-                      ? zh
-                        ? '請先貼上完整職缺並上傳履歷'
-                        : 'Paste the full job posting and upload a resume first'
+                      ? blocked
+                        ? jdLaunchBlockedTitle(currentLanguage)
+                        : zh
+                          ? '請先貼上完整職缺並上傳履歷'
+                          : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
                   className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all ${

@@ -49,7 +49,9 @@ test.describe('Full funnel — public surfaces', () => {
     await expect(jd).toBeVisible({ timeout: 15_000 });
     await jd.fill('https://www.linkedin.com/jobs/view/123456');
     await expect(page.getByRole('alert').filter({ hasText: /We detected a LinkedIn URL/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Get the JobBeagle extension/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Paste job text here/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Or capture with the extension/i })).toBeVisible();
+    await expect(page.getByText(/right-hand panel/i)).toBeVisible();
   });
 
   test('/?error=no_job_page does not scare the paste-JD homepage', async ({ page }) => {
