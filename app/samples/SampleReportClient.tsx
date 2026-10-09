@@ -1,14 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import BrandLogo from '@/components/BrandLogo';
+import LiteReportDashboard from '@/components/LiteReportDashboard';
+import FullReportDashboard from '@/components/FullReportDashboard';
 import { ReportFitStage } from '@/components/ReportFitStage';
 import {
-  V5SampleGuide,
-  V5SampleSnapshot,
-} from '@/components/prototypes/V5SampleReportPrototype';
+  getSampleSnapshotReport,
+  getSampleStrategyGuideReport,
+} from '@/lib/sample-reports';
 import {
   REPORT_CODES,
   normalizeReportType,
@@ -47,6 +49,9 @@ export default function SampleReportClient() {
   const reportType =
     normalizeReportType(rawType) ?? REPORT_CODES.JOB_FIT_SNAPSHOT;
   const isGuide = reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE;
+
+  const snapshot = useMemo(() => getSampleSnapshotReport(language), [language]);
+  const guide = useMemo(() => getSampleStrategyGuideReport(language), [language]);
 
   const goHome = () => {
     window.location.href = '/';
@@ -136,9 +141,21 @@ export default function SampleReportClient() {
             className="w-full"
           >
             {isGuide ? (
-              <V5SampleGuide language={language} />
+              <FullReportDashboard
+                report={guide}
+                language={language}
+                embedded
+                isSample
+                onNewAnalysis={goHome}
+              />
             ) : (
-              <V5SampleSnapshot language={language} />
+              <LiteReportDashboard
+                report={snapshot}
+                language={language}
+                embedded
+                isSample
+                onNewAnalysis={goHome}
+              />
             )}
           </ReportFitStage>
         </main>
