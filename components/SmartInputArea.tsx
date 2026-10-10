@@ -3,7 +3,7 @@
 import React, { useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Loader2, Puzzle } from 'lucide-react';
-import { classifyJobInput } from '@/lib/url-parser-logic';
+import { classifyJobInput, type JobInputClassification } from '@/lib/url-parser-logic';
 import ErrorStateUI from '@/components/ErrorStateUI';
 import {
   jdCharProgress,
