@@ -225,12 +225,12 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': 'AI 模型 — 代表什么',
     },
     help: help(
-      'Which model class runs the report. Flash-Lite = fast closed-book triage from JD + resume. Pro = deeper reasoning and live web when available.',
-      '報告用哪一級模型。Flash-Lite＝快速、只讀 JD＋履歷；Pro＝更深推理，並在可取得時做即時網搜。',
-      '报告用哪一级模型。Flash-Lite＝快速、只读 JD＋简历；Pro＝更深推理，并在可取得时做即时网搜。',
+      'Which model class runs the report. Snapshot is a fast fit from JD + resume. Guide uses Pro with live web search.',
+      '報告用哪一級模型。Snapshot＝依 JD＋履歷快速判斷適配；Guide＝Pro，並做即時網搜。',
+      '报告用哪一级模型。Snapshot＝依 JD＋简历快速判断适配；Guide＝Pro，并做即时网搜。',
     ),
-    snapshot: t('Flash-Lite (fast, no web)', 'Flash-Lite（快、無網搜）', 'Flash-Lite（快、无网搜）', 3),
-    guide: t('Pro + live web', 'Pro＋即時網搜', 'Pro＋即时网搜', 5),
+    snapshot: t('Fast fit from JD + resume', '依 JD＋履歷快速適配', '依 JD＋简历快速适配', 3),
+    guide: t('Pro + live web search', 'Pro＋即時網搜', 'Pro＋即时网搜', 5),
   },
   {
     section: 'shared',
@@ -286,11 +286,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '即时网搜',
     },
     help: help(
-      'Biggest gap vs Snapshot: Guide can pull live public web data for THIS company and role — employee/Glassdoor-style reviews, reported interview questions, real salary posts, market/hiring signals, third-party industry reports, and professional HR/comp commentary — then cite URL + date when available. Snapshot is closed-book (JD + resume only); it cannot see the live web.',
-      '對 Snapshot 最大的差距：Guide 能即時搜這間公司／這席的公開網路資料——含公司與職位評價、真實面試題、真實薪資貼文、市場／招募現況、第三方產業報告、專業人資／薪酬諮詢觀點——並盡量附網址＋日期。Snapshot 只讀 JD＋履歷，看不到即時網路。',
-      '对 Snapshot 最大的差距：Guide 能即时搜这家公司／这席的公开网络资料——含公司与职位评价、真实面试题、真实薪资贴文、市场／招募现况、第三方产业报告、专业人资／薪酬咨询观点——并尽量附网址＋日期。Snapshot 只读 JD＋简历，看不到即时网络。',
+      'Guide pulls live public web data for THIS company and role — employee/Glassdoor-style reviews, reported interview questions, real salary posts, market/hiring signals, third-party industry reports, and professional HR/comp commentary — then cites URL + date when available.',
+      'Guide 能即時搜這間公司／這席的公開網路資料——含公司與職位評價、真實面試題、真實薪資貼文、市場／招募現況、第三方產業報告、專業人資／薪酬諮詢觀點——並盡量附網址＋日期。',
+      'Guide 能即时搜这家公司／这席的公开网络资料——含公司与职位评价、真实面试题、真实薪资贴文、市场／招募现况、第三方产业报告、专业人资／薪酬咨询观点——并尽量附网址＋日期。',
     ),
-    snapshot: t('— JD + resume only', '— 只讀 JD＋履歷', '— 只读 JD＋简历'),
+    snapshot: t('—', '—', '—'),
     guide: t(
       'Yes — reviews, interview Qs, salary, market, industry/HR reports',
       '有 — 評價、面試題、薪資、市場、產業／人資報告',

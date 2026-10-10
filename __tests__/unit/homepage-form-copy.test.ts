@@ -25,6 +25,17 @@ describe('homepage form copy', () => {
     }
   });
 
+  it('puts live web search on Guide, not Fit Snapshot', () => {
+    const noWebPitch =
+      /no web|closed-book|flash-lite|不上網|不聯網|不联网|sin búsqueda|वेब सर्च नहीं|بلا بحث/i;
+    const webSearchPitch = /web search|網搜|网搜|búsqueda web|वेब सर्च|الويب/i;
+    for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
+      expect(copy.snapshotBlurb).not.toMatch(noWebPitch);
+      expect(copy.snapshotBlurb).not.toMatch(webSearchPitch);
+      expect(copy.strategyBlurb).toMatch(webSearchPitch);
+    }
+  });
+
   it('covers every app language', () => {
     expect(Object.keys(HOMEPAGE_FORM_COPY).sort()).toEqual(
       ['ar', 'en', 'es', 'hi', 'zh-CN', 'zh-TW'].sort(),

@@ -26,6 +26,11 @@ describe('report-compare', () => {
     expect(sections[0]).toBe('best_for');
     const firstShared = REPORT_COMPARE_ROWS.find((r) => r.section === 'shared');
     expect(firstShared?.feature.en).toMatch(/AI model/i);
+    const webSearch = REPORT_COMPARE_ROWS.find((r) => r.feature.en === 'Live web search');
+    expect(webSearch?.guide.text.en).toMatch(/reviews, interview Qs/i);
+    expect(webSearch?.help.en).toMatch(/live public web/i);
+    expect(webSearch?.help.en).not.toMatch(/closed-book|cannot see the live web/i);
+    expect(firstShared?.snapshot.text.en).not.toMatch(/no web/i);
     expect(sections.filter((s) => s === 'shared').length).toBeGreaterThanOrEqual(3);
     expect(sections.filter((s) => s === 'guide_only').length).toBeGreaterThanOrEqual(3);
     expect(sections.filter((s) => s === 'meta').length).toBeGreaterThanOrEqual(1);
