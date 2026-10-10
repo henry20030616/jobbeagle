@@ -240,9 +240,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '匹配分数 + 投递决策',
     },
     help: help(
-      'A 0–100 candidate fit score for THIS JD, plus a clear apply call (Apply now / after fixes / clarify / skip) with a short why.',
-      '針對這份 JD 的 0–100 匹配分數，加上清楚投遞決策（現在投／修好再投／先釐清／跳過）與簡短理由。',
-      '针对这份 JD 的 0–100 匹配分数，加上清楚投递决策（现在投／修好再投／先澄清／跳过）与简短理由。',
+      'A candidate fit score for THIS JD, plus a clear apply call (Apply now / after fixes / clarify / skip) with a short why.',
+      '針對這份 JD 的匹配分數，加上清楚投遞決策（現在投／修好再投／先釐清／跳過）與簡短理由。',
+      '针对这份 JD 的匹配分数，加上清楚投递决策（现在投／修好再投／先澄清／跳过）与简短理由。',
     ),
     snapshot: t('Core fit + apply call', '核心匹配 + 投遞決策', '核心匹配 + 投递决策', 4),
     guide: t('Full Snapshot + score implications', '完整 Snapshot + 分數意涵', '完整 Snapshot + 分数意涵', 5),

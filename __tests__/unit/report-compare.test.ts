@@ -40,6 +40,9 @@ describe('report-compare', () => {
       expect(row.feature.en.length).toBeGreaterThan(0);
       expect(row.help.en.length).toBeGreaterThan(20);
       expect(row.help['zh-TW'].length).toBeGreaterThan(10);
+      expect(`${row.help.en} ${row.help['zh-TW']} ${row.help['zh-CN']}`).not.toMatch(
+        /50\s*[–-]\s*100|0\s*[–-]\s*100/,
+      );
       expect(row.snapshot.text.en.length).toBeGreaterThan(0);
       expect(row.guide.text.en.length).toBeGreaterThan(0);
       if (row.section === 'shared') {

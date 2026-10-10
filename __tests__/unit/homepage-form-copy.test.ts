@@ -13,9 +13,16 @@ describe('homepage form copy', () => {
     expect(t.launchStep).toBe('4. Launch');
     expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');
     expect(t.snapshotBlurb).toContain('one-page fit check');
-    expect(t.snapshotBlurb).not.toMatch(/50/);
     expect(t.sampleLink).toBe('View report samples');
     expect(t.featuresAccordion).toBe('Jobbeagle advantages');
+  });
+
+  it('does not advertise the backend score floor to customers', () => {
+    const scoreBand = /50\s*[–-]\s*100|0\s*[–-]\s*100|不低於\s*50|不低于\s*50/;
+    for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
+      expect(copy.snapshotBlurb).not.toMatch(scoreBand);
+      expect(copy.strategyBlurb).not.toMatch(scoreBand);
+    }
   });
 
   it('covers every app language', () => {
