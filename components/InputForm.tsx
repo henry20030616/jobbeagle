@@ -933,7 +933,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       rel="noopener noreferrer"
                       className="compare-panel-label flex h-full w-full min-h-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-2xl font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50"
                     >
-                      <FileText className="h-8 w-8 shrink-0 text-indigo-300" aria-hidden />
+                      <FileText className="h-[3.75rem] w-[3.75rem] shrink-0 text-indigo-300" aria-hidden />
                       {t.sampleLink}
                     </Link>
                   )}
