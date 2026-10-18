@@ -100,13 +100,13 @@ function itemCopy(language: AppLanguage): ItemCopy {
       questions: s ? '面试真题准备' : '面試真題準備',
       negotiate: s ? '面试谈判建议' : '面試談判建議',
       nav: {
-        core: s ? '1 职位核心' : '1 職位核心',
-        market: s ? '2 市场薪资' : '2 市場薪資',
-        fit: s ? '3 匹配履历' : '3 匹配履歷',
-        land: s ? '4 薪资落点' : '4 薪資落點',
-        company: s ? '5 公司评价' : '5 公司評價',
-        questions: s ? '6 面试真题' : '6 面試真題',
-        negotiate: s ? '7 谈判建议' : '7 談判建議',
+        core: s ? '职位核心' : '職位核心',
+        market: s ? '市场薪资' : '市場薪資',
+        fit: s ? '匹配履历' : '匹配履歷',
+        land: s ? '薪资落点' : '薪資落點',
+        company: s ? '公司评价' : '公司評價',
+        questions: s ? '面试真题' : '面試真題',
+        negotiate: s ? '谈判建议' : '談判建議',
       },
       conditions: s ? '关键条件' : '關鍵條件',
       duties: s ? '关键职责' : '關鍵職責',
@@ -181,13 +181,13 @@ function itemCopy(language: AppLanguage): ItemCopy {
     questions: 'Interview questions',
     negotiate: 'Negotiation',
     nav: {
-      core: '1 Role core',
-      market: '2 Market pay',
-      fit: '3 Fit',
-      land: '4 Pay landing',
-      company: '5 Company',
-      questions: '6 Questions',
-      negotiate: '7 Negotiation',
+      core: 'Role core',
+      market: 'Market pay',
+      fit: 'Fit',
+      land: 'Pay landing',
+      company: 'Company',
+      questions: 'Questions',
+      negotiate: 'Negotiation',
     },
     conditions: 'Must-haves',
     duties: 'Real duties',
@@ -349,8 +349,10 @@ function ItemBlock({
   return (
     <section className="border-t border-slate-700/90 px-5 py-4">
       <div className="mb-3">
-        <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-300">{kicker}</p>
-        <h2 className="mt-1 text-2xl font-black text-white">{title}</h2>
+        {kicker ? (
+          <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-300">{kicker}</p>
+        ) : null}
+        <h2 className={`${kicker ? 'mt-1 ' : ''}text-2xl font-black text-white`}>{title}</h2>
         <p className="mt-1 text-base leading-snug text-slate-400">{deck}</p>
       </div>
       {children}
@@ -568,13 +570,13 @@ export function SnapshotItemStack({
   const copy = itemCopy(lang);
   return (
     <>
-      <ItemBlock kicker="01 / 03" title={copy.core} deck={copy.deck.core}>
+      <ItemBlock kicker="" title={copy.core} deck={copy.deck.core}>
         <CoreBody report={report} copy={copy} />
       </ItemBlock>
-      <ItemBlock kicker="02 / 03" title={copy.market} deck={copy.deck.market}>
+      <ItemBlock kicker="" title={copy.market} deck={copy.deck.market}>
         <MarketBody report={report} copy={copy} language={lang} locked={locked} />
       </ItemBlock>
-      <ItemBlock kicker="03 / 03" title={copy.fit} deck={copy.deck.fit}>
+      <ItemBlock kicker="" title={copy.fit} deck={copy.deck.fit}>
         <FitBody report={report} copy={copy} language={lang} locked={locked} rewrites={rewrites} />
       </ItemBlock>
     </>
@@ -660,15 +662,6 @@ export function GuideItemPage({
   const lang = normalizeReportLanguage(language);
   const copy = itemCopy(lang);
   const modules = report.guide_modules;
-  const pageNo: Record<GuideItemId, string> = {
-    core: '01',
-    market: '02',
-    fit: '03',
-    land: '04',
-    company: '05',
-    questions: '06',
-    negotiate: '07',
-  };
   const title: Record<GuideItemId, string> = {
     core: copy.core,
     market: copy.market,
@@ -809,7 +802,7 @@ export function GuideItemPage({
 
   return (
     <GuideSlideShell>
-      <PageHeaderBar pageOf={`${pageNo[item]} / 07`} title={title[item]} badge={copy.badge[item]} badgeTone="sky" />
+      <PageHeaderBar pageOf="" title={title[item]} badge="" badgeTone="sky" />
       <p className="border-b border-slate-700/90 px-5 py-3 text-lg leading-relaxed text-slate-300">
         {copy.deck[item]}
       </p>

@@ -18,10 +18,10 @@ function copyFor(language: AppLanguage) {
   if (language === 'zh-TW' || language === 'zh-CN') {
     const s = language === 'zh-CN';
     return {
-      item4: s ? '4. 个人化薪资落点' : '4. 個人化薪資落點',
-      item5: s ? '5. 公司与职位评价' : '5. 公司與職位評價',
-      item6: s ? '6. 面试真题准备' : '6. 面試真題準備',
-      item7: s ? '7. 面试谈判建议' : '7. 面試談判建議',
+      item4: s ? '个人化薪资落点' : '個人化薪資落點',
+      item5: s ? '公司与职位评价' : '公司與職位評價',
+      item6: s ? '面试真题准备' : '面試真題準備',
+      item7: s ? '面试谈判建议' : '面試談判建議',
       target: s ? '战略目标价' : '戰略目標價',
       ceiling: s ? '议价天花板' : '議價天花板',
       buyer: s ? '买方 / 卖方筹码' : '買方 / 賣方籌碼',
@@ -48,10 +48,10 @@ function copyFor(language: AppLanguage) {
     };
   }
   return {
-    item4: '4. Personalized pay landing',
-    item5: '5. Company and role reputation',
-    item6: '6. Interview questions',
-    item7: '7. Negotiation',
+    item4: 'Personalized pay landing',
+    item5: 'Company and role reputation',
+    item6: 'Interview questions',
+    item7: 'Negotiation',
     target: 'Target',
     ceiling: 'Ceiling',
     buyer: 'Buyer / seller leverage',
@@ -164,7 +164,7 @@ export default function GuideSpecModules({
     ].filter((row): row is [string, string] => Boolean(row[1]));
     return (
       <GuideSlideShell>
-        <PageHeaderBar pageOf="04" title={t.item4} badge="Guide" badgeTone="emerald" />
+        <PageHeaderBar pageOf="" title={t.item4} badge="" badgeTone="emerald" />
         <HeroDualRow
           left={(
             <>
@@ -201,7 +201,7 @@ export default function GuideSpecModules({
           ) : null}
         </div>
         <div className="border-t border-slate-700/90 px-5 py-3.5">
-          <PageHeaderBar pageOf="07" title={t.item7} badge="Guide" badgeTone="violet" />
+          <PageHeaderBar pageOf="" title={t.item7} badge="" badgeTone="violet" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
             <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
               <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{t.pay}</p>
@@ -221,7 +221,7 @@ export default function GuideSpecModules({
     const company = modules.company_eval;
     return (
       <GuideSlideShell>
-        <PageHeaderBar pageOf="05" title={t.item5} badge="Guide" badgeTone="amber" />
+        <PageHeaderBar pageOf="" title={t.item5} badge="" badgeTone="amber" />
         <div className="px-5 py-3.5 space-y-3">
           <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
             <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{t.culture}</p>
@@ -253,7 +253,7 @@ export default function GuideSpecModules({
   const bank = modules.interview_bank;
   return (
     <GuideSlideShell>
-      <PageHeaderBar pageOf="06" title={t.item6} badge="20" badgeTone="sky" />
+      <PageHeaderBar pageOf="" title={t.item6} badge="" badgeTone="sky" />
       <div className="px-5 py-3.5 space-y-5">
         <section>
           <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{t.professional}</p>

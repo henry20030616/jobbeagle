@@ -165,13 +165,13 @@ describe('seven-item report layout', () => {
       'negotiate',
     ]);
     expect(guideItemNav('zh-TW').map((item) => item.label)).toEqual([
-      '1 職位核心',
-      '2 市場薪資',
-      '3 匹配履歷',
-      '4 薪資落點',
-      '5 公司評價',
-      '6 面試真題',
-      '7 談判建議',
+      '職位核心',
+      '市場薪資',
+      '匹配履歷',
+      '薪資落點',
+      '公司評價',
+      '面試真題',
+      '談判建議',
     ]);
   });
 });
