@@ -305,7 +305,7 @@ function BriefColumn({
 
 function LockLine({ children }: { children: string }) {
   return (
-    <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-base font-semibold text-amber-100">
+    <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-base font-semibold text-slate-100">
       {children}
     </p>
   );
@@ -515,12 +515,12 @@ function FitBody({
         </div>
       </div>
       <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4">
-        <p className="font-mono text-xs font-bold tracking-[0.18em] text-amber-200/80">3.2</p>
-        <p className={`${SECTION_TITLE} text-amber-100 mt-1 mb-3`}>{copy.keywords}</p>
+        <p className="font-mono text-xs font-bold tracking-[0.18em] text-slate-400">3.2</p>
+        <p className={`${SECTION_TITLE} text-slate-100 mt-1 mb-3`}>{copy.keywords}</p>
         {keywords.length > 0 ? (
           <div className="flex flex-wrap gap-2 mb-3">
             {keywords.slice(0, 8).map((word) => (
-              <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-amber-100">
+              <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
                 {word}
               </span>
             ))}
@@ -530,7 +530,7 @@ function FitBody({
           <ul className="space-y-1.5">
             {gaps.map((item) => (
               <li key={item.gap} className={`${BODY} text-slate-200 leading-snug`}>
-                <span className="font-semibold text-amber-100">{item.gap}</span>
+                <span className="font-semibold text-slate-100">{item.gap}</span>
                 {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
               </li>
             ))}
@@ -707,7 +707,7 @@ export function GuideItemPage({
             <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
           </div>
           <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 p-4">
-            <p className={`${SECTION_TITLE} text-amber-200 mb-2`}>{copy.ceiling}</p>
+            <p className={`${SECTION_TITLE} text-slate-200 mb-2`}>{copy.ceiling}</p>
             <p className="text-3xl font-black text-white">{salary.ceiling || '—'}</p>
           </div>
         </div>
@@ -752,7 +752,7 @@ export function GuideItemPage({
             {company.labor_risk ? <p className={`${BODY_MUTED} mt-2`}>{copy.labor}: {company.labor_risk}</p> : null}
           </section>
           <section className="rounded-lg border border-amber-400/40 bg-amber-500/10 p-4">
-            <p className={`${SECTION_TITLE} text-amber-200 mb-2`}>{copy.h1b}</p>
+            <p className={`${SECTION_TITLE} text-slate-200 mb-2`}>{copy.h1b}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.h1b || '—'}</p>
             <p className={`${BODY_MUTED} mt-2`}>{copy.remote}: {company.remote_sponsorship || '—'}</p>
           </section>
