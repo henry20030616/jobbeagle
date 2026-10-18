@@ -164,6 +164,8 @@ export default function FullReportDashboard({
                 report={report}
                 language={lang}
                 embedded
+                edition="guide"
+                rewrites={report.guide_modules?.resume_rewrites ?? []}
                 onNewAnalysis={onNewAnalysis}
               />
             ) : (

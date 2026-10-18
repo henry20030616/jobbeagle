@@ -42,6 +42,7 @@ import {
 } from '@/lib/offer-display';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getGuideUiCopy, type GuideUiCopy } from '@/lib/report-ui-copy';
+import GuideSpecModules, { hasGuideSpec } from '@/components/guide/GuideSpecModules';
 
 export type GuideStrategyTab = 'hiring' | 'interview' | 'salary' | 'provenance';
 
@@ -1126,6 +1127,15 @@ export default function GuideStrategyPages({
 }) {
   const lang = normalizeReportLanguage(language);
   const copy = getGuideUiCopy(lang);
+  if (tab === 'hiring' && hasGuideSpec(report, 'hiring')) {
+    return <GuideSpecModules tab="hiring" report={report} language={lang} />;
+  }
+  if (tab === 'interview' && hasGuideSpec(report, 'interview')) {
+    return <GuideSpecModules tab="interview" report={report} language={lang} />;
+  }
+  if (tab === 'salary' && hasGuideSpec(report, 'salary')) {
+    return <GuideSpecModules tab="salary" report={report} language={lang} />;
+  }
   if (tab === 'hiring') return <Page2 report={report} copy={copy} />;
   if (tab === 'interview') return <Page3 report={report} copy={copy} />;
   if (tab === 'salary') return <Page4 report={report} copy={copy} language={lang} />;

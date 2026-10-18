@@ -1,4 +1,4 @@
-import type { FullReport, LiteReport } from '@/types';
+import type { FullReport, GuideModules, GuideQuestion, LiteReport } from '@/types';
 import { normalizeFullReport, normalizeLiteReport } from '@/lib/normalize-lite-report';
 import {
   normalizeReportLanguage,
@@ -741,6 +741,64 @@ export function getSampleSnapshotReport(
   return normalizeLiteReport(raw);
 }
 
+function sampleGuideModules(): GuideModules {
+  const reported = (
+    track: GuideQuestion['track'],
+    count: number,
+  ): GuideQuestion[] =>
+    Array.from({ length: count }, (_, index) => ({
+      question: track === 'professional'
+        ? `How have you owned ACH settlement exception ${index + 1}?`
+        : `Tell me about a cross-team delivery miss ${index + 1}.`,
+      track,
+      origin: 'reported' as const,
+      proximity: 'same_company_role' as const,
+      source_url: `https://example.com/${track}/${index + 1}`,
+      source_date: `2025-${String((index % 12) + 1).padStart(2, '0')}`,
+      answer: index < 10 ? 'Use one resume fact: SQL ops pack for payment exceptions. Do not invent volume.' : '',
+    }));
+  return {
+    resume_rewrites: [
+      {
+        gap: 'ACH returns ownership is not named',
+        before: 'Supported payment operations and reconciliation.',
+        after: 'Owned daily ACH exception queue for a US payments book; closed breaks before the 2pm cutoff.',
+      },
+    ],
+    salary_land: {
+      target: '$168K TC',
+      ceiling: '$185K TC',
+      base: '$145K',
+      equity: '$12K / yr',
+      bonus: '$11K',
+      buyer_seller: 'Buyer leverage: the seat has been open. Seller leverage: adjacent ACH proof, not named ownership.',
+      sources: [{ title: 'Levels sample', url: 'https://example.com/levels' }],
+    },
+    company_eval: {
+      culture: 'Public reviews describe a written, remote-friendly ops culture with tight cutoff deadlines.',
+      labor_risk: 'No cited labor action in the sample sources.',
+      layoff_risk: 'No WARN notice in the sample window.',
+      h1b: 'Sample filings exist; selection rate is not stated on the cited page.',
+      remote_sponsorship: 'Posting says US remote. Sponsorship is not confirmed.',
+      role_reviews: 'Reviewers praise SQL depth and flag on-call during settlement incidents.',
+      sources: [{ title: 'Blind sample', url: 'https://example.com/blind' }],
+    },
+    interview_bank: {
+      professional: reported('professional', 12).slice(0, 10),
+      behavioral: reported('behavioral', 10),
+      professional_extra: reported('professional', 12).slice(10),
+      behavioral_extra: [],
+      process: 'Recruiter screen, hiring-manager case, then a panel. About three weeks in the sample shares.',
+    },
+    negotiation: {
+      pay_strategy: 'Anchor at the $168K target. If they offer the band floor, counter once toward $185K and stop.',
+      benefits_strategy: 'Ask about signing bonus and remote days only after base is on the table.',
+      script: 'I can accept at $168K total, with the base at $145K. If we need to move, the ceiling I can justify is $185K.',
+    },
+    limitations: [],
+  };
+}
+
 export function getSampleStrategyGuideReport(
   language: AppLanguage | string = 'en',
 ): FullReport {
@@ -753,5 +811,5 @@ export function getSampleStrategyGuideReport(
       deepMerge(pack.snapshot ?? {}, pack.guide ?? {}),
     );
   }
-  return normalizeFullReport(raw);
+  return normalizeFullReport({ ...raw, guide_modules: sampleGuideModules() });
 }

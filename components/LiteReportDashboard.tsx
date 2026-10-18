@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import type { LiteReport } from '@/types';
+import type { GuideResumeRewrite, LiteReport } from '@/types';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -52,6 +52,9 @@ interface LiteReportDashboardProps {
   embedded?: boolean;
   /** Show large SAMPLE mark at top of the slide (sample preview pages) */
   isSample?: boolean;
+  /** Snapshot hides paid landing and shows upgrade locks. Guide keeps the slide and shows rewrites. */
+  edition?: 'snapshot' | 'guide';
+  rewrites?: GuideResumeRewrite[];
 }
 
 /**
@@ -66,6 +69,8 @@ export default function LiteReportDashboard({
   onNewAnalysis,
   embedded = false,
   isSample = false,
+  edition = 'snapshot',
+  rewrites = [],
 }: LiteReportDashboardProps) {
   const lang = normalizeReportLanguage(language);
   const t = getSnapshotUiCopy(lang);
@@ -75,13 +80,16 @@ export default function LiteReportDashboard({
   const [showBeagleScale, setShowBeagleScale] = React.useState(false);
   const beagleTiers = getBeagleTierLegend(score, lang);
 
+  const locked = edition === 'snapshot';
+  const conditions = (report.role_read?.hiring_signals ?? []).slice(0, 5);
+  const duties = (report.role_read?.responsibilities ?? []).slice(0, 5);
   const strengths = (report.proof_map?.strengths ?? report.matching_strengths ?? []).slice(0, 4);
   const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
   const offer = report.expected_offer;
   const offerRange = formatOfferRange(offer);
   const predictedOffer = formatPredictedOffer(offer);
   const offerEval = offerEvaluationSummary(offer, lang);
-  const tc = offer?.tc_breakdown;
+  const tc = locked ? undefined : offer?.tc_breakdown;
   const tcRows = (
     [
       [t.base, tc?.base],
@@ -187,6 +195,39 @@ export default function LiteReportDashboard({
             </div>
           </div>
         </header>
+
+        {(conditions.length > 0 || duties.length > 0) && (
+          <div className="border-b border-slate-700/90 px-5 py-3.5">
+            <div className="grid grid-cols-2 gap-3">
+              <section className="min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+                <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
+                  {lang === 'zh-TW' || lang === 'zh-CN' ? '關鍵條件' : 'Must-haves'}
+                </p>
+                <ul className="space-y-1.5">
+                  {conditions.map((item) => (
+                    <li key={item} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              <section className="min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+                <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>
+                  {lang === 'zh-TW' || lang === 'zh-CN' ? '關鍵職責' : 'Real duties'}
+                </p>
+                <ul className="space-y-1.5">
+                  {duties.map((item) => (
+                    <li key={item} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-sky-300/90" aria-hidden />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+          </div>
+        )}
 
         {/* Heroes: Fit | Offer — same title row + circle row so gauges align */}
         <div className="grid grid-cols-2 items-stretch divide-x divide-slate-700/90">
@@ -323,10 +364,17 @@ export default function LiteReportDashboard({
                 )}
               </div>
 
-              {predictedOffer ? (
+              {!locked && predictedOffer ? (
                 <PredictedLandSquircle value={predictedOffer} />
               ) : null}
             </div>
+            {locked ? (
+              <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-base font-semibold text-amber-100">
+                {lang === 'zh-TW' || lang === 'zh-CN'
+                  ? '🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解'
+                  : '🔒 Upgrade to Interview Guide for your pay landing and TC split'}
+              </p>
+            ) : null}
           </section>
         </div>
 
@@ -483,6 +531,26 @@ export default function LiteReportDashboard({
                     </li>
                   ))}
                 </ul>
+                {locked ? (
+                  <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-base font-semibold text-amber-100">
+                    {lang === 'zh-TW' || lang === 'zh-CN'
+                      ? '🔒 升級 Interview Guide 可解鎖針對該硬傷的具體修改範例與滿分話術'
+                      : '🔒 Upgrade to Interview Guide for line-by-line rewrites of these gaps'}
+                  </p>
+                ) : null}
+                {!locked && rewrites.length > 0 ? (
+                  <ul className="mt-3 space-y-2 border-t border-sky-400/25 pt-3">
+                    {rewrites.map((item) => (
+                      <li key={item.gap} className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3">
+                        <p className={`${BODY} font-semibold text-emerald-100`}>{item.gap}</p>
+                        {item.before ? (
+                          <p className={`${BODY_MUTED} mt-1`}>Before: {item.before}</p>
+                        ) : null}
+                        <p className={`${BODY} mt-1 text-slate-100`}>After: {item.after}</p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </section>
             </div>
           </div>
