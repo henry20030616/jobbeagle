@@ -12,7 +12,12 @@ import {
   PageHeaderBar,
   SECTION_TITLE,
 } from '@/components/guide/GuideSlideChrome';
-import { evidenceTierLabel, formatOfferRange, offerEvaluationSummary } from '@/lib/offer-display';
+import {
+  evidenceTierLabel,
+  formatOfferRange,
+  payEstimateScope,
+  payEstimateSentence,
+} from '@/lib/offer-display';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 import type { AppLanguage } from '@/lib/language-context';
@@ -42,6 +47,9 @@ type ItemCopy = {
   conditions: string;
   duties: string;
   band: string;
+  where: string;
+  role: string;
+  level: string;
   score: string;
   keywords: string;
   apply: string;
@@ -102,6 +110,9 @@ function itemCopy(language: AppLanguage): ItemCopy {
       conditions: s ? '关键条件' : '關鍵條件',
       duties: s ? '关键职责' : '關鍵職責',
       band: s ? '市场总包区间' : '市場總包區間',
+      where: s ? '地点' : '地點',
+      role: s ? '职位' : '職位',
+      level: s ? '职级或年资' : '職級或年資',
       score: s ? '匹配分数与灯号' : '匹配分數與燈號',
       keywords: s ? '欠缺的硬性关键字' : '欠缺的硬性關鍵字',
       apply: s ? '应征建议' : '應徵建議',
@@ -179,6 +190,9 @@ function itemCopy(language: AppLanguage): ItemCopy {
     conditions: 'Must-haves',
     duties: 'Real duties',
     band: 'Market total-comp range',
+    where: 'Where',
+    role: 'Role',
+    level: 'Level or years',
     score: 'Score and signal',
     keywords: 'Missing hard keywords',
     apply: 'Whether to apply',
@@ -381,27 +395,36 @@ function MarketBody({
 }) {
   const offer = report.expected_offer;
   const range = formatOfferRange(offer);
-  const evalSummary = offerEvaluationSummary(offer, language);
-  const where = [offer?.region, offer?.currency].filter(Boolean).join(' · ');
+  const scope = payEstimateScope(report, language);
   const tier = offer?.evidence_tier ? evidenceTierLabel(offer.evidence_tier, language) : '';
+  const facts = [
+    [copy.where, scope.where],
+    [copy.role, scope.role],
+    [copy.level, scope.level],
+  ] as const;
   return (
     <div className="overflow-hidden rounded-xl border border-emerald-400/55 bg-emerald-500/10">
-      <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-emerald-400/20">
-        <div className="px-5 py-4">
-          <p className="font-mono text-xs font-bold tracking-[0.18em] text-emerald-200/80">2.1</p>
-          <p className={`${SECTION_TITLE} text-emerald-200 mt-1`}>{copy.band}</p>
-          <p className={`${BODY_MUTED} mt-2`}>{[where, tier].filter(Boolean).join(' · ') || 'USD'}</p>
-          {range ? (
-            <p className="mt-2 text-4xl sm:text-5xl font-black text-white tracking-tight">{range}</p>
-          ) : (
-            <p className="mt-2 text-2xl font-bold text-slate-200">{copy.noBand}</p>
-          )}
-        </div>
-        <div className="px-5 py-4 bg-black/15">
-          <p className="font-mono text-xs font-bold tracking-[0.18em] text-emerald-200/70">NOTE</p>
-          <p className="mt-2 text-xl font-bold text-emerald-50">{evalSummary.headline}</p>
-          <p className={`${BODY} text-slate-200 leading-relaxed mt-2`}>{evalSummary.body}</p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-emerald-400/20 border-b border-emerald-400/20">
+        {facts.map(([label, value]) => (
+          <div key={label} className="px-4 py-3 min-w-0">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200/80">{label}</p>
+            <p className={`${BODY} mt-1 font-semibold text-white leading-snug`}>{value}</p>
+          </div>
+        ))}
+      </div>
+      <div className="px-5 py-4">
+        <p className={`${SECTION_TITLE} text-emerald-200`}>{copy.band}</p>
+        <p className={`${BODY_MUTED} mt-2`}>{[offer?.currency || 'USD', tier].filter(Boolean).join(' · ')}</p>
+        {range ? (
+          <p className="mt-2 text-4xl sm:text-5xl font-black text-white tracking-tight">{range}</p>
+        ) : (
+          <p className="mt-2 text-2xl font-bold text-slate-200">{copy.noBand}</p>
+        )}
+        {range ? (
+          <p className={`${BODY} text-slate-200 leading-relaxed mt-3`}>
+            {payEstimateSentence(scope, range, offer?.currency || 'USD', language)}
+          </p>
+        ) : null}
       </div>
       {locked ? <div className="px-5 pb-4"><LockLine>{copy.lockPay}</LockLine></div> : null}
     </div>

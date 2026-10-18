@@ -5,6 +5,8 @@ import {
   formatPredictedOffer,
   hasOfferRange,
   offerEvaluationSummary,
+  payEstimateScope,
+  payEstimateSentence,
   parseMoneyAmount,
   predictedLandGaugeValue,
 } from '@/lib/offer-display';
@@ -155,5 +157,44 @@ describe('offerEvaluationSummary', () => {
     expect(summary.headline).toContain('$160K – $190K');
     expect(summary.body).toMatch(/employer disclosed/i);
     expect(summary.note).toContain('Mid-band');
+  });
+});
+
+describe('payEstimateScope', () => {
+  it('names place, title, and years instead of a vague level', () => {
+    const scope = payEstimateScope(
+      {
+        job_title: 'Senior Business Analyst',
+        expected_offer: {
+          posted_range: null,
+          p25: '$145K',
+          p50: '$165K',
+          p75: '$190K',
+          currency: 'USD',
+          region: '美國 · 友善遠端',
+          target_gap: '',
+          evidence_tier: 'C',
+          sources: [],
+        },
+        hard_filter: {
+          items: [
+            {
+              requirement: '5+ 年 BA／產品營運經驗',
+              evidence: '履歷列出金融科技營運相關約 6 年經驗',
+            },
+          ],
+        },
+      },
+      'zh-TW',
+    );
+    expect(scope.where).toBe('美國 · 友善遠端');
+    expect(scope.role).toBe('Senior Business Analyst');
+    expect(scope.level).toContain('5+ 年');
+    expect(scope.level).toContain('6 年');
+    const sentence = payEstimateSentence(scope, '$145K – $190K', 'USD', 'zh-TW');
+    expect(sentence).toContain('地點：美國 · 友善遠端');
+    expect(sentence).toContain('職位：Senior Business Analyst');
+    expect(sentence).toContain('5+ 年');
+    expect(sentence).not.toMatch(/此職級/);
   });
 });

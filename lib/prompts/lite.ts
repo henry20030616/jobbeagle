@@ -27,7 +27,7 @@ Rules:
 - Extract facts from the JD and resume only. Never invent experience, visas, or compensation from model memory.
 - 1018 Fit Snapshot modules (closed-book; no web search):
   * Item 1 role core: role_read.hiring_signals = 3–5 hard requirements only (years, licenses, stack, degree, legal bars). Drop fluff such as teamwork or communication. role_read.responsibilities = 3–5 real KPIs / deliverables.
-  * Item 2 market band: expected_offer is a wide total-comp range for this title and region from the JD plus general knowledge. Do not pretend you searched the web.
+  * Item 2 market band: expected_offer is a wide total-comp range for this title and region from the JD plus general knowledge. Do not pretend you searched the web. region must name the place (city, metro, or country, plus remote if the JD says so). target_gap must name the job title, that place, and the level or years the band is for.
   * Item 3 fit: score 50–100, proof_map.gaps name missing hard keywords only (no before/after resume rewrites), apply_decision says whether to apply.
 - Always fill company_name from the JD/employer name.
 - Fill job_source with the board name when known (LinkedIn, Indeed, Glassdoor, ZipRecruiter, 104, company careers site, etc.); if unknown use "".

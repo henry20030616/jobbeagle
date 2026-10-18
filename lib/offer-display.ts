@@ -9,6 +9,90 @@ function cleanMoney(v: string | null | undefined): string {
   return v.trim();
 }
 
+export type PayEstimateScope = {
+  where: string;
+  role: string;
+  level: string;
+};
+
+const PAY_SCOPE_MISSING: Record<AppLanguage, { where: string; role: string; level: string }> = {
+  en: {
+    where: 'Location not stated on the posting',
+    role: 'Job title not stated',
+    level: 'Level or years not stated',
+  },
+  'zh-TW': {
+    where: '職缺沒有寫明地點',
+    role: '職缺沒有寫明職位',
+    level: '職缺沒有寫明職級或年資',
+  },
+  'zh-CN': {
+    where: '职位没有写明地点',
+    role: '职位没有写明职位名称',
+    level: '职位没有写明职级或年资',
+  },
+  es: {
+    where: 'El anuncio no indica el lugar',
+    role: 'El anuncio no indica el puesto',
+    level: 'El anuncio no indica nivel ni años',
+  },
+  hi: {
+    where: 'पोस्टिंग में जगह नहीं है',
+    role: 'पोस्टिंग में पद नहीं है',
+    level: 'पोस्टिंग में स्तर या वर्षों का उल्लेख नहीं',
+  },
+  ar: {
+    where: 'الإعلان لا يذكر المكان',
+    role: 'الإعلان لا يذكر المسمى',
+    level: 'الإعلان لا يذكر المستوى أو سنوات الخبرة',
+  },
+};
+
+const YEAR_SIGNAL = /年|years?|yoe|\byrs\b/i;
+
+/** Place, job title, and level or years the market band is about. */
+export function payEstimateScope(
+  report: {
+    job_title?: string | null;
+    expected_offer?: ExpectedOfferRange | null;
+    hard_filter?: { items?: Array<{ requirement?: string; evidence?: string }> } | null;
+    market_positioning?: { rationale?: string | null } | null;
+  },
+  language: AppLanguage | string = 'en',
+): PayEstimateScope {
+  const lang = normalizeReportLanguage(language);
+  const missing = PAY_SCOPE_MISSING[lang];
+  const where = report.expected_offer?.region?.trim() || missing.where;
+  const role = report.job_title?.trim() || missing.role;
+  const yearItem = (report.hard_filter?.items ?? []).find((item) =>
+    YEAR_SIGNAL.test(`${item.requirement ?? ''} ${item.evidence ?? ''}`),
+  );
+  const fromFilter = [yearItem?.requirement?.trim(), yearItem?.evidence?.trim()]
+    .filter((part): part is string => Boolean(part))
+    .join(' — ');
+  const level = fromFilter || report.market_positioning?.rationale?.trim() || missing.level;
+  return { where, role, level };
+}
+
+export function payEstimateSentence(
+  scope: PayEstimateScope,
+  range: string,
+  currency: string,
+  language: AppLanguage | string = 'en',
+): string {
+  const lang = normalizeReportLanguage(language);
+  const money = currency.trim() || 'USD';
+  const copy: Record<AppLanguage, string> = {
+    en: `Where: ${scope.where}. Role: ${scope.role}. Level or years: ${scope.level}. The market total for that scope is about ${range} (${money}). This is not the company’s offer.`,
+    'zh-TW': `地點：${scope.where}。職位：${scope.role}。職級或年資：${scope.level}。這個範圍的市場總包大約是 ${range}（${money}）。這不是這家公司的報價。`,
+    'zh-CN': `地点：${scope.where}。职位：${scope.role}。职级或年资：${scope.level}。这个范围的市场总包大约是 ${range}（${money}）。这不是这家公司的报价。`,
+    es: `Lugar: ${scope.where}. Puesto: ${scope.role}. Nivel o años: ${scope.level}. El total de mercado para ese alcance ronda ${range} (${money}). No es la oferta de la empresa.`,
+    hi: `जगह: ${scope.where}. पद: ${scope.role}. स्तर या वर्ष: ${scope.level}. इस दायरे का बाज़ार कुल लगभग ${range} (${money}) है। यह कंपनी का ऑफ़र नहीं है।`,
+    ar: `المكان: ${scope.where}. المسمى: ${scope.role}. المستوى أو السنوات: ${scope.level}. إجمالي السوق لهذا النطاق حوالي ${range} (${money}). هذا ليس عرض الشركة.`,
+  };
+  return copy[lang];
+}
+
 const TIER_LABELS: Record<AppLanguage, Record<'A' | 'B' | 'C' | 'D' | 'default', string>> = {
   en: {
     A: 'From the job posting',
