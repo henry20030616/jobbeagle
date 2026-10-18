@@ -32,7 +32,7 @@ function copyFor(language: AppLanguage) {
       culture: s ? '公司情报' : '公司情報',
       layoff: s ? '裁员风险' : '裁員風險',
       labor: s ? '劳工争议' : '勞工爭議',
-      h1b: s ? '1.2 签证赞助状况评估' : '1.2 簽證贊助狀況評估',
+      h1b: s ? '签证赞助状况评估' : '簽證贊助狀況評估',
       remote: 'Remote / Sponsorship',
       roleReviews: s ? '职位评价' : '職位評價',
       professional: s ? '专业题' : '專業題',
@@ -42,8 +42,8 @@ function copyFor(language: AppLanguage) {
       extra: s ? '补充资料列表' : '補充資料列表',
       answer: s ? '建议答案' : '建議答案',
       process: s ? '面试流程' : '面試流程',
-      pay: s ? '1.1 薪资筹码策略' : '1.1 薪資籌碼策略',
-      benefits: s ? '1.2 权益与福利争取' : '1.2 權益與福利爭取',
+      pay: s ? '薪资筹码策略' : '薪資籌碼策略',
+      benefits: s ? '权益与福利争取' : '權益與福利爭取',
       source: s ? '来源' : '來源',
     };
   }
@@ -62,7 +62,7 @@ function copyFor(language: AppLanguage) {
     culture: 'Company intel',
     layoff: 'Layoff risk',
     labor: 'Labor risk',
-    h1b: '1.2 Visa sponsorship',
+    h1b: 'Visa sponsorship',
     remote: 'Remote / Sponsorship',
     roleReviews: 'Role reviews',
     professional: 'Professional',
@@ -72,8 +72,8 @@ function copyFor(language: AppLanguage) {
     extra: 'Additional reported questions',
     answer: 'Suggested answer',
     process: 'Interview process',
-    pay: '1.1 Pay leverage',
-    benefits: '1.2 Benefits to negotiate',
+    pay: 'Pay leverage',
+    benefits: 'Benefits to negotiate',
     source: 'Source',
   };
 }

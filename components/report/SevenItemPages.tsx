@@ -132,21 +132,21 @@ function itemCopy(language: AppLanguage): ItemCopy {
       equity: s ? '股票' : '股票',
       bonus: s ? '奖金' : '獎金',
       buyer: s ? '买方 / 卖方筹码' : '買方 / 賣方籌碼',
-      culture: s ? '1.1 公司情报' : '1.1 公司情報',
+      culture: s ? '公司情报' : '公司情報',
       layoff: s ? '裁员风险' : '裁員風險',
       labor: s ? '劳工争议' : '勞工爭議',
-      h1b: s ? '1.2 签证赞助状况评估' : '1.2 簽證贊助狀況評估',
+      h1b: s ? '签证赞助状况评估' : '簽證贊助狀況評估',
       remote: 'Remote / Sponsorship',
-      roleReviews: s ? '2. 职位评价' : '2. 職位評價',
+      roleReviews: s ? '职位评价' : '職位評價',
       professional: s ? '专业题' : '專業題',
       behavioral: s ? '行为题' : '行為題',
       reported: s ? '网络真题' : '網路真題',
       predicted: s ? 'AI 预测题' : 'AI 預測題',
       extra: s ? '补充资料列表' : '補充資料列表',
       answer: s ? '建议答案' : '建議答案',
-      process: s ? '2. 面试流程' : '2. 面試流程',
-      pay: s ? '1.1 薪资筹码策略' : '1.1 薪資籌碼策略',
-      benefits: s ? '1.2 权益与福利争取' : '1.2 權益與福利爭取',
+      process: s ? '面试流程' : '面試流程',
+      pay: s ? '薪资筹码策略' : '薪資籌碼策略',
+      benefits: s ? '权益与福利争取' : '權益與福利爭取',
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
@@ -154,7 +154,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       dutiesHint: s ? '入职后真正要扛的产出' : '入職後真正要扛的產出',
       deck: {
         core: s ? '从职位原文抽出。只留筛人条件，以及到职后要扛的职责。' : '從職缺原文抽出。只留篩人條件，以及到職後要扛的職責。',
-        market: s ? '依职位与地区给出的宽总包。个人落点在第 4 项。' : '依職缺與地區給出的寬總包。個人落點在第 4 項。',
+        market: s ? '依职位与地区给出的宽总包。个人落点在面试指南。' : '依職缺與地區給出的寬總包。個人落點在面試指南。',
         fit: s ? '分数是适配灯号。下方是履历对不上的硬关键字。' : '分數是適配燈號。下方是履歷對不上的硬關鍵字。',
         land: s ? '这一席你比较可能落到的总包，以及底薪、股票、奖金。' : '這一席你比較可能落到的總包，以及底薪、股票、獎金。',
         company: s ? '公开来源里的文化、裁员、H-1B，以及这个职位的评价。' : '公開來源裡的文化、裁員、H-1B，以及這個職位的評價。',
@@ -209,21 +209,21 @@ function itemCopy(language: AppLanguage): ItemCopy {
     equity: 'Equity',
     bonus: 'Bonus',
     buyer: 'Buyer / seller leverage',
-    culture: '1.1 Company intel',
+    culture: 'Company intel',
     layoff: 'Layoff risk',
     labor: 'Labor risk',
-    h1b: '1.2 Visa sponsorship',
+    h1b: 'Visa sponsorship',
     remote: 'Remote / Sponsorship',
-    roleReviews: '2. Role reviews',
+    roleReviews: 'Role reviews',
     professional: 'Professional',
     behavioral: 'Behavioral',
     reported: 'Reported question',
     predicted: 'AI prediction',
     extra: 'Additional reported questions',
     answer: 'Suggested answer',
-    process: '2. Interview process',
-    pay: '1.1 Pay leverage',
-    benefits: '1.2 Benefits to negotiate',
+    process: 'Interview process',
+    pay: 'Pay leverage',
+    benefits: 'Benefits to negotiate',
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
@@ -231,7 +231,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     dutiesHint: 'The work this seat actually owns.',
     deck: {
       core: 'Pulled from the posting. Must-haves that screen people, and the work the seat owns.',
-      market: 'A wide total-comp band for this role and region. Your landing is item 4.',
+      market: 'A wide total-comp band for this role and region. Your landing is in the Interview Guide.',
       fit: 'The score is the fit signal. Below are the hard keywords the resume does not show.',
       land: 'Where you are likely to land, split into base, equity, and bonus.',
       company: 'Public culture, layoff, H-1B, and what people say about this role.',
@@ -258,47 +258,35 @@ export function guideItemNav(language?: AppLanguage | string): Array<{ id: Guide
 function BriefRows({ items }: { items: string[] }) {
   if (items.length === 0) return null;
   return (
-    <ol className="divide-y divide-white/10">
-      {items.map((item, index) => (
-        <li key={item} className="flex gap-3 py-3 first:pt-1 last:pb-1">
-          <span className="w-8 shrink-0 pt-0.5 font-mono text-sm font-bold tabular-nums text-indigo-200/90">
-            {String(index + 1).padStart(2, '0')}
-          </span>
+    <ul className="space-y-2 py-1">
+      {items.map((item) => (
+        <li key={item} className="flex gap-2.5">
+          <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
           <span className={`${BODY} font-medium text-slate-100 leading-snug`}>{item}</span>
         </li>
       ))}
-    </ol>
+    </ul>
   );
 }
 
 function BriefColumn({
-  kicker,
   title,
   hint,
-  count,
   accent,
   children,
 }: {
-  kicker: string;
   title: string;
   hint: string;
-  count: number;
   accent: string;
   children: React.ReactNode;
 }) {
   return (
     <section className={`min-w-0 overflow-hidden rounded-xl border ${accent}`}>
-      <header className="flex items-start justify-between gap-3 border-b border-white/10 bg-black/20 px-4 py-3">
-        <div className="min-w-0">
-          <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-200/80">{kicker}</p>
-          <h3 className="mt-1 text-xl font-black text-white">{title}</h3>
-          <p className="mt-1 text-base leading-snug text-slate-400">{hint}</p>
-        </div>
-        <span className="rounded-md border border-white/15 bg-slate-950/50 px-2.5 py-1 font-mono text-sm font-bold tabular-nums text-slate-100">
-          {String(count).padStart(2, '0')}
-        </span>
+      <header className="border-b border-white/10 bg-black/20 px-4 py-3">
+        <h3 className="text-xl font-black text-white">{title}</h3>
+        <p className="mt-1 text-base leading-snug text-slate-400">{hint}</p>
       </header>
-      <div className="px-4 py-2">{children}</div>
+      <div className="px-4 py-3">{children}</div>
     </section>
   );
 }
@@ -366,19 +354,15 @@ function CoreBody({ report, copy }: { report: LiteReport; copy: ItemCopy }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       <BriefColumn
-        kicker="1.1"
         title={copy.conditions}
         hint={copy.conditionsHint}
-        count={conditions.length}
         accent="border-sky-400/50 bg-indigo-500/10"
       >
         {conditions.length > 0 ? <BriefRows items={conditions} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
       </BriefColumn>
       <BriefColumn
-        kicker="1.2"
         title={copy.duties}
         hint={copy.dutiesHint}
-        count={duties.length}
         accent="border-sky-400/50 bg-slate-900/40"
       >
         {duties.length > 0 ? <BriefRows items={duties} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
@@ -463,8 +447,7 @@ function FitBody({
     <div className="space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="rounded-xl border border-sky-400/50 bg-indigo-500/10 p-4">
-          <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-200/80">3.1</p>
-          <p className={`${SECTION_TITLE} text-indigo-200 mt-1 mb-3`}>{copy.score}</p>
+          <p className={`${SECTION_TITLE} text-indigo-200 mb-3`}>{copy.score}</p>
           <div className="flex items-center gap-4">
             <BeagleIcon
               className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
@@ -496,8 +479,7 @@ function FitBody({
           {verdict ? <p className={`${BODY} text-slate-200 leading-relaxed mt-3`}>{verdict}</p> : null}
         </div>
         <div className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-4">
-          <p className="font-mono text-xs font-bold tracking-[0.18em] text-violet-200/80">3.3</p>
-          <p className={`${SECTION_TITLE} text-violet-200 mt-1 mb-3`}>
+          <p className={`${SECTION_TITLE} text-violet-200 mb-3`}>
             {(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}
           </p>
           {apply?.reason ? (
@@ -515,8 +497,7 @@ function FitBody({
         </div>
       </div>
       <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4">
-        <p className="font-mono text-xs font-bold tracking-[0.18em] text-slate-400">3.2</p>
-        <p className={`${SECTION_TITLE} text-slate-100 mt-1 mb-3`}>{copy.keywords}</p>
+        <p className={`${SECTION_TITLE} text-slate-100 mb-3`}>{copy.keywords}</p>
         {keywords.length > 0 ? (
           <div className="flex flex-wrap gap-2 mb-3">
             {keywords.slice(0, 8).map((word) => (
@@ -527,11 +508,14 @@ function FitBody({
           </div>
         ) : null}
         {gaps.length > 0 ? (
-          <ul className="space-y-1.5">
+          <ul className="space-y-2">
             {gaps.map((item) => (
-              <li key={item.gap} className={`${BODY} text-slate-200 leading-snug`}>
-                <span className="font-semibold text-slate-100">{item.gap}</span>
-                {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
+              <li key={item.gap} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
+                <span>
+                  <span className="font-semibold text-slate-100">{item.gap}</span>
+                  {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
+                </span>
               </li>
             ))}
           </ul>
