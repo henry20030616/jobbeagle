@@ -3,7 +3,8 @@
 import React from 'react';
 import type { FullReport, GuideQuestion, GuideResumeRewrite, GuideSource, LiteReport } from '@/types';
 import { ExternalLink } from 'lucide-react';
-import { getScoreInfo } from '@/components/AnalysisDashboard';
+import { PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from 'recharts';
+import { BeagleIcon, getScoreInfo } from '@/components/AnalysisDashboard';
 import {
   BODY,
   BODY_MUTED,
@@ -72,19 +73,23 @@ type ItemCopy = {
   sources: string;
   empty: string;
   noBand: string;
+  conditionsHint: string;
+  dutiesHint: string;
+  deck: Record<GuideItemId, string>;
+  badge: Record<GuideItemId, string>;
 };
 
 function itemCopy(language: AppLanguage): ItemCopy {
   if (language === 'zh-TW' || language === 'zh-CN') {
     const s = language === 'zh-CN';
     return {
-      core: s ? '1. 职位核心解析' : '1. 職位核心解析',
-      market: s ? '2. 市场薪资水准' : '2. 市場薪資水準',
-      fit: s ? '3. 匹配分数、履历分析' : '3. 匹配分數、履歷分析',
-      land: s ? '4. 个人化薪资落点' : '4. 個人化薪資落點',
-      company: s ? '5. 公司与职位评价' : '5. 公司與職位評價',
-      questions: s ? '6. 面试真题准备' : '6. 面試真題準備',
-      negotiate: s ? '7. 面试谈判建议' : '7. 面試談判建議',
+      core: s ? '职位核心解析' : '職位核心解析',
+      market: s ? '市场薪资水准' : '市場薪資水準',
+      fit: s ? '匹配分数、履历分析' : '匹配分數、履歷分析',
+      land: s ? '个人化薪资落点' : '個人化薪資落點',
+      company: s ? '公司与职位评价' : '公司與職位評價',
+      questions: s ? '面试真题准备' : '面試真題準備',
+      negotiate: s ? '面试谈判建议' : '面試談判建議',
       nav: {
         core: s ? '1 职位核心' : '1 職位核心',
         market: s ? '2 市场薪资' : '2 市場薪資',
@@ -132,16 +137,36 @@ function itemCopy(language: AppLanguage): ItemCopy {
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
+      conditionsHint: s ? '用来筛人的硬指标，不含公关句' : '用來篩人的硬指標，不含公關句',
+      dutiesHint: s ? '入职后真正要扛的产出' : '入職後真正要扛的產出',
+      deck: {
+        core: s ? '从职位原文抽出。只留筛人条件，以及到职后要扛的职责。' : '從職缺原文抽出。只留篩人條件，以及到職後要扛的職責。',
+        market: s ? '依职位与地区给出的宽总包。个人落点在第 4 项。' : '依職缺與地區給出的寬總包。個人落點在第 4 項。',
+        fit: s ? '分数是适配灯号。下方是履历对不上的硬关键字。' : '分數是適配燈號。下方是履歷對不上的硬關鍵字。',
+        land: s ? '这一席你比较可能落到的总包，以及底薪、股票、奖金。' : '這一席你比較可能落到的總包，以及底薪、股票、獎金。',
+        company: s ? '公开来源里的文化、裁员、H-1B，以及这个职位的评价。' : '公開來源裡的文化、裁員、H-1B，以及這個職位的評價。',
+        questions: s ? '近三年专业题与行为题各 10 题。真题附来源。' : '近三年專業題與行為題各 10 題。真題附來源。',
+        negotiate: s ? '先谈总包与底薪。底薪定了，再谈签约金、股票、远端与休假。' : '先談總包與底薪。底薪定了，再談簽約金、股票、遠端與休假。',
+      },
+      badge: {
+        core: 'JD',
+        market: 'BAND',
+        fit: 'FIT',
+        land: 'TC',
+        company: 'INTEL',
+        questions: '20',
+        negotiate: 'OFFER',
+      },
     };
   }
   return {
-    core: '1. Role core',
-    market: '2. Market pay',
-    fit: '3. Fit score and resume',
-    land: '4. Personalized pay landing',
-    company: '5. Company and role reputation',
-    questions: '6. Interview questions',
-    negotiate: '7. Negotiation',
+    core: 'Role core',
+    market: 'Market pay',
+    fit: 'Fit score and resume',
+    land: 'Personalized pay landing',
+    company: 'Company and role reputation',
+    questions: 'Interview questions',
+    negotiate: 'Negotiation',
     nav: {
       core: '1 Role core',
       market: '2 Market pay',
@@ -185,6 +210,26 @@ function itemCopy(language: AppLanguage): ItemCopy {
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
+    conditionsHint: 'Hard screens. No posting fluff.',
+    dutiesHint: 'The work this seat actually owns.',
+    deck: {
+      core: 'Pulled from the posting. Must-haves that screen people, and the work the seat owns.',
+      market: 'A wide total-comp band for this role and region. Your landing is item 4.',
+      fit: 'The score is the fit signal. Below are the hard keywords the resume does not show.',
+      land: 'Where you are likely to land, split into base, equity, and bonus.',
+      company: 'Public culture, layoff, H-1B, and what people say about this role.',
+      questions: 'Ten professional and ten behavioral questions from the last three years, with sources.',
+      negotiate: 'Settle total and base first. Then sign-on, equity, remote, and PTO.',
+    },
+    badge: {
+      core: 'JD',
+      market: 'BAND',
+      fit: 'FIT',
+      land: 'TC',
+      company: 'INTEL',
+      questions: '20',
+      negotiate: 'OFFER',
+    },
   };
 }
 
@@ -193,17 +238,51 @@ export function guideItemNav(language?: AppLanguage | string): Array<{ id: Guide
   return GUIDE_ITEM_IDS.map((id) => ({ id, label: copy.nav[id] }));
 }
 
-function BulletList({ items }: { items: string[] }) {
+function BriefRows({ items }: { items: string[] }) {
   if (items.length === 0) return null;
   return (
-    <ul className="space-y-1.5">
-      {items.map((item) => (
-        <li key={item} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-          <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-          <span>{item}</span>
+    <ol className="divide-y divide-white/10">
+      {items.map((item, index) => (
+        <li key={item} className="flex gap-3 py-3 first:pt-1 last:pb-1">
+          <span className="w-8 shrink-0 pt-0.5 font-mono text-sm font-bold tabular-nums text-indigo-200/90">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span className={`${BODY} font-medium text-slate-100 leading-snug`}>{item}</span>
         </li>
       ))}
-    </ul>
+    </ol>
+  );
+}
+
+function BriefColumn({
+  kicker,
+  title,
+  hint,
+  count,
+  accent,
+  children,
+}: {
+  kicker: string;
+  title: string;
+  hint: string;
+  count: number;
+  accent: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className={`min-w-0 overflow-hidden rounded-xl border ${accent}`}>
+      <header className="flex items-start justify-between gap-3 border-b border-white/10 bg-black/20 px-4 py-3">
+        <div className="min-w-0">
+          <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-200/80">{kicker}</p>
+          <h3 className="mt-1 text-xl font-black text-white">{title}</h3>
+          <p className="mt-1 text-base leading-snug text-slate-400">{hint}</p>
+        </div>
+        <span className="rounded-md border border-white/15 bg-slate-950/50 px-2.5 py-1 font-mono text-sm font-bold tabular-nums text-slate-100">
+          {String(count).padStart(2, '0')}
+        </span>
+      </header>
+      <div className="px-4 py-2">{children}</div>
+    </section>
   );
 }
 
@@ -240,15 +319,23 @@ function SourceList({ title, sources }: { title: string; sources: GuideSource[] 
 }
 
 function ItemBlock({
+  kicker,
   title,
+  deck,
   children,
 }: {
+  kicker: string;
   title: string;
+  deck: string;
   children: React.ReactNode;
 }) {
   return (
     <section className="border-t border-slate-700/90 px-5 py-4">
-      <h2 className="text-2xl font-black text-white mb-3">{title}</h2>
+      <div className="mb-3">
+        <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-300">{kicker}</p>
+        <h2 className="mt-1 text-2xl font-black text-white">{title}</h2>
+        <p className="mt-1 text-base leading-snug text-slate-400">{deck}</p>
+      </div>
       {children}
     </section>
   );
@@ -259,14 +346,24 @@ function CoreBody({ report, copy }: { report: LiteReport; copy: ItemCopy }) {
   const duties = (report.role_read?.responsibilities ?? []).slice(0, 5);
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div className="min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-        <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.conditions}</p>
-        {conditions.length > 0 ? <BulletList items={conditions} /> : <p className={BODY_MUTED}>{copy.empty}</p>}
-      </div>
-      <div className="min-w-0 rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-        <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.duties}</p>
-        {duties.length > 0 ? <BulletList items={duties} /> : <p className={BODY_MUTED}>{copy.empty}</p>}
-      </div>
+      <BriefColumn
+        kicker="1.1"
+        title={copy.conditions}
+        hint={copy.conditionsHint}
+        count={conditions.length}
+        accent="border-sky-400/50 bg-indigo-500/10"
+      >
+        {conditions.length > 0 ? <BriefRows items={conditions} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
+      </BriefColumn>
+      <BriefColumn
+        kicker="1.2"
+        title={copy.duties}
+        hint={copy.dutiesHint}
+        count={duties.length}
+        accent="border-sky-400/50 bg-slate-900/40"
+      >
+        {duties.length > 0 ? <BriefRows items={duties} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
+      </BriefColumn>
     </div>
   );
 }
@@ -288,16 +385,25 @@ function MarketBody({
   const where = [offer?.region, offer?.currency].filter(Boolean).join(' · ');
   const tier = offer?.evidence_tier ? evidenceTierLabel(offer.evidence_tier, language) : '';
   return (
-    <div className="rounded-lg border border-emerald-400/55 bg-emerald-500/10 p-4">
-      <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>{copy.band}</p>
-      <p className={`${BODY_MUTED} mb-1.5`}>{[where, tier].filter(Boolean).join(' · ') || 'USD'}</p>
-      {range ? (
-        <p className="text-3xl sm:text-4xl font-black text-white tracking-tight">{range}</p>
-      ) : (
-        <p className="text-2xl font-bold text-slate-200">{copy.noBand}</p>
-      )}
-      <p className={`${BODY} text-slate-200 leading-relaxed mt-2`}>{evalSummary.body}</p>
-      {locked ? <LockLine>{copy.lockPay}</LockLine> : null}
+    <div className="overflow-hidden rounded-xl border border-emerald-400/55 bg-emerald-500/10">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-emerald-400/20">
+        <div className="px-5 py-4">
+          <p className="font-mono text-xs font-bold tracking-[0.18em] text-emerald-200/80">2.1</p>
+          <p className={`${SECTION_TITLE} text-emerald-200 mt-1`}>{copy.band}</p>
+          <p className={`${BODY_MUTED} mt-2`}>{[where, tier].filter(Boolean).join(' · ') || 'USD'}</p>
+          {range ? (
+            <p className="mt-2 text-4xl sm:text-5xl font-black text-white tracking-tight">{range}</p>
+          ) : (
+            <p className="mt-2 text-2xl font-bold text-slate-200">{copy.noBand}</p>
+          )}
+        </div>
+        <div className="px-5 py-4 bg-black/15">
+          <p className="font-mono text-xs font-bold tracking-[0.18em] text-emerald-200/70">NOTE</p>
+          <p className="mt-2 text-xl font-bold text-emerald-50">{evalSummary.headline}</p>
+          <p className={`${BODY} text-slate-200 leading-relaxed mt-2`}>{evalSummary.body}</p>
+        </div>
+      </div>
+      {locked ? <div className="px-5 pb-4"><LockLine>{copy.lockPay}</LockLine></div> : null}
     </div>
   );
 }
@@ -328,15 +434,42 @@ function FitBody({
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.score}</p>
-          <p className={`text-6xl font-black tabular-nums leading-none ${scoreInfo.color}`}>{score}</p>
-          <p className={`text-2xl font-bold mt-2 ${scoreInfo.color}`}>{scoreInfo.level}</p>
+        <div className="rounded-xl border border-sky-400/50 bg-indigo-500/10 p-4">
+          <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-200/80">3.1</p>
+          <p className={`${SECTION_TITLE} text-indigo-200 mt-1 mb-3`}>{copy.score}</p>
+          <div className="flex items-center gap-4">
+            <BeagleIcon
+              className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
+              color={scoreInfo.fill}
+              spotColor={scoreInfo.spotColor}
+              glassesColor={scoreInfo.fill}
+            />
+            <div className="relative h-32 w-32 shrink-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadialBarChart
+                  innerRadius="68%"
+                  outerRadius="100%"
+                  barSize={12}
+                  data={[{ name: 'Score', value: score, fill: scoreInfo.fill }]}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+                  <RadialBar background dataKey="value" cornerRadius={30} />
+                </RadialBarChart>
+              </ResponsiveContainer>
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <span className={`text-4xl font-black tabular-nums ${scoreInfo.color}`}>{score}</span>
+              </div>
+            </div>
+          </div>
+          <p className={`text-2xl font-black mt-3 ${scoreInfo.color}`}>{scoreInfo.level}</p>
           <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
           {verdict ? <p className={`${BODY} text-slate-200 leading-relaxed mt-3`}>{verdict}</p> : null}
         </div>
-        <div className="rounded-lg border border-violet-400/40 bg-violet-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>
+        <div className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-4">
+          <p className="font-mono text-xs font-bold tracking-[0.18em] text-violet-200/80">3.3</p>
+          <p className={`${SECTION_TITLE} text-violet-200 mt-1 mb-3`}>
             {(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}
           </p>
           {apply?.reason ? (
@@ -353,8 +486,9 @@ function FitBody({
           )}
         </div>
       </div>
-      <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 p-4">
-        <p className={`${SECTION_TITLE} text-amber-200 mb-2`}>{copy.keywords}</p>
+      <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4">
+        <p className="font-mono text-xs font-bold tracking-[0.18em] text-amber-200/80">3.2</p>
+        <p className={`${SECTION_TITLE} text-amber-100 mt-1 mb-3`}>{copy.keywords}</p>
         {keywords.length > 0 ? (
           <div className="flex flex-wrap gap-2 mb-3">
             {keywords.slice(0, 8).map((word) => (
@@ -408,13 +542,13 @@ export function SnapshotItemStack({
   const copy = itemCopy(lang);
   return (
     <>
-      <ItemBlock title={copy.core}>
+      <ItemBlock kicker="01 / 03" title={copy.core} deck={copy.deck.core}>
         <CoreBody report={report} copy={copy} />
       </ItemBlock>
-      <ItemBlock title={copy.market}>
+      <ItemBlock kicker="02 / 03" title={copy.market} deck={copy.deck.market}>
         <MarketBody report={report} copy={copy} language={lang} locked={locked} />
       </ItemBlock>
-      <ItemBlock title={copy.fit}>
+      <ItemBlock kicker="03 / 03" title={copy.fit} deck={copy.deck.fit}>
         <FitBody report={report} copy={copy} language={lang} locked={locked} rewrites={rewrites} />
       </ItemBlock>
     </>
@@ -429,11 +563,14 @@ function QuestionList({
   copy: ItemCopy;
 }) {
   return (
-    <ul className="space-y-3">
-      {items.map((item) => (
-        <li key={item.question} className="rounded-lg border border-slate-700 bg-slate-900/50 p-3">
-          <div className="flex flex-wrap items-center gap-2 mb-1.5">
-            <span className="rounded-md bg-slate-800 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-200">
+    <ol className="space-y-3">
+      {items.map((item, index) => (
+        <li key={item.question} className="rounded-xl border border-slate-600/80 bg-slate-900/60 p-4">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="font-mono text-sm font-bold tabular-nums text-slate-400">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span className="rounded-md border border-indigo-400/40 bg-indigo-500/15 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-100">
               {item.origin === 'reported' ? copy.reported : copy.predicted}
             </span>
             {item.origin === 'reported' && item.source_url ? (
@@ -450,14 +587,14 @@ function QuestionList({
           </div>
           <p className={`${BODY} font-semibold text-slate-100`}>{item.question}</p>
           {item.answer ? (
-            <p className={`${BODY_MUTED} mt-1.5 leading-relaxed`}>
-              <span className="font-semibold text-slate-300">{copy.answer}: </span>
-              {item.answer}
-            </p>
+            <div className="mt-3 rounded-lg border border-white/10 bg-black/25 px-3 py-2.5">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{copy.answer}</p>
+              <p className={`${BODY} mt-1.5 text-slate-200 leading-relaxed`}>{item.answer}</p>
+            </div>
           ) : null}
         </li>
       ))}
-    </ul>
+    </ol>
   );
 }
 
@@ -640,7 +777,10 @@ export function GuideItemPage({
 
   return (
     <GuideSlideShell>
-      <PageHeaderBar pageOf={pageNo[item]} title={title[item]} badge={pageNo[item]} badgeTone="sky" />
+      <PageHeaderBar pageOf={`${pageNo[item]} / 07`} title={title[item]} badge={copy.badge[item]} badgeTone="sky" />
+      <p className="border-b border-slate-700/90 px-5 py-3 text-lg leading-relaxed text-slate-300">
+        {copy.deck[item]}
+      </p>
       <div className="px-5 py-4">{body}</div>
     </GuideSlideShell>
   );
