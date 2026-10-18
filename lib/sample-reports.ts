@@ -837,7 +837,7 @@ function sampleGuideModules(): GuideModules {
       pay_strategy:
         'Open at the $168K total target: $145K base, $12K a year equity, $11K bonus. If the offer is the band floor, counter once toward the $185K ceiling and stop. Do not invent a competing offer.',
       benefits_strategy:
-        'After base is named, ask about sign-on, remote days, and whether this seat is sponsorship-eligible. Do not trade base for a benefit that was not offered.',
+        'After base is named, ask about sign-on, an equity refresh, remote days, and PTO. Sponsorship is a separate recruiter question. Do not trade base for a benefit that was not offered.',
       script:
         'The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I can accept $168K total, with base at $145K. If we need to move, the ceiling I can justify from that proof is $185K.',
     },
