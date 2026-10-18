@@ -593,33 +593,37 @@ function QuestionList({
   return (
     <ol className="space-y-3">
       {items.map((item, index) => (
-        <li key={item.question} className="rounded-xl border border-slate-600/80 bg-slate-900/60 p-4">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="font-mono text-sm font-bold tabular-nums text-slate-400">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            <span className="rounded-md border border-indigo-400/40 bg-indigo-500/15 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-100">
-              {item.origin === 'reported' ? copy.reported : copy.predicted}
-            </span>
-            {item.origin === 'reported' && item.source_url ? (
-              <a
-                href={item.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm font-semibold text-sky-300 hover:text-sky-200"
-              >
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-                {item.source_url.replace(/^https?:\/\//, '').slice(0, 42)}
-              </a>
-            ) : null}
-          </div>
-          <p className={`${BODY} font-semibold text-slate-100`}>{item.question}</p>
-          {item.answer ? (
-            <div className="mt-3 rounded-lg border border-white/10 bg-black/25 px-3 py-2.5">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{copy.answer}</p>
-              <p className={`${BODY} mt-1.5 text-slate-200 leading-relaxed`}>{item.answer}</p>
+        <li key={item.question} className="grid grid-cols-2 overflow-hidden rounded-xl border border-slate-600/80 bg-slate-900/60">
+          <div className="min-w-0 p-4">
+            <div className="flex items-start gap-3">
+              <span className="w-9 shrink-0 font-mono text-2xl font-black tabular-nums leading-none text-indigo-200">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <div className="min-w-0">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-md border border-indigo-400/40 bg-indigo-500/15 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-100">
+                    {item.origin === 'reported' ? copy.reported : copy.predicted}
+                  </span>
+                  {item.origin === 'reported' && item.source_url ? (
+                    <a
+                      href={item.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm font-semibold text-sky-300 hover:text-sky-200"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                      {item.source_url.replace(/^https?:\/\//, '').slice(0, 42)}
+                    </a>
+                  ) : null}
+                </div>
+                <p className={`${BODY} font-semibold text-slate-100`}>{item.question}</p>
+              </div>
             </div>
-          ) : null}
+          </div>
+          <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{copy.answer}</p>
+            <p className={`${BODY} mt-2 text-slate-100 leading-relaxed`}>{item.answer || '—'}</p>
+          </div>
         </li>
       ))}
     </ol>

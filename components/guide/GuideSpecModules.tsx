@@ -91,31 +91,38 @@ function QuestionList({
 }) {
   return (
     <ul className="space-y-3">
-      {items.map((item) => (
-        <li key={item.question} className="rounded-lg border border-slate-700 bg-slate-900/50 p-3">
-          <div className="flex flex-wrap items-center gap-2 mb-1.5">
-            <span className="rounded-md bg-slate-800 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-200">
-              {item.origin === 'reported' ? reportedLabel : predictedLabel}
-            </span>
-            {item.origin === 'reported' && item.source_url ? (
-              <a
-                href={item.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm font-semibold text-sky-300 hover:text-sky-200"
-              >
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-                {item.source_url.replace(/^https?:\/\//, '').slice(0, 42)}
-              </a>
-            ) : null}
+      {items.map((item, index) => (
+        <li key={item.question} className="grid grid-cols-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50">
+          <div className="min-w-0 p-4">
+            <div className="flex items-start gap-3">
+              <span className="w-9 shrink-0 font-mono text-2xl font-black tabular-nums leading-none text-indigo-200">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <div className="min-w-0">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-md bg-slate-800 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-200">
+                    {item.origin === 'reported' ? reportedLabel : predictedLabel}
+                  </span>
+                  {item.origin === 'reported' && item.source_url ? (
+                    <a
+                      href={item.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm font-semibold text-sky-300 hover:text-sky-200"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                      {item.source_url.replace(/^https?:\/\//, '').slice(0, 42)}
+                    </a>
+                  ) : null}
+                </div>
+                <p className={`${BODY} font-semibold text-slate-100`}>{item.question}</p>
+              </div>
+            </div>
           </div>
-          <p className={`${BODY} font-semibold text-slate-100`}>{item.question}</p>
-          {item.answer ? (
-            <p className={`${BODY_MUTED} mt-1.5 leading-relaxed`}>
-              <span className="font-semibold text-slate-300">{answerLabel}: </span>
-              {item.answer}
-            </p>
-          ) : null}
+          <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{answerLabel}</p>
+            <p className={`${BODY} mt-2 text-slate-100 leading-relaxed`}>{item.answer || '—'}</p>
+          </div>
         </li>
       ))}
     </ul>
