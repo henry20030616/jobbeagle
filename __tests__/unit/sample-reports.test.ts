@@ -3,6 +3,7 @@ import {
   getSampleSnapshotReport,
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
+import { GUIDE_ITEM_IDS, guideItemNav } from '@/components/report/SevenItemPages';
 import { isFullReport, isLiteReport } from '@/lib/normalize-lite-report';
 import { fitBandFromScore } from '@/lib/report-rules';
 
@@ -143,6 +144,29 @@ describe('sample reports', () => {
     expect(report.hiring_context?.strategic_alignment_pitch).toMatch(/28%/);
     expect(report.hiring_context?.strategic_alignment_pitch).toMatch(/對帳/);
     expect(report.offer_strategy.negotiation_script?.counter).toMatch(/簽約金/);
+  });
+});
+
+describe('seven-item report layout', () => {
+  it('uses the seven spec sections as the Guide pages', () => {
+    expect(GUIDE_ITEM_IDS).toEqual([
+      'core',
+      'market',
+      'fit',
+      'land',
+      'company',
+      'questions',
+      'negotiate',
+    ]);
+    expect(guideItemNav('zh-TW').map((item) => item.label)).toEqual([
+      '1 職位核心',
+      '2 市場薪資',
+      '3 匹配履歷',
+      '4 薪資落點',
+      '5 公司評價',
+      '6 面試真題',
+      '7 談判建議',
+    ]);
   });
 });
 

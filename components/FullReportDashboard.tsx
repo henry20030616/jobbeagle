@@ -2,19 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import type { FullReport } from '@/types';
-import {
-  Building2,
-  Globe,
-  HandCoins,
-  Home,
-  Link2,
-  RotateCcw,
-  ScanSearch,
-} from 'lucide-react';
-import LiteReportDashboard from '@/components/LiteReportDashboard';
-import GuideStrategyPages, {
-  type GuideStrategyTab,
-} from '@/components/guide/GuideStrategyPages';
+import { Home, RotateCcw } from 'lucide-react';
+import { GuideItemPage, guideItemNav, type GuideItemId } from '@/components/report/SevenItemPages';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getGuideUiCopy } from '@/lib/report-ui-copy';
@@ -26,7 +15,7 @@ import {
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
 
-type GuideTab = 'snapshot' | GuideStrategyTab;
+type GuideTab = GuideItemId;
 
 interface FullReportDashboardProps {
   report: FullReport;
@@ -46,50 +35,17 @@ export default function FullReportDashboard({
 }: FullReportDashboardProps) {
   const lang = normalizeReportLanguage(language);
   const copy = getGuideUiCopy(lang);
-  const [tab, setTab] = useState<GuideTab>('snapshot');
+  const [tab, setTab] = useState<GuideTab>('core');
 
   const nav = useMemo(
-    () => [
-      {
-        id: 'snapshot' as const,
-        label: copy.nav.snapshot.label,
-        icon: <ScanSearch className="w-5 h-5" />,
-        blurb: copy.nav.snapshot.blurb,
-      },
-      {
-        id: 'hiring' as const,
-        label: copy.nav.hiring.label,
-        icon: <Building2 className="w-5 h-5" />,
-        blurb: copy.nav.hiring.blurb,
-      },
-      {
-        id: 'interview' as const,
-        label: copy.nav.interview.label,
-        icon: <Globe className="w-5 h-5" />,
-        blurb: copy.nav.interview.blurb,
-      },
-      {
-        id: 'salary' as const,
-        label: copy.nav.salary.label,
-        icon: <HandCoins className="w-5 h-5" />,
-        blurb: copy.nav.salary.blurb,
-      },
-      {
-        id: 'provenance' as const,
-        label: copy.nav.provenance.label,
-        icon: <Link2 className="w-5 h-5" />,
-        blurb: copy.nav.provenance.blurb,
-      },
-    ],
-    [copy],
+    () => guideItemNav(lang).map((item) => ({ ...item, blurb: '' })),
+    [lang],
   );
 
   const handleBack = () => {
     if (onNewAnalysis) onNewAnalysis();
     else window.location.href = '/';
   };
-
-  const activeNav = nav.find((n) => n.id === tab) ?? nav[0];
 
   return (
     <div
@@ -117,7 +73,9 @@ export default function FullReportDashboard({
               {copy.productTitle}
             </p>
             <p className="text-lg text-slate-400 mt-1.5">
-              {copy.productSubtitle}
+              {lang === 'zh-TW' || lang === 'zh-CN'
+                ? `${report.job_title || ''} · ${report.company_name || ''}`
+                : `${report.job_title || 'Role'} · ${report.company_name || 'Company'}`}
             </p>
           </div>
           {isSample ? (
@@ -141,7 +99,6 @@ export default function FullReportDashboard({
                     : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
                 }`}
               >
-                <span className={active ? 'text-violet-300' : 'text-slate-500'}>{item.icon}</span>
                 {item.label}
               </button>
             );
@@ -149,28 +106,8 @@ export default function FullReportDashboard({
         </nav>
 
         <section className="p-4 sm:p-6 space-y-4 bg-slate-950 min-w-0 min-h-[28rem]">
-          {tab !== 'snapshot' && (
-            <div>
-              <p className="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-1">
-                {activeNav.label}
-              </p>
-              <p className="text-base text-slate-500">{activeNav.blurb}</p>
-            </div>
-          )}
-
           <div key={tab} className="animate-fade-in space-y-4">
-            {tab === 'snapshot' ? (
-              <LiteReportDashboard
-                report={report}
-                language={lang}
-                embedded
-                edition="guide"
-                rewrites={report.guide_modules?.resume_rewrites ?? []}
-                onNewAnalysis={onNewAnalysis}
-              />
-            ) : (
-              <GuideStrategyPages tab={tab} report={report} language={lang} />
-            )}
+            <GuideItemPage report={report} item={tab} language={lang} />
           </div>
         </section>
       </div>
