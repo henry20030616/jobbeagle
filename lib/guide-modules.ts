@@ -100,6 +100,7 @@ export function emptyGuideModules(limitations: string[] = []): GuideModules {
       base: null,
       equity: null,
       bonus: null,
+      rationale: '',
       buyer_seller: '',
       sources: [],
     },
@@ -224,6 +225,7 @@ export function parseSalaryLand(raw: unknown): GuideModules['salary_land'] | nul
     base: asString(row.base).slice(0, 80) || null,
     equity: asString(row.equity).slice(0, 80) || null,
     bonus: asString(row.bonus).slice(0, 80) || null,
+    rationale: asString(row.rationale).slice(0, 1200),
     buyer_seller: asString(row.buyer_seller).slice(0, 800),
     sources: sources(row.sources),
   };

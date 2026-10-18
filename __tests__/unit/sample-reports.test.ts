@@ -108,6 +108,12 @@ describe('sample reports', () => {
     expect(modules!.salary_land.bonus).toBe('$11K');
     expect(modules!.salary_land.target).toMatch(/\$168K/);
     expect(modules!.salary_land.ceiling).toMatch(/\$185K/);
+    expect(modules!.salary_land.rationale).toMatch(/\$168K/);
+    expect(modules!.salary_land.rationale).toMatch(/\$185K/);
+    expect(modules!.salary_land.rationale).toMatch(/28%/);
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
+      /目標價/,
+    );
     expect(modules!.negotiation.pay_strategy.length).toBeGreaterThan(20);
     expect(modules!.negotiation.benefits_strategy.length).toBeGreaterThan(20);
     expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);

@@ -23,6 +23,7 @@ Return JSON only:
   "base": "$150K or null",
   "equity": "RSU string or null",
   "bonus": "bonus string or null",
+  "rationale": "Three sentences a candidate can read: (1) why the target is this number, naming the place, title, level or years, and the resume fact that holds it there; (2) why the ceiling stops where it stops; (3) why base, equity, and bonus split this way. Do not invent a competing offer or a metric that is not in the resume.",
   "buyer_seller": "who has leverage and why, citing only searched facts",
   "sources": [ { "title": string, "url": "https://..." } ]
 }

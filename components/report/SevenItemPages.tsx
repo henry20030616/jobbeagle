@@ -59,6 +59,7 @@ type ItemCopy = {
   after: string;
   target: string;
   ceiling: string;
+  judgment: string;
   base: string;
   equity: string;
   bonus: string;
@@ -126,6 +127,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       after: 'After',
       target: s ? '战略目标价' : '戰略目標價',
       ceiling: s ? '议价天花板' : '議價天花板',
+      judgment: s ? '判断：为什么是这些数字' : '判斷：為什麼是這些數字',
       base: s ? '底薪' : '底薪',
       equity: s ? '股票' : '股票',
       bonus: s ? '奖金' : '獎金',
@@ -202,6 +204,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     after: 'After',
     target: 'Target',
     ceiling: 'Ceiling',
+    judgment: 'Judgment: why these numbers',
     base: 'Base',
     equity: 'Equity',
     bonus: 'Bonus',
@@ -711,6 +714,12 @@ export function GuideItemPage({
             <p className="text-3xl font-black text-white">{salary.ceiling || '—'}</p>
           </div>
         </div>
+        {salary.rationale ? (
+          <section className="rounded-xl border border-sky-400/50 bg-indigo-500/10 p-4">
+            <p className={`${SECTION_TITLE} text-indigo-200 mb-2`}>{copy.judgment}</p>
+            <p className={`${BODY} text-slate-100 leading-relaxed`}>{salary.rationale}</p>
+          </section>
+        ) : null}
         {mix.length > 0 ? (
           <div className="grid grid-cols-3 gap-2">
             {mix.map(([label, value]) => (

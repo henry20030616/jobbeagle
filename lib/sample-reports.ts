@@ -760,7 +760,9 @@ function sampleGuideQuestion(
   };
 }
 
-function sampleGuideModules(): GuideModules {
+function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
+  const zh = language === 'zh-TW' || language === 'zh-CN';
+  const simplified = language === 'zh-CN';
   const professional = [
     'Walk me through how you prioritized an ACH return queue before cutoff.',
     'How do you reconcile a settlement break when the bank file and the ledger disagree?',
@@ -807,8 +809,16 @@ function sampleGuideModules(): GuideModules {
       base: '$145K',
       equity: '$12K / yr',
       bonus: '$11K',
-      buyer_seller:
-        'Buyer leverage: the seat has been open. Seller leverage: the 28% SQL cycle-time cut. ACH ownership is adjacent, so do not anchor as if that gap were closed.',
+      rationale: zh
+        ? simplified
+          ? '目标价放在 $168K，是因为这席在美国、可远程的 Senior Business Analyst 市场带大约 $145K–$190K。履历能证明的是 SQL／Looker 把对账周期缩短 28%，但 ACH 退票所有权只是相邻经验，所以不站到带的上沿。天花板停在 $185K：没有 Staff 级范围，也没有第二份 offer 可以再往上推。底薪 $145K、股票约 $12K／年、奖金 $11K 加总才是 $168K；股票和奖金不是履历已经拿到的项目，不能把它们说成既有权利。'
+          : '目標價放在 $168K，是因為這席在美國、可遠端的 Senior Business Analyst 市場帶大約 $145K–$190K。履歷能證明的是 SQL／Looker 把對帳週期縮短 28%，但 ACH 退票擁有權只是相鄰經驗，所以不站到帶的上緣。天花板停在 $185K：沒有 Staff 級範圍，也沒有第二份 offer 可以再往上推。底薪 $145K、股票約 $12K／年、獎金 $11K 加總才是 $168K；股票和獎金不是履歷已經拿到的項目，不能把它們說成既有權利。'
+        : 'The target sits at $168K because a US remote Senior Business Analyst band is about $145K–$190K. The resume can prove a 28% reconciliation cycle-time cut with SQL and Looker, but ACH returns ownership is only adjacent, so the number stays mid-band. The ceiling stops at $185K: there is no Staff-level scope and no second offer to push past it. Base $145K, about $12K a year of equity, and an $11K bonus are what add up to $168K. Equity and bonus are not items the resume already holds, so they are not existing rights.',
+      buyer_seller: zh
+        ? simplified
+          ? '买方筹码：这个位子还空着。卖方筹码：履历上的 28% 对账周期缩短。ACH 拥有权只是相邻经验，不能把它当成已经补上的缺口来喊价。'
+          : '買方籌碼：這個位子還空著。賣方籌碼：履歷上的 28% 對帳週期縮短。ACH 擁有權只是相鄰經驗，不能把它當成已經補上的缺口來喊價。'
+        : 'Buyer leverage: the seat has been open. Seller leverage: the 28% SQL cycle-time cut. ACH ownership is adjacent, so do not anchor as if that gap were closed.',
       sources: [
         { title: 'Levels sample', url: 'https://example.com/levels/northstar-ba' },
         { title: 'H-1B wage sample', url: 'https://example.com/h1b/northstar-wages' },
@@ -857,5 +867,5 @@ export function getSampleStrategyGuideReport(
       deepMerge(pack.snapshot ?? {}, pack.guide ?? {}),
     );
   }
-  return normalizeFullReport({ ...raw, guide_modules: sampleGuideModules() });
+  return normalizeFullReport({ ...raw, guide_modules: sampleGuideModules(lang) });
 }

@@ -678,6 +678,8 @@ export interface GuideModules {
     base: string | null;
     equity: string | null;
     bonus: string | null;
+    /** Why the target, ceiling, and base / equity / bonus split are these numbers. */
+    rationale: string;
     buyer_seller: string;
     sources: GuideSource[];
   };
