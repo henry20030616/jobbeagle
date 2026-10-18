@@ -17,10 +17,10 @@ const COPY = {
       'System has identified 2 potential ATS auto-reject triggers and untapped salary negotiation leverage.',
     unlock: 'Unlock Interview Guide — $9.99',
     features: [
-      '4 STAR interview questions with personalized answers',
-      'Verbatim salary negotiation script (cite your resume wins + Levels.fyi data)',
-      'Blind/Reddit team culture reality check',
-      'Layoff risk audit via Layoffs.fyi',
+      '20 interview questions with source links and resume-grounded answers',
+      'Your pay landing plus base, equity, and bonus',
+      'H-1B, layoff, and remote or sponsorship check',
+      'Headhunter script for pay and benefits',
     ],
   },
   'zh-TW': {
@@ -28,10 +28,10 @@ const COPY = {
     message: '系統已偵測到 2 項可能導致 ATS 秒刷的隱性要求，與潛在的談薪溢價空間。',
     unlock: '解鎖完整面試指南 — $9.99',
     features: [
-      '4 道 STAR 面試題 + 個人化答題框架',
-      '逐字談薪劇本（引用履歷成果 + Levels.fyi 數據）',
-      'Blind / Reddit 團隊文化真相',
-      '透過 Layoffs.fyi 審查裁員風險',
+      '20 題附來源的面試題，答法只引用履歷',
+      '個人落點，以及底薪、股票、獎金拆解',
+      'H-1B、裁員、遠端或贊助檢查',
+      '獵頭級薪資與福利說法',
     ],
   },
   'zh-CN': {
@@ -39,10 +39,10 @@ const COPY = {
     message: '系统已检测到 2 项可能导致 ATS 秒刷的隐性要求，与潜在的谈薪溢价空间。',
     unlock: '解锁完整面试指南 — $9.99',
     features: [
-      '4 道 STAR 面试题 + 个性化答题框架',
-      '逐字谈薪剧本（引用简历成果 + Levels.fyi 数据）',
-      'Blind / Reddit 团队文化真相',
-      '通过 Layoffs.fyi 审查裁员风险',
+      '20 题附来源的面试题，答法只引用简历',
+      '个人落点，以及底薪、股票、奖金拆解',
+      'H-1B、裁员、远程或赞助检查',
+      '猎头级薪资与福利说法',
     ],
   },
 };

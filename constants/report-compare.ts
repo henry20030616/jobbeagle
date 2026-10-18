@@ -92,14 +92,14 @@ export const REPORT_COMPARE_WHY_PRO: {
       'zh-CN': '更强模型：少空话，能把 JD、简历与市场脉络串成连贯的录取／谈薪故事。',
     },
     {
-      en: 'Live search: real company/role reviews, interview Qs, salary posts, market signals, industry & HR reports — cited with URL + date when available (Fit Snapshot cannot see the web).',
-      'zh-TW': '即時網搜：公司／職位評價、真實面試題、薪資貼文、市場現況、產業與人資報告——盡量附網址＋日期（適配快照看不到網路）。',
-      'zh-CN': '即时网搜：公司／职位评价、真实面试题、薪资贴文、市场现况、产业与人资报告——尽量附网址＋日期（适配快照看不到网络）。',
+      en: 'Live search: company reviews, layoff and H-1B signals, 20 interview questions, and salary posts — cited with URL + date when available.',
+      'zh-TW': '即時網搜：公司評價、裁員與 H-1B 訊號、20 題面試題、薪資貼文——盡量附網址＋日期。',
+      'zh-CN': '即时网搜：公司评价、裁员与 H-1B 信号、20 题面试题、薪资贴文——尽量附网址＋日期。',
     },
     {
-      en: 'Depth = usable scripts: recruiter concerns + defenses, STAR outlines from YOUR resume, and a copy-ready negotiation path.',
-      'zh-TW': '深度＝可照做：招募疑慮＋答辯、依你履歷的 STAR 大綱、可直接用的談薪路徑。',
-      'zh-CN': '深度＝可照做：招募疑虑＋答辩、依你简历的 STAR 大纲、可直接用的谈薪路径。',
+      en: 'Depth = usable scripts: a TC split, answers grounded in YOUR resume, and a headhunter script for pay and benefits.',
+      'zh-TW': '深度＝可照做：TC 拆解、依你履歷的答法、獵頭級薪資與福利說法。',
+      'zh-CN': '深度＝可照做：TC 拆解、依你简历的答法、猎头级薪资与福利说法。',
     },
     {
       en: 'Fit Snapshot is triage speed; Interview Guide is prep when this role is worth the fight.',
@@ -120,9 +120,9 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
     'zh-CN': '星星＝深度（满分 5）。积木相同——面试指南更深、更可照做。',
   },
   guide_only: {
-    en: 'Interview Guide only: live web intel (reviews, interview Qs, salary, market, industry/HR reports) + interview/offer playbooks.',
-    'zh-TW': '僅面試指南：即時網搜情報（評價、面試題、薪資、市場、產業／人資報告）＋面試／談薪。',
-    'zh-CN': '仅面试指南：即时网搜情报（评价、面试题、薪资、市场、产业／人资报告）＋面试／谈薪。',
+    en: 'Interview Guide only: H-1B and layoff intel, 20 sourced questions, your pay landing and TC split, plus a negotiation script.',
+    'zh-TW': '僅面試指南：H-1B 與裁員情報、20 題附來源、個人落點與 TC 拆解，以及談薪說法。',
+    'zh-CN': '仅面试指南：H-1B 与裁员情报、20 题附来源、个人落点与 TC 拆解，以及谈薪说法。',
   },
   meta: null,
 };
@@ -255,12 +255,12 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '薪酬区间 + 个人落点',
     },
     help: help(
-      'Seat cash band (with evidence tier) plus where YOU are likely to land inside that band, given resume↔JD fit/gaps. Guide also ties this into negotiation.',
-      '職缺現金薪酬帶（含證據等級），再加上依履歷↔JD 落差估計「你」可能落在哪；Guide 會接到談薪策略。',
-      '职位现金薪酬带（含证据等级），再加上依简历↔JD 落差估计「你」可能落在哪；Guide 会接到谈薪策略。',
+      'Snapshot shows a wide market band for the seat. Interview Guide adds where YOU are likely to land, the base / equity / bonus split, and the negotiation script.',
+      '適配快照給這席的寬薪酬帶。面試指南再加上你的落點、底薪／股票／獎金拆解，以及談薪說法。',
+      '适配快照给这席的宽薪酬带。面试指南再加上你的落点、底薪／股票／奖金拆解，以及谈薪说法。',
     ),
-    snapshot: t('Range + predicted land', '區間 + 預測落點', '区间 + 预测落点', 3),
-    guide: t('Range + land + negotiation levers', '區間 + 落點 + 談判槓桿', '区间 + 落点 + 谈判杠杆', 5),
+    snapshot: t('Wide market band', '寬薪酬帶', '宽薪酬带', 3),
+    guide: t('Landing + TC split + script', '落點 + TC 拆解 + 談薪', '落点 + TC 拆解 + 谈薪', 5),
   },
   {
     section: 'shared',
@@ -270,12 +270,12 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '面试准备 / STAR',
     },
     help: help(
-      'Predicted interview angles from your gaps. Snapshot gives 3 starters; Guide expands into a full playbook with STAR outlines grounded in YOUR resume.',
-      '依履歷缺口預測面試切入點。Snapshot 給 3 題開場；Guide 擴成完整題庫與依「你」履歷的 STAR 大綱。',
-      '依简历缺口预测面试切入点。Snapshot 给 3 题开场；Guide 扩成完整题库与依「你」简历的 STAR 大纲。',
+      'Snapshot names missing hard keywords. Interview Guide adds 10 professional and 10 behavioral questions from the last three years, with source links and resume-grounded answers.',
+      '適配快照點出缺的硬關鍵字。面試指南再加上近三年專業題與行為題各 10 題，附來源連結與依履歷的答法。',
+      '适配快照点出缺的硬关键词。面试指南再加上近三年专业题与行为题各 10 题，附来源链接与依简历的答法。',
     ),
-    snapshot: t('3 predicted starters', '僅 3 題預測開場', '仅 3 题预测开场', 2),
-    guide: t('Full playbook + STAR outlines', '完整題庫 + STAR 大綱', '完整题库 + STAR 大纲', 5),
+    snapshot: t('Missing keywords only', '只列缺的關鍵字', '只列缺的关键词', 2),
+    guide: t('20 questions with sources', '20 題附來源', '20 题附来源', 5),
   },
   // ── B. Guide only ──
   {
@@ -305,12 +305,12 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '招募与公司情报',
     },
     help: help(
-      'Why this seat may be open, what the team/market signal looks like, and what to validate with the recruiter — Guide-only, often search-backed.',
-      '這席為何可能開缺、團隊／市場訊號、該跟招募確認什麼——僅 Guide，常搭配網搜。',
-      '这席为何可能开缺、团队／市场信号、该跟招募确认什么——仅 Guide，常搭配网搜。',
+      'Why this seat may be open, culture and layoff or WARN signals, H-1B and remote or sponsorship notes, and what to validate with the recruiter.',
+      '這席為何可能開缺、文化與裁員或 WARN、H-1B 與遠端／贊助，以及該跟招募確認什麼。',
+      '这席为何可能开缺、文化与裁员或 WARN、H-1B 与远程／赞助，以及该跟招募确认什么。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Yes — seat / market signals', '有 — 開缺／市場訊號', '有 — 开缺／市场信号'),
+    guide: t('Yes — culture, layoff, H-1B', '有 — 文化、裁員、H-1B', '有 — 文化、裁员、H-1B'),
   },
   {
     section: 'guide_only',
@@ -335,12 +335,12 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '谈薪脚本',
     },
     help: help(
-      'Target / acceptable / walk-away framing, levers (sign-on, equity, etc.), and copy-ready lines you can say in a comp conversation.',
-      '目標／可接受／底線、談判槓桿（簽約金、股權等），以及談薪時可直接講的台詞。',
-      '目标／可接受／底线、谈判杠杆（签约金、股权等），以及谈薪时可直接讲的台词。',
+      'Headhunter framing for pay (target, ceiling, base / equity / bonus) and a second pass for benefits such as sign-on, remote days, and sponsorship.',
+      '獵頭級薪資說法（目標、上限、底薪／股票／獎金），以及第二段福利說法（簽約金、遠端、贊助）。',
+      '猎头级薪资说法（目标、上限、底薪／股票／奖金），以及第二段福利说法（签约金、远程、赞助）。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Yes — target / walk-away / script', '有 — 目標／底線／台詞', '有 — 目标／底线／台词'),
+    guide: t('Yes — pay script + benefits', '有 — 薪資說法 + 福利', '有 — 薪资说法 + 福利'),
   },
   {
     section: 'guide_only',

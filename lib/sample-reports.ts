@@ -741,28 +741,64 @@ export function getSampleSnapshotReport(
   return normalizeLiteReport(raw);
 }
 
+function sampleGuideQuestion(
+  question: string,
+  track: GuideQuestion['track'],
+  index: number,
+): GuideQuestion {
+  const year = index <= 8 ? '2025' : index <= 16 ? '2024' : '2023';
+  const month = String(((index * 3) % 12) + 1).padStart(2, '0');
+  return {
+    question,
+    track,
+    origin: 'reported',
+    proximity: 'same_company_role',
+    source_url: `https://example.com/northstar/${track}/${index}`,
+    source_date: `${year}-${month}`,
+    answer:
+      'Use only the resume fact: a 28% reconciliation cycle-time cut with SQL and Looker. Do not claim ACH returns ownership; the resume shows adjacent banking ops.',
+  };
+}
+
 function sampleGuideModules(): GuideModules {
-  const reported = (
-    track: GuideQuestion['track'],
-    count: number,
-  ): GuideQuestion[] =>
-    Array.from({ length: count }, (_, index) => ({
-      question: track === 'professional'
-        ? `How have you owned ACH settlement exception ${index + 1}?`
-        : `Tell me about a cross-team delivery miss ${index + 1}.`,
-      track,
-      origin: 'reported' as const,
-      proximity: 'same_company_role' as const,
-      source_url: `https://example.com/${track}/${index + 1}`,
-      source_date: `2025-${String((index % 12) + 1).padStart(2, '0')}`,
-      answer: index < 10 ? 'Use one resume fact: SQL ops pack for payment exceptions. Do not invent volume.' : '',
-    }));
+  const professional = [
+    'Walk me through how you prioritized an ACH return queue before cutoff.',
+    'How do you reconcile a settlement break when the bank file and the ledger disagree?',
+    'Tell me about a time NACHA return codes changed how you triaged exceptions.',
+    'How would you explain a same-day ACH failure to a merchant who missed payroll?',
+    'What SQL checks do you run before calling a settlement exception closed?',
+    'How have you partnered with engineering when a returns file arrived late?',
+    'Describe a control you added so a duplicate ACH file could not post twice.',
+    'How do you decide which exception is a customer issue versus a bank issue?',
+    'Walk through a month-end settlement tie-out you owned.',
+    'What would you inspect first if return volume jumped week over week?',
+    'Which ops metric would you put on a daily settlement standup?',
+    'How do you document an exception so the next shift can finish it?',
+  ].map((question, index) => sampleGuideQuestion(question, 'professional', index + 1));
+  const behavioral = [
+    'Tell me about a time you pushed back on a deadline that would have missed a cutoff.',
+    'Describe a cross-team miss and what you changed afterward.',
+    'Tell me about feedback that changed how you write status updates.',
+    'A stakeholder wanted a number you could not defend. What did you do?',
+    'Tell me about delivering bad news to a partner bank or customer.',
+    'Describe how you onboarded yourself into an unfamiliar payments process.',
+    'Tell me about a conflict with engineering over what done meant.',
+    'When have you chosen a simpler control over a perfect one?',
+    'Tell me about a written update that changed a leadership decision.',
+    'Describe a reconciliation mistake and how you contained it.',
+    'Tell me about coaching someone through their first incident.',
+  ].map((question, index) => sampleGuideQuestion(question, 'behavioral', index + 1));
   return {
     resume_rewrites: [
       {
         gap: 'ACH returns ownership is not named',
         before: 'Supported payment operations and reconciliation.',
-        after: 'Owned daily ACH exception queue for a US payments book; closed breaks before the 2pm cutoff.',
+        after: 'Cut reconciliation cycle time 28% with SQL and Looker on a banking-ops book. ACH returns ownership is not on this resume.',
+      },
+      {
+        gap: 'NACHA and processor ownership are unnamed',
+        before: 'Worked with vendors on payment issues.',
+        after: 'Partnered with engineering on late exception files. Do not add a processor or NACHA title that the resume does not show.',
       },
     ],
     salary_land: {
@@ -771,29 +807,39 @@ function sampleGuideModules(): GuideModules {
       base: '$145K',
       equity: '$12K / yr',
       bonus: '$11K',
-      buyer_seller: 'Buyer leverage: the seat has been open. Seller leverage: adjacent ACH proof, not named ownership.',
-      sources: [{ title: 'Levels sample', url: 'https://example.com/levels' }],
+      buyer_seller:
+        'Buyer leverage: the seat has been open. Seller leverage: the 28% SQL cycle-time cut. ACH ownership is adjacent, so do not anchor as if that gap were closed.',
+      sources: [
+        { title: 'Levels sample', url: 'https://example.com/levels/northstar-ba' },
+        { title: 'H-1B wage sample', url: 'https://example.com/h1b/northstar-wages' },
+      ],
     },
     company_eval: {
       culture: 'Public reviews describe a written, remote-friendly ops culture with tight cutoff deadlines.',
-      labor_risk: 'No cited labor action in the sample sources.',
-      layoff_risk: 'No WARN notice in the sample window.',
-      h1b: 'Sample filings exist; selection rate is not stated on the cited page.',
-      remote_sponsorship: 'Posting says US remote. Sponsorship is not confirmed.',
+      labor_risk: 'No cited labor action in the sample sources. Treat this as unknown, not as a clean record.',
+      layoff_risk: 'No WARN notice in the sample window. Ask the recruiter whether ops headcount changed in the last year.',
+      h1b: 'Sample H-1B employer filings for Northstar Payments show petitions in the last three years. The cited page does not publish a selection rate. Sponsorship is plausible and unconfirmed — ask the recruiter before you rely on it.',
+      remote_sponsorship: 'The posting says US remote. It does not say the company will sponsor this seat.',
       role_reviews: 'Reviewers praise SQL depth and flag on-call during settlement incidents.',
-      sources: [{ title: 'Blind sample', url: 'https://example.com/blind' }],
+      sources: [
+        { title: 'Blind sample', url: 'https://example.com/blind/northstar-ops' },
+        { title: 'WARN sample', url: 'https://example.com/warn/northstar' },
+      ],
     },
     interview_bank: {
-      professional: reported('professional', 12).slice(0, 10),
-      behavioral: reported('behavioral', 10),
-      professional_extra: reported('professional', 12).slice(10),
-      behavioral_extra: [],
-      process: 'Recruiter screen, hiring-manager case, then a panel. About three weeks in the sample shares.',
+      professional: professional.slice(0, 10),
+      behavioral: behavioral.slice(0, 10),
+      professional_extra: professional.slice(10),
+      behavioral_extra: behavioral.slice(10),
+      process: 'Recruiter screen, hiring-manager case on a settlement break, then a panel. Sample shares put the loop at about three weeks.',
     },
     negotiation: {
-      pay_strategy: 'Anchor at the $168K target. If they offer the band floor, counter once toward $185K and stop.',
-      benefits_strategy: 'Ask about signing bonus and remote days only after base is on the table.',
-      script: 'I can accept at $168K total, with the base at $145K. If we need to move, the ceiling I can justify is $185K.',
+      pay_strategy:
+        'Open at the $168K total target: $145K base, $12K a year equity, $11K bonus. If the offer is the band floor, counter once toward the $185K ceiling and stop. Do not invent a competing offer.',
+      benefits_strategy:
+        'After base is named, ask about sign-on, remote days, and whether this seat is sponsorship-eligible. Do not trade base for a benefit that was not offered.',
+      script:
+        'The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I can accept $168K total, with base at $145K. If we need to move, the ceiling I can justify from that proof is $185K.',
     },
     limitations: [],
   };

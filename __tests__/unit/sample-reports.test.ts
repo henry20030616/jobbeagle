@@ -82,6 +82,37 @@ describe('sample reports', () => {
     expect(reported?.source_date).toBeTruthy();
   });
 
+  it('shows the paid sample 20-question bank, extras, H-1B, and TC split', () => {
+    const modules = getSampleStrategyGuideReport('en').guide_modules;
+    expect(modules).toBeTruthy();
+    const bank = modules!.interview_bank;
+    expect(bank.professional).toHaveLength(10);
+    expect(bank.behavioral).toHaveLength(10);
+    expect(bank.professional_extra.length).toBeGreaterThan(0);
+    expect(bank.behavioral_extra.length).toBeGreaterThan(0);
+    for (const item of [
+      ...bank.professional,
+      ...bank.behavioral,
+      ...bank.professional_extra,
+      ...bank.behavioral_extra,
+    ]) {
+      expect(item.origin).toBe('reported');
+      expect(item.source_url).toMatch(/^https:\/\//);
+      expect(item.answer.length).toBeGreaterThan(20);
+    }
+    expect(modules!.company_eval.h1b).toMatch(/H-1B/);
+    expect(modules!.company_eval.sources[0]?.url).toMatch(/^https:\/\//);
+    expect(modules!.salary_land.base).toBe('$145K');
+    expect(modules!.salary_land.equity).toMatch(/\$12K/);
+    expect(modules!.salary_land.bonus).toBe('$11K');
+    expect(modules!.salary_land.target).toMatch(/\$168K/);
+    expect(modules!.salary_land.ceiling).toMatch(/\$185K/);
+    expect(modules!.negotiation.pay_strategy.length).toBeGreaterThan(20);
+    expect(modules!.negotiation.benefits_strategy.length).toBeGreaterThan(20);
+    expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);
+    expect('guide_modules' in getSampleSnapshotReport('en')).toBe(false);
+  });
+
   it('localizes Snapshot body + keeps English chrome-free for zh-TW', () => {
     const report = getSampleSnapshotReport('zh-TW');
     expect(report.proof_map.strengths[0]?.point).toMatch(/可量化/);

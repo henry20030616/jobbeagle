@@ -122,7 +122,7 @@ describe('homepage value propositions', () => {
         expect(text).not.toMatch(emoji);
       }
     }
-    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('Executive Competency Mapping');
-    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Federal Compensation Benchmarking');
+    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('Role core and fit');
+    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Market pay band');
   });
 });
