@@ -9,7 +9,8 @@ export type UntrustedKind =
   | 'career_context'
   | 'job_page_url'
   | 'company_hint'
-  | 'job_title_hint';
+  | 'job_title_hint'
+  | 'web_retrieval';
 
 const FENCE_OPEN = '<<<JOBBEAGLE_UNTRUSTED';
 const FENCE_CLOSE = '<<<END_JOBBEAGLE_UNTRUSTED>>>';

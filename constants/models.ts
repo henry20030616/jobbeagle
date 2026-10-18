@@ -9,7 +9,12 @@
 /** Fit Snapshot — flash-lite (pure reasoning, no web search) */
 export const GEMINI_LITE_MODEL = 'gemini-3.1-flash-lite';
 
-/** Interview Guide — full report in one Pro pass (+ Search) */
+/**
+ * Interview Guide paid modules.
+ * Search calls (salary, company/H-1B, question retrieval) use this model with Google Search.
+ * Writing calls (resume rewrite, answers, negotiation) use the same model with search off
+ * until an Anthropic key is configured.
+ */
 export const GEMINI_FULL_MODEL = 'gemini-3.1-pro-preview';
 
 /** Token count gate model */

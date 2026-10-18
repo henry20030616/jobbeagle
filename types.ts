@@ -631,6 +631,75 @@ export interface StrategyFitSalary {
   validate_with_recruiter: string[];
 }
 
+/** 1018 spec — one retrieved or predicted interview question before answer fill. */
+export type GuideQuestionTrack = 'professional' | 'behavioral';
+export type GuideQuestionOrigin = 'reported' | 'predicted';
+export type GuideQuestionProximity =
+  | 'same_company_role'
+  | 'same_industry_role'
+  | 'cross_industry';
+
+export interface GuideQuestion {
+  question: string;
+  track: GuideQuestionTrack;
+  origin: GuideQuestionOrigin;
+  proximity: GuideQuestionProximity | null;
+  source_url: string | null;
+  source_date: string | null;
+  /** Personalized answer. Empty until the writing pass. */
+  answer: string;
+}
+
+export interface GuideInterviewBank {
+  professional: GuideQuestion[];
+  behavioral: GuideQuestion[];
+  professional_extra: GuideQuestion[];
+  behavioral_extra: GuideQuestion[];
+  process: string;
+}
+
+export interface GuideResumeRewrite {
+  gap: string;
+  before: string;
+  after: string;
+}
+
+export interface GuideSource {
+  title: string;
+  url: string;
+}
+
+/** Paid Interview Guide modules from the 1018 spec. Snapshot stays on LiteReport. */
+export interface GuideModules {
+  resume_rewrites: GuideResumeRewrite[];
+  salary_land: {
+    target: string;
+    ceiling: string;
+    base: string | null;
+    equity: string | null;
+    bonus: string | null;
+    buyer_seller: string;
+    sources: GuideSource[];
+  };
+  company_eval: {
+    culture: string;
+    labor_risk: string;
+    layoff_risk: string;
+    h1b: string;
+    remote_sponsorship: string;
+    role_reviews: string;
+    sources: GuideSource[];
+  };
+  interview_bank: GuideInterviewBank;
+  negotiation: {
+    pay_strategy: string;
+    benefits_strategy: string;
+    script: string;
+  };
+  /** Module ids that failed and were left empty. */
+  limitations: string[];
+}
+
 /**
  * Job Fit Snapshot — Spec v3
  * Dual heroes: fit_score + expected_offer. No FLSA. No culture-in-score.
@@ -708,6 +777,8 @@ export interface StrategyIntelFields {
   custom_star_interview_bank?: string[];
   /** @deprecated use offer_strategy.script */
   salary_negotiation_script?: string;
+  /** 1018 paid modules (rewrite, salary land, company/H-1B, 20 questions, negotiation). */
+  guide_modules?: GuideModules;
 }
 
 /**

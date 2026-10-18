@@ -40,6 +40,7 @@ import type {
   StrategyFitSalary,
   StrategyIntelFields,
 } from '@/types';
+import { normalizeGuideModules } from '@/lib/guide-modules';
 import { fitBandFromScore, resolveApplyDecision } from '@/lib/report-rules';
 import { enrichTargetGapWithCareerContext } from '@/lib/career-context';
 import { buildProvenanceRecord, scrubInsightUrls } from '@/lib/provenance';
@@ -1204,6 +1205,7 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
       || '',
     custom_star_interview_bank: starBank.slice(0, 10),
     salary_negotiation_script: offer_strategy.script,
+    guide_modules: normalizeGuideModules(raw.guide_modules),
   };
 }
 
