@@ -122,7 +122,8 @@ describe('homepage value propositions', () => {
         expect(text).not.toMatch(emoji);
       }
     }
-    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('Role core and fit');
-    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Market pay band');
+    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('Skip wasted applications');
+    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Stays on your resume');
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].description).toBe('貼上職缺和履歷，先判斷要不要投，再準備怎麼面試。');
   });
 });
