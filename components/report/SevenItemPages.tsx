@@ -597,7 +597,7 @@ function FitBody({
   const verdictLines = verdictPoints.length >= 2 ? verdictPoints : splitDecisionBrief(verdict);
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="space-y-3">
         <div className="rounded-xl border border-sky-400/50 bg-indigo-500/10 p-4">
           <p className={`${SECTION_TITLE} text-indigo-200 mb-3`}>{copy.score}</p>
           <div className="flex items-center gap-4">
@@ -652,14 +652,10 @@ function FitBody({
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className={BODY_MUTED}>{copy.empty}</p>
-          )}
-        </div>
-      </div>
-      <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4">
-        <p className={`${SECTION_TITLE} text-slate-100`}>{copy.keywords}</p>
-        <p className={`${BODY} mb-3 mt-2 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
+          ) : null}
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <p className={`${SECTION_TITLE} text-slate-100`}>{copy.keywords}</p>
+            <p className={`${BODY} mb-3 mt-2 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
         {keywords.length > 0 ? (
           <div className="flex flex-wrap gap-2 mb-3">
             {keywords.slice(0, 8).map((word) => (
@@ -706,6 +702,8 @@ function FitBody({
             ))}
           </ul>
         ) : null}
+          </div>
+        </div>
       </div>
     </div>
   );
