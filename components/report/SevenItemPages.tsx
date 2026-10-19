@@ -47,6 +47,7 @@ type ItemCopy = {
   level: string;
   score: string;
   keywords: string;
+  keywordsNote: string;
   apply: string;
   lockPay: string;
   lockRewrite: string;
@@ -115,6 +116,9 @@ function itemCopy(language: AppLanguage): ItemCopy {
       level: s ? '职级或年资' : '職級或年資',
       score: s ? '匹配分数与灯号' : '匹配分數與燈號',
       keywords: s ? '欠缺的硬性关键字' : '欠缺的硬性關鍵字',
+      keywordsNote: s
+        ? '这些是人力资源筛选系统用来比对简历的重要关键字。简历里没有这些词，申请可能在招聘人员阅读之前就被系统排除。'
+        : '這些是人資篩選系統用來比對履歷的重要關鍵字。履歷裡沒有這些詞，申請可能在招募人員閱讀之前就被系統排除。',
       apply: s ? '应征建议' : '應徵建議',
       lockPay: s
         ? '🔒 升级 Interview Guide 可解锁个人化精准落点与 TC 结构拆解'
@@ -200,6 +204,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
     level: 'Level or years',
     score: 'Score and signal',
     keywords: 'Missing hard keywords',
+    keywordsNote:
+      'These are keywords the applicant tracking system uses to screen resumes. If the resume does not contain them, the application can be filtered out before a recruiter reads it.',
     apply: 'Whether to apply',
     lockPay: '🔒 Upgrade to Interview Guide for your pay landing and TC split',
     lockRewrite: '🔒 Upgrade to Interview Guide for line-by-line rewrites of these gaps',
@@ -652,7 +658,8 @@ function FitBody({
         </div>
       </div>
       <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4">
-        <p className={`${SECTION_TITLE} text-slate-100 mb-3`}>{copy.keywords}</p>
+        <p className={`${SECTION_TITLE} text-slate-100`}>{copy.keywords}</p>
+        <p className={`${BODY} mb-3 mt-2 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
         {keywords.length > 0 ? (
           <div className="flex flex-wrap gap-2 mb-3">
             {keywords.slice(0, 8).map((word) => (
