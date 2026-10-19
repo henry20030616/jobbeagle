@@ -380,6 +380,17 @@ function LockLine({ children }: { children: string }) {
   );
 }
 
+function groupRewrites(items: GuideResumeRewrite[]): Array<{ title: string; items: GuideResumeRewrite[] }> {
+  const groups: Array<{ title: string; items: GuideResumeRewrite[] }> = [];
+  for (const item of items) {
+    const title = item.category?.trim() || item.gap;
+    const last = groups[groups.length - 1];
+    if (last && last.title === title) last.items.push(item);
+    else groups.push({ title, items: [item] });
+  }
+  return groups;
+}
+
 function briefLines(text: string): string[] {
   const lined = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
   if (lined.length > 1) return lined;
@@ -664,11 +675,21 @@ function FitBody({
         {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
         {!locked && rewrites.length > 0 ? (
           <ul className="mt-3 space-y-2 border-t border-amber-400/30 pt-3">
-            {rewrites.map((item) => (
-              <li key={`${item.gap}-${item.after}`} className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3">
-                <p className={`${BODY} font-semibold text-emerald-100`}>{item.gap}</p>
-                {item.before ? <p className={`${BODY_MUTED} mt-1`}>{copy.before}: {item.before}</p> : null}
-                <p className={`${BODY} mt-1 text-slate-100`}>{copy.after}: {item.after}</p>
+            {groupRewrites(rewrites).map((group) => (
+              <li key={group.title} className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3">
+                <p className={`${BODY} font-semibold text-emerald-100`}>{group.title}</p>
+                {group.items.map((item, index) => (
+                  <div
+                    key={`${item.gap}-${item.after}`}
+                    className={index === 0 ? 'mt-2' : 'mt-3 border-t border-white/10 pt-3'}
+                  >
+                    {group.items.length > 1 && item.gap !== group.title ? (
+                      <p className={`${BODY} font-semibold text-slate-100`}>{item.gap}</p>
+                    ) : null}
+                    {item.before ? <p className={`${BODY_MUTED} mt-1`}>{copy.before}: {item.before}</p> : null}
+                    <p className={`${BODY} mt-1 text-slate-100`}>{copy.after}: {item.after}</p>
+                  </div>
+                ))}
               </li>
             ))}
           </ul>

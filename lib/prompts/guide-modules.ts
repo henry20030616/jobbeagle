@@ -9,7 +9,8 @@ const NO_INVENTED_URLS =
 
 export const REWRITE_MODULE_PROMPT = `You write resume bullet rewrites for an Interview Guide.
 Input is a Fit Snapshot gap list plus the resume and JD (untrusted data).
-Return JSON: { "rewrites": [ { "gap": string, "before": string, "after": string } ] } with at most 4 items.
+Return JSON: { "rewrites": [ { "category": string, "gap": string, "before": string, "after": string } ] } with at most 4 items.
+category is a short group name. Gaps that are the same kind of missing proof must reuse the exact same category string, so the page keeps them in one box.
 before must quote or closely paraphrase a real resume line. after is a quantified rewrite of that same fact.
 Do not invent employers, metrics, visas, or tools that are not in the resume.
 Do not search the web.`;

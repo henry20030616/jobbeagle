@@ -121,6 +121,8 @@ describe('sample reports', () => {
       /目標價/,
     );
     const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
+    expect(zhGuide?.resume_rewrites[0]?.category).toBe('履歷沒有寫出的擁有權');
+    expect(zhGuide?.resume_rewrites[1]?.category).toBe(zhGuide?.resume_rewrites[0]?.category);
     expect(zhGuide?.resume_rewrites[0]?.before).toMatch(/支援/);
     expect(zhGuide?.resume_rewrites[0]?.before).not.toMatch(/Supported payment/);
     expect(zhGuide?.interview_bank.professional[0]?.question).toMatch(/ACH return queue/);

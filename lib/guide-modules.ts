@@ -274,7 +274,9 @@ export function parseRewrites(raw: unknown): GuideModules['resume_rewrites'] {
     const before = asString(row.before);
     const after = asString(row.after);
     if (!gap || !after) continue;
+    const category = asString(row.category).slice(0, 80);
     out.push({
+      ...(category ? { category } : {}),
       gap: gap.slice(0, 240),
       before: before.slice(0, 400),
       after: after.slice(0, 400),
