@@ -133,7 +133,7 @@ const ZH_TW: SampleLocalePack = {
       pass_rate_pct: 42,
       missing_keyword_count: 4,
       summary: '履歷在 ACH／退票／清算／NACHA 等此 JD 核心關鍵字上偏薄。',
-      missing_keywords: ['ACH', 'returns', 'settlement', 'NACHA'],
+      missing_keywords: ['ACH 退票', '退票處理', '清算', 'NACHA 規範'],
     },
     expected_offer: {
       posted_range: null,
@@ -826,7 +826,7 @@ const ZH_CN: SampleLocalePack = {
       pass_rate_pct: 42,
       missing_keyword_count: 4,
       summary: '简历在 ACH／退票／清算／NACHA 等此 JD 核心关键字上偏薄。',
-      missing_keywords: ['ACH', 'returns', 'settlement', 'NACHA'],
+      missing_keywords: ['ACH 退票', '退票处理', '清算', 'NACHA 规范'],
     },
     expected_offer: {
       posted_range: null,
@@ -1504,8 +1504,8 @@ const ES: SampleLocalePack = {
       pass_rate_pct: 42,
       missing_keyword_count: 4,
       summary:
-        'El CV es ligero en keywords ACH / returns / settlement / NACHA que este JD trata como core.',
-      missing_keywords: ['ACH', 'returns', 'settlement', 'NACHA'],
+        'El CV es ligero en devoluciones ACH, liquidación y NACHA, que este anuncio trata como requisitos centrales.',
+      missing_keywords: ['devoluciones ACH', 'procesamiento de devoluciones', 'liquidación', 'norma NACHA'],
     },
     expected_offer: {
       posted_range: null,
@@ -2126,8 +2126,8 @@ const HI: SampleLocalePack = {
       pass_rate_pct: 42,
       missing_keyword_count: 4,
       summary:
-        'रिज़्यूमे ACH / returns / settlement / NACHA कीवर्ड्स पर हल्का है जिन्हें यह JD core मानता है।',
-      missing_keywords: ['ACH', 'returns', 'settlement', 'NACHA'],
+        'रिज़्यूमे ACH रिटर्न, सेटलमेंट और NACHA पर हल्का है, जिन्हें यह पद केंद्रीय शर्त मानता है।',
+      missing_keywords: ['ACH रिटर्न', 'रिटर्न प्रोसेसिंग', 'सेटलमेंट', 'NACHA नियम'],
     },
     expected_offer: {
       ...ES.snapshot.expected_offer!,
@@ -2281,8 +2281,8 @@ const AR: SampleLocalePack = {
       pass_rate_pct: 42,
       missing_keyword_count: 4,
       summary:
-        'السيرة خفيفة في كلمات ACH / returns / settlement / NACHA التي يعتبرها هذا الـ JD أساسية.',
-      missing_keywords: ['ACH', 'returns', 'settlement', 'NACHA'],
+        'السيرة خفيفة في مرتجعات ACH والتسوية وNACHA، وهي شروط أساسية في هذا الإعلان.',
+      missing_keywords: ['مرتجعات ACH', 'معالجة المرتجعات', 'التسوية', 'معيار NACHA'],
     },
     expected_offer: {
       ...ES.snapshot.expected_offer!,

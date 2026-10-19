@@ -6,6 +6,7 @@ import {
 } from '@/lib/report-language';
 import { deepMerge } from '@/lib/deep-merge';
 import { SAMPLE_REPORT_LOCALES } from '@/lib/sample-report-locales';
+import { SAMPLE_GUIDE_NARRATIVE } from '@/lib/sample-guide-locale';
 
 /** Public demo Snapshot — fictional candidate vs fictional US role. */
 const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
@@ -745,6 +746,7 @@ function sampleGuideQuestion(
   question: string,
   track: GuideQuestion['track'],
   index: number,
+  answer: string,
 ): GuideQuestion {
   const year = index <= 8 ? '2025' : index <= 16 ? '2024' : '2023';
   const month = String(((index * 3) % 12) + 1).padStart(2, '0');
@@ -755,85 +757,53 @@ function sampleGuideQuestion(
     proximity: 'same_company_role',
     source_url: `https://example.com/northstar/${track}/${index}`,
     source_date: `${year}-${month}`,
-    answer:
-      'Use only the resume fact: a 28% reconciliation cycle-time cut with SQL and Looker. Do not claim ACH returns ownership; the resume shows adjacent banking ops.',
+    answer,
   };
 }
 
+const SAMPLE_GUIDE_ANSWER: Record<AppLanguage, string> = {
+  en: 'Use only the resume fact: a 28% reconciliation cycle-time cut with SQL and Looker. Do not claim ACH returns ownership; the resume shows adjacent banking ops.',
+  'zh-TW': '只用履歷上能證明的事實：以 SQL 與 Looker 把對帳週期縮短 28%。不要宣稱擁有 ACH 退票；履歷只顯示相鄰的銀行營運經驗。',
+  'zh-CN': '只用简历上能证明的事实：以 SQL 与 Looker 把对账周期缩短 28%。不要宣称拥有 ACH 退票；简历只显示相邻的银行运营经验。',
+  es: 'Usa solo el hecho del CV: un recorte del 28% en el ciclo de conciliación con SQL y Looker. No afirmes propiedad de devoluciones ACH; el CV muestra operaciones bancarias adyacentes.',
+  hi: 'केवल रिज़्यूमे का तथ्य इस्तेमाल करें: SQL और Looker से मिलान चक्र 28% छोटा हुआ। ACH रिटर्न की मालिकी का दावा न करें; रिज़्यूमे में आसन्न बैंकिंग संचालन है।',
+  ar: 'استخدم فقط حقيقة السيرة: اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. لا تدّعِ ملكية مرتجعات ACH؛ السيرة تُظهر عمليات مصرفية مجاورة.',
+};
+
 function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
-  const zh = language === 'zh-TW' || language === 'zh-CN';
-  const simplified = language === 'zh-CN';
-  const professional = [
-    'Walk me through how you prioritized an ACH return queue before cutoff.',
-    'How do you reconcile a settlement break when the bank file and the ledger disagree?',
-    'Tell me about a time NACHA return codes changed how you triaged exceptions.',
-    'How would you explain a same-day ACH failure to a merchant who missed payroll?',
-    'What SQL checks do you run before calling a settlement exception closed?',
-    'How have you partnered with engineering when a returns file arrived late?',
-    'Describe a control you added so a duplicate ACH file could not post twice.',
-    'How do you decide which exception is a customer issue versus a bank issue?',
-    'Walk through a month-end settlement tie-out you owned.',
-    'What would you inspect first if return volume jumped week over week?',
-    'Which ops metric would you put on a daily settlement standup?',
-    'How do you document an exception so the next shift can finish it?',
-  ].map((question, index) => sampleGuideQuestion(question, 'professional', index + 1));
-  const behavioral = [
-    'Tell me about a time you pushed back on a deadline that would have missed a cutoff.',
-    'Describe a cross-team miss and what you changed afterward.',
-    'Tell me about feedback that changed how you write status updates.',
-    'A stakeholder wanted a number you could not defend. What did you do?',
-    'Tell me about delivering bad news to a partner bank or customer.',
-    'Describe how you onboarded yourself into an unfamiliar payments process.',
-    'Tell me about a conflict with engineering over what done meant.',
-    'When have you chosen a simpler control over a perfect one?',
-    'Tell me about a written update that changed a leadership decision.',
-    'Describe a reconciliation mistake and how you contained it.',
-    'Tell me about coaching someone through their first incident.',
-  ].map((question, index) => sampleGuideQuestion(question, 'behavioral', index + 1));
+  const copy = SAMPLE_GUIDE_NARRATIVE[language];
+  const answer = SAMPLE_GUIDE_ANSWER[language];
+  const professional = copy.professional.map((question, index) =>
+    sampleGuideQuestion(question, 'professional', index + 1, answer),
+  );
+  const behavioral = copy.behavioral.map((question, index) =>
+    sampleGuideQuestion(question, 'behavioral', index + 1, answer),
+  );
   return {
-    resume_rewrites: [
-      {
-        gap: 'ACH returns ownership is not named',
-        before: 'Supported payment operations and reconciliation.',
-        after: 'Cut reconciliation cycle time 28% with SQL and Looker on a banking-ops book. ACH returns ownership is not on this resume.',
-      },
-      {
-        gap: 'NACHA and processor ownership are unnamed',
-        before: 'Worked with vendors on payment issues.',
-        after: 'Partnered with engineering on late exception files. Do not add a processor or NACHA title that the resume does not show.',
-      },
-    ],
+    resume_rewrites: copy.rewrites,
     salary_land: {
       target: '$168K TC',
       ceiling: '$185K TC',
       base: '$145K',
       equity: '$12K / yr',
       bonus: '$11K',
-      rationale: zh
-        ? simplified
-          ? '目标价放在 $168K，是因为这席在美国、可远程的 Senior Business Analyst 市场带大约 $145K–$190K。履历能证明的是 SQL／Looker 把对账周期缩短 28%，但 ACH 退票所有权只是相邻经验，所以不站到带的上沿。天花板停在 $185K：没有 Staff 级范围，也没有第二份 offer 可以再往上推。底薪 $145K、股票约 $12K／年、奖金 $11K 加总才是 $168K；股票和奖金不是履历已经拿到的项目，不能把它们说成既有权利。'
-          : '目標價放在 $168K，是因為這席在美國、可遠端的 Senior Business Analyst 市場帶大約 $145K–$190K。履歷能證明的是 SQL／Looker 把對帳週期縮短 28%，但 ACH 退票擁有權只是相鄰經驗，所以不站到帶的上緣。天花板停在 $185K：沒有 Staff 級範圍，也沒有第二份 offer 可以再往上推。底薪 $145K、股票約 $12K／年、獎金 $11K 加總才是 $168K；股票和獎金不是履歷已經拿到的項目，不能把它們說成既有權利。'
-        : 'The target sits at $168K because a US remote Senior Business Analyst band is about $145K–$190K. The resume can prove a 28% reconciliation cycle-time cut with SQL and Looker, but ACH returns ownership is only adjacent, so the number stays mid-band. The ceiling stops at $185K: there is no Staff-level scope and no second offer to push past it. Base $145K, about $12K a year of equity, and an $11K bonus are what add up to $168K. Equity and bonus are not items the resume already holds, so they are not existing rights.',
-      buyer_seller: zh
-        ? simplified
-          ? '买方筹码：这个位子还空着。卖方筹码：履历上的 28% 对账周期缩短。ACH 拥有权只是相邻经验，不能把它当成已经补上的缺口来喊价。'
-          : '買方籌碼：這個位子還空著。賣方籌碼：履歷上的 28% 對帳週期縮短。ACH 擁有權只是相鄰經驗，不能把它當成已經補上的缺口來喊價。'
-        : 'Buyer leverage: the seat has been open. Seller leverage: the 28% SQL cycle-time cut. ACH ownership is adjacent, so do not anchor as if that gap were closed.',
+      rationale: copy.rationale,
+      buyer_seller: copy.buyer_seller,
       sources: [
-        { title: 'Levels sample', url: 'https://example.com/levels/northstar-ba' },
-        { title: 'H-1B wage sample', url: 'https://example.com/h1b/northstar-wages' },
+        { title: copy.levelsTitle, url: 'https://example.com/levels/northstar-ba' },
+        { title: copy.h1bWageTitle, url: 'https://example.com/h1b/northstar-wages' },
       ],
     },
     company_eval: {
-      culture: 'Public reviews describe a written, remote-friendly ops culture with tight cutoff deadlines.',
-      labor_risk: 'No cited labor action in the sample sources. Treat this as unknown, not as a clean record.',
-      layoff_risk: 'No WARN notice in the sample window. Ask the recruiter whether ops headcount changed in the last year.',
-      h1b: 'Sample H-1B employer filings for Northstar Payments show petitions in the last three years. The cited page does not publish a selection rate. Sponsorship is plausible and unconfirmed — ask the recruiter before you rely on it.',
-      remote_sponsorship: 'The posting says US remote. It does not say the company will sponsor this seat.',
-      role_reviews: 'Reviewers praise SQL depth and flag on-call during settlement incidents.',
+      culture: copy.culture,
+      labor_risk: copy.labor_risk,
+      layoff_risk: copy.layoff_risk,
+      h1b: copy.h1b,
+      remote_sponsorship: copy.remote_sponsorship,
+      role_reviews: copy.role_reviews,
       sources: [
-        { title: 'Blind sample', url: 'https://example.com/blind/northstar-ops' },
-        { title: 'WARN sample', url: 'https://example.com/warn/northstar' },
+        { title: copy.blindTitle, url: 'https://example.com/blind/northstar-ops' },
+        { title: copy.warnTitle, url: 'https://example.com/warn/northstar' },
       ],
     },
     interview_bank: {
@@ -841,15 +811,12 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       behavioral: behavioral.slice(0, 10),
       professional_extra: professional.slice(10),
       behavioral_extra: behavioral.slice(10),
-      process: 'Recruiter screen, hiring-manager case on a settlement break, then a panel. Sample shares put the loop at about three weeks.',
+      process: copy.process,
     },
     negotiation: {
-      pay_strategy:
-        'Open at the $168K total target: $145K base, $12K a year equity, $11K bonus. If the offer is the band floor, counter once toward the $185K ceiling and stop. Do not invent a competing offer.',
-      benefits_strategy:
-        'After base is named, ask about sign-on, an equity refresh, remote days, and PTO. Sponsorship is a separate recruiter question. Do not trade base for a benefit that was not offered.',
-      script:
-        'The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I can accept $168K total, with base at $145K. If we need to move, the ceiling I can justify from that proof is $185K.',
+      pay_strategy: copy.pay_strategy,
+      benefits_strategy: copy.benefits_strategy,
+      script: copy.script,
     },
     limitations: [],
   };

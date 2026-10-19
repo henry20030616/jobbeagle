@@ -114,6 +114,14 @@ describe('sample reports', () => {
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
       /目標價/,
     );
+    const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
+    expect(zhGuide?.resume_rewrites[0]?.before).toMatch(/支援/);
+    expect(zhGuide?.resume_rewrites[0]?.before).not.toMatch(/Supported payment/);
+    expect(zhGuide?.interview_bank.professional[0]?.question).toMatch(/請說明/);
+    expect(zhGuide?.interview_bank.professional[0]?.answer).toMatch(/履歷/);
+    expect(getSampleSnapshotReport('zh-TW').ats_warning?.missing_keywords?.join(' ')).not.toMatch(
+      /\breturns\b|\bsettlement\b/,
+    );
     expect(modules!.negotiation.pay_strategy.length).toBeGreaterThan(20);
     expect(modules!.negotiation.benefits_strategy.length).toBeGreaterThan(20);
     expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);

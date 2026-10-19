@@ -117,8 +117,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
       lockRewrite: s
         ? '🔒 升级 Interview Guide 可解锁针对该硬伤的具体修改范例与满分话术'
         : '🔒 升級 Interview Guide 可解鎖針對該硬傷的具體修改範例與滿分話術',
-      before: 'Before',
-      after: 'After',
+      before: s ? '修改前' : '修改前',
+      after: s ? '修改后' : '修改後',
       target: s ? '战略目标价' : '戰略目標價',
       ceiling: s ? '议价天花板' : '議價天花板',
       judgment: s ? '判断：为什么是这些数字' : '判斷：為什麼是這些數字',
@@ -130,7 +130,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       layoff: s ? '裁员风险' : '裁員風險',
       labor: s ? '劳工争议' : '勞工爭議',
       h1b: s ? '签证赞助状况评估' : '簽證贊助狀況評估',
-      remote: 'Remote / Sponsorship',
+      remote: s ? '远端 / 签证赞助' : '遠端 / 簽證贊助',
       roleReviews: s ? '职位评价' : '職位評價',
       professional: s ? '专业题' : '專業題',
       behavioral: s ? '行为题' : '行為題',
