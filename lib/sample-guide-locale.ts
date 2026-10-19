@@ -27,6 +27,8 @@ export type SampleGuideNarrative = {
   pay_strategy: string;
   benefits_strategy: string;
   script: string;
+  company_questions: string;
+  follow_up_email: string;
 };
 
 const en: SampleGuideNarrative = {
@@ -114,6 +116,10 @@ const en: SampleGuideNarrative = {
     'Talk benefits only after the $145K base is named. Do not reverse that order.\nAsk once, for four items: sign-on, an equity refresh, remote days per week, and PTO. Do not turn them into four separate counters.\nSponsorship stays out of this counter. The posting says US remote and does not say this seat is sponsored. Ask the recruiter.\nDo not give up base for a benefit the employer did not offer. If they ask to cut the $145K in exchange for remote days or PTO, refuse that trade.',
   script:
     'The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I can accept $168K total, with base at $145K. If we need to move, the ceiling that proof can support is $185K.',
+  company_questions:
+    'Does this seat own ACH returns on day one, or is settlement experience enough?\nWho receives the monthly cycle-time and error-rate report, and what do they expect in the first 90 days?\nHow often is on-call during settlement incidents, and what does the rotation cover?\nThe posting says US remote and does not say this seat is sponsored. Will the company sponsor it?\nAfter this interview, who runs the next round and what are they assessing?',
+  follow_up_email:
+    'Send this after the interview, before anyone starts talking numbers. Once pay is on the table, use the spoken line above and do not send this note.\n\nSubject: Senior Business Analyst interview\n\nThank you for the time today. I am interested in this payments-operations seat. The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I did not describe ACH returns as work I already owned. If the seat needs that ownership on day one, I would like to confirm the scope.',
 };
 
 const zhTW: SampleGuideNarrative = {
@@ -197,6 +203,10 @@ const zhTW: SampleGuideNarrative = {
     '底薪 $145K 講定之後才談福利。順序不要反過來。\n一次問完四項：簽約金、股票增授、每週遠端天數、帶薪假。不要拆成四次還價。\n簽證贊助不進這次還價。職缺只寫美國可遠端，沒有寫會贊助這個位子。這題問招募。\n對方沒有提出的福利，不要用降低底薪去換。若對方要求把 $145K 降下來換遠端或休假，拒絕這筆交換。',
   script:
     '我能證明的是，用 SQL 與 Looker 把對帳週期縮短 28%。我接受總薪酬 $168K，其中底薪 $145K。若還要移動，這項證明能站住的上限是 $185K。',
+  company_questions:
+    '這個職位第一天就要獨立負責 ACH 退票，還是有清算經驗即可？\n每月的對帳週期與錯誤率，是向哪一位營運主管報告，前 90 天要交出什麼？\n清算事故的待命頻率與範圍是什麼？\n職缺寫的是美國可遠端，沒有寫簽證贊助。這個位子會贊助嗎？\n這一面試之後，下一關由誰進行、看的是什麼？',
+  follow_up_email:
+    '面試結束、對方還沒開始談薪資時寄。已經在談數字，就用上面的開口稿，不要再寄這封。\n\n主旨：Senior Business Analyst 面試後續\n\n謝謝今天的時間。我對這個支付營運職位有興趣。履歷上能對上的，是用 SQL 與 Looker 把對帳週期縮短 28%。我沒有把 ACH 退票說成已經負責過。如果這個位子第一天就要獨立處理退票，我希望再確認一次工作範圍。',
 };
 
 const zhCN: SampleGuideNarrative = {
@@ -280,6 +290,10 @@ const zhCN: SampleGuideNarrative = {
     '底薪 $145K 讲定之后才谈福利。顺序不要反过来。\n一次问完四项：签约金、股票增授、每周远程天数、带薪假。不要拆成四次还价。\n签证赞助不进这次还价。职位只写美国可远程，没有写会赞助这个位子。这题问招聘。\n对方没有提出的福利，不要用降低底薪去换。若对方要求把 $145K 降下来换远程或休假，拒绝这笔交换。',
   script:
     '我能证明的是，用 SQL 与 Looker 把对账周期缩短 28%。我接受总薪酬 $168K，其中底薪 $145K。若还要移动，这项证明能站住的上限是 $185K。',
+  company_questions:
+    '这个职位第一天就要独立负责 ACH 退票，还是有清算经验即可？\n每月的对账周期与错误率，是向哪一位运营主管报告，前 90 天要交出什么？\n清算事故的待命频率与范围是什么？\n职位写的是美国可远程，没有写签证赞助。这个位子会赞助吗？\n这一轮面试之后，下一关由谁进行、看的是什么？',
+  follow_up_email:
+    '面试结束、对方还没开始谈薪酬时寄。已经在谈数字，就用上面的开口稿，不要再寄这封。\n\n主旨：Senior Business Analyst 面试后续\n\n谢谢今天的时间。我对这个支付运营职位有兴趣。简历上能对上的，是用 SQL 与 Looker 把对账周期缩短 28%。我没有把 ACH 退票说成已经负责过。如果这个位子第一天就要独立处理退票，我希望再确认一次工作范围。',
 };
 
 const es: SampleGuideNarrative = {
@@ -367,6 +381,10 @@ const es: SampleGuideNarrative = {
     'Habla de beneficios solo después de nombrar la base de $145K. No inviertas ese orden.\nPide una sola vez cuatro cosas: prima de firma, ampliación de acciones, días remotos por semana y vacaciones. No las conviertas en cuatro contraofertas.\nEl patrocinio queda fuera de esta contraoferta. El anuncio dice remoto en Estados Unidos y no dice que este puesto esté patrocinado. Pregúntalo al reclutador.\nNo entregues la base a cambio de un beneficio que no te hayan ofrecido. Si piden bajar los $145K a cambio de remoto o vacaciones, rechaza ese canje.',
   script:
     'Lo que puedo mostrar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. Acepto $168K de total, con base de $145K. Si hay que moverse, el techo que esa prueba sostiene es $185K.',
+  company_questions:
+    '¿Este puesto posee las devoluciones ACH desde el primer día, o basta la experiencia en liquidación?\n¿Quién recibe el informe mensual de ciclo y tasa de error, y qué espera en los primeros 90 días?\n¿Con qué frecuencia hay guardia en incidentes de liquidación y qué cubre?\nEl anuncio dice remoto en Estados Unidos y no dice que el puesto esté patrocinado. ¿La empresa lo patrocina?\nDespués de esta entrevista, ¿quién hace la siguiente ronda y qué evalúa?',
+  follow_up_email:
+    'Envíala al terminar la entrevista, antes de que nadie hable de cifras. Si ya se está negociando el sueldo, usa la frase de arriba y no envíes esta nota.\n\nAsunto: Entrevista de Senior Business Analyst\n\nGracias por el tiempo de hoy. Me interesa este puesto de operaciones de pago. Lo que puedo mostrar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. No describí las devoluciones ACH como un trabajo que ya poseía. Si el puesto exige esa propiedad desde el primer día, quisiera confirmar el alcance.',
 };
 
 const hi: SampleGuideNarrative = {
@@ -453,6 +471,10 @@ const hi: SampleGuideNarrative = {
     'लाभ की बात $145K आधार तय होने के बाद करें। क्रम उलटा न करें।\nएक बार में चार चीज़ें माँगें: साइन-ऑन, इक्विटी वृद्धि, प्रति सप्ताह दूरस्थ दिन, और छुट्टी। इन्हें चार अलग प्रतिप्रस्ताव न बनाएँ।\nप्रायोजन इस प्रतिप्रस्ताव में नहीं आता। विज्ञापन अमेरिका में दूरस्थ कहता है और इस सीट का प्रायोजन नहीं कहता। यह भर्तीकर्ता से पूछें।\nजो लाभ नियोक्ता ने नहीं दिया, उसके बदले आधार न दें। अगर वे दूरस्थ दिन या छुट्टी के लिए $145K घटाना चाहें, तो यह विनिमय अस्वीकार करें।',
   script:
     'जो मैं दिखा सकता हूँ, वह SQL और Looker से मिलान चक्र में 28% की कमी है। मैं कुल $168K स्वीकार करता हूँ, जिसमें आधार $145K है। अगर हिलना हो, तो इस प्रमाण की ऊपरी सीमा $185K है।',
+  company_questions:
+    'क्या इस पद पर पहले दिन से ACH रिटर्न की ज़िम्मेदारी है, या सेटलमेंट अनुभव काफ़ी है?\nमासिक चक्र-समय और त्रुटि-दर रिपोर्ट किसे मिलती है, और पहले 90 दिनों में वे क्या चाहते हैं?\nसेटलमेंट घटनाओं में ऑन-कॉल कितनी बार है, और दायरा क्या है?\nविज्ञापन अमेरिका में दूरस्थ कहता है और प्रायोजन नहीं कहता। क्या कंपनी इस सीट को प्रायोजित करेगी?\nइस इंटरव्यू के बाद अगला दौर कौन लेता है, और वे क्या जाँचते हैं?',
+  follow_up_email:
+    'इंटरव्यू के बाद, संख्याओं की बात शुरू होने से पहले भेजें। वेतन की बात चल पड़ी हो, तो ऊपर वाली पंक्ति बोलें और यह पत्र न भेजें।\n\nविषय: Senior Business Analyst इंटरव्यू\n\nआज का समय देने के लिए धन्यवाद। मुझे इस भुगतान-संचालन पद में रुचि है। जो मैं दिखा सकता हूँ, वह SQL और Looker से मिलान चक्र में 28% की कमी है। मैंने ACH रिटर्न को ऐसा काम नहीं बताया जिसकी मालिकी मेरे पास पहले से हो। अगर पद को पहले दिन से यह मालिकी चाहिए, तो मैं दायरा एक बार पुष्ट करना चाहूँगा।',
 };
 
 const ar: SampleGuideNarrative = {
@@ -539,6 +561,10 @@ const ar: SampleGuideNarrative = {
     'تحدث عن المزايا فقط بعد تسمية أساس $145K. لا تعكس هذا الترتيب.\nاطلب مرة واحدة أربعة بنود: مكافأة التوقيع، وتجديد الأسهم، وأيام العمل عن بُعد في الأسبوع، والإجازة. لا تجعلها أربعة عروض مضادة.\nالرعاية خارج هذا العرض المضاد. يقول الإعلان عملاً عن بُعد داخل الولايات المتحدة ولا يقول إن هذا المقعد مَرعي. اسأل المسؤول.\nلا تتنازل عن الأساس مقابل ميزة لم تُعرض. إذا طلبوا خفض $145K مقابل أيام عن بُعد أو إجازة، ارفض هذه المبادلة.',
   script:
     'ما أستطيع إظهاره هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. أقبل إجمالي $168K، والأساس فيه $145K. إذا لزم التحرك، فالسقف الذي يثبته هذا الدليل هو $185K.',
+  company_questions:
+    'هل يملك هذا المقعد مرتجعات ACH من اليوم الأول، أم تكفي خبرة التسوية؟\nمن يستلم تقرير زمن الدورة ومعدل الخطأ الشهري، وماذا يتوقع في أول 90 يوماً؟\nما وتيرة المناوبة أثناء حوادث التسوية، وما الذي تغطيه؟\nيقول الإعلان إن العمل عن بُعد داخل الولايات المتحدة ولا يذكر الرعاية. هل ترعى الشركة هذا المقعد؟\nبعد هذه المقابلة، من يدير الجولة التالية وماذا يقيّم؟',
+  follow_up_email:
+    'أرسِلها بعد المقابلة وقبل أن يبدأ الحديث عن الأرقام. إذا بدأت مناقشة الأجر، فاستخدم الجملة أعلاه ولا ترسل هذه الرسالة.\n\nالموضوع: مقابلة Senior Business Analyst\n\nشكراً على الوقت اليوم. أنا مهتم بمقعد عمليات الدفع هذا. ما أستطيع إظهاره هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. لم أصف مرتجعات ACH كعمل كنت أملكه. إذا كان المقعد يحتاج هذه الملكية من اليوم الأول، فأود تأكيد النطاق.',
 };
 
 export const SAMPLE_GUIDE_NARRATIVE: Record<AppLanguage, SampleGuideNarrative> = {

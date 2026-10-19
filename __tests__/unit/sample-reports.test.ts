@@ -135,6 +135,8 @@ describe('sample reports', () => {
       /先報總薪酬/,
     );
     expect(modules!.negotiation.benefits_strategy.length).toBeGreaterThan(20);
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.negotiation.company_questions).toMatch(/ACH 退票/);
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.negotiation.follow_up_email).toMatch(/面試結束/);
     expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);
     expect('guide_modules' in getSampleSnapshotReport('en')).toBe(false);
   });

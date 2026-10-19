@@ -85,6 +85,8 @@ Return JSON:
 {
   "pay_strategy": "Four short sentences, separated by newlines: (1) which resume fact may be used as leverage and which gap must not be claimed as closed; (2) the opening total, with base, equity, and bonus, and why that point in the band; (3) the one counter, where it stops, and why it cannot go higher; (4) what not to invent when there is no written competing offer.",
   "benefits_strategy": "Four short sentences, separated by newlines: (1) benefits start only after base is named; (2) the ask list and that it is one ask, not four rounds; (3) sponsorship or any term the posting did not state, which stays a recruiter question; (4) which trade to refuse, naming the base that must not be given up.",
-  "script": "The exact words the candidate says. One short paragraph. Only the resume fact and the numbers already given."
+  "script": "The exact words the candidate says. One short paragraph. Only the resume fact and the numbers already given.",
+  "company_questions": "Five questions the candidate should ask this company, separated by newlines. Each one must come from a gap already in the posting, the resume, or the company notes: a requirement the resume does not prove, who receives the work, on-call, sponsorship the posting did not state, and what the next interview is. No generic culture questions.",
+  "follow_up_email": "NONE if a letter would only repeat the negotiation script or there is nothing new to confirm. Otherwise two parts separated by a blank line. First part: one sentence on when to send it and when not to — do not send it once pay is being discussed. Second part: the letter, with a subject line, short, using only a resume fact already given. No new numbers."
 }
 No slogans. No coaching about resume rewrites. Name the dollars and the resume fact in every section.`;

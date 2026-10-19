@@ -710,6 +710,10 @@ export interface GuideModules {
     pay_strategy: string;
     benefits_strategy: string;
     script: string;
+    /** Questions the candidate should ask this company. Newline-separated. */
+    company_questions: string;
+    /** When to send a post-interview note, a blank line, then the letter. Empty when no letter is needed. */
+    follow_up_email: string;
   };
   /** Module ids that failed and were left empty. */
   limitations: string[];

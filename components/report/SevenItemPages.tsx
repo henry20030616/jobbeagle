@@ -81,6 +81,8 @@ type ItemCopy = {
   pay: string;
   benefits: string;
   say: string;
+  askCompany: string;
+  followUp: string;
   sources: string;
   empty: string;
   noBand: string;
@@ -157,6 +159,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
       pay: s ? '薪资筹码策略' : '薪資籌碼策略',
       benefits: s ? '权益与福利争取' : '權益與福利爭取',
       say: s ? '开口这样说' : '開口這樣說',
+      askCompany: s ? '建议问公司的问题' : '建議問公司的問題',
+      followUp: s ? '建议面试后寄给公司的信（如果需要）' : '建議面試後寄給公司的信（如果需要）',
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
@@ -241,6 +245,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
     pay: 'Pay leverage',
     benefits: 'Benefits to negotiate',
     say: 'What to say',
+    askCompany: 'Questions to ask the company',
+    followUp: 'Note to send after the interview, if one is needed',
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
@@ -998,7 +1004,11 @@ export function GuideItemPage({
   }
   if (item === 'negotiate') {
     const negotiation = modules?.negotiation;
-    body = negotiation && (negotiation.pay_strategy || negotiation.benefits_strategy || negotiation.script) ? (
+    const followUpParts = (negotiation?.follow_up_email ?? '').split(/\n\n/);
+    const followUpWhen = followUpParts.length > 1 ? followUpParts[0] : '';
+    const followUpLetter = followUpParts.length > 1 ? followUpParts.slice(1).join('\n\n') : (negotiation?.follow_up_email ?? '');
+    body = negotiation && (negotiation.pay_strategy || negotiation.benefits_strategy || negotiation.script || negotiation.company_questions || negotiation.follow_up_email) ? (
+      <div className="space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
           <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>{copy.pay}</p>
@@ -1014,6 +1024,20 @@ export function GuideItemPage({
           <p className={`${SECTION_TITLE} text-violet-300 mb-3`}>{copy.benefits}</p>
           <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
         </section>
+      </div>
+      {negotiation.company_questions ? (
+        <section className="rounded-lg border border-sky-400/50 bg-slate-900/40 p-4">
+          <p className={`${SECTION_TITLE} mb-3 text-slate-100`}>{copy.askCompany}</p>
+          <PointList items={briefLines(negotiation.company_questions)} dot="bg-sky-300" />
+        </section>
+      ) : null}
+      {followUpLetter ? (
+        <section className="rounded-lg border border-sky-400/50 bg-slate-900/40 p-4">
+          <p className={`${SECTION_TITLE} mb-3 text-slate-100`}>{copy.followUp}</p>
+          {followUpWhen ? <p className={`${BODY} mb-3 font-medium leading-relaxed text-slate-300`}>{followUpWhen}</p> : null}
+          <p className={`${BODY} whitespace-pre-wrap font-medium leading-relaxed text-slate-100`}>{followUpLetter}</p>
+        </section>
+      ) : null}
       </div>
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
   }

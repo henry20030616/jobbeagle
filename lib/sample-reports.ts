@@ -827,6 +827,8 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       pay_strategy: copy.pay_strategy,
       benefits_strategy: copy.benefits_strategy,
       script: copy.script,
+      company_questions: copy.company_questions,
+      follow_up_email: copy.follow_up_email,
     },
     limitations: [],
   };

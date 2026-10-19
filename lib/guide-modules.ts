@@ -134,7 +134,7 @@ export function emptyGuideModules(limitations: string[] = []): GuideModules {
       behavioral_extra: [],
       process: '',
     },
-    negotiation: { pay_strategy: '', benefits_strategy: '', script: '' },
+    negotiation: { pay_strategy: '', benefits_strategy: '', script: '', company_questions: '', follow_up_email: '' },
     limitations,
   };
 }
@@ -289,10 +289,13 @@ export function parseRewrites(raw: unknown): GuideModules['resume_rewrites'] {
 export function parseNegotiation(raw: unknown): GuideModules['negotiation'] | null {
   if (!raw || typeof raw !== 'object') return null;
   const row = raw as Record<string, unknown>;
+  const followUp = asString(row.follow_up_email).slice(0, 2000);
   return {
     pay_strategy: asString(row.pay_strategy).slice(0, 2000),
     benefits_strategy: asString(row.benefits_strategy).slice(0, 2000),
     script: asString(row.script).slice(0, 1500),
+    company_questions: asString(row.company_questions).slice(0, 2000),
+    follow_up_email: /^none$/i.test(followUp.trim()) ? '' : followUp,
   };
 }
 
