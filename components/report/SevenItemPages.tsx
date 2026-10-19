@@ -739,11 +739,11 @@ export function SnapshotItemStack({
       <ItemBlock kicker="" title={copy.core} deck={copy.deck.core}>
         <CoreBody report={report} copy={copy} />
       </ItemBlock>
-      <ItemBlock kicker="" title={copy.market} deck={copy.deck.market}>
-        <MarketBody report={report} copy={copy} language={lang} locked={locked} />
-      </ItemBlock>
       <ItemBlock kicker="" title={copy.fit} deck={copy.deck.fit}>
         <FitBody report={report} copy={copy} language={lang} locked={locked} rewrites={rewrites} />
+      </ItemBlock>
+      <ItemBlock kicker="" title={copy.market} deck={copy.deck.market}>
+        <MarketBody report={report} copy={copy} language={lang} locked={locked} />
       </ItemBlock>
     </>
   );

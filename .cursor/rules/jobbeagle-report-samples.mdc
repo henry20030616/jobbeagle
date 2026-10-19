@@ -22,7 +22,7 @@ When adjusting **either** report product UI or content rules, **always update bo
 
 ## Current Snapshot content rules (as of 2026-07-18)
 
-- **Layout**: one-page slide frame (`LiteReportDashboard`) with three numbered sections — 1 role core, 2 market pay band, 3 fit score / missing keywords / apply call. Upgrade locks sit inside sections 2 and 3. No upgrade CTA under the slide.
+- **Layout**: one-page slide frame (`LiteReportDashboard`) with three sections, top to bottom — role core, fit score / missing keywords / apply call, market pay band. Upgrade locks sit inside the fit and market sections. No upgrade CTA under the slide. No section numbers.
 - JobBeagle evaluates fit — it is **not** a resume coach. Line-by-line rewrites appear only on Interview Guide item 3.
 - Strategy Guide uses **top horizontal nav** for the seven items: Role core · Market pay · Fit · Pay landing · Company · Questions · Negotiation. It opens on item 1. Source links live inside items 4–6.
 - All report surfaces (Snapshot, Guide, `/samples`, `/report`) center as a column; **sample pages** place an independent Sample notice card on the **left**, top-aligned with the report frame (`sm:items-start`).
