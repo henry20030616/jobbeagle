@@ -123,7 +123,7 @@ describe('sample reports', () => {
     const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
     expect(zhGuide?.resume_rewrites[0]?.before).toMatch(/支援/);
     expect(zhGuide?.resume_rewrites[0]?.before).not.toMatch(/Supported payment/);
-    expect(zhGuide?.interview_bank.professional[0]?.question).toMatch(/請說明/);
+    expect(zhGuide?.interview_bank.professional[0]?.question).toMatch(/ACH return queue/);
     expect(zhGuide?.interview_bank.professional[0]?.answer).toMatch(/履歷/);
     expect(getSampleSnapshotReport('zh-TW').ats_warning?.missing_keywords?.join(' ')).not.toMatch(
       /\breturns\b|\bsettlement\b/,

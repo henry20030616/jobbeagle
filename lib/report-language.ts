@@ -26,11 +26,12 @@ export function geminiLanguageDirective(language: AppLanguage): string {
   const name = NATIVE_LABEL[language] ?? NATIVE_LABEL.en;
   return [
     `OUTPUT LANGUAGE (CRITICAL): Write EVERY human-readable string value in the JSON response in ${name}.`,
-    'Cover all narrative fields: score summaries, apply reasons, strengths/gaps, ATS warning summary, missing-keyword phrases, resume rewrites (gap, before, after), role/team insights, company truth, interview questions and answers, negotiation scripts, citation descriptions, and any insufficient-data messages.',
+    'Cover all narrative fields: score summaries, apply reasons, strengths/gaps, ATS warning summary, missing-keyword phrases, resume rewrites (gap, before, after), role/team insights, company truth, suggested answers to interview questions, negotiation scripts, citation descriptions, and any insufficient-data messages.',
+    'Reported interview questions stay in the language of the source page. Do not translate them. Predicted questions, which have no source page, are written in the output language. Suggested answers are always in the output language.',
     'Keep JSON keys and machine enums unchanged (apply_decision.label enum, hard_filter.status, evidence_tier A/B/C/D, skill_kind hard|soft, predicted boolean, currency codes).',
     'Proper nouns, URLs, and dollar amounts may stay as commonly written; surrounding prose must still be in the output language.',
     language === 'en'
-      ? 'Do not mix Chinese or other languages into English string fields.'
-      : `Do not leave English UI chrome or English fallback boilerplate inside ${name} string fields.`,
+      ? 'Do not mix Chinese or other languages into English narrative fields. Leave a question in its source language when that page is not English.'
+      : `Do not leave English UI chrome or English fallback boilerplate inside ${name} narrative fields. A question copied from an English source page is not boilerplate; leave that question in English.`,
   ].join('\n');
 }

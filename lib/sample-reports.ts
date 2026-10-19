@@ -773,10 +773,12 @@ const SAMPLE_GUIDE_ANSWER: Record<AppLanguage, string> = {
 function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
   const copy = SAMPLE_GUIDE_NARRATIVE[language];
   const answer = SAMPLE_GUIDE_ANSWER[language];
-  const professional = copy.professional.map((question, index) =>
+  // Sample sources are English web posts, so the question text stays English.
+  const sourceQuestions = SAMPLE_GUIDE_NARRATIVE.en;
+  const professional = sourceQuestions.professional.map((question, index) =>
     sampleGuideQuestion(question, 'professional', index + 1, answer),
   );
-  const behavioral = copy.behavioral.map((question, index) =>
+  const behavioral = sourceQuestions.behavioral.map((question, index) =>
     sampleGuideQuestion(question, 'behavioral', index + 1, answer),
   );
   return {

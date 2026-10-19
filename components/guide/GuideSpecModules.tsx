@@ -100,7 +100,7 @@ function QuestionList({
               </span>
               <div className="min-w-0">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <span className="rounded-md bg-slate-800 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-200">
+                  <span className="rounded-md bg-slate-800 px-2.5 py-1 text-xl font-black text-indigo-100">
                     {item.origin === 'reported' ? reportedLabel : predictedLabel}
                   </span>
                   {item.origin === 'reported' && item.source_url ? (
@@ -120,7 +120,7 @@ function QuestionList({
             </div>
           </div>
           <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{answerLabel}</p>
+            <p className="text-xl font-black text-slate-100">{answerLabel}</p>
             <p className={`${BODY} mt-2 text-slate-100 leading-relaxed`}>{item.answer || '—'}</p>
           </div>
         </li>
