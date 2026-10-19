@@ -130,7 +130,7 @@ describe('sample reports', () => {
     );
     expect(modules!.negotiation.pay_strategy).toMatch(/28%/);
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.negotiation.pay_strategy).toMatch(
-      /先報總包/,
+      /先報總薪酬/,
     );
     expect(modules!.negotiation.benefits_strategy.length).toBeGreaterThan(20);
     expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);

@@ -84,8 +84,8 @@ export function payEstimateSentence(
   const money = currency.trim() || 'USD';
   const copy: Record<AppLanguage, string> = {
     en: `Where: ${scope.where}. Role: ${scope.role}. Level or years: ${scope.level}. The market total for that scope is about ${range} (${money}). This is not the company’s offer.`,
-    'zh-TW': `地點：${scope.where}。職位：${scope.role}。職級或年資：${scope.level}。這個範圍的市場總包大約是 ${range}（${money}）。這不是這家公司的報價。`,
-    'zh-CN': `地点：${scope.where}。职位：${scope.role}。职级或年资：${scope.level}。这个范围的市场总包大约是 ${range}（${money}）。这不是这家公司的报价。`,
+    'zh-TW': `地點：${scope.where}。職位：${scope.role}。職級或年資：${scope.level}。這個範圍的市場總薪酬大約是 ${range}（${money}）。這不是這家公司的報價。`,
+    'zh-CN': `地点：${scope.where}。职位：${scope.role}。职级或年资：${scope.level}。这个范围的市场总薪酬大约是 ${range}（${money}）。这不是这家公司的报价。`,
     es: `Lugar: ${scope.where}. Puesto: ${scope.role}. Nivel o años: ${scope.level}. El total de mercado para ese alcance ronda ${range} (${money}). No es la oferta de la empresa.`,
     hi: `जगह: ${scope.where}. पद: ${scope.role}. स्तर या वर्ष: ${scope.level}. इस दायरे का बाज़ार कुल लगभग ${range} (${money}) है। यह कंपनी का ऑफ़र नहीं है।`,
     ar: `المكان: ${scope.where}. المسمى: ${scope.role}. المستوى أو السنوات: ${scope.level}. إجمالي السوق لهذا النطاق حوالي ${range} (${money}). هذا ليس عرض الشركة.`,
