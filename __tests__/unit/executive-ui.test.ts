@@ -122,8 +122,10 @@ describe('homepage value propositions', () => {
         expect(text).not.toMatch(emoji);
       }
     }
-    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('Skip wasted applications');
-    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Stays on your resume');
-    expect(HOMEPAGE_FORM_COPY['zh-TW'].description).toBe('貼上職缺和履歷，先判斷要不要投，再準備怎麼面試。');
+    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('A clear call');
+    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Does not make you look stronger');
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].description).toBe(
+      '先看這份工作值不值得你的下一輪時間，再只準備你進面試站得住的說法。',
+    );
   });
 });
