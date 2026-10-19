@@ -60,6 +60,9 @@ type ItemCopy = {
   bonus: string;
   buyer: string;
   culture: string;
+  pros: string;
+  cons: string;
+  companyReview: string;
   layoff: string;
   labor: string;
   h1b: string;
@@ -127,6 +130,9 @@ function itemCopy(language: AppLanguage): ItemCopy {
       bonus: s ? '奖金' : '獎金',
       buyer: s ? '买方 / 卖方筹码' : '買方 / 賣方籌碼',
       culture: s ? '公司情报' : '公司情報',
+      pros: s ? '优点' : '優點',
+      cons: s ? '缺点' : '缺點',
+      companyReview: s ? '公司评价' : '公司評價',
       layoff: s ? '裁员风险' : '裁員風險',
       labor: s ? '劳工争议' : '勞工爭議',
       h1b: s ? '签证赞助状况评估' : '簽證贊助狀況評估',
@@ -203,6 +209,9 @@ function itemCopy(language: AppLanguage): ItemCopy {
     bonus: 'Bonus',
     buyer: 'Buyer / seller leverage',
     culture: 'Company intel',
+    pros: 'Pros',
+    cons: 'Cons',
+    companyReview: 'Company reviews',
     layoff: 'Layoff risk',
     labor: 'Labor risk',
     h1b: 'Visa sponsorship',
@@ -365,6 +374,51 @@ function LockLine({ children }: { children: string }) {
     <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-base font-semibold text-slate-100">
       {children}
     </p>
+  );
+}
+
+function PointList({ items, dot }: { items: string[]; dot: string }) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="space-y-2">
+      {items.map((item) => (
+        <li key={item} className="flex gap-2.5">
+          <span className={`mt-2.5 h-2 w-2 shrink-0 rounded-full ${dot}`} aria-hidden />
+          <span className={`${BODY} font-medium leading-snug text-slate-100`}>{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ReviewColumn({
+  title,
+  prosLabel,
+  consLabel,
+  pros,
+  cons,
+  sourcesTitle,
+  sources,
+  accent,
+}: {
+  title: string;
+  prosLabel: string;
+  consLabel: string;
+  pros: string[];
+  cons: string[];
+  sourcesTitle: string;
+  sources: GuideSource[];
+  accent: string;
+}) {
+  return (
+    <section className={`rounded-xl border p-4 ${accent}`}>
+      <h3 className="mb-4 text-2xl font-black text-white">{title}</h3>
+      <p className={`${SECTION_TITLE} mb-2 text-emerald-200`}>{prosLabel}</p>
+      <PointList items={pros} dot="bg-emerald-300" />
+      <p className={`${SECTION_TITLE} mb-2 mt-4 text-slate-200`}>{consLabel}</p>
+      <PointList items={cons} dot="bg-slate-300" />
+      <SourceList title={sourcesTitle} sources={sources} />
+    </section>
   );
 }
 
@@ -776,7 +830,34 @@ export function GuideItemPage({
   }
   if (item === 'company') {
     const company = modules?.company_eval;
+    const split = company
+      ? company.company_pros.length + company.company_cons.length + company.role_pros.length + company.role_cons.length > 0
+      : false;
     body = company ? (
+      split ? (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <ReviewColumn
+            title={copy.companyReview}
+            prosLabel={copy.pros}
+            consLabel={copy.cons}
+            pros={company.company_pros}
+            cons={company.company_cons}
+            sourcesTitle={copy.sources}
+            sources={company.sources}
+            accent="border-sky-400/50 bg-indigo-500/10"
+          />
+          <ReviewColumn
+            title={copy.roleReviews}
+            prosLabel={copy.pros}
+            consLabel={copy.cons}
+            pros={company.role_pros}
+            cons={company.role_cons}
+            sourcesTitle={copy.sources}
+            sources={company.role_sources}
+            accent="border-emerald-400/40 bg-emerald-500/10"
+          />
+        </div>
+      ) : (
       <div className="space-y-3">
         <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
           <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.culture}</p>
@@ -800,6 +881,7 @@ export function GuideItemPage({
         </section>
         <SourceList title={copy.sources} sources={company.sources} />
       </div>
+      )
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
   }
   if (item === 'questions') {

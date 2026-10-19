@@ -51,6 +51,15 @@ const PROXIMITY_RANK: Record<GuideQuestionProximity, number> = {
   cross_industry: 2,
 };
 
+function asStringList(value: unknown, limit = 4): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is string => typeof item === 'string')
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, limit);
+}
+
 function asString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
 }
@@ -111,7 +120,12 @@ export function emptyGuideModules(limitations: string[] = []): GuideModules {
       h1b: '',
       remote_sponsorship: '',
       role_reviews: '',
+      company_pros: [],
+      company_cons: [],
+      role_pros: [],
+      role_cons: [],
       sources: [],
+      role_sources: [],
     },
     interview_bank: {
       professional: [],
@@ -241,7 +255,12 @@ export function parseCompanyEval(raw: unknown): GuideModules['company_eval'] | n
     h1b: asString(row.h1b).slice(0, 800),
     remote_sponsorship: asString(row.remote_sponsorship).slice(0, 800),
     role_reviews: asString(row.role_reviews).slice(0, 800),
+    company_pros: asStringList(row.company_pros).map((item) => item.slice(0, 400)),
+    company_cons: asStringList(row.company_cons).map((item) => item.slice(0, 400)),
+    role_pros: asStringList(row.role_pros).map((item) => item.slice(0, 400)),
+    role_cons: asStringList(row.role_cons).map((item) => item.slice(0, 400)),
     sources: sources(row.sources),
+    role_sources: sources(row.role_sources),
   };
 }
 

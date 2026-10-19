@@ -801,9 +801,16 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       h1b: copy.h1b,
       remote_sponsorship: copy.remote_sponsorship,
       role_reviews: copy.role_reviews,
+      company_pros: copy.company_pros,
+      company_cons: copy.company_cons,
+      role_pros: copy.role_pros,
+      role_cons: copy.role_cons,
       sources: [
         { title: copy.blindTitle, url: 'https://example.com/blind/northstar-ops' },
         { title: copy.warnTitle, url: 'https://example.com/warn/northstar' },
+      ],
+      role_sources: [
+        { title: copy.roleSourceTitle, url: 'https://example.com/glassdoor/northstar-ba' },
       ],
     },
     interview_bank: {

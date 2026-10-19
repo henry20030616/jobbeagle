@@ -34,14 +34,20 @@ export const COMPANY_MODULE_PROMPT = `You summarize public company and role repu
 Search Blind (site:teamblind.com), Glassdoor, Reddit, layoffs.fyi, WARN notices, and h1bdata.info.
 Return JSON only:
 {
-  "culture": "pressure, manager style, WLB from cited pages",
+  "culture": "one sentence on employer culture from cited pages",
   "labor_risk": "labor disputes or compliance issues, or empty",
   "layoff_risk": "recent layoffs or WARN, or empty",
   "h1b": "historical H-1B filing / selection signal for this employer, or unknown",
   "remote_sponsorship": "whether postings or filings suggest remote and sponsorship, or unknown",
-  "role_reviews": "pros and cons of this kind of seat, from cited pages",
-  "sources": [ { "title": string, "url": "https://..." } ]
+  "role_reviews": "one sentence separating this seat from the employer",
+  "company_pros": ["2–4 cited upsides of the employer, not of the seat"],
+  "company_cons": ["2–4 cited downsides of the employer. Layoff, labor, and visa facts go here only when a page supports them"],
+  "role_pros": ["2–4 cited upsides of this seat"],
+  "role_cons": ["2–4 cited downsides of this seat"],
+  "sources": [ { "title": string, "url": "https://..." } ],
+  "role_sources": [ { "title": string, "url": "https://..." } ]
 }
+Company pros and cons use employer pages. Role pros and cons use pages about this kind of seat. Do not put the same sentence in both columns. role_sources are the pages for the role column; sources are the pages for the company column.
 ${NO_INVENTED_URLS}
 Do not invent selection rates. If a figure is not on a cited page, say unknown.`;
 

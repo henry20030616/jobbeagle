@@ -690,7 +690,18 @@ export interface GuideModules {
     h1b: string;
     remote_sponsorship: string;
     role_reviews: string;
+    /** Cited upsides of the employer. */
+    company_pros: string[];
+    /** Cited downsides of the employer, including layoff or visa only when a page supports them. */
+    company_cons: string[];
+    /** Cited upsides of this seat. */
+    role_pros: string[];
+    /** Cited downsides of this seat. */
+    role_cons: string[];
+    /** Employer-level pages (culture, layoff, H-1B). */
     sources: GuideSource[];
+    /** Pages about this role, separate from the company sources. */
+    role_sources: GuideSource[];
   };
   interview_bank: GuideInterviewBank;
   negotiation: {

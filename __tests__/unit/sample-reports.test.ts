@@ -103,6 +103,12 @@ describe('sample reports', () => {
     }
     expect(modules!.company_eval.h1b).toMatch(/H-1B/);
     expect(modules!.company_eval.sources[0]?.url).toMatch(/^https:\/\//);
+    expect(modules!.company_eval.company_pros.length).toBeGreaterThanOrEqual(2);
+    expect(modules!.company_eval.role_cons.length).toBeGreaterThanOrEqual(2);
+    expect(modules!.company_eval.role_sources[0]?.url).toMatch(/^https:\/\//);
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.company_eval.company_pros[0]).toMatch(
+      /公開評價/,
+    );
     expect(modules!.salary_land.base).toBe('$145K');
     expect(modules!.salary_land.equity).toMatch(/\$12K/);
     expect(modules!.salary_land.bonus).toBe('$11K');

@@ -16,6 +16,11 @@ export type SampleGuideNarrative = {
   h1b: string;
   remote_sponsorship: string;
   role_reviews: string;
+  company_pros: string[];
+  company_cons: string[];
+  role_pros: string[];
+  role_cons: string[];
+  roleSourceTitle: string;
   blindTitle: string;
   warnTitle: string;
   process: string;
@@ -79,6 +84,24 @@ const en: SampleGuideNarrative = {
   h1b: 'Sample H-1B employer filings for Northstar Payments show petitions in the last three years. The cited page does not publish a selection rate. Sponsorship is plausible and unconfirmed — ask the recruiter before you rely on it.',
   remote_sponsorship: 'The posting says US remote. It does not say the company will sponsor this seat.',
   role_reviews: 'Reviewers praise SQL depth and flag on-call during settlement incidents.',
+  company_pros: [
+    'Public reviews describe a written, remote-friendly operations culture.',
+    'No WARN notice appears in the sample window.',
+  ],
+  company_cons: [
+    'The same reviews describe tight cutoff deadlines.',
+    'Sample sources cite no labor action. Treat that as unknown, not as a clean record.',
+    'H-1B filings exist for the last three years, and the cited page publishes no selection rate. Sponsorship is unconfirmed. The posting says US remote and does not say this seat is sponsored.',
+  ],
+  role_pros: [
+    'Reviews of this seat praise the SQL depth the posting asks for.',
+    'Reviewers describe a defined settlement cutoff, not a vague collaboration role.',
+  ],
+  role_cons: [
+    'On-call is expected during settlement incidents.',
+    'Reviews do not describe a promotion pace for this seat. Confirm that with the recruiter.',
+  ],
+  roleSourceTitle: 'Glassdoor role sample',
   blindTitle: 'Blind sample',
   warnTitle: 'WARN sample',
   process:
@@ -143,6 +166,24 @@ const zhTW: SampleGuideNarrative = {
   h1b: '範例中的 Northstar Payments H-1B 雇主申報顯示近三年有申請。所引頁面沒有公布抽籤率。贊助有可能，但尚未確認。在你依賴它之前，先問招募。',
   remote_sponsorship: '職缺寫美國可遠端。沒有寫這家公司會為這個位子提供簽證贊助。',
   role_reviews: '評價肯定 SQL 深度，並指出清算事故期間需要待命。',
+  company_pros: [
+    '公開評價把這家公司寫成重視書面溝通、可遠端的營運文化。',
+    '範例區間內沒有 WARN 裁員通知。',
+  ],
+  company_cons: [
+    '同一批評價指出截止時間很緊。',
+    '範例來源沒有引用勞資行動。這是未知，不是清白紀錄。',
+    '近三年有 H-1B 申請，所引頁面沒有公布抽籤率。贊助尚未確認。職缺寫美國可遠端，沒有寫會贊助這個位子。',
+  ],
+  role_pros: [
+    '這個職位的評價肯定 SQL 深度，和職缺要求一致。',
+    '評價把工作寫成有明確的清算截止，而不是空泛的協作。',
+  ],
+  role_cons: [
+    '清算事故期間需要待命。',
+    '評價沒有寫出這個位子的晉升節奏，上任前要向招募確認。',
+  ],
+  roleSourceTitle: 'Glassdoor 職位評價範例',
   blindTitle: 'Blind 範例',
   warnTitle: 'WARN 範例',
   process: '招募篩選、用人主管的清算差異案例，然後是小組面試。範例分享把整段流程放在大約三週。',
@@ -206,6 +247,24 @@ const zhCN: SampleGuideNarrative = {
   h1b: '示例中的 Northstar Payments H-1B 雇主申报显示近三年有申请。所引页面没有公布抽签率。赞助有可能，但尚未确认。在你依赖它之前，先问招聘。',
   remote_sponsorship: '职位写美国可远程。没有写这家公司会为这个位子提供签证赞助。',
   role_reviews: '评价肯定 SQL 深度，并指出清算事故期间需要待命。',
+  company_pros: [
+    '公开评价把这家公司写成重视书面沟通、可远程的运营文化。',
+    '示例区间内没有 WARN 裁员通知。',
+  ],
+  company_cons: [
+    '同一批评价指出截止时间很紧。',
+    '示例来源没有引用劳资行动。这是未知，不是清白记录。',
+    '近三年有 H-1B 申请，所引页面没有公布抽签率。赞助尚未确认。职位写美国可远程，没有写会赞助这个位子。',
+  ],
+  role_pros: [
+    '这个职位的评价肯定 SQL 深度，和职位要求一致。',
+    '评价把工作写成有明确的清算截止，而不是空泛的协作。',
+  ],
+  role_cons: [
+    '清算事故期间需要待命。',
+    '评价没有写出这个位子的晋升节奏，上任前要向招聘确认。',
+  ],
+  roleSourceTitle: 'Glassdoor 职位评价示例',
   blindTitle: 'Blind 示例',
   warnTitle: 'WARN 示例',
   process: '招聘筛选、用人主管的清算差异案例，然后是小组面试。示例分享把整段流程放在大约三周。',
@@ -272,6 +331,24 @@ const es: SampleGuideNarrative = {
   h1b: 'Las presentaciones H-1B de muestra de Northstar Payments muestran peticiones en los últimos tres años. La página citada no publica una tasa de selección. El patrocinio es posible y no está confirmado. Pregunta al reclutador antes de depender de ello.',
   remote_sponsorship: 'El anuncio dice remoto en Estados Unidos. No dice que la empresa patrocine este puesto.',
   role_reviews: 'Las reseñas valoran la profundidad en SQL y señalan guardias durante incidentes de liquidación.',
+  company_pros: [
+    'Las reseñas públicas describen una cultura de operaciones por escrito y compatible con remoto.',
+    'No aparece un aviso WARN en la ventana de la muestra.',
+  ],
+  company_cons: [
+    'Las mismas reseñas describen cortes de plazo muy ajustados.',
+    'Las fuentes no citan una acción laboral. Eso es desconocido, no un historial limpio.',
+    'Hay presentaciones H-1B en los últimos tres años y la página citada no publica una tasa de selección. El patrocinio no está confirmado. El anuncio dice remoto en Estados Unidos y no dice que este puesto esté patrocinado.',
+  ],
+  role_pros: [
+    'Las reseñas de este puesto valoran la profundidad en SQL que pide el anuncio.',
+    'Describen un corte de liquidación definido, no un rol vago de colaboración.',
+  ],
+  role_cons: [
+    'Hay guardia durante incidentes de liquidación.',
+    'Las reseñas no describen el ritmo de promoción de este puesto. Confírmalo con el reclutador.',
+  ],
+  roleSourceTitle: 'Muestra de reseñas del puesto',
   blindTitle: 'Muestra de Blind',
   warnTitle: 'Muestra de WARN',
   process:
@@ -338,6 +415,24 @@ const hi: SampleGuideNarrative = {
   h1b: 'Northstar Payments के नमूना H-1B नियोक्ता दाखिले पिछले तीन वर्षों में याचिकाएँ दिखाते हैं। उद्धृत पृष्ठ चयन दर नहीं छापता। प्रायोजन संभव है और पुष्ट नहीं है। उस पर निर्भर होने से पहले भर्तीकर्ता से पूछें।',
   remote_sponsorship: 'विज्ञापन अमेरिका में दूरस्थ कहता है। यह नहीं कहता कि कंपनी इस सीट को प्रायोजित करेगी।',
   role_reviews: 'समीक्षाएँ SQL की गहराई की सराहना करती हैं और सेटलमेंट घटनाओं के दौरान ऑन-कॉल बताती हैं।',
+  company_pros: [
+    'सार्वजनिक समीक्षाएँ लिखित और दूरस्थ-अनुकूल संचालन संस्कृति बताती हैं।',
+    'नमूना अवधि में कोई WARN सूचना नहीं है।',
+  ],
+  company_cons: [
+    'वही समीक्षाएँ कड़े कटऑफ बताती हैं।',
+    'स्रोत कोई श्रम कार्रवाई नहीं उद्धृत करते। यह अज्ञात है, साफ़ रिकॉर्ड नहीं।',
+    'पिछले तीन वर्षों में H-1B दाखिले हैं और उद्धृत पृष्ठ चयन दर नहीं छापता। प्रायोजन पुष्ट नहीं है। विज्ञापन अमेरिका में दूरस्थ कहता है और यह नहीं कहता कि इस सीट का प्रायोजन है।',
+  ],
+  role_pros: [
+    'इस पद की समीक्षाएँ उसी SQL गहराई की सराहना करती हैं जो विज्ञापन माँगता है।',
+    'वे एक स्पष्ट सेटलमेंट कटऑफ बताती हैं, खाली सहयोग भूमिका नहीं।',
+  ],
+  role_cons: [
+    'सेटलमेंट घटनाओं के दौरान ऑन-कॉल अपेक्षित है।',
+    'समीक्षाएँ इस पद की पदोन्नति गति नहीं लिखतीं। भर्तीकर्ता से पुष्टि करें।',
+  ],
+  roleSourceTitle: 'पद समीक्षा नमूना',
   blindTitle: 'Blind नमूना',
   warnTitle: 'WARN नमूना',
   process:
@@ -404,6 +499,24 @@ const ar: SampleGuideNarrative = {
   h1b: 'تُظهر إيداعات صاحب العمل H-1B في العينة لشركة Northstar Payments طلبات خلال السنوات الثلاث الماضية. الصفحة المذكورة لا تنشر معدل اختيار. الرعاية محتملة وغير مؤكدة. اسأل المسؤول قبل أن تعتمد عليها.',
   remote_sponsorship: 'يقول الإعلان إن العمل عن بُعد داخل الولايات المتحدة. لا يقول إن الشركة سترعى هذا المقعد.',
   role_reviews: 'يشيد المراجعون بعمق SQL ويشيرون إلى المناوبة أثناء حوادث التسوية.',
+  company_pros: [
+    'تصف المراجعات العامة ثقافة عمليات مكتوبة وصديقة للعمل عن بُعد.',
+    'لا يظهر إخطار WARN في نافذة العينة.',
+  ],
+  company_cons: [
+    'تصف المراجعات نفسها مواعيد قطع ضيقة.',
+    'لا تذكر المصادر إجراءً عمالياً. هذا مجهول، وليس سجلاً نظيفاً.',
+    'توجد إيداعات H-1B خلال السنوات الثلاث الماضية والصفحة المذكورة لا تنشر معدل اختيار. الرعاية غير مؤكدة. يقول الإعلان إن العمل عن بُعد داخل الولايات المتحدة ولا يقول إن هذا المقعد مَرعي.',
+  ],
+  role_pros: [
+    'تشيد مراجعات هذا المقعد بعمق SQL الذي يطلبه الإعلان.',
+    'تصف موعد قطع تسوية محدداً، لا دوراً عاماً للتعاون.',
+  ],
+  role_cons: [
+    'المناوبة متوقعة أثناء حوادث التسوية.',
+    'لا تصف المراجعات وتيرة الترقية لهذا المقعد. أكّد ذلك مع المسؤول.',
+  ],
+  roleSourceTitle: 'عينة تقييم الدور',
   blindTitle: 'عينة Blind',
   warnTitle: 'عينة WARN',
   process:
