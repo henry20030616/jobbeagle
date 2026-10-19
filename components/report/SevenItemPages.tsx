@@ -3,7 +3,7 @@
 import React from 'react';
 import type { FullReport, GuideQuestion, GuideResumeRewrite, GuideSource, LiteReport } from '@/types';
 import { ExternalLink } from 'lucide-react';
-import { PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from 'recharts';
+import { Cell, Pie, PieChart, PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from 'recharts';
 import { BeagleIcon, getScoreInfo } from '@/components/AnalysisDashboard';
 import {
   BODY,
@@ -245,6 +245,86 @@ function itemCopy(language: AppLanguage): ItemCopy {
 export function guideItemNav(language?: AppLanguage | string): Array<{ id: GuideItemId; label: string }> {
   const copy = itemCopy(normalizeReportLanguage(language));
   return GUIDE_ITEM_IDS.map((id) => ({ id, label: copy.nav[id] }));
+}
+
+const PAY_SLICE_COLORS = ['#34d399', '#38bdf8', '#a5b4fc'] as const;
+
+function parsePayAmount(raw: string): number | null {
+  const match = raw.replace(/,/g, '').match(/([\d.]+)\s*([kKmM])?/);
+  const digits = match?.[1];
+  if (!digits) return null;
+  const value = Number(digits);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  const unit = match?.[2]?.toLowerCase();
+  if (unit === 'k') return value * 1000;
+  if (unit === 'm') return value * 1_000_000;
+  return value;
+}
+
+function PayMixPie({
+  rows,
+  totalLabel,
+}: {
+  rows: Array<[string, string]>;
+  totalLabel: string;
+}) {
+  const slices = rows.flatMap((row, index) => {
+    const amount = parsePayAmount(row[1]);
+    if (amount === null) return [];
+    return [{ label: row[0], value: row[1], amount, fill: PAY_SLICE_COLORS[index % PAY_SLICE_COLORS.length] ?? '#34d399' }];
+  });
+  const total = slices.reduce((sum, slice) => sum + slice.amount, 0);
+  if (slices.length < 2 || total <= 0) {
+    return (
+      <div className="grid grid-cols-3 gap-2">
+        {rows.map(([label, value]) => (
+          <div key={label} className="rounded-md border border-emerald-400/25 bg-black/20 px-2.5 py-2">
+            <p className={BODY_MUTED}>{label}</p>
+            <p className={`${BODY} font-semibold text-emerald-50`}>{value}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="grid grid-cols-1 items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4 md:grid-cols-[16rem_1fr]">
+      <div className="relative mx-auto h-56 w-full max-w-[16rem]">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={slices}
+              dataKey="amount"
+              nameKey="label"
+              innerRadius="62%"
+              outerRadius="90%"
+              stroke="none"
+              paddingAngle={2}
+              isAnimationActive={false}
+            >
+              {slices.map((slice) => (
+                <Cell key={slice.label} fill={slice.fill} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-8 text-center">
+          <span className="text-2xl font-black leading-tight text-white">{totalLabel}</span>
+        </div>
+      </div>
+      <ul className="space-y-3">
+        {slices.map((slice) => (
+          <li key={slice.label} className="flex items-center gap-3">
+            <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: slice.fill }} aria-hidden />
+            <span className={`${BODY} min-w-0 flex-1 font-semibold text-slate-100`}>{slice.label}</span>
+            <span className={`${BODY} font-semibold text-white`}>{slice.value}</span>
+            <span className={`${BODY} w-12 text-right text-slate-300`}>
+              {Math.round((slice.amount / total) * 100)}%
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 function BriefRows({ items }: { items: string[] }) {
@@ -683,16 +763,7 @@ export function GuideItemPage({
             <p className={`${BODY} text-slate-100 leading-relaxed`}>{salary.rationale}</p>
           </section>
         ) : null}
-        {mix.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2">
-            {mix.map(([label, value]) => (
-              <div key={label} className="rounded-md border border-emerald-400/25 bg-black/20 px-2.5 py-2">
-                <p className={BODY_MUTED}>{label}</p>
-                <p className={`${BODY} font-semibold text-emerald-50`}>{value}</p>
-              </div>
-            ))}
-          </div>
-        ) : null}
+        {mix.length > 0 ? <PayMixPie rows={mix} totalLabel={salary.target || '—'} /> : null}
         {salary.buyer_seller ? (
           <div className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
             <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.buyer}</p>
