@@ -122,10 +122,14 @@ describe('homepage value propositions', () => {
         expect(text).not.toMatch(emoji);
       }
     }
-    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('A clear call');
-    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Does not make you look stronger');
+    expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('Precise fit analysis');
+    expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Pay landing projection');
     expect(HOMEPAGE_FORM_COPY['zh-TW'].description).toBe(
-      '先看這份工作值不值得你的下一輪時間，再只準備你進面試站得住的說法。',
+      '精準判斷職缺適配、預估薪資落點，並彙整關鍵職位情報，協助你高效完成面試準備——一次取得決策所需資料，省去四處搜尋。',
     );
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].matchAnalysis).toBe('精準適配分析');
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].salaryResearch).toBe('薪資落點預測');
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].industryAnalysis).toBe('關鍵職位情報');
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].interviewPrep).toBe('高效面試準備');
   });
 });
