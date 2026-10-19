@@ -77,6 +77,7 @@ type ItemCopy = {
   process: string;
   pay: string;
   benefits: string;
+  say: string;
   sources: string;
   empty: string;
   noBand: string;
@@ -147,6 +148,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       process: s ? '面试流程' : '面試流程',
       pay: s ? '薪资筹码策略' : '薪資籌碼策略',
       benefits: s ? '权益与福利争取' : '權益與福利爭取',
+      say: s ? '开口这样说' : '開口這樣說',
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
@@ -226,6 +228,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     process: 'Interview process',
     pay: 'Pay leverage',
     benefits: 'Benefits to negotiate',
+    say: 'What to say',
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
@@ -375,6 +378,13 @@ function LockLine({ children }: { children: string }) {
       {children}
     </p>
   );
+}
+
+function briefLines(text: string): string[] {
+  const lined = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  if (lined.length > 1) return lined;
+  const sentences = text.split(/(?<=[。！？])/).map((line) => line.trim()).filter(Boolean);
+  return sentences.length > 0 ? sentences : lined;
 }
 
 function PointList({ items, dot }: { items: string[]; dot: string }) {
@@ -912,12 +922,18 @@ export function GuideItemPage({
     body = negotiation && (negotiation.pay_strategy || negotiation.benefits_strategy || negotiation.script) ? (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.pay}</p>
-          <p className={`${BODY} text-slate-200 leading-relaxed`}>{negotiation.pay_strategy || negotiation.script}</p>
+          <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>{copy.pay}</p>
+          <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
+          {negotiation.script ? (
+            <div className="mt-4 border-t border-white/10 pt-3">
+              <p className={`${SECTION_TITLE} mb-2 text-slate-100`}>{copy.say}</p>
+              <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
+            </div>
+          ) : null}
         </section>
         <section className="rounded-lg border border-violet-400/40 bg-violet-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>{copy.benefits}</p>
-          <p className={`${BODY} text-slate-200 leading-relaxed`}>{negotiation.benefits_strategy || '—'}</p>
+          <p className={`${SECTION_TITLE} text-violet-300 mb-3`}>{copy.benefits}</p>
+          <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
         </section>
       </div>
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;

@@ -288,8 +288,8 @@ export function parseNegotiation(raw: unknown): GuideModules['negotiation'] | nu
   if (!raw || typeof raw !== 'object') return null;
   const row = raw as Record<string, unknown>;
   return {
-    pay_strategy: asString(row.pay_strategy).slice(0, 1200),
-    benefits_strategy: asString(row.benefits_strategy).slice(0, 1200),
+    pay_strategy: asString(row.pay_strategy).slice(0, 2000),
+    benefits_strategy: asString(row.benefits_strategy).slice(0, 2000),
     script: asString(row.script).slice(0, 1500),
   };
 }

@@ -128,7 +128,10 @@ describe('sample reports', () => {
     expect(getSampleSnapshotReport('zh-TW').ats_warning?.missing_keywords?.join(' ')).not.toMatch(
       /\breturns\b|\bsettlement\b/,
     );
-    expect(modules!.negotiation.pay_strategy.length).toBeGreaterThan(20);
+    expect(modules!.negotiation.pay_strategy).toMatch(/28%/);
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.negotiation.pay_strategy).toMatch(
+      /先報總包/,
+    );
     expect(modules!.negotiation.benefits_strategy.length).toBeGreaterThan(20);
     expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);
     expect('guide_modules' in getSampleSnapshotReport('en')).toBe(false);

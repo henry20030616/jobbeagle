@@ -107,11 +107,11 @@ const en: SampleGuideNarrative = {
   process:
     'Recruiter screen, hiring-manager case on a settlement break, then a panel. Sample shares put the loop at about three weeks.',
   pay_strategy:
-    'Open at the $168K total target: $145K base, $12K a year equity, $11K bonus. If the offer is the band floor, counter once toward the $185K ceiling and stop. Do not invent a competing offer.',
+    'Name the total first, not the base. The only fact this resume can spend is a 28% reconciliation cycle-time cut with SQL and Looker. ACH returns ownership is not on the resume, so do not price the offer as if that gap were closed.\nOpen at $168K total: $145K base, about $12K a year of equity, and an $11K bonus. That is the middle of the band, which is what this proof supports.\nIf the offer is the floor of the band, or base only, counter once and stop at $185K. There is no Staff scope and no second written offer, so nothing above $185K has a basis.\nDo not invent a competing offer. The leverage is the 28% already delivered, not another company.',
   benefits_strategy:
-    'After base is named, ask about sign-on, an equity refresh, remote days, and PTO. Sponsorship is a separate recruiter question. Do not trade base for a benefit that was not offered.',
+    'Talk benefits only after the $145K base is named. Do not reverse that order.\nAsk once, for four items: sign-on, an equity refresh, remote days per week, and PTO. Do not turn them into four separate counters.\nSponsorship stays out of this counter. The posting says US remote and does not say this seat is sponsored. Ask the recruiter.\nDo not give up base for a benefit the employer did not offer. If they ask to cut the $145K in exchange for remote days or PTO, refuse that trade.',
   script:
-    'The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I can accept $168K total, with base at $145K. If we need to move, the ceiling I can justify from that proof is $185K.',
+    'The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I can accept $168K total, with base at $145K. If we need to move, the ceiling that proof can support is $185K.',
 };
 
 const zhTW: SampleGuideNarrative = {
@@ -188,11 +188,11 @@ const zhTW: SampleGuideNarrative = {
   warnTitle: 'WARN 範例',
   process: '招募篩選、用人主管的清算差異案例，然後是小組面試。範例分享把整段流程放在大約三週。',
   pay_strategy:
-    '開價放在總包目標 $168K：底薪 $145K、股票每年約 $12K、獎金 $11K。如果 offer 在區間底部，只往 $185K 天花板還價一次就停。不要編造第二份 offer。',
+    '先報總包，不要先報底薪。這份履歷能拿來談的證據只有一項：用 SQL 與 Looker 把對帳週期縮短 28%。履歷沒有 ACH 退票擁有權，不能把這個缺口說成已經補上，拿來抬價。\n開價 $168K 總包：底薪 $145K、股票約 $12K／年、獎金 $11K。這是市場帶的中段，對得上履歷能證明的範圍。\n對方若開在帶的底部，或只給底薪、不給股票與獎金，只還價一次，停在 $185K。沒有 Staff 級範圍，也沒有第二份書面 offer，再往上沒有依據。\n沒有書面競爭方案就不要編。籌碼是已經發生的 28%，不是另一家公司。',
   benefits_strategy:
-    '底薪講定之後，再問簽約金、股票增授、遠端天數與休假。簽證贊助是另外問招募的問題。不要用底薪去換一個對方沒有提出的福利。',
+    '底薪 $145K 講定之後才談福利。順序不要反過來。\n一次問完四項：簽約金、股票增授、每週遠端天數、帶薪假。不要拆成四次還價。\n簽證贊助不進這次還價。職缺只寫美國可遠端，沒有寫會贊助這個位子。這題問招募。\n對方沒有提出的福利，不要用降低底薪去換。若對方要求把 $145K 降下來換遠端或休假，拒絕這筆交換。',
   script:
-    '我能證明的成果，是用 SQL 與 Looker 把對帳週期縮短 28%。我可以接受總包 $168K，底薪 $145K。如果還要移動，以這項證明能站得住的天花板是 $185K。',
+    '我能證明的是，用 SQL 與 Looker 把對帳週期縮短 28%。我接受總包 $168K，其中底薪 $145K。若還要移動，這項證明能站住的上限是 $185K。',
 };
 
 const zhCN: SampleGuideNarrative = {
@@ -269,11 +269,11 @@ const zhCN: SampleGuideNarrative = {
   warnTitle: 'WARN 示例',
   process: '招聘筛选、用人主管的清算差异案例，然后是小组面试。示例分享把整段流程放在大约三周。',
   pay_strategy:
-    '开价放在总包目标 $168K：底薪 $145K、股票每年约 $12K、奖金 $11K。如果 offer 在区间底部，只往 $185K 天花板还价一次就停。不要编造第二份 offer。',
+    '先报总包，不要先报底薪。这份简历能拿来谈的证据只有一项：用 SQL 与 Looker 把对账周期缩短 28%。简历没有 ACH 退票所有权，不能把这个缺口说成已经补上，拿来抬价。\n开价 $168K 总包：底薪 $145K、股票约 $12K／年、奖金 $11K。这是市场带的中段，对得上简历能证明的范围。\n对方若开在带的底部，或只给底薪、不给股票与奖金，只还价一次，停在 $185K。没有 Staff 级范围，也没有第二份书面 offer，再往上没有依据。\n没有书面竞争方案就不要编。筹码是已经发生的 28%，不是另一家公司。',
   benefits_strategy:
-    '底薪讲定之后，再问签约金、股票增授、远程天数与休假。签证赞助是另外问招聘的问题。不要用底薪去换一个对方没有提出的福利。',
+    '底薪 $145K 讲定之后才谈福利。顺序不要反过来。\n一次问完四项：签约金、股票增授、每周远程天数、带薪假。不要拆成四次还价。\n签证赞助不进这次还价。职位只写美国可远程，没有写会赞助这个位子。这题问招聘。\n对方没有提出的福利，不要用降低底薪去换。若对方要求把 $145K 降下来换远程或休假，拒绝这笔交换。',
   script:
-    '我能证明的成果，是用 SQL 与 Looker 把对账周期缩短 28%。我可以接受总包 $168K，底薪 $145K。如果还要移动，以这项证明能站得住的天花板是 $185K。',
+    '我能证明的是，用 SQL 与 Looker 把对账周期缩短 28%。我接受总包 $168K，其中底薪 $145K。若还要移动，这项证明能站住的上限是 $185K。',
 };
 
 const es: SampleGuideNarrative = {
@@ -354,11 +354,11 @@ const es: SampleGuideNarrative = {
   process:
     'Filtro del reclutador, caso del responsable de contratación sobre una diferencia de liquidación y después un panel. Las muestras sitúan el proceso en unas tres semanas.',
   pay_strategy:
-    'Abre en el total objetivo de $168K: base $145K, unos $12K al año en acciones y bono de $11K. Si la oferta está en el suelo de la banda, contraoferta una vez hacia el techo de $185K y para. No inventes una segunda oferta.',
+    'Nombra primero el total, no la base. El único hecho que este CV puede usar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. La propiedad de devoluciones ACH no está en el CV, así que no pongas precio como si esa brecha ya estuviera cerrada.\nAbre en $168K de total: base $145K, unos $12K al año en acciones y un bono de $11K. Es el medio de la banda, que es lo que esta prueba sostiene.\nSi la oferta está en el suelo, o es solo base, contraoferta una vez y para en $185K. No hay alcance de nivel Staff ni una segunda oferta por escrito, así que por encima de $185K no hay base.\nNo inventes una oferta competidora. La palanca es el 28% ya entregado, no otra empresa.',
   benefits_strategy:
-    'Cuando la base esté nombrada, pregunta por la prima de firma, una ampliación de acciones, días remotos y vacaciones. El patrocinio es una pregunta aparte para el reclutador. No cambies base por un beneficio que no te hayan ofrecido.',
+    'Habla de beneficios solo después de nombrar la base de $145K. No inviertas ese orden.\nPide una sola vez cuatro cosas: prima de firma, ampliación de acciones, días remotos por semana y vacaciones. No las conviertas en cuatro contraofertas.\nEl patrocinio queda fuera de esta contraoferta. El anuncio dice remoto en Estados Unidos y no dice que este puesto esté patrocinado. Pregúntalo al reclutador.\nNo entregues la base a cambio de un beneficio que no te hayan ofrecido. Si piden bajar los $145K a cambio de remoto o vacaciones, rechaza ese canje.',
   script:
-    'Lo que puedo mostrar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. Puedo aceptar $168K de total, con base de $145K. Si hay que moverse, el techo que esa prueba sostiene es $185K.',
+    'Lo que puedo mostrar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. Acepto $168K de total, con base de $145K. Si hay que moverse, el techo que esa prueba sostiene es $185K.',
 };
 
 const hi: SampleGuideNarrative = {
@@ -438,11 +438,11 @@ const hi: SampleGuideNarrative = {
   process:
     'भर्तीकर्ता की जाँच, सेटलमेंट अंतर पर नियुक्ति प्रबंधक का केस, फिर पैनल। नमूना साझाकरण पूरी प्रक्रिया को लगभग तीन सप्ताह मानते हैं।',
   pay_strategy:
-    'कुल लक्ष्य $168K पर खोलें: आधार $145K, प्रति वर्ष लगभग $12K इक्विटी, बोनस $11K। अगर ऑफ़र पट्टी के निचले सिरे पर है, तो $185K छत की ओर एक बार प्रतिप्रस्ताव दें और रुकें। दूसरा ऑफ़र गढ़ें नहीं।',
+    'पहले कुल बताएँ, आधार नहीं। यह रिज़्यूमे केवल एक तथ्य खर्च कर सकता है: SQL और Looker से मिलान चक्र में 28% की कमी। ACH रिटर्न की मालिकी रिज़्यूमे में नहीं है, इसलिए इस अंतर को भरा हुआ मानकर दाम न लगाएँ।\n$168K कुल पर खोलें: आधार $145K, प्रति वर्ष लगभग $12K इक्विटी, बोनस $11K। यह पट्टी का मध्य है, जितना यह प्रमाण संभालता है।\nअगर ऑफ़र पट्टी के निचले सिरे पर है, या केवल आधार है, तो एक बार प्रतिप्रस्ताव दें और $185K पर रुकें। Staff दायरा नहीं है और दूसरा लिखित ऑफ़र नहीं है, इसलिए $185K से ऊपर का आधार नहीं है।\nप्रतिस्पर्धी ऑफ़र गढ़ें नहीं। लाभ वह 28% है जो हो चुका है, कोई दूसरी कंपनी नहीं।',
   benefits_strategy:
-    'आधार तय होने के बाद साइन-ऑन, इक्विटी वृद्धि, दूरस्थ दिन और छुट्टी पूछें। प्रायोजन भर्तीकर्ता से अलग प्रश्न है। ऐसे लाभ के बदले आधार न दें जो पेश ही नहीं किया गया।',
+    'लाभ की बात $145K आधार तय होने के बाद करें। क्रम उलटा न करें।\nएक बार में चार चीज़ें माँगें: साइन-ऑन, इक्विटी वृद्धि, प्रति सप्ताह दूरस्थ दिन, और छुट्टी। इन्हें चार अलग प्रतिप्रस्ताव न बनाएँ।\nप्रायोजन इस प्रतिप्रस्ताव में नहीं आता। विज्ञापन अमेरिका में दूरस्थ कहता है और इस सीट का प्रायोजन नहीं कहता। यह भर्तीकर्ता से पूछें।\nजो लाभ नियोक्ता ने नहीं दिया, उसके बदले आधार न दें। अगर वे दूरस्थ दिन या छुट्टी के लिए $145K घटाना चाहें, तो यह विनिमय अस्वीकार करें।',
   script:
-    'जो काम मैं दिखा सकता हूँ, वह SQL और Looker से मिलान चक्र में 28% की कमी है। मैं कुल $168K स्वीकार कर सकता हूँ, आधार $145K के साथ। अगर हिलना हो, तो इस प्रमाण से खड़ा होने वाला छत $185K है।',
+    'जो मैं दिखा सकता हूँ, वह SQL और Looker से मिलान चक्र में 28% की कमी है। मैं कुल $168K स्वीकार करता हूँ, जिसमें आधार $145K है। अगर हिलना हो, तो इस प्रमाण की ऊपरी सीमा $185K है।',
 };
 
 const ar: SampleGuideNarrative = {
@@ -522,11 +522,11 @@ const ar: SampleGuideNarrative = {
   process:
     'فرز المسؤول، ثم حالة لدى مدير التوظيف عن فرق تسوية، ثم لجنة. تضع المشاركات في العينة الحلقة عند نحو ثلاثة أسابيع.',
   pay_strategy:
-    'افتح عند إجمالي هدف $168K: أساس $145K، ونحو $12K سنوياً من الأسهم، ومكافأة $11K. إذا كان العرض عند قاع النطاق، فقدم عرضاً مضاداً مرة واحدة نحو سقف $185K ثم توقف. لا تخترع عرضاً ثانياً.',
+    'سمِّ الإجمالي أولاً، لا الأساس. الحقيقة الوحيدة التي تستطيع هذه السيرة إنفاقها هي اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. ملكية مرتجعات ACH ليست في السيرة، فلا تسعّر العرض كأن هذه الفجوة قد سُدّت.\nافتح عند إجمالي $168K: أساس $145K، ونحو $12K سنوياً من الأسهم، ومكافأة $11K. هذا منتصف النطاق، وهو ما يثبته هذا الدليل.\nإذا كان العرض عند قاع النطاق، أو أساساً فقط، فقدّم عرضاً مضاداً مرة واحدة وتوقف عند $185K. لا يوجد نطاق بمستوى Staff ولا عرض ثانٍ مكتوب، لذلك لا سند لما فوق $185K.\nلا تخترع عرضاً منافساً. الورقة هي نسبة 28% التي تحققت، وليست شركة أخرى.',
   benefits_strategy:
-    'بعد تسمية الأساس، اسأل عن مكافأة التوقيع وتجديد الأسهم وأيام العمل عن بُعد والإجازة. الرعاية سؤال منفصل للمسؤول. لا تستبدل الأساس بميزة لم تُعرض.',
+    'تحدث عن المزايا فقط بعد تسمية أساس $145K. لا تعكس هذا الترتيب.\nاطلب مرة واحدة أربعة بنود: مكافأة التوقيع، وتجديد الأسهم، وأيام العمل عن بُعد في الأسبوع، والإجازة. لا تجعلها أربعة عروض مضادة.\nالرعاية خارج هذا العرض المضاد. يقول الإعلان عملاً عن بُعد داخل الولايات المتحدة ولا يقول إن هذا المقعد مَرعي. اسأل المسؤول.\nلا تتنازل عن الأساس مقابل ميزة لم تُعرض. إذا طلبوا خفض $145K مقابل أيام عن بُعد أو إجازة، ارفض هذه المبادلة.',
   script:
-    'العمل الذي أستطيع إظهاره هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. أستطيع قبول إجمالي $168K، بأساس $145K. إذا لزم التحرك، فالسقف الذي يثبته هذا الدليل هو $185K.',
+    'ما أستطيع إظهاره هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. أقبل إجمالي $168K، والأساس فيه $145K. إذا لزم التحرك، فالسقف الذي يثبته هذا الدليل هو $185K.',
 };
 
 export const SAMPLE_GUIDE_NARRATIVE: Record<AppLanguage, SampleGuideNarrative> = {

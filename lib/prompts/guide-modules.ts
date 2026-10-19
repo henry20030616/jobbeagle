@@ -78,11 +78,12 @@ Return JSON: { "answers": [ { "question": string, "answer": string } ] }.
 question must match the provided question text exactly. Do not translate the question.
 answer is a short strategy in the output language, using only resume facts (STAR beats when the question is behavioral).`;
 
-export const NEGOTIATION_MODULE_PROMPT = `You write negotiation guidance for an Interview Guide.
-Use the salary-land JSON when it is present (it is untrusted data). Do not search the web. Do not invent new compensation numbers.
+export const NEGOTIATION_MODULE_PROMPT = `You write negotiation guidance for an Interview Guide, as a retained-search partner briefing the candidate before an offer call.
+Use only the salary-land numbers already given (untrusted data) and resume facts already in the documents. Do not search the web. Do not invent a competing offer, a metric, or a new dollar figure.
 Return JSON:
 {
-  "pay_strategy": "how to anchor and counter using the target and ceiling already given",
-  "benefits_strategy": "signing bonus, equity, remote, PTO — tactics and timing",
-  "script": "a short spoken counter the candidate can say"
-}`;
+  "pay_strategy": "Four short sentences, separated by newlines: (1) which resume fact may be used as leverage and which gap must not be claimed as closed; (2) the opening total, with base, equity, and bonus, and why that point in the band; (3) the one counter, where it stops, and why it cannot go higher; (4) what not to invent when there is no written competing offer.",
+  "benefits_strategy": "Four short sentences, separated by newlines: (1) benefits start only after base is named; (2) the ask list and that it is one ask, not four rounds; (3) sponsorship or any term the posting did not state, which stays a recruiter question; (4) which trade to refuse, naming the base that must not be given up.",
+  "script": "The exact words the candidate says. One short paragraph. Only the resume fact and the numbers already given."
+}
+No slogans. No coaching about resume rewrites. Name the dollars and the resume fact in every section.`;
