@@ -13,7 +13,7 @@ export function splitDecisionBrief(text: string | null | undefined): string[] {
   if (byLine.length >= 2) return byLine;
 
   const bySentence = raw
-    .split(/(?<=[.!?。！？])\s+/)
+    .split(/(?<=[。！？])\s*|(?<=[.!?])\s+/)
     .map((s) => s.trim())
     .filter(Boolean);
 

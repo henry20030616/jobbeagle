@@ -609,7 +609,7 @@ function FitBody({
             {(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}
           </p>
           {apply?.reason ? (
-            <ul className="space-y-1.5">
+            <ul className="space-y-3">
               {splitDecisionBrief(apply.reason).map((point) => (
                 <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
                   <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-violet-300/90" aria-hidden />

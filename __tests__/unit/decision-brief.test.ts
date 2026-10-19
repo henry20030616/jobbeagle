@@ -16,6 +16,17 @@ describe('splitDecisionBrief', () => {
     expect(points).toEqual(['Fit is solid', 'Gap is payments', 'Clarify first']);
   });
 
+  it('splits Chinese sentences that have no space after the period', () => {
+    const points = splitDecisionBrief(
+      '六年經驗已過門檻。職缺把退票列為核心。此標籤反映要求尚未確認。',
+    );
+    expect(points).toEqual([
+      '六年經驗已過門檻。',
+      '職缺把退票列為核心。',
+      '此標籤反映要求尚未確認。',
+    ]);
+  });
+
   it('returns empty for blank input', () => {
     expect(splitDecisionBrief('')).toEqual([]);
     expect(splitDecisionBrief(null)).toEqual([]);
