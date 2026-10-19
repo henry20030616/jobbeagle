@@ -25,7 +25,7 @@ Return JSON only:
   "equity": "RSU string or null",
   "bonus": "bonus string or null",
   "rationale": "Three sentences a candidate can read: (1) why the target is this number, naming the place, title, level or years, and the resume fact that holds it there; (2) why the ceiling stops where it stops; (3) why base, equity, and bonus split this way. Do not invent a competing offer or a metric that is not in the resume.",
-  "buyer_seller": "Three short sentences a candidate can read, separated by newlines. Do not say buyer, seller, leverage, or 籌碼. (1) What the company can rely on, in plain words. (2) What the candidate can rely on, naming the resume fact. (3) What the candidate must not claim. Use only searched facts and resume facts.",
+  "buyer_seller": "Exactly two lines, separated by one newline, with no labels. Line 1 is the company position: what the employer can rely on, in plain words. Line 2 is the candidate position: the resume fact they can use, and what they must not claim. Do not add a third line. Do not say buyer, seller, leverage, or 籌碼. Use only searched facts and resume facts.",
   "sources": [ { "title": string, "url": "https://..." } ]
 }
 ${NO_INVENTED_URLS}

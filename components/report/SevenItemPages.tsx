@@ -58,7 +58,8 @@ type ItemCopy = {
   base: string;
   equity: string;
   bonus: string;
-  buyer: string;
+  companyStance: string;
+  candidateStance: string;
   culture: string;
   pros: string;
   cons: string;
@@ -129,7 +130,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
       base: s ? '底薪' : '底薪',
       equity: s ? '股票' : '股票',
       bonus: s ? '奖金' : '獎金',
-      buyer: s ? '谈薪时，公司与你各靠什么' : '談薪時，公司與你各靠什麼',
+      companyStance: s ? '公司立场' : '公司立場',
+      candidateStance: s ? '求职者立场' : '求職者立場',
       culture: s ? '公司情报' : '公司情報',
       pros: s ? '优点' : '優點',
       cons: s ? '缺点' : '缺點',
@@ -209,7 +211,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
     base: 'Base',
     equity: 'Equity',
     bonus: 'Bonus',
-    buyer: 'What each side can rely on',
+    companyStance: 'Company position',
+    candidateStance: 'Candidate position',
     culture: 'Company intel',
     pros: 'Pros',
     cons: 'Cons',
@@ -868,9 +871,17 @@ export function GuideItemPage({
           </section>
         ) : null}
         {salary.buyer_seller ? (
-          <div className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-            <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.buyer}</p>
-            <PointList items={briefLines(salary.buyer_seller)} dot="bg-sky-300" />
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+              <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.companyStance}</p>
+              <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{briefLines(salary.buyer_seller)[0]}</p>
+            </section>
+            <section className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 p-4">
+              <p className={`${SECTION_TITLE} text-emerald-200 mb-2`}>{copy.candidateStance}</p>
+              <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>
+                {briefLines(salary.buyer_seller).slice(1).join('')}
+              </p>
+            </section>
           </div>
         ) : null}
         <SourceList title={copy.sources} sources={salary.sources} />
