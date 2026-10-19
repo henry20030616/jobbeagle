@@ -379,7 +379,7 @@ function BriefColumn({
 
 function LockLine({ children }: { children: string }) {
   return (
-    <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-base font-semibold text-slate-100">
+    <p className="mt-3 text-base font-semibold text-slate-300">
       {children}
     </p>
   );
