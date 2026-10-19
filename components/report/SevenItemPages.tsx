@@ -12,12 +12,7 @@ import {
   PageHeaderBar,
   SECTION_TITLE,
 } from '@/components/guide/GuideSlideChrome';
-import {
-  evidenceTierLabel,
-  formatOfferRange,
-  payEstimateScope,
-  payEstimateSentence,
-} from '@/lib/offer-display';
+import { formatOfferRange, payEstimateScope } from '@/lib/offer-display';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 import type { AppLanguage } from '@/lib/language-context';
@@ -82,6 +77,7 @@ type ItemCopy = {
   sources: string;
   empty: string;
   noBand: string;
+  notOffer: string;
   deck: Record<GuideItemId, string>;
   badge: Record<GuideItemId, string>;
 };
@@ -148,6 +144,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
+      notOffer: s ? '这不是这家公司的报价。' : '這不是這家公司的報價。',
       deck: {
         core: '',
         market: s ? '依职位与地区给出的宽总包。个人落点在面试指南。' : '依職缺與地區給出的寬總包。個人落點在面試指南。',
@@ -223,6 +220,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
+    notOffer: 'This is not the company’s offer.',
     deck: {
       core: '',
       market: 'A wide total-comp band for this role and region. Your landing is in the Interview Guide.',
@@ -374,36 +372,27 @@ function MarketBody({
   const offer = report.expected_offer;
   const range = formatOfferRange(offer);
   const scope = payEstimateScope(report, language);
-  const tier = offer?.evidence_tier ? evidenceTierLabel(offer.evidence_tier, language) : '';
-  const facts = [
-    [copy.where, scope.where],
-    [copy.role, scope.role],
-    [copy.level, scope.level],
-  ] as const;
+  const sep = language === 'zh-TW' || language === 'zh-CN' ? '：' : ': ';
+  const levelLines = scope.level.split(' — ').map((part) => part.trim()).filter(Boolean);
+  const rows = [
+    `${copy.where}${sep}${scope.where}`,
+    `${copy.role}${sep}${scope.role}`,
+    ...levelLines.map((part, index) => (index === 0 ? `${copy.level}${sep}${part}` : part)),
+    range
+      ? `${copy.band}${sep}${range} (${offer?.currency || 'USD'})`
+      : `${copy.band}${sep}${copy.noBand}`,
+  ];
+  if (range) rows.push(copy.notOffer);
   return (
     <div className="overflow-hidden rounded-xl border border-emerald-400/55 bg-emerald-500/10">
-      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-emerald-400/20 border-b border-emerald-400/20">
-        {facts.map(([label, value]) => (
-          <div key={label} className="px-4 py-3 min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200/80">{label}</p>
-            <p className={`${BODY} mt-1 font-semibold text-white leading-snug`}>{value}</p>
-          </div>
+      <ul className="space-y-3 px-5 py-4">
+        {rows.map((row) => (
+          <li key={row} className="flex gap-2.5">
+            <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
+            <span className={`${BODY} font-medium text-slate-100 leading-snug`}>{row}</span>
+          </li>
         ))}
-      </div>
-      <div className="px-5 py-4">
-        <p className={`${SECTION_TITLE} text-emerald-200`}>{copy.band}</p>
-        <p className={`${BODY_MUTED} mt-2`}>{[offer?.currency || 'USD', tier].filter(Boolean).join(' · ')}</p>
-        {range ? (
-          <p className="mt-2 text-4xl sm:text-5xl font-black text-white tracking-tight">{range}</p>
-        ) : (
-          <p className="mt-2 text-2xl font-bold text-slate-200">{copy.noBand}</p>
-        )}
-        {range ? (
-          <p className={`${BODY} text-slate-200 leading-relaxed mt-3`}>
-            {payEstimateSentence(scope, range, offer?.currency || 'USD', language)}
-          </p>
-        ) : null}
-      </div>
+      </ul>
       {locked ? <div className="px-5 pb-4"><LockLine>{copy.lockPay}</LockLine></div> : null}
     </div>
   );
