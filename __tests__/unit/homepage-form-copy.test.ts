@@ -12,7 +12,7 @@ describe('homepage form copy', () => {
     expect(t.reportTypeStep).toBe('3. Pick one report');
     expect(t.launchStep).toBe('4. Launch');
     expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');
-    expect(t.snapshotBlurb).toContain('one-page fit check');
+    expect(t.snapshotBlurb).toBe('Matches your resume to the job and says whether to apply.');
     expect(t.sampleLink).toBe('View report samples');
     expect(t.featuresAccordion).toBe('Jobbeagle advantages');
   });

@@ -24,9 +24,8 @@ export const REPORT_PRODUCT = {
     labelZhCN: '适配快照',
     shortEn: 'Fit Snapshot',
     shortZh: '適配快照',
-    blurbEn:
-      'A one-page fit check: must-haves, a market pay band, missing keywords, and whether to apply.',
-    blurbZh: '一頁適配判斷：硬條件、市場薪酬帶、缺的關鍵字，以及該不該投。',
+    blurbEn: 'Matches your resume to the job and says whether to apply.',
+    blurbZh: '用履歷對上職缺，判斷要不要應徵。',
     legacyCodes: ['lite'] as const,
     creditField: 'job_fit_snapshot_credits' as const,
     dbCreditColumn: 'available_job_fit_snapshot_credits' as const,
@@ -38,9 +37,8 @@ export const REPORT_PRODUCT = {
     labelZhCN: '面试指南',
     shortEn: 'Interview Guide',
     shortZh: '面試指南',
-    blurbEn:
-      'Live web search: your pay landing and TC split, H-1B and layoff risk, 20 interview questions with sources, and a headhunter negotiation script. Includes the Fit Snapshot.',
-    blurbZh: '即時網搜：個人薪資落點與 TC 拆解、H-1B 與裁員風險、20 題附來源的面試題，以及獵頭級談薪說法。內含適配快照。',
+    blurbEn: 'After a live web search, tells you how to answer, what to ask, and how to negotiate.',
+    blurbZh: '查過網搜資料後，告訴你進面試怎麼答、怎麼問、怎麼談。',
     legacyCodes: ['full'] as const,
     creditField: 'interview_strategy_guide_credits' as const,
     dbCreditColumn: 'available_interview_strategy_guide_credits' as const,
