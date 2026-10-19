@@ -125,7 +125,7 @@ describe('homepage value propositions', () => {
     expect(HOMEPAGE_FORM_COPY.en.matchAnalysis).toBe('Precise fit analysis');
     expect(HOMEPAGE_FORM_COPY.en.salaryResearch).toBe('Pay landing projection');
     expect(HOMEPAGE_FORM_COPY['zh-TW'].description).toBe(
-      '精準判斷職缺適配、預估薪資落點，並彙整關鍵職位情報，協助你高效完成面試準備——一次取得決策所需資料，省去四處搜尋。',
+      '以人資篩選視角與可驗證之市場情報，為每一次應徵提供適配判定、薪酬落點與面試整備——讓職涯決策有據可依，關鍵情報一次到位。',
     );
     expect(HOMEPAGE_FORM_COPY['zh-TW'].matchAnalysis).toBe('精準適配分析');
     expect(HOMEPAGE_FORM_COPY['zh-TW'].salaryResearch).toBe('薪資落點預測');
