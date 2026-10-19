@@ -129,7 +129,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       base: s ? '底薪' : '底薪',
       equity: s ? '股票' : '股票',
       bonus: s ? '奖金' : '獎金',
-      buyer: s ? '买方 / 卖方筹码' : '買方 / 賣方籌碼',
+      buyer: s ? '谈薪时，公司与你各靠什么' : '談薪時，公司與你各靠什麼',
       culture: s ? '公司情报' : '公司情報',
       pros: s ? '优点' : '優點',
       cons: s ? '缺点' : '缺點',
@@ -209,7 +209,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     base: 'Base',
     equity: 'Equity',
     bonus: 'Bonus',
-    buyer: 'Buyer / seller leverage',
+    buyer: 'What each side can rely on',
     culture: 'Company intel',
     pros: 'Pros',
     cons: 'Cons',
@@ -831,7 +831,7 @@ export function GuideItemPage({
         {salary.buyer_seller ? (
           <div className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
             <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.buyer}</p>
-            <p className={`${BODY} text-slate-200 leading-relaxed`}>{salary.buyer_seller}</p>
+            <PointList items={briefLines(salary.buyer_seller)} dot="bg-sky-300" />
           </div>
         ) : null}
         <SourceList title={copy.sources} sources={salary.sources} />

@@ -74,7 +74,7 @@ const en: SampleGuideNarrative = {
   rationale:
     'The target sits at $168K because a US remote Senior Business Analyst band is about $145K–$190K. The resume can prove a 28% reconciliation cycle-time cut with SQL and Looker, but ACH returns ownership is only adjacent, so the number stays mid-band. The ceiling stops at $185K: there is no Staff-level scope and no second offer to push past it. Base $145K, about $12K a year of equity, and an $11K bonus are what add up to $168K. Equity and bonus are not items the resume already holds, so they are not existing rights.',
   buyer_seller:
-    'Buyer leverage: the seat has been open. Seller leverage: the 28% SQL cycle-time cut. ACH ownership is adjacent, so do not anchor as if that gap were closed.',
+    'The company: this seat is still open, so they need someone and they can also keep waiting.\nYou: the resume fact you can use is a 28% reconciliation cycle-time cut with SQL and Looker.\nDo not use this: ACH returns ownership is not on the resume, so do not talk as if you already did that work.',
   levelsTitle: 'Levels sample',
   h1bWageTitle: 'H-1B wage sample',
   culture: 'Public reviews describe a written, remote-friendly ops culture with tight cutoff deadlines.',
@@ -157,7 +157,7 @@ const zhTW: SampleGuideNarrative = {
   rationale:
     '目標價放在 $168K，是因為這席在美國、可遠端的 Senior Business Analyst 市場帶大約 $145K–$190K。履歷能證明的是 SQL／Looker 把對帳週期縮短 28%，但 ACH 退票擁有權只是相鄰經驗，所以不站到帶的上緣。天花板停在 $185K：沒有 Staff 級範圍，也沒有第二份 offer 可以再往上推。底薪 $145K、股票約 $12K／年、獎金 $11K 加總才是 $168K；股票和獎金不是履歷已經拿到的項目，不能把它們說成既有權利。',
   buyer_seller:
-    '買方籌碼：這個位子還空著。賣方籌碼：履歷上的 28% 對帳週期縮短。ACH 擁有權只是相鄰經驗，不能把它當成已經補上的缺口來喊價。',
+    '公司這邊：這個位子還沒補上，所以他們需要人，也可以繼續等。\n你這邊：履歷上能拿出來的，是用 SQL 與 Looker 把對帳週期縮短 28%。\n不能拿來談的：履歷沒有 ACH 退票擁有權，不要把這項說成已經做到。',
   levelsTitle: 'Levels 範例',
   h1bWageTitle: 'H-1B 薪資範例',
   culture: '公開評價描述的是重視書面、可遠端的營運文化，截止時間很緊。',
@@ -238,7 +238,7 @@ const zhCN: SampleGuideNarrative = {
   rationale:
     '目标价放在 $168K，是因为这席在美国、可远程的 Senior Business Analyst 市场带大约 $145K–$190K。履历能证明的是 SQL／Looker 把对账周期缩短 28%，但 ACH 退票所有权只是相邻经验，所以不站到带的上沿。天花板停在 $185K：没有 Staff 级范围，也没有第二份 offer 可以再往上推。底薪 $145K、股票约 $12K／年、奖金 $11K 加总才是 $168K；股票和奖金不是履历已经拿到的项目，不能把它们说成既有权利。',
   buyer_seller:
-    '买方筹码：这个位子还空着。卖方筹码：履历上的 28% 对账周期缩短。ACH 拥有权只是相邻经验，不能把它当成已经补上的缺口来喊价。',
+    '公司这边：这个位子还没补上，所以他们需要人，也可以继续等。\n你这边：简历上能拿出来的，是用 SQL 与 Looker 把对账周期缩短 28%。\n不能拿来谈的：简历没有 ACH 退票所有权，不要把这项说成已经做到。',
   levelsTitle: 'Levels 示例',
   h1bWageTitle: 'H-1B 薪资示例',
   culture: '公开评价描述的是重视书面、可远程的运营文化，截止时间很紧。',
@@ -321,7 +321,7 @@ const es: SampleGuideNarrative = {
   rationale:
     'El objetivo queda en $168K porque la banda de un Senior Business Analyst remoto en Estados Unidos ronda $145K–$190K. El CV puede probar un recorte del 28% en el ciclo de conciliación con SQL y Looker, pero la propiedad de devoluciones ACH solo es adyacente, así que el número se queda a mitad de banda. El techo para en $185K: no hay alcance de nivel Staff ni una segunda oferta para subir más. La base de $145K, unos $12K al año en acciones y un bono de $11K son lo que suma $168K. Las acciones y el bono no son derechos que el CV ya tenga.',
   buyer_seller:
-    'Palanca del comprador: el puesto sigue abierto. Palanca del vendedor: el recorte del 28% en el ciclo con SQL. La propiedad ACH es adyacente; no ancles como si esa brecha ya estuviera cerrada.',
+    'La empresa: el puesto sigue abierto, así que necesitan a alguien y también pueden seguir esperando.\nTú: el hecho del CV que puedes usar es un recorte del 28% en el ciclo de conciliación con SQL y Looker.\nNo uses esto: la propiedad de devoluciones ACH no está en el CV, así que no hables como si ya hubieras hecho ese trabajo.',
   levelsTitle: 'Muestra de Levels',
   h1bWageTitle: 'Muestra salarial H-1B',
   culture: 'Las reseñas públicas describen una cultura de operaciones por escrito, compatible con remoto y con cortes muy ajustados.',
@@ -406,7 +406,7 @@ const hi: SampleGuideNarrative = {
   rationale:
     'लक्ष्य $168K पर है क्योंकि अमेरिका में दूरस्थ Senior Business Analyst की पट्टी लगभग $145K–$190K है। रिज़्यूमे SQL और Looker से मिलान चक्र में 28% की कमी साबित कर सकता है, पर ACH रिटर्न की मालिकी केवल आसन्न है, इसलिए संख्या पट्टी के बीच में रहती है। छत $185K पर रुकती है: Staff स्तर का दायरा नहीं है और ऊपर धकेलने के लिए दूसरा ऑफ़र नहीं है। आधार $145K, लगभग $12K प्रति वर्ष इक्विटी और $11K बोनस मिलकर $168K बनते हैं। इक्विटी और बोनस रिज़्यूमे के मौजूदा अधिकार नहीं हैं।',
   buyer_seller:
-    'खरीदार का लाभ: यह सीट अभी खाली है। विक्रेता का लाभ: SQL से चक्र में 28% की कमी। ACH की मालिकी आसन्न है; इस अंतर को भरा हुआ मानकर अंकुर न लगाएँ।',
+    'कंपनी: यह सीट अभी खाली है, इसलिए उन्हें किसी की ज़रूरत है और वे इंतज़ार भी कर सकते हैं।\nआप: रिज़्यूमे पर जो तथ्य इस्तेमाल कर सकते हैं, वह SQL और Looker से मिलान चक्र में 28% की कमी है।\nइसे बातचीत में न लाएँ: रिज़्यूमे में ACH रिटर्न की मालिकी नहीं है, इसलिए ऐसा न कहें कि यह काम आप कर चुके हैं।',
   levelsTitle: 'Levels नमूना',
   h1bWageTitle: 'H-1B वेतन नमूना',
   culture: 'सार्वजनिक समीक्षाएँ लिखित, दूरस्थ-अनुकूल संचालन संस्कृति बताती हैं, जिसमें कटऑफ बहुत कड़े हैं।',
@@ -490,7 +490,7 @@ const ar: SampleGuideNarrative = {
   rationale:
     'الهدف عند $168K لأن نطاق Senior Business Analyst عن بُعد في الولايات المتحدة يقارب $145K–$190K. تستطيع السيرة إثبات اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker، لكن ملكية مرتجعات ACH مجاورة فقط، لذلك يبقى الرقم في منتصف النطاق. يتوقف السقف عند $185K: لا يوجد نطاق بمستوى Staff ولا عرض ثانٍ للدفع أعلى. الأساس $145K ونحو $12K سنوياً من الأسهم ومكافأة $11K هي ما يجمع $168K. الأسهم والمكافأة ليست حقوقاً تملكها السيرة أصلاً.',
   buyer_seller:
-    'ورقة المشتري: المقعد ما يزال شاغراً. ورقة البائع: اختصار الدورة بنسبة 28% باستخدام SQL. ملكية ACH مجاورة؛ لا تثبّت السعر كأن هذه الفجوة قد سُدّت.',
+    'الشركة: المقعد ما يزال شاغراً، فهم بحاجة إلى شخص ويمكنهم أيضاً مواصلة الانتظار.\nأنت: الحقيقة التي تستطيع استخدامها من السيرة هي اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker.\nلا تستخدم هذا: ملكية مرتجعات ACH ليست في السيرة، فلا تتحدث كأنك أنجزت هذا العمل.',
   levelsTitle: 'عينة Levels',
   h1bWageTitle: 'عينة أجر H-1B',
   culture: 'تصف المراجعات العامة ثقافة عمليات مكتوبة وصديقة للعمل عن بُعد، مع مواعيد قطع ضيقة.',
