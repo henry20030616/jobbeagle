@@ -171,7 +171,8 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
       'Clarify with the recruiter whether ACH/returns ownership is required or preferred before investing a full application cycle.',
   },
   role_read: {
-    mission: 'Own requirements and analytics for payments operations improvements.',
+    mission:
+      'This seat is a Senior Business Analyst for payments operations. The company needs this person to turn settlement and ACH-returns problems into scheduled requirements, and to write the acceptance criteria with engineering. The bar is five or more years as a business analyst or in product operations, plus independent SQL and ownership of a production operations dashboard.',
     responsibilities: [
       'Turn payment-operations issues into scheduled requirements and set the order they are built.',
       'Write the requirements and acceptance criteria for settlement and ACH returns with engineering.',

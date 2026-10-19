@@ -164,7 +164,8 @@ const ZH_TW: SampleLocalePack = {
       next_best_action: '先向招募確認 ACH／退票擁有權是必備還是加分，再投入完整投遞週期。',
     },
     role_read: {
-      mission: '擁有支付營運改善的需求與分析。',
+      mission:
+        '這個職位是支付營運的 Senior Business Analyst。公司要這個人把清算與退票的營運問題整理成可排程的需求，並和工程一起寫驗收標準。錄取條件是 5 年以上 Business Analyst 或產品營運經驗，而且要能獨立使用 SQL、負責正式環境的營運儀表板。',
       responsibilities: [
         '把支付營運問題整理成可排程的需求，並決定處理順序。',
         '與工程一起寫清算與 ACH 退票流程的需求與驗收標準。',
@@ -857,7 +858,8 @@ const ZH_CN: SampleLocalePack = {
       next_best_action: '先向招聘确认 ACH／退票所有权是必备还是加分，再投入完整投递周期。',
     },
     role_read: {
-      mission: '拥有支付运营改善的需求与分析。',
+      mission:
+        '这个职位是支付运营的 Senior Business Analyst。公司要这个人把清算与退票的运营问题整理成可排期的需求，并和工程一起写验收标准。录用条件是 5 年以上 Business Analyst 或产品运营经验，而且要能独立使用 SQL、负责正式环境的运营仪表板。',
       responsibilities: [
         '把支付运营问题整理成可排期的需求，并决定处理顺序。',
         '与工程一起写清算与 ACH 退票流程的需求与验收标准。',
@@ -1537,7 +1539,8 @@ const ES: SampleLocalePack = {
         'Aclara con el reclutador si ownership ACH/returns es required o preferred antes de invertir un ciclo completo.',
     },
     role_read: {
-      mission: 'Poseer requisitos y analytics para mejoras de ops de pagos.',
+      mission:
+        'Este puesto es de Senior Business Analyst en operaciones de pago. La empresa necesita a alguien que convierta los problemas de liquidación y devoluciones en requisitos planificables, y que escriba los criterios de aceptación con ingeniería. La condición es cinco años o más como business analyst o en operaciones de producto, más SQL autónomo y la responsabilidad de un panel de operaciones en producción.',
       responsibilities: [
         'Convertir incidencias de operaciones de pago en requisitos planificables y fijar su orden.',
         'Redactar con ingeniería los requisitos y criterios de aceptación de liquidación y devoluciones ACH.',
@@ -2146,7 +2149,8 @@ const HI: SampleLocalePack = {
         'पूरा आवेदन चक्र लगाने से पहले रिक्रूटर से पूछें ACH/returns ownership required है या preferred।',
     },
     role_read: {
-      mission: 'Payments ops सुधारों के लिए requirements और analytics own करें।',
+      mission:
+        'यह पद भुगतान संचालन का Senior Business Analyst है। कंपनी को ऐसे व्यक्ति की ज़रूरत है जो सेटलमेंट और रिटर्न की समस्याओं को शेड्यूल होने वाली आवश्यकताओं में बदले, और इंजीनियरिंग के साथ स्वीकृति मानदंड लिखे। शर्त है Business Analyst या उत्पाद संचालन में पाँच या अधिक वर्ष, स्वतंत्र SQL, और प्रोडक्शन संचालन डैशबोर्ड की ज़िम्मेदारी।',
       responsibilities: [
         'भुगतान संचालन की समस्याओं को शेड्यूल होने वाली आवश्यकताओं में बदलें और उनका क्रम तय करें।',
         'इंजीनियरिंग के साथ सेटलमेंट और ACH रिटर्न की आवश्यकताएँ और स्वीकृति मानदंड लिखें।',
@@ -2301,7 +2305,8 @@ const AR: SampleLocalePack = {
         'وضّح مع المسؤول إن كانت ملكية ACH/returns مطلوبة أم مفضلة قبل استثمار دورة تقديم كاملة.',
     },
     role_read: {
-      mission: 'امتلك المتطلبات والتحليلات لتحسينات عمليات المدفوعات.',
+      mission:
+        'هذا الدور هو Senior Business Analyst لعمليات الدفع. تحتاج الشركة إلى شخص يحوّل مشكلات التسوية والمرتجعات إلى متطلبات قابلة للجدولة، ويكتب معايير القبول مع الهندسة. الشرط هو خمس سنوات أو أكثر كمحلل أعمال أو في عمليات المنتج، مع استخدام SQL بشكل مستقل وتحمّل لوحة عمليات في بيئة الإنتاج.',
       responsibilities: [
         'تحويل مشكلات عمليات الدفع إلى متطلبات قابلة للجدولة وتحديد ترتيبها.',
         'كتابة المتطلبات ومعايير القبول للتسوية ومرتجعات ACH مع الهندسة.',

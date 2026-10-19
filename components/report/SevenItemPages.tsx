@@ -39,6 +39,7 @@ type ItemCopy = {
   questions: string;
   negotiate: string;
   nav: Record<GuideItemId, string>;
+  summary: string;
   conditions: string;
   duties: string;
   band: string;
@@ -108,6 +109,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
         questions: s ? '面试真题' : '面試真題',
         negotiate: s ? '谈判建议' : '談判建議',
       },
+      summary: s ? '分析总结' : '分析總結',
       conditions: s ? '关键条件' : '關鍵條件',
       duties: s ? '关键职责' : '關鍵職責',
       band: s ? '市场总薪酬区间' : '市場總薪酬區間',
@@ -196,6 +198,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       questions: 'Questions',
       negotiate: 'Negotiation',
     },
+    summary: 'Position summary',
     conditions: 'Must-haves',
     duties: 'Real duties',
     band: 'Market total compensation range',
@@ -506,7 +509,15 @@ function ItemBlock({
 function CoreBody({ report, copy }: { report: LiteReport; copy: ItemCopy }) {
   const conditions = (report.role_read?.hiring_signals ?? []).slice(0, 5);
   const duties = (report.role_read?.responsibilities ?? []).slice(0, 5);
+  const summary = report.role_read?.mission?.trim() ?? '';
   return (
+    <div className="space-y-3">
+      {summary ? (
+        <section>
+          <p className={`${SECTION_TITLE} text-slate-100`}>{copy.summary}</p>
+          <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{summary}</p>
+        </section>
+      ) : null}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       <BriefColumn
         title={copy.conditions}
@@ -520,6 +531,7 @@ function CoreBody({ report, copy }: { report: LiteReport; copy: ItemCopy }) {
       >
         {duties.length > 0 ? <BriefRows items={duties} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
       </BriefColumn>
+    </div>
     </div>
   );
 }
