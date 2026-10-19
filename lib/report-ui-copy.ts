@@ -221,7 +221,7 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecisionFallback: '投遞決策',
     applyLabels: {
       'Apply now': '立即投遞',
-      'Apply after fixes': '補強後再投',
+      'Apply after fixes': '建議履歷調整後再應徵',
       'Clarify first': '先釐清再投',
       Skip: '略過',
     },
@@ -256,7 +256,7 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecisionFallback: '投递决策',
     applyLabels: {
       'Apply now': '立即投递',
-      'Apply after fixes': '补强后再投',
+      'Apply after fixes': '建议简历调整后再应征',
       'Clarify first': '先澄清再投',
       Skip: '跳过',
     },
