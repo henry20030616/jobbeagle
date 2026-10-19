@@ -569,6 +569,10 @@ function FitBody({
     || report.recruiter_verdict
     || report.one_sentence_sharp_critique
     || '';
+  const verdictPoints = (report.fit_score?.sharp_verdict_points ?? [])
+    .map((point) => point.trim())
+    .filter(Boolean);
+  const verdictLines = verdictPoints.length >= 2 ? verdictPoints : splitDecisionBrief(verdict);
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -602,7 +606,16 @@ function FitBody({
           </div>
           <p className={`text-2xl font-black mt-3 ${scoreInfo.color}`}>{scoreInfo.level}</p>
           <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
-          {verdict ? <p className={`${BODY} text-slate-200 leading-relaxed mt-3`}>{verdict}</p> : null}
+          {verdictLines.length > 0 ? (
+            <ul className="mt-3 space-y-3">
+              {verdictLines.map((point) => (
+                <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
         <div className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-4">
           <p className={`${SECTION_TITLE} text-violet-200 mb-3`}>
