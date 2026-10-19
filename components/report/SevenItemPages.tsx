@@ -123,7 +123,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
         : '🔒 升級 Interview Guide 可解鎖針對該硬傷的具體修改範例與滿分話術',
       before: s ? '修改前' : '修改前',
       after: s ? '修改后' : '修改後',
-      target: s ? '战略目标价' : '戰略目標價',
+      target: s ? '个人战略目标薪资' : '個人戰略目標薪資',
       ceiling: s ? '议价天花板' : '議價天花板',
       judgment: s ? '判断：为什么是这些数字' : '判斷：為什麼是這些數字',
       base: s ? '底薪' : '底薪',
@@ -203,7 +203,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     lockRewrite: '🔒 Upgrade to Interview Guide for line-by-line rewrites of these gaps',
     before: 'Before',
     after: 'After',
-    target: 'Target',
+    target: 'Personal target compensation',
     ceiling: 'Ceiling',
     judgment: 'Judgment: why these numbers',
     base: 'Base',
@@ -276,9 +276,11 @@ function parsePayAmount(raw: string): number | null {
 function PayMixPie({
   rows,
   totalLabel,
+  bare = false,
 }: {
   rows: Array<[string, string]>;
   totalLabel: string;
+  bare?: boolean;
 }) {
   const slices = rows.flatMap((row, index) => {
     const amount = parsePayAmount(row[1]);
@@ -299,7 +301,7 @@ function PayMixPie({
     );
   }
   return (
-    <div className="grid grid-cols-1 items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4 md:grid-cols-[16rem_1fr]">
+    <div className={`grid grid-cols-1 items-center gap-2 md:grid-cols-[16rem_1fr] ${bare ? '' : 'rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4'}`}>
       <div className="relative mx-auto h-56 w-full max-w-[16rem]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -845,10 +847,14 @@ export function GuideItemPage({
     ].filter((row): row is [string, string] => Boolean(row[1]));
     body = salary ? (
       <div className="space-y-3">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="rounded-lg border border-emerald-400/55 bg-emerald-500/10 p-4">
-            <p className={`${SECTION_TITLE} text-emerald-300 mb-2`}>{copy.target}</p>
-            <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
+            <p className={`${SECTION_TITLE} text-emerald-300 mb-3`}>{copy.target}</p>
+            {mix.length > 0 ? (
+              <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
+            ) : (
+              <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
+            )}
           </div>
           <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 p-4">
             <p className={`${SECTION_TITLE} text-slate-200 mb-2`}>{copy.ceiling}</p>
@@ -861,7 +867,6 @@ export function GuideItemPage({
             <p className={`${BODY} text-slate-100 leading-relaxed`}>{salary.rationale}</p>
           </section>
         ) : null}
-        {mix.length > 0 ? <PayMixPie rows={mix} totalLabel={salary.target || '—'} /> : null}
         {salary.buyer_seller ? (
           <div className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
             <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.buyer}</p>
