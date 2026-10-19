@@ -372,24 +372,28 @@ function MarketBody({
   const offer = report.expected_offer;
   const range = formatOfferRange(offer);
   const scope = payEstimateScope(report, language);
-  const sep = language === 'zh-TW' || language === 'zh-CN' ? '：' : ': ';
   const levelLines = scope.level.split(' — ').map((part) => part.trim()).filter(Boolean);
-  const rows = [
-    `${copy.where}${sep}${scope.where}`,
-    `${copy.role}${sep}${scope.role}`,
-    ...levelLines.map((part, index) => (index === 0 ? `${copy.level}${sep}${part}` : part)),
-    range
-      ? `${copy.band}${sep}${range} (${offer?.currency || 'USD'})`
-      : `${copy.band}${sep}${copy.noBand}`,
+  const money = offer?.currency || 'USD';
+  const blocks: Array<{ title: string; lines: string[] }> = [
+    { title: copy.where, lines: [scope.where] },
+    { title: copy.role, lines: [scope.role] },
+    { title: copy.level, lines: levelLines.length > 0 ? levelLines : [scope.level] },
+    {
+      title: copy.band,
+      lines: range ? [`${range} (${money})`, copy.notOffer] : [copy.noBand],
+    },
   ];
-  if (range) rows.push(copy.notOffer);
   return (
     <div className="overflow-hidden rounded-xl border border-emerald-400/55 bg-emerald-500/10">
-      <ul className="space-y-3 px-5 py-4">
-        {rows.map((row) => (
-          <li key={row} className="flex gap-2.5">
-            <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
-            <span className={`${BODY} font-medium text-slate-100 leading-snug`}>{row}</span>
+      <ul className="space-y-4 px-5 py-4">
+        {blocks.map((block) => (
+          <li key={block.title}>
+            <p className={`${SECTION_TITLE} text-emerald-200`}>{block.title}</p>
+            {block.lines.map((line) => (
+              <p key={line} className={`${BODY} mt-1 font-semibold text-white leading-snug`}>
+                {line}
+              </p>
+            ))}
           </li>
         ))}
       </ul>
