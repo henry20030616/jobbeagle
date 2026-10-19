@@ -166,14 +166,14 @@ const ZH_TW: SampleLocalePack = {
     role_read: {
       mission: '擁有支付營運改善的需求與分析。',
       responsibilities: [
-        '把營運痛點轉成優先排序的 backlog',
-        '與工程合作清算／退票流程',
-        '發布週期與錯誤率 KPI',
+        '把支付營運問題整理成可排程的需求，並決定處理順序。',
+        '與工程一起寫清算與 ACH 退票流程的需求與驗收標準。',
+        '每月向營運主管報告對帳週期與錯誤率。',
       ],
       hiring_signals: [
-        '預期高階擁有權，而非初階工單分流',
-        '偏好支付領域勝於泛用 BA',
-        'SQL 是必備，不是加分項',
+        '須具備 5 年以上 Business Analyst 或產品營運經驗。',
+        '須能獨立使用 SQL，並負責正式環境的營運儀表板。',
+        '職位是支付營運：ACH 退票、清算，或同等支付軌道經驗為必要條件。',
       ],
     },
     interview_starters: [
@@ -859,14 +859,14 @@ const ZH_CN: SampleLocalePack = {
     role_read: {
       mission: '拥有支付运营改善的需求与分析。',
       responsibilities: [
-        '把运营痛点转成优先排序的 backlog',
-        '与工程合作清算／退票流程',
-        '发布周期与错误率 KPI',
+        '把支付运营问题整理成可排期的需求，并决定处理顺序。',
+        '与工程一起写清算与 ACH 退票流程的需求与验收标准。',
+        '每月向运营主管报告对账周期与错误率。',
       ],
       hiring_signals: [
-        '预期高阶所有权，而非初级工单分流',
-        '偏好支付领域胜于泛用 BA',
-        'SQL 是必备，不是加分项',
+        '须具备 5 年以上 Business Analyst 或产品运营经验。',
+        '须能独立使用 SQL，并负责正式环境的运营仪表板。',
+        '职位是支付运营：ACH 退票、清算，或同等支付轨道经验为必要条件。',
       ],
     },
     interview_starters: [
@@ -1539,14 +1539,14 @@ const ES: SampleLocalePack = {
     role_read: {
       mission: 'Poseer requisitos y analytics para mejoras de ops de pagos.',
       responsibilities: [
-        'Traducir dolor de ops a backlog priorizado',
-        'Partner con eng en workflows de settlement / returns',
-        'Publicar KPIs de cycle time y error rate',
+        'Convertir incidencias de operaciones de pago en requisitos planificables y fijar su orden.',
+        'Redactar con ingeniería los requisitos y criterios de aceptación de liquidación y devoluciones ACH.',
+        'Informar cada mes al responsable de operaciones del tiempo de conciliación y la tasa de error.',
       ],
       hiring_signals: [
-        'Se espera ownership sénior, no triage junior',
-        'Dominio de pagos preferido sobre BA genérico',
-        'SQL es must-have, no nice-to-have',
+        'Cinco años o más como business analyst o en operaciones de producto.',
+        'Debe usar SQL de forma autónoma y ser responsable de un panel de operaciones en producción.',
+        'El puesto es operaciones de pagos: devoluciones ACH, liquidación o un riel equivalente es obligatorio.',
       ],
     },
     interview_starters: [
@@ -2148,14 +2148,14 @@ const HI: SampleLocalePack = {
     role_read: {
       mission: 'Payments ops सुधारों के लिए requirements और analytics own करें।',
       responsibilities: [
-        'Ops दर्द को प्राथमिकता backlog में बदलें',
-        'Settlement / returns workflows पर eng के साथ partner',
-        'Cycle time और error rate के KPI प्रकाशित करें',
+        'भुगतान संचालन की समस्याओं को शेड्यूल होने वाली आवश्यकताओं में बदलें और उनका क्रम तय करें।',
+        'इंजीनियरिंग के साथ सेटलमेंट और ACH रिटर्न की आवश्यकताएँ और स्वीकृति मानदंड लिखें।',
+        'हर महीने संचालन प्रमुख को मिलान चक्र और त्रुटि दर की रिपोर्ट दें।',
       ],
       hiring_signals: [
-        'सीनियर ownership अपेक्षित, जूनियर ticket triage नहीं',
-        'Generic BA से payments डोमेन preferred',
-        'SQL must-have है, nice-to-have नहीं',
+        'Business Analyst या उत्पाद संचालन में पाँच या अधिक वर्ष।',
+        'SQL स्वतंत्र रूप से आना चाहिए, और प्रोडक्शन संचालन डैशबोर्ड की ज़िम्मेदारी होनी चाहिए।',
+        'यह भूमिका भुगतान संचालन है: ACH रिटर्न, सेटलमेंट, या समकक्ष रेल आवश्यक है।',
       ],
     },
     interview_starters: [
@@ -2303,14 +2303,14 @@ const AR: SampleLocalePack = {
     role_read: {
       mission: 'امتلك المتطلبات والتحليلات لتحسينات عمليات المدفوعات.',
       responsibilities: [
-        'حوّل ألم العمليات إلى backlog ذي أولوية',
-        'شارك الهندسة في سير عمل التسوية / returns',
-        'انشر مؤشرات cycle time ومعدل الأخطاء',
+        'تحويل مشكلات عمليات الدفع إلى متطلبات قابلة للجدولة وتحديد ترتيبها.',
+        'كتابة المتطلبات ومعايير القبول للتسوية ومرتجعات ACH مع الهندسة.',
+        'رفع تقرير شهري إلى مسؤول العمليات عن زمن المطابقة ومعدل الأخطاء.',
       ],
       hiring_signals: [
-        'يُتوقع ملكية أقدم لا فرز تذاكر مبتدئ',
-        'مجال المدفوعات مفضّل على BA عام',
-        'SQL شرط أساسي لا ميزة إضافية',
+        'خمس سنوات أو أكثر كمحلل أعمال أو في عمليات المنتج.',
+        'يلزم استخدام SQL بشكل مستقل وتحمّل لوحة عمليات في بيئة الإنتاج.',
+        'الدور هو عمليات المدفوعات: مرتجعات ACH أو التسوية أو مسار دفع معادل شرط إلزامي.',
       ],
     },
     interview_starters: [

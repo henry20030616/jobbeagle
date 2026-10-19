@@ -82,8 +82,6 @@ type ItemCopy = {
   sources: string;
   empty: string;
   noBand: string;
-  conditionsHint: string;
-  dutiesHint: string;
   deck: Record<GuideItemId, string>;
   badge: Record<GuideItemId, string>;
 };
@@ -150,10 +148,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
-      conditionsHint: s ? '用来筛人的硬指标，不含公关句' : '用來篩人的硬指標，不含公關句',
-      dutiesHint: s ? '入职后真正要扛的产出' : '入職後真正要扛的產出',
       deck: {
-        core: s ? '从职位原文抽出。只留筛人条件，以及到职后要扛的职责。' : '從職缺原文抽出。只留篩人條件，以及到職後要扛的職責。',
+        core: '',
         market: s ? '依职位与地区给出的宽总包。个人落点在面试指南。' : '依職缺與地區給出的寬總包。個人落點在面試指南。',
         fit: s ? '分数是适配灯号。下方是履历对不上的硬关键字。' : '分數是適配燈號。下方是履歷對不上的硬關鍵字。',
         land: s ? '这一席你比较可能落到的总包，以及底薪、股票、奖金。' : '這一席你比較可能落到的總包，以及底薪、股票、獎金。',
@@ -227,10 +223,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
-    conditionsHint: 'Hard screens. No posting fluff.',
-    dutiesHint: 'The work this seat actually owns.',
     deck: {
-      core: 'Pulled from the posting. Must-haves that screen people, and the work the seat owns.',
+      core: '',
       market: 'A wide total-comp band for this role and region. Your landing is in the Interview Guide.',
       fit: 'The score is the fit signal. Below are the hard keywords the resume does not show.',
       land: 'Where you are likely to land, split into base, equity, and bonus.',
@@ -271,12 +265,10 @@ function BriefRows({ items }: { items: string[] }) {
 
 function BriefColumn({
   title,
-  hint,
   accent,
   children,
 }: {
   title: string;
-  hint: string;
   accent: string;
   children: React.ReactNode;
 }) {
@@ -284,7 +276,6 @@ function BriefColumn({
     <section className={`min-w-0 overflow-hidden rounded-xl border ${accent}`}>
       <header className="border-b border-white/10 bg-black/20 px-4 py-3">
         <h3 className="text-xl font-black text-white">{title}</h3>
-        <p className="mt-1 text-base leading-snug text-slate-400">{hint}</p>
       </header>
       <div className="px-4 py-3">{children}</div>
     </section>
@@ -341,7 +332,7 @@ function ItemBlock({
           <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-300">{kicker}</p>
         ) : null}
         <h2 className={`${kicker ? 'mt-1 ' : ''}text-2xl font-black text-white`}>{title}</h2>
-        <p className="mt-1 text-base leading-snug text-slate-400">{deck}</p>
+        {deck ? <p className="mt-1 text-base leading-snug text-slate-400">{deck}</p> : null}
       </div>
       {children}
     </section>
@@ -355,14 +346,12 @@ function CoreBody({ report, copy }: { report: LiteReport; copy: ItemCopy }) {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       <BriefColumn
         title={copy.conditions}
-        hint={copy.conditionsHint}
         accent="border-sky-400/50 bg-indigo-500/10"
       >
         {conditions.length > 0 ? <BriefRows items={conditions} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
       </BriefColumn>
       <BriefColumn
         title={copy.duties}
-        hint={copy.dutiesHint}
         accent="border-sky-400/50 bg-slate-900/40"
       >
         {duties.length > 0 ? <BriefRows items={duties} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}

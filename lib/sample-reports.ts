@@ -172,14 +172,14 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
   role_read: {
     mission: 'Own requirements and analytics for payments operations improvements.',
     responsibilities: [
-      'Translate ops pain into prioritized backlog',
-      'Partner with eng on settlement / returns workflows',
-      'Publish KPIs for cycle time and error rate',
+      'Turn payment-operations issues into scheduled requirements and set the order they are built.',
+      'Write the requirements and acceptance criteria for settlement and ACH returns with engineering.',
+      'Report reconciliation cycle time and error rate to the operations lead each month.',
     ],
     hiring_signals: [
-      'Senior ownership expected, not junior ticket triage',
-      'Payments domain preferred over generic BA',
-      'SQL literacy is a must-have, not a nice-to-have',
+      'Five or more years as a business analyst or in product operations.',
+      'Must use SQL independently and own a production operations dashboard.',
+      'The seat is payments operations: ACH returns, settlement, or an equivalent payments rail is required.',
     ],
   },
   interview_starters: [
