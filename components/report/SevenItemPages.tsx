@@ -266,9 +266,11 @@ function itemCopy(language: AppLanguage): ItemCopy {
   };
 }
 
+const GUIDE_PAGE_IDS = ['core', 'land', 'company', 'questions', 'negotiate'] as const;
+
 export function guideItemNav(language?: AppLanguage | string): Array<{ id: GuideItemId; label: string }> {
   const copy = itemCopy(normalizeReportLanguage(language));
-  return GUIDE_ITEM_IDS.map((id) => ({ id, label: copy.nav[id] }));
+  return GUIDE_PAGE_IDS.map((id) => ({ id, label: copy.nav[id] }));
 }
 
 const PAY_SLICE_COLORS = ['#34d399', '#38bdf8', '#a5b4fc'] as const;
@@ -842,8 +844,18 @@ export function GuideItemPage({
     negotiate: copy.negotiate,
   };
 
+  if (item === 'core') {
+    return (
+      <SnapshotItemStack
+        report={report}
+        language={lang}
+        locked={false}
+        rewrites={modules?.resume_rewrites ?? []}
+      />
+    );
+  }
+
   let body: React.ReactNode = null;
-  if (item === 'core') body = <CoreBody report={report} copy={copy} />;
   if (item === 'market') {
     body = <MarketBody report={report} copy={copy} language={lang} locked={false} />;
   }

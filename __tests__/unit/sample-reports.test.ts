@@ -185,8 +185,6 @@ describe('seven-item report layout', () => {
     ]);
     expect(guideItemNav('zh-TW').map((item) => item.label)).toEqual([
       '職位核心',
-      '市場薪資',
-      '匹配履歷',
       '薪資落點',
       '公司評價',
       '面試真題',
