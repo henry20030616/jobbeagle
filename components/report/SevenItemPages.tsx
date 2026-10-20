@@ -624,67 +624,66 @@ function FitBody({
           </ul>
         ) : null}
       </section>
-      <section className="border-t border-white/10 pt-5">
-        <p className={`${SECTION_TITLE} text-violet-200 mb-3`}>
-          {(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}
-        </p>
-        {apply?.next_best_action ? (
-          <p className={`${BODY} text-slate-200 leading-snug`}>
-            <span className="font-semibold text-slate-100">{copy.nextAction}: </span>
-            {apply.next_best_action}
-          </p>
-        ) : null}
-      </section>
-      <section className="border-t border-white/10 pt-5">
-        <p className={`${SECTION_TITLE} text-slate-100`}>{copy.keywords}</p>
-        <p className={`${BODY} mb-3 mt-2 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
-        {keywords.length > 0 ? (
-          <div className="mb-3 flex flex-wrap gap-2">
-            {keywords.slice(0, 8).map((word) => (
-              <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
-                {word}
-              </span>
-            ))}
-          </div>
-        ) : null}
-        {gaps.length > 0 ? (
-          <ul className="space-y-2">
-            {gaps.map((item) => (
-              <li key={item.gap} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
-                <span>
-                  <span className="font-semibold text-slate-100">{item.gap}</span>
-                  {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <BriefColumn title={(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}>
+          {apply?.next_best_action ? (
+            <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
+              {apply.next_best_action}
+            </p>
+          ) : (
+            <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+          )}
+        </BriefColumn>
+        <BriefColumn title={copy.keywords}>
+          <p className={`${BODY} mb-3 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
+          {keywords.length > 0 ? (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {keywords.slice(0, 8).map((word) => (
+                <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
+                  {word}
                 </span>
-              </li>
-            ))}
-          </ul>
-        ) : keywords.length === 0 ? (
-          <p className={BODY_MUTED}>{copy.empty}</p>
-        ) : null}
-        {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
-        {!locked && rewrites.length > 0 ? (
-          <ul className="mt-3 space-y-2 border-t border-amber-400/30 pt-3">
-            {groupRewrites(rewrites).map((group) => (
-              <li key={group.title} className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3">
-                <p className={`${BODY} font-semibold text-emerald-100`}>{group.title}</p>
-                {group.items.map((item, index) => (
-                  <div
-                    key={`${item.gap}-${item.after}`}
-                    className={index === 0 ? 'mt-2' : 'mt-3 border-t border-white/10 pt-3'}
-                  >
-                    {group.items.length > 1 && item.gap !== group.title ? (
-                      <p className={`${BODY} font-semibold text-slate-100`}>{item.gap}</p>
-                    ) : null}
-                    {item.before ? <p className={`${BODY_MUTED} mt-1`}>{copy.before}: {item.before}</p> : null}
-                    <p className={`${BODY} mt-1 text-slate-100`}>{copy.after}: {item.after}</p>
-                  </div>
-                ))}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </section>
+              ))}
+            </div>
+          ) : null}
+          {gaps.length > 0 ? (
+            <ul className="space-y-2">
+              {gaps.map((item) => (
+                <li key={item.gap} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
+                  <span>
+                    <span className="font-semibold text-slate-100">{item.gap}</span>
+                    {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : keywords.length === 0 ? (
+            <p className={BODY_MUTED}>{copy.empty}</p>
+          ) : null}
+          {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
+          {!locked && rewrites.length > 0 ? (
+            <ul className="mt-3 space-y-2 border-t border-amber-400/30 pt-3">
+              {groupRewrites(rewrites).map((group) => (
+                <li key={group.title} className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3">
+                  <p className={`${BODY} font-semibold text-emerald-100`}>{group.title}</p>
+                  {group.items.map((item, index) => (
+                    <div
+                      key={`${item.gap}-${item.after}`}
+                      className={index === 0 ? 'mt-2' : 'mt-3 border-t border-white/10 pt-3'}
+                    >
+                      {group.items.length > 1 && item.gap !== group.title ? (
+                        <p className={`${BODY} font-semibold text-slate-100`}>{item.gap}</p>
+                      ) : null}
+                      {item.before ? <p className={`${BODY_MUTED} mt-1`}>{copy.before}: {item.before}</p> : null}
+                      <p className={`${BODY} mt-1 text-slate-100`}>{copy.after}: {item.after}</p>
+                    </div>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </BriefColumn>
+      </div>
     </div>
   );
 }
