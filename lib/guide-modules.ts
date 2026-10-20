@@ -114,6 +114,7 @@ export function emptyGuideModules(limitations: string[] = []): GuideModules {
       sources: [],
     },
     company_eval: {
+      summary: '',
       culture: '',
       labor_risk: '',
       layoff_risk: '',
@@ -133,8 +134,16 @@ export function emptyGuideModules(limitations: string[] = []): GuideModules {
       professional_extra: [],
       behavioral_extra: [],
       process: '',
+      summary: '',
     },
-    negotiation: { pay_strategy: '', benefits_strategy: '', script: '', company_questions: '', follow_up_email: '' },
+    negotiation: {
+      summary: '',
+      pay_strategy: '',
+      benefits_strategy: '',
+      script: '',
+      company_questions: '',
+      follow_up_email: '',
+    },
     limitations,
   };
 }
@@ -204,6 +213,7 @@ function bankForTrack(items: GuideQuestion[], track: GuideQuestionTrack): {
 export function selectInterviewBank(
   questions: GuideQuestion[],
   process = '',
+  summary = '',
 ): GuideInterviewBank {
   const professional = bankForTrack(questions, 'professional');
   const behavioral = bankForTrack(questions, 'behavioral');
@@ -213,6 +223,7 @@ export function selectInterviewBank(
     professional_extra: professional.extra,
     behavioral_extra: behavioral.extra,
     process: process.slice(0, 1500),
+    summary: summary.slice(0, 800),
   };
 }
 
@@ -249,6 +260,7 @@ export function parseCompanyEval(raw: unknown): GuideModules['company_eval'] | n
   if (!raw || typeof raw !== 'object') return null;
   const row = raw as Record<string, unknown>;
   return {
+    summary: asString(row.summary).slice(0, 800),
     culture: asString(row.culture).slice(0, 800),
     labor_risk: asString(row.labor_risk).slice(0, 800),
     layoff_risk: asString(row.layoff_risk).slice(0, 800),
@@ -291,6 +303,7 @@ export function parseNegotiation(raw: unknown): GuideModules['negotiation'] | nu
   const row = raw as Record<string, unknown>;
   const followUp = asString(row.follow_up_email).slice(0, 2000);
   return {
+    summary: asString(row.summary).slice(0, 800),
     pay_strategy: asString(row.pay_strategy).slice(0, 2000),
     benefits_strategy: asString(row.benefits_strategy).slice(0, 2000),
     script: asString(row.script).slice(0, 1500),
@@ -346,6 +359,7 @@ export function normalizeGuideModules(raw: unknown): GuideModules | undefined {
       professional_extra: parseGuideQuestions(bank.professional_extra),
       behavioral_extra: parseGuideQuestions(bank.behavioral_extra),
       process: asString(bank.process).slice(0, 1500),
+      summary: asString(bank.summary).slice(0, 800),
     },
     negotiation: parseNegotiation(row.negotiation) ?? emptyGuideModules().negotiation,
     limitations,

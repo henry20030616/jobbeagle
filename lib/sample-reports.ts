@@ -798,6 +798,7 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       ],
     },
     company_eval: {
+      summary: copy.company_summary,
       culture: copy.culture,
       labor_risk: copy.labor_risk,
       layoff_risk: copy.layoff_risk,
@@ -822,8 +823,10 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       professional_extra: professional.slice(10),
       behavioral_extra: behavioral.slice(10),
       process: copy.process,
+      summary: copy.questions_summary,
     },
     negotiation: {
+      summary: copy.negotiate_summary,
       pay_strategy: copy.pay_strategy,
       benefits_strategy: copy.benefits_strategy,
       script: copy.script,

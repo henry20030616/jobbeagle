@@ -656,6 +656,8 @@ export interface GuideInterviewBank {
   professional_extra: GuideQuestion[];
   behavioral_extra: GuideQuestion[];
   process: string;
+  /** Two or three sentences on how this company interviews this role. */
+  summary?: string;
 }
 
 export interface GuideResumeRewrite {
@@ -686,6 +688,8 @@ export interface GuideModules {
     sources: GuideSource[];
   };
   company_eval: {
+    /** Two or three sentences: employer risk and what public reviews say about this seat. */
+    summary?: string;
     culture: string;
     labor_risk: string;
     layoff_risk: string;
@@ -707,6 +711,8 @@ export interface GuideModules {
   };
   interview_bank: GuideInterviewBank;
   negotiation: {
+    /** Two or three sentences: opening number, what the resume can support, and what not to invent. */
+    summary?: string;
     pay_strategy: string;
     benefits_strategy: string;
     script: string;

@@ -35,6 +35,7 @@ export const COMPANY_MODULE_PROMPT = `You summarize public company and role repu
 Search Blind (site:teamblind.com), Glassdoor, Reddit, layoffs.fyi, WARN notices, and h1bdata.info.
 Return JSON only:
 {
+  "summary": "Two or three sentences a candidate can read: what public reviews say about this employer, the main cited risk (layoff, labor, or visa), and what they say about this seat. Unknown stays unknown.",
   "culture": "one sentence on employer culture from cited pages",
   "labor_risk": "labor disputes or compliance issues, or empty",
   "layoff_risk": "recent layoffs or WARN, or empty",
@@ -56,6 +57,7 @@ export const QUESTION_RETRIEVAL_PROMPT = `You retrieve interview questions from 
 Search Glassdoor, Blind, Reddit, and Levels.fyi. Prefer: same company + same role, then same industry + same role, then other industries + same role.
 Return JSON only:
 {
+  "summary": "Two or three sentences: how this company interviews this role (rounds and timing) and what the cited questions cluster on. Empty if search found nothing.",
   "process": "rounds, interviewer roles, and typical timing from real shares, or empty",
   "questions": [
     {
@@ -83,6 +85,7 @@ export const NEGOTIATION_MODULE_PROMPT = `You write negotiation guidance for an 
 Use only the salary-land numbers already given (untrusted data) and resume facts already in the documents. Do not search the web. Do not invent a competing offer, a metric, or a new dollar figure.
 Return JSON:
 {
+  "summary": "Two or three sentences: the opening total, the resume fact that supports it, and what not to invent. Name the dollars.",
   "pay_strategy": "Four short sentences, separated by newlines: (1) which resume fact may be used as leverage and which gap must not be claimed as closed; (2) the opening total, with base, equity, and bonus, and why that point in the band; (3) the one counter, where it stops, and why it cannot go higher; (4) what not to invent when there is no written competing offer.",
   "benefits_strategy": "Four short sentences, separated by newlines: (1) benefits start only after base is named; (2) the ask list and that it is one ask, not four rounds; (3) sponsorship or any term the posting did not state, which stays a recruiter question; (4) which trade to refuse, naming the base that must not be given up.",
   "script": "The exact words the candidate says. One short paragraph. Only the resume fact and the numbers already given.",

@@ -8,12 +8,12 @@ import { BeagleIcon, getScoreInfo } from '@/components/AnalysisDashboard';
 import {
   BODY,
   BODY_MUTED,
-  GuideSlideShell,
-  PageHeaderBar,
   SECTION_TITLE,
 } from '@/components/guide/GuideSlideChrome';
+import { REPORT_FRAME_BORDER } from '@/constants/report-frame';
 import { formatOfferRange, payEstimateScope } from '@/lib/offer-display';
 import { splitDecisionBrief } from '@/lib/decision-brief';
+import { guideItemSummaries, snapshotItemSummaries } from '@/lib/report-item-summaries';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
@@ -40,6 +40,8 @@ type ItemCopy = {
   negotiate: string;
   nav: Record<GuideItemId, string>;
   summary: string;
+  analysisSummary: string;
+  nextAction: string;
   conditions: string;
   duties: string;
   band: string;
@@ -112,6 +114,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
         negotiate: s ? '谈判建议' : '談判建議',
       },
       summary: s ? '职位概述' : '職位概述',
+      analysisSummary: s ? '总结分析' : '總結分析',
+      nextAction: s ? '下一步' : '下一步',
       conditions: s ? '关键条件' : '關鍵條件',
       duties: s ? '关键职责' : '關鍵職責',
       band: s ? '市场总薪酬区间' : '市場總薪酬區間',
@@ -203,6 +207,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
       negotiate: 'Negotiation',
     },
     summary: 'Job overview',
+    analysisSummary: 'Analysis summary',
+    nextAction: 'Next step',
     conditions: 'Must-haves',
     duties: 'Real duties',
     band: 'Market total compensation range',
@@ -377,19 +383,15 @@ function BriefRows({ items }: { items: string[] }) {
 
 function BriefColumn({
   title,
-  accent,
   children,
 }: {
   title: string;
-  accent: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className={`min-w-0 overflow-hidden rounded-xl border ${accent}`}>
-      <header className="border-b border-white/10 bg-black/20 px-4 py-3">
-        <h3 className="text-xl font-black text-white">{title}</h3>
-      </header>
-      <div className="px-4 py-3">{children}</div>
+    <section className="min-w-0">
+      <h3 className="mb-2 text-xl font-black text-white">{title}</h3>
+      {children}
     </section>
   );
 }
@@ -442,7 +444,6 @@ function ReviewColumn({
   cons,
   sourcesTitle,
   sources,
-  accent,
 }: {
   title: string;
   prosLabel: string;
@@ -451,10 +452,9 @@ function ReviewColumn({
   cons: string[];
   sourcesTitle: string;
   sources: GuideSource[];
-  accent: string;
 }) {
   return (
-    <section className={`rounded-xl border p-4 ${accent}`}>
+    <section className="min-w-0">
       <h3 className="mb-4 text-2xl font-black text-white">{title}</h3>
       <p className={`${SECTION_TITLE} mb-2 text-emerald-200`}>{prosLabel}</p>
       <PointList items={pros} dot="bg-emerald-300" />
@@ -490,26 +490,26 @@ function SourceList({ title, sources }: { title: string; sources: GuideSource[] 
 }
 
 function ItemBlock({
-  kicker,
   title,
-  deck,
+  summaryLabel,
+  summary,
   children,
 }: {
-  kicker: string;
   title: string;
-  deck: string;
+  summaryLabel: string;
+  summary: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-slate-700/90 px-5 py-4">
-      <div className="mb-3">
-        {kicker ? (
-          <p className="font-mono text-xs font-bold tracking-[0.18em] text-indigo-300">{kicker}</p>
-        ) : null}
-        <h2 className={`${kicker ? 'mt-1 ' : ''}text-2xl font-black text-white`}>{title}</h2>
-        {deck ? <p className="mt-1 text-base leading-snug text-slate-400">{deck}</p> : null}
-      </div>
-      {children}
+    <section className={`rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900/55 p-5`}>
+      <h2 className="text-2xl font-black text-white">{title}</h2>
+      {summary ? (
+        <div className="mt-4">
+          <p className={`${SECTION_TITLE} text-slate-100`}>{summaryLabel}</p>
+          <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{summary}</p>
+        </div>
+      ) : null}
+      <div className="mt-4">{children}</div>
     </section>
   );
 }
@@ -517,29 +517,14 @@ function ItemBlock({
 function CoreBody({ report, copy }: { report: LiteReport; copy: ItemCopy }) {
   const conditions = (report.role_read?.hiring_signals ?? []).slice(0, 5);
   const duties = (report.role_read?.responsibilities ?? []).slice(0, 5);
-  const summary = report.role_read?.mission?.trim() ?? '';
   return (
-    <div className="space-y-3">
-      {summary ? (
-        <section>
-          <p className={`${SECTION_TITLE} text-slate-100`}>{copy.summary}</p>
-          <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{summary}</p>
-        </section>
-      ) : null}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <BriefColumn
-        title={copy.conditions}
-        accent="border-sky-400/50 bg-indigo-500/10"
-      >
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <BriefColumn title={copy.conditions}>
         {conditions.length > 0 ? <BriefRows items={conditions} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
       </BriefColumn>
-      <BriefColumn
-        title={copy.duties}
-        accent="border-sky-400/50 bg-slate-900/40"
-      >
+      <BriefColumn title={copy.duties}>
         {duties.length > 0 ? <BriefRows items={duties} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
       </BriefColumn>
-    </div>
     </div>
   );
 }
@@ -570,8 +555,8 @@ function MarketBody({
     },
   ];
   return (
-    <div className="overflow-hidden rounded-xl border border-emerald-400/55 bg-emerald-500/10">
-      <ul className="space-y-4 px-5 py-4">
+    <div>
+      <ul className="space-y-4">
         {blocks.map((block) => (
           <li key={block.title}>
             <p className={`${SECTION_TITLE} text-emerald-200`}>{block.title}</p>
@@ -583,7 +568,7 @@ function MarketBody({
           </li>
         ))}
       </ul>
-      {locked ? <div className="px-5 pb-4"><LockLine>{copy.lockPay}</LockLine></div> : null}
+      {locked ? <LockLine>{copy.lockPay}</LockLine> : null}
     </div>
   );
 }
@@ -616,68 +601,64 @@ function FitBody({
     .filter(Boolean);
   const verdictLines = verdictPoints.length >= 2 ? verdictPoints : splitDecisionBrief(verdict);
   return (
-    <div className="space-y-3">
-      <div className="space-y-3">
-        <div className="rounded-xl border border-sky-400/50 bg-indigo-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-indigo-200 mb-3`}>{copy.score}</p>
-          <div className="flex items-center gap-4">
-            <BeagleIcon
-              className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
-              color={scoreInfo.fill}
-              spotColor={scoreInfo.spotColor}
-              glassesColor={scoreInfo.fill}
-            />
-            <div className="relative h-32 w-32 shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadialBarChart
-                  innerRadius="68%"
-                  outerRadius="100%"
-                  barSize={12}
-                  data={[{ name: 'Score', value: score, fill: scoreInfo.fill }]}
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-                  <RadialBar background dataKey="value" cornerRadius={30} />
-                </RadialBarChart>
-              </ResponsiveContainer>
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <span className={`text-4xl font-black tabular-nums ${scoreInfo.color}`}>{score}</span>
-              </div>
+    <div className="space-y-5">
+      <section>
+        <p className={`${SECTION_TITLE} text-indigo-200 mb-3`}>{copy.score}</p>
+        <div className="flex items-center gap-4">
+          <BeagleIcon
+            className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
+            color={scoreInfo.fill}
+            spotColor={scoreInfo.spotColor}
+            glassesColor={scoreInfo.fill}
+          />
+          <div className="relative h-32 w-32 shrink-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadialBarChart
+                innerRadius="68%"
+                outerRadius="100%"
+                barSize={12}
+                data={[{ name: 'Score', value: score, fill: scoreInfo.fill }]}
+                startAngle={90}
+                endAngle={-270}
+              >
+                <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+                <RadialBar background dataKey="value" cornerRadius={30} />
+              </RadialBarChart>
+            </ResponsiveContainer>
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <span className={`text-4xl font-black tabular-nums ${scoreInfo.color}`}>{score}</span>
             </div>
           </div>
-          <p className={`text-2xl font-black mt-3 ${scoreInfo.color}`}>{scoreInfo.level}</p>
-          <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
-          {verdictLines.length > 0 ? (
-            <ul className="mt-3 space-y-3">
-              {verdictLines.map((point) => (
-                <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
         </div>
-        <div className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-4">
-          <p className={`${SECTION_TITLE} text-violet-200 mb-3`}>
-            {(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}
+        <p className={`text-2xl font-black mt-3 ${scoreInfo.color}`}>{scoreInfo.level}</p>
+        <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
+        {verdictLines.length > 0 ? (
+          <ul className="mt-3 space-y-3">
+            {verdictLines.map((point) => (
+              <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
+      <section className="border-t border-white/10 pt-5">
+        <p className={`${SECTION_TITLE} text-violet-200 mb-3`}>
+          {(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}
+        </p>
+        {apply?.next_best_action ? (
+          <p className={`${BODY} text-slate-200 leading-snug`}>
+            <span className="font-semibold text-slate-100">{copy.nextAction}: </span>
+            {apply.next_best_action}
           </p>
-          {apply?.reason ? (
-            <ul className="space-y-3">
-              {splitDecisionBrief(apply.reason).map((point) => (
-                <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-violet-300/90" aria-hidden />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          <div className="mt-4 border-t border-white/10 pt-4">
-            <p className={`${SECTION_TITLE} text-slate-100`}>{copy.keywords}</p>
-            <p className={`${BODY} mb-3 mt-2 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
+        ) : null}
+      </section>
+      <section className="border-t border-white/10 pt-5">
+        <p className={`${SECTION_TITLE} text-slate-100`}>{copy.keywords}</p>
+        <p className={`${BODY} mb-3 mt-2 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
         {keywords.length > 0 ? (
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="mb-3 flex flex-wrap gap-2">
             {keywords.slice(0, 8).map((word) => (
               <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
                 {word}
@@ -722,9 +703,7 @@ function FitBody({
             ))}
           </ul>
         ) : null}
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
@@ -742,18 +721,19 @@ export function SnapshotItemStack({
 }) {
   const lang = normalizeReportLanguage(language);
   const copy = itemCopy(lang);
+  const summaries = snapshotItemSummaries(report);
   return (
-    <>
-      <ItemBlock kicker="" title={copy.core} deck={copy.deck.core}>
+    <div className="space-y-4 px-5 py-4">
+      <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
         <CoreBody report={report} copy={copy} />
       </ItemBlock>
-      <ItemBlock kicker="" title={copy.fit} deck={copy.deck.fit}>
+      <ItemBlock title={copy.fit} summaryLabel={copy.analysisSummary} summary={summaries.fit}>
         <FitBody report={report} copy={copy} language={lang} locked={locked} rewrites={rewrites} />
       </ItemBlock>
-      <ItemBlock kicker="" title={copy.market} deck={copy.deck.market}>
+      <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market}>
         <MarketBody report={report} copy={copy} language={lang} locked={locked} />
       </ItemBlock>
-    </>
+    </div>
   );
 }
 
@@ -884,34 +864,28 @@ export function GuideItemPage({
       [copy.bonus, salary?.bonus],
     ].filter((row): row is [string, string] => Boolean(row[1]));
     body = salary ? (
-      <div className="space-y-3">
-        <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <div className="rounded-lg border border-emerald-400/55 bg-emerald-500/10 p-4">
+      <div className="space-y-5">
+        <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <section>
             <p className={`${SECTION_TITLE} text-emerald-300 mb-3`}>{copy.target}</p>
             {mix.length > 0 ? (
               <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
             ) : (
               <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
             )}
-          </div>
-          <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 p-4">
+          </section>
+          <section>
             <p className={`${SECTION_TITLE} text-slate-200 mb-2`}>{copy.ceiling}</p>
             <p className="text-3xl font-black text-white">{salary.ceiling || '—'}</p>
-          </div>
-        </div>
-        {salary.rationale ? (
-          <section className="rounded-xl border border-sky-400/50 bg-indigo-500/10 p-4">
-            <p className={`${SECTION_TITLE} text-indigo-200 mb-2`}>{copy.judgment}</p>
-            <p className={`${BODY} text-slate-100 leading-relaxed`}>{salary.rationale}</p>
           </section>
-        ) : null}
+        </div>
         {salary.buyer_seller ? (
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+          <div className="grid grid-cols-1 gap-5 border-t border-white/10 pt-5 md:grid-cols-2">
+            <section>
               <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.companyStance}</p>
               <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{briefLines(salary.buyer_seller)[0]}</p>
             </section>
-            <section className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 p-4">
+            <section>
               <p className={`${SECTION_TITLE} text-emerald-200 mb-2`}>{copy.candidateStance}</p>
               <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>
                 {briefLines(salary.buyer_seller).slice(1).join('')}
@@ -930,7 +904,7 @@ export function GuideItemPage({
       : false;
     body = company ? (
       split ? (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <ReviewColumn
             title={copy.companyReview}
             prosLabel={copy.pros}
@@ -939,7 +913,6 @@ export function GuideItemPage({
             cons={company.company_cons}
             sourcesTitle={copy.sources}
             sources={company.sources}
-            accent="border-sky-400/50 bg-indigo-500/10"
           />
           <ReviewColumn
             title={copy.roleReviews}
@@ -949,28 +922,27 @@ export function GuideItemPage({
             cons={company.role_cons}
             sourcesTitle={copy.sources}
             sources={company.role_sources}
-            accent="border-emerald-400/40 bg-emerald-500/10"
           />
         </div>
       ) : (
-      <div className="space-y-3">
-        <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+      <div className="space-y-5">
+        <section>
           <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.culture}</p>
           <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.culture || '—'}</p>
         </section>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <section className="rounded-lg border border-red-400/40 bg-red-500/10 p-4">
+        <div className="grid grid-cols-1 gap-5 border-t border-white/10 pt-5 md:grid-cols-2">
+          <section>
             <p className={`${SECTION_TITLE} text-red-300 mb-2`}>{copy.layoff}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.layoff_risk || '—'}</p>
             {company.labor_risk ? <p className={`${BODY_MUTED} mt-2`}>{copy.labor}: {company.labor_risk}</p> : null}
           </section>
-          <section className="rounded-lg border border-amber-400/40 bg-amber-500/10 p-4">
+          <section>
             <p className={`${SECTION_TITLE} text-slate-200 mb-2`}>{copy.h1b}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.h1b || '—'}</p>
             <p className={`${BODY_MUTED} mt-2`}>{copy.remote}: {company.remote_sponsorship || '—'}</p>
           </section>
         </div>
-        <section className="rounded-lg border border-slate-700 bg-slate-900/40 p-4">
+        <section className="border-t border-white/10 pt-5">
           <p className={`${SECTION_TITLE} text-slate-300 mb-2`}>{copy.roleReviews}</p>
           <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.role_reviews || '—'}</p>
         </section>
@@ -993,8 +965,8 @@ export function GuideItemPage({
           <QuestionList items={bank.behavioral} copy={copy} />
           <ExtraList items={bank.behavioral_extra} title={copy.extra} />
         </section>
-        {bank.process ? (
-          <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+        {bank.process && bank.summary ? (
+          <section className="border-t border-white/10 pt-5">
             <p className={`${SECTION_TITLE} text-sky-300 mb-2`}>{copy.process}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{bank.process}</p>
           </section>
@@ -1008,9 +980,9 @@ export function GuideItemPage({
     const followUpWhen = followUpParts.length > 1 ? followUpParts[0] : '';
     const followUpLetter = followUpParts.length > 1 ? followUpParts.slice(1).join('\n\n') : (negotiation?.follow_up_email ?? '');
     body = negotiation && (negotiation.pay_strategy || negotiation.benefits_strategy || negotiation.script || negotiation.company_questions || negotiation.follow_up_email) ? (
-      <div className="space-y-3">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+      <div className="space-y-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <section>
           <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>{copy.pay}</p>
           <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
           {negotiation.script ? (
@@ -1020,19 +992,19 @@ export function GuideItemPage({
             </div>
           ) : null}
         </section>
-        <section className="rounded-lg border border-violet-400/40 bg-violet-500/10 p-4">
+        <section>
           <p className={`${SECTION_TITLE} text-violet-300 mb-3`}>{copy.benefits}</p>
           <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
         </section>
       </div>
       {negotiation.company_questions ? (
-        <section className="rounded-lg border border-sky-400/50 bg-slate-900/40 p-4">
+        <section className="border-t border-white/10 pt-5">
           <p className={`${SECTION_TITLE} mb-3 text-slate-100`}>{copy.askCompany}</p>
           <PointList items={briefLines(negotiation.company_questions)} dot="bg-sky-300" />
         </section>
       ) : null}
       {followUpLetter ? (
-        <section className="rounded-lg border border-sky-400/50 bg-slate-900/40 p-4">
+        <section className="border-t border-white/10 pt-5">
           <p className={`${SECTION_TITLE} mb-3 text-slate-100`}>{copy.followUp}</p>
           {followUpWhen ? <p className={`${BODY} mb-3 font-medium leading-relaxed text-slate-300`}>{followUpWhen}</p> : null}
           <p className={`${BODY} whitespace-pre-wrap font-medium leading-relaxed text-slate-100`}>{followUpLetter}</p>
@@ -1042,13 +1014,20 @@ export function GuideItemPage({
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
   }
 
+  const summaries = guideItemSummaries(report);
+  const snapshotSummaries = snapshotItemSummaries(report);
+  const summaryByItem: Record<GuideItemId, string> = {
+    core: snapshotSummaries.core,
+    market: snapshotSummaries.market,
+    fit: snapshotSummaries.fit,
+    land: summaries.land,
+    company: summaries.company,
+    questions: summaries.questions,
+    negotiate: summaries.negotiate,
+  };
   return (
-    <GuideSlideShell>
-      <PageHeaderBar pageOf="" title={title[item]} badge="" badgeTone="sky" />
-      <p className="border-b border-slate-700/90 px-5 py-3 text-lg leading-relaxed text-slate-300">
-        {copy.deck[item]}
-      </p>
-      <div className="px-5 py-4">{body}</div>
-    </GuideSlideShell>
+    <ItemBlock title={title[item]} summaryLabel={copy.analysisSummary} summary={summaryByItem[item]}>
+      {body}
+    </ItemBlock>
   );
 }

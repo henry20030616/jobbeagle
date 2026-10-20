@@ -24,6 +24,9 @@ export type SampleGuideNarrative = {
   blindTitle: string;
   warnTitle: string;
   process: string;
+  company_summary: string;
+  questions_summary: string;
+  negotiate_summary: string;
   pay_strategy: string;
   benefits_strategy: string;
   script: string;
@@ -110,6 +113,12 @@ const en: SampleGuideNarrative = {
   warnTitle: 'WARN sample',
   process:
     'Recruiter screen, hiring-manager case on a settlement break, then a panel. Sample shares put the loop at about three weeks.',
+  company_summary:
+    'Public reviews describe a written, remote-friendly ops culture with tight cutoffs. No WARN appears in the sample window; H-1B filings exist, but sponsorship for this seat is unconfirmed. Ask the recruiter about ops headcount and visa before treating either as settled.',
+  questions_summary:
+    'Sample shares describe a recruiter screen, a hiring-manager settlement-break case, then a panel, in about three weeks. Professional questions cluster on ACH returns, cutoff, and SQL checks; behavioral questions probe written status and cross-team misses.',
+  negotiate_summary:
+    'Open at $168K total with $145K base, using only the 28% reconciliation cycle-time proof. Stop at $185K; there is no Staff scope and no second offer. Do not invent a competing bid, and do not trade base for a benefit the employer did not offer.',
   pay_strategy:
     'Name the total first, not the base. The only fact this resume can spend is a 28% reconciliation cycle-time cut with SQL and Looker. ACH returns ownership is not on the resume, so do not price the offer as if that gap were closed.\nOpen at $168K total: $145K base, about $12K a year of equity, and an $11K bonus. That is the middle of the band, which is what this proof supports.\nIf the offer is the floor of the band, or base only, counter once and stop at $185K. There is no Staff scope and no second written offer, so nothing above $185K has a basis.\nDo not invent a competing offer. The leverage is the 28% already delivered, not another company.',
   benefits_strategy:
@@ -197,6 +206,12 @@ const zhTW: SampleGuideNarrative = {
   blindTitle: 'Blind 範例',
   warnTitle: 'WARN 範例',
   process: '招募篩選、用人主管的清算差異案例，然後是小組面試。範例分享把整段流程放在大約三週。',
+  company_summary:
+    '公開評價寫的是重視書面溝通、可遠端的營運文化，截止時間很緊。範例區間沒有 WARN；近三年有 H-1B 申請，但這個位子是否贊助尚未確認。入職前向招募確認人力變動與簽證。',
+  questions_summary:
+    '範例分享是招募篩選、用人主管的清算差異案例，再進小組面試，全程大約三週。專業題集中在 ACH 退票、截止與 SQL 核對；行為題看書面狀態與跨團隊失誤。',
+  negotiate_summary:
+    '總薪酬開在 $168K，底薪 $145K，依據只有履歷上的對帳週期縮短 28%。上限停在 $185K：沒有 Staff 範圍，也沒有第二份 offer。不要編競爭方案，也不要用底薪去換對方沒提出的福利。',
   pay_strategy:
     '先報總薪酬，不要先報底薪。這份履歷能拿來談的證據只有一項：用 SQL 與 Looker 把對帳週期縮短 28%。履歷沒有 ACH 退票擁有權，不能把這個缺口說成已經補上，拿來抬價。\n開價 $168K 總薪酬：底薪 $145K、股票約 $12K／年、獎金 $11K。這是市場帶的中段，對得上履歷能證明的範圍。\n對方若開在帶的底部，或只給底薪、不給股票與獎金，只還價一次，停在 $185K。沒有 Staff 級範圍，也沒有第二份書面 offer，再往上沒有依據。\n沒有書面競爭方案就不要編。籌碼是已經發生的 28%，不是另一家公司。',
   benefits_strategy:
@@ -284,6 +299,12 @@ const zhCN: SampleGuideNarrative = {
   blindTitle: 'Blind 示例',
   warnTitle: 'WARN 示例',
   process: '招聘筛选、用人主管的清算差异案例，然后是小组面试。示例分享把整段流程放在大约三周。',
+  company_summary:
+    '公开评价写的是重视书面沟通、可远程的运营文化，截止时间很紧。示例区间没有 WARN；近三年有 H-1B 申请，但这个位子是否赞助尚未确认。入职前向招聘确认人力变动与签证。',
+  questions_summary:
+    '示例分享是招聘筛选、用人主管的清算差异案例，再进小组面试，全程大约三周。专业题集中在 ACH 退票、截止与 SQL 核对；行为题看书面状态与跨团队失误。',
+  negotiate_summary:
+    '总薪酬开在 $168K，底薪 $145K，依据只有简历上的对账周期缩短 28%。上限停在 $185K：没有 Staff 范围，也没有第二份 offer。不要编竞争方案，也不要用底薪去换对方没提出的福利。',
   pay_strategy:
     '先报总薪酬，不要先报底薪。这份简历能拿来谈的证据只有一项：用 SQL 与 Looker 把对账周期缩短 28%。简历没有 ACH 退票所有权，不能把这个缺口说成已经补上，拿来抬价。\n开价 $168K 总薪酬：底薪 $145K、股票约 $12K／年、奖金 $11K。这是市场带的中段，对得上简历能证明的范围。\n对方若开在带的底部，或只给底薪、不给股票与奖金，只还价一次，停在 $185K。没有 Staff 级范围，也没有第二份书面 offer，再往上没有依据。\n没有书面竞争方案就不要编。筹码是已经发生的 28%，不是另一家公司。',
   benefits_strategy:
@@ -375,6 +396,12 @@ const es: SampleGuideNarrative = {
   warnTitle: 'Muestra de WARN',
   process:
     'Filtro del reclutador, caso del responsable de contratación sobre una diferencia de liquidación y después un panel. Las muestras sitúan el proceso en unas tres semanas.',
+  company_summary:
+    'Las reseñas públicas describen una cultura de operaciones escrita y remota, con plazos muy ajustados. No hay WARN en la ventana de muestra; hay presentaciones H-1B, pero el patrocinio de este puesto no está confirmado. Pregunta al reclutador por la plantilla de ops y el visado antes de darlo por sentado.',
+  questions_summary:
+    'Las muestras describen un filtro del reclutador, un caso de liquidación con el responsable y un panel, en unas tres semanas. Las preguntas profesionales se concentran en devoluciones ACH, el corte y SQL; las conductuales, en el estatus escrito y fallos entre equipos.',
+  negotiate_summary:
+    'Abre en $168K total con base $145K, usando solo la prueba del 28% en el ciclo de conciliación. Para en $185K: no hay alcance Staff ni una segunda oferta. No inventes una oferta competidora ni cambies la base por un beneficio que la empresa no ofreció.',
   pay_strategy:
     'Nombra primero el total, no la base. El único hecho que este CV puede usar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. La propiedad de devoluciones ACH no está en el CV, así que no pongas precio como si esa brecha ya estuviera cerrada.\nAbre en $168K de total: base $145K, unos $12K al año en acciones y un bono de $11K. Es el medio de la banda, que es lo que esta prueba sostiene.\nSi la oferta está en el suelo, o es solo base, contraoferta una vez y para en $185K. No hay alcance de nivel Staff ni una segunda oferta por escrito, así que por encima de $185K no hay base.\nNo inventes una oferta competidora. La palanca es el 28% ya entregado, no otra empresa.',
   benefits_strategy:
@@ -465,6 +492,12 @@ const hi: SampleGuideNarrative = {
   warnTitle: 'WARN नमूना',
   process:
     'भर्तीकर्ता की जाँच, सेटलमेंट अंतर पर नियुक्ति प्रबंधक का केस, फिर पैनल। नमूना साझाकरण पूरी प्रक्रिया को लगभग तीन सप्ताह मानते हैं।',
+  company_summary:
+    'सार्वजनिक समीक्षाएँ लिखित, दूरस्थ-अनुकूल ops संस्कृति और कड़े कटऑफ बताती हैं। नमूना अवधि में WARN नहीं; H-1B दाखिले हैं, पर इस सीट का प्रायोजन पुष्ट नहीं। ops हेडकाउंट और वीज़ा भर्तीकर्ता से पूछें।',
+  questions_summary:
+    'नमूने भर्तीकर्ता स्क्रीन, सेटलमेंट-ब्रेक केस, फिर पैनल बताते हैं—लगभग तीन सप्ताह। पेशेवर प्रश्न ACH रिटर्न, कटऑफ और SQL पर हैं; व्यवहारिक प्रश्न लिखित स्टेटस और क्रॉस-टीम चूक पर।',
+  negotiate_summary:
+    '$168K कुल, आधार $145K पर खोलें—केवल 28% मिलान चक्र प्रमाण के साथ। $185K पर रुकें; Staff दायरा या दूसरा ऑफ़र नहीं है। प्रतिस्पर्धी बोली न गढ़ें, और नियोक्ता ने न दी सुविधा के बदले आधार न दें।',
   pay_strategy:
     'पहले कुल बताएँ, आधार नहीं। यह रिज़्यूमे केवल एक तथ्य खर्च कर सकता है: SQL और Looker से मिलान चक्र में 28% की कमी। ACH रिटर्न की मालिकी रिज़्यूमे में नहीं है, इसलिए इस अंतर को भरा हुआ मानकर दाम न लगाएँ।\n$168K कुल पर खोलें: आधार $145K, प्रति वर्ष लगभग $12K इक्विटी, बोनस $11K। यह पट्टी का मध्य है, जितना यह प्रमाण संभालता है।\nअगर ऑफ़र पट्टी के निचले सिरे पर है, या केवल आधार है, तो एक बार प्रतिप्रस्ताव दें और $185K पर रुकें। Staff दायरा नहीं है और दूसरा लिखित ऑफ़र नहीं है, इसलिए $185K से ऊपर का आधार नहीं है।\nप्रतिस्पर्धी ऑफ़र गढ़ें नहीं। लाभ वह 28% है जो हो चुका है, कोई दूसरी कंपनी नहीं।',
   benefits_strategy:
@@ -555,6 +588,12 @@ const ar: SampleGuideNarrative = {
   warnTitle: 'عينة WARN',
   process:
     'فرز المسؤول، ثم حالة لدى مدير التوظيف عن فرق تسوية، ثم لجنة. تضع المشاركات في العينة الحلقة عند نحو ثلاثة أسابيع.',
+  company_summary:
+    'تصف المراجعات ثقافة عمليات مكتوبة ومرنة للعمل عن بُعد مع مواعيد قطع ضيقة. لا يوجد WARN في نافذة العينة؛ توجد إيداعات H-1B لكن رعاية هذا المقعد غير مؤكدة. اسأل المسؤول عن عدد موظفي العمليات والتأشيرة قبل الاعتماد عليهما.',
+  questions_summary:
+    'تصف المشاركات فرز المسؤول ثم حالة فرق تسوية ثم لجنة، في نحو ثلاثة أسابيع. تتركز الأسئلة المهنية على مرتجعات ACH والقطع وSQL؛ والسلوكية على التحديث المكتوب وإخفاقات الفرق.',
+  negotiate_summary:
+    'افتح عند إجمالي $168K وأساس $145K، مستنداً فقط إلى اختصار دورة المطابقة 28%. توقف عند $185K؛ لا نطاق Staff ولا عرض ثانٍ. لا تخترع عرضاً منافساً ولا تستبدل الأساس بميزة لم تُعرض.',
   pay_strategy:
     'سمِّ الإجمالي أولاً، لا الأساس. الحقيقة الوحيدة التي تستطيع هذه السيرة إنفاقها هي اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. ملكية مرتجعات ACH ليست في السيرة، فلا تسعّر العرض كأن هذه الفجوة قد سُدّت.\nافتح عند إجمالي $168K: أساس $145K، ونحو $12K سنوياً من الأسهم، ومكافأة $11K. هذا منتصف النطاق، وهو ما يثبته هذا الدليل.\nإذا كان العرض عند قاع النطاق، أو أساساً فقط، فقدّم عرضاً مضاداً مرة واحدة وتوقف عند $185K. لا يوجد نطاق بمستوى Staff ولا عرض ثانٍ مكتوب، لذلك لا سند لما فوق $185K.\nلا تخترع عرضاً منافساً. الورقة هي نسبة 28% التي تحققت، وليست شركة أخرى.',
   benefits_strategy:

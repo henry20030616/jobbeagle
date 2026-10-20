@@ -155,14 +155,16 @@ export async function runPaidGuideModules(input: PaidGuideInput): Promise<GuideM
 
   let retrievedQuestions: ReturnType<typeof parseGuideQuestions> = [];
   let process = '';
+  let questionSummary = '';
   if (retrievalRes.status === 'fulfilled' && retrievalRes.value && typeof retrievalRes.value === 'object') {
-    const row = retrievalRes.value as { questions?: unknown; process?: unknown };
+    const row = retrievalRes.value as { questions?: unknown; process?: unknown; summary?: unknown };
     retrievedQuestions = parseGuideQuestions(row.questions);
     process = typeof row.process === 'string' ? row.process : '';
+    questionSummary = typeof row.summary === 'string' ? row.summary : '';
   } else {
     limitations.push('Interview question retrieval failed.');
   }
-  modules.interview_bank = selectInterviewBank(retrievedQuestions, process);
+  modules.interview_bank = selectInterviewBank(retrievedQuestions, process, questionSummary);
 
   const answerTask = wrapUntrusted(
     'web_retrieval',

@@ -31,6 +31,18 @@ describe('sample reports', () => {
     expect(report.expected_offer.tc_breakdown?.total).toContain('$185K');
   });
 
+  it('gives each Snapshot and Guide sample section a summary paragraph', () => {
+    const snapshot = getSampleSnapshotReport('zh-TW');
+    expect(snapshot.role_read.mission.length).toBeGreaterThan(40);
+    expect(snapshot.apply_decision.reason.length).toBeGreaterThan(40);
+    expect(snapshot.expected_offer.target_gap.length).toBeGreaterThan(20);
+    const guide = getSampleStrategyGuideReport('zh-TW');
+    expect(guide.guide_modules?.salary_land.rationale.length).toBeGreaterThan(40);
+    expect(guide.guide_modules?.company_eval.summary?.length).toBeGreaterThan(20);
+    expect(guide.guide_modules?.interview_bank.summary?.length).toBeGreaterThan(20);
+    expect(guide.guide_modules?.negotiation.summary?.length).toBeGreaterThan(20);
+  });
+
   it('builds a valid Strategy Guide sample with STAR templates', () => {
     const report = getSampleStrategyGuideReport('en');
     expect(isFullReport(report)).toBe(true);
