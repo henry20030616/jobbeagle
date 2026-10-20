@@ -89,7 +89,6 @@ type ItemCopy = {
   empty: string;
   noBand: string;
   notOffer: string;
-  deck: Record<GuideItemId, string>;
   badge: Record<GuideItemId, string>;
 };
 
@@ -169,15 +168,6 @@ function itemCopy(language: AppLanguage): ItemCopy {
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
       notOffer: s ? '这不是这家公司的报价。' : '這不是這家公司的報價。',
-      deck: {
-        core: '',
-        market: s ? '依职位与地区给出的市场总薪酬区间。个人落点在面试指南。' : '依職缺與地區給出的市場總薪酬區間。個人落點在面試指南。',
-        fit: s ? '分数是适配灯号。下方是履历对不上的硬关键字。' : '分數是適配燈號。下方是履歷對不上的硬關鍵字。',
-        land: s ? '这一席你比较可能落到的总薪酬，以及底薪、股票、奖金。' : '這一席你比較可能落到的總薪酬，以及底薪、股票、獎金。',
-        company: s ? '公开来源里的文化、裁员、H-1B，以及这个职位的评价。' : '公開來源裡的文化、裁員、H-1B，以及這個職位的評價。',
-        questions: s ? '近三年专业题与行为题各 10 题。真题附来源。' : '近三年專業題與行為題各 10 題。真題附來源。',
-        negotiate: s ? '先谈总薪酬与底薪。底薪定了，再谈签约金、股票、远端与休假。' : '先談總薪酬與底薪。底薪定了，再談簽約金、股票、遠端與休假。',
-      },
       badge: {
         core: 'JD',
         market: 'BAND',
@@ -257,15 +247,6 @@ function itemCopy(language: AppLanguage): ItemCopy {
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
     notOffer: 'This is not the company’s offer.',
-    deck: {
-      core: '',
-      market: 'A wide market total-compensation range for this role and region. Your landing is in the Interview Guide.',
-      fit: 'The score is the fit signal. Below are the hard keywords the resume does not show.',
-      land: 'Where you are likely to land, split into base, equity, and bonus.',
-      company: 'Public culture, layoff, H-1B, and what people say about this role.',
-      questions: 'Ten professional and ten behavioral questions from the last three years, with sources.',
-      negotiate: 'Settle total and base first. Then sign-on, equity, remote, and PTO.',
-    },
     badge: {
       core: 'JD',
       market: 'BAND',
