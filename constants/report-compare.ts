@@ -115,14 +115,14 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
 > = {
   best_for: null,
   shared: {
-    en: 'Stars = depth (out of 5). Same building blocks — Interview Guide goes deeper and more actionable.',
-    'zh-TW': '星星＝深度（滿分 5）。積木相同——面試指南更深、更可照做。',
-    'zh-CN': '星星＝深度（满分 5）。积木相同——面试指南更深、更可照做。',
+    en: 'Stars = depth (out of 5). These three items are the Snapshot; the Guide includes them and goes deeper on fit.',
+    'zh-TW': '星星＝深度（滿分 5）。這三項就是適配快照；面試指南含這三項，履歷分析會再加深。',
+    'zh-CN': '星星＝深度（满分 5）。这三项就是适配快照；面试指南含这三项，简历分析会再加深。',
   },
   guide_only: {
-    en: 'Interview Guide only: H-1B and layoff intel, 20 sourced questions, your pay landing and TC split, plus a negotiation script.',
-    'zh-TW': '僅面試指南：H-1B 與裁員情報、20 題附來源、個人落點與 TC 拆解，以及談薪說法。',
-    'zh-CN': '仅面试指南：H-1B 与裁员情报、20 题附来源、个人落点与 TC 拆解，以及谈薪说法。',
+    en: 'Interview Guide only: pay landing, company and role intel, sourced interview questions, and negotiation.',
+    'zh-TW': '僅面試指南：個人化薪資落點、公司與職位評價、面試真題準備、面試談判建議。',
+    'zh-CN': '仅面试指南：个人化薪资落点、公司与职位评价、面试真题准备、面试谈判建议。',
   },
   meta: null,
 };
@@ -200,7 +200,6 @@ export const REPORT_COMPARE_COL: {
 };
 
 export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
-  // ── Top: Best for ──
   {
     section: 'best_for',
     feature: {
@@ -216,146 +215,110 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
     guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
   },
-  // ── A. Shared (stars = depth) — AI model first ──
   {
     section: 'shared',
     feature: {
-      en: 'AI model — what it means',
-      'zh-TW': 'AI 模型 — 代表什麼',
-      'zh-CN': 'AI 模型 — 代表什么',
+      en: 'Role core',
+      'zh-TW': '職位核心解析',
+      'zh-CN': '职位核心解析',
     },
     help: help(
-      'Which model class runs the report. Snapshot is a fast fit from JD + resume. Guide uses Pro with live web search.',
-      '報告用哪一級模型。Snapshot＝依 JD＋履歷快速判斷適配；Guide＝Pro，並做即時網搜。',
-      '报告用哪一级模型。Snapshot＝依 JD＋简历快速判断适配；Guide＝Pro，并做即时网搜。',
+      'Job overview plus the must-haves and real duties for this seat, read from the posting.',
+      '職位概述，以及這席的關鍵條件與關鍵職責，依職缺內文整理。',
+      '职位概述，以及这席的关键条件与关键职责，依职位正文整理。',
     ),
-    snapshot: t('Fast fit from JD + resume', '依 JD＋履歷快速適配', '依 JD＋简历快速适配', 3),
-    guide: t('Pro + live web search', 'Pro＋即時網搜', 'Pro＋即时网搜', 5),
-  },
-  {
-    section: 'shared',
-    feature: {
-      en: 'Fit score + apply decision',
-      'zh-TW': '匹配分數 + 投遞決策',
-      'zh-CN': '匹配分数 + 投递决策',
-    },
-    help: help(
-      'A candidate fit score for THIS JD, plus a clear apply call (Apply now / after fixes / clarify / skip) with a short why.',
-      '針對這份 JD 的匹配分數，加上清楚投遞決策（現在投／修好再投／先釐清／跳過）與簡短理由。',
-      '针对这份 JD 的匹配分数，加上清楚投递决策（现在投／修好再投／先澄清／跳过）与简短理由。',
-    ),
-    snapshot: t('Core fit + apply call', '核心匹配 + 投遞決策', '核心匹配 + 投递决策', 4),
-    guide: t('Full Snapshot + score implications', '完整 Snapshot + 分數意涵', '完整 Snapshot + 分数意涵', 5),
+    snapshot: t('Overview, must-haves, duties', '職位概述、條件、職責', '职位概述、条件、职责', 4),
+    guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
   },
   {
     section: 'shared',
     feature: {
-      en: 'Expected offer range + your land',
-      'zh-TW': '薪酬區間 + 個人落點',
-      'zh-CN': '薪酬区间 + 个人落点',
+      en: 'Fit score and resume',
+      'zh-TW': '匹配分數、履歷分析',
+      'zh-CN': '匹配分数、简历分析',
     },
     help: help(
-      'Snapshot shows a wide market band for the seat. Interview Guide adds where YOU are likely to land, the base / equity / bonus split, and the negotiation script.',
-      '適配快照給這席的寬薪酬帶。面試指南再加上你的落點、底薪／股票／獎金拆解，以及談薪說法。',
-      '适配快照给这席的宽薪酬带。面试指南再加上你的落点、底薪／股票／奖金拆解，以及谈薪说法。',
+      'Fit summary, score, apply advice on the left, and missing hard keywords on the right. Guide adds line-by-line resume rewrites for those gaps.',
+      '總結分析、匹配分數；左欄應徵建議、右欄欠缺的硬性關鍵字。面試指南再加上針對缺口的履歷改寫。',
+      '总结分析、匹配分数；左栏应征建议、右栏欠缺的硬性关键字。面试指南再加上针对缺口的简历改写。',
     ),
-    snapshot: t('Wide market band', '寬薪酬帶', '宽薪酬带', 3),
-    guide: t('Landing + TC split + script', '落點 + TC 拆解 + 談薪', '落点 + TC 拆解 + 谈薪', 5),
+    snapshot: t('Score, apply call, keywords', '分數、應徵建議、關鍵字', '分数、应征建议、关键字', 4),
+    guide: t('Snapshot + resume rewrites', '快照內容 + 履歷改寫', '快照内容 + 简历改写', 5),
   },
   {
     section: 'shared',
     feature: {
-      en: 'Interview prep / STAR',
-      'zh-TW': '面試準備 / STAR',
-      'zh-CN': '面试准备 / STAR',
+      en: 'Market pay',
+      'zh-TW': '市場薪資水準',
+      'zh-CN': '市场薪资水准',
     },
     help: help(
-      'Snapshot names missing hard keywords. Interview Guide adds 10 professional and 10 behavioral questions from the last three years, with source links and resume-grounded answers.',
-      '適配快照點出缺的硬關鍵字。面試指南再加上近三年專業題與行為題各 10 題，附來源連結與依履歷的答法。',
-      '适配快照点出缺的硬关键词。面试指南再加上近三年专业题与行为题各 10 题，附来源链接与依简历的答法。',
+      'A market total-compensation range for this title and location. Not this company’s offer. Your personal landing is a Guide-only item.',
+      '依職缺與地區的市場總薪酬區間。這不是這家公司的報價。個人化落點在面試指南專屬項目。',
+      '依职位与地区的市场总薪酬区间。这不是这家公司的报价。个人化落点在面试指南专属项目。',
     ),
-    snapshot: t('Missing keywords only', '只列缺的關鍵字', '只列缺的关键词', 2),
-    guide: t('20 questions with sources', '20 題附來源', '20 题附来源', 5),
-  },
-  // ── B. Guide only ──
-  {
-    section: 'guide_only',
-    feature: {
-      en: 'Live web search',
-      'zh-TW': '即時網搜',
-      'zh-CN': '即时网搜',
-    },
-    help: help(
-      'Guide pulls live public web data for THIS company and role — employee/Glassdoor-style reviews, reported interview questions, real salary posts, market/hiring signals, third-party industry reports, and professional HR/comp commentary — then cites URL + date when available.',
-      'Guide 能即時搜這間公司／這席的公開網路資料——含公司與職位評價、真實面試題、真實薪資貼文、市場／招募現況、第三方產業報告、專業人資／薪酬諮詢觀點——並盡量附網址＋日期。',
-      'Guide 能即时搜这家公司／这席的公开网络资料——含公司与职位评价、真实面试题、真实薪资贴文、市场／招募现况、第三方产业报告、专业人资／薪酬咨询观点——并尽量附网址＋日期。',
-    ),
-    snapshot: t('—', '—', '—'),
-    guide: t(
-      'Yes — reviews, interview Qs, salary, market, industry/HR reports',
-      '有 — 評價、面試題、薪資、市場、產業／人資報告',
-      '有 — 评价、面试题、薪资、市场、产业／人资报告',
-    ),
+    snapshot: t('Market total-comp range', '市場總薪酬區間', '市场总薪酬区间', 4),
+    guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
   },
   {
     section: 'guide_only',
     feature: {
-      en: 'Hiring context / company intel',
-      'zh-TW': '招募與公司情報',
-      'zh-CN': '招募与公司情报',
+      en: 'Personalized pay landing',
+      'zh-TW': '個人化薪資落點',
+      'zh-CN': '个人化薪资落点',
     },
     help: help(
-      'Why this seat may be open, culture and layoff or WARN signals, H-1B and remote or sponsorship notes, and what to validate with the recruiter.',
-      '這席為何可能開缺、文化與裁員或 WARN、H-1B 與遠端／贊助，以及該跟招募確認什麼。',
-      '这席为何可能开缺、文化与裁员或 WARN、H-1B 与远程／赞助，以及该跟招募确认什么。',
+      'Where you are likely to land, with a base / equity / bonus split, a ceiling, and company vs candidate stance. Uses live public pay pages when search finds them.',
+      '你比較可能落到的總薪酬，含底薪／股票／獎金、議價上限，以及公司與求職者立場。有公開薪酬頁時會附來源。',
+      '你比较可能落到的总薪酬，含底薪／股票／奖金、议价上限，以及公司与求职者立场。有公开薪酬页时会附来源。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Yes — culture, layoff, H-1B', '有 — 文化、裁員、H-1B', '有 — 文化、裁员、H-1B'),
+    guide: t('Landing, TC split, stances', '落點、TC 拆解、雙方立場', '落点、TC 拆解、双方立场'),
   },
   {
     section: 'guide_only',
     feature: {
-      en: 'Concerns & defenses',
-      'zh-TW': '疑慮與答辯',
-      'zh-CN': '疑虑与答辩',
+      en: 'Company and role reputation',
+      'zh-TW': '公司與職位評價',
+      'zh-CN': '公司与职位评价',
     },
     help: help(
-      'The top recruiter doubts about YOUR fit for THIS JD, plus how to answer without inventing experience.',
-      '招募對「你做這席」最可能的疑慮，以及怎麼答——不捏造經歷。',
-      '招募对「你做这席」最可能的疑虑，以及怎么答——不捏造经历。',
+      'Cited public intel on this employer and this seat: culture, layoff or WARN, visa sponsorship, and role reviews.',
+      '有來源的公開情報：雇主文化、裁員或 WARN、簽證贊助，以及這個職位的評價。',
+      '有来源的公开情报：雇主文化、裁员或 WARN、签证赞助，以及这个职位的评价。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Yes — 3 doubts + answers', '有 — 3 疑慮＋答辯', '有 — 3 疑虑＋答辩'),
+    guide: t('Culture, layoff, visa, reviews', '文化、裁員、簽證、職位評價', '文化、裁员、签证、职位评价'),
   },
   {
     section: 'guide_only',
     feature: {
-      en: 'Offer negotiation script',
-      'zh-TW': '談薪腳本',
-      'zh-CN': '谈薪脚本',
+      en: 'Interview questions',
+      'zh-TW': '面試真題準備',
+      'zh-CN': '面试真题准备',
     },
     help: help(
-      'Headhunter framing for pay (target, ceiling, base / equity / bonus) and a second pass for benefits such as sign-on, remote days, and sponsorship.',
-      '獵頭級薪資說法（目標、上限、底薪／股票／獎金），以及第二段福利說法（簽約金、遠端、贊助）。',
-      '猎头级薪资说法（目标、上限、底薪／股票／奖金），以及第二段福利说法（签约金、远程、赞助）。',
+      'Ten professional and ten behavioral questions from the last three years, with sources on reported items and answers mapped to your resume.',
+      '近三年專業題與行為題各 10 題。真題附來源，答法對照你的履歷。',
+      '近三年专业题与行为题各 10 题。真题附来源，答法对照你的简历。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Yes — pay script + benefits', '有 — 薪資說法 + 福利', '有 — 薪资说法 + 福利'),
+    guide: t('20 questions with sources', '20 題附來源與答法', '20 题附来源与答法'),
   },
   {
     section: 'guide_only',
     feature: {
-      en: 'Hire thesis (candidate case)',
-      'zh-TW': '錄取論點（Candidate Case）',
-      'zh-CN': '录取论点（Candidate Case）',
+      en: 'Negotiation',
+      'zh-TW': '面試談判建議',
+      'zh-CN': '面试谈判建议',
     },
     help: help(
-      'A short “why hire YOU for THIS seat” thesis in recruiter language — your proof points packaged as a hire case.',
-      '用招募聽得懂的話，寫出「為何該錄取你做這席」——把證據收成錄取論點。',
-      '用招募听得懂的话，写出「为何该录取你做这席」——把证据收成录取论点。',
+      'What to say on pay and benefits, questions to ask the company, and a post-interview note when one is needed.',
+      '薪資與福利怎麼開口、建議問公司的問題，以及需要時的面試後信件。',
+      '薪资与福利怎么开口、建议问公司的问题，以及需要时的面试后信件。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Yes — why hire you', '有 — 為何錄取你', '有 — 为何录取你'),
+    guide: t('Script, asks, follow-up note', '談薪說法、提問、面試後信', '谈薪说法、提问、面试后信'),
   },
   // ── C. Price ──
   {

@@ -24,15 +24,23 @@ describe('report-compare', () => {
     const sections = REPORT_COMPARE_ROWS.map((r) => r.section);
     expect(REPORT_COMPARE_ROWS[0]?.feature.en).toBe('Best for');
     expect(sections[0]).toBe('best_for');
-    const firstShared = REPORT_COMPARE_ROWS.find((r) => r.section === 'shared');
-    expect(firstShared?.feature.en).toMatch(/AI model/i);
-    const webSearch = REPORT_COMPARE_ROWS.find((r) => r.feature.en === 'Live web search');
-    expect(webSearch?.guide.text.en).toMatch(/reviews, interview Qs/i);
-    expect(webSearch?.help.en).toMatch(/live public web/i);
-    expect(webSearch?.help.en).not.toMatch(/closed-book|cannot see the live web/i);
-    expect(firstShared?.snapshot.text.en).not.toMatch(/no web/i);
-    expect(sections.filter((s) => s === 'shared').length).toBeGreaterThanOrEqual(3);
-    expect(sections.filter((s) => s === 'guide_only').length).toBeGreaterThanOrEqual(3);
+    const shared = REPORT_COMPARE_ROWS.filter((r) => r.section === 'shared');
+    expect(shared.map((r) => r.feature['zh-TW'])).toEqual([
+      '職位核心解析',
+      '匹配分數、履歷分析',
+      '市場薪資水準',
+    ]);
+    const guideOnly = REPORT_COMPARE_ROWS.filter((r) => r.section === 'guide_only');
+    expect(guideOnly.map((r) => r.feature['zh-TW'])).toEqual([
+      '個人化薪資落點',
+      '公司與職位評價',
+      '面試真題準備',
+      '面試談判建議',
+    ]);
+    expect(REPORT_COMPARE_ROWS.some((r) => r.feature.en === 'Live web search')).toBe(false);
+    expect(shared[0]?.snapshot.text.en).not.toMatch(/no web/i);
+    expect(sections.filter((s) => s === 'shared').length).toBe(3);
+    expect(sections.filter((s) => s === 'guide_only').length).toBe(4);
     expect(sections.filter((s) => s === 'meta').length).toBeGreaterThanOrEqual(1);
 
     const firstGuide = sections.indexOf('guide_only');
