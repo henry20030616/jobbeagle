@@ -483,7 +483,7 @@ function ItemBlock({
 }) {
   return (
     <section className={`rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900/55 p-5`}>
-      <h2 className="text-2xl font-black text-white">{title}</h2>
+      <h2 className="text-2xl font-black text-blue-400">{title}</h2>
       {summary ? (
         <div className="mt-4">
           <p className={`${SECTION_TITLE} text-slate-100`}>{summaryLabel}</p>
