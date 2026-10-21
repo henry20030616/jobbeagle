@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { GEMINI_FULL_MODEL, GEMINI_LITE_MODEL } from '@/constants/models';
 import {
+  applyInterviewAnswers,
   GUIDE_MODULE_ROUTES,
   parseGuideQuestions,
   selectInterviewBank,
 } from '@/lib/guide-modules';
+import type { GuideInterviewBank, GuideQuestion } from '@/types';
 import { isCitableSourceUrl } from '@/lib/provenance';
 
 describe('guide module routes', () => {
@@ -105,5 +107,61 @@ describe('selectInterviewBank', () => {
     ]);
     expect(questions[0]?.origin).toBe('predicted');
     expect(questions[0]?.source_url).toBeNull();
+  });
+});
+
+function q(question: string, answer = ''): GuideQuestion {
+  return {
+    question,
+    track: 'professional',
+    origin: 'predicted',
+    proximity: null,
+    source_url: null,
+    source_date: null,
+    answer,
+  };
+}
+
+function bankOf(questions: string[]): GuideInterviewBank {
+  return {
+    professional: questions.slice(0, 2).map((text) => q(text)),
+    behavioral: questions.slice(2, 4).map((text) => q(text)),
+    professional_extra: questions.slice(4).map((text) => q(text)),
+    behavioral_extra: [],
+    process: '',
+  };
+}
+
+describe('applyInterviewAnswers', () => {
+  it('fills unique answers onto matching questions including extras', () => {
+    const filled = applyInterviewAnswers(bankOf(['A', 'B', 'C', 'D', 'E']), {
+      answers: [
+        { question: 'A', answer: 'Queue ranking with the Looker board.' },
+        { question: 'B', answer: 'SQL match then Looker triage.' },
+        { question: 'C', answer: 'NACHA sit-with-owner plan.' },
+        { question: 'D', answer: 'Merchant impact from cycle time.' },
+        { question: 'E', answer: 'Handoff note for the next shift.' },
+      ],
+    });
+    expect(filled.professional[0]?.answer).toMatch(/Queue ranking/);
+    expect(filled.professional[1]?.answer).toMatch(/SQL match/);
+    expect(filled.professional_extra[0]?.answer).toMatch(/Handoff/);
+  });
+
+  it('drops a cloned majority so identical answers never stamp the bank', () => {
+    const clone =
+      'Use only the resume fact: a 28% reconciliation cycle-time cut with SQL and Looker.';
+    const filled = applyInterviewAnswers(bankOf(['A', 'B', 'C', 'D']), {
+      answers: [
+        { question: 'A', answer: clone },
+        { question: 'B', answer: clone },
+        { question: 'C', answer: clone },
+        { question: 'D', answer: 'Unique merchant-payroll answer.' },
+      ],
+    });
+    expect(filled.professional[0]?.answer).toBe('');
+    expect(filled.professional[1]?.answer).toBe('');
+    expect(filled.behavioral[0]?.answer).toBe('');
+    expect(filled.behavioral[1]?.answer).toMatch(/merchant-payroll/);
   });
 });

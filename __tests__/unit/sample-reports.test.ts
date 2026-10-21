@@ -123,12 +123,15 @@ describe('sample reports', () => {
     expect(bank.behavioral).toHaveLength(10);
     expect(bank.professional_extra.length).toBeGreaterThan(0);
     expect(bank.behavioral_extra.length).toBeGreaterThan(0);
-    for (const item of [
+    const items = [
       ...bank.professional,
       ...bank.behavioral,
       ...bank.professional_extra,
       ...bank.behavioral_extra,
-    ]) {
+    ];
+    const answers = items.map((item) => item.answer);
+    expect(new Set(answers).size).toBe(answers.length);
+    for (const item of items) {
       expect(item.origin).toBe('reported');
       expect(item.source_url).toMatch(/^https:\/\//);
       expect(item.source_url).not.toMatch(/example\.com/i);
@@ -172,6 +175,13 @@ describe('sample reports', () => {
     expect(zhGuide?.resume_rewrites[0]?.before).not.toMatch(/Supported payment/);
     expect(zhGuide?.interview_bank.professional[0]?.question).toMatch(/ACH return queue/);
     expect(zhGuide?.interview_bank.professional[0]?.answer).toMatch(/履歷/);
+    expect(zhGuide?.interview_bank.professional[0]?.answer).toMatch(/Looker|佇列|排序/);
+    expect(zhGuide?.interview_bank.professional[1]?.answer).not.toBe(
+      zhGuide?.interview_bank.professional[0]?.answer,
+    );
+    expect(zhGuide?.interview_bank.behavioral[0]?.answer).not.toBe(
+      zhGuide?.interview_bank.professional[0]?.answer,
+    );
     expect(getSampleSnapshotReport('zh-TW').ats_warning?.missing_keywords?.join(' ')).not.toMatch(
       /\breturns\b|\bsettlement\b/,
     );
@@ -185,6 +195,21 @@ describe('sample reports', () => {
     expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);
     expect('guide_modules' in getSampleSnapshotReport('en')).toBe(false);
   });
+
+  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+    'gives each sample interview question its own answer (%s)',
+    (lang) => {
+      const bank = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank;
+      const answers = [
+        ...bank.professional,
+        ...bank.behavioral,
+        ...bank.professional_extra,
+        ...bank.behavioral_extra,
+      ].map((item) => item.answer);
+      expect(answers.every((answer) => answer.length > 20)).toBe(true);
+      expect(new Set(answers).size).toBe(answers.length);
+    },
+  );
 
   it('localizes Snapshot body + keeps English chrome-free for zh-TW', () => {
     const report = getSampleSnapshotReport('zh-TW');

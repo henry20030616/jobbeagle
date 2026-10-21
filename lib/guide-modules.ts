@@ -328,6 +328,25 @@ export function applyInterviewAnswers(
     const answer = asString(row.answer);
     if (question && answer) byQuestion.set(question, answer.slice(0, 1200));
   }
+  const values = [...byQuestion.values()];
+  if (values.length >= 3) {
+    const counts = new Map<string, number>();
+    for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1);
+    const max = Math.max(...counts.values());
+    if (max / values.length >= 0.5) {
+      let clone = '';
+      for (const [text, n] of counts) {
+        if (n === max) {
+          clone = text;
+          break;
+        }
+      }
+      for (const [question, answer] of byQuestion) {
+        if (answer === clone) byQuestion.delete(question);
+      }
+      if (byQuestion.size === 0) return bank;
+    }
+  }
   const fill = (items: GuideQuestion[]) =>
     items.map((item) => ({
       ...item,
@@ -337,6 +356,8 @@ export function applyInterviewAnswers(
     ...bank,
     professional: fill(bank.professional),
     behavioral: fill(bank.behavioral),
+    professional_extra: fill(bank.professional_extra),
+    behavioral_extra: fill(bank.behavioral_extra),
   };
 }
 

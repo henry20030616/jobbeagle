@@ -7,6 +7,7 @@ import {
 import { deepMerge } from '@/lib/deep-merge';
 import { SAMPLE_REPORT_LOCALES } from '@/lib/sample-report-locales';
 import { SAMPLE_GUIDE_NARRATIVE } from '@/lib/sample-guide-locale';
+import { SAMPLE_GUIDE_ANSWERS } from '@/lib/sample-guide-answers';
 
 /** Public demo Snapshot — fictional candidate vs fictional US role. */
 const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
@@ -779,25 +780,26 @@ function sampleGuideQuestion(
   };
 }
 
-const SAMPLE_GUIDE_ANSWER: Record<AppLanguage, string> = {
-  en: 'Use only the resume fact: a 28% reconciliation cycle-time cut with SQL and Looker. Do not claim ACH returns ownership; the resume shows adjacent banking ops.',
-  'zh-TW': '只用履歷上能證明的事實：以 SQL 與 Looker 把對帳週期縮短 28%。不要宣稱擁有 ACH 退票；履歷只顯示相鄰的銀行營運經驗。',
-  'zh-CN': '只用简历上能证明的事实：以 SQL 与 Looker 把对账周期缩短 28%。不要宣称拥有 ACH 退票；简历只显示相邻的银行运营经验。',
-  es: 'Usa solo el hecho del CV: un recorte del 28% en el ciclo de conciliación con SQL y Looker. No afirmes propiedad de devoluciones ACH; el CV muestra operaciones bancarias adyacentes.',
-  hi: 'केवल रिज़्यूमे का तथ्य इस्तेमाल करें: SQL और Looker से मिलान चक्र 28% छोटा हुआ। ACH रिटर्न की मालिकी का दावा न करें; रिज़्यूमे में आसन्न बैंकिंग संचालन है।',
-  ar: 'استخدم فقط حقيقة السيرة: اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. لا تدّعِ ملكية مرتجعات ACH؛ السيرة تُظهر عمليات مصرفية مجاورة.',
-};
-
 function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
   const copy = SAMPLE_GUIDE_NARRATIVE[language];
-  const answer = SAMPLE_GUIDE_ANSWER[language];
+  const answers = SAMPLE_GUIDE_ANSWERS[language];
   // Sample sources are English web posts, so the question text stays English.
   const sourceQuestions = SAMPLE_GUIDE_NARRATIVE.en;
   const professional = sourceQuestions.professional.map((question, index) =>
-    sampleGuideQuestion(question, 'professional', index + 1, answer),
+    sampleGuideQuestion(
+      question,
+      'professional',
+      index + 1,
+      answers.professional[index] ?? '',
+    ),
   );
   const behavioral = sourceQuestions.behavioral.map((question, index) =>
-    sampleGuideQuestion(question, 'behavioral', index + 1, answer),
+    sampleGuideQuestion(
+      question,
+      'behavioral',
+      index + 1,
+      answers.behavioral[index] ?? '',
+    ),
   );
   return {
     resume_rewrites: copy.rewrites,
