@@ -24,7 +24,7 @@ Return JSON only:
   "base": "$150K or null",
   "equity": "RSU string or null",
   "bonus": "bonus string or null",
-  "rationale": "Three sentences a candidate can read: (1) why the target is this number, naming the place, title, level or years, and the resume fact that holds it there; (2) why the ceiling stops where it stops; (3) why base, equity, and bonus split this way. Do not invent a competing offer or a metric that is not in the resume.",
+  "rationale": "Exactly three lines, separated by newlines. Each line is 'Kind: fact' (or CJK ：). Line 1 Target/目標價: the dollar, place, title/level, and the resume fact that holds it there. Line 2 Ceiling/天花板: where it stops and why. Line 3 Mix/結構: base, equity, bonus, and which of those are not existing rights. Do not invent a competing offer or a metric that is not in the resume.",
   "buyer_seller": "Exactly two lines, separated by one newline, with no labels. Write like a retained-search partner: cold, specific, no conversational filler. Line 1 is the employer position at the table: whether the seat is still posted, any cited start deadline / hiring freeze / headcount signal, and what that implies for a first offer (mid-band vs ceiling). Line 2 is the candidate position: the quantified resume fact that supports the ask, and the JD requirement that is not evidenced and must not be claimed as completed scope. Ban casual phrasing such as 'they need someone and can keep waiting', '這個位子還沒補上', '也可以繼續等'. Do not say buyer, seller, leverage, or 籌碼. Use only searched facts and resume facts.",
   "sources": [ { "title": string, "url": "https://..." } ]
 }
@@ -35,7 +35,7 @@ export const COMPANY_MODULE_PROMPT = `You summarize public company and role repu
 Search Blind (site:teamblind.com), Glassdoor, Reddit, layoffs.fyi, WARN notices, and h1bdata.info.
 Return JSON only:
 {
-  "summary": "Two or three sentences a candidate can read: what public reviews say about this employer, the main cited risk (layoff, labor, or visa), and what they say about this seat. Unknown stays unknown.",
+  "summary": "Two or three newline-separated 'Kind: fact' lines (Culture/文化, Risk/風險, Seat/職位 or Confirm/待確認). One driver per line. Unknown stays unknown.",
   "culture": "one sentence on employer culture from cited pages",
   "labor_risk": "labor disputes or compliance issues, or empty",
   "layoff_risk": "recent layoffs or WARN, or empty",
@@ -57,7 +57,7 @@ export const QUESTION_RETRIEVAL_PROMPT = `You retrieve interview questions from 
 Search Glassdoor, Blind, Reddit, and Levels.fyi. Prefer: same company + same role, then same industry + same role, then other industries + same role.
 Return JSON only:
 {
-  "summary": "Two or three sentences: how this company interviews this role (rounds and timing) and what the cited questions cluster on. Empty if search found nothing.",
+  "summary": "Two or three newline-separated 'Kind: fact' lines (Process/流程, Professional/專業題, Behavioral/行為題). One driver per line. Empty if search found nothing.",
   "process": "rounds, interviewer roles, and typical timing from real shares, or empty",
   "questions": [
     {
@@ -85,7 +85,7 @@ export const NEGOTIATION_MODULE_PROMPT = `You write negotiation guidance for an 
 Use only the salary-land numbers already given (untrusted data) and resume facts already in the documents. Do not search the web. Do not invent a competing offer, a metric, or a new dollar figure.
 Return JSON:
 {
-  "summary": "Two or three sentences: the opening total, the resume fact that supports it, and what not to invent. Name the dollars.",
+  "summary": "Exactly three newline-separated 'Kind: fact' lines (Open/開價, Cap/上限, Ban/禁區). Name the dollars, the resume fact, and what not to invent.",
   "pay_strategy": "Four short sentences, separated by newlines: (1) which resume fact may be used as leverage and which gap must not be claimed as closed; (2) the opening total, with base, equity, and bonus, and why that point in the band; (3) the one counter, where it stops, and why it cannot go higher; (4) what not to invent when there is no written competing offer.",
   "benefits_strategy": "Four short sentences, separated by newlines: (1) benefits start only after base is named; (2) the ask list and that it is one ask, not four rounds; (3) sponsorship or any term the posting did not state, which stays a recruiter question; (4) which trade to refuse, naming the base that must not be given up.",
   "script": "The exact words the candidate says. One short paragraph. Only the resume fact and the numbers already given.",

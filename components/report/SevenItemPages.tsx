@@ -14,7 +14,7 @@ import { REPORT_FRAME_BORDER } from '@/constants/report-frame';
 import { formatOfferRange, payEstimateScope } from '@/lib/offer-display';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
-import { guideItemSummaries, snapshotItemSummaries } from '@/lib/report-item-summaries';
+import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
@@ -495,13 +495,20 @@ function ItemBlock({
   summary: string;
   children: React.ReactNode;
 }) {
+  const points = splitSummaryPoints(summary);
   return (
     <section className={`rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900/55 p-5`}>
       <h2 className="text-2xl font-black text-blue-400">{title}</h2>
-      {summary ? (
+      {points.length > 0 ? (
         <div className="mt-4">
           <p className={SUBHEAD}>{summaryLabel}</p>
-          <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{summary}</p>
+          {points.length > 1 ? (
+            <div className="mt-2">
+              <BriefRows items={points} />
+            </div>
+          ) : (
+            <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{points[0]}</p>
+          )}
         </div>
       ) : null}
       <div className="mt-4">{children}</div>

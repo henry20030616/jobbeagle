@@ -8,15 +8,23 @@ function joinSummaryParts(parts: Array<string | null | undefined>): string {
   return parts.map((part) => trimText(part)).filter(Boolean).join(' ');
 }
 
-/** First n sentences or newline-separated lines, for a section overview. */
-export function firstSummarySentences(text: string, count = 2): string {
-  const lined = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
-  if (lined.length >= count) return lined.slice(0, count).join(' ');
-  const sentences = text
+/** Split a section overview into scannable points. Newlines win; else sentences. */
+export function splitSummaryPoints(text: string): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  const lined = trimmed.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  if (lined.length > 1) return lined;
+  const sentences = trimmed
     .split(/(?<=[。！？.!?])(?:\s+|$)/)
     .map((line) => line.trim())
     .filter(Boolean);
-  return sentences.slice(0, count).join(' ');
+  if (sentences.length >= 3) return sentences;
+  return [trimmed];
+}
+
+/** First n sentences or newline-separated lines, for a section overview. */
+export function firstSummarySentences(text: string, count = 2): string {
+  return splitSummaryPoints(text).slice(0, count).join(' ');
 }
 
 export function snapshotItemSummaries(report: LiteReport): {

@@ -153,8 +153,11 @@ describe('sample reports', () => {
     expect(modules!.salary_land.rationale).toMatch(/\$185K/);
     expect(modules!.salary_land.rationale).toMatch(/28%/);
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
-      /目標價/,
+      /目標價：/,
     );
+    expect(
+      getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale.split('\n'),
+    ).toHaveLength(3);
     const stance = getSampleStrategyGuideReport('zh-TW').guide_modules!.salary_land.buyer_seller;
     expect(stance.split('\n')[0]).toMatch(/公開招募|補位/);
     expect(stance).not.toMatch(/還沒補上|也可以繼續等|需要人/);
