@@ -25,7 +25,7 @@ Return JSON only:
   "equity": "RSU string or null",
   "bonus": "bonus string or null",
   "rationale": "Three sentences a candidate can read: (1) why the target is this number, naming the place, title, level or years, and the resume fact that holds it there; (2) why the ceiling stops where it stops; (3) why base, equity, and bonus split this way. Do not invent a competing offer or a metric that is not in the resume.",
-  "buyer_seller": "Exactly two lines, separated by one newline, with no labels. Line 1 is the company position: what the employer can rely on, in plain words. Line 2 is the candidate position: the resume fact they can use, and what they must not claim. Do not add a third line. Do not say buyer, seller, leverage, or 籌碼. Use only searched facts and resume facts.",
+  "buyer_seller": "Exactly two lines, separated by one newline, with no labels. Write like a retained-search partner: cold, specific, no conversational filler. Line 1 is the employer position at the table: whether the seat is still posted, any cited start deadline / hiring freeze / headcount signal, and what that implies for a first offer (mid-band vs ceiling). Line 2 is the candidate position: the quantified resume fact that supports the ask, and the JD requirement that is not evidenced and must not be claimed as completed scope. Ban casual phrasing such as 'they need someone and can keep waiting', '這個位子還沒補上', '也可以繼續等'. Do not say buyer, seller, leverage, or 籌碼. Use only searched facts and resume facts.",
   "sources": [ { "title": string, "url": "https://..." } ]
 }
 ${NO_INVENTED_URLS}

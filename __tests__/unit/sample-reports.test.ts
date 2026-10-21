@@ -155,6 +155,11 @@ describe('sample reports', () => {
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
       /目標價/,
     );
+    const stance = getSampleStrategyGuideReport('zh-TW').guide_modules!.salary_land.buyer_seller;
+    expect(stance.split('\n')[0]).toMatch(/公開招募|補位/);
+    expect(stance).not.toMatch(/還沒補上|也可以繼續等|需要人/);
+    expect(modules!.salary_land.buyer_seller).not.toMatch(/keep waiting|need someone/i);
+    expect(modules!.salary_land.buyer_seller).toMatch(/28%/);
     const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
     expect(zhGuide?.resume_rewrites[0]?.category).toBe('履歷沒有寫出的擁有權');
     expect(zhGuide?.resume_rewrites[1]?.category).toBe(zhGuide?.resume_rewrites[0]?.category);
