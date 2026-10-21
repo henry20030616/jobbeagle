@@ -36,7 +36,7 @@ describe('sample reports', () => {
     expect(zh.role_read.hiring_signals).toEqual([
       '年資：5 年以上 Business Analyst 或產品營運。',
       '技能：SQL — 須能獨立使用。',
-      '系統：正式環境營運儀表板擁有權。',
+      '系統：正式環境營運儀表板（須能獨立負責）。',
       '領域：支付營運 — ACH 退票、清算，或同等支付軌道。',
     ]);
     expect(zh.role_read.responsibilities).toEqual([
@@ -164,7 +164,9 @@ describe('sample reports', () => {
     expect(modules!.salary_land.buyer_seller).not.toMatch(/keep waiting|need someone/i);
     expect(modules!.salary_land.buyer_seller).toMatch(/28%/);
     const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
-    expect(zhGuide?.resume_rewrites[0]?.category).toBe('履歷沒有寫出的擁有權');
+    expect(zhGuide?.resume_rewrites[0]?.category).toBe('履歷缺少的關鍵項目');
+    expect(zhGuide?.resume_rewrites[0]?.gap).toMatch(/ACH|清算|退票/);
+    expect(zhGuide?.resume_rewrites.map((item) => item.category).join()).not.toMatch(/擁有權/);
     expect(zhGuide?.resume_rewrites[1]?.category).toBe(zhGuide?.resume_rewrites[0]?.category);
     expect(zhGuide?.resume_rewrites[0]?.before).toMatch(/支援/);
     expect(zhGuide?.resume_rewrites[0]?.before).not.toMatch(/Supported payment/);

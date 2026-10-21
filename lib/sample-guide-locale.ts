@@ -64,18 +64,18 @@ const en: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'Ownership the resume does not name',
-      gap: 'ACH returns ownership is not named',
+      category: 'Missing hard requirements on the resume',
+      gap: 'Resume does not show ACH returns or settlement',
       before: 'Supported payment operations and reconciliation.',
       after:
-        'Cut reconciliation cycle time 28% with SQL and Looker on a banking-ops book. ACH returns ownership is not on this resume.',
+        'Cut reconciliation cycle time 28% with SQL and Looker on a banking-ops book. The resume does not show ACH returns or settlement; do not add them.',
     },
     {
-      category: 'Ownership the resume does not name',
-      gap: 'NACHA and processor ownership are unnamed',
+      category: 'Missing hard requirements on the resume',
+      gap: 'Resume does not show NACHA or a named processor',
       before: 'Worked with vendors on payment issues.',
       after:
-        'Partnered with engineering on late exception files. Do not add a processor or NACHA title that the resume does not show.',
+        'Partnered with engineering on late exception files. The resume does not show a processor or NACHA title; do not add one.',
     },
   ],
   rationale:
@@ -161,14 +161,14 @@ const zhTW: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: '履歷沒有寫出的擁有權',
-      gap: '履歷沒有寫出 ACH 退票擁有權',
+      category: '履歷缺少的關鍵項目',
+      gap: '履歷缺少 ACH 退票與清算經驗',
       before: '支援支付營運與對帳。',
-      after: '在銀行營運帳上，用 SQL 與 Looker 把對帳週期縮短 28%。這份履歷沒有 ACH 退票擁有權，改寫時不要補上。',
+      after: '在銀行營運帳上，用 SQL 與 Looker 把對帳週期縮短 28%。履歷沒有 ACH 退票或清算經驗，改寫時不要補上。',
     },
     {
-      category: '履歷沒有寫出的擁有權',
-      gap: '履歷沒有寫出 NACHA 與處理商擁有權',
+      category: '履歷缺少的關鍵項目',
+      gap: '履歷缺少 NACHA 與支付處理商經驗',
       before: '與供應商處理支付問題。',
       after: '與工程一起處理遲到的例外檔。履歷沒有處理商或 NACHA 職稱，不要自行加上。',
     },
@@ -254,14 +254,14 @@ const zhCN: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: '简历没有写出的所有权',
-      gap: '简历没有写出 ACH 退票所有权',
+      category: '简历缺少的关键项目',
+      gap: '简历缺少 ACH 退票与清算经验',
       before: '支持支付运营与对账。',
-      after: '在银行运营账上，用 SQL 与 Looker 把对账周期缩短 28%。这份简历没有 ACH 退票所有权，改写时不要补上。',
+      after: '在银行运营账上，用 SQL 与 Looker 把对账周期缩短 28%。简历没有 ACH 退票或清算经验，改写时不要补上。',
     },
     {
-      category: '简历没有写出的所有权',
-      gap: '简历没有写出 NACHA 与处理商所有权',
+      category: '简历缺少的关键项目',
+      gap: '简历缺少 NACHA 与支付处理商经验',
       before: '与供应商处理支付问题。',
       after: '与工程一起处理迟到的例外档。简历没有处理商或 NACHA 职称，不要自行加上。',
     },
@@ -347,15 +347,15 @@ const es: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'Propiedad que el CV no nombra',
-      gap: 'El CV no nombra la propiedad de las devoluciones ACH',
+      category: 'Requisitos clave que faltan en el CV',
+      gap: 'El CV no muestra devoluciones ACH ni liquidación',
       before: 'Apoyé operaciones de pago y conciliación.',
       after:
-        'En un libro de operaciones bancarias, reduje el ciclo de conciliación un 28% con SQL y Looker. Este CV no tiene propiedad de devoluciones ACH; no la añadas al reescribir.',
+        'En un libro de operaciones bancarias, reduje el ciclo de conciliación un 28% con SQL y Looker. El CV no muestra devoluciones ACH ni liquidación; no las añadas al reescribir.',
     },
     {
-      category: 'Propiedad que el CV no nombra',
-      gap: 'El CV no nombra la propiedad de NACHA ni del procesador',
+      category: 'Requisitos clave que faltan en el CV',
+      gap: 'El CV no muestra NACHA ni un procesador concreto',
       before: 'Trabajé con proveedores en incidencias de pago.',
       after:
         'Trabajé con ingeniería en archivos de excepción que llegaron tarde. El CV no muestra un cargo de procesador ni de NACHA; no lo añadas.',
@@ -444,15 +444,15 @@ const hi: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'रिज़्यूमे में नहीं लिखी मालिकी',
-      gap: 'रिज़्यूमे में ACH रिटर्न की मालिकी नहीं लिखी',
+      category: 'रिज़्यूमे में कमी वाले मुख्य आइटम',
+      gap: 'रिज़्यूमे में ACH रिटर्न या सेटलमेंट नहीं है',
       before: 'भुगतान संचालन और मिलान में सहयोग किया।',
       after:
-        'बैंकिंग संचालन की किताब पर SQL और Looker से मिलान चक्र 28% छोटा किया। इस रिज़्यूमे में ACH रिटर्न की मालिकी नहीं है; पुनर्लेखन में इसे जोड़ें नहीं।',
+        'बैंकिंग संचालन की किताब पर SQL और Looker से मिलान चक्र 28% छोटा किया। रिज़्यूमे में ACH रिटर्न या सेटलमेंट नहीं है; पुनर्लेखन में जोड़ें नहीं।',
     },
     {
-      category: 'रिज़्यूमे में नहीं लिखी मालिकी',
-      gap: 'रिज़्यूमे में NACHA और प्रोसेसर की मालिकी नहीं लिखी',
+      category: 'रिज़्यूमे में कमी वाले मुख्य आइटम',
+      gap: 'रिज़्यूमे में NACHA या नामित प्रोसेसर नहीं है',
       before: 'भुगतान समस्याओं पर विक्रेताओं के साथ काम किया।',
       after:
         'देर से आई अपवाद फ़ाइलों पर इंजीनियरिंग के साथ काम किया। रिज़्यूमे में प्रोसेसर या NACHA का पद नहीं है; इसे स्वयं न जोड़ें।',
@@ -540,15 +540,15 @@ const ar: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'ملكية لا تذكرها السيرة',
-      gap: 'السيرة لا تذكر ملكية مرتجعات ACH',
+      category: 'البنود الأساسية الناقصة في السيرة',
+      gap: 'السيرة لا تُظهر مرتجعات ACH أو التسوية',
       before: 'دعمت عمليات الدفع والمطابقة.',
       after:
-        'على دفتر عمليات مصرفية، اختصرت زمن المطابقة بنسبة 28% باستخدام SQL وLooker. هذه السيرة لا تتضمن ملكية مرتجعات ACH؛ لا تضفها عند إعادة الصياغة.',
+        'على دفتر عمليات مصرفية، اختصرت زمن المطابقة بنسبة 28% باستخدام SQL وLooker. السيرة لا تُظهر مرتجعات ACH أو التسوية؛ لا تضفها عند إعادة الصياغة.',
     },
     {
-      category: 'ملكية لا تذكرها السيرة',
-      gap: 'السيرة لا تذكر ملكية NACHA أو المعالج',
+      category: 'البنود الأساسية الناقصة في السيرة',
+      gap: 'السيرة لا تُظهر NACHA أو معالجاً مسمى',
       before: 'عملت مع الموردين على مشكلات الدفع.',
       after:
         'عملت مع الهندسة على ملفات استثناء وصلت متأخرة. السيرة لا تُظهر مسمى معالج أو NACHA؛ لا تضفه من عندك.',

@@ -181,7 +181,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     hiring_signals: [
       'Years: 5+ as Business Analyst or in product operations.',
       'Skill: SQL — must use independently.',
-      'System: production operations dashboard ownership.',
+      'System: production operations dashboard — must own it independently.',
       'Domain: payments operations — ACH returns, settlement, or an equivalent rail.',
     ],
   },

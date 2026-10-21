@@ -174,7 +174,7 @@ const ZH_TW: SampleLocalePack = {
       hiring_signals: [
         '年資：5 年以上 Business Analyst 或產品營運。',
         '技能：SQL — 須能獨立使用。',
-        '系統：正式環境營運儀表板擁有權。',
+        '系統：正式環境營運儀表板（須能獨立負責）。',
         '領域：支付營運 — ACH 退票、清算，或同等支付軌道。',
       ],
     },
@@ -869,7 +869,7 @@ const ZH_CN: SampleLocalePack = {
       hiring_signals: [
         '年资：5 年以上 Business Analyst 或产品运营。',
         '技能：SQL — 须能独立使用。',
-        '系统：正式环境运营仪表板所有权。',
+        '系统：正式环境运营仪表板（须能独立负责）。',
         '领域：支付运营 — ACH 退票、清算，或同等支付轨道。',
       ],
     },
@@ -1551,7 +1551,7 @@ const ES: SampleLocalePack = {
       hiring_signals: [
         'Años: 5+ como Business Analyst o en operaciones de producto.',
         'Habilidad: SQL — uso autónomo obligatorio.',
-        'Sistema: propiedad de un panel de operaciones en producción.',
+        'Sistema: panel de operaciones en producción — hay que gestionarlo de forma autónoma.',
         'Dominio: operaciones de pagos — devoluciones ACH, liquidación o un riel equivalente.',
       ],
     },
@@ -2319,7 +2319,7 @@ const AR: SampleLocalePack = {
       hiring_signals: [
         'سنوات: 5+ كمحلل أعمال أو في عمليات المنتج.',
         'مهارة: SQL — استخدام مستقل إلزامي.',
-        'نظام: ملكية لوحة عمليات في بيئة الإنتاج.',
+        'نظام: لوحة عمليات في بيئة الإنتاج — يجب إدارتها بشكل مستقل.',
         'مجال: عمليات المدفوعات — مرتجعات ACH أو التسوية أو مسار دفع معادل.',
       ],
     },
