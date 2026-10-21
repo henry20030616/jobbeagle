@@ -4,6 +4,8 @@ import React from 'react';
 
 /** Mirror LiteReportDashboard (Page 1) typography — do not diverge. */
 export const SECTION_TITLE = 'text-lg font-bold uppercase tracking-[0.14em]';
+/** In-item labels (職位概述, 關鍵條件, 應徵建議) — one size and color. */
+export const SUBHEAD = 'text-xl font-black text-white';
 export const BODY = 'text-lg';
 export const BODY_MUTED = 'text-lg text-slate-400';
 export const META = 'text-base';

@@ -8,7 +8,7 @@ import { BeagleIcon, getScoreInfo } from '@/components/AnalysisDashboard';
 import {
   BODY,
   BODY_MUTED,
-  SECTION_TITLE,
+  SUBHEAD,
 } from '@/components/guide/GuideSlideChrome';
 import { REPORT_FRAME_BORDER } from '@/constants/report-frame';
 import { formatOfferRange, payEstimateScope } from '@/lib/offer-display';
@@ -371,7 +371,7 @@ function BriefColumn({
 }) {
   return (
     <section className="min-w-0">
-      <h3 className="mb-2 text-xl font-black text-white">{title}</h3>
+      <h3 className={`mb-2 ${SUBHEAD}`}>{title}</h3>
       {children}
     </section>
   );
@@ -436,10 +436,10 @@ function ReviewColumn({
 }) {
   return (
     <section className="min-w-0">
-      <h3 className="mb-4 text-2xl font-black text-white">{title}</h3>
-      <p className={`${SECTION_TITLE} mb-2 text-emerald-200`}>{prosLabel}</p>
+      <h3 className={`mb-4 ${SUBHEAD}`}>{title}</h3>
+      <p className={`${SUBHEAD} mb-2`}>{prosLabel}</p>
       <PointList items={pros} dot="bg-emerald-300" />
-      <p className={`${SECTION_TITLE} mb-2 mt-4 text-slate-200`}>{consLabel}</p>
+      <p className={`${SUBHEAD} mb-2 mt-4`}>{consLabel}</p>
       <PointList items={cons} dot="bg-slate-300" />
       <SourceList title={sourcesTitle} sources={sources} />
     </section>
@@ -450,7 +450,7 @@ function SourceList({ title, sources }: { title: string; sources: GuideSource[] 
   if (sources.length === 0) return null;
   return (
     <div className="mt-3">
-      <p className={`${SECTION_TITLE} text-slate-400 mb-2`}>{title}</p>
+      <p className={`${SUBHEAD} mb-2`}>{title}</p>
       <ul className="space-y-1.5">
         {sources.map((source) => (
           <li key={source.url}>
@@ -486,7 +486,7 @@ function ItemBlock({
       <h2 className="text-2xl font-black text-blue-400">{title}</h2>
       {summary ? (
         <div className="mt-4">
-          <p className={`${SECTION_TITLE} text-slate-100`}>{summaryLabel}</p>
+          <p className={SUBHEAD}>{summaryLabel}</p>
           <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{summary}</p>
         </div>
       ) : null}
@@ -540,7 +540,7 @@ function MarketBody({
       <ul className="space-y-4">
         {blocks.map((block) => (
           <li key={block.title}>
-            <p className={`${SECTION_TITLE} text-emerald-200`}>{block.title}</p>
+            <p className={SUBHEAD}>{block.title}</p>
             {block.lines.map((line) => (
               <p key={line} className={`${BODY} mt-1 font-semibold text-white leading-snug`}>
                 {line}
@@ -584,7 +584,7 @@ function FitBody({
   return (
     <div className="space-y-5">
       <section>
-        <p className={`${SECTION_TITLE} text-indigo-200 mb-3`}>{copy.score}</p>
+        <p className={`${SUBHEAD} mb-3`}>{copy.score}</p>
         <div className="flex items-center gap-4">
           <BeagleIcon
             className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
@@ -755,7 +755,7 @@ function QuestionList({
             </div>
           </div>
           <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
-            <p className="text-xl font-black text-slate-100">{copy.answer}</p>
+            <p className={SUBHEAD}>{copy.answer}</p>
             <p className={`${BODY} mt-2 text-slate-100 leading-relaxed`}>{item.answer || '—'}</p>
           </div>
         </li>
@@ -847,7 +847,7 @@ export function GuideItemPage({
       <div className="space-y-5">
         <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <section>
-            <p className={`${SECTION_TITLE} text-emerald-300 mb-3`}>{copy.target}</p>
+            <p className={`${SUBHEAD} mb-3`}>{copy.target}</p>
             {mix.length > 0 ? (
               <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
             ) : (
@@ -855,18 +855,18 @@ export function GuideItemPage({
             )}
           </section>
           <section>
-            <p className={`${SECTION_TITLE} text-slate-200 mb-2`}>{copy.ceiling}</p>
+            <p className={`${SUBHEAD} mb-2`}>{copy.ceiling}</p>
             <p className="text-3xl font-black text-white">{salary.ceiling || '—'}</p>
           </section>
         </div>
         {salary.buyer_seller ? (
           <div className="grid grid-cols-1 gap-5 border-t border-white/10 pt-5 md:grid-cols-2">
             <section>
-              <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.companyStance}</p>
+              <p className={`${SUBHEAD} mb-2`}>{copy.companyStance}</p>
               <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{briefLines(salary.buyer_seller)[0]}</p>
             </section>
             <section>
-              <p className={`${SECTION_TITLE} text-emerald-200 mb-2`}>{copy.candidateStance}</p>
+              <p className={`${SUBHEAD} mb-2`}>{copy.candidateStance}</p>
               <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>
                 {briefLines(salary.buyer_seller).slice(1).join('')}
               </p>
@@ -907,23 +907,23 @@ export function GuideItemPage({
       ) : (
       <div className="space-y-5">
         <section>
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.culture}</p>
+          <p className={`${SUBHEAD} mb-2`}>{copy.culture}</p>
           <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.culture || '—'}</p>
         </section>
         <div className="grid grid-cols-1 gap-5 border-t border-white/10 pt-5 md:grid-cols-2">
           <section>
-            <p className={`${SECTION_TITLE} text-red-300 mb-2`}>{copy.layoff}</p>
+            <p className={`${SUBHEAD} mb-2`}>{copy.layoff}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.layoff_risk || '—'}</p>
             {company.labor_risk ? <p className={`${BODY_MUTED} mt-2`}>{copy.labor}: {company.labor_risk}</p> : null}
           </section>
           <section>
-            <p className={`${SECTION_TITLE} text-slate-200 mb-2`}>{copy.h1b}</p>
+            <p className={`${SUBHEAD} mb-2`}>{copy.h1b}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.h1b || '—'}</p>
             <p className={`${BODY_MUTED} mt-2`}>{copy.remote}: {company.remote_sponsorship || '—'}</p>
           </section>
         </div>
         <section className="border-t border-white/10 pt-5">
-          <p className={`${SECTION_TITLE} text-slate-300 mb-2`}>{copy.roleReviews}</p>
+          <p className={`${SUBHEAD} mb-2`}>{copy.roleReviews}</p>
           <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.role_reviews || '—'}</p>
         </section>
         <SourceList title={copy.sources} sources={company.sources} />
@@ -936,18 +936,18 @@ export function GuideItemPage({
     body = bank && (bank.professional.length > 0 || bank.behavioral.length > 0) ? (
       <div className="space-y-5">
         <section>
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{copy.professional}</p>
+          <p className={`${SUBHEAD} mb-2`}>{copy.professional}</p>
           <QuestionList items={bank.professional} copy={copy} />
           <ExtraList items={bank.professional_extra} title={copy.extra} />
         </section>
         <section>
-          <p className={`${SECTION_TITLE} text-violet-300 mb-2`}>{copy.behavioral}</p>
+          <p className={`${SUBHEAD} mb-2`}>{copy.behavioral}</p>
           <QuestionList items={bank.behavioral} copy={copy} />
           <ExtraList items={bank.behavioral_extra} title={copy.extra} />
         </section>
         {bank.process && bank.summary ? (
           <section className="border-t border-white/10 pt-5">
-            <p className={`${SECTION_TITLE} text-sky-300 mb-2`}>{copy.process}</p>
+            <p className={`${SUBHEAD} mb-2`}>{copy.process}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{bank.process}</p>
           </section>
         ) : null}
@@ -963,29 +963,29 @@ export function GuideItemPage({
       <div className="space-y-5">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <section>
-          <p className={`${SECTION_TITLE} text-indigo-300 mb-3`}>{copy.pay}</p>
+          <p className={`${SUBHEAD} mb-3`}>{copy.pay}</p>
           <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
           {negotiation.script ? (
             <div className="mt-4 border-t border-white/10 pt-3">
-              <p className={`${SECTION_TITLE} mb-2 text-slate-100`}>{copy.say}</p>
+              <p className={`${SUBHEAD} mb-2`}>{copy.say}</p>
               <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
             </div>
           ) : null}
         </section>
         <section>
-          <p className={`${SECTION_TITLE} text-violet-300 mb-3`}>{copy.benefits}</p>
+          <p className={`${SUBHEAD} mb-3`}>{copy.benefits}</p>
           <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
         </section>
       </div>
       {negotiation.company_questions ? (
         <section className="border-t border-white/10 pt-5">
-          <p className={`${SECTION_TITLE} mb-3 text-slate-100`}>{copy.askCompany}</p>
+          <p className={`${SUBHEAD} mb-3`}>{copy.askCompany}</p>
           <PointList items={briefLines(negotiation.company_questions)} dot="bg-sky-300" />
         </section>
       ) : null}
       {followUpLetter ? (
         <section className="border-t border-white/10 pt-5">
-          <p className={`${SECTION_TITLE} mb-3 text-slate-100`}>{copy.followUp}</p>
+          <p className={`${SUBHEAD} mb-3`}>{copy.followUp}</p>
           {followUpWhen ? <p className={`${BODY} mb-3 font-medium leading-relaxed text-slate-300`}>{followUpWhen}</p> : null}
           <p className={`${BODY} whitespace-pre-wrap font-medium leading-relaxed text-slate-100`}>{followUpLetter}</p>
         </section>
