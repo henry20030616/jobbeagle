@@ -116,7 +116,7 @@ function QuestionList({
                     </a>
                   ) : null}
                 </div>
-                <p className={`${BODY} font-semibold text-slate-100`}>{item.question}</p>
+                <p className="text-2xl font-bold leading-snug text-slate-100">{item.question}</p>
               </div>
             </div>
           </div>
@@ -276,9 +276,9 @@ export default function GuideSpecModules({
               <summary className={`${BODY} font-semibold text-slate-200 cursor-pointer`}>{t.extra}</summary>
               <ul className="mt-3 space-y-1.5">
                 {bank.professional_extra.map((item) => (
-                  <li key={item.question} className={`${BODY} text-slate-300`}>
+                  <li key={item.question} className="text-xl font-semibold leading-snug text-slate-200">
                     {item.question}
-                    {item.source_url ? (
+                    {isCitableSourceUrl(item.source_url) ? (
                       <>
                         {' '}
                         <a href={item.source_url} target="_blank" rel="noopener noreferrer" className="text-sky-300 hover:text-sky-200">
@@ -305,9 +305,9 @@ export default function GuideSpecModules({
               <summary className={`${BODY} font-semibold text-slate-200 cursor-pointer`}>{t.extra}</summary>
               <ul className="mt-3 space-y-1.5">
                 {bank.behavioral_extra.map((item) => (
-                  <li key={item.question} className={`${BODY} text-slate-300`}>
+                  <li key={item.question} className="text-xl font-semibold leading-snug text-slate-200">
                     {item.question}
-                    {item.source_url ? (
+                    {isCitableSourceUrl(item.source_url) ? (
                       <>
                         {' '}
                         <a href={item.source_url} target="_blank" rel="noopener noreferrer" className="text-sky-300 hover:text-sky-200">

@@ -777,7 +777,7 @@ function QuestionList({
                     </a>
                   ) : null}
                 </div>
-                <p className={`${BODY} font-semibold text-slate-100`}>{item.question}</p>
+                <p className="text-2xl font-bold leading-snug text-slate-100">{item.question}</p>
               </div>
             </div>
           </div>
@@ -798,7 +798,7 @@ function ExtraList({ items, title }: { items: GuideQuestion[]; title: string }) 
       <summary className={`${BODY} font-semibold text-slate-200 cursor-pointer`}>{title}</summary>
       <ul className="mt-3 space-y-1.5">
         {items.map((item) => (
-          <li key={item.question} className={`${BODY} text-slate-300`}>
+          <li key={item.question} className="text-xl font-semibold leading-snug text-slate-200">
             {item.question}
             {isCitableSourceUrl(item.source_url) ? (
               <>
