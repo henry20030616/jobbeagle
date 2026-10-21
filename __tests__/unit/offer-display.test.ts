@@ -4,6 +4,7 @@ import {
   formatOfferRange,
   formatPredictedOffer,
   hasOfferRange,
+  marketBandDisclaimer,
   offerEvaluationSummary,
   payEstimateScope,
   payEstimateSentence,
@@ -15,7 +16,7 @@ describe('evidenceTierLabel', () => {
   it('maps tiers to plain English', () => {
     expect(evidenceTierLabel('A')).toMatch(/job posting/i);
     expect(evidenceTierLabel('B')).toMatch(/comparable/i);
-    expect(evidenceTierLabel('C')).toMatch(/Market estimate/i);
+    expect(evidenceTierLabel('C')).toMatch(/Market salary level/i);
     expect(evidenceTierLabel('D')).toMatch(/too thin/i);
   });
 });
@@ -196,5 +197,24 @@ describe('payEstimateScope', () => {
     expect(sentence).toContain('職位：Senior Business Analyst');
     expect(sentence).toContain('5+ 年');
     expect(sentence).not.toMatch(/此職級/);
+    const disclaimer = marketBandDisclaimer(
+      {
+        posted_range: null,
+        p25: '$145K',
+        p50: '$165K',
+        p75: '$190K',
+        currency: 'USD',
+        region: '美國 · 友善遠端',
+        target_gap: '',
+        evidence_tier: 'C',
+        sources: ['Market benchmark for Senior BA / fintech ops (US)'],
+      },
+      scope,
+      'zh-TW',
+    );
+    expect(disclaimer.nature).toBe('非公司數據，為市場薪資水準。');
+    expect(disclaimer.method).toMatch(/職稱（Senior Business Analyst）/);
+    expect(disclaimer.method).toMatch(/未刊登公司薪資/);
+    expect(disclaimer.method).toMatch(/對照依據: Market benchmark/);
   });
 });

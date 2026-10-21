@@ -11,7 +11,7 @@ import {
   SUBHEAD,
 } from '@/components/guide/GuideSlideChrome';
 import { REPORT_FRAME_BORDER } from '@/constants/report-frame';
-import { formatOfferRange, payEstimateScope } from '@/lib/offer-display';
+import { formatOfferRange, marketBandDisclaimer, payEstimateScope } from '@/lib/offer-display';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
@@ -89,7 +89,6 @@ type ItemCopy = {
   sources: string;
   empty: string;
   noBand: string;
-  notOffer: string;
   badge: Record<GuideItemId, string>;
 };
 
@@ -168,7 +167,6 @@ function itemCopy(language: AppLanguage): ItemCopy {
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
-      notOffer: s ? '这不是这家公司的报价。' : '這不是這家公司的報價。',
       badge: {
         core: 'JD',
         market: 'BAND',
@@ -247,7 +245,6 @@ function itemCopy(language: AppLanguage): ItemCopy {
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
-    notOffer: 'This is not the company’s offer.',
     badge: {
       core: 'JD',
       market: 'BAND',
@@ -547,13 +544,15 @@ function MarketBody({
   const scope = payEstimateScope(report, language);
   const levelLines = scope.level.split(' — ').map((part) => part.trim()).filter(Boolean);
   const money = offer?.currency || 'USD';
-  const blocks: Array<{ title: string; lines: string[] }> = [
+  const disclaimer = marketBandDisclaimer(offer, scope, language);
+  const blocks: Array<{ title: string; lines: string[]; notes?: string[] }> = [
     { title: copy.where, lines: [scope.where] },
     { title: copy.role, lines: [scope.role] },
     { title: copy.level, lines: levelLines.length > 0 ? levelLines : [scope.level] },
     {
       title: copy.band,
-      lines: range ? [`${range} (${money})`, copy.notOffer] : [copy.noBand],
+      lines: range ? [`${range} (${money})`] : [copy.noBand],
+      notes: range ? [disclaimer.nature, disclaimer.method] : undefined,
     },
   ];
   return (
@@ -565,6 +564,11 @@ function MarketBody({
             {block.lines.map((line) => (
               <p key={line} className={`${BODY} mt-1 font-semibold text-white leading-snug`}>
                 {line}
+              </p>
+            ))}
+            {block.notes?.map((note) => (
+              <p key={note} className={`${BODY} mt-1 font-medium leading-relaxed text-slate-200`}>
+                {note}
               </p>
             ))}
           </li>

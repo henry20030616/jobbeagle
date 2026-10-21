@@ -253,9 +253,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '市场薪资水准',
     },
     help: help(
-      'A market total-compensation range for this title and location. Not this company’s offer. Your personal landing is a Guide-only item.',
-      '依職缺與地區的市場總薪酬區間。這不是這家公司的報價。個人化落點在面試指南專屬項目。',
-      '依职位与地区的市场总薪酬区间。这不是这家公司的报价。个人化落点在面试指南专属项目。',
+      'A market total-compensation range from the posting’s title, location, and level — not company pay data. Your personal landing is a Guide-only item.',
+      '依職缺的職稱、地點與職級估計的市場總薪酬區間。非公司數據，為市場薪資水準。個人化落點在面試指南專屬項目。',
+      '依职位的职称、地点与职级估计的市场总薪酬区间。非公司数据，为市场薪资水准。个人化落点在面试指南专属项目。',
     ),
     snapshot: t('Market total-comp range', '市場總薪酬區間', '市场总薪酬区间', 4),
     guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),

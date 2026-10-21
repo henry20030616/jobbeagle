@@ -74,21 +74,95 @@ export function payEstimateScope(
   return { where, role, level };
 }
 
+export function marketBandDisclaimer(
+  offer: ExpectedOfferRange | null | undefined,
+  scope: PayEstimateScope,
+  language: AppLanguage | string = 'en',
+): { nature: string; method: string } {
+  const lang = normalizeReportLanguage(language);
+  const tier = offer?.evidence_tier === 'A' || offer?.evidence_tier === 'B'
+    || offer?.evidence_tier === 'C' || offer?.evidence_tier === 'D'
+    ? offer.evidence_tier
+    : 'C';
+  const source = (offer?.sources ?? []).map((item) => item.trim()).filter(Boolean)[0] ?? '';
+  const nature: Record<AppLanguage, string> = {
+    en: 'This is not company pay data. It is a market salary level.',
+    'zh-TW': '非公司數據，為市場薪資水準。',
+    'zh-CN': '非公司数据，为市场薪资水准。',
+    es: 'No son datos salariales de la empresa. Es un nivel salarial de mercado.',
+    hi: 'यह कंपनी का वेतन डेटा नहीं है। यह बाज़ार वेतन स्तर है।',
+    ar: 'هذه ليست بيانات أجر الشركة. هذا مستوى أجور السوق.',
+  };
+  const method: Record<AppLanguage, Record<'A' | 'B' | 'C' | 'D', string>> = {
+    en: {
+      A: `The figure comes from the salary field on this posting. Role: ${scope.role}. Location: ${scope.where}.`,
+      B: `The posting does not give this employer’s internal pay. The figure comes from public compensation for similar title, location, and level. Role: ${scope.role}. Location: ${scope.where}. Level or years: ${scope.level}.`,
+      C: `The posting does not list an employer range. The band is estimated from the posting’s title (${scope.role}), location (${scope.where}), and level or years (${scope.level}), against the market total-comp level for comparable seats.`,
+      D: 'The posting does not give enough title, location, or level signal for a reliable market band.',
+    },
+    'zh-TW': {
+      A: `數字取自這則職缺刊登的薪資欄。職位：${scope.role}。地點：${scope.where}。`,
+      B: `職缺沒有這家公司的內部薪資。數字取自職稱、地點與職級相近的公開薪酬資料。職位：${scope.role}。地點：${scope.where}。職級或年資：${scope.level}。`,
+      C: `職缺未刊登公司薪資。依職稱（${scope.role}）、地點（${scope.where}）與職級或年資（${scope.level}），對照同類職位的市場總薪酬帶估計。`,
+      D: '職缺的職稱、地點或職級訊號不足，無法形成可靠的市場區間。',
+    },
+    'zh-CN': {
+      A: `数字取自这则职位刊登的薪酬栏。职位：${scope.role}。地点：${scope.where}。`,
+      B: `职位没有这家公司的内部薪酬。数字取自职称、地点与职级相近的公开薪酬资料。职位：${scope.role}。地点：${scope.where}。职级或年资：${scope.level}。`,
+      C: `职位未刊登公司薪酬。依职称（${scope.role}）、地点（${scope.where}）与职级或年资（${scope.level}），对照同类职位的市场总薪酬带估计。`,
+      D: '职位的职称、地点或职级信号不足，无法形成可靠的市场区间。',
+    },
+    es: {
+      A: `La cifra sale del campo salarial de este anuncio. Puesto: ${scope.role}. Lugar: ${scope.where}.`,
+      B: `El anuncio no da la retribución interna de esta empresa. La cifra sale de compensación pública de título, lugar y nivel similares. Puesto: ${scope.role}. Lugar: ${scope.where}. Nivel o años: ${scope.level}.`,
+      C: `El anuncio no publica una banda de la empresa. La banda se estima con el título (${scope.role}), el lugar (${scope.where}) y el nivel o años (${scope.level}), frente al total de mercado de puestos comparables.`,
+      D: 'El anuncio no da título, lugar o nivel suficientes para una banda de mercado fiable.',
+    },
+    hi: {
+      A: `आंकड़ा इस पोस्टिंग के वेतन फ़ील्ड से है। पद: ${scope.role}। जगह: ${scope.where}।`,
+      B: `पोस्टिंग इस नियोक्ता का आंतरिक वेतन नहीं देती। आंकड़ा समान पद, जगह और स्तर के सार्वजनिक मुआवज़े से है। पद: ${scope.role}। जगह: ${scope.where}। स्तर या वर्ष: ${scope.level}।`,
+      C: `पोस्टिंग में नियोक्ता रेंज नहीं है। पट्टी पद (${scope.role}), जगह (${scope.where}) और स्तर या वर्षों (${scope.level}) से, तुलनीय सीटों के बाज़ार कुल मुआवज़े के सापेक्ष अनुमानित है।`,
+      D: 'विश्वसनीय बाज़ार पट्टी के लिए पद, जगह या स्तर का संकेत पर्याप्त नहीं।',
+    },
+    ar: {
+      A: `الرقم من حقل الأجر في هذا الإعلان. المسمى: ${scope.role}. المكان: ${scope.where}.`,
+      B: `الإعلان لا يعطي أجر هذه الشركة الداخلي. الرقم من تعويض علني لمسمى ومكان ومستوى مشابه. المسمى: ${scope.role}. المكان: ${scope.where}. المستوى أو السنوات: ${scope.level}.`,
+      C: `الإعلان لا ينشر نطاقاً لصاحب العمل. يُقدَّر النطاق من المسمى (${scope.role}) والمكان (${scope.where}) والمستوى أو السنوات (${scope.level}) مقابل إجمالي السوق لمقاعد مماثلة.`,
+      D: 'الإعلان لا يعطي إشارة كافية للمسمى أو المكان أو المستوى لنطاق سوق موثوق.',
+    },
+  };
+  const sourceLead: Record<AppLanguage, string> = {
+    en: 'Benchmark basis',
+    'zh-TW': '對照依據',
+    'zh-CN': '对照依据',
+    es: 'Base de comparación',
+    hi: 'तुलना आधार',
+    ar: 'أساس المقارنة',
+  };
+  const methodLine = method[lang][tier];
+  const withSource = source && (tier === 'B' || tier === 'C')
+    ? `${methodLine} ${sourceLead[lang]}: ${source}.`
+    : methodLine;
+  return { nature: nature[lang], method: withSource };
+}
+
 export function payEstimateSentence(
   scope: PayEstimateScope,
   range: string,
   currency: string,
   language: AppLanguage | string = 'en',
+  offer?: ExpectedOfferRange | null,
 ): string {
   const lang = normalizeReportLanguage(language);
   const money = currency.trim() || 'USD';
+  const disclaimer = marketBandDisclaimer(offer, scope, language);
   const copy: Record<AppLanguage, string> = {
-    en: `Where: ${scope.where}. Role: ${scope.role}. Level or years: ${scope.level}. The market total for that scope is about ${range} (${money}). This is not the company’s offer.`,
-    'zh-TW': `地點：${scope.where}。職位：${scope.role}。職級或年資：${scope.level}。這個範圍的市場總薪酬大約是 ${range}（${money}）。這不是這家公司的報價。`,
-    'zh-CN': `地点：${scope.where}。职位：${scope.role}。职级或年资：${scope.level}。这个范围的市场总薪酬大约是 ${range}（${money}）。这不是这家公司的报价。`,
-    es: `Lugar: ${scope.where}. Puesto: ${scope.role}. Nivel o años: ${scope.level}. El total de mercado para ese alcance ronda ${range} (${money}). No es la oferta de la empresa.`,
-    hi: `जगह: ${scope.where}. पद: ${scope.role}. स्तर या वर्ष: ${scope.level}. इस दायरे का बाज़ार कुल लगभग ${range} (${money}) है। यह कंपनी का ऑफ़र नहीं है।`,
-    ar: `المكان: ${scope.where}. المسمى: ${scope.role}. المستوى أو السنوات: ${scope.level}. إجمالي السوق لهذا النطاق حوالي ${range} (${money}). هذا ليس عرض الشركة.`,
+    en: `Where: ${scope.where}. Role: ${scope.role}. Level or years: ${scope.level}. The market total for that scope is about ${range} (${money}). ${disclaimer.nature} ${disclaimer.method}`,
+    'zh-TW': `地點：${scope.where}。職位：${scope.role}。職級或年資：${scope.level}。這個範圍的市場總薪酬大約是 ${range}（${money}）。${disclaimer.nature}${disclaimer.method}`,
+    'zh-CN': `地点：${scope.where}。职位：${scope.role}。职级或年资：${scope.level}。这个范围的市场总薪酬大约是 ${range}（${money}）。${disclaimer.nature}${disclaimer.method}`,
+    es: `Lugar: ${scope.where}. Puesto: ${scope.role}. Nivel o años: ${scope.level}. El total de mercado para ese alcance ronda ${range} (${money}). ${disclaimer.nature} ${disclaimer.method}`,
+    hi: `जगह: ${scope.where}. पद: ${scope.role}. स्तर या वर्ष: ${scope.level}. इस दायरे का बाज़ार कुल लगभग ${range} (${money}) है। ${disclaimer.nature} ${disclaimer.method}`,
+    ar: `المكان: ${scope.where}. المسمى: ${scope.role}. المستوى أو السنوات: ${scope.level}. إجمالي السوق لهذا النطاق حوالي ${range} (${money}). ${disclaimer.nature} ${disclaimer.method}`,
   };
   return copy[lang];
 }
@@ -97,42 +171,42 @@ const TIER_LABELS: Record<AppLanguage, Record<'A' | 'B' | 'C' | 'D' | 'default',
   en: {
     A: 'From the job posting',
     B: 'From comparable public roles',
-    C: 'Market estimate (not a company offer)',
+    C: 'Market salary level (not company data)',
     D: 'Pay data too thin',
     default: 'Pay evidence unclear',
   },
   'zh-TW': {
     A: '來自職缺刊登',
     B: '來自可比公開職缺',
-    C: '市場估計（非公司報價）',
+    C: '市場薪資水準（非公司數據）',
     D: '薪資資料不足',
     default: '薪資證據不明',
   },
   'zh-CN': {
     A: '来自职位刊登',
     B: '来自可比公开职位',
-    C: '市场估计（非公司报价）',
+    C: '市场薪资水准（非公司数据）',
     D: '薪酬数据不足',
     default: '薪酬证据不明',
   },
   es: {
     A: 'Del anuncio del puesto',
     B: 'De roles públicos comparables',
-    C: 'Estimación de mercado (no oferta de la empresa)',
+    C: 'Nivel salarial de mercado (no datos de la empresa)',
     D: 'Datos salariales insuficientes',
     default: 'Evidencia salarial poco clara',
   },
   hi: {
     A: 'जॉब पोस्टिंग से',
     B: 'तुलनीय सार्वजनिक भूमिकाओं से',
-    C: 'बाज़ार अनुमान (कंपनी ऑफर नहीं)',
+    C: 'बाज़ार वेतन स्तर (कंपनी डेटा नहीं)',
     D: 'वेतन डेटा अपर्याप्त',
     default: 'वेतन साक्ष्य अस्पष्ट',
   },
   ar: {
     A: 'من إعلان الوظيفة',
     B: 'من أدوار عامة مماثلة',
-    C: 'تقدير سوقي (ليس عرض الشركة)',
+    C: 'مستوى أجور السوق (ليست بيانات الشركة)',
     D: 'بيانات الأجر ضعيفة',
     default: 'دليل الأجر غير واضح',
   },
@@ -351,15 +425,15 @@ export function offerEvaluationSummary(
   const c: Record<AppLanguage, { headline: string; body: string }> = {
     en: {
       headline: `Market value ≈ ${range}`,
-      body: `For this level in ${region}, comparable roles typically land around ${range} (${currency}). Use that as the market price of the job when deciding whether to apply — it is not a promised company offer.`,
+        body: `For this level in ${region}, comparable roles typically land around ${range} (${currency}). That is a market salary level, not this company’s pay data — estimated from title, location, and level on the posting.`,
     },
     'zh-TW': {
       headline: `市場價值 ≈ ${range}`,
-      body: `在 ${region} 此職級，相近職位通常落在 ${range}（${currency}）。決定是否投遞時可作為市價參考 — 並非公司保證報價。`,
+        body: `在 ${region} 此職級，相近職位通常落在 ${range}（${currency}）。這是市場薪資水準，非公司數據；依職缺的職稱、地點與職級估計。`,
     },
     'zh-CN': {
       headline: `市场价值 ≈ ${range}`,
-      body: `在 ${region} 此职级，相近职位通常落在 ${range}（${currency}）。决定是否投递时可作为市价参考 — 并非公司保证报价。`,
+        body: `在 ${region} 此职级，相近职位通常落在 ${range}（${currency}）。这是市场薪资水准，非公司数据；依职位的职称、地点与职级估计。`,
     },
     es: {
       headline: `Valor de mercado ≈ ${range}`,
