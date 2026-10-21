@@ -15,6 +15,7 @@ import { formatOfferRange, marketBandDisclaimer, payEstimateScope } from '@/lib/
 import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
+import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-email';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 import type { AppLanguage } from '@/lib/language-context';
@@ -87,6 +88,7 @@ type ItemCopy = {
   say: string;
   askCompany: string;
   followUp: string;
+  subject: string;
   sources: string;
   empty: string;
   noBand: string;
@@ -165,6 +167,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       say: s ? '开口这样说' : '開口這樣說',
       askCompany: s ? '建议问公司的问题' : '建議問公司的問題',
       followUp: s ? '建议面试后寄给公司的信（如果需要）' : '建議面試後寄給公司的信（如果需要）',
+      subject: '主旨',
       sources: s ? '来源' : '來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
@@ -243,6 +246,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     say: 'What to say',
     askCompany: 'Questions to ask the company',
     followUp: 'Note to send after the interview, if one is needed',
+    subject: 'Subject',
     sources: 'Sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
@@ -983,9 +987,8 @@ export function GuideItemPage({
   }
   if (item === 'negotiate') {
     const negotiation = modules?.negotiation;
-    const followUpParts = (negotiation?.follow_up_email ?? '').split(/\n\n/);
-    const followUpWhen = followUpParts.length > 1 ? followUpParts[0] : '';
-    const followUpLetter = followUpParts.length > 1 ? followUpParts.slice(1).join('\n\n') : (negotiation?.follow_up_email ?? '');
+    const followUp = parseFollowUpEmail(negotiation?.follow_up_email ?? '');
+    const followUpParagraphs = followUpLetterParagraphs(followUp.body);
     body = negotiation && (negotiation.pay_strategy || negotiation.benefits_strategy || negotiation.script || negotiation.company_questions || negotiation.follow_up_email) ? (
       <div className="space-y-5">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -1010,11 +1013,30 @@ export function GuideItemPage({
           <PointList items={briefLines(negotiation.company_questions)} dot="bg-sky-300" />
         </section>
       ) : null}
-      {followUpLetter ? (
+      {followUp.body || followUp.subject ? (
         <section className="border-t border-white/10 pt-5">
           <p className={`${SUBHEAD} mb-3`}>{copy.followUp}</p>
-          {followUpWhen ? <p className={`${BODY} mb-3 font-medium leading-relaxed text-slate-300`}>{followUpWhen}</p> : null}
-          <p className={`${BODY} whitespace-pre-wrap font-medium leading-relaxed text-slate-100`}>{followUpLetter}</p>
+          {followUp.when ? (
+            <p className={`${BODY_MUTED} mb-4 leading-relaxed`}>{followUp.when}</p>
+          ) : null}
+          <div className="rounded-xl border border-slate-600/80 bg-slate-950/50 px-6 py-5">
+            {followUp.subject ? (
+              <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/10 pb-3">
+                <span className={`${BODY_MUTED} shrink-0`}>{copy.subject}</span>
+                <span className={`${BODY} font-medium text-slate-100`}>{followUp.subject}</span>
+              </div>
+            ) : null}
+            <div className="space-y-4">
+              {followUpParagraphs.map((paragraph, index) => (
+                <p
+                  key={index}
+                  className={`${BODY} whitespace-pre-wrap leading-[1.75] text-slate-100`}
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </div>
         </section>
       ) : null}
       </div>

@@ -302,7 +302,7 @@ export function parseRewrites(raw: unknown): GuideModules['resume_rewrites'] {
 export function parseNegotiation(raw: unknown): GuideModules['negotiation'] | null {
   if (!raw || typeof raw !== 'object') return null;
   const row = raw as Record<string, unknown>;
-  const followUp = asString(row.follow_up_email).slice(0, 2000);
+  const followUp = asString(row.follow_up_email).slice(0, 2500);
   return {
     summary: asString(row.summary).slice(0, 800),
     pay_strategy: asString(row.pay_strategy).slice(0, 2000),

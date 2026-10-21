@@ -128,7 +128,7 @@ const en: SampleGuideNarrative = {
   company_questions:
     'Does this seat own ACH returns on day one, or is settlement experience enough?\nWho receives the monthly cycle-time and error-rate report, and what do they expect in the first 90 days?\nHow often is on-call during settlement incidents, and what does the rotation cover?\nThe posting says US remote and does not say this seat is sponsored. Will the company sponsor it?\nAfter this interview, who runs the next round and what are they assessing?',
   follow_up_email:
-    'Send this after the interview, before anyone starts talking numbers. Once pay is on the table, use the spoken line above and do not send this note.\n\nSubject: Senior Business Analyst interview\n\nThank you for the time today. I am interested in this payments-operations seat. The work I can show is a 28% reconciliation cycle-time cut with SQL and Looker. I did not describe ACH returns as work I already owned. If the seat needs that ownership on day one, I would like to confirm the scope.',
+    'Send this after the interview, before anyone starts talking numbers. Once pay is on the table, use the spoken line above and do not send this note.\n\nSubject: Thank you — Senior Business Analyst, Northstar Payments\n\nDear Hiring Team,\n\nThank you for taking the time to speak with me today about the Senior Business Analyst role on the payments operations team.\n\nThe work I can speak to with evidence is a 28% cut in reconciliation cycle time using SQL and Looker. I did not present ACH returns as work I have already owned.\n\nIf this seat requires independent handling of ACH returns on day one, I would welcome a brief confirmation of the scope before a next round.\n\nBest regards,\n[Your name]',
 };
 
 const zhTW: SampleGuideNarrative = {
@@ -221,7 +221,7 @@ const zhTW: SampleGuideNarrative = {
   company_questions:
     '這個職位第一天就要獨立負責 ACH 退票，還是有清算經驗即可？\n每月的對帳週期與錯誤率，是向哪一位營運主管報告，前 90 天要交出什麼？\n清算事故的待命頻率與範圍是什麼？\n職缺寫的是美國可遠端，沒有寫簽證贊助。這個位子會贊助嗎？\n這一面試之後，下一關由誰進行、看的是什麼？',
   follow_up_email:
-    '面試結束、對方還沒開始談薪資時寄。已經在談數字，就用上面的開口稿，不要再寄這封。\n\n主旨：Senior Business Analyst 面試後續\n\n謝謝今天的時間。我對這個支付營運職位有興趣。履歷上能對上的，是用 SQL 與 Looker 把對帳週期縮短 28%。我沒有把 ACH 退票說成已經負責過。如果這個位子第一天就要獨立處理退票，我希望再確認一次工作範圍。',
+    '面試結束、對方還沒開始談薪資時寄。已經在談數字，就用上面的開口稿，不要再寄這封。\n\n主旨：Senior Business Analyst 面試後續 — Northstar Payments\n\n您好：\n\n感謝您今天撥冗面試 Senior Business Analyst（支付營運）一職。\n\n履歷上能證明的，是以 SQL 與 Looker 把對帳週期縮短 28%。我沒有把 ACH 退票說成已經負責過。\n\n若這個位子第一天就要獨立處理退票，希望能再確認一次工作範圍。\n\n此致\n[您的姓名]',
 };
 
 const zhCN: SampleGuideNarrative = {
@@ -314,7 +314,7 @@ const zhCN: SampleGuideNarrative = {
   company_questions:
     '这个职位第一天就要独立负责 ACH 退票，还是有清算经验即可？\n每月的对账周期与错误率，是向哪一位运营主管报告，前 90 天要交出什么？\n清算事故的待命频率与范围是什么？\n职位写的是美国可远程，没有写签证赞助。这个位子会赞助吗？\n这一轮面试之后，下一关由谁进行、看的是什么？',
   follow_up_email:
-    '面试结束、对方还没开始谈薪酬时寄。已经在谈数字，就用上面的开口稿，不要再寄这封。\n\n主旨：Senior Business Analyst 面试后续\n\n谢谢今天的时间。我对这个支付运营职位有兴趣。简历上能对上的，是用 SQL 与 Looker 把对账周期缩短 28%。我没有把 ACH 退票说成已经负责过。如果这个位子第一天就要独立处理退票，我希望再确认一次工作范围。',
+    '面试结束、对方还没开始谈薪酬时寄。已经在谈数字，就用上面的开口稿，不要再寄这封。\n\n主旨：Senior Business Analyst 面试后续 — Northstar Payments\n\n您好：\n\n感谢您今天拨冗面试 Senior Business Analyst（支付运营）一职。\n\n简历上能证明的，是以 SQL 与 Looker 把对账周期缩短 28%。我没有把 ACH 退票说成已经负责过。\n\n若这个位子第一天就要独立处理退票，希望能再确认一次工作范围。\n\n此致\n[您的姓名]',
 };
 
 const es: SampleGuideNarrative = {
@@ -411,7 +411,7 @@ const es: SampleGuideNarrative = {
   company_questions:
     '¿Este puesto posee las devoluciones ACH desde el primer día, o basta la experiencia en liquidación?\n¿Quién recibe el informe mensual de ciclo y tasa de error, y qué espera en los primeros 90 días?\n¿Con qué frecuencia hay guardia en incidentes de liquidación y qué cubre?\nEl anuncio dice remoto en Estados Unidos y no dice que el puesto esté patrocinado. ¿La empresa lo patrocina?\nDespués de esta entrevista, ¿quién hace la siguiente ronda y qué evalúa?',
   follow_up_email:
-    'Envíala al terminar la entrevista, antes de que nadie hable de cifras. Si ya se está negociando el sueldo, usa la frase de arriba y no envíes esta nota.\n\nAsunto: Entrevista de Senior Business Analyst\n\nGracias por el tiempo de hoy. Me interesa este puesto de operaciones de pago. Lo que puedo mostrar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. No describí las devoluciones ACH como un trabajo que ya poseía. Si el puesto exige esa propiedad desde el primer día, quisiera confirmar el alcance.',
+    'Envíala al terminar la entrevista, antes de que nadie hable de cifras. Si ya se está negociando el sueldo, usa la frase de arriba y no envíes esta nota.\n\nAsunto: Agradecimiento — Senior Business Analyst, Northstar Payments\n\nEstimado equipo de selección:\n\nGracias por el tiempo de hoy para hablar del puesto de Senior Business Analyst en operaciones de pago.\n\nLo que puedo acreditar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. No presenté las devoluciones ACH como un trabajo que ya hubiera dirigido.\n\nSi el puesto exige gestionar devoluciones ACH de forma independiente desde el primer día, agradecería confirmar el alcance antes de una siguiente ronda.\n\nUn saludo,\n[Su nombre]',
 };
 
 const hi: SampleGuideNarrative = {
@@ -507,7 +507,7 @@ const hi: SampleGuideNarrative = {
   company_questions:
     'क्या इस पद पर पहले दिन से ACH रिटर्न की ज़िम्मेदारी है, या सेटलमेंट अनुभव काफ़ी है?\nमासिक चक्र-समय और त्रुटि-दर रिपोर्ट किसे मिलती है, और पहले 90 दिनों में वे क्या चाहते हैं?\nसेटलमेंट घटनाओं में ऑन-कॉल कितनी बार है, और दायरा क्या है?\nविज्ञापन अमेरिका में दूरस्थ कहता है और प्रायोजन नहीं कहता। क्या कंपनी इस सीट को प्रायोजित करेगी?\nइस इंटरव्यू के बाद अगला दौर कौन लेता है, और वे क्या जाँचते हैं?',
   follow_up_email:
-    'इंटरव्यू के बाद, संख्याओं की बात शुरू होने से पहले भेजें। वेतन की बात चल पड़ी हो, तो ऊपर वाली पंक्ति बोलें और यह पत्र न भेजें।\n\nविषय: Senior Business Analyst इंटरव्यू\n\nआज का समय देने के लिए धन्यवाद। मुझे इस भुगतान-संचालन पद में रुचि है। जो मैं दिखा सकता हूँ, वह SQL और Looker से मिलान चक्र में 28% की कमी है। मैंने ACH रिटर्न को ऐसा काम नहीं बताया जिसकी मालिकी मेरे पास पहले से हो। अगर पद को पहले दिन से यह मालिकी चाहिए, तो मैं दायरा एक बार पुष्ट करना चाहूँगा।',
+    'इंटरव्यू के बाद, संख्याओं की बात शुरू होने से पहले भेजें। वेतन की बात चल पड़ी हो, तो ऊपर वाली पंक्ति बोलें और यह पत्र न भेजें।\n\nविषय: धन्यवाद — Senior Business Analyst, Northstar Payments\n\nप्रिय भर्ती टीम,\n\nआज Senior Business Analyst (भुगतान संचालन) पद पर समय देने के लिए धन्यवाद।\n\nजो मैं प्रमाण के साथ कह सकता हूँ, वह SQL और Looker से मिलान चक्र में 28% की कमी है। मैंने ACH रिटर्न को ऐसा काम नहीं बताया जिसे मैं पहले से चलाता रहा हूँ।\n\nअगर इस पद पर पहले दिन से ACH रिटर्न स्वतंत्र रूप से संभालने होंगे, तो अगले दौर से पहले दायरा एक बार पुष्ट करना चाहूँगा।\n\nसादर,\n[आपका नाम]',
 };
 
 const ar: SampleGuideNarrative = {
@@ -603,7 +603,7 @@ const ar: SampleGuideNarrative = {
   company_questions:
     'هل يملك هذا المقعد مرتجعات ACH من اليوم الأول، أم تكفي خبرة التسوية؟\nمن يستلم تقرير زمن الدورة ومعدل الخطأ الشهري، وماذا يتوقع في أول 90 يوماً؟\nما وتيرة المناوبة أثناء حوادث التسوية، وما الذي تغطيه؟\nيقول الإعلان إن العمل عن بُعد داخل الولايات المتحدة ولا يذكر الرعاية. هل ترعى الشركة هذا المقعد؟\nبعد هذه المقابلة، من يدير الجولة التالية وماذا يقيّم؟',
   follow_up_email:
-    'أرسِلها بعد المقابلة وقبل أن يبدأ الحديث عن الأرقام. إذا بدأت مناقشة الأجر، فاستخدم الجملة أعلاه ولا ترسل هذه الرسالة.\n\nالموضوع: مقابلة Senior Business Analyst\n\nشكراً على الوقت اليوم. أنا مهتم بمقعد عمليات الدفع هذا. ما أستطيع إظهاره هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. لم أصف مرتجعات ACH كعمل كنت أملكه. إذا كان المقعد يحتاج هذه الملكية من اليوم الأول، فأود تأكيد النطاق.',
+    'أرسِلها بعد المقابلة وقبل أن يبدأ الحديث عن الأرقام. إذا بدأت مناقشة الأجر، فاستخدم الجملة أعلاه ولا ترسل هذه الرسالة.\n\nالموضوع: شكر — Senior Business Analyst، Northstar Payments\n\nفريق التوظيف الكريم،\n\nشكراً لكم على الوقت اليوم للحديث عن مقعد Senior Business Analyst في عمليات الدفع.\n\nما أستطيع إثباته هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. لم أقدّم مرتجعات ACH كعمل كنت أديره من قبل.\n\nإذا كان المقعد يتطلب معالجة مرتجعات ACH بشكل مستقل من اليوم الأول، فأود تأكيد النطاق قبل جولة تالية.\n\nمع التحية،\n[اسمك]',
 };
 
 export const SAMPLE_GUIDE_NARRATIVE: Record<AppLanguage, SampleGuideNarrative> = {
