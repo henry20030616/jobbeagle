@@ -13,6 +13,7 @@ import {
 } from '@/components/guide/GuideSlideChrome';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
+import { isCitableSourceUrl } from '@/lib/provenance';
 
 function copyFor(language: AppLanguage) {
   if (language === 'zh-TW' || language === 'zh-CN') {
@@ -103,7 +104,7 @@ function QuestionList({
                   <span className="rounded-md bg-slate-800 px-2.5 py-1 text-xl font-black text-indigo-100">
                     {item.origin === 'reported' ? reportedLabel : predictedLabel}
                   </span>
-                  {item.origin === 'reported' && item.source_url ? (
+                  {item.origin === 'reported' && isCitableSourceUrl(item.source_url) ? (
                     <a
                       href={item.source_url}
                       target="_blank"

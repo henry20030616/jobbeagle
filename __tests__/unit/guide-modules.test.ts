@@ -5,6 +5,7 @@ import {
   parseGuideQuestions,
   selectInterviewBank,
 } from '@/lib/guide-modules';
+import { isCitableSourceUrl } from '@/lib/provenance';
 
 describe('guide module routes', () => {
   it('keeps the free snapshot on Flash-Lite with search off', () => {
@@ -35,6 +36,13 @@ describe('guide module routes', () => {
   });
 });
 
+describe('isCitableSourceUrl', () => {
+  it('rejects example.com placeholders and keeps public interview hosts', () => {
+    expect(isCitableSourceUrl('https://example.com/northstar/professional/5')).toBe(false);
+    expect(isCitableSourceUrl('https://www.glassdoor.com/Interview/index.htm')).toBe(true);
+  });
+});
+
 describe('selectInterviewBank', () => {
   it('keeps the 10 newest same-company questions and lists the overflow', () => {
     const questions = parseGuideQuestions(
@@ -43,7 +51,7 @@ describe('selectInterviewBank', () => {
         track: 'professional',
         origin: 'reported',
         proximity: 'same_company_role',
-        source_url: `https://example.com/${index}`,
+        source_url: `https://www.glassdoor.com/Interview/${index}`,
         source_date: `2024-${String(index + 1).padStart(2, '0')}`,
       })),
     );
@@ -68,7 +76,7 @@ describe('selectInterviewBank', () => {
         track: 'behavioral',
         origin: 'reported',
         proximity: 'same_industry_role',
-        source_url: 'https://example.com/q',
+        source_url: 'https://www.glassdoor.com/Interview/index.htm',
         source_date: '2025-01',
       },
       {
@@ -82,5 +90,20 @@ describe('selectInterviewBank', () => {
     expect(bank.behavioral.map((item) => item.question)).toEqual(['Real', 'No source', 'Predicted']);
     expect(bank.behavioral[1]?.origin).toBe('predicted');
     expect(bank.behavioral_extra).toHaveLength(0);
+  });
+
+  it('drops invented example.com sources so reported questions are not clickable placeholders', () => {
+    const questions = parseGuideQuestions([
+      {
+        question: 'Placeholder',
+        track: 'professional',
+        origin: 'reported',
+        proximity: 'same_industry_role',
+        source_url: 'https://example.com/northstar/professional/5',
+        source_date: '2025-01',
+      },
+    ]);
+    expect(questions[0]?.origin).toBe('predicted');
+    expect(questions[0]?.source_url).toBeNull();
   });
 });

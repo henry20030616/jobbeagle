@@ -10,6 +10,7 @@ import type {
   LiteReport,
 } from '@/types';
 import { GEMINI_FULL_MODEL, GEMINI_LITE_MODEL } from '@/constants/models';
+import { isCitableSourceUrl } from '@/lib/provenance';
 
 export type GuideModuleId =
   | 'snapshot'
@@ -66,7 +67,7 @@ function asString(value: unknown): string {
 
 function httpUrl(value: unknown): string | null {
   const url = asString(value);
-  if (!/^https?:\/\//i.test(url)) return null;
+  if (!isCitableSourceUrl(url)) return null;
   return url.slice(0, 500);
 }
 

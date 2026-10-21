@@ -13,6 +13,20 @@ export function isValidHttpUrl(raw: string): boolean {
   }
 }
 
+/** Real public pages only — example.com placeholders must never be clickable. */
+export function isCitableSourceUrl(raw: string | null | undefined): boolean {
+  const s = (raw ?? '').trim();
+  if (!isValidHttpUrl(s)) return false;
+  try {
+    const host = new URL(s).hostname.toLowerCase().replace(/^www\./, '');
+    if (host === 'example.com' || host === 'example.org' || host === 'example.net') return false;
+    if (host.endsWith('.example.com')) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function normalizeSourceDate(raw: string | undefined | null): string {
   const s = (raw ?? '').trim();
   if (!s) return '';

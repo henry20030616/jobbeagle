@@ -12,6 +12,7 @@ import {
 } from '@/components/guide/GuideSlideChrome';
 import { REPORT_FRAME_BORDER } from '@/constants/report-frame';
 import { formatOfferRange, marketBandDisclaimer, payEstimateScope } from '@/lib/offer-display';
+import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
@@ -458,12 +459,13 @@ function ReviewColumn({
 }
 
 function SourceList({ title, sources }: { title: string; sources: GuideSource[] }) {
-  if (sources.length === 0) return null;
+  const cited = sources.filter((source) => isCitableSourceUrl(source.url));
+  if (cited.length === 0) return null;
   return (
     <div className="mt-3">
       <p className={`${SUBHEAD} mb-2`}>{title}</p>
       <ul className="space-y-1.5">
-        {sources.map((source) => (
+        {cited.map((source) => (
           <li key={source.url}>
             <a
               href={source.url}
@@ -763,15 +765,15 @@ function QuestionList({
                   <span className="rounded-md border border-indigo-400/40 bg-indigo-500/15 px-2.5 py-1 text-xl font-black text-indigo-100">
                     {item.origin === 'reported' ? copy.reported : copy.predicted}
                   </span>
-                  {item.origin === 'reported' && item.source_url ? (
+                  {item.origin === 'reported' && isCitableSourceUrl(item.source_url) ? (
                     <a
-                      href={item.source_url}
+                      href={item.source_url ?? undefined}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-sm font-semibold text-sky-300 hover:text-sky-200"
                     >
                       <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-                      {item.source_url.replace(/^https?:\/\//, '').slice(0, 42)}
+                      {(item.source_url ?? '').replace(/^https?:\/\//, '').slice(0, 42)}
                     </a>
                   ) : null}
                 </div>
@@ -798,11 +800,11 @@ function ExtraList({ items, title }: { items: GuideQuestion[]; title: string }) 
         {items.map((item) => (
           <li key={item.question} className={`${BODY} text-slate-300`}>
             {item.question}
-            {item.source_url ? (
+            {isCitableSourceUrl(item.source_url) ? (
               <>
                 {' '}
-                <a href={item.source_url} target="_blank" rel="noopener noreferrer" className="text-sky-300 hover:text-sky-200">
-                  {item.source_url.replace(/^https?:\/\//, '').slice(0, 42)}
+                <a href={item.source_url ?? undefined} target="_blank" rel="noopener noreferrer" className="text-sky-300 hover:text-sky-200">
+                  {(item.source_url ?? '').replace(/^https?:\/\//, '').slice(0, 42)}
                 </a>
               </>
             ) : null}
