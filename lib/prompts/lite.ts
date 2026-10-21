@@ -26,7 +26,7 @@ Your job is to support TWO hero decisions only:
 Rules:
 - Extract facts from the JD and resume only. Never invent experience, visas, or compensation from model memory.
 - 1018 Fit Snapshot modules (closed-book; no web search):
-  * Item 1 role core: role_read.mission = two or three sentences that explain this position: the title, what the company needs this person to own, and the bar for getting the seat. role_read.hiring_signals = 3–5 client-facing requirement statements. Each one names the requirement and its bar (years, license, system, degree, or regulation) in a complete sentence. role_read.responsibilities = 3–5 duties. Each one names the work product and who it is for. Write for the candidate, not for an internal reviewer. No slogans, no contrasts such as "not a nice-to-have", no "fluff" commentary, and no shorthand like "partner with eng".
+  * Item 1 role core: role_read.mission = two or three sentences that explain this position: the title, what the company needs this person to own, and the bar for getting the seat. role_read.hiring_signals = 3–5 scannable facts, each "Kind: extractable fact" (ASCII colon + space, or fullwidth ： in CJK). Kind is a short label in the report language for one of: years of experience, named skill/tool, license/cert, domain knowledge/experience, degree, or named system. The fact MUST name the JD keyword, number, license, system, or domain (e.g. "Years: 5+ as Business Analyst or product operations", "年資：5 年以上 Business Analyst 或產品營運"). Ban vague paraphrases ("relevant experience", "strong communication", "fast-paced environment", "須具備相關經驗"). Do not invent licenses or degrees the JD does not name. role_read.responsibilities = 3–5 duties, each "Deliverable: who it is for + named system/rail/metric from the JD". Lead with the work-product keyword (requirements backlog, acceptance criteria, KPI pack, dashboard, runbook). Ban generic duties ("partner with stakeholders", "drive improvements", "support the team", "把問題整理成需求" with no named rail/metric). Write for the candidate, not for an internal reviewer. No slogans, no contrasts such as "not a nice-to-have", no "fluff" commentary, and no shorthand like "partner with eng".
   * Item 2 market band: expected_offer is a wide total-comp range for this title and region from the JD plus general knowledge. Do not pretend you searched the web. region must name the place (city, metro, or country, plus remote if the JD says so). target_gap must name the job title, that place, and the level or years the band is for.
   * Item 3 fit: score 50–100, proof_map.gaps name missing hard keywords only (no before/after resume rewrites), apply_decision says whether to apply.
 - Always fill company_name from the JD/employer name.
@@ -229,8 +229,18 @@ export const LITE_JSON_SCHEMA = {
       type: 'object',
       properties: {
         mission: { type: 'string' },
-        responsibilities: { type: 'array', items: { type: 'string' } },
-        hiring_signals: { type: 'array', items: { type: 'string' } },
+        responsibilities: {
+          type: 'array',
+          items: { type: 'string' },
+          description:
+            '3–5 "Deliverable: who + named system/rail/metric" lines. Lead with the work-product keyword. No generic duties.',
+        },
+        hiring_signals: {
+          type: 'array',
+          items: { type: 'string' },
+          description:
+            '3–5 "Kind: fact" lines. Kind = Years, Skill, License, Domain, Degree, or System (report-language equivalent OK). Fact names the JD keyword, years, license, system, or domain. No vague paraphrases.',
+        },
       },
       required: ['mission', 'responsibilities', 'hiring_signals'],
     },

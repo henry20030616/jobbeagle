@@ -31,6 +31,26 @@ describe('sample reports', () => {
     expect(report.expected_offer.tc_breakdown?.total).toContain('$185K');
   });
 
+  it('states must-haves as keywords, years, or explicit domain items', () => {
+    const zh = getSampleSnapshotReport('zh-TW');
+    expect(zh.role_read.hiring_signals).toEqual([
+      '年資：5 年以上 Business Analyst 或產品營運。',
+      '技能：SQL — 須能獨立使用。',
+      '系統：正式環境營運儀表板擁有權。',
+      '領域：支付營運 — ACH 退票、清算，或同等支付軌道。',
+    ]);
+    expect(zh.role_read.responsibilities).toEqual([
+      '需求 backlog：把清算與 ACH 退票問題寫成可排程需求，並排處理順序（給工程）。',
+      '驗收標準：與工程共同撰寫清算／ACH 退票流程的需求與驗收標準。',
+      '營運指標：每月向營運主管報告對帳週期與錯誤率。',
+    ]);
+    const en = getSampleSnapshotReport('en');
+    expect(en.role_read.hiring_signals.join('\n')).toMatch(/Years: 5\+/);
+    expect(en.role_read.hiring_signals.join('\n')).toMatch(/Skill: SQL/);
+    expect(en.role_read.hiring_signals.join('\n')).toMatch(/Domain:[\s\S]*ACH/);
+    expect(en.role_read.responsibilities.join('\n')).toMatch(/Acceptance criteria:[\s\S]*ACH/);
+  });
+
   it('gives each Snapshot and Guide sample section a summary paragraph', () => {
     const snapshot = getSampleSnapshotReport('zh-TW');
     expect(snapshot.role_read.mission.length).toBeGreaterThan(40);
@@ -111,10 +131,13 @@ describe('sample reports', () => {
     ]) {
       expect(item.origin).toBe('reported');
       expect(item.source_url).toMatch(/^https:\/\//);
+      expect(item.source_url).not.toMatch(/example\.com/i);
       expect(item.answer.length).toBeGreaterThan(20);
     }
     expect(modules!.company_eval.h1b).toMatch(/H-1B/);
     expect(modules!.company_eval.sources[0]?.url).toMatch(/^https:\/\//);
+    expect(modules!.company_eval.sources.map((s) => s.url).join('\n')).not.toMatch(/example\.com/i);
+    expect(modules!.salary_land.sources.map((s) => s.url).join('\n')).not.toMatch(/example\.com/i);
     expect(modules!.company_eval.company_pros.length).toBeGreaterThanOrEqual(2);
     expect(modules!.company_eval.role_cons.length).toBeGreaterThanOrEqual(2);
     expect(modules!.company_eval.role_sources[0]?.url).toMatch(/^https:\/\//);

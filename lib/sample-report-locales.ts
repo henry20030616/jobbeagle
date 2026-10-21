@@ -167,14 +167,15 @@ const ZH_TW: SampleLocalePack = {
       mission:
         '這個職位是支付營運的 Senior Business Analyst。公司要這個人把清算與退票的營運問題整理成可排程的需求，並和工程一起寫驗收標準。錄取條件是 5 年以上 Business Analyst 或產品營運經驗，而且要能獨立使用 SQL、負責正式環境的營運儀表板。',
       responsibilities: [
-        '把支付營運問題整理成可排程的需求，並決定處理順序。',
-        '與工程一起寫清算與 ACH 退票流程的需求與驗收標準。',
-        '每月向營運主管報告對帳週期與錯誤率。',
+        '需求 backlog：把清算與 ACH 退票問題寫成可排程需求，並排處理順序（給工程）。',
+        '驗收標準：與工程共同撰寫清算／ACH 退票流程的需求與驗收標準。',
+        '營運指標：每月向營運主管報告對帳週期與錯誤率。',
       ],
       hiring_signals: [
-        '須具備 5 年以上 Business Analyst 或產品營運經驗。',
-        '須能獨立使用 SQL，並負責正式環境的營運儀表板。',
-        '職位是支付營運：ACH 退票、清算，或同等支付軌道經驗為必要條件。',
+        '年資：5 年以上 Business Analyst 或產品營運。',
+        '技能：SQL — 須能獨立使用。',
+        '系統：正式環境營運儀表板擁有權。',
+        '領域：支付營運 — ACH 退票、清算，或同等支付軌道。',
       ],
     },
     interview_starters: [
@@ -861,14 +862,15 @@ const ZH_CN: SampleLocalePack = {
       mission:
         '这个职位是支付运营的 Senior Business Analyst。公司要这个人把清算与退票的运营问题整理成可排期的需求，并和工程一起写验收标准。录用条件是 5 年以上 Business Analyst 或产品运营经验，而且要能独立使用 SQL、负责正式环境的运营仪表板。',
       responsibilities: [
-        '把支付运营问题整理成可排期的需求，并决定处理顺序。',
-        '与工程一起写清算与 ACH 退票流程的需求与验收标准。',
-        '每月向运营主管报告对账周期与错误率。',
+        '需求 backlog：把清算与 ACH 退票问题写成可排期需求，并排处理顺序（给工程）。',
+        '验收标准：与工程共同撰写清算／ACH 退票流程的需求与验收标准。',
+        '运营指标：每月向运营主管报告对账周期与错误率。',
       ],
       hiring_signals: [
-        '须具备 5 年以上 Business Analyst 或产品运营经验。',
-        '须能独立使用 SQL，并负责正式环境的运营仪表板。',
-        '职位是支付运营：ACH 退票、清算，或同等支付轨道经验为必要条件。',
+        '年资：5 年以上 Business Analyst 或产品运营。',
+        '技能：SQL — 须能独立使用。',
+        '系统：正式环境运营仪表板所有权。',
+        '领域：支付运营 — ACH 退票、清算，或同等支付轨道。',
       ],
     },
     interview_starters: [
@@ -1542,14 +1544,15 @@ const ES: SampleLocalePack = {
       mission:
         'Este puesto es de Senior Business Analyst en operaciones de pago. La empresa necesita a alguien que convierta los problemas de liquidación y devoluciones en requisitos planificables, y que escriba los criterios de aceptación con ingeniería. La condición es cinco años o más como business analyst o en operaciones de producto, más SQL autónomo y la responsabilidad de un panel de operaciones en producción.',
       responsibilities: [
-        'Convertir incidencias de operaciones de pago en requisitos planificables y fijar su orden.',
-        'Redactar con ingeniería los requisitos y criterios de aceptación de liquidación y devoluciones ACH.',
-        'Informar cada mes al responsable de operaciones del tiempo de conciliación y la tasa de error.',
+        'Backlog de requisitos: convertir incidencias de liquidación y devoluciones ACH en trabajo planificable y fijar el orden (para ingeniería).',
+        'Criterios de aceptación: redactar con ingeniería las specs de liquidación y devoluciones ACH.',
+        'Paquete KPI de ops: informar cada mes al responsable de operaciones del tiempo de conciliación y la tasa de error.',
       ],
       hiring_signals: [
-        'Cinco años o más como business analyst o en operaciones de producto.',
-        'Debe usar SQL de forma autónoma y ser responsable de un panel de operaciones en producción.',
-        'El puesto es operaciones de pagos: devoluciones ACH, liquidación o un riel equivalente es obligatorio.',
+        'Años: 5+ como Business Analyst o en operaciones de producto.',
+        'Habilidad: SQL — uso autónomo obligatorio.',
+        'Sistema: propiedad de un panel de operaciones en producción.',
+        'Dominio: operaciones de pagos — devoluciones ACH, liquidación o un riel equivalente.',
       ],
     },
     interview_starters: [
@@ -2152,14 +2155,15 @@ const HI: SampleLocalePack = {
       mission:
         'यह पद भुगतान संचालन का Senior Business Analyst है। कंपनी को ऐसे व्यक्ति की ज़रूरत है जो सेटलमेंट और रिटर्न की समस्याओं को शेड्यूल होने वाली आवश्यकताओं में बदले, और इंजीनियरिंग के साथ स्वीकृति मानदंड लिखे। शर्त है Business Analyst या उत्पाद संचालन में पाँच या अधिक वर्ष, स्वतंत्र SQL, और प्रोडक्शन संचालन डैशबोर्ड की ज़िम्मेदारी।',
       responsibilities: [
-        'भुगतान संचालन की समस्याओं को शेड्यूल होने वाली आवश्यकताओं में बदलें और उनका क्रम तय करें।',
-        'इंजीनियरिंग के साथ सेटलमेंट और ACH रिटर्न की आवश्यकताएँ और स्वीकृति मानदंड लिखें।',
-        'हर महीने संचालन प्रमुख को मिलान चक्र और त्रुटि दर की रिपोर्ट दें।',
+        'आवश्यकता बैकलॉग: सेटलमेंट और ACH रिटर्न समस्याओं को शेड्यूल होने वाले काम में बदलें और क्रम तय करें (इंजीनियरिंग के लिए)।',
+        'स्वीकृति मानदंड: इंजीनियरिंग के साथ सेटलमेंट और ACH रिटर्न की specs लिखें।',
+        'ऑप्स KPI पैक: हर महीने संचालन प्रमुख को मिलान चक्र और त्रुटि दर रिपोर्ट करें।',
       ],
       hiring_signals: [
-        'Business Analyst या उत्पाद संचालन में पाँच या अधिक वर्ष।',
-        'SQL स्वतंत्र रूप से आना चाहिए, और प्रोडक्शन संचालन डैशबोर्ड की ज़िम्मेदारी होनी चाहिए।',
-        'यह भूमिका भुगतान संचालन है: ACH रिटर्न, सेटलमेंट, या समकक्ष रेल आवश्यक है।',
+        'वर्ष: Business Analyst या उत्पाद संचालन में 5+।',
+        'कौशल: SQL — स्वतंत्र उपयोग अनिवार्य।',
+        'सिस्टम: प्रोडक्शन संचालन डैशबोर्ड की ज़िम्मेदारी।',
+        'क्षेत्र: भुगतान संचालन — ACH रिटर्न, सेटलमेंट, या समकक्ष रेल।',
       ],
     },
     interview_starters: [
@@ -2308,14 +2312,15 @@ const AR: SampleLocalePack = {
       mission:
         'هذا الدور هو Senior Business Analyst لعمليات الدفع. تحتاج الشركة إلى شخص يحوّل مشكلات التسوية والمرتجعات إلى متطلبات قابلة للجدولة، ويكتب معايير القبول مع الهندسة. الشرط هو خمس سنوات أو أكثر كمحلل أعمال أو في عمليات المنتج، مع استخدام SQL بشكل مستقل وتحمّل لوحة عمليات في بيئة الإنتاج.',
       responsibilities: [
-        'تحويل مشكلات عمليات الدفع إلى متطلبات قابلة للجدولة وتحديد ترتيبها.',
-        'كتابة المتطلبات ومعايير القبول للتسوية ومرتجعات ACH مع الهندسة.',
-        'رفع تقرير شهري إلى مسؤول العمليات عن زمن المطابقة ومعدل الأخطاء.',
+        'قائمة المتطلبات: تحويل مشكلات التسوية ومرتجعات ACH إلى عمل قابل للجدولة وترتيب التنفيذ (للهندسة).',
+        'معايير القبول: كتابة مواصفات التسوية ومرتجعات ACH مع الهندسة.',
+        'حزمة مؤشرات العمليات: تقرير شهري لمسؤول العمليات عن زمن المطابقة ومعدل الأخطاء.',
       ],
       hiring_signals: [
-        'خمس سنوات أو أكثر كمحلل أعمال أو في عمليات المنتج.',
-        'يلزم استخدام SQL بشكل مستقل وتحمّل لوحة عمليات في بيئة الإنتاج.',
-        'الدور هو عمليات المدفوعات: مرتجعات ACH أو التسوية أو مسار دفع معادل شرط إلزامي.',
+        'سنوات: 5+ كمحلل أعمال أو في عمليات المنتج.',
+        'مهارة: SQL — استخدام مستقل إلزامي.',
+        'نظام: ملكية لوحة عمليات في بيئة الإنتاج.',
+        'مجال: عمليات المدفوعات — مرتجعات ACH أو التسوية أو مسار دفع معادل.',
       ],
     },
     interview_starters: [

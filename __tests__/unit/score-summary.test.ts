@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   parallelizeVerdictPoint,
   scoreSummaryPoints,
+  splitLabeledFact,
   splitScoreSummaryPoint,
 } from '@/lib/score-summary';
 
@@ -25,6 +26,20 @@ describe('scoreSummaryPoints', () => {
       label: 'Main gap',
       detail: 'ACH depth is thin.',
     });
+  });
+
+  it('splits CJK fullwidth colon without rewriting dashes inside the fact', () => {
+    expect(splitLabeledFact('年資：5 年以上 Business Analyst 或產品營運。')).toEqual({
+      label: '年資',
+      detail: '5 年以上 Business Analyst 或產品營運。',
+    });
+    expect(splitLabeledFact('技能：SQL — 須能獨立使用。')).toEqual({
+      label: '技能',
+      detail: 'SQL — 須能獨立使用。',
+    });
+    expect(parallelizeVerdictPoint('技能：SQL — 須能獨立使用。')).toBe(
+      '技能：SQL — 須能獨立使用。',
+    );
   });
 
   it('normalizes dash separators to colon for parallel labels', () => {

@@ -174,14 +174,15 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     mission:
       'This seat is a Senior Business Analyst for payments operations. The company needs this person to turn settlement and ACH-returns problems into scheduled requirements, and to write the acceptance criteria with engineering. The bar is five or more years as a business analyst or in product operations, plus independent SQL and ownership of a production operations dashboard.',
     responsibilities: [
-      'Turn payment-operations issues into scheduled requirements and set the order they are built.',
-      'Write the requirements and acceptance criteria for settlement and ACH returns with engineering.',
-      'Report reconciliation cycle time and error rate to the operations lead each month.',
+      'Requirements backlog: turn settlement and ACH-returns issues into scheduled work and set build order (for engineering).',
+      'Acceptance criteria: write settlement and ACH-returns specs with engineering.',
+      'Ops KPI pack: report reconciliation cycle time and error rate to the operations lead each month.',
     ],
     hiring_signals: [
-      'Five or more years as a business analyst or in product operations.',
-      'Must use SQL independently and own a production operations dashboard.',
-      'The seat is payments operations: ACH returns, settlement, or an equivalent payments rail is required.',
+      'Years: 5+ as Business Analyst or in product operations.',
+      'Skill: SQL — must use independently.',
+      'System: production operations dashboard ownership.',
+      'Domain: payments operations — ACH returns, settlement, or an equivalent rail.',
     ],
   },
   interview_starters: [
@@ -743,6 +744,22 @@ export function getSampleSnapshotReport(
   return normalizeLiteReport(raw);
 }
 
+/** Real public pages — never example.com. Northstar is fictional, so links go to the industry source, not a fake company thread. */
+const SAMPLE_INTERVIEW_SOURCES = [
+  'https://www.glassdoor.com/Interview/business-analyst-interview-questions-SRCH_KO0,16.htm',
+  'https://www.glassdoor.com/Interview/index.htm',
+  'https://www.teamblind.com/',
+  'https://www.reddit.com/r/cscareerquestions/',
+] as const;
+
+const SAMPLE_GUIDE_SOURCE_URLS = {
+  levels: 'https://www.levels.fyi/t/business-analyst',
+  h1b: 'https://h1bdata.info/',
+  blind: 'https://www.teamblind.com/',
+  warn: 'https://www.dol.gov/agencies/eta/layoffs/warn',
+  glassdoorRole: 'https://www.glassdoor.com/Reviews/index.htm',
+} as const;
+
 function sampleGuideQuestion(
   question: string,
   track: GuideQuestion['track'],
@@ -755,8 +772,8 @@ function sampleGuideQuestion(
     question,
     track,
     origin: 'reported',
-    proximity: 'same_company_role',
-    source_url: `https://example.com/northstar/${track}/${index}`,
+    proximity: 'same_industry_role',
+    source_url: SAMPLE_INTERVIEW_SOURCES[(index - 1) % SAMPLE_INTERVIEW_SOURCES.length],
     source_date: `${year}-${month}`,
     answer,
   };
@@ -793,8 +810,8 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       rationale: copy.rationale,
       buyer_seller: copy.buyer_seller,
       sources: [
-        { title: copy.levelsTitle, url: 'https://example.com/levels/northstar-ba' },
-        { title: copy.h1bWageTitle, url: 'https://example.com/h1b/northstar-wages' },
+        { title: copy.levelsTitle, url: SAMPLE_GUIDE_SOURCE_URLS.levels },
+        { title: copy.h1bWageTitle, url: SAMPLE_GUIDE_SOURCE_URLS.h1b },
       ],
     },
     company_eval: {
@@ -810,11 +827,11 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       role_pros: copy.role_pros,
       role_cons: copy.role_cons,
       sources: [
-        { title: copy.blindTitle, url: 'https://example.com/blind/northstar-ops' },
-        { title: copy.warnTitle, url: 'https://example.com/warn/northstar' },
+        { title: copy.blindTitle, url: SAMPLE_GUIDE_SOURCE_URLS.blind },
+        { title: copy.warnTitle, url: SAMPLE_GUIDE_SOURCE_URLS.warn },
       ],
       role_sources: [
-        { title: copy.roleSourceTitle, url: 'https://example.com/glassdoor/northstar-ba' },
+        { title: copy.roleSourceTitle, url: SAMPLE_GUIDE_SOURCE_URLS.glassdoorRole },
       ],
     },
     interview_bank: {

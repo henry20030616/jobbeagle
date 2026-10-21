@@ -1,9 +1,28 @@
+const LABELED_FACT = /^[^:：]{1,48}[:：]\s*\S/;
+
+/** Split "Kind: fact" or "種類：事實" without rewriting dashes inside the fact. */
+export function splitLabeledFact(point: string): { label: string; detail: string } {
+  const trimmed = point.trim();
+  if (!trimmed) return { label: '', detail: '' };
+  const ascii = trimmed.indexOf(': ');
+  const fullwidth = trimmed.indexOf('：');
+  const idx = [ascii, fullwidth]
+    .filter((i) => i > 0 && i < 48)
+    .sort((a, b) => a - b)[0];
+  if (idx == null) return { label: trimmed, detail: '' };
+  const sepLen = trimmed.startsWith('：', idx) ? 1 : 2;
+  return {
+    label: trimmed.slice(0, idx).trim(),
+    detail: trimmed.slice(idx + sepLen).trim(),
+  };
+}
+
 /** Normalize "Label — detail" / "Label - detail" → "Label: detail" for parallel bullets. */
 export function parallelizeVerdictPoint(point: string): string {
   const trimmed = point.trim();
   if (!trimmed) return trimmed;
-  // Already "Label: detail"
-  if (/^[^:]{1,48}:\s+\S/.test(trimmed)) return trimmed;
+  // Already "Label: detail" or "標籤：細節"
+  if (LABELED_FACT.test(trimmed)) return trimmed;
   // "Label — detail" / "Label – detail" / "Label - detail"
   const dashed = trimmed.replace(
     /^(.{1,48}?)\s*[—–-]\s+(\S.*)$/u,
@@ -14,15 +33,7 @@ export function parallelizeVerdictPoint(point: string): string {
 
 /** Split "Label: detail" for UI (bold label + muted detail). */
 export function splitScoreSummaryPoint(point: string): { label: string; detail: string } {
-  const trimmed = parallelizeVerdictPoint(point);
-  const idx = trimmed.indexOf(': ');
-  if (idx > 0 && idx < 48) {
-    return {
-      label: trimmed.slice(0, idx).trim(),
-      detail: trimmed.slice(idx + 2).trim(),
-    };
-  }
-  return { label: trimmed, detail: '' };
+  return splitLabeledFact(parallelizeVerdictPoint(point));
 }
 
 /** Prefer model bullets; else split prose into scannable Score Summary points. */

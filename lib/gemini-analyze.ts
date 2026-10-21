@@ -252,8 +252,18 @@ const LITE_RESPONSE_SCHEMA = {
       type: Type.OBJECT,
       properties: {
         mission: { type: Type.STRING },
-        responsibilities: { type: Type.ARRAY, items: { type: Type.STRING } },
-        hiring_signals: { type: Type.ARRAY, items: { type: Type.STRING } },
+        responsibilities: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING },
+          description:
+            '3–5 "Deliverable: who + named system/rail/metric" lines. Lead with the work-product keyword. No generic duties.',
+        },
+        hiring_signals: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING },
+          description:
+            '3–5 "Kind: fact" lines. Kind = Years, Skill, License, Domain, Degree, or System (report-language equivalent OK). Fact names the JD keyword, years, license, system, or domain. No vague paraphrases.',
+        },
       },
       required: ['mission', 'responsibilities', 'hiring_signals'],
     },

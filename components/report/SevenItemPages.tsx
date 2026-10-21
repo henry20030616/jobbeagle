@@ -13,6 +13,7 @@ import {
 import { REPORT_FRAME_BORDER } from '@/constants/report-frame';
 import { formatOfferRange, payEstimateScope } from '@/lib/offer-display';
 import { splitDecisionBrief } from '@/lib/decision-brief';
+import { splitLabeledFact } from '@/lib/score-summary';
 import { guideItemSummaries, snapshotItemSummaries } from '@/lib/report-item-summaries';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 import type { AppLanguage } from '@/lib/language-context';
@@ -352,12 +353,25 @@ function BriefRows({ items }: { items: string[] }) {
   if (items.length === 0) return null;
   return (
     <ul className="space-y-2 py-1">
-      {items.map((item) => (
-        <li key={item} className="flex gap-2.5">
-          <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-          <span className={`${BODY} font-medium text-slate-100 leading-snug`}>{item}</span>
-        </li>
-      ))}
+      {items.map((item) => {
+        const { label, detail } = splitLabeledFact(item);
+        return (
+          <li key={item} className="flex gap-2.5">
+            <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+            <span className={`${BODY} font-medium text-slate-100 leading-snug`}>
+              {detail ? (
+                <>
+                  <span className="font-bold text-blue-300">{label}</span>
+                  {item.includes('：') ? '：' : ': '}
+                  {detail}
+                </>
+              ) : (
+                item
+              )}
+            </span>
+          </li>
+        );
+      })}
     </ul>
   );
 }

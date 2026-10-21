@@ -82,8 +82,8 @@ const en: SampleGuideNarrative = {
     'The target sits at $168K because a US remote Senior Business Analyst band is about $145K–$190K. The resume can prove a 28% reconciliation cycle-time cut with SQL and Looker, but ACH returns ownership is only adjacent, so the number stays mid-band. The ceiling stops at $185K: there is no Staff-level scope and no second offer to push past it. Base $145K, about $12K a year of equity, and an $11K bonus are what add up to $168K. Equity and bonus are not items the resume already holds, so they are not existing rights.',
   buyer_seller:
     'This seat is still open, so they need someone and they can also keep waiting.\nThe resume fact you can use is a 28% reconciliation cycle-time cut with SQL and Looker. ACH returns ownership is not on the resume, so do not talk as if you already did that work.',
-  levelsTitle: 'Levels sample',
-  h1bWageTitle: 'H-1B wage sample',
+  levelsTitle: 'Levels.fyi — Business Analyst',
+  h1bWageTitle: 'H-1B wage data',
   culture: 'Public reviews describe a written, remote-friendly ops culture with tight cutoff deadlines.',
   labor_risk: 'No cited labor action in the sample sources. Treat this as unknown, not as a clean record.',
   layoff_risk:
@@ -108,9 +108,9 @@ const en: SampleGuideNarrative = {
     'On-call is expected during settlement incidents.',
     'Reviews do not describe a promotion pace for this seat. Confirm that with the recruiter.',
   ],
-  roleSourceTitle: 'Glassdoor role sample',
-  blindTitle: 'Blind sample',
-  warnTitle: 'WARN sample',
+  roleSourceTitle: 'Glassdoor — role reviews',
+  blindTitle: 'Blind — ops reviews',
+  warnTitle: 'DOL WARN notices',
   process:
     'Recruiter screen, hiring-manager case on a settlement break, then a panel. Sample shares put the loop at about three weeks.',
   company_summary:
@@ -177,8 +177,8 @@ const zhTW: SampleGuideNarrative = {
     '目標價放在 $168K，是因為這席在美國、可遠端的 Senior Business Analyst 市場帶大約 $145K–$190K。履歷能證明的是 SQL／Looker 把對帳週期縮短 28%，但 ACH 退票擁有權只是相鄰經驗，所以不站到帶的上緣。天花板停在 $185K：沒有 Staff 級範圍，也沒有第二份 offer 可以再往上推。底薪 $145K、股票約 $12K／年、獎金 $11K 加總才是 $168K；股票和獎金不是履歷已經拿到的項目，不能把它們說成既有權利。',
   buyer_seller:
     '這個位子還沒補上，所以他們需要人，也可以繼續等。\n履歷上能拿出來的，是用 SQL 與 Looker 把對帳週期縮短 28%。履歷沒有 ACH 退票擁有權，不要把這項說成已經做到。',
-  levelsTitle: 'Levels 範例',
-  h1bWageTitle: 'H-1B 薪資範例',
+  levelsTitle: 'Levels.fyi — Business Analyst',
+  h1bWageTitle: 'H-1B 薪資資料',
   culture: '公開評價描述的是重視書面、可遠端的營運文化，截止時間很緊。',
   labor_risk: '範例來源沒有引用勞資行動。這應視為未知，不是清白紀錄。',
   layoff_risk: '範例區間內沒有 WARN 通知。請向招募確認過去一年營運人力是否變動。',
@@ -202,9 +202,9 @@ const zhTW: SampleGuideNarrative = {
     '清算事故期間需要待命。',
     '評價沒有寫出這個位子的晉升節奏，上任前要向招募確認。',
   ],
-  roleSourceTitle: 'Glassdoor 職位評價範例',
-  blindTitle: 'Blind 範例',
-  warnTitle: 'WARN 範例',
+  roleSourceTitle: 'Glassdoor 職位評價',
+  blindTitle: 'Blind 營運討論',
+  warnTitle: 'DOL WARN 公告',
   process: '招募篩選、用人主管的清算差異案例，然後是小組面試。範例分享把整段流程放在大約三週。',
   company_summary:
     '公開評價寫的是重視書面溝通、可遠端的營運文化，截止時間很緊。範例區間沒有 WARN；近三年有 H-1B 申請，但這個位子是否贊助尚未確認。入職前向招募確認人力變動與簽證。',
@@ -270,8 +270,8 @@ const zhCN: SampleGuideNarrative = {
     '目标价放在 $168K，是因为这席在美国、可远程的 Senior Business Analyst 市场带大约 $145K–$190K。履历能证明的是 SQL／Looker 把对账周期缩短 28%，但 ACH 退票所有权只是相邻经验，所以不站到带的上沿。天花板停在 $185K：没有 Staff 级范围，也没有第二份 offer 可以再往上推。底薪 $145K、股票约 $12K／年、奖金 $11K 加总才是 $168K；股票和奖金不是履历已经拿到的项目，不能把它们说成既有权利。',
   buyer_seller:
     '这个位子还没补上，所以他们需要人，也可以继续等。\n简历上能拿出来的，是用 SQL 与 Looker 把对账周期缩短 28%。简历没有 ACH 退票所有权，不要把这项说成已经做到。',
-  levelsTitle: 'Levels 示例',
-  h1bWageTitle: 'H-1B 薪资示例',
+  levelsTitle: 'Levels.fyi — Business Analyst',
+  h1bWageTitle: 'H-1B 薪资资料',
   culture: '公开评价描述的是重视书面、可远程的运营文化，截止时间很紧。',
   labor_risk: '示例来源没有引用劳资行动。这应视为未知，不是清白记录。',
   layoff_risk: '示例区间内没有 WARN 通知。请向招聘确认过去一年运营人力是否变动。',
@@ -295,9 +295,9 @@ const zhCN: SampleGuideNarrative = {
     '清算事故期间需要待命。',
     '评价没有写出这个位子的晋升节奏，上任前要向招聘确认。',
   ],
-  roleSourceTitle: 'Glassdoor 职位评价示例',
-  blindTitle: 'Blind 示例',
-  warnTitle: 'WARN 示例',
+  roleSourceTitle: 'Glassdoor 职位评价',
+  blindTitle: 'Blind 运营讨论',
+  warnTitle: 'DOL WARN 公告',
   process: '招聘筛选、用人主管的清算差异案例，然后是小组面试。示例分享把整段流程放在大约三周。',
   company_summary:
     '公开评价写的是重视书面沟通、可远程的运营文化，截止时间很紧。示例区间没有 WARN；近三年有 H-1B 申请，但这个位子是否赞助尚未确认。入职前向招聘确认人力变动与签证。',
@@ -365,8 +365,8 @@ const es: SampleGuideNarrative = {
     'El objetivo queda en $168K porque la banda de un Senior Business Analyst remoto en Estados Unidos ronda $145K–$190K. El CV puede probar un recorte del 28% en el ciclo de conciliación con SQL y Looker, pero la propiedad de devoluciones ACH solo es adyacente, así que el número se queda a mitad de banda. El techo para en $185K: no hay alcance de nivel Staff ni una segunda oferta para subir más. La base de $145K, unos $12K al año en acciones y un bono de $11K son lo que suma $168K. Las acciones y el bono no son derechos que el CV ya tenga.',
   buyer_seller:
     'El puesto sigue abierto, así que necesitan a alguien y también pueden seguir esperando.\nEl hecho del CV que puedes usar es un recorte del 28% en el ciclo de conciliación con SQL y Looker. La propiedad de devoluciones ACH no está en el CV, así que no hables como si ya hubieras hecho ese trabajo.',
-  levelsTitle: 'Muestra de Levels',
-  h1bWageTitle: 'Muestra salarial H-1B',
+  levelsTitle: 'Levels.fyi — Business Analyst',
+  h1bWageTitle: 'Datos salariales H-1B',
   culture: 'Las reseñas públicas describen una cultura de operaciones por escrito, compatible con remoto y con cortes muy ajustados.',
   labor_risk: 'Las fuentes de la muestra no citan una acción laboral. Trátalo como desconocido, no como un historial limpio.',
   layoff_risk:
@@ -391,9 +391,9 @@ const es: SampleGuideNarrative = {
     'Hay guardia durante incidentes de liquidación.',
     'Las reseñas no describen el ritmo de promoción de este puesto. Confírmalo con el reclutador.',
   ],
-  roleSourceTitle: 'Muestra de reseñas del puesto',
-  blindTitle: 'Muestra de Blind',
-  warnTitle: 'Muestra de WARN',
+  roleSourceTitle: 'Glassdoor — reseñas del puesto',
+  blindTitle: 'Blind — reseñas de ops',
+  warnTitle: 'Avisos WARN de DOL',
   process:
     'Filtro del reclutador, caso del responsable de contratación sobre una diferencia de liquidación y después un panel. Las muestras sitúan el proceso en unas tres semanas.',
   company_summary:
@@ -462,8 +462,8 @@ const hi: SampleGuideNarrative = {
     'लक्ष्य $168K पर है क्योंकि अमेरिका में दूरस्थ Senior Business Analyst की पट्टी लगभग $145K–$190K है। रिज़्यूमे SQL और Looker से मिलान चक्र में 28% की कमी साबित कर सकता है, पर ACH रिटर्न की मालिकी केवल आसन्न है, इसलिए संख्या पट्टी के बीच में रहती है। छत $185K पर रुकती है: Staff स्तर का दायरा नहीं है और ऊपर धकेलने के लिए दूसरा ऑफ़र नहीं है। आधार $145K, लगभग $12K प्रति वर्ष इक्विटी और $11K बोनस मिलकर $168K बनते हैं। इक्विटी और बोनस रिज़्यूमे के मौजूदा अधिकार नहीं हैं।',
   buyer_seller:
     'यह सीट अभी खाली है, इसलिए उन्हें किसी की ज़रूरत है और वे इंतज़ार भी कर सकते हैं।\nरिज़्यूमे पर जो तथ्य इस्तेमाल कर सकते हैं, वह SQL और Looker से मिलान चक्र में 28% की कमी है। रिज़्यूमे में ACH रिटर्न की मालिकी नहीं है, इसलिए ऐसा न कहें कि यह काम आप कर चुके हैं।',
-  levelsTitle: 'Levels नमूना',
-  h1bWageTitle: 'H-1B वेतन नमूना',
+  levelsTitle: 'Levels.fyi — Business Analyst',
+  h1bWageTitle: 'H-1B वेतन डेटा',
   culture: 'सार्वजनिक समीक्षाएँ लिखित, दूरस्थ-अनुकूल संचालन संस्कृति बताती हैं, जिसमें कटऑफ बहुत कड़े हैं।',
   labor_risk: 'नमूना स्रोतों में कोई श्रम कार्रवाई उद्धृत नहीं है। इसे अज्ञात मानें, साफ़ रिकॉर्ड नहीं।',
   layoff_risk: 'नमूना अवधि में कोई WARN सूचना नहीं है। भर्तीकर्ता से पूछें कि पिछले वर्ष संचालन की संख्या बदली या नहीं।',
@@ -487,9 +487,9 @@ const hi: SampleGuideNarrative = {
     'सेटलमेंट घटनाओं के दौरान ऑन-कॉल अपेक्षित है।',
     'समीक्षाएँ इस पद की पदोन्नति गति नहीं लिखतीं। भर्तीकर्ता से पुष्टि करें।',
   ],
-  roleSourceTitle: 'पद समीक्षा नमूना',
-  blindTitle: 'Blind नमूना',
-  warnTitle: 'WARN नमूना',
+  roleSourceTitle: 'Glassdoor — पद समीक्षा',
+  blindTitle: 'Blind — ops चर्चा',
+  warnTitle: 'DOL WARN सूचनाएँ',
   process:
     'भर्तीकर्ता की जाँच, सेटलमेंट अंतर पर नियुक्ति प्रबंधक का केस, फिर पैनल। नमूना साझाकरण पूरी प्रक्रिया को लगभग तीन सप्ताह मानते हैं।',
   company_summary:
@@ -558,8 +558,8 @@ const ar: SampleGuideNarrative = {
     'الهدف عند $168K لأن نطاق Senior Business Analyst عن بُعد في الولايات المتحدة يقارب $145K–$190K. تستطيع السيرة إثبات اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker، لكن ملكية مرتجعات ACH مجاورة فقط، لذلك يبقى الرقم في منتصف النطاق. يتوقف السقف عند $185K: لا يوجد نطاق بمستوى Staff ولا عرض ثانٍ للدفع أعلى. الأساس $145K ونحو $12K سنوياً من الأسهم ومكافأة $11K هي ما يجمع $168K. الأسهم والمكافأة ليست حقوقاً تملكها السيرة أصلاً.',
   buyer_seller:
     'المقعد ما يزال شاغراً، فهم بحاجة إلى شخص ويمكنهم أيضاً مواصلة الانتظار.\nالحقيقة التي تستطيع استخدامها من السيرة هي اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. ملكية مرتجعات ACH ليست في السيرة، فلا تتحدث كأنك أنجزت هذا العمل.',
-  levelsTitle: 'عينة Levels',
-  h1bWageTitle: 'عينة أجر H-1B',
+  levelsTitle: 'Levels.fyi — Business Analyst',
+  h1bWageTitle: 'بيانات أجور H-1B',
   culture: 'تصف المراجعات العامة ثقافة عمليات مكتوبة وصديقة للعمل عن بُعد، مع مواعيد قطع ضيقة.',
   labor_risk: 'مصادر العينة لا تذكر إجراءً عمالياً. عامل هذا كمجهول، لا كسجل نظيف.',
   layoff_risk: 'لا يوجد إخطار WARN في نافذة العينة. اسأل المسؤول إن تغيّر عدد عمليات التشغيل خلال السنة الماضية.',
@@ -583,9 +583,9 @@ const ar: SampleGuideNarrative = {
     'المناوبة متوقعة أثناء حوادث التسوية.',
     'لا تصف المراجعات وتيرة الترقية لهذا المقعد. أكّد ذلك مع المسؤول.',
   ],
-  roleSourceTitle: 'عينة تقييم الدور',
-  blindTitle: 'عينة Blind',
-  warnTitle: 'عينة WARN',
+  roleSourceTitle: 'Glassdoor — تقييمات الدور',
+  blindTitle: 'Blind — نقاشات العمليات',
+  warnTitle: 'إشعارات DOL WARN',
   process:
     'فرز المسؤول، ثم حالة لدى مدير التوظيف عن فرق تسوية، ثم لجنة. تضع المشاركات في العينة الحلقة عند نحو ثلاثة أسابيع.',
   company_summary:

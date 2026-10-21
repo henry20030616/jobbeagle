@@ -199,6 +199,7 @@ ${SNAPSHOT_CALIBRATION_RULES}
 - apply_decision.reason / next_best_action: competitiveness and decision steps only — never resume rewrite coaching.
 - proof_map.strengths: 3–4 evidence-backed points. proof_map.gaps: 3–4 mismatches.
 - proof_map.resume_actions: 0–3 missing-proof facts only (not how-to edits).
+- role_read.hiring_signals = 3–5 "Kind: extractable fact" lines (Years / Skill / License / Domain / Degree / System, or report-language equivalents such as 年資／技能／證照／領域／學歷／系統). Name the JD keyword, number, license, system, or domain. Ban vague paraphrases. Do not invent licenses the JD does not name. role_read.responsibilities = 3–5 "Deliverable: who + named system/rail/metric" lines. Lead with the work-product keyword. Ban generic duties.
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps.
 
 === Strategy layer rules ===
