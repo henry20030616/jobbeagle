@@ -348,7 +348,6 @@ export async function executeLiteAnalysis(
     contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl) }],
     config: {
       systemInstruction: systemBase,
-      temperature: 0.3,
       maxOutputTokens: 8192,
       responseMimeType: 'application/json',
       responseSchema: LITE_RESPONSE_SCHEMA,
@@ -371,7 +370,6 @@ export async function executeLiteAnalysis(
       config: {
         systemInstruction:
           `${systemBase}\n\nCRITICAL: Return COMPLETE valid JSON only. Keep string fields concise (1–2 sentences each). Do not truncate. Tier D → null salary numbers.`,
-        temperature: 0.2,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
         responseSchema: LITE_RESPONSE_SCHEMA,
@@ -393,7 +391,6 @@ export async function executeLiteAnalysis(
       contents: [{ parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl) }],
       config: {
         systemInstruction: `${systemBase}\n\n${formatQualityRetryHint(firstPass.corrections)}`,
-        temperature: 0.2,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
         responseSchema: LITE_RESPONSE_SCHEMA,

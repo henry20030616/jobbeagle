@@ -76,7 +76,6 @@ Now output your critique in JSON format:`;
       model: 'gemini-1.5-flash',
       contents: [{ parts: [{ text: promptText }] }],
       config: {
-        temperature: 0.8, // High temperature for critical thinking
         maxOutputTokens: 2048,
         responseMimeType: 'application/json',
       },

@@ -63,7 +63,6 @@ async function generateJson(options: {
       contents: [{ parts: options.parts }],
       config: {
         systemInstruction: options.system,
-        temperature: 0.3,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
         ...(search ? { tools: [{ googleSearch: {} }] } : {}),

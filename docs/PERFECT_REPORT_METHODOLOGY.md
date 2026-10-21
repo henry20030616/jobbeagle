@@ -823,7 +823,6 @@ const response = await gemini.generateContent({
   generationConfig: {
     responseMimeType: 'application/json',
     responseSchema: PAGE4_INTERVIEW_SCHEMA,  // ← 硬约束
-    temperature: 0.7,
   },
 });
 
@@ -1024,7 +1023,7 @@ Rules:
 - Be EXTREMELY picky
 - Flag even minor issues
 - If unsure, mark as unverifiable
-- Use high temperature (0.8) to be more critical
+- Do not set temperature / top_p / top_k — Gemini 3+ rejects sampling params
 ```
 
 ### Quality Severity 定义

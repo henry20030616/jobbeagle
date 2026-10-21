@@ -66,7 +66,6 @@ export async function POST(request: NextRequest) {
       system_instruction: { parts: [{ text: systemInstruction }] },
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
-        temperature: 0.7,
         response_mime_type: "application/json",
       },
       safetySettings: [
