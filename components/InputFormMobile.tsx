@@ -539,13 +539,13 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               <Puzzle className="h-5 w-5 shrink-0 text-emerald-400" />
               <span className="text-base text-emerald-300 font-bold truncate">
                 {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
-                {[extensionCapture.company_name, extensionCapture.job_title].filter(
-                  (part) => part && !/^unknown (company|role)$/i.test(part),
-                ).length > 0
-                  ? ` · ${[extensionCapture.company_name, extensionCapture.job_title]
-                      .filter((part) => part && !/^unknown (company|role)$/i.test(part))
-                      .join(' · ')}`
-                  : ''}
+                {(() => {
+                  const parts = [extensionCapture.company_name, extensionCapture.job_title].filter(
+                    (part) =>
+                      part.length > 0 && !/^unknown (company|role)$/i.test(part),
+                  );
+                  return parts.length > 0 ? ` · ${parts.join(' · ')}` : '';
+                })()}
               </span>
             </div>
           ) : (

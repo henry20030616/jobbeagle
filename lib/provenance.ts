@@ -14,7 +14,7 @@ export function isValidHttpUrl(raw: string): boolean {
 }
 
 /** Real public pages only — example.com placeholders must never be clickable. */
-export function isCitableSourceUrl(raw: string | null | undefined): boolean {
+export function isCitableSourceUrl(raw: string | null | undefined): raw is string {
   const s = (raw ?? '').trim();
   if (!isValidHttpUrl(s)) return false;
   try {

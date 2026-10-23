@@ -52,10 +52,12 @@ function ReportChoiceMark({ selected }: { selected: boolean }) {
   );
 }
 
+function isCaptureChipPart(part: string | undefined): part is string {
+  return typeof part === 'string' && part.length > 0 && !/^unknown (company|role)$/i.test(part);
+}
+
 function captureChipParts(capture: { company_name?: string; job_title?: string }): string[] {
-  return [capture.company_name, capture.job_title].filter(
-    (part): part is string => Boolean(part) && !/^unknown (company|role)$/i.test(part),
-  );
+  return [capture.company_name, capture.job_title].filter(isCaptureChipPart);
 }
 
 function StepSequenceMark() {
