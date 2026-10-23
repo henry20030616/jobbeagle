@@ -572,9 +572,9 @@ const InputForm: React.FC<InputFormProps> = ({
   const captureParts = extensionCapture ? captureChipParts(extensionCapture) : [];
 
   return (
-    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-3 sm:gap-3.5 lg:gap-4'}`}>
+    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-8 sm:gap-10 lg:gap-12'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
-      <div className={`homepage-hero-wrap w-full min-w-0 shrink-0 space-y-2 px-2 text-center ${compactChrome ? 'py-1' : 'pt-1 sm:pt-2 pb-0'}`}>
+      <div className={`homepage-hero-wrap w-full min-w-0 shrink-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'pt-2 sm:pt-3 pb-1'}`}>
         <BrandLogo
           size={compactChrome ? 'nav' : 'hero'}
           showIcon
@@ -590,7 +590,7 @@ const InputForm: React.FC<InputFormProps> = ({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-4 sm:gap-5 lg:gap-6'}`}>
+      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-8 sm:gap-10 lg:gap-12'}`}>
         {!compactChrome && (
           <div className="homepage-features grid w-full shrink-0 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {([

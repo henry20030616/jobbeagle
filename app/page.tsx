@@ -536,7 +536,7 @@ export default function Home() {
     <div className="homepage-font-large flex min-h-dvh w-full flex-col items-stretch justify-start overflow-x-hidden overscroll-x-none bg-zinc-950 text-slate-200">
       {/* Side gutters keep the operator on-screen; main grows so steps 1–4 fill leftover height. */}
       <main className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col px-[3.5vw] sm:px-[4vw] lg:px-[4.5vw] xl:px-[5vw] py-3 sm:py-4 md:py-5">
-        <div className="mb-3 flex min-w-0 w-full shrink-0 items-center justify-between gap-2 sm:mb-4 sm:gap-3 lg:mb-5">
+        <div className="mb-5 flex min-w-0 w-full shrink-0 items-center justify-between gap-2 sm:mb-6 sm:gap-3 lg:mb-8">
           {/* Only show header logo when report is visible; InputForm has its own hero logo */}
           {report && <BrandLogo size="nav" showIcon />}
           <div className={`homepage-header-controls flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 lg:gap-3 min-w-0 max-w-full ${!report ? 'ml-auto' : ''}`}>
