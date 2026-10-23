@@ -434,8 +434,8 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           {t.description}
         </p>
         {extensionCapture && (
-          <p className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-300">
-            <Puzzle className="h-3 w-3 shrink-0" />
+          <p className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-300">
+            <Puzzle className="h-4 w-4 shrink-0" />
             <span className="truncate">
               {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
             </span>
@@ -543,12 +543,16 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             <span>{t.jobData}</span>
           </h2>
           {extensionCapture ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
-              <Puzzle className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
-              <span className="text-xs text-emerald-300 font-medium truncate">
-                {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
-                {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).length > 0
-                  ? ` · ${[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ')}`
+            <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
+              <Puzzle className="h-5 w-5 shrink-0 text-emerald-400" />
+              <span className="text-base text-emerald-300 font-bold truncate">
+                {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
+                {[extensionCapture.company_name, extensionCapture.job_title].filter(
+                  (part) => part && !/^unknown (company|role)$/i.test(part),
+                ).length > 0
+                  ? ` · ${[extensionCapture.company_name, extensionCapture.job_title]
+                      .filter((part) => part && !/^unknown (company|role)$/i.test(part))
+                      .join(' · ')}`
                   : ''}
               </span>
             </div>

@@ -51,6 +51,12 @@ function ReportChoiceMark({ selected }: { selected: boolean }) {
   );
 }
 
+function captureChipParts(capture: { company_name?: string; job_title?: string }): string[] {
+  return [capture.company_name, capture.job_title].filter(
+    (part): part is string => Boolean(part) && !/^unknown (company|role)$/i.test(part),
+  );
+}
+
 function StepSequenceMark() {
   return (
     <div className="flex items-center justify-center self-stretch">
@@ -560,6 +566,7 @@ const InputForm: React.FC<InputFormProps> = ({
     !jobDescription ||
     blocked ||
     (!publicAts && !resume);
+  const captureParts = extensionCapture ? captureChipParts(extensionCapture) : [];
 
   return (
     <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-3 sm:gap-4 lg:gap-5'}`}>
@@ -579,8 +586,8 @@ const InputForm: React.FC<InputFormProps> = ({
           {t.description}
         </p>
         {extensionCapture && (
-          <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300/90">
-            <Puzzle className="h-4 w-4 shrink-0" />
+          <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-4 py-2.5 text-lg sm:text-xl lg:text-2xl font-medium text-emerald-300/90">
+            <Puzzle className="h-6 w-6 sm:h-7 sm:w-7 shrink-0" />
             <span className="truncate">
               {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
             </span>
@@ -675,15 +682,13 @@ const InputForm: React.FC<InputFormProps> = ({
               <div className={STEP_PILL_ROW}>
                 {extensionCapture ? (
                   <span
-                    className="inline-flex max-w-full items-center gap-1.5 truncate rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm text-emerald-300"
-                    title={[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ') || undefined}
+                    className="inline-flex max-w-full items-center gap-2 sm:gap-3 truncate rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 text-base sm:text-lg lg:text-xl xl:text-2xl text-emerald-300"
+                    title={captureParts.join(' · ') || undefined}
                   >
-                    <Puzzle className="h-4 w-4 shrink-0" />
+                    <Puzzle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 shrink-0" />
                     <span className="truncate font-bold">
                       {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
-                      {[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).length > 0
-                        ? ` · ${[extensionCapture.company_name, extensionCapture.job_title].filter(Boolean).join(' · ')}`
-                        : ''}
+                      {captureParts.length > 0 ? ` · ${captureParts.join(' · ')}` : ''}
                     </span>
                   </span>
                 ) : (
