@@ -679,13 +679,13 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                 type="button"
                 onClick={handleManualSave}
                 disabled={isSaving}
-                className={`inline-flex items-center justify-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-bold transition-all ${
+                className={`inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-base font-bold transition-all ${
                   isSaving
                     ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400/50'
                     : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
                 }`}
               >
-                <Save className="h-3.5 w-3.5" />
+                <Save className="h-5 w-5" />
                 {isSaving ? t.saving : showSaveSuccess ? t.saved : t.save}
               </button>
             </>
