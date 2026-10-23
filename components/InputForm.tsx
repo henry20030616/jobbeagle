@@ -21,23 +21,23 @@ import {
 } from '@/constants/report-frame';
 
 const PILL =
-  'inline-flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border border-indigo-500/20 transition-all whitespace-nowrap max-w-full';
+  'inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border border-indigo-500/20 transition-all';
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-6 sm:p-9 lg:p-12 xl:p-14`;
+  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-8 lg:p-10 xl:p-12`;
 const STEP_TITLE =
-  'step-title flex h-[4.5rem] sm:h-[5.75rem] lg:h-[7.25rem] shrink-0 items-center overflow-hidden pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+  'step-title flex min-h-[4rem] sm:min-h-[5rem] lg:min-h-[6.375rem] shrink-0 items-center pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
-  'mb-4 sm:mb-5 lg:mb-6 flex h-[4.5rem] sm:h-[6.25rem] lg:h-[8rem] w-full min-w-0 shrink-0 items-center overflow-hidden';
+  'mb-4 sm:mb-5 lg:mb-6 flex min-h-[4rem] sm:min-h-[5.5rem] lg:min-h-[7rem] w-full min-w-0 shrink-0 items-center';
 /** Shared content shell height — steps 1–4 bottom boxes align */
-const STEP_BODY_MIN = 'min-h-[32rem] sm:min-h-[40rem] lg:min-h-[48rem]';
-const STEP_BODY = `flex ${STEP_BODY_MIN} flex-1 flex-col`;
+const STEP_BODY_MIN = 'min-h-[28rem] sm:min-h-[35rem] lg:min-h-[42rem]';
+const STEP_BODY = `flex ${STEP_BODY_MIN} min-w-0 flex-1 flex-col overflow-hidden`;
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
-const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} flex-1 grid-rows-3 gap-3 sm:gap-4 lg:gap-5`;
-const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5`;
+const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-3 gap-3 sm:gap-4 lg:gap-5 overflow-hidden`;
+const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5 overflow-hidden`;
 const REPORT_CARD =
-  'w-full min-h-0 h-full rounded-xl border-2 px-4 sm:px-5 lg:px-6 xl:px-7 py-4 sm:py-5 lg:py-6 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
+  'w-full min-h-0 h-full rounded-xl border-2 px-3 sm:px-4 lg:px-5 xl:px-6 py-3 sm:py-4 lg:py-5 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
 
 function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
@@ -62,8 +62,8 @@ function StepSequenceMark() {
   return (
     <div className="flex items-center justify-center self-stretch">
       <div className={STEP_CONNECTOR} aria-hidden>
-        <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
-          <ChevronRight className="h-12 w-12" strokeWidth={2.75} />
+        <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
+          <ChevronRight className="h-10 w-10" strokeWidth={2.75} />
         </span>
       </div>
       <div className="flex justify-center py-3 text-indigo-300 lg:hidden" aria-hidden>
@@ -580,7 +580,7 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`homepage-hero-desc mx-auto w-full max-w-[88rem] text-pretty text-center font-semibold leading-snug text-zinc-400 ${
+          className={`homepage-hero-desc mx-auto w-full max-w-[min(100%,72rem)] text-balance text-center font-semibold leading-snug text-zinc-400 ${
             compactChrome ? 'text-sm sm:text-base md:text-lg' : ''
           }`}
         >
@@ -670,7 +670,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-500" />
-                <span className="truncate leading-snug">{t.jobData}</span>
+                <span className="min-w-0 leading-snug">{t.jobData}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
                 {extensionCapture ? (
@@ -679,7 +679,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     title={captureParts.join(' · ') || undefined}
                   >
                     <Puzzle className="h-4 w-4 shrink-0" />
-                    <span className="min-w-0 truncate font-bold">
+                    <span className="min-w-0 truncate font-bold whitespace-nowrap">
                       {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
                       {captureParts.length > 0 ? ` · ${captureParts.join(' · ')}` : ''}
                     </span>
@@ -691,7 +691,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     title={zh ? '職缺頁可一鍵抓 JD，免手動貼上' : 'On a job page? Grab the JD in one click — no paste'}
                   >
                     <Puzzle className="h-4 w-4 shrink-0" />
-                    <span className="font-bold">
+                    <span className="min-w-0 truncate font-bold">
                       {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
                     </span>
                   </Link>
@@ -743,7 +743,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   aria-haspopup="listbox"
                 >
                   <History className="h-[1em] w-[1em] shrink-0" />
-                  <span className="font-bold">{t.resumeLibrary}</span>
+                  <span className="min-w-0 truncate font-bold">{t.resumeLibrary}</span>
                   {resumeHistory.length > 0 && <span className="font-bold">({resumeHistory.length})</span>}
                 </button>
                 {showHistoryDropdown && (
@@ -861,7 +861,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-emerald-500" />
-                <span className="truncate leading-snug">{t.reportTypeStep}</span>
+                <span className="min-w-0 leading-snug">{t.reportTypeStep}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
                 {onReportTypeChange ? (
@@ -871,7 +871,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     title={`${creditsPillShort}${creditsPillDetail} → — ${creditsPillTitle}`}
                   >
                     <CreditCard className="h-5 w-5 shrink-0" />
-                    <span className="font-bold leading-snug">
+                    <span className="min-w-0 truncate font-bold leading-snug">
                       {creditsPillShort}
                       <span className="hidden group-hover:inline group-focus-within:inline">
                         {creditsPillDetail}
@@ -946,7 +946,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className={`${STEP_COL} relative z-0 bg-slate-700/30`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
-                <span className="truncate leading-snug">{t.launchStep}</span>
+                <span className="min-w-0 leading-snug">{t.launchStep}</span>
               </h2>
               <div className={STEP_PILL_ROW} aria-hidden />
               <div className={`${STEP_BODY} relative z-10`}>
