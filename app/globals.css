@@ -176,45 +176,76 @@ main input {
 }
 
 /*
- * Desktop homepage type — three rungs only.
- * Hero / UI / step titles. Header, referral, and footer stay product chrome.
- * Do not remap every Tailwind text-* utility (that overfit the layout).
+ * Desktop homepage type — hero / UI / step / chrome.
+ * Header, features, referral, and footer use the same scale as the operator.
  */
 @media (min-width: 1024px) {
   .homepage-font-large {
-    --type-hero: 2.75rem;
+    --type-hero: 3.1rem;
     --type-ui: 2.75rem;
     --type-step: 3.75rem;
+    --type-chrome: 2.15rem;
   }
 
-  .homepage-font-large .homepage-header-controls .text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
-  .homepage-font-large .homepage-header-controls .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
-  .homepage-font-large .homepage-header-controls .text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
-  .homepage-font-large .homepage-header-controls .text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-header-controls .text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-header-controls .text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
-  .homepage-font-large .homepage-header-controls .sm\:text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
-  .homepage-font-large .homepage-header-controls .sm\:text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-header-controls .lg\:h-16 { height: 2.75rem !important; }
+  .homepage-font-large .homepage-header-controls .text-xs { font-size: 1.65rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .text-sm { font-size: 1.85rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .text-base { font-size: 1.85rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .text-lg { font-size: 2rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .text-xl { font-size: 2rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .text-2xl { font-size: 2.15rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .sm\:text-base { font-size: 1.85rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .sm\:text-lg { font-size: 2rem !important; line-height: 1.3 !important; }
+  .homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: 2rem !important; line-height: 1.3 !important; }
 
-  .homepage-font-large .homepage-referral .text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-referral .text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+  .homepage-font-large .homepage-referral .text-lg,
+  .homepage-font-large .homepage-referral .text-xl {
+    font-size: var(--type-ui) !important;
+    line-height: 1.35 !important;
+  }
   .homepage-font-large .homepage-referral .w-6,
-  .homepage-font-large .homepage-referral .h-6 { width: 1.25rem !important; height: 1.25rem !important; }
+  .homepage-font-large .homepage-referral .h-6 { width: 2rem !important; height: 2rem !important; }
   .homepage-font-large .homepage-referral .w-5,
-  .homepage-font-large .homepage-referral .h-5 { width: 1.125rem !important; height: 1.125rem !important; }
+  .homepage-font-large .homepage-referral .h-5 { width: 1.75rem !important; height: 1.75rem !important; }
 
   .homepage-font-large .homepage-footer { margin-top: 0.75rem !important; }
-  .homepage-font-large .homepage-footer .text-xs { font-size: 0.875rem !important; line-height: 1.25rem !important; }
-  .homepage-font-large .homepage-footer .text-sm { font-size: 1rem !important; line-height: 1.5rem !important; }
-  .homepage-font-large .homepage-footer .text-base { font-size: 1.125rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-footer .text-lg { font-size: 1.25rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-footer .text-xl { font-size: 1.35rem !important; line-height: 1.85rem !important; }
-  .homepage-font-large .homepage-footer .text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
-  .homepage-font-large .homepage-footer .lg\:text-lg { font-size: 1.25rem !important; line-height: 1.75rem !important; }
-  .homepage-font-large .homepage-footer .lg\:text-xl { font-size: 1.35rem !important; line-height: 1.85rem !important; }
-  .homepage-font-large .homepage-footer .lg\:text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+  .homepage-font-large .homepage-footer .text-xs,
+  .homepage-font-large .homepage-footer .sm\:text-xs,
+  .homepage-font-large .homepage-footer .text-sm,
+  .homepage-font-large .homepage-footer .sm\:text-sm,
+  .homepage-font-large .homepage-footer .text-base,
+  .homepage-font-large .homepage-footer .lg\:text-lg,
+  .homepage-font-large .homepage-footer .text-lg {
+    font-size: var(--type-chrome) !important;
+    line-height: 1.4 !important;
+  }
+  .homepage-font-large .homepage-footer .text-xl,
+  .homepage-font-large .homepage-footer .lg\:text-xl,
+  .homepage-font-large .homepage-footer .text-2xl,
+  .homepage-font-large .homepage-footer .lg\:text-2xl {
+    font-size: var(--type-ui) !important;
+    line-height: 1.3 !important;
+  }
+
+  .homepage-font-large .homepage-features .text-lg,
+  .homepage-font-large .homepage-features .sm\:text-lg,
+  .homepage-font-large .homepage-features .text-xl,
+  .homepage-font-large .homepage-features .sm\:text-xl,
+  .homepage-font-large .homepage-features .lg\:text-2xl,
+  .homepage-font-large .homepage-features .xl\:text-3xl,
+  .homepage-font-large .homepage-features .text-2xl,
+  .homepage-font-large .homepage-features .text-3xl {
+    font-size: var(--type-ui) !important;
+    line-height: 1.3 !important;
+  }
+  .homepage-font-large .homepage-features .text-sm,
+  .homepage-font-large .homepage-features .sm\:text-sm,
+  .homepage-font-large .homepage-features .text-base,
+  .homepage-font-large .homepage-features .sm\:text-base,
+  .homepage-font-large .homepage-features .lg\:text-lg,
+  .homepage-font-large .homepage-features .xl\:text-2xl {
+    font-size: var(--type-chrome) !important;
+    line-height: 1.4 !important;
+  }
 
   .homepage-font-large .homepage-hero-desc {
     font-size: var(--type-hero) !important;
@@ -229,7 +260,7 @@ main input {
     line-height: 1.3 !important;
   }
   .homepage-font-large .feature-desc {
-    font-size: 2.15rem !important;
+    font-size: var(--type-chrome) !important;
     line-height: 1.4 !important;
   }
   .homepage-font-large .step-title,
