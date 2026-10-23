@@ -109,6 +109,11 @@ describe('getExtensionScrapeError', () => {
     expect(getExtensionScrapeError('no_job_page', 'es')).toContain('LinkedIn');
   });
 
+  it('returns Traditional Chinese for scrape_failed when the UI is zh-TW', () => {
+    expect(getExtensionScrapeError('scrape_failed', 'zh-TW')).toMatch(/抓取失敗|太短/);
+    expect(getExtensionScrapeError('scrape_failed', 'zh-TW')).not.toMatch(/Job scrape failed/);
+  });
+
   it('returns null for unknown keys', () => {
     expect(getExtensionScrapeError('not_a_real_key', 'en')).toBeNull();
   });

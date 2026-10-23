@@ -39,3 +39,25 @@ export function getExtensionScrapeError(
   const entry = EXTENSION_SCRAPE_ERRORS[key as ExtensionScrapeErrorKey];
   return language === 'zh-TW' || language === 'zh-CN' ? entry['zh-TW'] : entry.en;
 }
+
+export function extensionScrapeBannerChrome(language: string): {
+  title: string;
+  hint: string;
+} {
+  if (language === 'zh-CN') {
+    return {
+      title: '职位还没抓到',
+      hint: '也可以直接在下面第 1 步贴上完整职位内容。',
+    };
+  }
+  if (language === 'zh-TW') {
+    return {
+      title: '職缺還沒抓到',
+      hint: '也可以直接在下方第 1 步貼上完整職缺內容。',
+    };
+  }
+  return {
+    title: 'Job not captured yet',
+    hint: 'You can also paste the full job description in step 1 below.',
+  };
+}

@@ -30,6 +30,7 @@ import {
   formatCapturedJd,
 } from '@/lib/payload';
 import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
+import ExtensionScrapeBanner from '@/components/ExtensionScrapeBanner';
 
 interface ReportSummary {
   id: string;
@@ -141,6 +142,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [scrapeErrorKey, setScrapeErrorKey] = useState<string | null>(null);
   const [lastReportId, setLastReportId] = useState<string | null>(null);
   const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -190,13 +192,8 @@ export default function Home() {
           '',
           `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`,
         );
-      } else {
-        const scrapeMsg = scrapeErrorKey
-          ? getExtensionScrapeError(scrapeErrorKey, language)
-          : null;
-        if (scrapeMsg) {
-          setError(scrapeMsg);
-        }
+      } else if (scrapeErrorKey && getExtensionScrapeError(scrapeErrorKey, language)) {
+        setScrapeErrorKey(scrapeErrorKey);
       }
 
       const ref = urlParams.get('ref');
@@ -396,12 +393,14 @@ export default function Home() {
     setReport(null);
     setError(null);
     setErrorCode(null);
+    setScrapeErrorKey(null);
     sessionStorage.removeItem('jb_last_report_id');
     clearReportSession();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGenerate = async (inputs: UserInputs) => {
+    setScrapeErrorKey(null);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -705,6 +704,23 @@ export default function Home() {
             onDismiss={() => { setError(null); setErrorCode(null); }}
           />
         )}
+        {scrapeErrorKey ? (
+          <ExtensionScrapeBanner
+            errorKey={scrapeErrorKey}
+            language={language}
+            onDismiss={() => {
+              setScrapeErrorKey(null);
+              const url = new URL(window.location.href);
+              url.searchParams.delete('error');
+              const qs = url.searchParams.toString();
+              window.history.replaceState(
+                {},
+                '',
+                `${url.pathname}${qs ? `?${qs}` : ''}${url.hash}`,
+              );
+            }}
+          />
+        ) : null}
         {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'AUTH_REQUIRED' && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
             <div className="flex items-start justify-between">

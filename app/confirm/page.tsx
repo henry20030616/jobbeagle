@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/browser';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { decodePayloadParamForPreFlight, formatCapturedJd } from '@/lib/payload';
 import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
+import ExtensionScrapeBanner from '@/components/ExtensionScrapeBanner';
 import type { LiteReport, ReportType, UserInputs, UserProfile } from '@/types';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import {
@@ -153,18 +154,12 @@ export default function ConfirmPage() {
     }
 
     loadJob();
-    const scrapeMsg = scrapeErrorKey
-      ? getExtensionScrapeError(scrapeErrorKey, language)
-      : null;
-    if (scrapeMsg) {
-      setError(scrapeMsg);
-    }
     loadSession();
 
     return () => {
       cancelled = true;
     };
-  }, [sidParam, payloadParam, scrapeErrorKey, loadSession, embedded, language]);
+  }, [sidParam, payloadParam, loadSession, embedded]);
 
   useEffect(() => {
     trackEvent(ANALYTICS_EVENTS.confirmView, {
@@ -387,6 +382,18 @@ export default function ConfirmPage() {
             />
           </div>
         )}
+        {scrapeErrorKey && getExtensionScrapeError(scrapeErrorKey, language) ? (
+          <ExtensionScrapeBanner
+            errorKey={scrapeErrorKey}
+            language={language}
+            onDismiss={() => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.delete('error');
+              const qs = params.toString();
+              router.replace(qs ? `/confirm?${qs}` : '/confirm');
+            }}
+          />
+        ) : null}
         {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'AUTH_REQUIRED' && (
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-200 text-sm">
             <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />

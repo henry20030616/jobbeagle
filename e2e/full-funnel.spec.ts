@@ -62,6 +62,19 @@ test.describe('Full funnel — public surfaces', () => {
     await expect(page).not.toHaveURL(/error=no_job_page/);
   });
 
+  test('/?error=scrape_failed is a capture warning, not Analysis Failed', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('jobbeagle_language', 'zh-TW');
+    });
+    await page.goto('/?error=scrape_failed');
+    await expect(page.locator('.homepage-steps')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /Analysis Failed|分析失敗/ })).toHaveCount(0);
+    await expect(page.locator('pre')).toHaveCount(0);
+    await expect(page.getByText('職缺還沒抓到')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/抓取失敗|太短/)).toBeVisible();
+    await expect(page.getByText(/第 1 步貼上/)).toBeVisible();
+  });
+
   test('Sample opens the sample reports', async ({ page }) => {
     await page.goto('/');
     const sample = page.getByRole('link', { name: /View report samples|查看報告範例/ });
