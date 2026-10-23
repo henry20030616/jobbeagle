@@ -25,13 +25,13 @@ const PILL =
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-6 lg:p-7`;
+  `relative flex h-full min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-6 lg:p-7`;
 const STEP_TITLE =
   'step-title flex shrink-0 items-center pb-3 lg:pb-4 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
   'mb-3 lg:mb-4 flex min-h-[2.75rem] w-full min-w-0 shrink-0 items-center';
-/** Content-sized shell — cards follow type, they do not fill leftover viewport. */
-const STEP_BODY_MIN = 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-[20rem]';
+/** Mobile floor; desktop bodies grow with the flex-1 step row. */
+const STEP_BODY_MIN = 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-0';
 const STEP_BODY = `flex ${STEP_BODY_MIN} min-w-0 flex-1 flex-col overflow-hidden`;
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
 const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-3 gap-3 sm:gap-4 overflow-hidden`;
@@ -572,7 +572,7 @@ const InputForm: React.FC<InputFormProps> = ({
   const captureParts = extensionCapture ? captureChipParts(extensionCapture) : [];
 
   return (
-    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-8 sm:gap-10 lg:gap-12'}`}>
+    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-5 sm:gap-6 lg:gap-7'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
       <div className={`homepage-hero-wrap w-full min-w-0 shrink-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'pt-2 sm:pt-4 pb-1'}`}>
         <BrandLogo
@@ -590,7 +590,7 @@ const InputForm: React.FC<InputFormProps> = ({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-8 sm:gap-10 lg:gap-12'}`}>
+      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-5 sm:gap-6 lg:gap-7'}`}>
         {!compactChrome && (
           <div className="homepage-features grid w-full shrink-0 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {([
@@ -667,7 +667,7 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
 
         {/* Classic 1→4 operator: separate cards with sequence arrows */}
-        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-5 lg:gap-y-6">
+        <div className="homepage-steps grid w-full min-h-0 min-w-0 flex-1 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-5 lg:gap-y-6">
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>

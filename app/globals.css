@@ -205,7 +205,7 @@ main input {
   .homepage-font-large .homepage-referral .w-5,
   .homepage-font-large .homepage-referral .h-5 { width: 1.125rem !important; height: 1.125rem !important; }
 
-  .homepage-font-large .homepage-footer { margin-top: 2rem; }
+  .homepage-font-large .homepage-footer { margin-top: 0.75rem !important; }
   .homepage-font-large .homepage-footer .text-xs { font-size: 0.875rem !important; line-height: 1.25rem !important; }
   .homepage-font-large .homepage-footer .text-sm { font-size: 1rem !important; line-height: 1.5rem !important; }
   .homepage-font-large .homepage-footer .text-base { font-size: 1.125rem !important; line-height: 1.75rem !important; }
