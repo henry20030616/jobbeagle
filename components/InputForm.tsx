@@ -29,7 +29,7 @@ const STEP_COL =
 const STEP_TITLE =
   'step-title flex shrink-0 items-center pb-3 lg:pb-4 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
-  'mb-3 lg:mb-4 flex min-h-[2.75rem] w-full min-w-0 shrink-0 items-center';
+  'mb-3 lg:mb-4 flex min-h-0 w-full min-w-0 shrink-0 items-center';
 /** Mobile floor; desktop bodies grow with the flex-1 step row. */
 const STEP_BODY_MIN = 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-0';
 const STEP_BODY = `flex ${STEP_BODY_MIN} min-w-0 flex-1 flex-col overflow-hidden`;
@@ -42,12 +42,12 @@ const REPORT_CARD =
 function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
     <span
-      className={`flex h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 shrink-0 items-center justify-center rounded-full border-2 ${
+      className={`flex h-8 w-8 sm:h-10 sm:w-10 lg:h-14 lg:w-14 shrink-0 items-center justify-center rounded-full border-2 ${
         selected ? 'border-white bg-white text-[#3d3c7c]' : 'border-white/80 bg-transparent'
       }`}
       aria-hidden
     >
-      {selected ? <Check className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" strokeWidth={3} /> : null}
+      {selected ? <Check className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8" strokeWidth={3} /> : null}
     </span>
   );
 }
@@ -642,7 +642,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     className="flex w-full items-center gap-3 sm:gap-4 lg:gap-5 rounded-2xl border border-slate-700 bg-slate-800/80 p-4 sm:p-6 lg:p-8 text-left shadow-xl backdrop-blur-sm transition-colors hover:bg-slate-700/40"
                   >
                     <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 sm:p-4 lg:p-5 shadow-inner ring-1 ${item.iconWrap}`}>
-                      <Icon className={`h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
+                      <Icon className={`h-7 w-7 sm:h-8 sm:w-8 lg:h-12 lg:w-12 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
@@ -671,7 +671,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-500" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-500" />
                 <span className="min-w-0 leading-snug">{t.jobData}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
@@ -680,7 +680,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     className={`${PILL} border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20`}
                     title={captureParts.join(' · ') || undefined}
                   >
-                    <Puzzle className="h-4 w-4 shrink-0" />
+                    <Puzzle className="h-[1em] w-[1em] shrink-0" />
                     <span className="min-w-0 truncate font-bold whitespace-nowrap">
                       {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
                       {captureParts.length > 0 ? ` · ${captureParts.join(' · ')}` : ''}
@@ -692,7 +692,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     className={PILL}
                     title={zh ? '職缺頁可一鍵抓 JD，免手動貼上' : 'On a job page? Grab the JD in one click — no paste'}
                   >
-                    <Puzzle className="h-4 w-4 shrink-0" />
+                    <Puzzle className="h-[1em] w-[1em] shrink-0" />
                     <span className="min-w-0 truncate font-bold">
                       {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
                     </span>
@@ -733,7 +733,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 2. Resume — overflow-visible so Saved Resumes dropdown can open */}
             <div className={`${STEP_COL} overflow-visible`}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-violet-500" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-violet-500" />
                 <span className="whitespace-nowrap">{t.resume}</span>
               </h2>
               <div className={`relative z-40 ${STEP_PILL_ROW} overflow-visible`}>
@@ -804,8 +804,8 @@ const InputForm: React.FC<InputFormProps> = ({
                       htmlFor="resume-file-input"
                       className="group relative z-10 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl px-3 py-4 text-center hover:bg-slate-700/30 sm:px-4 sm:py-5"
                     >
-                      <div className="rounded-full border border-slate-700 bg-slate-800 p-3 sm:p-4 transition-colors group-hover:border-indigo-500/30 group-hover:bg-indigo-500/20">
-                        <Upload className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 text-slate-400 group-hover:text-indigo-400" />
+                      <div className="rounded-full border border-slate-700 bg-slate-800 p-3 sm:p-4 lg:p-5 transition-colors group-hover:border-indigo-500/30 group-hover:bg-indigo-500/20">
+                        <Upload className="h-7 w-7 sm:h-8 sm:w-8 lg:h-16 lg:w-16 text-slate-400 group-hover:text-indigo-400" />
                       </div>
                       <div className="min-w-0 text-center">
                         <p className="upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-slate-400">{t.upload}</p>
@@ -862,7 +862,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 3. Report type — Snapshot + Guide + Compare (3 equal boxes) */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-emerald-500" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-emerald-500" />
                 <span className="min-w-0 leading-snug">{t.reportTypeStep}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
@@ -872,7 +872,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     className={`${PILL} group max-w-full`}
                     title={`${creditsPillShort}${creditsPillDetail} → — ${creditsPillTitle}`}
                   >
-                    <CreditCard className="h-5 w-5 shrink-0" />
+                    <CreditCard className="h-[1em] w-[1em] shrink-0" />
                     <span className="min-w-0 truncate font-bold leading-snug">
                       {creditsPillShort}
                       <span className="hidden group-hover:inline group-focus-within:inline">
@@ -919,7 +919,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       <span className="flex items-start justify-between gap-3">
                         <span className="flex flex-wrap items-center gap-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
                           {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                          <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 shrink-0 text-indigo-100" />
+                          <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-10 lg:w-10 shrink-0 text-indigo-100" />
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE} />
                       </span>
@@ -947,7 +947,7 @@ const InputForm: React.FC<InputFormProps> = ({
             {/* 4. Launch — same title/pill spacers so content box aligns */}
             <div className={`${STEP_COL} relative z-0 bg-slate-700/30`}>
               <h2 className={STEP_TITLE}>
-                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
+                <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
                 <span className="min-w-0 leading-snug">{t.launchStep}</span>
               </h2>
               <div className={STEP_PILL_ROW} aria-hidden />
@@ -991,7 +991,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   ) : (
                     <>
                       <span className="px-1 leading-snug">{submitLabel}</span>
-                      <Pointer className="h-[3.75rem] w-[3.75rem] shrink-0" aria-hidden />
+                      <Pointer className="h-[4.5rem] w-[4.5rem] shrink-0" aria-hidden />
                     </>
                   )}
                 </button>
