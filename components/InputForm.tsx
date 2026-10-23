@@ -586,16 +586,6 @@ const InputForm: React.FC<InputFormProps> = ({
         >
           {t.description}
         </p>
-        {extensionCapture ? (
-          <div className="flex justify-center">
-            <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-300/90">
-              <Puzzle className="h-4 w-4 shrink-0" />
-              <span className="truncate">
-                {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
-              </span>
-            </p>
-          </div>
-        ) : null}
       </div>
 
       <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-8 sm:gap-12 lg:gap-16 xl:gap-20'}`}>

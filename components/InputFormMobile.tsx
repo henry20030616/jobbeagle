@@ -433,14 +433,6 @@ const InputFormMobile: React.FC<InputFormProps> = ({
         <p className="homepage-hero-desc px-2 text-center text-[0.6rem] font-semibold leading-snug text-slate-400">
           {t.description}
         </p>
-        {extensionCapture && (
-          <p className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-300">
-            <Puzzle className="h-4 w-4 shrink-0" />
-            <span className="truncate">
-              {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
-            </span>
-          </p>
-        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
