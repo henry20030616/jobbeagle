@@ -25,19 +25,19 @@ const PILL =
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-8 lg:p-10 xl:p-12`;
+  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-6 sm:p-9 lg:p-12 xl:p-14`;
 const STEP_TITLE =
-  'step-title flex h-[4rem] sm:h-[5rem] lg:h-[6.375rem] shrink-0 items-center overflow-hidden pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+  'step-title flex h-[4.5rem] sm:h-[5.75rem] lg:h-[7.25rem] shrink-0 items-center overflow-hidden pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
-  'mb-4 sm:mb-5 lg:mb-6 flex h-[4rem] sm:h-[5.5rem] lg:h-[7rem] w-full min-w-0 shrink-0 items-center overflow-hidden';
+  'mb-4 sm:mb-5 lg:mb-6 flex h-[4.5rem] sm:h-[6.25rem] lg:h-[8rem] w-full min-w-0 shrink-0 items-center overflow-hidden';
 /** Shared content shell height — steps 1–4 bottom boxes align */
-const STEP_BODY_MIN = 'min-h-[28rem] sm:min-h-[35rem] lg:min-h-[42rem]';
+const STEP_BODY_MIN = 'min-h-[32rem] sm:min-h-[40rem] lg:min-h-[48rem]';
 const STEP_BODY = `flex ${STEP_BODY_MIN} flex-1 flex-col`;
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
 const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} flex-1 grid-rows-3 gap-3 sm:gap-4 lg:gap-5`;
 const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5`;
 const REPORT_CARD =
-  'w-full min-h-0 h-full rounded-xl border-2 px-3 sm:px-4 lg:px-5 xl:px-6 py-3 sm:py-4 lg:py-5 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
+  'w-full min-h-0 h-full rounded-xl border-2 px-4 sm:px-5 lg:px-6 xl:px-7 py-4 sm:py-5 lg:py-6 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
 
 function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
@@ -62,8 +62,8 @@ function StepSequenceMark() {
   return (
     <div className="flex items-center justify-center self-stretch">
       <div className={STEP_CONNECTOR} aria-hidden>
-        <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
-          <ChevronRight className="h-10 w-10" strokeWidth={2.75} />
+        <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
+          <ChevronRight className="h-12 w-12" strokeWidth={2.75} />
         </span>
       </div>
       <div className="flex justify-center py-3 text-indigo-300 lg:hidden" aria-hidden>
@@ -588,7 +588,7 @@ const InputForm: React.FC<InputFormProps> = ({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-8 sm:gap-12 lg:gap-16 xl:gap-20'}`}>
+      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-6 sm:gap-8 lg:gap-10 xl:gap-12'}`}>
         {!compactChrome && (
           <div className="homepage-features grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-4 lg:gap-8">
             {([
@@ -665,7 +665,7 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
 
         {/* Classic 1→4 operator: separate cards with sequence arrows */}
-        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4 lg:gap-y-6">
+        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-5 lg:gap-y-6">
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
