@@ -257,9 +257,18 @@ main input {
   .homepage-font-large .md\:text-7xl,
   .homepage-font-large .lg\:text-7xl { font-size: 4.75rem !important; line-height: 1 !important; }
 
+  .homepage-font-large .homepage-hero-wrap {
+    container-type: inline-size;
+  }
   .homepage-font-large .homepage-hero-desc {
-    font-size: 1.7rem !important;
-    line-height: 1.45 !important;
+    font-size: min(2.2rem, calc(100cqw / 62)) !important;
+    line-height: 1.25 !important;
+    white-space: nowrap;
+  }
+  .homepage-font-large .homepage-hero-desc-wrap {
+    white-space: normal;
+    font-size: 1.55rem !important;
+    line-height: 1.4 !important;
   }
   .homepage-font-large .feature-title {
     font-size: 1.7rem !important;
