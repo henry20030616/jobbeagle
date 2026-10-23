@@ -27,8 +27,9 @@ const STEP_CONNECTOR =
 const STEP_COL =
   `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-8 lg:p-10 xl:p-12`;
 const STEP_TITLE =
-  'step-title flex min-h-[4rem] sm:min-h-[5rem] lg:min-h-[6.375rem] shrink-0 items-center pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
-const STEP_PILL_ROW = 'mb-4 sm:mb-5 lg:mb-6 flex min-h-[4rem] sm:min-h-[5.5rem] lg:min-h-[7rem] shrink-0 items-center';
+  'step-title flex h-[4rem] sm:h-[5rem] lg:h-[6.375rem] shrink-0 items-center overflow-hidden pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+const STEP_PILL_ROW =
+  'mb-4 sm:mb-5 lg:mb-6 flex h-[4rem] sm:h-[5.5rem] lg:h-[7rem] w-full min-w-0 shrink-0 items-center overflow-hidden';
 /** Shared content shell height — steps 1–4 bottom boxes align */
 const STEP_BODY_MIN = 'min-h-[28rem] sm:min-h-[35rem] lg:min-h-[42rem]';
 const STEP_BODY = `flex ${STEP_BODY_MIN} flex-1 flex-col`;
@@ -579,20 +580,22 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`homepage-hero-desc mx-auto w-full max-w-[160rem] text-center font-semibold leading-snug text-zinc-400 ${
+          className={`homepage-hero-desc mx-auto w-full max-w-[88rem] text-pretty text-center font-semibold leading-snug text-zinc-400 ${
             compactChrome ? 'text-sm sm:text-base md:text-lg' : ''
           }`}
         >
           {t.description}
         </p>
-        {extensionCapture && (
-          <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-4 py-2.5 text-lg sm:text-xl lg:text-2xl font-medium text-emerald-300/90">
-            <Puzzle className="h-6 w-6 sm:h-7 sm:w-7 shrink-0" />
-            <span className="truncate">
-              {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
-            </span>
-          </p>
-        )}
+        {extensionCapture ? (
+          <div className="flex justify-center">
+            <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-300/90">
+              <Puzzle className="h-4 w-4 shrink-0" />
+              <span className="truncate">
+                {zh ? '已從 Chrome 外掛抓取職缺' : 'Job captured via Chrome extension'}
+              </span>
+            </p>
+          </div>
+        ) : null}
       </div>
 
       <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-8 sm:gap-12 lg:gap-16 xl:gap-20'}`}>
@@ -677,16 +680,16 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-500" />
-                <span className="leading-snug">{t.jobData}</span>
+                <span className="truncate leading-snug">{t.jobData}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
                 {extensionCapture ? (
                   <span
-                    className="inline-flex max-w-full items-center gap-2 sm:gap-3 truncate rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 text-base sm:text-lg lg:text-xl xl:text-2xl text-emerald-300"
+                    className={`${PILL} border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20`}
                     title={captureParts.join(' · ') || undefined}
                   >
-                    <Puzzle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 shrink-0" />
-                    <span className="truncate font-bold">
+                    <Puzzle className="h-4 w-4 shrink-0" />
+                    <span className="min-w-0 truncate font-bold">
                       {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
                       {captureParts.length > 0 ? ` · ${captureParts.join(' · ')}` : ''}
                     </span>
@@ -849,13 +852,13 @@ const InputForm: React.FC<InputFormProps> = ({
                       type="button"
                       onClick={handleManualSave}
                       disabled={isSaving}
-                      className={`inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 sm:py-3 text-lg sm:text-xl lg:text-2xl font-bold transition-all ${
+                      className={`inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-base sm:text-lg lg:text-xl font-bold transition-all ${
                         isSaving
                           ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400/50'
                           : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
                       }`}
                     >
-                      <Save className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
+                      <Save className="h-5 w-5 sm:h-6 sm:w-6" />
                       {isSaving ? t.saving : t.save}
                     </button>
                   </div>
@@ -868,7 +871,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-emerald-500" />
-                <span className="leading-snug">{t.reportTypeStep}</span>
+                <span className="truncate leading-snug">{t.reportTypeStep}</span>
               </h2>
               <div className={STEP_PILL_ROW}>
                 {onReportTypeChange ? (
@@ -907,7 +910,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT} />
                       </span>
-                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.snapshotBlurb}</p>
+                      <p className="mt-1.5 sm:mt-2 line-clamp-3 text-sm sm:text-base lg:text-lg leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                     </button>
                   </div>
                   <div
@@ -928,7 +931,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE} />
                       </span>
-                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base lg:text-lg xl:text-2xl leading-snug text-indigo-100">{t.strategyBlurb}</p>
+                      <p className="mt-1.5 sm:mt-2 line-clamp-3 text-sm sm:text-base lg:text-lg leading-snug text-indigo-100">{t.strategyBlurb}</p>
                     </button>
                   </div>
                   {!compactChrome && (
@@ -953,7 +956,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <div className={`${STEP_COL} relative z-0 bg-slate-700/30`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-10 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
-                <span className="leading-snug">{t.launchStep}</span>
+                <span className="truncate leading-snug">{t.launchStep}</span>
               </h2>
               <div className={STEP_PILL_ROW} aria-hidden />
               <div className={`${STEP_BODY} relative z-10`}>
