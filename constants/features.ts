@@ -2,10 +2,11 @@
 
 /**
  * Shorts / employer video recruiting surface.
- * Frozen by default to keep focus on analyze funnel. Set NEXT_PUBLIC_SHORTS_ENABLED=true to enable.
+ * Temporarily frozen (2026-10-23) so the analyze funnel stays primary.
+ * Restore with: return process.env.NEXT_PUBLIC_SHORTS_ENABLED === 'true';
  */
 export function isShortsEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_SHORTS_ENABLED === 'true';
+  return false;
 }
 
 /**
