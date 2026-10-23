@@ -9,7 +9,7 @@ describe('homepage form copy', () => {
     const t = getHomepageFormCopy('en');
     expect(t.generate).toBe('AI Strategy Analysis');
     expect(t.upload).toBe('Click to upload Resume');
-    expect(t.reportTypeStep).toBe('3. Pick one report');
+    expect(t.reportTypeStep).toBe('3. Choose report type');
     expect(t.launchStep).toBe('4. Launch');
     expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');
     expect(t.snapshotBlurb).toMatch(/hard requirements|missing keywords|pay band/i);
