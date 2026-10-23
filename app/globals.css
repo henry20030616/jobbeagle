@@ -181,7 +181,7 @@ main input {
  */
 @media (min-width: 1024px) {
   .homepage-font-large {
-    --type-hero: 4.4rem;
+    --type-hero: 3.5rem;
     --type-ui: 2.75rem;
     --type-step: 3.75rem;
     --type-rest: 4rem;
@@ -249,6 +249,9 @@ main input {
     line-height: 1.4 !important;
   }
 
+  .homepage-font-large .homepage-hero-wrap {
+    container-type: inline-size;
+  }
   .homepage-font-large .homepage-hero-wrap .lg\:text-7xl {
     font-size: 6rem !important;
     line-height: 1 !important;
@@ -259,10 +262,10 @@ main input {
     height: 6.5rem !important;
   }
   .homepage-font-large .homepage-hero-desc {
-    font-size: var(--type-hero) !important;
-    line-height: 1.45 !important;
+    font-size: clamp(2.5rem, calc(100cqw / 31), var(--type-hero)) !important;
+    line-height: 1.35 !important;
     white-space: normal;
-    max-width: min(90rem, 100%);
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
   }
