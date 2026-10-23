@@ -20,7 +20,7 @@ const InputFormWrapper: React.FC<InputFormProps> = (props) => {
   return (
     <>
       {/* Desktop version: ≥1024px (lg+) */}
-      <div className="hidden lg:block">
+      <div className="hidden min-h-0 lg:flex lg:flex-1 lg:flex-col">
         <InputForm {...props} />
       </div>
       

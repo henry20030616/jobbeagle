@@ -25,19 +25,19 @@ const PILL =
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-8 lg:p-10 xl:p-12`;
+  `relative flex h-full min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-7 lg:p-9 xl:p-11`;
 const STEP_TITLE =
-  'step-title flex min-h-[4rem] sm:min-h-[5rem] lg:min-h-[6.375rem] shrink-0 items-center pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+  'step-title flex min-h-[4.25rem] sm:min-h-[5.25rem] lg:min-h-[6.75rem] shrink-0 items-center pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
-  'mb-4 sm:mb-5 lg:mb-6 flex min-h-[4rem] sm:min-h-[5.5rem] lg:min-h-[7rem] w-full min-w-0 shrink-0 items-center';
-/** Shared content shell height — steps 1–4 bottom boxes align */
-const STEP_BODY_MIN = 'min-h-[28rem] sm:min-h-[35rem] lg:min-h-[42rem]';
+  'mb-4 sm:mb-5 lg:mb-6 flex min-h-[4.25rem] sm:min-h-[5.75rem] lg:min-h-[7.25rem] w-full min-w-0 shrink-0 items-center';
+/** Floor height; flex-1 lets the operator fill leftover viewport height. */
+const STEP_BODY_MIN = 'min-h-[22rem] sm:min-h-[26rem] lg:min-h-[32rem]';
 const STEP_BODY = `flex ${STEP_BODY_MIN} min-w-0 flex-1 flex-col overflow-hidden`;
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
 const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-3 gap-3 sm:gap-4 lg:gap-5 overflow-hidden`;
 const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5 overflow-hidden`;
 const REPORT_CARD =
-  'w-full min-h-0 h-full rounded-xl border-2 px-3 sm:px-4 lg:px-5 xl:px-6 py-3 sm:py-4 lg:py-5 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
+  'w-full min-h-0 h-full rounded-xl border-2 px-4 sm:px-5 lg:px-6 xl:px-7 py-4 sm:py-5 lg:py-6 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
 
 function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
@@ -64,8 +64,8 @@ function StepSequenceMark() {
   return (
     <div className="flex items-center justify-center self-stretch">
       <div className={STEP_CONNECTOR} aria-hidden>
-        <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
-          <ChevronRight className="h-10 w-10" strokeWidth={2.75} />
+        <span className="flex h-[4.75rem] w-[4.75rem] items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
+          <ChevronRight className="h-11 w-11" strokeWidth={2.75} />
         </span>
       </div>
       <div className="flex justify-center py-3 text-indigo-300 lg:hidden" aria-hidden>
@@ -572,9 +572,9 @@ const InputForm: React.FC<InputFormProps> = ({
   const captureParts = extensionCapture ? captureChipParts(extensionCapture) : [];
 
   return (
-    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-3 sm:gap-4 lg:gap-5'}`}>
+    <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-3 sm:gap-3.5 lg:gap-4'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
-      <div className={`w-full min-w-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'pt-2 sm:pt-3 pb-0'}`}>
+      <div className={`w-full min-w-0 shrink-0 space-y-2 px-2 text-center ${compactChrome ? 'py-1' : 'pt-1 sm:pt-2 pb-0'}`}>
         <BrandLogo
           size={compactChrome ? 'nav' : 'hero'}
           showIcon
@@ -590,9 +590,9 @@ const InputForm: React.FC<InputFormProps> = ({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'gap-6 sm:gap-8 lg:gap-10 xl:gap-12'}`}>
+      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-4 sm:gap-5 lg:gap-6'}`}>
         {!compactChrome && (
-          <div className="homepage-features grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-4 lg:gap-8">
+          <div className="homepage-features grid w-full shrink-0 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {([
               {
                 id: 'fit',
@@ -667,7 +667,7 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
 
         {/* Classic 1→4 operator: separate cards with sequence arrows */}
-        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-5 lg:gap-y-6">
+        <div className="homepage-steps grid w-full min-h-0 min-w-0 flex-1 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:min-h-[min(58rem,calc(100dvh-22rem))] lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4 lg:gap-y-6">
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>

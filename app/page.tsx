@@ -533,10 +533,10 @@ export default function Home() {
   const t = translations[language] ?? translations['en'];
 
   return (
-    <div className="homepage-font-large flex min-h-screen w-full flex-col items-stretch justify-start overflow-x-hidden overscroll-x-none bg-zinc-950 text-slate-200">
-      {/* Proportional side gutters so the operator row isn’t clipped at the screen edge. */}
-      <main className="mx-auto w-full min-w-0 px-[5vw] sm:px-[6vw] lg:px-[7vw] xl:px-[8vw] py-4 sm:py-6 md:py-8">
-        <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-8 min-w-0 w-full">
+    <div className="homepage-font-large flex min-h-dvh w-full flex-col items-stretch justify-start overflow-x-hidden overscroll-x-none bg-zinc-950 text-slate-200">
+      {/* Side gutters keep the operator on-screen; main grows so steps 1–4 fill leftover height. */}
+      <main className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col px-[3.5vw] sm:px-[4vw] lg:px-[4.5vw] xl:px-[5vw] py-3 sm:py-4 md:py-5">
+        <div className="mb-3 flex min-w-0 w-full shrink-0 items-center justify-between gap-2 sm:mb-4 sm:gap-3 lg:mb-5">
           {/* Only show header logo when report is visible; InputForm has its own hero logo */}
           {report && <BrandLogo size="nav" showIcon />}
           <div className={`homepage-header-controls flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 lg:gap-3 min-w-0 max-w-full ${!report ? 'ml-auto' : ''}`}>
@@ -749,20 +749,22 @@ export default function Home() {
         )}
 
         {!report ? (
-          <div className="w-full min-w-0">
-            <InputFormWrapper
-              onSubmit={handleGenerate}
-              isLoading={loading}
-              language={language}
-              onLanguageChange={undefined}
-              initialJobDescription={extensionJobData || undefined}
-              reportType={reportType}
-              onReportTypeChange={setReportType}
-              userProfile={userProfile}
-              extensionCapture={extensionCaptureMeta}
-            />
+          <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
+            <div className="flex min-h-0 w-full flex-1 flex-col">
+              <InputFormWrapper
+                onSubmit={handleGenerate}
+                isLoading={loading}
+                language={language}
+                onLanguageChange={undefined}
+                initialJobDescription={extensionJobData || undefined}
+                reportType={reportType}
+                onReportTypeChange={setReportType}
+                userProfile={userProfile}
+                extensionCapture={extensionCaptureMeta}
+              />
+            </div>
             {currentUser && userProfile && (
-              <div className="homepage-referral relative z-10 mt-8 mb-1 w-full min-w-0">
+              <div className="homepage-referral relative z-10 mt-4 mb-0 w-full min-w-0 shrink-0">
                 <ReferralCard
                   referralCode={userProfile.referral_code}
                   language={language}
