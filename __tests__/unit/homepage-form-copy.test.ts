@@ -12,7 +12,8 @@ describe('homepage form copy', () => {
     expect(t.reportTypeStep).toBe('3. Pick one report');
     expect(t.launchStep).toBe('4. Launch');
     expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');
-    expect(t.snapshotBlurb).toBe('Matches your resume to the job and says whether to apply.');
+    expect(t.snapshotBlurb).toMatch(/hard requirements|missing keywords|pay band/i);
+    expect(t.strategyBlurb).toMatch(/web search/i);
     expect(t.sampleLink).toBe('View report samples');
     expect(t.featuresAccordion).toBe('Jobbeagle advantages');
   });
@@ -34,6 +35,16 @@ describe('homepage form copy', () => {
       expect(copy.snapshotBlurb).not.toMatch(webSearchPitch);
       expect(copy.strategyBlurb).toMatch(webSearchPitch);
     }
+  });
+
+  it('states Snapshot and Guide value, not a generic match line', () => {
+    const zh = HOMEPAGE_FORM_COPY['zh-TW'];
+    expect(zh.snapshotBlurb).toMatch(/硬性門檻/);
+    expect(zh.snapshotBlurb).toMatch(/關鍵字/);
+    expect(zh.snapshotBlurb).toMatch(/薪資/);
+    expect(zh.strategyBlurb).toMatch(/網搜/);
+    expect(zh.strategyBlurb).toMatch(/真題|對答/);
+    expect(zh.strategyBlurb).toMatch(/談薪|落點/);
   });
 
   it('covers every app language', () => {

@@ -24,8 +24,9 @@ export const REPORT_PRODUCT = {
     labelZhCN: '适配快照',
     shortEn: 'Fit Snapshot',
     shortZh: '適配快照',
-    blurbEn: 'Matches your resume to the job and says whether to apply.',
-    blurbZh: '用履歷對上職缺，判斷要不要應徵。',
+    blurbEn:
+      'HR-screen this seat before you apply: hard requirements, missing keywords, an apply call, and the market pay band.',
+    blurbZh: '投遞前用人資標準核對：硬性門檻、缺漏關鍵字、應徵判定，以及此席市場薪資水準。',
     legacyCodes: ['lite'] as const,
     creditField: 'job_fit_snapshot_credits' as const,
     dbCreditColumn: 'available_job_fit_snapshot_credits' as const,
@@ -37,8 +38,10 @@ export const REPORT_PRODUCT = {
     labelZhCN: '面试指南',
     shortEn: 'Interview Guide',
     shortZh: '面試指南',
-    blurbEn: 'After a live web search, tells you how to answer, what to ask, and how to negotiate.',
-    blurbZh: '查過網搜資料後，告訴你進面試怎麼答、怎麼問、怎麼談。',
+    blurbEn:
+      'Includes the Snapshot, then live web search intel for this interview: company and role risk, real questions with resume-backed answers, and a defendable pay strategy.',
+    blurbZh:
+      '含適配快照，再用網搜情報備戰這場面試：公司與職位風險、真題對答，以及可守住的談薪落點。',
     legacyCodes: ['full'] as const,
     creditField: 'interview_strategy_guide_credits' as const,
     dbCreditColumn: 'available_interview_strategy_guide_credits' as const,
