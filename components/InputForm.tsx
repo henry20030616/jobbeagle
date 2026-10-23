@@ -25,17 +25,17 @@ const PILL =
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
-  `relative flex h-full min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-7 lg:p-9 xl:p-11`;
+  `relative flex min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-6 lg:p-7`;
 const STEP_TITLE =
-  'step-title flex min-h-[4.25rem] sm:min-h-[5.25rem] lg:min-h-[6.75rem] shrink-0 items-center pb-3 sm:pb-4 lg:pb-5 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+  'step-title flex shrink-0 items-center pb-3 lg:pb-4 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
-  'mb-4 sm:mb-5 lg:mb-6 flex min-h-[4.25rem] sm:min-h-[5.75rem] lg:min-h-[7.25rem] w-full min-w-0 shrink-0 items-center';
-/** Floor height; flex-1 lets the operator fill leftover viewport height. */
-const STEP_BODY_MIN = 'min-h-[22rem] sm:min-h-[26rem] lg:min-h-[32rem]';
+  'mb-3 lg:mb-4 flex min-h-[2.75rem] w-full min-w-0 shrink-0 items-center';
+/** Content-sized shell — cards follow type, they do not fill leftover viewport. */
+const STEP_BODY_MIN = 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-[20rem]';
 const STEP_BODY = `flex ${STEP_BODY_MIN} min-w-0 flex-1 flex-col overflow-hidden`;
 /** Step 3 only — pure CSS grid so three cards share equal height (no flex+grid clash) */
-const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-3 gap-3 sm:gap-4 lg:gap-5 overflow-hidden`;
-const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-2 gap-3 sm:gap-4 lg:gap-5 overflow-hidden`;
+const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-3 gap-3 sm:gap-4 overflow-hidden`;
+const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-2 gap-3 sm:gap-4 overflow-hidden`;
 const REPORT_CARD =
   'w-full min-h-0 h-full rounded-xl border-2 px-4 sm:px-5 lg:px-6 xl:px-7 py-4 sm:py-5 lg:py-6 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
 
@@ -64,8 +64,8 @@ function StepSequenceMark() {
   return (
     <div className="flex items-center justify-center self-stretch">
       <div className={STEP_CONNECTOR} aria-hidden>
-        <span className="flex h-[4.75rem] w-[4.75rem] items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
-          <ChevronRight className="h-11 w-11" strokeWidth={2.75} />
+        <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
+          <ChevronRight className="h-8 w-8" strokeWidth={2.75} />
         </span>
       </div>
       <div className="flex justify-center py-3 text-indigo-300 lg:hidden" aria-hidden>
@@ -574,7 +574,7 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-8 sm:gap-10 lg:gap-12'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
-      <div className={`homepage-hero-wrap w-full min-w-0 shrink-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'pt-2 sm:pt-3 pb-1'}`}>
+      <div className={`homepage-hero-wrap w-full min-w-0 shrink-0 space-y-3 px-2 text-center ${compactChrome ? 'py-1' : 'pt-2 sm:pt-4 pb-1'}`}>
         <BrandLogo
           size={compactChrome ? 'nav' : 'hero'}
           showIcon
@@ -582,9 +582,9 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`homepage-hero-desc mx-auto w-full text-center font-semibold leading-none tracking-tight text-zinc-400 ${
-            zh ? '' : 'homepage-hero-desc-wrap'
-          } ${compactChrome ? 'text-sm sm:text-base md:text-lg' : ''}`}
+          className={`homepage-hero-desc mx-auto w-full text-pretty text-center font-semibold text-zinc-400 ${
+            compactChrome ? 'text-sm sm:text-base md:text-lg' : ''
+          }`}
         >
           {t.description}
         </p>
@@ -667,7 +667,7 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
 
         {/* Classic 1→4 operator: separate cards with sequence arrows */}
-        <div className="homepage-steps grid w-full min-h-0 min-w-0 flex-1 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:min-h-[min(58rem,calc(100dvh-22rem))] lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-4 lg:gap-y-6">
+        <div className="homepage-steps grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-5 lg:gap-y-6">
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
