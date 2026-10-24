@@ -78,7 +78,7 @@ function StepSequenceMark() {
   return (
     <div className="flex items-center justify-center self-stretch">
       <div className={STEP_CONNECTOR} aria-hidden>
-        <span className="flex h-24 w-24 items-center justify-center rounded-full border-[3px] border-cyan-300 bg-indigo-600 text-white shadow-[0_0_22px_rgba(34,211,238,0.65)] ring-4 ring-cyan-200/80">
+        <span className="flex h-24 w-24 items-center justify-center rounded-full border-[3px] border-slate-400 bg-slate-800 text-white ring-4 ring-slate-500">
           <ChevronRight className="h-14 w-14" strokeWidth={3.25} />
         </span>
       </div>

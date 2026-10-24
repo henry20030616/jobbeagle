@@ -19,14 +19,17 @@ describe('homepage step sequence arrows', () => {
 
   it('enlarges the circular chevrons with a thick high-contrast stroke', () => {
     expect(mark).toContain('h-24 w-24');
-    expect(mark).toContain('border-[3px] border-cyan-300');
-    expect(mark).toContain('bg-indigo-600 text-white');
-    expect(mark).toContain('ring-4 ring-cyan-200');
+    expect(mark).toContain('border-[3px] border-slate-400');
+    expect(mark).toContain('bg-slate-800 text-white');
+    expect(mark).toContain('ring-4 ring-slate-500');
     expect(mark).toContain('<ChevronRight className="h-14 w-14" strokeWidth={3.25} />');
     expect(mark).not.toContain('h-14 w-14 items-center');
+    expect(mark).not.toContain('border-cyan-300');
+    expect(mark).not.toContain('bg-indigo-600');
+    expect(mark).not.toContain('ring-cyan-200');
+    expect(mark).not.toContain('shadow-[0_0_22px_rgba(34,211,238,0.65)]');
     expect(mark).not.toContain('border-2 border-indigo-400');
     expect(mark).not.toContain('text-indigo-200');
-    expect(mark).not.toContain('border-slate-600');
     expect(mark).not.toContain('text-slate-300');
     expect(mark).toContain('<ChevronDown className="h-16 w-16" strokeWidth={3.25} />');
   });
