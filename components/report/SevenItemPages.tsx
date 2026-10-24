@@ -439,8 +439,8 @@ function PayRangeMark({
         title={`${mark} ${value}`}
       />
       <span
-        className={`pointer-events-none absolute z-[2] w-max max-w-[8.5rem] text-center leading-tight ${
-          side === 'above' ? 'bottom-[calc(100%+0.45rem)]' : 'top-[calc(100%+0.45rem)]'
+        className={`pointer-events-none absolute z-[2] w-max max-w-[12rem] text-center leading-tight ${
+          side === 'above' ? 'bottom-[calc(100%+0.85rem)]' : 'top-[calc(100%+0.85rem)]'
         }`}
         style={{ left: `${pct}%`, transform: markerLabelTransform(pct) }}
         data-range-label={tone}
@@ -513,8 +513,8 @@ function PayRangeLine({
       ) : rangeText ? (
         <p className={`${BODY} mb-2 font-semibold text-white`}>{rangeText}</p>
       ) : null}
-      <div className={hero ? undefined : 'px-[3.25rem]'}>
-        <div className={`relative ${hero ? 'mx-1 mt-1 mb-2 h-3.5' : 'mt-12 mb-12 h-2.5'} rounded-full bg-slate-700`}>
+      <div className={hero ? undefined : 'px-16'}>
+        <div className={`relative ${hero ? 'mx-1 mt-1 mb-2 h-3.5' : 'mt-16 mb-16 h-2.5'} rounded-full bg-slate-700`}>
           <span
             className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
             style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}

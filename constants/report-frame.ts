@@ -167,9 +167,10 @@ export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
  * Snapshot hero + Guide compact salary range track.
- * Half of the parent pay block, horizontally centered — not full-bleed.
+ * Full width of the parent pay block, horizontally centered.
+ * Do not attach this to the zoomed 98vw report shell — only the pay card.
  */
-export const PAY_RANGE_LINE_WIDTH = 'w-1/2 max-w-[50%] mx-auto min-w-0';
+export const PAY_RANGE_LINE_WIDTH = 'w-full mx-auto min-w-0';
 
 /**
  * Homepage `<main>` horizontal gutters (`app/page.tsx`).
