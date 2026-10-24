@@ -786,7 +786,7 @@ export default function AccountPage() {
               </p>
             )}
 
-            <div className="flex flex-col items-stretch gap-6 lg:flex-row lg:items-start lg:gap-8">
+            <div className="flex flex-col items-stretch gap-6 lg:flex-row lg:items-start lg:gap-24">
             <AccountSectionNav language={language} activeId={activeSection} />
             <div className="min-w-0 flex-1 space-y-8 sm:space-y-10">
 

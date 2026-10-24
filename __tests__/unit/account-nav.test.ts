@@ -72,6 +72,11 @@ describe('account function nav', () => {
       '<AccountSectionNav language={language} activeId={activeSection} />',
     );
     expect(ACCOUNT_PAGE).toContain('lg:flex-row');
+    // Desktop rail↔panel gap is 3× the previous lg:gap-8 (2rem → 6rem). Mobile stays gap-6.
+    expect(ACCOUNT_PAGE).toContain(
+      'flex flex-col items-stretch gap-6 lg:flex-row lg:items-start lg:gap-24',
+    );
+    expect(ACCOUNT_PAGE).not.toContain('lg:gap-8');
     expect(ACCOUNT_PAGE).not.toContain('我的帳號管理');
   });
 
