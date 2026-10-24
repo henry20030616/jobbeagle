@@ -661,7 +661,7 @@ export interface GuideInterviewBank {
 }
 
 export interface GuideResumeRewrite {
-  /** Shared label for gaps of the same kind. Same string means one box. */
+  /** Shared label for gaps of the same kind. UI chrome titles the direction card. */
   category?: string;
   gap: string;
   before: string;

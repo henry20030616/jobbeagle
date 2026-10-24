@@ -254,6 +254,32 @@ describe('sample reports', () => {
       expect(rewrites[1].after.length).toBeGreaterThan(0);
       expect(snapshot.proof_map.gaps.length).toBeGreaterThanOrEqual(3);
       expect(guide.proof_map.gaps).toEqual(snapshot.proof_map.gaps);
+      const titles = {
+        en: { missing: 'Missing keys on the resume', direction: 'Suggested resume direction' },
+        'zh-TW': { missing: '履歷缺少的關鍵', direction: '建議履歷優化方向' },
+        'zh-CN': { missing: '简历缺少的关键', direction: '建议简历优化方向' },
+        es: { missing: 'Claves que faltan en el CV', direction: 'Dirección sugerida para el CV' },
+        hi: { missing: 'रिज़्यूमे में कमी वाले मुख्य बिंदु', direction: 'सुझाई गई रिज़्यूमे दिशा' },
+        ar: { missing: 'المفاتيح الناقصة في السيرة', direction: 'اتجاه مقترح لتحسين السيرة' },
+      } as const;
+      const snapHtml = renderToStaticMarkup(
+        createElement(SnapshotItemStack, { report: snapshot, language: lang, locked: true }),
+      );
+      const guideHtml = renderToStaticMarkup(
+        createElement(SnapshotItemStack, {
+          report: guide,
+          language: lang,
+          locked: false,
+          rewrites,
+        }),
+      );
+      expect(snapHtml).toContain(titles[lang].missing);
+      expect(snapHtml).not.toContain(titles[lang].direction);
+      expect(guideHtml).toContain(titles[lang].missing);
+      expect(guideHtml).toContain(titles[lang].direction);
+      expect(guideHtml.indexOf(titles[lang].missing)).toBeLessThan(
+        guideHtml.indexOf(titles[lang].direction),
+      );
     },
   );
 
@@ -325,10 +351,14 @@ describe('seven-item report layout', () => {
     ]);
   });
 
-  it('keeps rewrite category headings on REPORT_H2 and the card outside the keyword column', () => {
+  it('keeps missing-keys and rewrite-direction headings on REPORT_H2 and the card outside the keyword column', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>');
     expect(source).toContain('title={copy.rewriteDirection}');
+    expect(source).toContain("return '履歷缺少的關鍵'");
+    expect(source).toContain("return '建議履歷優化方向'");
+    expect(source).not.toContain('欠缺的硬性關鍵字');
+    expect(source).not.toContain('履歷缺少的關鍵項目');
     expect(source).toContain('className="w-full min-w-0 rounded-lg border border-emerald-400/30');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>');
@@ -379,6 +409,8 @@ describe('seven-item report layout', () => {
       expect(html).toContain('應徵建議');
       expect(html).toContain('藍寶米格魯');
       expect(html).toContain('履歷缺少的關鍵');
+      expect(html).not.toContain('欠缺的硬性關鍵字');
+      expect(html).not.toContain('履歷缺少的關鍵項目');
       expect(html).not.toContain('建議履歷調整後再應徵');
       expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('匹配分數與燈號'));
       expect(html.indexOf('匹配分數與燈號')).toBeLessThan(html.indexOf('藍寶米格魯'));
