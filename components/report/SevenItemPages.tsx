@@ -311,7 +311,7 @@ function PayMixPie({
     );
   }
   return (
-    <div className={`grid grid-cols-1 items-center gap-2 md:grid-cols-[16rem_1fr] ${bare ? '' : 'rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4'}`}>
+    <div className={`grid w-fit max-w-full grid-cols-1 items-center justify-items-start gap-x-6 gap-y-2 md:grid-cols-[16rem_auto] ${bare ? '' : 'rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4'}`}>
       <div className="relative mx-auto h-56 w-full max-w-[16rem]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -335,13 +335,13 @@ function PayMixPie({
           <span className="text-2xl font-black leading-tight text-white">{totalLabel}</span>
         </div>
       </div>
-      <ul className="space-y-3">
+      <ul className="grid w-max max-w-full grid-cols-[auto_auto_auto_auto] items-center gap-x-3 gap-y-3">
         {slices.map((slice) => (
-          <li key={slice.label} className="flex items-center gap-3">
+          <li key={slice.label} className="contents">
             <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: slice.fill }} aria-hidden />
-            <span className={`${BODY} min-w-0 flex-1 font-semibold text-slate-100`}>{slice.label}</span>
+            <span className={`${BODY} font-semibold text-slate-100`}>{slice.label}</span>
             <span className={`${BODY} font-semibold text-white`}>{slice.value}</span>
-            <span className={`${BODY} w-12 text-right text-slate-300`}>
+            <span className={`${BODY} tabular-nums text-slate-300`}>
               {Math.round((slice.amount / total) * 100)}%
             </span>
           </li>

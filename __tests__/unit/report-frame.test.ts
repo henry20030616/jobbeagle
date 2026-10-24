@@ -161,6 +161,19 @@ describe('homepage step-header pills', () => {
   });
 });
 
+describe('pay-mix legend', () => {
+  it('clusters label, amount, and percent instead of stretching across the report', () => {
+    const pages = readFileSync(
+      join(process.cwd(), 'components/report/SevenItemPages.tsx'),
+      'utf8',
+    );
+    expect(pages).toContain('md:grid-cols-[16rem_auto]');
+    expect(pages).toContain('w-max max-w-full grid-cols-[auto_auto_auto_auto]');
+    expect(pages).not.toContain('min-w-0 flex-1 font-semibold text-slate-100');
+    expect(pages).not.toContain('md:grid-cols-[16rem_1fr]');
+  });
+});
+
 describe('page shell gutters', () => {
   it('matches homepage left/right vw padding on samples and live report shells', () => {
     expect(PAGE_SHELL_GUTTER).toBe('px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]');
