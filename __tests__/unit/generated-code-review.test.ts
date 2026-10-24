@@ -24,6 +24,15 @@ describe('generated-code review', () => {
     expect(blocked.some((f) => f.file === 'components/InputForm.tsx')).toBe(true);
   });
 
+  it('blocks ANTHROPIC_API_KEY added to a client component', () => {
+    const diff = [
+      '+++ b/components/InputForm.tsx',
+      '+const k = process.env.ANTHROPIC_API_KEY;',
+    ].join('\n');
+    const blocked = blockingFindings(reviewGeneratedDiff(diff));
+    expect(blocked.some((f) => f.file === 'components/InputForm.tsx')).toBe(true);
+  });
+
   it('asks to refactor as-any in lib, but does not block a clean fence wrap', () => {
     const dirty = ['+++ b/lib/profiles.ts', '+const row = data as any;'].join('\n');
     const dirtyFindings = reviewGeneratedDiff(dirty);

@@ -149,7 +149,8 @@ LIMIT 5;
 
 | Key | 用途 |
 |-----|------|
-| `GEMINI_API_KEY` | Lite / Full AI 分析 |
+| `GEMINI_API_KEY` | Lite Snapshot + Guide intel |
+| `ANTHROPIC_API_KEY` | Guide writing（rewrite / answers / negotiation）；缺則 fallback Gemini Pro |
 
 從 [Lemon Squeezy](https://app.lemonsqueezy.com) → **Settings → API**：
 

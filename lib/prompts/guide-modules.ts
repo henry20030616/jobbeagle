@@ -1,7 +1,7 @@
 /**
  * Paid Interview Guide module prompts (1018 spec).
  * Search modules use Gemini Pro + Google Search.
- * Writing modules use Gemini Pro with search off until Claude is connected.
+ * Writing modules use Claude Sonnet (search off); Gemini Pro fallback if ANTHROPIC_API_KEY is missing.
  */
 
 const NO_INVENTED_URLS =

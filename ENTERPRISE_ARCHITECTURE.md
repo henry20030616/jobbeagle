@@ -48,7 +48,7 @@
 
 ### 3.4 Architecture & Secrets
 
-- 禁止將 `SUPABASE_SERVICE_ROLE_KEY`、`GEMINI_API_KEY`、`LEMONSQUEEZY_API_KEY` 暴露給 Client Components。
+- 禁止將 `SUPABASE_SERVICE_ROLE_KEY`、`GEMINI_API_KEY`、`ANTHROPIC_API_KEY`、`LEMONSQUEEZY_API_KEY` 暴露給 Client Components。
 - 前端僅可使用 `NEXT_PUBLIC_*`。
 - 所有表必須啟用 RLS。
 

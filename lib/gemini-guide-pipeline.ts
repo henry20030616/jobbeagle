@@ -2,6 +2,11 @@ import { GoogleGenAI } from '@google/genai';
 import { GEMINI_FULL_MODEL } from '@/constants/models';
 import type { GuideModules } from '@/types';
 import {
+  generateAnthropicJson,
+  getAnthropicApiKey,
+  type GuideContentPart,
+} from '@/lib/anthropic-writing';
+import {
   applyInterviewAnswers,
   emptyGuideModules,
   parseCompanyEval,
@@ -9,7 +14,9 @@ import {
   parseNegotiation,
   parseRewrites,
   parseSalaryLand,
+  resolveGuideModuleRoute,
   selectInterviewBank,
+  type GuideModuleId,
 } from '@/lib/guide-modules';
 import {
   COMPANY_MODULE_PROMPT,
@@ -30,10 +37,10 @@ import {
   type AppLanguage,
 } from '@/lib/report-language';
 
-type ContentPart = { text: string } | { inlineData: { mimeType: string; data: string } };
+type PaidGuideModuleId = Exclude<GuideModuleId, 'snapshot'>;
 
 export interface PaidGuideInput {
-  parts: ContentPart[];
+  parts: GuideContentPart[];
   language: AppLanguage | string;
   companyName: string;
   jobTitle: string;
@@ -45,15 +52,15 @@ function getAI(): GoogleGenAI {
   return new GoogleGenAI({ apiKey: key });
 }
 
-function withTask(parts: ContentPart[], task: string): ContentPart[] {
+function withTask(parts: GuideContentPart[], task: string): GuideContentPart[] {
   const [first, ...rest] = parts;
   if (!first || !('text' in first)) return [{ text: task }, ...parts];
   return [{ text: `${task}\n\n${first.text}` }, ...rest];
 }
 
-async function generateJson(options: {
+async function generateGeminiJson(options: {
   system: string;
-  parts: ContentPart[];
+  parts: GuideContentPart[];
   search: boolean;
 }): Promise<unknown> {
   const ai = getAI();
@@ -89,11 +96,62 @@ async function generateJson(options: {
   }
 }
 
+async function generateClaudeJson(options: {
+  system: string;
+  parts: GuideContentPart[];
+}): Promise<unknown> {
+  try {
+    return await generateAnthropicJson(options);
+  } catch (firstErr) {
+    console.warn(
+      '[Guide writing] Claude retry:',
+      firstErr instanceof Error ? firstErr.message : firstErr,
+    );
+    return generateAnthropicJson(options);
+  }
+}
+
+/**
+ * Writing → Claude when ANTHROPIC_API_KEY is set; Gemini Pro (search off) if the key is missing.
+ * Claude API failures also fall back to Gemini Pro so Guide does not hard-break.
+ */
+async function generateModuleJson(options: {
+  moduleId: PaidGuideModuleId;
+  system: string;
+  parts: GuideContentPart[];
+}): Promise<unknown> {
+  const route = resolveGuideModuleRoute(options.moduleId, Boolean(getAnthropicApiKey()));
+  if (route.provider === 'anthropic') {
+    try {
+      return await generateClaudeJson({
+        system: options.system,
+        parts: options.parts,
+      });
+    } catch (err) {
+      console.error(
+        `[Guide writing] Claude failed for ${options.moduleId}; falling back to Gemini Pro (search off):`,
+        err instanceof Error ? err.message : err,
+      );
+      return generateGeminiJson({
+        system: options.system,
+        parts: options.parts,
+        search: false,
+      });
+    }
+  }
+
+  return generateGeminiJson({
+    system: options.system,
+    parts: options.parts,
+    search: route.search,
+  });
+}
+
 /**
  * Paid modules after the Flash-Lite snapshot.
- * Items 4, 5, and 6-retrieval run together with Search.
+ * Items 4, 5, and 6-retrieval run together with Search (Gemini Pro).
  * Item 6 answers wait for retrieval. Item 7 waits for the salary module.
- * Item 3 rewrite runs with them and does not search.
+ * Item 3 rewrite / answers / negotiation call Claude (search off).
  */
 export async function runPaidGuideModules(input: PaidGuideInput): Promise<GuideModules> {
   const lang = normalizeReportLanguage(input.language);
@@ -106,26 +164,32 @@ export async function runPaidGuideModules(input: PaidGuideInput): Promise<GuideM
   ].filter(Boolean).join('\n');
   const limitations: string[] = [];
 
+  if (!getAnthropicApiKey()) {
+    console.error(
+      '[Guide writing] ANTHROPIC_API_KEY is missing. resume_rewrite, question_answers, and negotiation will fall back to Gemini Pro (search off).',
+    );
+  }
+
   const settled = await Promise.allSettled([
-    generateJson({
+    generateModuleJson({
+      moduleId: 'resume_rewrite',
       system: system(REWRITE_MODULE_PROMPT),
       parts: withTask(input.parts, `${hints}\nRewrite the hard gaps only. Do not search.`),
-      search: false,
     }),
-    generateJson({
+    generateModuleJson({
+      moduleId: 'salary_land',
       system: system(SALARY_MODULE_PROMPT),
       parts: withTask(input.parts, `${hints}\nSearch for this candidate's pay landing.`),
-      search: true,
     }),
-    generateJson({
+    generateModuleJson({
+      moduleId: 'company_intel',
       system: system(COMPANY_MODULE_PROMPT),
       parts: withTask(input.parts, `${hints}\nSearch company and role reputation, including H-1B.`),
-      search: true,
     }),
-    generateJson({
+    generateModuleJson({
+      moduleId: 'question_retrieval',
       system: system(QUESTION_RETRIEVAL_PROMPT),
       parts: withTask(input.parts, `${hints}\nSearch interview questions from the last three years.`),
-      search: true,
     }),
   ]);
 
@@ -175,15 +239,15 @@ export async function runPaidGuideModules(input: PaidGuideInput): Promise<GuideM
   const salaryTask = wrapUntrusted('web_retrieval', JSON.stringify(modules.salary_land));
 
   const writing = await Promise.allSettled([
-    generateJson({
+    generateModuleJson({
+      moduleId: 'question_answers',
       system: system(QUESTION_ANSWER_PROMPT),
       parts: withTask(input.parts, `Answer only these questions.\n${answerTask}`),
-      search: false,
     }),
-    generateJson({
+    generateModuleJson({
+      moduleId: 'negotiation',
       system: system(NEGOTIATION_MODULE_PROMPT),
       parts: withTask(input.parts, `Salary land already estimated:\n${salaryTask}`),
-      search: false,
     }),
   ]);
 

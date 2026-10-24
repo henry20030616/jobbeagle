@@ -2,6 +2,10 @@
 export const SECURITY_TEST_FILES = [
   '__tests__/unit/prompt-injection-guard.test.ts',
   '__tests__/unit/generated-code-review.test.ts',
+  '__tests__/unit/anthropic-writing.test.ts',
+  '__tests__/unit/gemini-guide-pipeline.test.ts',
+  '__tests__/unit/guide-writing-route.test.ts',
+  '__tests__/unit/guide-modules.test.ts',
   '__tests__/unit/rate-limit-memory.test.ts',
   '__tests__/unit/sybil-mode.test.ts',
   '__tests__/unit/profiles-credits.test.ts',

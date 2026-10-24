@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { GEMINI_FULL_MODEL, GEMINI_LITE_MODEL } from '@/constants/models';
+import {
+  ANTHROPIC_WRITING_MODEL,
+  GEMINI_FULL_MODEL,
+  GEMINI_LITE_MODEL,
+} from '@/constants/models';
 import {
   applyInterviewAnswers,
+  GUIDE_INTEL_MODULE_IDS,
   GUIDE_MODULE_ROUTES,
+  GUIDE_WRITING_MODULE_IDS,
   parseGuideQuestions,
+  resolveGuideModuleRoute,
   selectInterviewBank,
 } from '@/lib/guide-modules';
 import type { GuideInterviewBank, GuideQuestion } from '@/types';
@@ -14,17 +21,33 @@ describe('guide module routes', () => {
     const snapshot = GUIDE_MODULE_ROUTES.find((route) => route.id === 'snapshot');
     expect(snapshot).toEqual({
       id: 'snapshot',
+      provider: 'gemini',
       model: GEMINI_LITE_MODEL,
       search: false,
     });
   });
 
-  it('uses Pro with search only for salary, company, and question retrieval', () => {
+  it('uses Gemini Pro with search only for salary, company, and question retrieval', () => {
     const searched = GUIDE_MODULE_ROUTES.filter((route) => route.search).map((route) => route.id);
-    expect(searched).toEqual(['salary_land', 'company_intel', 'question_retrieval']);
-    for (const route of GUIDE_MODULE_ROUTES) {
-      if (route.id === 'snapshot') continue;
-      expect(route.model).toBe(GEMINI_FULL_MODEL);
+    expect(searched).toEqual([...GUIDE_INTEL_MODULE_IDS]);
+    for (const id of GUIDE_INTEL_MODULE_IDS) {
+      const route = GUIDE_MODULE_ROUTES.find((item) => item.id === id);
+      expect(route).toMatchObject({
+        provider: 'gemini',
+        model: GEMINI_FULL_MODEL,
+        search: true,
+      });
+    }
+  });
+
+  it('routes writing modules to Claude Sonnet with search off', () => {
+    for (const id of GUIDE_WRITING_MODULE_IDS) {
+      const route = GUIDE_MODULE_ROUTES.find((item) => item.id === id);
+      expect(route).toMatchObject({
+        provider: 'anthropic',
+        model: ANTHROPIC_WRITING_MODEL,
+        search: false,
+      });
     }
   });
 
@@ -35,6 +58,38 @@ describe('guide module routes', () => {
     expect(answers?.after).toBe('question_retrieval');
     expect(negotiation?.search).toBe(false);
     expect(negotiation?.after).toBe('salary_land');
+  });
+
+  it('keeps writing on Claude when the Anthropic key is present', () => {
+    for (const id of GUIDE_WRITING_MODULE_IDS) {
+      expect(resolveGuideModuleRoute(id, true)).toMatchObject({
+        provider: 'anthropic',
+        model: ANTHROPIC_WRITING_MODEL,
+        search: false,
+      });
+    }
+  });
+
+  it('falls writing back to Gemini Pro when the Anthropic key is missing', () => {
+    for (const id of GUIDE_WRITING_MODULE_IDS) {
+      expect(resolveGuideModuleRoute(id, false)).toMatchObject({
+        provider: 'gemini',
+        model: GEMINI_FULL_MODEL,
+        search: false,
+      });
+    }
+  });
+
+  it('never routes intel or snapshot to Anthropic', () => {
+    expect(resolveGuideModuleRoute('snapshot', true).provider).toBe('gemini');
+    for (const id of GUIDE_INTEL_MODULE_IDS) {
+      expect(resolveGuideModuleRoute(id, true)).toMatchObject({
+        provider: 'gemini',
+        model: GEMINI_FULL_MODEL,
+        search: true,
+      });
+      expect(resolveGuideModuleRoute(id, false).provider).toBe('gemini');
+    }
   });
 });
 

@@ -9,8 +9,8 @@ Canonical detail: repo root **`.cursorrules`**. On conflict with older “call A
 
 ## Unit economics
 
-- **Snapshot** = closed-book, Flash-Lite, **no** Google Search / web tools / scrape APIs.
-- **Guide** = open-book, Pro (+ Search). Do not burn Pro/Search on Snapshot or free paths.
+- **Snapshot** = closed-book, Flash-Lite, **no** Google Search / web tools / scrape APIs / Anthropic.
+- **Guide intel** = open-book, Pro (+ Search). **Guide writing** = Claude Sonnet, search off. Do not burn Pro/Search on Snapshot, free paths, or writing modules.
 - Models: `constants/models.ts`. Analyze: `lib/gemini-analyze.ts`.
 
 ## Zero hallucination

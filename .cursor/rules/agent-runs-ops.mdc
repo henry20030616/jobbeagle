@@ -59,6 +59,7 @@ alwaysApply: true
 |------|------|
 | Supabase | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` |
 | Gemini | `GEMINI_API_KEY` 或 `GOOGLE_GEMINI_API_KEY`（分析 API 必備） |
+| Anthropic | `ANTHROPIC_API_KEY`（Guide writing：rewrite / answers / negotiation；缺則 fallback Gemini Pro） |
 | PayPal | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_ENVIRONMENT`（正式為 `live`）, `PAYPAL_WEBHOOK_ID`, `PAYPAL_PLAN_STANDARD_SUB`, `PAYPAL_PLAN_ADVANCED_SUB` |
 | Cron / 外掛 handoff | `CRON_SECRET`（簽名 extension `sid`；可選 `EXTENSION_HANDOFF_SECRET`） |
 | 其他 | `RESEND_API_KEY`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` |

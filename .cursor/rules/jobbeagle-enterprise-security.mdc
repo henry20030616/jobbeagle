@@ -21,7 +21,7 @@ When changing APIs, auth, payments, or storage, enforce all six:
 - Account delete (`/api/account/delete`) must hard-delete profile, reports, and stored resume files (CCPA).
 
 ## 4. Secrets & architecture
-- No service-role / Gemini / PayPal secret keys in Client Components.
+- No service-role / Gemini / Anthropic / PayPal secret keys in Client Components.
 - Keep RLS enabled on `profiles`, `analysis_reports`, and related tables.
 - Profile credits / `membership_tier`: never client-writable. Lock via migration `011_lock_profile_credit_mutations.sql` (narrow UPDATE grants + entitlement trigger). Mutations only via `service_role` or SECURITY DEFINER RPCs (`decrement_*`, `increment_profile_credits`) and a verified PayPal webhook.
 

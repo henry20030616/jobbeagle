@@ -9,7 +9,11 @@ import type {
   GuideSource,
   LiteReport,
 } from '@/types';
-import { GEMINI_FULL_MODEL, GEMINI_LITE_MODEL } from '@/constants/models';
+import {
+  ANTHROPIC_WRITING_MODEL,
+  GEMINI_FULL_MODEL,
+  GEMINI_LITE_MODEL,
+} from '@/constants/models';
 import { isCitableSourceUrl } from '@/lib/provenance';
 
 export type GuideModuleId =
@@ -21,30 +25,94 @@ export type GuideModuleId =
   | 'question_answers'
   | 'negotiation';
 
+export type GuideModelProvider = 'gemini' | 'anthropic';
+
 export interface GuideModuleRoute {
   id: GuideModuleId;
+  provider: GuideModelProvider;
   model: string;
   search: boolean;
   /** Runs only after this module's retrieval/search result exists. */
   after?: GuideModuleId;
 }
 
+export const GUIDE_WRITING_MODULE_IDS = [
+  'resume_rewrite',
+  'question_answers',
+  'negotiation',
+] as const satisfies readonly GuideModuleId[];
+
+export const GUIDE_INTEL_MODULE_IDS = [
+  'salary_land',
+  'company_intel',
+  'question_retrieval',
+] as const satisfies readonly GuideModuleId[];
+
 /**
- * 1018 routing on the models this repo can call today.
- * Snapshot: Flash-Lite, search off.
- * Paid search (items 4, 5, 6 retrieval): Pro + Search.
- * Paid writing (item 3 rewrite, item 6 answers, item 7): Pro, search off,
- * standing in for Claude until ANTHROPIC_API_KEY is set.
+ * Canonical 1018 routes.
+ * Snapshot: Flash-Lite, search off, no Anthropic.
+ * Intel (items 4, 5, 6 retrieval): Gemini Pro + Search.
+ * Writing (item 3 rewrite, item 6 answers, item 7): Claude Sonnet, search off.
+ * Runtime: missing ANTHROPIC_API_KEY → writing falls back to Gemini Pro (search off).
  */
+const GUIDE_MODULE_ROUTE_BY_ID: Record<GuideModuleId, GuideModuleRoute> = {
+  snapshot: { id: 'snapshot', provider: 'gemini', model: GEMINI_LITE_MODEL, search: false },
+  resume_rewrite: {
+    id: 'resume_rewrite',
+    provider: 'anthropic',
+    model: ANTHROPIC_WRITING_MODEL,
+    search: false,
+  },
+  salary_land: { id: 'salary_land', provider: 'gemini', model: GEMINI_FULL_MODEL, search: true },
+  company_intel: { id: 'company_intel', provider: 'gemini', model: GEMINI_FULL_MODEL, search: true },
+  question_retrieval: {
+    id: 'question_retrieval',
+    provider: 'gemini',
+    model: GEMINI_FULL_MODEL,
+    search: true,
+  },
+  question_answers: {
+    id: 'question_answers',
+    provider: 'anthropic',
+    model: ANTHROPIC_WRITING_MODEL,
+    search: false,
+    after: 'question_retrieval',
+  },
+  negotiation: {
+    id: 'negotiation',
+    provider: 'anthropic',
+    model: ANTHROPIC_WRITING_MODEL,
+    search: false,
+    after: 'salary_land',
+  },
+};
+
 export const GUIDE_MODULE_ROUTES: readonly GuideModuleRoute[] = [
-  { id: 'snapshot', model: GEMINI_LITE_MODEL, search: false },
-  { id: 'resume_rewrite', model: GEMINI_FULL_MODEL, search: false },
-  { id: 'salary_land', model: GEMINI_FULL_MODEL, search: true },
-  { id: 'company_intel', model: GEMINI_FULL_MODEL, search: true },
-  { id: 'question_retrieval', model: GEMINI_FULL_MODEL, search: true },
-  { id: 'question_answers', model: GEMINI_FULL_MODEL, search: false, after: 'question_retrieval' },
-  { id: 'negotiation', model: GEMINI_FULL_MODEL, search: false, after: 'salary_land' },
+  GUIDE_MODULE_ROUTE_BY_ID.snapshot,
+  GUIDE_MODULE_ROUTE_BY_ID.resume_rewrite,
+  GUIDE_MODULE_ROUTE_BY_ID.salary_land,
+  GUIDE_MODULE_ROUTE_BY_ID.company_intel,
+  GUIDE_MODULE_ROUTE_BY_ID.question_retrieval,
+  GUIDE_MODULE_ROUTE_BY_ID.question_answers,
+  GUIDE_MODULE_ROUTE_BY_ID.negotiation,
 ];
+
+/** If ANTHROPIC_API_KEY is missing, writing modules use Gemini Pro with search off. */
+export function resolveGuideModuleRoute(
+  id: GuideModuleId,
+  anthropicKeyPresent: boolean,
+): GuideModuleRoute {
+  const route = GUIDE_MODULE_ROUTE_BY_ID[id];
+  if (route.provider === 'anthropic' && !anthropicKeyPresent) {
+    return {
+      ...route,
+      provider: 'gemini',
+      model: GEMINI_FULL_MODEL,
+      search: false,
+    };
+  }
+  return route;
+}
 
 const PROXIMITY_RANK: Record<GuideQuestionProximity, number> = {
   same_company_role: 0,

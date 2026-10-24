@@ -23,6 +23,7 @@
     "paypal:rename-catalog": "node scripts/ops/rename-paypal-catalog.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
     "@google/genai": "^1.31.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.47.10",
