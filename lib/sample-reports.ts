@@ -155,7 +155,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     sources: ['Market benchmark for Senior BA / fintech ops (US)'],
     candidate_predicted_offer: '$155K',
     candidate_position_label:
-      'Lower mid-band: core BA proof is solid, but thin ACH/payments ownership likely caps cash below the seat midpoint.',
+      'Lower mid-band: core BA proof is solid, but thin ACH/payments work likely keeps cash below the seat midpoint.',
     tc_breakdown: {
       base: '$150K',
       bonus: '$15K',

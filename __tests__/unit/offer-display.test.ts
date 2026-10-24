@@ -212,9 +212,59 @@ describe('payEstimateScope', () => {
       scope,
       'zh-TW',
     );
-    expect(disclaimer.nature).toBe('非公司數據，為市場薪資水準。');
-    expect(disclaimer.method).toMatch(/職稱（Senior Business Analyst）/);
-    expect(disclaimer.method).toMatch(/未刊登公司薪資/);
-    expect(disclaimer.method).toMatch(/對照依據: Market benchmark/);
+    expect(disclaimer.nature).toBe('');
+    expect(disclaimer.method).toBe(
+      '職缺未公布薪資；此區間依職稱、地點與年資對照市場水準，非該公司數據。',
+    );
+    expect(disclaimer.method).not.toContain('Senior Business Analyst');
+    expect(disclaimer.method).not.toContain('美國 · 友善遠端');
+    expect(disclaimer.method).not.toMatch(/6 年/);
+    expect(disclaimer.method).not.toMatch(/對照依據|擁有權/);
+  });
+});
+
+describe('marketBandDisclaimer', () => {
+  const offer = {
+    posted_range: null,
+    p25: '$145K',
+    p50: '$165K',
+    p75: '$190K',
+    currency: 'USD',
+    region: 'United States · Remote-friendly',
+    target_gap: '',
+    evidence_tier: 'C' as const,
+    sources: ['Market benchmark for Senior BA / fintech ops (US)'],
+  };
+
+  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+    'keeps %s copy short and does not repeat labeled fields or sources',
+    (lang) => {
+      const scope = payEstimateScope(
+        {
+          job_title: 'Senior Business Analyst',
+          expected_offer: offer,
+          hard_filter: {
+            items: [{ requirement: '5+ years BA', evidence: '6 years listed' }],
+          },
+        },
+        lang,
+      );
+      const disclaimer = marketBandDisclaimer(offer, scope, lang);
+      expect(disclaimer.nature).toBe('');
+      expect(disclaimer.method.length).toBeGreaterThan(20);
+      expect(disclaimer.method.length).toBeLessThan(220);
+      expect(disclaimer.method).not.toContain(scope.role);
+      expect(disclaimer.method).not.toContain(scope.where);
+      expect(disclaimer.method).not.toContain('6 years');
+      expect(disclaimer.method).not.toMatch(/對照依據|Benchmark basis|对照依据|example\.com|擁有權|所有权/);
+    },
+  );
+
+  it('uses posted-field copy for tier A and thin-signal copy for tier D', () => {
+    const scope = payEstimateScope({ job_title: 'Senior Business Analyst', expected_offer: offer }, 'en');
+    expect(marketBandDisclaimer({ ...offer, evidence_tier: 'A' }, scope, 'en').method).toMatch(
+      /posting.s salary field/i,
+    );
+    expect(marketBandDisclaimer({ ...offer, evidence_tier: 'D' }, scope, 'en').method).toMatch(/too thin/i);
   });
 });

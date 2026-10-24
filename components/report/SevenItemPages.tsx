@@ -85,6 +85,7 @@ type ItemCopy = {
   reported: string;
   predicted: string;
   extra: string;
+  extraRule: string;
   answer: string;
   process: string;
   pay: string;
@@ -98,6 +99,23 @@ type ItemCopy = {
   noBand: string;
   badge: Record<GuideItemId, string>;
 };
+
+function extraRuleCopy(language: AppLanguage): string {
+  switch (language) {
+    case 'zh-TW':
+      return '以下十題為近期最重要的面試題；近三年其餘真題列於補充資料列表。';
+    case 'zh-CN':
+      return '以下十题为近期最重要的面试题；近三年其余真题列于补充资料列表。';
+    case 'es':
+      return 'Estas diez son las de mayor prioridad reciente. El resto de preguntas reales de los últimos tres años aparece abajo.';
+    case 'hi':
+      return 'ये दस हाल की प्राथमिकता वाले प्रश्न हैं। पिछले तीन वर्षों के शेष वास्तविक प्रश्न नीचे हैं।';
+    case 'ar':
+      return 'هذه العشر هي المجموعة الأحدث والأولى أولوية. بقية الأسئلة الحقيقية من السنوات الثلاث الماضية أدناه.';
+    default:
+      return 'These ten are the most recent priority set. Remaining reported questions from the last three years appear below.';
+  }
+}
 
 function itemCopy(language: AppLanguage): ItemCopy {
   if (language === 'zh-TW' || language === 'zh-CN') {
@@ -164,6 +182,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       reported: s ? '网络真题' : '網路真題',
       predicted: s ? 'AI 预测题' : 'AI 預測題',
       extra: s ? '补充资料列表' : '補充資料列表',
+      extraRule: extraRuleCopy(language),
       answer: s ? '建议答案' : '建議答案',
       process: s ? '面试流程' : '面試流程',
       pay: s ? '薪资筹码策略' : '薪資籌碼策略',
@@ -243,6 +262,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     reported: 'Reported question',
     predicted: 'AI prediction',
     extra: 'Additional reported questions',
+    extraRule: extraRuleCopy(language),
     answer: 'Suggested answer',
     process: 'Interview process',
     pay: 'Pay leverage',
@@ -373,19 +393,24 @@ function markerPercent(value: number | null, min: number, span: number): number 
 
 function PayRangeLine({
   offer,
+  currency,
   targetLabel,
   targetValue,
   ceilingLabel,
   ceilingValue,
+  variant = 'compact',
 }: {
   offer: LiteReport['expected_offer'];
-  targetLabel: string;
-  targetValue: string;
-  ceilingLabel: string;
-  ceilingValue: string;
+  currency?: string;
+  targetLabel?: string;
+  targetValue?: string;
+  ceilingLabel?: string;
+  ceilingValue?: string;
+  variant?: 'hero' | 'compact';
 }) {
   const { low, high } = bandEnds(offer);
   const rangeText = formatOfferRange(offer);
+  const money = currency?.trim() || offer?.currency || 'USD';
   const amounts = [
     parseMoneyAmount(low),
     parseMoneyAmount(high),
@@ -395,49 +420,82 @@ function PayRangeLine({
   const min = amounts.length > 0 ? Math.min(...amounts) : null;
   const max = amounts.length > 0 ? Math.max(...amounts) : null;
   const span = min !== null && max !== null && max > min ? max - min : 0;
+  const lowPct = min !== null ? markerPercent(parseMoneyAmount(low), min, span) : null;
+  const highPct = min !== null ? markerPercent(parseMoneyAmount(high), min, span) : null;
   const targetPct = min !== null ? markerPercent(parseMoneyAmount(targetValue), min, span) : null;
   const ceilingPct = min !== null ? markerPercent(parseMoneyAmount(ceilingValue), min, span) : null;
+  const fillLeft = lowPct ?? 0;
+  const fillRight = 100 - (highPct ?? 100);
+  const aria = rangeText ? `${rangeText} (${money})` : money;
+  const hero = variant === 'hero';
   return (
-    <div className="min-w-0">
-      {rangeText ? (
+    <div
+      className="min-w-0"
+      data-pay-range={variant}
+      role="img"
+      aria-label={aria}
+    >
+      {hero ? (
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <span className="text-3xl font-black tabular-nums tracking-tight text-white">{low ?? rangeText ?? '—'}</span>
+          <span className={`${BODY_MUTED} mb-0.5 shrink-0`}>{money}</span>
+          {high ? (
+            <span className="text-3xl font-black tabular-nums tracking-tight text-white">{high}</span>
+          ) : null}
+        </div>
+      ) : rangeText ? (
         <p className={`${BODY} mb-4 font-semibold text-white`}>{rangeText}</p>
       ) : null}
-      <div className="relative mx-1 mt-6 mb-10 h-2 rounded-full bg-slate-700">
+      <div className={`relative mx-1 ${hero ? 'mt-1 mb-2 h-3.5' : 'mt-6 mb-10 h-2'} rounded-full bg-slate-700`}>
+        <span
+          className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
+          style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}
+        />
+        {hero ? (
+          <>
+            <span className="absolute left-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
+            <span className="absolute right-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
+          </>
+        ) : null}
         {targetPct !== null ? (
           <span
             className="absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-emerald-400"
             style={{ left: `${targetPct}%` }}
-            title={`${targetLabel} ${targetValue}`}
+            title={targetLabel && targetValue ? `${targetLabel} ${targetValue}` : undefined}
           />
         ) : null}
         {ceilingPct !== null ? (
           <span
             className="absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-sky-400"
             style={{ left: `${ceilingPct}%` }}
-            title={`${ceilingLabel} ${ceilingValue}`}
+            title={ceilingLabel && ceilingValue ? `${ceilingLabel} ${ceilingValue}` : undefined}
           />
         ) : null}
-        <div className="pointer-events-none absolute left-0 right-0 top-5 flex justify-between">
-          <span className={`${BODY} tabular-nums text-slate-300`}>{low ?? ''}</span>
-          <span className={`${BODY} tabular-nums text-slate-300`}>{high ?? ''}</span>
-        </div>
+        {!hero ? (
+          <div className="pointer-events-none absolute left-0 right-0 top-5 flex justify-between">
+            <span className={`${BODY} tabular-nums text-slate-300`}>{low ?? ''}</span>
+            <span className={`${BODY} tabular-nums text-slate-300`}>{high ?? ''}</span>
+          </div>
+        ) : null}
       </div>
-      <ul className="space-y-1.5">
-        {targetValue ? (
-          <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400" aria-hidden />
-            <span className={REPORT_H3}>{targetLabel}</span>
-            <span className={`${BODY} font-semibold text-white`}>{targetValue}</span>
-          </li>
-        ) : null}
-        {ceilingValue ? (
-          <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-sky-400" aria-hidden />
-            <span className={REPORT_H3}>{ceilingLabel}</span>
-            <span className={`${BODY} font-semibold text-white`}>{ceilingValue}</span>
-          </li>
-        ) : null}
-      </ul>
+      {!hero ? (
+        <ul className="space-y-1.5">
+          {targetValue ? (
+            <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400" aria-hidden />
+              <span className={REPORT_H3}>{targetLabel}</span>
+              <span className={`${BODY} font-semibold text-white`}>{targetValue}</span>
+            </li>
+          ) : null}
+          {ceilingValue ? (
+            <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-sky-400" aria-hidden />
+              <span className={REPORT_H3}>{ceilingLabel}</span>
+              <span className={`${BODY} font-semibold text-white`}>{ceilingValue}</span>
+            </li>
+          ) : null}
+        </ul>
+      ) : null}
     </div>
   );
 }
@@ -756,35 +814,39 @@ function MarketBody({
   const levelLines = scope.level.split(' — ').map((part) => part.trim()).filter(Boolean);
   const money = offer?.currency || 'USD';
   const disclaimer = marketBandDisclaimer(offer, scope, language);
-  const blocks: Array<{ title: string; lines: string[]; notes?: string[] }> = [
+  const caveat = [disclaimer.nature, disclaimer.method].filter(Boolean).join(' ');
+  const facts: Array<{ title: string; lines: string[] }> = [
     { title: copy.where, lines: [scope.where] },
     { title: copy.role, lines: [scope.role] },
     { title: copy.level, lines: levelLines.length > 0 ? levelLines : [scope.level] },
-    {
-      title: copy.band,
-      lines: range ? [`${range} (${money})`] : [copy.noBand],
-      notes: range ? [disclaimer.nature, disclaimer.method] : undefined,
-    },
   ];
   return (
-    <div>
-      <ul className="space-y-4">
-        {blocks.map((block) => (
-          <li key={block.title}>
-            <p className={REPORT_H2}>{block.title}</p>
-            {block.lines.map((line) => (
+    <div className="space-y-4">
+      <div>
+        <p className={REPORT_H2}>{copy.band}</p>
+        {range ? (
+          <div className="mt-3">
+            <PayRangeLine offer={offer} currency={money} variant="hero" />
+          </div>
+        ) : (
+          <p className={`${BODY} mt-1 font-semibold text-white leading-snug`}>{copy.noBand}</p>
+        )}
+      </div>
+      <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {facts.map((fact) => (
+          <li key={fact.title} className="min-w-0">
+            <p className={REPORT_H3}>{fact.title}</p>
+            {fact.lines.map((line) => (
               <p key={line} className={`${BODY} mt-1 font-semibold text-white leading-snug`}>
                 {line}
-              </p>
-            ))}
-            {block.notes?.map((note) => (
-              <p key={note} className={`${BODY} mt-1 font-medium leading-relaxed text-slate-200`}>
-                {note}
               </p>
             ))}
           </li>
         ))}
       </ul>
+      {range && caveat ? (
+        <p className={`${BODY} font-medium leading-relaxed text-slate-200`}>{caveat}</p>
+      ) : null}
       {locked ? <LockLine>{copy.lockPay}</LockLine> : null}
     </div>
   );
@@ -1163,6 +1225,7 @@ export function GuideItemPage({
     const bank = modules?.interview_bank;
     body = bank && (bank.professional.length > 0 || bank.behavioral.length > 0) ? (
       <div className="space-y-4">
+        <p className={`${BODY} font-medium leading-relaxed text-slate-200`}>{copy.extraRule}</p>
         {bank.professional.length > 0 ? (
           <SectionCard title={copy.professional} heading={REPORT_H1}>
             <QuestionList items={bank.professional} copy={copy} />

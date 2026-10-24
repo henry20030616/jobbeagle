@@ -148,7 +148,7 @@ const ZH_TW: SampleLocalePack = {
       sources: ['美國 Senior BA／金融科技營運市場基準'],
       candidate_predicted_offer: '$155K',
       candidate_position_label:
-        '偏中下帶：核心 BA 證據扎實，但 ACH／支付擁有權偏薄，現金可能低於座位中位。',
+        '偏中下帶：核心 BA 證據扎實，但 ACH／支付實績偏薄，現金可能低於座位中位。',
       tc_breakdown: {
         base: '$150K',
         bonus: '$15K',
@@ -843,7 +843,7 @@ const ZH_CN: SampleLocalePack = {
       sources: ['美国 Senior BA／金融科技运营市场基准'],
       candidate_predicted_offer: '$155K',
       candidate_position_label:
-        '偏中下带：核心 BA 证据扎实，但 ACH／支付所有权偏薄，现金可能低于座位中位。',
+        '偏中下带：核心 BA 证据扎实，但 ACH／支付实绩偏薄，现金可能低于座位中位。',
       tc_breakdown: {
         base: '$150K',
         bonus: '$15K',
@@ -1524,7 +1524,7 @@ const ES: SampleLocalePack = {
       sources: ['Benchmark de mercado Senior BA / fintech ops (EE. UU.)'],
       candidate_predicted_offer: '$155K',
       candidate_position_label:
-        'Medio-bajo: prueba BA sólida, pero ownership ACH/pagos fino probablemente limita el cash bajo el punto medio.',
+        'Medio-bajo: prueba BA sólida, pero evidencia ACH/pagos limitada probablemente deja el cash bajo el punto medio.',
       tc_breakdown: {
         base: '$150K',
         bonus: '$15K',
@@ -2142,7 +2142,7 @@ const HI: SampleLocalePack = {
         'US रिमोट Senior BA fintech-ops सीटों के लिए तुलनीय कैश आमतौर पर इस बैंड में आता है; बातचीत से पहले नियोक्ता का अनुमोदित रेंज पुष्टि करें।',
       sources: ['Senior BA / fintech ops बाज़ार बेंचमार्क (US)'],
       candidate_position_label:
-        'निचला मिड-बैंड: कोर BA सबूत मज़बूत, लेकिन पतली ACH/payments ownership कैश को midpoint से नीचे रख सकती है।',
+        'निचला मिड-बैंड: कोर BA सबूत मज़बूत, लेकिन पतली ACH/payments प्रमाण कैश को midpoint से नीचे रख सकती है।',
     },
     apply_decision: {
       label: 'Apply after fixes',
@@ -2299,7 +2299,7 @@ const AR: SampleLocalePack = {
         'لمقاعد Senior BA fintech-ops عن بُعد في الولايات المتحدة، يقع النقد المقارن عادة في هذا النطاق؛ أكّد النطاق المعتمد قبل التفاوض.',
       sources: ['معيار سوق Senior BA / fintech ops (الولايات المتحدة)'],
       candidate_position_label:
-        'منتصف سفلي: إثبات BA الأساسي قوي، لكن ملكية ACH/المدفوعات الضعيفة قد تحد النقد دون نقطة الوسط.',
+        'منتصف سفلي: إثبات BA الأساسي قوي، لكن إثبات ACH/المدفوعات الضعيف قد يحد النقد دون نقطة الوسط.',
     },
     apply_decision: {
       label: 'Apply after fixes',

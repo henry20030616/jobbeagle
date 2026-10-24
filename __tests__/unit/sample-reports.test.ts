@@ -383,6 +383,41 @@ describe('seven-item report layout', () => {
     expect(guideHtml).toContain(guide.apply_decision.next_best_action);
   });
 
+  it('renders Snapshot market pay as a visual range with a short caveat', () => {
+    const snapshot = getSampleSnapshotReport('zh-TW');
+    const guide = getSampleStrategyGuideReport('zh-TW');
+    const snapHtml = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: snapshot,
+        language: 'zh-TW',
+        locked: true,
+      }),
+    );
+    const guideHtml = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: guide,
+        language: 'zh-TW',
+        locked: false,
+        rewrites: guide.guide_modules?.resume_rewrites ?? [],
+      }),
+    );
+    const caveat = '職缺未公布薪資；此區間依職稱、地點與年資對照市場水準，非該公司數據。';
+    for (const html of [snapHtml, guideHtml]) {
+      expect(html).toContain('data-pay-range="hero"');
+      expect(html).toContain('$145K');
+      expect(html).toContain('$190K');
+      expect(html).toContain('市場總薪酬區間');
+      expect(html).toContain(caveat);
+      expect(html).not.toContain('依職稱（Senior Business Analyst）');
+      expect(html).not.toContain('對照依據');
+      expect(html).not.toContain('議價天花板');
+      expect(html.indexOf('市場總薪酬區間')).toBeLessThan(html.indexOf('地點'));
+      expect(html.indexOf('$145K')).toBeLessThan(html.indexOf(caveat));
+    }
+    expect(snapHtml).toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
+    expect(guideHtml).not.toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
+  });
+
   it('frames company, pay, questions, and negotiate inner blocks with GUIDE_SECTION_FRAME', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('GUIDE_SECTION_FRAME');
@@ -410,7 +445,7 @@ describe('seven-item report layout', () => {
       /<ItemBlock title=\{title\[item\]\} summaryLabel=\{copy\.analysisSummary\}/,
     );
     const zh = getSampleStrategyGuideReport('zh-TW').guide_modules!;
-    expect(zh.company_eval.summary.split('\n')).toHaveLength(3);
+    expect(zh.company_eval.summary?.split('\n')).toHaveLength(3);
     expect(zh.company_eval.company_pros.length).toBeGreaterThan(0);
     expect(zh.company_eval.role_pros.length).toBeGreaterThan(0);
     expect(zh.negotiation.summary).toMatch(/開價/);
@@ -502,7 +537,7 @@ describe('seven-item report layout', () => {
       ar: 'عملية التوظيف:',
     } as const;
     for (const lang of Object.keys(labels) as Array<keyof typeof labels>) {
-      const summary = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank.summary;
+      const summary = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank.summary ?? '';
       expect(summary.startsWith(labels[lang])).toBe(true);
     }
   });
