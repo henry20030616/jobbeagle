@@ -11,7 +11,9 @@ describe('homepage form copy', () => {
     expect(t.upload).toBe('Click to upload Resume');
     expect(t.reportTypeStep).toBe('3. Choose report type');
     expect(t.launchStep).toBe('4. Launch');
-    expect(t.jobUrlPlaceholder).toContain('Paste the full job posting');
+    expect(t.jobUrlPlaceholder).toBe(
+      'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…).\nDo not paste only a URL or a short excerpt',
+    );
     expect(t.snapshotBlurb).toMatch(/hard requirements|missing keywords|pay band/i);
     expect(t.strategyBlurb).toMatch(/web search/i);
     expect(t.sampleLink).toBe('View report samples');
@@ -51,5 +53,14 @@ describe('homepage form copy', () => {
     expect(Object.keys(HOMEPAGE_FORM_COPY).sort()).toEqual(
       ['ar', 'en', 'es', 'hi', 'zh-CN', 'zh-TW'].sort(),
     );
+  });
+
+  it('does not end the job-paste placeholder with an ellipsis', () => {
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].jobUrlPlaceholder).toBe(
+      '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。\n勿只貼網址或片段',
+    );
+    for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
+      expect(copy.jobUrlPlaceholder).not.toMatch(/(\.{3}|…)\s*$/u);
+    }
   });
 });
