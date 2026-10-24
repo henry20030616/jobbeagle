@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   HOMEPAGE_FORM_COPY,
@@ -18,6 +20,37 @@ describe('homepage form copy', () => {
     expect(t.strategyBlurb).toMatch(/web search/i);
     expect(t.sampleLink).toBe('View report samples');
     expect(t.featuresAccordion).toBe('Jobbeagle advantages');
+    expect(t.uploadSupport).toBe(
+      'Supports .pdf, .doc, .docx, .txt, .md\n(Max 4MB)',
+    );
+  });
+
+  it('puts the Max 4MB resume note on its own line in every language', () => {
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].uploadSupport).toBe(
+      '支援 .pdf, .doc, .docx, .txt, .md\n(Max 4MB)',
+    );
+    expect(HOMEPAGE_FORM_COPY['zh-CN'].uploadSupport).toBe(
+      '支持 .pdf, .doc, .docx, .txt, .md\n(最大 4MB)',
+    );
+    expect(HOMEPAGE_FORM_COPY.en.uploadSupport).toBe(
+      'Supports .pdf, .doc, .docx, .txt, .md\n(Max 4MB)',
+    );
+    expect(HOMEPAGE_FORM_COPY.es.uploadSupport).toBe(
+      'Compatible con .pdf, .doc, .docx, .txt, .md\n(Máx 4MB)',
+    );
+    expect(HOMEPAGE_FORM_COPY.hi.uploadSupport).toBe(
+      '.pdf, .doc, .docx, .txt, .md सपोर्ट करता है\n(अधिकतम 4MB)',
+    );
+    expect(HOMEPAGE_FORM_COPY.ar.uploadSupport).toBe(
+      'يدعم .pdf و .doc و .docx و .txt و .md\n(حتى 4MB)',
+    );
+    for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
+      expect(copy.uploadSupport).toMatch(/\n\([^)]*4MB\)\s*$/u);
+      expect(copy.upload).not.toMatch(/4MB/);
+    }
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].upload).toBe('點擊上傳履歷');
+    const form = readFileSync(join(process.cwd(), 'components/InputForm.tsx'), 'utf8');
+    expect(form).toMatch(/className="upload-support[^"]*whitespace-pre-line/);
   });
 
   it('does not advertise the backend score floor to customers', () => {
