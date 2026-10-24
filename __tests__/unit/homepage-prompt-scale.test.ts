@@ -46,6 +46,27 @@ describe('homepage prompt type scale', () => {
     expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.strategyBlurb\}/);
   });
 
+  it('enlarges only the homepage hero brand to 130% of the prior 7.2rem / 7.8rem sizes', () => {
+    const css = read('app/globals.css');
+    const logo = read('components/BrandLogo.tsx');
+    const form = read('components/InputForm.tsx');
+
+    expect(css).toContain('.homepage-font-large .homepage-hero-wrap .lg\\:text-7xl');
+    expect(css).toContain('font-size: 9.36rem !important;');
+    expect(css).toContain('width: 10.14rem !important;');
+    expect(css).toContain('height: 10.14rem !important;');
+    expect(css).not.toMatch(/\.homepage-hero-wrap[\s\S]{0,200}font-size:\s*7\.2rem/);
+    expect(css).not.toMatch(/\.homepage-hero-wrap[\s\S]{0,200}width:\s*7\.8rem/);
+    expect(form).toContain('space-y-[4.5rem]');
+    expect(logo).toContain(
+      "hero: 'text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight'",
+    );
+    expect(logo).toContain(
+      "hero: 'w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 drop-shadow-xl'",
+    );
+    expect(logo).toContain("nav: 'text-2xl sm:text-3xl font-black tracking-tight'");
+  });
+
   it('scales only the features-to-steps gap by 1.5× and leaves logo/intro spacing alone', () => {
     const form = read('components/InputForm.tsx');
     const mobile = read('components/InputFormMobile.tsx');

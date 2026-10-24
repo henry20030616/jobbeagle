@@ -282,14 +282,15 @@ main input {
     line-height: 1.4 !important;
   }
 
+  /* Homepage hero brand only — 130% of prior 7.2rem word / 7.8rem icon. */
   .homepage-font-large .homepage-hero-wrap .lg\:text-7xl {
-    font-size: 7.2rem !important;
+    font-size: 9.36rem !important;
     line-height: 1 !important;
   }
   .homepage-font-large .homepage-hero-wrap .lg\:w-32,
   .homepage-font-large .homepage-hero-wrap .lg\:h-32 {
-    width: 7.8rem !important;
-    height: 7.8rem !important;
+    width: 10.14rem !important;
+    height: 10.14rem !important;
   }
   .homepage-font-large .homepage-hero-desc {
     font-size: var(--type-rest) !important;
