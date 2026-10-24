@@ -96,8 +96,6 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
 
   return (
     <div className="homepage-footer mt-12 space-y-6">
-      <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
-
       <div className="w-full max-w-5xl mx-auto">
         <div
           ref={panelRef}
