@@ -250,13 +250,13 @@ main input {
   }
 
   .homepage-font-large .homepage-hero-wrap .lg\:text-7xl {
-    font-size: 6rem !important;
+    font-size: 7.2rem !important;
     line-height: 1 !important;
   }
   .homepage-font-large .homepage-hero-wrap .lg\:w-32,
   .homepage-font-large .homepage-hero-wrap .lg\:h-32 {
-    width: 6.5rem !important;
-    height: 6.5rem !important;
+    width: 7.8rem !important;
+    height: 7.8rem !important;
   }
   .homepage-font-large .homepage-hero-desc {
     font-size: var(--type-rest) !important;
