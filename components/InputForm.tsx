@@ -16,14 +16,14 @@ import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import BrandLogo from '@/components/BrandLogo';
 import {
   HOMEPAGE_STEP_COL_SURFACE,
+  HOMEPAGE_STEP_PILL,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_IDLE,
 } from '@/constants/report-frame';
 
 const PILL_BOX =
   'inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border transition-all';
-/** Same dark-blue fill as step 3 report cards (`REPORT_TYPE_CARD_*`). */
-const PILL = `${PILL_BOX} text-zinc-100 bg-blue-900 hover:bg-blue-800 border-blue-700`;
+const PILL = `${PILL_BOX} ${HOMEPAGE_STEP_PILL}`;
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
@@ -45,7 +45,7 @@ function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
     <span
       className={`flex h-8 w-8 sm:h-10 sm:w-10 lg:h-14 lg:w-14 shrink-0 items-center justify-center rounded-full border-2 ${
-        selected ? 'border-white bg-white text-[#3d3c7c]' : 'border-white/80 bg-transparent'
+        selected ? 'border-white bg-white text-blue-900' : 'border-white/80 bg-transparent'
       }`}
       aria-hidden
     >
@@ -641,22 +641,22 @@ const InputForm: React.FC<InputFormProps> = ({
                     onFocus={() => setExpandedFeature(item.id)}
                     onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
                     onClick={() => setExpandedFeature(open ? null : item.id)}
-                    className="flex w-full items-center gap-3 sm:gap-4 lg:gap-5 rounded-2xl border border-slate-700 bg-slate-800/80 p-4 sm:p-6 lg:p-8 text-left shadow-xl backdrop-blur-sm transition-colors hover:bg-slate-700/40"
+                    className="flex w-full flex-col items-center gap-2 sm:gap-3 lg:gap-4 bg-transparent p-0 text-center"
                   >
                     <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 sm:p-4 lg:p-5 shadow-inner ring-1 ${item.iconWrap}`}>
                       <Icon className={`h-7 w-7 sm:h-8 sm:w-8 lg:h-12 lg:w-12 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="feature-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-100">{item.title}</span>
+                    <div className="min-w-0 w-full">
+                      <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                        <span className="feature-title text-center text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-100">{item.title}</span>
                         <ChevronDown
-                          className={`mt-0.5 h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
                         />
                       </div>
                       <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                         <div className="overflow-hidden">
-                          <p className="feature-desc pb-0.5 pt-2 sm:pt-2.5 text-sm sm:text-base lg:text-lg xl:text-2xl leading-normal text-slate-400">
+                          <p className="feature-desc pb-0.5 pt-2 sm:pt-2.5 text-center text-sm sm:text-base lg:text-lg xl:text-2xl leading-normal text-slate-400">
                             {item.desc}
                           </p>
                         </div>

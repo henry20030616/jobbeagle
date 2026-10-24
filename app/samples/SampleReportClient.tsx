@@ -107,7 +107,7 @@ export default function SampleReportClient() {
             >
               <span
                 className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-4 ${
-                  !isGuide ? 'border-white bg-white text-[#3d3c7c]' : 'border-white/80'
+                  !isGuide ? 'border-white bg-white text-blue-900' : 'border-white/80'
                 }`}
                 aria-hidden
               >
@@ -122,7 +122,7 @@ export default function SampleReportClient() {
             >
               <span
                 className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-4 ${
-                  isGuide ? 'border-white bg-white text-[#3d3c7c]' : 'border-white/80'
+                  isGuide ? 'border-white bg-white text-blue-900' : 'border-white/80'
                 }`}
                 aria-hidden
               >

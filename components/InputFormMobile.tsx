@@ -734,7 +734,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
                         reportType === REPORT_CODES.JOB_FIT_SNAPSHOT
-                          ? 'border-white bg-white text-[#3d3c7c]'
+                          ? 'border-white bg-white text-blue-900'
                           : 'border-white/80'
                       }`}
                       aria-hidden
@@ -769,7 +769,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
                         reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                          ? 'border-white bg-white text-[#3d3c7c]'
+                          ? 'border-white bg-white text-blue-900'
                           : 'border-white/80'
                       }`}
                       aria-hidden
@@ -817,14 +817,14 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             }
             className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-2 ${
               submitDisabled
-                ? 'bg-indigo-600/35 text-zinc-100 cursor-not-allowed'
+                ? 'bg-blue-900/35 text-zinc-100 cursor-not-allowed'
                 : publicAts
                   ? 'bg-emerald-600 text-white'
                   : jdError
                     ? 'bg-red-600 text-white'
                     : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                      ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-[0_0_28px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80'
-                      : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 active:from-indigo-700 active:to-indigo-600 text-white'
+                      ? 'bg-blue-800 text-white shadow-[0_0_28px_rgba(30,64,175,0.75)] ring-2 ring-blue-300/80'
+                      : 'bg-blue-800 hover:bg-blue-700 active:bg-blue-900 text-white'
             }`}
           >
             {isLoading || isParsingUrl ? (

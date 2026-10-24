@@ -46,17 +46,24 @@ export const REPORT_TYPE_CARD_ACTIVE =
   'border-solid border-white bg-blue-900 text-white ring-4 ring-white/90';
 
 /**
+ * Homepage step pills (Chrome extension / saved resumes / credits).
+ * Same dark-blue fill as step 3 cards and the step 4 launch box.
+ */
+export const HOMEPAGE_STEP_PILL =
+  'text-zinc-100 bg-blue-900 hover:bg-blue-800 border-blue-700';
+
+/**
  * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.
  * /samples Fit Snapshot + Interview Guide tabs match this — not the step-3 report cards.
  */
 export const HOMEPAGE_STEP_COL_SURFACE =
   'rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl';
 
-/** /samples Fit Snapshot + Interview Guide — same fill as the step-4 Launch button */
+/** /samples Fit Snapshot + Interview Guide — same dark-blue fill as step 3 cards / step-4 Launch */
 export const SAMPLE_REPORT_TAB_IDLE =
-  'rounded-2xl border border-[#5a598f] bg-[#3d3c7c] text-white hover:bg-[#4a498e]';
+  'rounded-2xl border border-blue-700 bg-blue-900 text-white hover:bg-blue-800';
 export const SAMPLE_REPORT_TAB_ACTIVE =
-  'rounded-2xl border border-white bg-[#3d3c7c] text-white ring-4 ring-white/90';
+  'rounded-2xl border border-white bg-blue-900 text-white ring-4 ring-white/90';
 
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =
