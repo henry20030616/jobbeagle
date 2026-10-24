@@ -42,4 +42,19 @@ describe('homepage prompt type scale', () => {
     expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.snapshotBlurb\}/);
     expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.strategyBlurb\}/);
   });
+
+  it('scales only the features-to-steps gap by 1.5× and leaves logo/intro spacing alone', () => {
+    const form = read('components/InputForm.tsx');
+    const mobile = read('components/InputFormMobile.tsx');
+
+    expect(form).toContain(
+      "flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-5 sm:gap-6 lg:gap-7'}",
+    );
+    expect(form).toContain(
+      "flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-[1.875rem] sm:gap-[2.25rem] lg:gap-[2.625rem]'}",
+    );
+    expect(form).toContain('space-y-[4.5rem]');
+    expect(mobile).toContain('homepage-features mb-[1.125rem] [&+*]:!mt-0');
+    expect(mobile).toContain('<form onSubmit={handleSubmit} className="space-y-3">');
+  });
 });

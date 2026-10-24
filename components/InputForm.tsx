@@ -598,7 +598,7 @@ const InputForm: React.FC<InputFormProps> = ({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-5 sm:gap-6 lg:gap-7'}`}>
+      <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-[1.875rem] sm:gap-[2.25rem] lg:gap-[2.625rem]'}`}>
         {!compactChrome && (
           <div className="homepage-features grid w-full shrink-0 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {([

@@ -437,7 +437,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="rounded-xl border border-indigo-500/30 bg-slate-800/80 overflow-hidden shadow-sm">
+        <div className="homepage-features mb-[1.125rem] [&+*]:!mt-0 rounded-xl border border-indigo-500/30 bg-slate-800/80 overflow-hidden shadow-sm">
           <button
             type="button"
             aria-expanded={featuresOpen}
