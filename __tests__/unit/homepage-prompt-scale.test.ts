@@ -23,6 +23,7 @@ describe('homepage prompt type scale', () => {
     expect(input).toContain('overflow-visible');
     expect(input).not.toMatch(/line-clamp|text-ellipsis/);
     expect(css).toContain('.homepage-steps .jd-paste-prompt');
+    expect(css).toContain('.homepage-steps .jd-paste-prompt.\\32xl\\:text-4xl');
     expect(css).toContain('font-size: var(--type-step)');
   });
 });

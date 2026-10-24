@@ -56,11 +56,24 @@ describe('homepage form copy', () => {
   });
 
   it('does not end the job-paste placeholder with an ellipsis', () => {
-    expect(HOMEPAGE_FORM_COPY['zh-TW'].jobUrlPlaceholder).toBe(
-      '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。\n勿只貼網址或片段',
-    );
+    const expected: Record<keyof typeof HOMEPAGE_FORM_COPY, string> = {
+      'zh-TW':
+        '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。\n勿只貼網址或片段',
+      'zh-CN':
+        '请粘贴完整职位：公司名称、职位名称，以及完整职位内容（条件、职责等）。\n勿只贴网址或片段',
+      en: 'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…).\nDo not paste only a URL or a short excerpt',
+      es: 'Pega la oferta completa: empresa, puesto y descripción completa (requisitos, responsabilidades…).\nNo pegues solo una URL o un extracto',
+      hi: 'पूरी जॉब पोस्टिंग पेस्ट करें: कंपनी नाम, पदनाम और पूरा विवरण (आवश्यकताएँ, जिम्मेदारियाँ…)।\nकेवल URL या छोटा अंश न पेस्ट करें',
+      ar: 'الصق إعلان الوظيفة بالكامل: اسم الشركة والمسمى والوصف الكامل (المتطلبات والمسؤوليات…).\nلا تلصق الرابط فقط أو مقتطفًا قصيرًا',
+    };
+    for (const [lang, placeholder] of Object.entries(expected)) {
+      expect(HOMEPAGE_FORM_COPY[lang as keyof typeof HOMEPAGE_FORM_COPY].jobUrlPlaceholder).toBe(
+        placeholder,
+      );
+    }
     for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
       expect(copy.jobUrlPlaceholder).not.toMatch(/(\.{3}|…)\s*$/u);
     }
   });
 });
+
