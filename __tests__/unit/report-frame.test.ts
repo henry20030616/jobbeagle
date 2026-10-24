@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   HOMEPAGE_STEP_PILL,
   HOMEPAGE_STEP_PILL_TYPE,
+  HOMEPAGE_TITLE_TYPE,
   REPORT_ACTION_TEXT,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_FILL,
@@ -46,8 +47,9 @@ describe('homepage step 3 / sample tab fill', () => {
     expect(REPORT_TYPE_LAUNCH_BOX).toContain(REPORT_TYPE_CARD_ACTIVE);
     expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/border-2/);
     expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/border-white/);
-    expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/text-zinc-100/);
-    expect(REPORT_TYPE_LAUNCH_BOX).not.toMatch(/indigo|bg-blue-800|#3d3c7c/);
+    expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/text-white/);
+    expect(REPORT_TYPE_LAUNCH_BOX).toBe(`border-2 ${REPORT_TYPE_CARD_ACTIVE}`);
+    expect(REPORT_TYPE_LAUNCH_BOX).not.toMatch(/indigo|bg-blue-800|#3d3c7c|opacity|text-zinc-100/);
   });
 
   it('fills the desktop sample leftover box so the four step inner boxes share one bottom', () => {
@@ -68,45 +70,63 @@ describe('homepage step 3 / sample tab fill', () => {
     const mobile = readFileSync(join(process.cwd(), 'components/InputFormMobile.tsx'), 'utf8');
     for (const source of [desktop, mobile]) {
       expect(source).toContain('REPORT_TYPE_LAUNCH_BOX');
+      expect(source).toContain('disabled:opacity-100');
+      expect(source).not.toMatch(/REPORT_TYPE_LAUNCH_BOX\} cursor-not-allowed opacity-80/);
       expect(source).not.toMatch(/bg-blue-900\/3[05]/);
       expect(source).not.toMatch(/ring-2 ring-blue-300/);
       expect(source).not.toMatch(/shadow-\[0_0_\d+px_rgba\(30,/);
     }
     expect(desktop).toContain('STEP_PILL_ROW_EMPTY');
-    expect(desktop).toContain('text-zinc-100');
+    expect(desktop).toContain('REPORT_TYPE_LAUNCH_BOX');
   });
 });
 
 describe('homepage step-header pills', () => {
-  it('scales Chrome / saved-resume / credits pills to 1.5× current type and icons', () => {
+  it('matches 四大優點 titles, the three pills, and step 1–4 headings', () => {
+    expect(HOMEPAGE_TITLE_TYPE).toContain('homepage-title-type');
+    expect(HOMEPAGE_TITLE_TYPE).toContain('text-lg sm:text-xl lg:text-2xl xl:text-3xl');
     expect(HOMEPAGE_STEP_PILL_TYPE).toContain('step-header-pill');
-    expect(HOMEPAGE_STEP_PILL_TYPE).toContain('text-[1.5rem]');
-    expect(HOMEPAGE_STEP_PILL_TYPE).toContain('sm:text-[1.6875rem]');
-    expect(HOMEPAGE_STEP_PILL_TYPE).toContain('lg:text-[1.875rem]');
-    expect(HOMEPAGE_STEP_PILL_TYPE).toContain('xl:text-[2.25rem]');
+    expect(HOMEPAGE_STEP_PILL_TYPE).toContain(HOMEPAGE_TITLE_TYPE);
+    expect(HOMEPAGE_STEP_PILL_TYPE).not.toContain('text-[1.5rem]');
     expect(HOMEPAGE_STEP_PILL).toContain(HOMEPAGE_STEP_PILL_TYPE);
 
     const desktop = readFileSync(join(process.cwd(), 'components/InputForm.tsx'), 'utf8');
     const mobile = readFileSync(join(process.cwd(), 'components/InputFormMobile.tsx'), 'utf8');
     const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8');
 
+    expect(desktop).toContain('HOMEPAGE_TITLE_TYPE');
     expect(desktop).toContain('HOMEPAGE_STEP_PILL_TYPE');
+    expect(desktop).toMatch(/STEP_TITLE =\s*`step-title \$\{HOMEPAGE_TITLE_TYPE\}[^`]*text-white/);
     expect(desktop).toContain("Puzzle className=\"h-[1em] w-[1em] shrink-0\"");
     expect(desktop).toContain("History className=\"h-[1em] w-[1em] shrink-0\"");
     expect(desktop).toContain("CreditCard className=\"h-[1em] w-[1em] shrink-0\"");
-    expect(desktop).toContain('min-h-[4.125rem]');
+    expect(desktop).toContain('min-h-[4rem]');
+    expect(desktop).not.toContain('min-h-[4.125rem]');
     expect(desktop).toMatch(/STEP_PILL_ROW =\s*'[^']*overflow-visible/);
     expect(desktop).not.toMatch(/STEP_TITLE =\s*'[^']*overflow-hidden/);
+    expect(desktop).not.toMatch(/STEP_TITLE =\s*`[^`]*overflow-hidden/);
     expect(desktop).not.toMatch(/STEP_PILL_ROW =\s*'[^']*overflow-hidden/);
+    expect(desktop).toMatch(/feature-title \$\{HOMEPAGE_TITLE_TYPE\}/);
 
     expect(css).toMatch(
+      /\.homepage-steps \.step-header-pill[\s\S]*?font-size:\s*var\(--type-rest\)/,
+    );
+    expect(css).toMatch(
+      /\.homepage-steps \.step-title[\s\S]*?font-size:\s*var\(--type-rest\)/,
+    );
+    expect(css).toMatch(/\.feature-title \{[\s\S]*?font-size:\s*var\(--type-rest\)/);
+    expect(css).not.toMatch(
       /\.homepage-steps \.step-header-pill \{[\s\S]*?font-size:\s*calc\(var\(--type-ui\) \* 1\.5\)/,
     );
+    expect(css).toContain('font-size: 9.36rem !important;');
 
     expect(mobile).toContain('step-header-pill');
-    expect(mobile).toContain('text-[1.125rem]');
-    expect(mobile).toContain("Puzzle className=\"h-6 w-6 shrink-0\"");
-    expect(mobile).toContain("History className=\"h-6 w-6 shrink-0\"");
-    expect(mobile).toContain("CreditCard className=\"h-6 w-6 shrink-0\"");
+    expect(mobile).toContain('homepage-title-type text-xs');
+    expect(mobile).toMatch(/MOBILE_STEP_TITLE = `step-title[\s\S]*?text-white/);
+    expect(mobile).not.toContain('text-white/90');
+    expect(mobile).not.toContain('text-[1.125rem]');
+    expect(mobile).toContain("Puzzle className=\"h-[1em] w-[1em] shrink-0\"");
+    expect(mobile).toContain("History className=\"h-[1em] w-[1em] shrink-0\"");
+    expect(mobile).toContain("CreditCard className=\"h-[1em] w-[1em] shrink-0\"");
   });
 });

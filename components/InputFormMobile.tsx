@@ -31,10 +31,12 @@ import BrandLogo from '@/components/BrandLogo';
 // Mobile-specific constants (NO responsive classes) - Ultra compact v2
 const MOBILE_CONTAINER = 'w-full space-y-3 px-3 py-4';
 const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-3 space-y-2.5 shadow-lg';
-const MOBILE_STEP_TITLE = 'flex items-center gap-2 text-sm font-bold text-white/90';
+/** Same type size as each 四大優點 feature title (`text-xs`). */
+const MOBILE_TITLE_TYPE = 'homepage-title-type text-xs';
+const MOBILE_STEP_TITLE = `step-title flex items-center gap-2 ${MOBILE_TITLE_TYPE} font-bold text-white`;
 const MOBILE_STEP_BADGE = 'h-5 w-1 rounded-full shrink-0';
-const MOBILE_BUTTON_PRIMARY = 'w-full py-4 text-base font-bold rounded-xl transition-all active:scale-[0.98] shadow-lg';
-const MOBILE_PILL = 'step-header-pill inline-flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/50 px-2.5 py-1 text-[1.125rem] leading-snug text-slate-300 font-medium';
+const MOBILE_BUTTON_PRIMARY = 'w-full py-4 rounded-xl transition-all active:scale-[0.98] disabled:opacity-100';
+const MOBILE_PILL = `step-header-pill ${MOBILE_TITLE_TYPE} inline-flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/50 px-2.5 py-1 leading-snug text-slate-300 font-medium`;
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -519,7 +521,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       <Icon className={`h-4 w-4 ${item.iconColor}`} strokeWidth={1.75} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-bold leading-snug text-slate-200">{item.title}</p>
+                      <p className={`${MOBILE_TITLE_TYPE} font-bold leading-snug text-slate-200`}>{item.title}</p>
                       <p className="pt-0.5 text-xs leading-normal text-slate-400">{item.desc}</p>
                     </div>
                   </div>
@@ -555,7 +557,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               className={MOBILE_PILL}
               title={zh ? '職缺頁可一鍵抓 JD，免手動貼上' : 'On a job page? Grab the JD in one click — no paste'}
             >
-              <Puzzle className="h-6 w-6 shrink-0" />
+              <Puzzle className="h-[1em] w-[1em] shrink-0" />
               <span className="font-bold">
                 {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
               </span>
@@ -591,7 +593,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
               className={MOBILE_PILL}
             >
-              <History className="h-6 w-6 shrink-0" />
+              <History className="h-[1em] w-[1em] shrink-0" />
               <span>{t.resumeLibrary}</span>
               {resumeHistory.length > 0 && <span>({resumeHistory.length})</span>}
             </button>
@@ -702,7 +704,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               className={`${MOBILE_PILL} group max-w-full`}
               title={`${creditsPillShort}${creditsPillDetail} → — ${creditsPillTitle}`}
             >
-              <CreditCard className="h-6 w-6 shrink-0" />
+              <CreditCard className="h-[1em] w-[1em] shrink-0" />
               <span className="font-bold leading-snug">
                 {creditsPillShort}
                 <span className="hidden group-hover:inline group-focus-within:inline">
@@ -819,11 +821,11 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             }
             className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-2 ${
               submitDisabled
-                ? `${REPORT_TYPE_LAUNCH_BOX} cursor-not-allowed opacity-80`
+                ? `${REPORT_TYPE_LAUNCH_BOX} cursor-not-allowed`
                 : publicAts
-                  ? 'border-2 border-solid border-white bg-emerald-600 text-zinc-100'
+                  ? 'border-2 border-solid border-white bg-emerald-600 text-white'
                   : jdError
-                    ? 'border-2 border-solid border-white bg-red-600 text-zinc-100'
+                    ? 'border-2 border-solid border-white bg-red-600 text-white'
                     : REPORT_TYPE_LAUNCH_BOX
             }`}
           >
@@ -838,10 +840,10 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             ) : isSaving ? (
               <span className="text-sm text-white/70">{t.waitingSave}</span>
             ) : (
-              <>
-                <Pointer className="h-9 w-9" aria-hidden />
-                <span className="text-base font-bold">{submitLabel}</span>
-              </>
+              <span className="report-choice-title flex flex-col items-center justify-center gap-[0.35em] text-sm font-bold text-white">
+                <span>{submitLabel}</span>
+                <Pointer className="h-[1.15em] w-[1.15em] shrink-0" aria-hidden />
+              </span>
             )}
           </button>
         </div>

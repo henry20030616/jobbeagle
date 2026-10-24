@@ -18,6 +18,7 @@ import {
   HOMEPAGE_STEP_COL_SURFACE,
   HOMEPAGE_STEP_PILL,
   HOMEPAGE_STEP_PILL_TYPE,
+  HOMEPAGE_TITLE_TYPE,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_IDLE,
   REPORT_TYPE_LAUNCH_BOX,
@@ -31,9 +32,9 @@ const STEP_CONNECTOR =
 const STEP_COL =
   `relative flex h-full min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-6 lg:p-7`;
 const STEP_TITLE =
-  'step-title flex shrink-0 items-center overflow-visible pb-3 lg:pb-4 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+  `step-title ${HOMEPAGE_TITLE_TYPE} flex shrink-0 items-center overflow-visible pb-3 lg:pb-4 font-bold text-white`;
 const STEP_PILL_ROW =
-  'mb-3 lg:mb-4 flex min-h-[4.125rem] w-full min-w-0 shrink-0 items-center overflow-visible';
+  'mb-3 lg:mb-4 flex min-h-[4rem] w-full min-w-0 shrink-0 items-center overflow-visible';
 /** Empty step-4 spacer — same min-height as steps 1–3 so launch top matches 適配快照. */
 const STEP_PILL_ROW_EMPTY = STEP_PILL_ROW;
 /** Mobile floor; desktop bodies grow with the flex-1 step row. */
@@ -47,6 +48,9 @@ const REPORT_CARD =
 /** Same type scale as step-2 empty-state 點擊上傳履歷 (`upload-prompt` + 2xl:text-4xl → --type-step). */
 const STEP_PROMPT_TYPE =
   'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl';
+/** Same classes as the step-3 適配快照 card title — reuse on 「AI戰略分析」. */
+const REPORT_CHOICE_TITLE =
+  'report-choice-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white';
 
 function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
@@ -73,12 +77,12 @@ function StepSequenceMark() {
   return (
     <div className="flex items-center justify-center self-stretch">
       <div className={STEP_CONNECTOR} aria-hidden>
-        <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-indigo-400 bg-slate-900 text-indigo-200 shadow-lg">
-          <ChevronRight className="h-8 w-8" strokeWidth={2.75} />
+        <span className="flex h-24 w-24 items-center justify-center rounded-full border-[3px] border-cyan-300 bg-indigo-600 text-white shadow-[0_0_22px_rgba(34,211,238,0.65)] ring-4 ring-cyan-200/80">
+          <ChevronRight className="h-14 w-14" strokeWidth={3.25} />
         </span>
       </div>
-      <div className="flex justify-center py-3 text-indigo-300 lg:hidden" aria-hidden>
-        <ChevronDown className="h-10 w-10" strokeWidth={2.75} />
+      <div className="flex justify-center py-3 text-cyan-200 lg:hidden" aria-hidden>
+        <ChevronDown className="h-16 w-16" strokeWidth={3.25} />
       </div>
     </div>
   );
@@ -655,7 +659,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         <Icon className={`h-7 w-7 sm:h-8 sm:w-8 lg:h-12 lg:w-12 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                       </div>
                       <span className="relative inline-block min-w-0 max-w-full">
-                        <span className="feature-title block text-left text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-100">{item.title}</span>
+                        <span className={`feature-title ${HOMEPAGE_TITLE_TYPE} block text-left font-semibold leading-snug text-zinc-100`}>{item.title}</span>
                         <ChevronDown
                           className={`pointer-events-none absolute left-full top-1/2 ml-1.5 h-8 w-8 sm:h-9 sm:w-9 lg:h-12 lg:w-12 shrink-0 -translate-y-1/2 text-indigo-200 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           strokeWidth={2.75}
@@ -977,9 +981,9 @@ const InputForm: React.FC<InputFormProps> = ({
                           : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-100 transition-all ${
+                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center transition-all disabled:opacity-100 ${
                     submitDisabled
-                      ? `${REPORT_TYPE_LAUNCH_BOX} cursor-not-allowed opacity-80`
+                      ? `${REPORT_TYPE_LAUNCH_BOX} cursor-not-allowed`
                       : publicAts
                         ? 'border-2 border-solid border-white bg-emerald-600 hover:-translate-y-1 hover:bg-emerald-500 active:translate-y-0 active:bg-emerald-700'
                         : jdError
@@ -1000,10 +1004,10 @@ const InputForm: React.FC<InputFormProps> = ({
                   ) : isSaving ? (
                     <span className="text-lg text-white/70">{t.waitingSave}</span>
                   ) : (
-                    <>
-                      <span className="px-1 leading-snug">{submitLabel}</span>
-                      <Pointer className="h-[4.5rem] w-[4.5rem] shrink-0" aria-hidden />
-                    </>
+                    <span className={`${REPORT_CHOICE_TITLE} flex flex-col items-center justify-center gap-[0.35em] px-1`}>
+                      <span className="leading-snug">{submitLabel}</span>
+                      <Pointer className="h-[1.15em] w-[1.15em] shrink-0" aria-hidden />
+                    </span>
                   )}
                 </button>
               </div>

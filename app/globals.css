@@ -310,11 +310,6 @@ main input {
     font-size: var(--type-chrome) !important;
     line-height: 1.4 !important;
   }
-  .homepage-font-large .step-title,
-  .homepage-font-large .homepage-steps .step-title {
-    font-size: var(--type-step) !important;
-    line-height: 1.2 !important;
-  }
   .homepage-font-large .upload-prompt,
   .homepage-font-large .upload-support,
   .homepage-font-large .jd-paste-prompt,
@@ -382,10 +377,22 @@ main input {
     font-size: calc(var(--type-ui) * 1.5) !important;
     line-height: 1.2 !important;
   }
-  /* Chrome / saved resumes / credits pills — 1.5× --type-ui. Icons use 1em. */
-  .homepage-font-large .homepage-steps .step-header-pill {
-    font-size: calc(var(--type-ui) * 1.5) !important;
+  /*
+   * 四大優點 titles, step 1–4 headings, and the three step-header pills.
+   * Same size (--type-rest). Must follow the generic .homepage-steps text-*
+   * rules so this wins. Icons on pills use 1em.
+   */
+  .homepage-font-large .feature-title,
+  .homepage-font-large .homepage-title-type,
+  .homepage-font-large .homepage-steps .homepage-title-type,
+  .homepage-font-large .homepage-steps .step-header-pill,
+  .homepage-font-large .homepage-steps .step-title {
+    font-size: var(--type-rest) !important;
     line-height: 1.3 !important;
+  }
+  .homepage-font-large .step-title,
+  .homepage-font-large .homepage-steps .step-title {
+    color: rgb(255 255 255) !important;
   }
 }
 

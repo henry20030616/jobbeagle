@@ -48,20 +48,28 @@ export const REPORT_TYPE_CARD_ACTIVE =
   `border-solid border-white ${REPORT_TYPE_CARD_FILL} text-white ring-4 ring-white/90`;
 
 /**
- * Step-4 launch inner 方匡 — same fill + white 2px box as the selected Snapshot card.
- * Disabled may dim via opacity only; do not swap to /35 overlay or blue-800.
+ * Step-4 launch inner 方匡 — same opaque fill + white 2px box as the selected Snapshot card.
+ * Idle homepage is disabled (no JD/resume); do not dim with opacity — that mixes the slate
+ * column through bg-blue-900 and reads as a different/duller blue.
  */
 export const REPORT_TYPE_LAUNCH_BOX =
-  `border-2 ${REPORT_TYPE_CARD_ACTIVE} text-zinc-100`;
+  `border-2 ${REPORT_TYPE_CARD_ACTIVE}`;
+
+/**
+ * Shared homepage title type: 四大優點 feature titles, step 1–4 headings,
+ * and the three step-header pills. Desktop `.homepage-font-large` maps this
+ * to `var(--type-rest)` so the three surfaces stay in sync.
+ */
+export const HOMEPAGE_TITLE_TYPE =
+  'homepage-title-type text-lg sm:text-xl lg:text-2xl xl:text-3xl';
 
 /**
  * Step-header pill type (Chrome / saved resumes / credits).
- * 1.5× the previous Tailwind scale (text-base / sm:text-lg / lg:text-xl / xl:text-2xl).
- * Homepage desktop pairs with `.step-header-pill` → calc(var(--type-ui) * 1.5).
+ * Same size as 四大優點 titles (`HOMEPAGE_TITLE_TYPE` / `--type-rest`).
  * Icons must stay 1em so they track the text.
  */
 export const HOMEPAGE_STEP_PILL_TYPE =
-  'step-header-pill text-[1.5rem] sm:text-[1.6875rem] lg:text-[1.875rem] xl:text-[2.25rem]';
+  `step-header-pill ${HOMEPAGE_TITLE_TYPE}`;
 
 /**
  * Homepage step pills (Chrome extension / saved resumes / credits).
