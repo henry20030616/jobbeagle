@@ -368,7 +368,9 @@ main input {
   .homepage-font-large .homepage-steps .sm\:text-4xl,
   .homepage-font-large .homepage-steps .md\:text-4xl,
   .homepage-font-large .homepage-steps .xl\:text-4xl,
-  .homepage-font-large .homepage-steps .\32xl\:text-4xl {
+  .homepage-font-large .homepage-steps .\32xl\:text-4xl,
+  .homepage-font-large .homepage-steps .jd-paste-prompt,
+  .homepage-font-large .homepage-steps .jd-paste-prompt.\32xl\:text-4xl {
     font-size: var(--type-step) !important;
     line-height: 1.2 !important;
   }

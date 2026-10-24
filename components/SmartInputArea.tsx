@@ -34,12 +34,14 @@ const PLACEHOLDER_ZH =
 const PLACEHOLDER_EN =
   'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…).\nDo not paste only a URL or a short excerpt';
 
-/** Same type scale as InputForm “Click to upload Resume”. */
-const JD_PROMPT_TYPE =
-  'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold leading-snug';
+/** Same type scale as InputForm “Click to upload Resume” / upload-support. */
+const HOMEPAGE_STEP_BODY_TYPE =
+  'text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold leading-snug';
 
-/** Desktop Step 1 paste prompt — 43px (2.6875rem), not upload-prompt 54px. */
-const JD_PROMPT_TYPE_COMPACT = 'jd-paste-prompt text-sm font-semibold leading-snug';
+const JD_PROMPT_TYPE = `upload-prompt ${HOMEPAGE_STEP_BODY_TYPE}`;
+
+/** Compact Step 1 paste — same class/size as step-2 `.upload-prompt` (2xl:text-4xl → --type-step). */
+const JD_PROMPT_TYPE_COMPACT = `jd-paste-prompt ${JD_PROMPT_TYPE}`;
 
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.
@@ -140,7 +142,7 @@ export default function SmartInputArea({
               aria-hidden="true"
               className={`pointer-events-none absolute inset-0 flex items-start justify-start overflow-visible rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
             >
-              <p className={`${promptType} w-full min-w-0 max-w-full whitespace-pre-line text-left text-slate-400`}>
+              <p className={`${promptType} w-full min-w-0 max-w-full overflow-visible whitespace-pre-line break-words text-left text-slate-400`}>
                 {resolvedPlaceholder}
               </p>
             </div>
