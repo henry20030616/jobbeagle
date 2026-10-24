@@ -105,6 +105,14 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
 export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
+ * Homepage `<main>` horizontal gutters (`app/page.tsx`).
+ * vw padding so left AND right stay inset on any monitor — not rem-capped,
+ * not a centered 1024px island.
+ */
+export const PAGE_SHELL_GUTTER =
+  'px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]';
+
+/**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,
  * then scales uniformly to fill the stage width — proportions stay fixed.
  * Wider canvas = less empty side margin on desktop monitors.

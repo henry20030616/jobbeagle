@@ -16,6 +16,7 @@ import DeleteAccountButton from '@/components/DeleteAccountButton';
 import BrandLogo from '@/components/BrandLogo';
 import { FitStage } from '@/components/FitStage';
 import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
+import { PAGE_SHELL_GUTTER } from '@/constants/report-frame';
 
 const copy: Record<
   AppLanguage,
@@ -241,7 +242,10 @@ export default function DangerZonePageClient() {
         mode="fill"
         className="w-full min-h-screen !justify-start !items-start"
       >
-        <main className="mx-0 w-full max-w-none px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-8 sm:space-y-10" data-fit-ref="account-danger">
+        <main
+          className={`mx-0 w-full max-w-full ${PAGE_SHELL_GUTTER} py-6 sm:py-10 space-y-8 sm:space-y-10`}
+          data-fit-ref="account-danger"
+        >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <BrandLogo size="nav" showIcon />
             <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">

@@ -28,8 +28,10 @@ import type { CareerContext, MembershipTier, UserProfile } from '@/types';
 import { careerContextHasSignal } from '@/lib/career-context';
 import { FitStage } from '@/components/FitStage';
 import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
+import { PAGE_SHELL_GUTTER } from '@/constants/report-frame';
 import AccountSectionNav from '@/components/AccountSectionNav';
 import {
+  ACCOUNT_HASH_IDS,
   getAccountNavCopy,
   isAccountHashId,
   type AccountHashId,
@@ -168,7 +170,7 @@ const copy: Record<
       'Cancel your monthly subscription? You keep access until the current billing period ends. You can subscribe again below anytime.',
     cancelOk: 'Billing stopped. You keep access until {date}.',
     cancelOkNoDate: 'Billing stopped. You keep access until the current period ends.',
-    cancelNone: 'No cancellable monthly subscription found for this email.',
+    cancelNone: 'No monthly subscription on this account.',
     manageNone: 'Could not open the billing portal. Try again in a moment.',
     subRenews: 'Renews {date}',
     subEnds: 'Access until {date}',
@@ -226,7 +228,7 @@ const copy: Record<
       '確定取消月費訂閱？本期結束前仍可使用。之後可再從下方重新訂閱。',
     cancelOk: '已停止扣款。你可使用至 {date}。',
     cancelOkNoDate: '已停止扣款。本期結束前仍可使用。',
-    cancelNone: '此信箱沒有可取消的月費訂閱。',
+    cancelNone: '目前沒有月費訂閱。',
     manageNone: '無法開啟帳單入口，請稍後再試。',
     subRenews: '下次續訂 {date}',
     subEnds: '可用至 {date}',
@@ -281,7 +283,7 @@ const copy: Record<
     cancelConfirm: '确定取消月费订阅？本期结束前仍可使用。之后可再从下方重新订阅。',
     cancelOk: '已停止扣款。你可使用至 {date}。',
     cancelOkNoDate: '已停止扣款。本期结束前仍可使用。',
-    cancelNone: '此邮箱没有可取消的月费订阅。',
+    cancelNone: '目前没有月费订阅。',
     manageNone: '无法打开账单入口，请稍后再试。',
     subRenews: '下次续订 {date}',
     subEnds: '可用至 {date}',
@@ -338,7 +340,7 @@ const copy: Record<
       '¿Cancelar la suscripción mensual? Conservas el acceso hasta el fin del periodo. Puedes volver a suscribirte abajo.',
     cancelOk: 'Se detuvo el cobro. Conservas el acceso hasta {date}.',
     cancelOkNoDate: 'Se detuvo el cobro. Conservas el acceso hasta el fin del periodo.',
-    cancelNone: 'No hay una suscripción mensual cancelable para este email.',
+    cancelNone: 'No hay una suscripción mensual en esta cuenta.',
     manageNone: 'No se pudo abrir el portal de facturación. Inténtalo de nuevo.',
     subRenews: 'Se renueva {date}',
     subEnds: 'Acceso hasta {date}',
@@ -396,7 +398,7 @@ const copy: Record<
       'मासिक सदस्यता रद्द करें? वर्तमान अवधि खत्म होने तक ऐक्सेस रहेगा। बाद में नीचे फिर से ले सकते हैं।',
     cancelOk: 'बिलिंग बंद। आप {date} तक उपयोग कर सकते हैं।',
     cancelOkNoDate: 'बिलिंग बंद। वर्तमान अवधि खत्म होने तक ऐक्सेस रहेगा।',
-    cancelNone: 'इस ईमेल पर रद्द करने योग्य मासिक सदस्यता नहीं मिली।',
+    cancelNone: 'इस खाते पर मासिक सदस्यता नहीं है।',
     manageNone: 'बिलिंग पोर्टल नहीं खुल सका। बाद में प्रयास करें।',
     subRenews: 'नवीनीकरण {date}',
     subEnds: '{date} तक ऐक्सेस',
@@ -453,7 +455,7 @@ const copy: Record<
       'إلغاء الاشتراك الشهري؟ يبقى الوصول حتى نهاية الفترة الحالية. يمكنك الاشتراك مجددًا أدناه.',
     cancelOk: 'توقف الفوترة. يمكنك الاستخدام حتى {date}.',
     cancelOkNoDate: 'توقف الفوترة. يبقى الوصول حتى نهاية الفترة الحالية.',
-    cancelNone: 'لا يوجد اشتراك شهري قابل للإلغاء لهذا البريد.',
+    cancelNone: 'لا يوجد اشتراك شهري على هذا الحساب.',
     manageNone: 'تعذر فتح بوابة الفوترة. حاول لاحقًا.',
     subRenews: 'يتجدد {date}',
     subEnds: 'الوصول حتى {date}',
@@ -543,7 +545,7 @@ export default function AccountPage() {
   const [billingLoaded, setBillingLoaded] = useState(false);
   const [portalBusy, setPortalBusy] = useState(false);
   const [cancelBusy, setCancelBusy] = useState(false);
-  const [panel, setPanel] = useState<AccountHashId>('overview');
+  const [activeSection, setActiveSection] = useState<AccountHashId>('overview');
   const navCopy = getAccountNavCopy(language);
 
   const loadBilling = useCallback(async () => {
@@ -625,12 +627,36 @@ export default function AccountPage() {
   useEffect(() => {
     const sync = () => {
       const next = window.location.hash.replace(/^#/, '');
-      if (isAccountHashId(next)) setPanel(next);
+      if (next === 'subscription-actions' || next === 'sponsor') {
+        setActiveSection('plans');
+        return;
+      }
+      if (isAccountHashId(next)) setActiveSection(next);
     };
     sync();
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
   }, []);
+
+  useEffect(() => {
+    if (!data) return;
+    const nodes = ACCOUNT_HASH_IDS.map((id) => document.getElementById(id)).filter(
+      (el): el is HTMLElement => el != null,
+    );
+    if (nodes.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const id = visible[0]?.target.id;
+        if (id && isAccountHashId(id)) setActiveSection(id);
+      },
+      { rootMargin: '-15% 0px -55% 0px', threshold: [0.15, 0.35, 0.6] },
+    );
+    for (const node of nodes) observer.observe(node);
+    return () => observer.disconnect();
+  }, [data]);
 
   const handleCheckout = async (plan: CheckoutPlanType, amountUsd?: string) => {
     setBusyPlan(plan);
@@ -715,7 +741,10 @@ export default function AccountPage() {
         mode="fill"
         className="w-full min-h-screen !justify-start !items-start"
       >
-      <main className="mx-0 w-full max-w-none px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-8 sm:space-y-10" data-fit-ref="account">
+      <main
+        className={`mx-0 w-full max-w-full ${PAGE_SHELL_GUTTER} py-6 sm:py-10 space-y-8 sm:space-y-10`}
+        data-fit-ref="account"
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <BrandLogo size="nav" showIcon />
           <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
@@ -758,11 +787,10 @@ export default function AccountPage() {
             )}
 
             <div className="flex flex-col items-stretch gap-6 lg:flex-row lg:items-start lg:gap-8">
-            <AccountSectionNav language={language} activeId={panel} />
-            <div className="min-w-0 flex-1">
+            <AccountSectionNav language={language} activeId={activeSection} />
+            <div className="min-w-0 flex-1 space-y-8 sm:space-y-10">
 
-            {panel === 'overview' && (
-            <section id="overview" role="tabpanel" className={ACCOUNT_CARD}>
+            <section id="overview" className={ACCOUNT_CARD}>
               <h2 className={ACCOUNT_HEADING}>{navCopy.overview}</h2>
               <dl className="grid gap-3 text-lg sm:grid-cols-2">
                 <div>
@@ -801,10 +829,8 @@ export default function AccountPage() {
                 </div>
               </dl>
             </section>
-            )}
 
-            {panel === 'career-context' && (
-            <section id="career-context" role="tabpanel" className={ACCOUNT_CARD}>
+            <section id="career-context" className={ACCOUNT_CARD}>
               <div className="flex items-start gap-3">
                 <Target className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
                 <div>
@@ -823,10 +849,8 @@ export default function AccountPage() {
                   : t.careerContextCta}
               </Link>
             </section>
-            )}
 
-            {panel === 'plans' && (
-            <section id="plans" role="tabpanel" className={`${ACCOUNT_CARD} space-y-5`}>
+            <section id="plans" className={`${ACCOUNT_CARD} space-y-5`}>
               <div className="flex items-start gap-3">
                 <CreditCard className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
                 <div>
@@ -863,53 +887,45 @@ export default function AccountPage() {
                   );
                 })}
               </ul>
-            </section>
-            )}
 
-            {panel === 'subscription-actions' && (
-            <section id="subscription-actions" role="tabpanel" className={ACCOUNT_CARD}>
-              <h2 className={ACCOUNT_HEADING}>{navCopy.subscriptionActions}</h2>
-              <p className="text-lg text-zinc-400 leading-snug">{t.subscriptionNote}</p>
-              <div className="flex flex-wrap items-center gap-3">
-                {billing?.canManage ? (
-                  <button
-                    type="button"
-                    disabled={portalBusy || deactivated}
-                    onClick={() => void handleManageBilling()}
-                    className={SECONDARY_BTN}
-                  >
-                    {portalBusy ? t.managingBilling : t.manageBilling}
-                  </button>
-                ) : null}
-                {billing?.canCancel ? (
-                  <button
-                    type="button"
-                    disabled={cancelBusy || deactivated}
-                    onClick={() => void handleCancelSubscription()}
-                    className={SECONDARY_BTN}
-                  >
-                    {cancelBusy ? t.cancelling : t.cancelSub}
-                  </button>
-                ) : null}
-                {billingLoaded && !billing?.canManage && !billing?.canCancel ? (
-                  <p className="text-lg text-zinc-400">{t.cancelNone}</p>
+              <div className="space-y-3 border-t border-blue-500/30 pt-5">
+                <div className="flex flex-wrap items-center gap-3">
+                  {billing?.canManage ? (
+                    <button
+                      type="button"
+                      disabled={portalBusy || deactivated}
+                      onClick={() => void handleManageBilling()}
+                      className={SECONDARY_BTN}
+                    >
+                      {portalBusy ? t.managingBilling : t.manageBilling}
+                    </button>
+                  ) : null}
+                  {billing?.canCancel ? (
+                    <button
+                      type="button"
+                      disabled={cancelBusy || deactivated}
+                      onClick={() => void handleCancelSubscription()}
+                      className={SECONDARY_BTN}
+                    >
+                      {cancelBusy ? t.cancelling : t.cancelSub}
+                    </button>
+                  ) : null}
+                  {billingLoaded && !billing?.canManage && !billing?.canCancel ? (
+                    <p className="text-lg text-zinc-400">{t.cancelNone}</p>
+                  ) : null}
+                </div>
+                {billingLoaded && billing ? (
+                  <p className="text-lg text-zinc-400">
+                    {billing.cancelled || billing.status === 'cancelled'
+                      ? `${t.subCancelledNote} ${fillDate(t.subEnds, billing.endsAt, language)}`.trim()
+                      : fillDate(t.subRenews, billing.renewsAt ?? billing.endsAt, language)}
+                  </p>
                 ) : null}
               </div>
-              {billingLoaded && billing ? (
-                <p className="text-lg text-zinc-400">
-                  {billing.cancelled || billing.status === 'cancelled'
-                    ? `${t.subCancelledNote} ${fillDate(t.subEnds, billing.endsAt, language)}`.trim()
-                    : fillDate(t.subRenews, billing.renewsAt ?? billing.endsAt, language)}
-                </p>
-              ) : null}
-            </section>
-            )}
 
-            {panel === 'sponsor' && (
-            <section id="sponsor" role="tabpanel" className={ACCOUNT_CARD}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-3 border-t border-blue-500/30 pt-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 sm:flex-1">
-                  <h2 className={ACCOUNT_HEADING}>{navCopy.sponsor}</h2>
+                  <h3 className={ACCOUNT_HEADING}>{t.sponsorTitle}</h3>
                   <p className="text-base text-zinc-400 mt-1">{t.sponsorNote}</p>
                 </div>
                 <div className="flex flex-wrap items-end gap-3 shrink-0">
@@ -941,10 +957,8 @@ export default function AccountPage() {
                 </div>
               </div>
             </section>
-            )}
 
-            {panel === 'billing' && (
-            <section id="billing" role="tabpanel" className={ACCOUNT_CARD}>
+            <section id="billing" className={ACCOUNT_CARD}>
               <h2 className={ACCOUNT_HEADING}>{navCopy.billing}</h2>
               {data.orders.length === 0 ? (
                 <p className="text-lg text-zinc-400">{t.billingEmpty}</p>
@@ -984,10 +998,8 @@ export default function AccountPage() {
                 </div>
               )}
             </section>
-            )}
 
-            {panel === 'referrals' && (
-            <section id="referrals" role="tabpanel" className={`${ACCOUNT_CARD} space-y-5`}>
+            <section id="referrals" className={`${ACCOUNT_CARD} space-y-5`}>
               <div className="flex items-start gap-3">
                 <Gift className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
                 <div>
@@ -1034,7 +1046,6 @@ export default function AccountPage() {
                 </ul>
               )}
             </section>
-            )}
             </div>
             </div>
           </>

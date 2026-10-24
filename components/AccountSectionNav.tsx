@@ -3,9 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  Ban,
   Gift,
-  Heart,
   LayoutList,
   Receipt,
   ShieldAlert,
@@ -25,8 +23,6 @@ const ICONS: Record<AccountNavItem['id'], typeof LayoutList> = {
   overview: LayoutList,
   'career-context': Target,
   plans: ShoppingCart,
-  'subscription-actions': Ban,
-  sponsor: Heart,
   billing: Receipt,
   referrals: Gift,
   danger: ShieldAlert,
@@ -62,10 +58,7 @@ export default function AccountSectionNav({
       data-account-nav=""
       className="lg:sticky lg:top-6 lg:w-[22rem] lg:shrink-0 lg:self-start"
     >
-      <ul
-        role="tablist"
-        className="flex flex-wrap gap-2 lg:flex-col lg:flex-nowrap lg:gap-1.5"
-      >
+      <ul className="flex flex-wrap gap-2 lg:flex-col lg:flex-nowrap lg:gap-1.5">
         {ACCOUNT_NAV_ITEMS.map((item) => {
           const label = accountNavLabel(item, copy);
           const Icon = ICONS[item.id];
@@ -73,14 +66,12 @@ export default function AccountSectionNav({
           const active = item.id === activeId;
           const className = itemClassName(item, active);
           return (
-            <li key={item.id} role="none">
+            <li key={item.id}>
               {isHash ? (
                 <a
                   href={item.href}
-                  role="tab"
                   className={className}
-                  aria-selected={active}
-                  aria-current={active ? 'page' : undefined}
+                  aria-current={active ? 'location' : undefined}
                 >
                   <Icon className="h-[1em] w-[1em] shrink-0" aria-hidden />
                   {label}

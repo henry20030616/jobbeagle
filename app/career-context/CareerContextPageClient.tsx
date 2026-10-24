@@ -18,6 +18,7 @@ import BrandLogo from '@/components/BrandLogo';
 import CareerContextForm from '@/components/CareerContextForm';
 import { FitStage } from '@/components/FitStage';
 import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
+import { PAGE_SHELL_GUTTER } from '@/constants/report-frame';
 import type { CareerContext } from '@/types';
 import { normalizeCareerContext } from '@/lib/career-context';
 
@@ -123,7 +124,7 @@ export default function CareerContextPageClient() {
         className="w-full min-h-screen !justify-start !items-start"
       >
         <div
-          className="mx-0 w-full max-w-none space-y-8 sm:space-y-10 px-4 sm:px-8 lg:px-10 py-6 sm:py-10"
+          className={`mx-0 w-full max-w-full ${PAGE_SHELL_GUTTER} space-y-8 sm:space-y-10 py-6 sm:py-10`}
           data-fit-ref="career-context"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
