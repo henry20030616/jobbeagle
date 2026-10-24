@@ -942,7 +942,7 @@ export default function AccountPage() {
                         value={sponsorAmount}
                         disabled={Boolean(busyPlan) || deactivated}
                         onChange={(e) => setSponsorAmount(e.target.value)}
-                        className="w-32 rounded-lg border border-blue-500/50 bg-slate-950 px-3 py-2 text-lg text-zinc-100"
+                        className="w-[8em] min-w-[8em] shrink-0 rounded-lg border border-blue-500/50 bg-slate-950 px-3 py-2 text-lg tabular-nums text-zinc-100 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                     </div>
                   </label>
