@@ -817,7 +817,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             }
             className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-2 ${
               submitDisabled
-                ? 'bg-indigo-600/35 text-white/55 cursor-not-allowed'
+                ? 'bg-indigo-600/35 text-zinc-100 cursor-not-allowed'
                 : publicAts
                   ? 'bg-emerald-600 text-white'
                   : jdError

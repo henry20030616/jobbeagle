@@ -964,9 +964,9 @@ const InputForm: React.FC<InputFormProps> = ({
                           : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white shadow-lg shadow-indigo-500/30 transition-all ${
+                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-100 shadow-lg shadow-indigo-500/30 transition-all ${
                     submitDisabled
-                      ? 'cursor-not-allowed bg-indigo-600/35 text-white/55 shadow-none'
+                      ? 'cursor-not-allowed bg-indigo-600/35 text-zinc-100 shadow-none'
                       : publicAts
                         ? 'bg-emerald-600 shadow-emerald-500/30 hover:-translate-y-1 hover:bg-emerald-500 active:translate-y-0 active:bg-emerald-700'
                         : jdError
