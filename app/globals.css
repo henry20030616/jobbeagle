@@ -341,6 +341,10 @@ main input {
     font-size: var(--type-step) !important;
     line-height: 1.2 !important;
   }
+  .homepage-font-large .homepage-steps .report-choice-title {
+    font-size: calc(var(--type-ui) * 1.5) !important;
+    line-height: 1.2 !important;
+  }
 }
 
 /*

@@ -897,7 +897,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       className="w-full min-w-0 text-left"
                     >
                       <span className="flex items-start justify-between gap-3">
-                        <span className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
+                        <span className="report-choice-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
                           {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT} />
@@ -917,7 +917,7 @@ const InputForm: React.FC<InputFormProps> = ({
                       className="w-full min-w-0 text-left"
                     >
                       <span className="flex items-start justify-between gap-3">
-                        <span className="flex flex-wrap items-center gap-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
+                        <span className="report-choice-title flex flex-wrap items-center gap-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white">
                           {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
                           <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 lg:h-10 lg:w-10 shrink-0 text-indigo-100" />
                         </span>
