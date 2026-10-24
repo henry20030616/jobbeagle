@@ -49,6 +49,18 @@ describe('homepage step 3 / sample tab fill', () => {
     expect(REPORT_TYPE_LAUNCH_BOX).not.toMatch(/indigo|bg-blue-800|#3d3c7c/);
   });
 
+  it('sizes the desktop sample leftover box to 60% of the third-row slot, top-aligned', () => {
+    const desktop = readFileSync(join(process.cwd(), 'components/InputForm.tsx'), 'utf8');
+    expect(desktop).toContain('STEP_BODY_CARDS');
+    expect(desktop).toContain('grid-rows-3');
+    expect(desktop).toMatch(
+      /flex h-full min-h-0 w-full flex-col justify-start[\s\S]{0,200}href="\/samples"[\s\S]{0,400}h-\[60%\]/,
+    );
+    expect(desktop).not.toMatch(
+      /href="\/samples"[\s\S]{0,500}flex h-full w-full min-h-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed/,
+    );
+  });
+
   it('homepage launch buttons use the Snapshot-matched inner box, not a translucent overlay', () => {
     const desktop = readFileSync(join(process.cwd(), 'components/InputForm.tsx'), 'utf8');
     const mobile = readFileSync(join(process.cwd(), 'components/InputFormMobile.tsx'), 'utf8');
