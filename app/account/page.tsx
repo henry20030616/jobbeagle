@@ -159,7 +159,7 @@ const copy: Record<
     subEnds: 'Access until {date}',
     subCancelledNote: 'Billing has stopped.',
     subUnmatched:
-      'Your account still shows a paid plan, but PayPal has no live subscription for this email. Sandbox or cancelled tests can leave this badge. Buy again below if you want a live plan.',
+      'No active subscription found. If your plan looks wrong, buy again below.',
     buy: 'Buy',
     buying: 'Redirecting…',
     billing: 'Billing history',
@@ -180,7 +180,7 @@ const copy: Record<
       'Optional floors for fit and offer targeting. Lives on its own page — not mixed with billing.',
     careerContextCta: 'Set Career Context →',
     careerContextEdit: 'Edit Career Context →',
-    sponsorTitle: 'Sponsor the author',
+    sponsorTitle: 'Sponsor JobBeagle',
     sponsorNote:
       'Any amount from $0.50 to $1,000. Does not add credits — a thank-you only.',
     sponsorAmount: 'USD amount',
@@ -216,7 +216,7 @@ const copy: Record<
     subEnds: '可用至 {date}',
     subCancelledNote: '已停止扣款。',
     subUnmatched:
-      '帳戶仍顯示付費方案，但 PayPal 沒有此信箱的正式訂閱。沙盒測試或已取消的訂閱常會留下這個狀態。若要正式方案，請在下方重新購買。',
+      '目前看不到有效的訂閱。若方案顯示不正確，請在下方重新購買。',
     buy: '購買',
     buying: '跳轉中…',
     billing: '帳單紀錄',
@@ -236,7 +236,7 @@ const copy: Record<
     careerContextBlurb: '選填底線，用來對齊 fit 與薪資目標。獨立頁設定，不跟買額度混在一起。',
     careerContextCta: '設定 Career Context →',
     careerContextEdit: '編輯 Career Context →',
-    sponsorTitle: '贊助作者',
+    sponsorTitle: '贊助 JobBeagle',
     sponsorNote: '金額 $0.50–$1,000，不會增加額度，僅作為支持。',
     sponsorAmount: '美元金額',
     sponsorCta: '贊助',
@@ -269,7 +269,7 @@ const copy: Record<
     subEnds: '可用至 {date}',
     subCancelledNote: '已停止扣款。',
     subUnmatched:
-      '账户仍显示付费方案，但 PayPal 没有此邮箱的正式订阅。沙盒测试或已取消的订阅常会留下这个状态。若要正式方案，请在下方重新购买。',
+      '目前看不到有效的订阅。若方案显示不正确，请在下方重新购买。',
     buy: '购买',
     buying: '跳转中…',
     billing: '账单记录',
@@ -289,7 +289,7 @@ const copy: Record<
     careerContextBlurb: '可选底线，用于对齐 fit 与薪酬目标。在独立页设置，不和买额度混在一起。',
     careerContextCta: '设置 Career Context →',
     careerContextEdit: '编辑 Career Context →',
-    sponsorTitle: '赞助作者',
+    sponsorTitle: '赞助 JobBeagle',
     sponsorNote: '金额 $0.50–$1,000，不会增加额度，仅作为支持。',
     sponsorAmount: '美元金额',
     sponsorCta: '赞助',
@@ -324,7 +324,7 @@ const copy: Record<
     subEnds: 'Acceso hasta {date}',
     subCancelledNote: 'El cobro se detuvo.',
     subUnmatched:
-      'Tu cuenta sigue mostrando un plan de pago, pero PayPal no tiene una suscripción en vivo para este email. Pruebas sandbox o canceladas pueden dejar este estado. Compra de nuevo abajo si quieres un plan real.',
+      'No hay una suscripción activa. Si el plan no se ve bien, vuelve a comprar abajo.',
     buy: 'Comprar',
     buying: 'Redirigiendo…',
     billing: 'Historial de facturación',
@@ -345,7 +345,7 @@ const copy: Record<
       'Pisos opcionales para fit y compensación. En su propia página, no mezclado con facturación.',
     careerContextCta: 'Configurar Career Context →',
     careerContextEdit: 'Editar Career Context →',
-    sponsorTitle: 'Patrocinar al autor',
+    sponsorTitle: 'Patrocinar JobBeagle',
     sponsorNote:
       'Cualquier monto de $0.50 a $1,000. No suma créditos — solo un agradecimiento.',
     sponsorAmount: 'Monto en USD',
@@ -381,7 +381,7 @@ const copy: Record<
     subEnds: '{date} तक ऐक्सेस',
     subCancelledNote: 'बिलिंग बंद हो गई।',
     subUnmatched:
-      'खाते में अभी भी पेड प्लान दिख रहा है, लेकिन इस ईमेल पर PayPal की लाइव सदस्यता नहीं मिली। सैंडबॉक्स या रद्द टेस्ट से यह रह सकता है। लाइव प्लान के लिए नीचे फिर खरीदें।',
+      'कोई सक्रिय सदस्यता नहीं दिख रही। अगर प्लान गलत दिखे, तो नीचे फिर से खरीदें।',
     buy: 'खरीदें',
     buying: 'रीडायरेक्ट…',
     billing: 'बिलिंग इतिहास',
@@ -402,7 +402,7 @@ const copy: Record<
       'Fit और ऑफर के लिए वैकल्पिक floors। अलग पेज पर सेट करें — बिलिंग के साथ नहीं।',
     careerContextCta: 'Career Context सेट करें →',
     careerContextEdit: 'Career Context संपादित करें →',
-    sponsorTitle: 'लेखक को स्पॉन्सर करें',
+    sponsorTitle: 'JobBeagle को स्पॉन्सर करें',
     sponsorNote: '$0.50 से $1,000 तक। क्रेडिट नहीं मिलते — सिर्फ़ समर्थन।',
     sponsorAmount: 'USD राशि',
     sponsorCta: 'स्पॉन्सर',
@@ -437,7 +437,7 @@ const copy: Record<
     subEnds: 'الوصول حتى {date}',
     subCancelledNote: 'توقفت الفوترة.',
     subUnmatched:
-      'حسابك ما زال يظهر خطة مدفوعة، لكن PayPal لا يجد اشتراكًا حيًا لهذا البريد. تجارب الصندوق الرمل أو الاشتراكات الملغاة تترك هذه الحالة. اشترِ من جديد أدناه إن أردت خطة رسمية.',
+      'لا يظهر اشتراك فعّال. إذا كانت الخطة غير صحيحة، اشترِ من جديد أدناه.',
     buy: 'شراء',
     buying: 'جارٍ التحويل…',
     billing: 'سجل الفوترة',
@@ -458,7 +458,7 @@ const copy: Record<
       'حدود اختيارية للملاءمة والعرض. صفحة مستقلة — ليست مع الفوترة.',
     careerContextCta: 'تعيين Career Context →',
     careerContextEdit: 'تعديل Career Context →',
-    sponsorTitle: 'ادعم المؤلف',
+    sponsorTitle: 'ادعم JobBeagle',
     sponsorNote: 'أي مبلغ من $0.50 إلى $1,000. لا يضيف رصيدًا — شكر فقط.',
     sponsorAmount: 'المبلغ بالدولار',
     sponsorCta: 'ادعم',
@@ -854,12 +854,12 @@ export default function AccountPage() {
                   );
                 })}
               </ul>
-              <div className="rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4 space-y-3">
-                <div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4">
+                <div className="min-w-0 sm:flex-1">
                   <p className="text-lg font-semibold text-amber-100">{t.sponsorTitle}</p>
                   <p className="text-base text-slate-400 mt-1">{t.sponsorNote}</p>
                 </div>
-                <div className="flex flex-wrap items-end gap-3">
+                <div className="flex flex-wrap items-end gap-3 shrink-0">
                   <label className="flex flex-col gap-1">
                     <span className="text-sm text-slate-400">{t.sponsorAmount}</span>
                     <div className="flex items-center gap-2">
