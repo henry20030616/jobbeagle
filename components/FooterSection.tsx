@@ -110,22 +110,22 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
           }}
         >
           <div
-            className="w-full flex items-center gap-2.5 sm:gap-3 lg:gap-4 px-3.5 sm:px-5 lg:px-7 py-3 sm:py-4 lg:py-5 text-left"
+            className="w-full px-3.5 sm:px-5 lg:px-7 py-3 sm:py-4 lg:py-5 text-center"
             aria-expanded={open}
           >
-            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-10 lg:h-10 text-indigo-400 shrink-0" />
-            <span className="flex-1 min-w-0">
-              <span className="block text-sm sm:text-base lg:text-2xl font-bold text-white">{t.contactTitle}</span>
-              {open ? (
-                <span className="mt-0.5 block text-xs sm:text-sm lg:text-lg leading-snug text-slate-400 whitespace-normal break-words">
-                  {t.contactDesc}
-                </span>
-              ) : null}
-            </span>
-            <ChevronDown
-              className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-8 lg:h-8 text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-              aria-hidden
-            />
+            <div className="flex items-center justify-center gap-2.5 sm:gap-3 lg:gap-4">
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-10 lg:h-10 text-indigo-400 shrink-0" />
+              <span className="text-sm sm:text-base lg:text-2xl font-bold text-white">{t.contactTitle}</span>
+              <ChevronDown
+                className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-8 lg:h-8 text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                aria-hidden
+              />
+            </div>
+            {open ? (
+              <span className="mt-0.5 block text-xs sm:text-sm lg:text-lg leading-snug text-slate-400 whitespace-normal break-words">
+                {t.contactDesc}
+              </span>
+            ) : null}
           </div>
 
           <div
