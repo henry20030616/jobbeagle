@@ -120,6 +120,7 @@ const copy: Record<
     loadError: string;
     actionError: string;
     careerContextTitle: string;
+    careerContextSubtitle: string;
     careerContextBlurb: string;
     careerContextCta: string;
     careerContextEdit: string;
@@ -176,8 +177,9 @@ const copy: Record<
     loadError: 'Could not load account.',
     actionError: 'Something went wrong. Try again.',
     careerContextTitle: 'Career Context',
+    careerContextSubtitle: '',
     careerContextBlurb:
-      'Optional floors for fit and offer targeting. Lives on its own page — not mixed with billing.',
+      'Optional settings for location, salary floor, and work authorization. Used when generating your Job Fit Snapshot and Interview Strategy Guide to align fit and pay recommendations.',
     careerContextCta: 'Set Career Context →',
     careerContextEdit: 'Edit Career Context →',
     sponsorTitle: 'Sponsor JobBeagle',
@@ -232,10 +234,12 @@ const copy: Record<
     pending: '待完成',
     loadError: '無法載入帳戶資料。',
     actionError: '操作失敗，請稍後再試。',
-    careerContextTitle: 'Career Context',
-    careerContextBlurb: '選填底線，用來對齊 fit 與薪資目標。獨立頁設定，不跟買額度混在一起。',
-    careerContextCta: '設定 Career Context →',
-    careerContextEdit: '編輯 Career Context →',
+    careerContextTitle: '職涯條件',
+    careerContextSubtitle: 'Career Context',
+    careerContextBlurb:
+      '可選填地點、薪酬下限、工作權等條件。產生適配快照與面試指南時，會據此對齊匹配度與薪資建議。',
+    careerContextCta: '設定職涯條件 →',
+    careerContextEdit: '編輯職涯條件 →',
     sponsorTitle: '贊助 JobBeagle',
     sponsorNote: '金額 $0.50–$1,000，不會增加額度，僅作為支持。',
     sponsorAmount: '美元金額',
@@ -285,10 +289,12 @@ const copy: Record<
     pending: '待完成',
     loadError: '无法加载账户数据。',
     actionError: '操作失败，请稍后再试。',
-    careerContextTitle: 'Career Context',
-    careerContextBlurb: '可选底线，用于对齐 fit 与薪酬目标。在独立页设置，不和买额度混在一起。',
-    careerContextCta: '设置 Career Context →',
-    careerContextEdit: '编辑 Career Context →',
+    careerContextTitle: '职涯条件',
+    careerContextSubtitle: 'Career Context',
+    careerContextBlurb:
+      '可选填地点、薪酬下限、工作权等条件。生成适配快照与面试指南时，会据此对齐匹配度与薪酬建议。',
+    careerContextCta: '设置职涯条件 →',
+    careerContextEdit: '编辑职涯条件 →',
     sponsorTitle: '赞助 JobBeagle',
     sponsorNote: '金额 $0.50–$1,000，不会增加额度，仅作为支持。',
     sponsorAmount: '美元金额',
@@ -340,11 +346,12 @@ const copy: Record<
     pending: 'Pendiente',
     loadError: 'No se pudo cargar la cuenta.',
     actionError: 'Algo falló. Inténtalo de nuevo.',
-    careerContextTitle: 'Career Context',
+    careerContextTitle: 'Condiciones profesionales',
+    careerContextSubtitle: 'Career Context',
     careerContextBlurb:
-      'Pisos opcionales para fit y compensación. En su propia página, no mezclado con facturación.',
-    careerContextCta: 'Configurar Career Context →',
-    careerContextEdit: 'Editar Career Context →',
+      'Ajustes opcionales de ubicación, salario mínimo y autorización de trabajo. Al generar el Fit Snapshot y la Interview Guide, alineamos la adecuación y las recomendaciones salariales.',
+    careerContextCta: 'Configurar condiciones profesionales →',
+    careerContextEdit: 'Editar condiciones profesionales →',
     sponsorTitle: 'Patrocinar JobBeagle',
     sponsorNote:
       'Cualquier monto de $0.50 a $1,000. No suma créditos — solo un agradecimiento.',
@@ -397,11 +404,12 @@ const copy: Record<
     pending: 'लंबित',
     loadError: 'खाता लोड नहीं हो सका।',
     actionError: 'त्रुटि। पुनः प्रयास करें।',
-    careerContextTitle: 'Career Context',
+    careerContextTitle: 'करियर शर्तें',
+    careerContextSubtitle: 'Career Context',
     careerContextBlurb:
-      'Fit और ऑफर के लिए वैकल्पिक floors। अलग पेज पर सेट करें — बिलिंग के साथ नहीं।',
-    careerContextCta: 'Career Context सेट करें →',
-    careerContextEdit: 'Career Context संपादित करें →',
+      'स्थान, न्यूनतम वेतन और कार्य अनुमति जैसी वैकल्पिक सेटिंग। Job Fit Snapshot और Interview Strategy Guide बनाते समय मैच और वेतन सुझाव इन्हीं के अनुरूप रखे जाते हैं।',
+    careerContextCta: 'करियर शर्तें सेट करें →',
+    careerContextEdit: 'करियर शर्तें संपादित करें →',
     sponsorTitle: 'JobBeagle को स्पॉन्सर करें',
     sponsorNote: '$0.50 से $1,000 तक। क्रेडिट नहीं मिलते — सिर्फ़ समर्थन।',
     sponsorAmount: 'USD राशि',
@@ -453,11 +461,12 @@ const copy: Record<
     pending: 'قيد الانتظار',
     loadError: 'تعذر تحميل الحساب.',
     actionError: 'حدث خطأ. حاول مجددًا.',
-    careerContextTitle: 'Career Context',
+    careerContextTitle: 'شروط المسار المهني',
+    careerContextSubtitle: 'Career Context',
     careerContextBlurb:
-      'حدود اختيارية للملاءمة والعرض. صفحة مستقلة — ليست مع الفوترة.',
-    careerContextCta: 'تعيين Career Context →',
-    careerContextEdit: 'تعديل Career Context →',
+      'إعدادات اختيارية للموقع والحد الأدنى للراتب وتصريح العمل. تُستخدم عند إنشاء Fit Snapshot وInterview Guide لمواءمة التقييم وتوصيات الراتب.',
+    careerContextCta: 'تعيين شروط المسار المهني →',
+    careerContextEdit: 'تعديل شروط المسار المهني →',
     sponsorTitle: 'ادعم JobBeagle',
     sponsorNote: 'أي مبلغ من $0.50 إلى $1,000. لا يضيف رصيدًا — شكر فقط.',
     sponsorAmount: 'المبلغ بالدولار',
@@ -773,6 +782,11 @@ export default function AccountPage() {
                   <h2 className="text-xl font-semibold uppercase tracking-wide text-emerald-200/90">
                     {t.careerContextTitle}
                   </h2>
+                  {t.careerContextSubtitle ? (
+                    <p className="text-sm font-medium tracking-wide text-emerald-200/60 mt-0.5">
+                      {t.careerContextSubtitle}
+                    </p>
+                  ) : null}
                   <p className="text-lg text-slate-400 mt-1 leading-snug">{t.careerContextBlurb}</p>
                 </div>
               </div>
