@@ -12,6 +12,7 @@ import {
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
   REPORT_GUIDE_TAB_TYPE,
+  REPORT_GUIDE_TAB_GAP,
   REPORT_SHELL_WIDTH,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
@@ -86,7 +87,7 @@ export default function FullReportDashboard({
           ) : null}
         </div>
 
-        <nav className="px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex flex-wrap gap-2">
+        <nav className={`px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex flex-wrap sm:flex-nowrap ${REPORT_GUIDE_TAB_GAP}`}>
           {nav.map((item) => {
             const active = tab === item.id;
             return (

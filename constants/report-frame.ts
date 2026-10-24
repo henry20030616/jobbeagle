@@ -59,6 +59,9 @@ export const REPORT_H3 = 'report-h3';
 export const REPORT_GUIDE_TAB_TYPE =
   'text-2xl font-black tracking-tight leading-tight';
 
+/** Horizontal gap between Guide in-report tabs. 2× the previous `gap-2` (8px → 16px). */
+export const REPORT_GUIDE_TAB_GAP = 'gap-4';
+
 /**
  * Homepage report-type cards (step 3).
  * Dark blue fill (blue-900 / #1e3a8a family) — not indigo/purple.
