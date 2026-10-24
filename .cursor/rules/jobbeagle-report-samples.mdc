@@ -22,9 +22,9 @@ When adjusting **either** report product UI or content rules, **always update bo
 
 ## Current Snapshot content rules (as of 2026-07-18)
 
-- **Layout**: one-page slide frame (`LiteReportDashboard`) with three sections, top to bottom — role core, fit score / missing keywords / apply call, market pay band. Upgrade locks sit inside the fit and market sections. No upgrade CTA under the slide. No section numbers.
+- **Layout**: one-page slide frame (`LiteReportDashboard`) with three sections, top to bottom — fit analysis (score / Beagle / apply call / missing keywords), role core, market pay band. Upgrade locks sit inside the fit and market sections. No upgrade CTA under the slide. No section numbers.
 - JobBeagle evaluates fit — it is **not** a resume coach. Line-by-line rewrites appear only on Interview Guide item 3.
-- Strategy Guide opens on one page that stacks the same three Snapshot sections (role core, fit and resume, market pay). The top nav after that page is Pay landing · Company · Questions · Negotiation. Source links live inside the pay, company, and question pages.
+- Strategy Guide opens on one page that stacks the same three Snapshot sections (fit analysis, role core, market pay). The top nav after that page is Pay landing · Company · Questions · Negotiation. Source links live inside the pay, company, and question pages.
 - All report surfaces (Snapshot, Guide, `/samples`, `/report`) center as a column; **sample pages** place an independent Sample notice card on the **left**, top-aligned with the report frame (`sm:items-start`).
 - Sample notice **SAMPLE** uses `SampleMark variant="notice"` (narrow-card sizing). Report frames use default `variant="report"`. Do not override size/tracking via className — Tailwind utility conflicts will clip to “SAMP”.
 - Frame borders use bright blue (`border-blue-500`). Shell width: `REPORT_SHELL_WIDTH` = `max-w-[98vw]` — **never rem-cap** (e.g. 100rem≈1600px creates a centered island on large monitors).

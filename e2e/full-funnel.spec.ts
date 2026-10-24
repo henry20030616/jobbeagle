@@ -1,4 +1,26 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+async function expectFitSectionBeforeRoleCore(page: Page): Promise<void> {
+  const fit = page.locator('h2').filter({ hasText: /^(Fit analysis|匹配度分析)$/ }).first();
+  const core = page.locator('h2').filter({ hasText: /^(Role core|職位核心解析|职位核心解析)$/ }).first();
+  await expect(fit).toBeVisible({ timeout: 15_000 });
+  await expect(core).toBeVisible();
+  const fitY = await fit.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const coreY = await core.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  expect(fitY).toBeLessThan(coreY);
+}
+
+async function expectPageScrollsPastFold(page: Page): Promise<void> {
+  const metrics = await page.evaluate(() => ({
+    scrollHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight),
+    innerHeight: window.innerHeight,
+  }));
+  expect(metrics.scrollHeight).toBeGreaterThan(metrics.innerHeight + 40);
+  await page.mouse.wheel(0, 2200);
+  await page.waitForTimeout(300);
+  const y = await page.evaluate(() => window.scrollY);
+  expect(y).toBeGreaterThan(40);
+}
 
 /**
  * Public conversion funnel — JobBeagle homepage → samples → account/docs.
@@ -93,6 +115,18 @@ test.describe('Full funnel — public surfaces', () => {
     await page.goto('/samples?type=interview_strategy_guide');
     await expect(page.getByText('SAMPLE').first()).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText(/Interview Guide|面試指南/i).first()).toBeVisible();
+    await expectFitSectionBeforeRoleCore(page);
+    await expectPageScrollsPastFold(page);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.getByRole('button', { name: /^Questions$|^面試真題$|^面试真题$/ }).click();
+    await expect(page.getByText(/Professional|專業題|专业题/).first()).toBeVisible();
+  });
+
+  test('Fit Snapshot sample page scrolls and puts fit analysis first', async ({ page }) => {
+    await page.goto('/samples?type=job_fit_snapshot');
+    await expect(page.getByText('SAMPLE').first()).toBeVisible({ timeout: 15_000 });
+    await expectFitSectionBeforeRoleCore(page);
+    await expectPageScrollsPastFold(page);
   });
 
   test('extension install page renders', async ({ page }) => {

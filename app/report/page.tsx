@@ -82,7 +82,7 @@ export default function ReportPage() {
   const chrome = strategy ? getGuideUiCopy(lang) : getSnapshotUiCopy(lang);
 
   return (
-    <div className={`min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200 flex flex-col ${PAGE_SHELL_GUTTER}`}>
+    <div className={`min-h-screen w-full max-w-full bg-slate-950 text-slate-200 flex flex-col ${PAGE_SHELL_GUTTER}`}>
       <div className="border-b border-slate-800/80 bg-slate-950 py-3 shrink-0">
         <div className="mx-auto w-full max-w-full flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={REPORT_ACTION_BTN}>
@@ -105,7 +105,7 @@ export default function ReportPage() {
         </span>
       </header>
       <div
-        className={`min-h-0 flex-1 overflow-hidden py-6 ${
+        className={`py-6 ${
           strategy ? SAMPLE_RAIL_ROW : 'flex flex-col items-center'
         }`}
       >
@@ -128,8 +128,8 @@ export default function ReportPage() {
             })}
           </FunctionRail>
         ) : null}
-        <main className="flex min-h-0 min-w-0 flex-1 justify-center overflow-auto">
-          <ReportFitStage className="w-full flex-1 min-h-0">
+        <main className="min-w-0 w-full flex-1">
+          <ReportFitStage className="w-full">
             {strategy ? (
               <FullReportDashboard
                 report={normalizeFullReport(payload.report as FullReport)}

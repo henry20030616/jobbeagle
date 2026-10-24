@@ -63,7 +63,7 @@ export default function SampleReportClient() {
   const guideLabel = reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language);
 
   return (
-    <div className={`flex h-screen w-full min-w-0 flex-col overflow-hidden bg-slate-950 text-slate-200 ${PAGE_SHELL_GUTTER}`}>
+    <div className={`flex min-h-screen w-full min-w-0 flex-col bg-slate-950 text-slate-200 ${PAGE_SHELL_GUTTER}`}>
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-4 border-b border-slate-800 py-6">
         <BrandLogo size="hero" showIcon />
         <div className="flex flex-wrap items-center justify-end gap-3">
@@ -79,7 +79,7 @@ export default function SampleReportClient() {
         </div>
       </header>
 
-      <div className={`min-h-0 min-w-0 flex-1 overflow-hidden ${SAMPLE_RAIL_ROW}`}>
+      <div className={`min-w-0 flex-1 py-6 ${SAMPLE_RAIL_ROW}`}>
         <FunctionRail as="aside" label={chrome.productTitle}>
           <div
             className={`${SAMPLE_NOTICE_SURFACE} w-full px-6 py-5 flex flex-col gap-3 rounded-xl`}
@@ -115,7 +115,7 @@ export default function SampleReportClient() {
           <ReportCompareModal language={language} variant="button" className="w-full" />
         </FunctionRail>
 
-        <main className="flex min-h-0 min-w-0 flex-1 justify-center overflow-auto">
+        <main className="min-w-0 w-full flex-1">
           <ReportFitStage
             designWidth={REPORT_SLIDE_DESIGN_WIDTH}
             maxScale={2.4}

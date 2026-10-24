@@ -43,7 +43,10 @@ export type FitStageProps = {
  * Fixed-proportion stage: lay out at designWidth (× designHeight), then scale
  * with CSS `zoom` (not transform:scale — zoom keeps text crisp).
  *
- * Outer always clips horizontally — never contributes to page scroll.
+ * Contain (reports): height follows the zoomed canvas so the PAGE scrolls.
+ * Do not self-stretch or overflow-clip here — `overflow-x: clip` pairs to
+ * `overflow-y: clip` and eats wheel/trackpad. Horizontal overflow is already
+ * killed on html/body. Fill/shorts stay viewport-bound and may clip.
  * Do NOT put min-h-screen / 100vh inside the zoomed canvas (they get multiplied).
  *
  * mode="shorts": phones fill the viewport; wider screens use a 9:16 column
@@ -119,7 +122,7 @@ export function FitStage({
       data-fit-stage
       data-fit-mode={mode}
       data-fit-fluid={fluid ? 'true' : 'false'}
-      className={`flex w-full min-w-0 justify-center overflow-x-clip self-stretch ${fillLayout ? 'h-full' : ''} ${className}`}
+      className={`flex w-full min-w-0 justify-center ${fillLayout ? 'h-full self-stretch' : ''} ${mode === 'shorts' ? 'overflow-hidden' : ''} ${className}`}
     >
       <div
         data-fit-canvas

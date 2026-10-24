@@ -289,6 +289,12 @@ describe('report item heading scale', () => {
     );
     expect(pages).toContain('<h2 className={REPORT_H1}>{title}</h2>');
     expect(pages).toContain('<ItemBlock title={copy.core}');
+    expect(pages.indexOf('<ItemBlock title={copy.fit}')).toBeLessThan(
+      pages.indexOf('<ItemBlock title={copy.core}'),
+    );
+    expect(pages.indexOf('<ItemBlock title={copy.core}')).toBeLessThan(
+      pages.indexOf('<ItemBlock title={copy.market}'),
+    );
   });
 });
 
@@ -323,5 +329,24 @@ describe('page shell gutters', () => {
     expect(report).toContain('PAGE_SHELL_GUTTER');
     expect(samples).not.toMatch(/header className="[^"]*px-6 py-6 sm:px-8/);
     expect(report).not.toMatch(/header className="[^"]*px-6 py-4/);
+  });
+
+  it('lets samples and live report grow with the document instead of locking the viewport', () => {
+    const samples = readFileSync(
+      join(process.cwd(), 'app/samples/SampleReportClient.tsx'),
+      'utf8',
+    );
+    const report = readFileSync(join(process.cwd(), 'app/report/page.tsx'), 'utf8');
+    const fit = readFileSync(join(process.cwd(), 'components/FitStage.tsx'), 'utf8');
+    const rail = readFileSync(join(process.cwd(), 'components/FunctionRail.tsx'), 'utf8');
+
+    expect(samples).toContain('min-h-screen');
+    expect(samples).not.toMatch(/(?:^|[^\w-])h-screen(?:[^\w-]|$)/);
+    expect(samples).not.toMatch(/overflow-hidden \$\{SAMPLE_RAIL_ROW\}/);
+    expect(samples).not.toMatch(/overflow-auto/);
+    expect(report).not.toMatch(/flex-1 overflow-hidden py-6/);
+    expect(report).not.toMatch(/overflow-x-clip/);
+    expect(fit).not.toMatch(/overflow-x-clip self-stretch/);
+    expect(rail).not.toMatch(/overflow-y-auto/);
   });
 });

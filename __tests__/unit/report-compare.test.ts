@@ -39,8 +39,8 @@ describe('report-compare', () => {
     expect(sections[0]).toBe('best_for');
     const shared = REPORT_COMPARE_ROWS.filter((r) => r.section === 'shared');
     expect(shared.map((r) => r.feature['zh-TW'])).toEqual([
-      '職位核心解析',
       '匹配度分析',
+      '職位核心解析',
       '市場薪資水準',
     ]);
     const guideOnly = REPORT_COMPARE_ROWS.filter((r) => r.section === 'guide_only');

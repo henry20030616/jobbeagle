@@ -30,7 +30,7 @@ export default function FunctionRail({
   return (
     <Comp
       aria-label={label}
-      className={`${SAMPLE_RAIL_SHELL} flex min-h-0 flex-col overflow-y-auto ${SAMPLE_RAIL_ITEM_GAP} ${className}`.trim()}
+      className={`${SAMPLE_RAIL_SHELL} flex flex-col ${SAMPLE_RAIL_ITEM_GAP} ${className}`.trim()}
       {...rest}
     >
       {children}

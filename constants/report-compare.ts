@@ -218,21 +218,6 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     section: 'shared',
     feature: {
-      en: 'Role core',
-      'zh-TW': '職位核心解析',
-      'zh-CN': '职位核心解析',
-    },
-    help: help(
-      'Job overview plus the must-haves and real duties for this seat, read from the posting.',
-      '職位概述，以及這席的關鍵條件與關鍵職責，依職缺內文整理。',
-      '职位概述，以及这席的关键条件与关键职责，依职位正文整理。',
-    ),
-    snapshot: t('Overview, must-haves, duties', '職位概述、條件、職責', '职位概述、条件、职责', 4),
-    guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
-  },
-  {
-    section: 'shared',
-    feature: {
       en: 'Fit analysis',
       'zh-TW': '匹配度分析',
       'zh-CN': '匹配度分析',
@@ -244,6 +229,21 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     ),
     snapshot: t('Score, apply call, keywords', '分數、應徵建議、關鍵字', '分数、应征建议、关键字', 4),
     guide: t('Snapshot + resume rewrites', '快照內容 + 履歷改寫', '快照内容 + 简历改写', 5),
+  },
+  {
+    section: 'shared',
+    feature: {
+      en: 'Role core',
+      'zh-TW': '職位核心解析',
+      'zh-CN': '职位核心解析',
+    },
+    help: help(
+      'Job overview plus the must-haves and real duties for this seat, read from the posting.',
+      '職位概述，以及這席的關鍵條件與關鍵職責，依職缺內文整理。',
+      '职位概述，以及这席的关键条件与关键职责，依职位正文整理。',
+    ),
+    snapshot: t('Overview, must-haves, duties', '職位概述、條件、職責', '职位概述、条件、职责', 4),
+    guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
   },
   {
     section: 'shared',

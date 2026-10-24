@@ -391,6 +391,59 @@ function markerPercent(value: number | null, min: number, span: number): number 
   return Math.max(2, Math.min(98, ((value - min) / span) * 100));
 }
 
+function onBarPayLabel(label: string): string {
+  if (label === '個人戰略目標薪資') return '個人目標';
+  if (label === '个人战略目标薪资') return '个人目标';
+  if (label === 'Personal target compensation') return 'Target';
+  return label;
+}
+
+function markerLabelTransform(pct: number): string {
+  if (pct <= 16) return 'translateX(0%)';
+  if (pct >= 84) return 'translateX(-100%)';
+  return 'translateX(-50%)';
+}
+
+function PayRangeMark({
+  pct,
+  label,
+  value,
+  tone,
+  side,
+}: {
+  pct: number;
+  label: string;
+  value: string;
+  tone: 'target' | 'ceiling';
+  side: 'above' | 'below';
+}) {
+  const mark = onBarPayLabel(label);
+  const dot = tone === 'target'
+    ? 'border-2 border-white bg-emerald-400'
+    : 'border-2 border-white bg-sky-400';
+  const nameColor = tone === 'target' ? 'text-emerald-300' : 'text-sky-300';
+  return (
+    <>
+      <span
+        className={`absolute top-1/2 z-[1] h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full ${dot}`}
+        style={{ left: `${pct}%` }}
+        data-range-mark={tone}
+        title={`${mark} ${value}`}
+      />
+      <span
+        className={`pointer-events-none absolute z-[2] w-max max-w-[8.5rem] text-center leading-tight ${
+          side === 'above' ? 'bottom-[calc(100%+0.45rem)]' : 'top-[calc(100%+0.45rem)]'
+        }`}
+        style={{ left: `${pct}%`, transform: markerLabelTransform(pct) }}
+        data-range-label={tone}
+      >
+        <span className={`block text-sm font-bold ${nameColor}`}>{mark}</span>
+        <span className="block text-sm font-semibold tabular-nums text-white">{value}</span>
+      </span>
+    </>
+  );
+}
+
 function PayRangeLine({
   offer,
   currency,
@@ -426,11 +479,17 @@ function PayRangeLine({
   const ceilingPct = min !== null ? markerPercent(parseMoneyAmount(ceilingValue), min, span) : null;
   const fillLeft = lowPct ?? 0;
   const fillRight = 100 - (highPct ?? 100);
-  const aria = rangeText ? `${rangeText} (${money})` : money;
   const hero = variant === 'hero';
+  const staggerCeiling =
+    targetPct !== null && ceilingPct !== null;
+  const aria = [
+    rangeText ? `${rangeText} (${money})` : money,
+    targetLabel && targetValue ? `${targetLabel} ${targetValue}` : null,
+    ceilingLabel && ceilingValue ? `${ceilingLabel} ${ceilingValue}` : null,
+  ].filter(Boolean).join('. ');
   return (
     <div
-      className="min-w-0"
+      className={hero ? 'min-w-0' : 'w-full min-w-0'}
       data-pay-range={variant}
       role="img"
       aria-label={aria}
@@ -444,58 +503,54 @@ function PayRangeLine({
           ) : null}
         </div>
       ) : rangeText ? (
-        <p className={`${BODY} mb-4 font-semibold text-white`}>{rangeText}</p>
+        <p className={`${BODY} mb-1 font-semibold text-white`}>{rangeText}</p>
       ) : null}
-      <div className={`relative mx-1 ${hero ? 'mt-1 mb-2 h-3.5' : 'mt-6 mb-10 h-2'} rounded-full bg-slate-700`}>
-        <span
-          className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
-          style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}
-        />
-        {hero ? (
-          <>
-            <span className="absolute left-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
-            <span className="absolute right-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
-          </>
-        ) : null}
-        {targetPct !== null ? (
+      <div className={hero ? undefined : 'px-[3.25rem]'}>
+        <div className={`relative ${hero ? 'mx-1 mt-1 mb-2 h-3.5' : 'mt-9 mb-11 h-2.5'} rounded-full bg-slate-700`}>
           <span
-            className="absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-emerald-400"
-            style={{ left: `${targetPct}%` }}
-            title={targetLabel && targetValue ? `${targetLabel} ${targetValue}` : undefined}
+            className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
+            style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}
           />
-        ) : null}
-        {ceilingPct !== null ? (
-          <span
-            className="absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-sky-400"
-            style={{ left: `${ceilingPct}%` }}
-            title={ceilingLabel && ceilingValue ? `${ceilingLabel} ${ceilingValue}` : undefined}
-          />
-        ) : null}
-        {!hero ? (
-          <div className="pointer-events-none absolute left-0 right-0 top-5 flex justify-between">
-            <span className={`${BODY} tabular-nums text-slate-300`}>{low ?? ''}</span>
-            <span className={`${BODY} tabular-nums text-slate-300`}>{high ?? ''}</span>
-          </div>
-        ) : null}
+          {hero ? (
+            <>
+              <span className="absolute left-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
+              <span className="absolute right-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
+            </>
+          ) : null}
+          {targetPct !== null && targetValue ? (
+            <PayRangeMark
+              pct={targetPct}
+              label={targetLabel || ''}
+              value={targetValue}
+              tone="target"
+              side="above"
+            />
+          ) : null}
+          {ceilingPct !== null && ceilingValue ? (
+            <PayRangeMark
+              pct={ceilingPct}
+              label={ceilingLabel || ''}
+              value={ceilingValue}
+              tone="ceiling"
+              side={staggerCeiling ? 'below' : 'above'}
+            />
+          ) : null}
+          {!hero ? (
+            <>
+              <span
+                className={`pointer-events-none absolute left-0 top-1/2 -translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
+              >
+                {low ?? ''}
+              </span>
+              <span
+                className={`pointer-events-none absolute right-0 top-1/2 translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
+              >
+                {high ?? ''}
+              </span>
+            </>
+          ) : null}
+        </div>
       </div>
-      {!hero ? (
-        <ul className="space-y-1.5">
-          {targetValue ? (
-            <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400" aria-hidden />
-              <span className={REPORT_H3}>{targetLabel}</span>
-              <span className={`${BODY} font-semibold text-white`}>{targetValue}</span>
-            </li>
-          ) : null}
-          {ceilingValue ? (
-            <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-sky-400" aria-hidden />
-              <span className={REPORT_H3}>{ceilingLabel}</span>
-              <span className={`${BODY} font-semibold text-white`}>{ceilingValue}</span>
-            </li>
-          ) : null}
-        </ul>
-      ) : null}
     </div>
   );
 }
@@ -699,6 +754,7 @@ function ReviewColumn({
   cons,
   sourcesTitle,
   sources,
+  columnClass,
 }: {
   title: string;
   prosLabel: string;
@@ -707,29 +763,41 @@ function ReviewColumn({
   cons: string[];
   sourcesTitle: string;
   sources: GuideSource[];
+  columnClass: string;
 }) {
   return (
-    <SectionCard title={title} className="min-w-0">
-      <p className={`${REPORT_H3} mb-2`}>{prosLabel}</p>
-      <PointList items={pros} dot="bg-emerald-300" />
-      <p className={`${REPORT_H3} mb-2 mt-4`}>{consLabel}</p>
-      <PointList items={cons} dot="bg-slate-300" />
-      <SourceList title={sourcesTitle} sources={sources} />
-    </SectionCard>
+    <section
+      className={`${GUIDE_SECTION_FRAME} min-w-0 ${columnClass} md:row-span-4 md:grid md:grid-rows-subgrid`}
+    >
+      <h2 className={REPORT_H2}>{title}</h2>
+      <div className="mt-4 min-w-0 md:mt-0">
+        <p className={`${REPORT_H3} mb-2`}>{prosLabel}</p>
+        <PointList items={pros} dot="bg-emerald-300" />
+      </div>
+      <div className="mt-4 min-w-0 md:mt-0">
+        <p className={`${REPORT_H3} mb-2`}>{consLabel}</p>
+        <PointList items={cons} dot="bg-slate-300" />
+      </div>
+      <div className="min-w-0">
+        <SourceList title={sourcesTitle} sources={sources} className="mt-3 md:mt-0" />
+      </div>
+    </section>
   );
 }
 
 function SourceList({
   title,
   sources,
+  className = 'mt-3',
 }: {
   title: string;
   sources: GuideSource[];
+  className?: string;
 }) {
   const cited = sources.filter((source) => isCitableSourceUrl(source.url));
   if (cited.length === 0) return null;
   return (
-    <div className="mt-3">
+    <div className={className}>
       <p className={`${REPORT_H3} mb-2`}>{title}</p>
       <ul className="space-y-1.5">
         {cited.map((source) => (
@@ -987,11 +1055,11 @@ export function SnapshotItemStack({
   const summaries = snapshotItemSummaries(report);
   return (
     <div className="space-y-4 px-5 py-4">
-      <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
-        <CoreBody report={report} copy={copy} />
-      </ItemBlock>
       <ItemBlock title={copy.fit} summaryLabel={copy.analysisSummary} summary={summaries.fit}>
         <FitBody report={report} copy={copy} language={lang} locked={locked} rewrites={rewrites} />
+      </ItemBlock>
+      <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
+        <CoreBody report={report} copy={copy} />
       </ItemBlock>
       <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market}>
         <MarketBody report={report} copy={copy} language={lang} locked={locked} />
@@ -1123,13 +1191,13 @@ export function GuideItemPage({
       <div className="space-y-4">
         <section className={GUIDE_SECTION_FRAME}>
           <h2 className={REPORT_H1}>{copy.land}</h2>
-          <div className="mt-4 grid grid-cols-1 items-center gap-6 lg:grid-cols-[auto_minmax(0,1fr)]">
+          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             {mix.length > 0 ? (
               <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
             ) : (
               <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
             )}
-            <InnerSection title={copy.band}>
+            <InnerSection title={copy.band} className="w-full max-w-sm sm:min-w-[20rem] lg:ml-auto lg:w-[24rem] lg:shrink-0">
               <PayRangeLine
                 offer={report.expected_offer}
                 targetLabel={copy.target}
@@ -1178,7 +1246,7 @@ export function GuideItemPage({
       : false;
     body = company ? (
       split ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-[auto_auto_auto_auto]">
           <ReviewColumn
             title={copy.companyReview}
             prosLabel={copy.pros}
@@ -1187,6 +1255,7 @@ export function GuideItemPage({
             cons={company.company_cons}
             sourcesTitle={copy.sources}
             sources={company.sources}
+            columnClass="md:col-start-1"
           />
           <ReviewColumn
             title={copy.roleReviews}
@@ -1196,6 +1265,7 @@ export function GuideItemPage({
             cons={company.role_cons}
             sourcesTitle={copy.sources}
             sources={company.role_sources}
+            columnClass="md:col-start-2"
           />
         </div>
       ) : (

@@ -370,6 +370,8 @@ describe('seven-item report layout', () => {
       expect(html).toContain('藍寶米格魯');
       expect(html).toContain('欠缺的硬性關鍵字');
       expect(html).not.toContain('建議履歷調整後再應徵');
+      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('職位核心解析'));
+      expect(html.indexOf('職位核心解析')).toBeLessThan(html.indexOf('市場總薪酬區間'));
       expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('應徵建議'));
       expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('欠缺的硬性關鍵字'));
       expect(html).toContain('border-emerald-400/30');
@@ -436,6 +438,10 @@ describe('seven-item report layout', () => {
     expect(source).toContain('<PayRangeLine');
     expect(source).toContain('targetLabel={copy.target}');
     expect(source).toContain('ceilingLabel={copy.ceiling}');
+    expect(source).toContain('lg:flex-row lg:items-center lg:justify-between');
+    expect(source).toContain('lg:ml-auto lg:w-[24rem] lg:shrink-0');
+    expect(source).toContain('data-range-label={tone}');
+    expect(source).not.toContain('lg:grid-cols-[auto_minmax(0,1fr)]');
     expect(source).toContain("sources: s ? '资料来源' : '資料來源'");
     expect(source).toContain("sources: 'Data sources'");
     expect(source).not.toContain('<SectionCard title={copy.target} heading={REPORT_H3}>');
@@ -470,6 +476,11 @@ describe('seven-item report layout', () => {
     expect(html).toContain('$168K');
     expect(html).toContain('$185K');
     expect(html).toContain('議價天花板');
+    expect(html).toContain('個人目標');
+    expect(html).toContain('data-pay-range="compact"');
+    expect(html).toContain('data-range-label="target"');
+    expect(html).toContain('data-range-label="ceiling"');
+    expect(html).toContain('max-w-sm');
     expect(html).toContain('資料來源');
     expect(html).toContain('Levels.fyi');
     expect(html).toContain('結構拆分');
