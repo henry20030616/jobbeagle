@@ -8,7 +8,6 @@ import ErrorStateUI from '@/components/ErrorStateUI';
 import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import {
   jdCharProgress,
-  jdEmptyHint,
   jdUrlOnlyMessage,
   MIN_JD_CHARS,
 } from '@/lib/jd-paste-help';
@@ -140,9 +139,17 @@ export default function SmartInputArea({
               aria-hidden="true"
               className={`pointer-events-none absolute inset-0 flex items-center justify-start overflow-visible rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
             >
-              <p className={`${promptType} w-full min-w-0 max-w-full overflow-visible whitespace-pre-line break-words text-left text-slate-400`}>
-                {resolvedPlaceholder}
-              </p>
+              <ul className={`${promptType} w-full min-w-0 max-w-full list-outside list-disc space-y-[0.3em] overflow-visible break-words ps-[1.4em] text-left text-slate-400`}>
+                {resolvedPlaceholder
+                  .split('\n')
+                  .map((line) => line.trim())
+                  .filter((line) => line.length > 0)
+                  .map((line) => (
+                    <li key={line} className="overflow-visible whitespace-normal">
+                      {line}
+                    </li>
+                  ))}
+              </ul>
             </div>
           )}
 
@@ -173,10 +180,6 @@ export default function SmartInputArea({
           />
         )}
       </div>
-
-      {!value.trim() && classification.kind !== 'blocked_board' && (
-        <p className="jd-empty-hint mt-2 text-xs leading-snug text-slate-500">{jdEmptyHint(language)}</p>
-      )}
 
       {showCharProgress && (
         <p className="mt-2 text-xs leading-snug text-amber-200/90">{jdCharProgress(language, trimmedLen)}</p>

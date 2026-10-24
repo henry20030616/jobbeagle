@@ -14,12 +14,6 @@ export function jdPasteSteps(language: string): string {
     : 'Open the job detail (LinkedIn: the right-hand panel) → select all in that panel (Ctrl/Cmd+A) → copy → paste the full text here, not the link.';
 }
 
-export function jdEmptyHint(language: string): string {
-  return langOf(language) === 'zh'
-    ? '請貼職缺正文，不要貼連結。'
-    : 'Paste the job text, not the link.';
-}
-
 export function jdUrlOnlyMessage(language: string): string {
   return langOf(language) === 'zh'
     ? `⚠️ 請勿只貼網址。${jdPasteSteps(language)} Greenhouse / Lever 可自動解析。`
