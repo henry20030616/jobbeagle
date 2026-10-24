@@ -21,6 +21,8 @@ describe('homepage prompt type scale', () => {
     expect(input).toContain('compact ? JD_PROMPT_TYPE_COMPACT : JD_PROMPT_TYPE');
     expect(input).not.toMatch(/jd-paste-prompt text-sm/);
     expect(input).toContain('overflow-visible');
+    expect(input).toContain('flex items-center justify-start');
+    expect(input).not.toMatch(/inset-0 flex items-start/);
     expect(input).not.toMatch(/line-clamp|text-ellipsis/);
     expect(css).toContain('.homepage-steps .jd-paste-prompt');
     expect(css).toContain('.homepage-steps .jd-paste-prompt.\\32xl\\:text-4xl');

@@ -140,7 +140,7 @@ export default function SmartInputArea({
           {!value && (
             <div
               aria-hidden="true"
-              className={`pointer-events-none absolute inset-0 flex items-start justify-start overflow-visible rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
+              className={`pointer-events-none absolute inset-0 flex items-center justify-start overflow-visible rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
             >
               <p className={`${promptType} w-full min-w-0 max-w-full overflow-visible whitespace-pre-line break-words text-left text-slate-400`}>
                 {resolvedPlaceholder}
