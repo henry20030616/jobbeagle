@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LogOut, User, UserCircle } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { useLanguage } from '@/lib/language-context';
 import { getLoginButtonCopy, type LoginButtonCopy } from '@/constants/login-button-copy';
@@ -10,8 +10,8 @@ import type { User as AuthUser } from '@supabase/supabase-js';
 
 export const HEADER_ACCOUNT_HREF = '/account';
 
-const HEADER_ACCOUNT_BTN =
-  'inline-flex h-9 sm:h-10 lg:h-16 shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all';
+const HEADER_IDENTITY_BTN =
+  'inline-flex h-9 sm:h-10 lg:h-16 min-w-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all';
 
 const HEADER_LOGOUT_BTN =
   'inline-flex h-9 sm:h-10 lg:h-16 shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-semibold';
@@ -35,16 +35,7 @@ export function LoggedInHeaderControls({
     <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
       <Link
         href={HEADER_ACCOUNT_HREF}
-        className={HEADER_ACCOUNT_BTN}
-        title={copy.accountTitle}
-        aria-label={copy.accountTitle}
-      >
-        <UserCircle className="w-4 h-4 lg:w-7 lg:h-7 shrink-0" />
-        <span className="hidden sm:inline">{copy.account}</span>
-      </Link>
-      <Link
-        href={HEADER_ACCOUNT_HREF}
-        className="flex items-center gap-1.5 sm:gap-2 text-slate-300 min-w-0 rounded-lg hover:text-white transition-colors"
+        className={HEADER_IDENTITY_BTN}
         title={copy.accountTitle}
         aria-label={copy.accountTitle}
       >

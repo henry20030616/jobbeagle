@@ -22,14 +22,14 @@ describe('login button copy', () => {
     }
   });
 
-  it('uses short account labels that match header chrome', () => {
-    expect(LOGIN_BUTTON_COPY['zh-TW'].account).toBe('帳戶');
-    expect(LOGIN_BUTTON_COPY.en.account).toBe('Account');
+  it('uses account-management titles for the merged identity control', () => {
+    expect(LOGIN_BUTTON_COPY['zh-TW'].accountTitle).toBe('帳戶管理');
+    expect(LOGIN_BUTTON_COPY.en.accountTitle).toBe('Account management');
   });
 });
 
 describe('LoggedInHeaderControls', () => {
-  it('links identity and an explicit account control to /account and keeps logout', () => {
+  it('links a single identity control to /account and keeps logout', () => {
     const html = renderToStaticMarkup(
       createElement(LoggedInHeaderControls, {
         avatarUrl: undefined,
@@ -42,10 +42,12 @@ describe('LoggedInHeaderControls', () => {
 
     expect(HEADER_ACCOUNT_HREF).toBe('/account');
     expect(html).toContain('href="/account"');
-    expect(html).toContain('帳戶');
+    expect(html.match(/href="\/account"/g)?.length).toBe(1);
     expect(html).toContain('Ada');
+    expect(html).toContain('ada@example.com');
+    expect(html).toContain('帳戶管理');
+    expect(html).not.toContain('>帳戶<');
     expect(html).toContain('登出');
-    expect(html.match(/href="\/account"/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
   it('does not send a logged-in control to anywhere except /account', () => {
@@ -60,8 +62,10 @@ describe('LoggedInHeaderControls', () => {
     );
 
     expect(html).toContain('href="/account"');
+    expect(html.match(/href="\/account"/g)?.length).toBe(1);
     expect(html).not.toContain('href="/account/danger"');
-    expect(html).toContain('Account');
+    expect(html).toContain('Account management');
+    expect(html).not.toContain('>Account<');
     expect(html).toContain('Log out');
   });
 });
