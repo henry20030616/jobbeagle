@@ -649,14 +649,14 @@ const InputForm: React.FC<InputFormProps> = ({
                     <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 sm:p-4 lg:p-5 shadow-inner ring-1 ${item.iconWrap}`}>
                       <Icon className={`h-7 w-7 sm:h-8 sm:w-8 lg:h-12 lg:w-12 ${item.iconColor}`} strokeWidth={1.75} absoluteStrokeWidth />
                     </div>
-                    <div className="min-w-0 w-full">
-                      <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                        <span className="feature-title text-center text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-100">{item.title}</span>
+                    <div className="flex min-w-0 w-full flex-col items-center">
+                      <span className="relative inline-block max-w-full">
+                        <span className="feature-title block text-center text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-100">{item.title}</span>
                         <ChevronDown
-                          className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          className={`pointer-events-none absolute left-full top-1/2 ml-1 h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 shrink-0 -translate-y-1/2 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
                         />
-                      </div>
+                      </span>
                       <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                         <div className="overflow-hidden">
                           <p className="feature-desc pb-0.5 pt-2 sm:pt-2.5 text-center text-sm sm:text-base lg:text-lg xl:text-2xl leading-normal text-slate-400">
