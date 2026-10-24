@@ -46,6 +46,31 @@ describe('homepage prompt type scale', () => {
     expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.strategyBlurb\}/);
   });
 
+  it('puts matching leading icons before step-3 Snapshot and Guide titles', () => {
+    const form = read('components/InputForm.tsx');
+    const mobile = read('components/InputFormMobile.tsx');
+
+    expect(form).toMatch(
+      /<Camera className="[^"]+" aria-hidden \/>\s*\{reportLabel\(REPORT_CODES\.JOB_FIT_SNAPSHOT/,
+    );
+    expect(form).toMatch(
+      /<Sparkles className="[^"]+" aria-hidden \/>\s*\{reportLabel\(REPORT_CODES\.INTERVIEW_STRATEGY_GUIDE/,
+    );
+    expect(form).not.toMatch(/report-choice-title[^"]*flex-wrap/);
+    expect(form).not.toMatch(
+      /\{reportLabel\(REPORT_CODES\.INTERVIEW_STRATEGY_GUIDE[\s\S]{0,120}<Sparkles/,
+    );
+    expect(mobile).toMatch(
+      /<Camera className="[^"]+" aria-hidden \/>\s*\{reportLabel\(REPORT_CODES\.JOB_FIT_SNAPSHOT/,
+    );
+    expect(mobile).toMatch(
+      /<Sparkles className="[^"]+" aria-hidden \/>\s*\{reportLabel\(REPORT_CODES\.INTERVIEW_STRATEGY_GUIDE/,
+    );
+    expect(mobile).not.toMatch(
+      /\{reportLabel\(REPORT_CODES\.INTERVIEW_STRATEGY_GUIDE[\s\S]{0,120}<Sparkles/,
+    );
+  });
+
   it('enlarges only the homepage hero brand to 130% of the prior 7.2rem / 7.8rem sizes', () => {
     const css = read('app/globals.css');
     const logo = read('components/BrandLogo.tsx');

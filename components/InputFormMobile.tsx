@@ -10,7 +10,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { UserInputs, ResumeInput, ReportType, UserProfile } from '@/types';
-import { FileText, Upload, X, History, Clock, Save, Puzzle, CreditCard, Sparkles, Check, Pointer, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown } from 'lucide-react';
+import { FileText, Upload, X, History, Clock, Save, Puzzle, CreditCard, Sparkles, Camera, Check, Pointer, ScanSearch, BadgeDollarSign, ShieldAlert, MessageSquare, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/browser';
 import { validateJobDescription } from '@/lib/validate-job-description';
@@ -729,7 +729,8 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="w-full text-left"
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <p className="whitespace-normal text-sm font-bold text-white">
+                    <p className="flex items-center gap-1.5 text-sm font-bold text-white">
+                      <Camera className="h-4 w-4 shrink-0 text-indigo-100" aria-hidden />
                       {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                     </p>
                     <span
@@ -763,9 +764,9 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="w-full text-left"
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <p className="flex items-center gap-1 whitespace-normal text-sm font-bold text-white">
+                    <p className="flex items-center gap-1.5 text-sm font-bold text-white">
+                      <Sparkles className="h-4 w-4 shrink-0 text-indigo-100" aria-hidden />
                       {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
-                      <Sparkles className="h-4 w-4 text-indigo-100" />
                     </p>
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
