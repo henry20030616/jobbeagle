@@ -28,6 +28,7 @@ import type { CareerContext, MembershipTier, UserProfile } from '@/types';
 import { careerContextHasSignal } from '@/lib/career-context';
 import { FitStage } from '@/components/FitStage';
 import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
+import AccountSectionNav from '@/components/AccountSectionNav';
 
 type AccountOrder = {
   id: string;
@@ -729,7 +730,14 @@ export default function AccountPage() {
               </p>
             )}
 
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+            <AccountSectionNav language={language} />
+            <div className="min-w-0 flex-1 space-y-8 sm:space-y-10">
+
+            <section
+              id="overview"
+              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4"
+            >
               <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
                 {t.overview}
               </h2>
@@ -775,7 +783,10 @@ export default function AccountPage() {
               </dl>
             </section>
 
-            <section className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 p-7 space-y-4">
+            <section
+              id="career-context"
+              className="scroll-mt-4 rounded-xl border border-emerald-500/25 bg-emerald-950/20 p-7 space-y-4"
+            >
               <div className="flex items-start gap-3">
                 <Target className="w-7 h-7 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
@@ -800,7 +811,10 @@ export default function AccountPage() {
               </Link>
             </section>
 
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5">
+            <section
+              id="subscription"
+              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5"
+            >
               <div className="flex items-start gap-3">
                 <CreditCard className="w-7 h-7 text-indigo-400 shrink-0 mt-0.5" />
                 <div>
@@ -810,7 +824,7 @@ export default function AccountPage() {
                   <p className="text-lg text-slate-500 mt-1 leading-snug">{t.subscriptionNote}</p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
+              <div id="subscription-actions" className="scroll-mt-4 flex flex-wrap items-center gap-3">
                 {billing?.canManage ? (
                   <button
                     type="button"
@@ -845,7 +859,7 @@ export default function AccountPage() {
                   || data.profile.membership_tier === 'advanced_sub') ? (
                 <p className="text-lg text-amber-200/80">{t.subUnmatched}</p>
               ) : null}
-              <ul className="space-y-3">
+              <ul id="plans" className="scroll-mt-4 space-y-3">
                 {ACTIVE_CHECKOUT_PLAN_TYPES.map((planType) => {
                   const plan = CHECKOUT_PLANS[planType];
                   const label =
@@ -868,7 +882,10 @@ export default function AccountPage() {
                   );
                 })}
               </ul>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4">
+              <div
+                id="sponsor"
+                className="scroll-mt-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4"
+              >
                 <div className="min-w-0 sm:flex-1">
                   <p className="text-lg font-semibold text-amber-100">{t.sponsorTitle}</p>
                   <p className="text-base text-slate-400 mt-1">{t.sponsorNote}</p>
@@ -903,7 +920,10 @@ export default function AccountPage() {
               </div>
             </section>
 
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4">
+            <section
+              id="billing"
+              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4"
+            >
               <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
                 {t.billing}
               </h2>
@@ -947,7 +967,10 @@ export default function AccountPage() {
               )}
             </section>
 
-            <section className="rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5">
+            <section
+              id="referrals"
+              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5"
+            >
               <div className="flex items-start gap-3">
                 <Gift className="w-7 h-7 text-indigo-400 shrink-0 mt-0.5" />
                 <div>
@@ -996,6 +1019,8 @@ export default function AccountPage() {
                 </ul>
               )}
             </section>
+            </div>
+            </div>
           </>
         )}
       </main>
