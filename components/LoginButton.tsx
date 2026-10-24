@@ -11,7 +11,7 @@ import type { User as AuthUser } from '@supabase/supabase-js';
 export const HEADER_ACCOUNT_HREF = '/account';
 
 const HEADER_IDENTITY_BTN =
-  'inline-flex h-9 sm:h-10 lg:h-16 min-w-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all';
+  'inline-flex h-9 sm:h-10 lg:h-16 max-sm:min-w-0 sm:shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all';
 
 const HEADER_LOGOUT_BTN =
   'inline-flex h-9 sm:h-10 lg:h-16 shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-semibold';
@@ -32,7 +32,7 @@ export function LoggedInHeaderControls({
   onLogout,
 }: LoggedInHeaderControlsProps) {
   return (
-    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+    <div className="flex items-center gap-1.5 sm:gap-2 max-sm:min-w-0 sm:shrink-0">
       <Link
         href={HEADER_ACCOUNT_HREF}
         className={HEADER_IDENTITY_BTN}
@@ -50,12 +50,12 @@ export function LoggedInHeaderControls({
             <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-7 lg:h-7 text-white" />
           </div>
         )}
-        <div className="min-w-0 hidden min-[420px]:flex flex-col">
-          <span className="text-sm font-semibold text-white truncate max-w-[7.5rem] sm:max-w-[10rem] lg:max-w-[18rem]">
+        <div className="hidden min-[420px]:flex max-sm:min-w-0 flex-col justify-center text-left">
+          <span className="text-sm font-semibold text-white leading-tight max-sm:max-w-[12rem] max-sm:truncate sm:whitespace-nowrap">
             {displayName}
           </span>
           {displayEmail ? (
-            <span className="hidden lg:block text-xs text-slate-400 truncate max-w-[18rem]">
+            <span className="hidden lg:block text-xs text-slate-400 leading-tight whitespace-nowrap">
               {displayEmail}
             </span>
           ) : null}

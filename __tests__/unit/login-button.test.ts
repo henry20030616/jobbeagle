@@ -68,4 +68,26 @@ describe('LoggedInHeaderControls', () => {
     expect(html).not.toContain('>Account<');
     expect(html).toContain('Log out');
   });
+
+  it('shows a typical Google name and email without a tight truncate max-width', () => {
+    const html = renderToStaticMarkup(
+      createElement(LoggedInHeaderControls, {
+        avatarUrl: undefined,
+        displayName: 'henry20030616',
+        displayEmail: 'henry061680@gmail.com',
+        copy: getLoginButtonCopy('en'),
+        onLogout: () => undefined,
+      }),
+    );
+
+    expect(html).toContain('henry20030616');
+    expect(html).toContain('henry061680@gmail.com');
+    expect(html).not.toContain('max-w-[7.5rem]');
+    expect(html).not.toContain('max-w-[10rem]');
+    expect(html).not.toContain('max-w-[18rem]');
+    expect(html).toContain('max-sm:truncate');
+    expect(html).toContain('sm:whitespace-nowrap');
+    expect(html.match(/href="\/account"/g)?.length).toBe(1);
+    expect(html).toContain('Log out');
+  });
 });
