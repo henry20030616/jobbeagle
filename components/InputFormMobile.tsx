@@ -745,7 +745,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       ) : null}
                     </span>
                   </div>
-                  <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.snapshotBlurb}</p>
+                  <p className="upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">{t.snapshotBlurb}</p>
                 </button>
               </div>
 
@@ -780,7 +780,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       ) : null}
                     </span>
                   </div>
-                  <p className="whitespace-normal text-xs leading-snug text-indigo-100">{t.strategyBlurb}</p>
+                  <p className="upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">{t.strategyBlurb}</p>
                 </button>
               </div>
 

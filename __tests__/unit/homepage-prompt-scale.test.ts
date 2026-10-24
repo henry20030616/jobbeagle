@@ -26,6 +26,20 @@ describe('homepage prompt type scale', () => {
     expect(input).not.toMatch(/line-clamp|text-ellipsis/);
     expect(css).toContain('.homepage-steps .jd-paste-prompt');
     expect(css).toContain('.homepage-steps .jd-paste-prompt.\\32xl\\:text-4xl');
+    expect(css).toContain('.homepage-steps .upload-prompt.\\32xl\\:text-4xl');
     expect(css).toContain('font-size: var(--type-step)');
+  });
+
+  it('sizes step-3 report blurbs with the same desktop type as step-2 upload', () => {
+    const form = read('components/InputForm.tsx');
+    const mobile = read('components/InputFormMobile.tsx');
+    const promptType = "const STEP_PROMPT_TYPE =\n  'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl'";
+
+    expect(form).toContain(promptType);
+    expect(form).toMatch(/STEP_PROMPT_TYPE[\s\S]{0,80}snapshotBlurb/);
+    expect(form).toMatch(/STEP_PROMPT_TYPE[\s\S]{0,80}strategyBlurb/);
+    expect(form).toMatch(/report-choice-title[^"]*text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white/);
+    expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.snapshotBlurb\}/);
+    expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.strategyBlurb\}/);
   });
 });

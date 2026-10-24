@@ -43,6 +43,9 @@ const STEP_BODY_CARDS = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-3 gap-3 
 const STEP_BODY_CARDS_COMPACT = `grid ${STEP_BODY_MIN} min-w-0 flex-1 grid-rows-2 gap-3 sm:gap-4 overflow-hidden`;
 const REPORT_CARD =
   'w-full min-h-0 h-full rounded-xl border-2 px-4 sm:px-5 lg:px-6 xl:px-7 py-4 sm:py-5 lg:py-6 text-left transition flex flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3';
+/** Same type scale as step-2 empty-state 點擊上傳履歷 (`upload-prompt` + 2xl:text-4xl → --type-step). */
+const STEP_PROMPT_TYPE =
+  'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl';
 
 function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
@@ -908,7 +911,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT} />
                       </span>
-                      <p className="mt-1.5 sm:mt-2 line-clamp-3 text-sm sm:text-base lg:text-lg leading-snug text-indigo-100">{t.snapshotBlurb}</p>
+                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-3 leading-snug text-indigo-100`}>{t.snapshotBlurb}</p>
                     </button>
                   </div>
                   <div
@@ -929,7 +932,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE} />
                       </span>
-                      <p className="mt-1.5 sm:mt-2 line-clamp-3 text-sm sm:text-base lg:text-lg leading-snug text-indigo-100">{t.strategyBlurb}</p>
+                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-3 leading-snug text-indigo-100`}>{t.strategyBlurb}</p>
                     </button>
                   </div>
                   {!compactChrome && (
