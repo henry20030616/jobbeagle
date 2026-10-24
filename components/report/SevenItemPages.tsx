@@ -8,9 +8,13 @@ import { BeagleIcon, getScoreInfo } from '@/components/AnalysisDashboard';
 import {
   BODY,
   BODY_MUTED,
-  SUBHEAD,
 } from '@/components/guide/GuideSlideChrome';
-import { GUIDE_SECTION_FRAME } from '@/constants/report-frame';
+import {
+  GUIDE_SECTION_FRAME,
+  REPORT_H1,
+  REPORT_H2,
+  REPORT_H3,
+} from '@/constants/report-frame';
 import { formatOfferRange, marketBandDisclaimer, payEstimateScope } from '@/lib/offer-display';
 import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
@@ -388,7 +392,7 @@ function BriefColumn({
 }) {
   return (
     <section className="min-w-0">
-      <h3 className={`mb-2 ${SUBHEAD}`}>{title}</h3>
+      <h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>
       {children}
     </section>
   );
@@ -429,7 +433,7 @@ function RewriteGroups({
           key={group.title}
           className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4"
         >
-          <h3 className={`mb-2 ${SUBHEAD}`}>{group.title}</h3>
+          <h3 className={`mb-2 ${REPORT_H2}`}>{group.title}</h3>
           <ul className="space-y-4">
             {group.items.map((item) => {
               const showGap = item.gap.trim() !== group.title;
@@ -496,14 +500,16 @@ function SectionCard({
   title,
   children,
   className,
+  heading = REPORT_H2,
 }: {
   title: string;
   children: React.ReactNode;
   className?: string;
+  heading?: string;
 }) {
   return (
     <section className={className ? `${GUIDE_SECTION_FRAME} ${className}` : GUIDE_SECTION_FRAME}>
-      <h2 className="text-2xl font-black text-blue-400">{title}</h2>
+      <h2 className={heading}>{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -513,7 +519,7 @@ function SummaryCard({ label, summary }: { label: string; summary: string }) {
   const points = splitSummaryPoints(summary);
   if (points.length === 0) return null;
   return (
-    <SectionCard title={label}>
+    <SectionCard title={label} heading={REPORT_H1}>
       {points.length > 1 ? (
         <BriefRows items={points} />
       ) : (
@@ -542,9 +548,9 @@ function ReviewColumn({
 }) {
   return (
     <SectionCard title={title} className="min-w-0">
-      <p className={`${SUBHEAD} mb-2`}>{prosLabel}</p>
+      <p className={`${REPORT_H3} mb-2`}>{prosLabel}</p>
       <PointList items={pros} dot="bg-emerald-300" />
-      <p className={`${SUBHEAD} mb-2 mt-4`}>{consLabel}</p>
+      <p className={`${REPORT_H3} mb-2 mt-4`}>{consLabel}</p>
       <PointList items={cons} dot="bg-slate-300" />
       <SourceList title={sourcesTitle} sources={sources} />
     </SectionCard>
@@ -580,11 +586,11 @@ function SourceList({
     </ul>
   );
   if (framed) {
-    return <SectionCard title={title}>{list}</SectionCard>;
+    return <SectionCard title={title} heading={REPORT_H3}>{list}</SectionCard>;
   }
   return (
     <div className="mt-3">
-      <p className={`${SUBHEAD} mb-2`}>{title}</p>
+      <p className={`${REPORT_H3} mb-2`}>{title}</p>
       {list}
     </div>
   );
@@ -604,10 +610,10 @@ function ItemBlock({
   const points = splitSummaryPoints(summary);
   return (
     <section className={GUIDE_SECTION_FRAME}>
-      <h2 className="text-2xl font-black text-blue-400">{title}</h2>
+      <h2 className={REPORT_H1}>{title}</h2>
       {points.length > 0 ? (
         <div className="mt-4">
-          <p className={SUBHEAD}>{summaryLabel}</p>
+          <p className={REPORT_H2}>{summaryLabel}</p>
           {points.length > 1 ? (
             <div className="mt-2">
               <BriefRows items={points} />
@@ -669,7 +675,7 @@ function MarketBody({
       <ul className="space-y-4">
         {blocks.map((block) => (
           <li key={block.title}>
-            <p className={SUBHEAD}>{block.title}</p>
+            <p className={REPORT_H2}>{block.title}</p>
             {block.lines.map((line) => (
               <p key={line} className={`${BODY} mt-1 font-semibold text-white leading-snug`}>
                 {line}
@@ -718,7 +724,7 @@ function FitBody({
   return (
     <div className="space-y-5">
       <section>
-        <p className={`${SUBHEAD} mb-3`}>{copy.score}</p>
+        <p className={`${REPORT_H2} mb-3`}>{copy.score}</p>
         <div className="flex items-center gap-4">
           <BeagleIcon
             className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
@@ -871,7 +877,7 @@ function QuestionList({
             </div>
           </div>
           <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
-            <p className={SUBHEAD}>{copy.answer}</p>
+            <p className={REPORT_H3}>{copy.answer}</p>
             <p className={`${BODY} mt-2 text-slate-100 leading-relaxed`}>{item.answer || '—'}</p>
           </div>
         </li>
@@ -954,14 +960,14 @@ export function GuideItemPage({
     body = salary ? (
       <div className="space-y-4">
         <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <SectionCard title={copy.target}>
+          <SectionCard title={copy.target} heading={REPORT_H3}>
             {mix.length > 0 ? (
               <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
             ) : (
               <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
             )}
           </SectionCard>
-          <SectionCard title={copy.ceiling}>
+          <SectionCard title={copy.ceiling} heading={REPORT_H3}>
             <p className="text-3xl font-black text-white">{salary.ceiling || '—'}</p>
           </SectionCard>
         </div>
@@ -1042,13 +1048,13 @@ export function GuideItemPage({
     body = bank && (bank.professional.length > 0 || bank.behavioral.length > 0) ? (
       <div className="space-y-4">
         {bank.professional.length > 0 ? (
-          <SectionCard title={copy.professional}>
+          <SectionCard title={copy.professional} heading={REPORT_H1}>
             <QuestionList items={bank.professional} copy={copy} />
             <ExtraList items={bank.professional_extra} title={copy.extra} />
           </SectionCard>
         ) : null}
         {bank.behavioral.length > 0 ? (
-          <SectionCard title={copy.behavioral}>
+          <SectionCard title={copy.behavioral} heading={REPORT_H1}>
             <QuestionList items={bank.behavioral} copy={copy} />
             <ExtraList items={bank.behavioral_extra} title={copy.extra} />
           </SectionCard>
@@ -1082,7 +1088,7 @@ export function GuideItemPage({
         </div>
       ) : null}
       {negotiation.script ? (
-        <SectionCard title={copy.say}>
+        <SectionCard title={copy.say} heading={REPORT_H3}>
           <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
         </SectionCard>
       ) : null}

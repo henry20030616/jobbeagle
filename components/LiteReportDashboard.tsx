@@ -85,7 +85,7 @@ export default function LiteReportDashboard({
         <header className="border-b border-slate-700/90 px-5 py-3.5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className={`${SECTION_TITLE} text-indigo-400 mb-1`}>{t.productTitle}</p>
+              <p className={`${SECTION_TITLE} text-sky-400 mb-1`}>{t.productTitle}</p>
               <h1 className="text-4xl font-black text-white flex items-center gap-2 flex-wrap leading-tight">
                 <Briefcase className="w-5 h-5 text-slate-400 shrink-0" />
                 {report.job_title || t.unknownRole}

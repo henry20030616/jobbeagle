@@ -119,6 +119,34 @@ body > div {
   }
 }
 
+/*
+ * Report item headings (Snapshot + Guide). Navy slide, blue-500 frames.
+ * L1 brightest/largest → L3 deepest/smallest. Keep SAMPLE mark gold.
+ */
+.report-h1 {
+  font-size: 1.5rem; /* text-2xl */
+  line-height: 1.25;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  color: rgb(125 211 252); /* sky-300 */
+}
+
+.report-h2 {
+  font-size: 1.25rem; /* text-xl */
+  line-height: 1.25;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  color: rgb(96 165 250); /* blue-400 */
+}
+
+.report-h3 {
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: rgb(59 130 246); /* blue-500 */
+}
+
 /* Compare modal: always viewport-centered (escape parent transforms via portal + fixed). */
 .jb-compare-overlay {
   position: fixed !important;

@@ -95,7 +95,7 @@ export default function FullReportDashboard({
                 onClick={() => setTab(item.id)}
                 className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-base sm:text-lg font-bold transition-colors border ${
                   active
-                    ? 'border-violet-500 bg-violet-500/10 text-violet-100'
+                    ? 'border-blue-500 bg-blue-500/10 text-sky-100'
                     : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'
                 }`}
               >

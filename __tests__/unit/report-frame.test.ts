@@ -4,6 +4,9 @@ import { describe, expect, it } from 'vitest';
 import {
   GUIDE_SECTION_FRAME,
   HOMEPAGE_STEP_PILL,
+  REPORT_H1,
+  REPORT_H2,
+  REPORT_H3,
   HOMEPAGE_STEP_PILL_TYPE,
   HOMEPAGE_TITLE_TYPE,
   PAGE_SHELL_GUTTER,
@@ -177,6 +180,32 @@ describe('Guide inner section cards', () => {
     expect(pages).toContain('GUIDE_SECTION_FRAME');
     expect(pages).toContain('function SectionCard');
     expect(pages).toContain('function SummaryCard');
+  });
+});
+
+describe('report item heading scale', () => {
+  it('defines L1/L2/L3 as blue-family CSS classes with a size and hue order', () => {
+    expect(REPORT_H1).toBe('report-h1');
+    expect(REPORT_H2).toBe('report-h2');
+    expect(REPORT_H3).toBe('report-h3');
+
+    const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8');
+    expect(css).toMatch(/\.report-h1 \{[\s\S]*?font-size:\s*1\.5rem/);
+    expect(css).toMatch(/\.report-h1 \{[\s\S]*?color:\s*rgb\(125 211 252\)/);
+    expect(css).toMatch(/\.report-h2 \{[\s\S]*?font-size:\s*1\.25rem/);
+    expect(css).toMatch(/\.report-h2 \{[\s\S]*?color:\s*rgb\(96 165 250\)/);
+    expect(css).toMatch(/\.report-h3 \{[\s\S]*?font-size:\s*1\.125rem/);
+    expect(css).toMatch(/\.report-h3 \{[\s\S]*?color:\s*rgb\(59 130 246\)/);
+
+    const pages = readFileSync(
+      join(process.cwd(), 'components/report/SevenItemPages.tsx'),
+      'utf8',
+    );
+    expect(pages).toContain('REPORT_H1');
+    expect(pages).toContain('REPORT_H2');
+    expect(pages).toContain('REPORT_H3');
+    expect(pages).not.toMatch(/className=\{`mb-2 \$\{SUBHEAD\}`\}/);
+    expect(pages).not.toContain('text-2xl font-black text-blue-400');
   });
 });
 

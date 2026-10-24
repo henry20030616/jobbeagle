@@ -306,10 +306,10 @@ describe('seven-item report layout', () => {
     ]);
   });
 
-  it('keeps rewrite category headings on SUBHEAD and the card outside the keyword column', () => {
+  it('keeps rewrite category headings on REPORT_H2 and the card outside the keyword column', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
-    expect(source).toContain('<h3 className={`mb-2 ${SUBHEAD}`}>{title}</h3>');
-    expect(source).toContain('<h3 className={`mb-2 ${SUBHEAD}`}>{group.title}</h3>');
+    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>');
+    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{group.title}</h3>');
     expect(source).toContain('className="w-full min-w-0 rounded-lg border border-emerald-400/30');
     expect(source.indexOf('<RewriteGroups')).toBeGreaterThan(source.indexOf('</BriefColumn>\n      </div>'));
     expect(source).toContain('{beforeLabel}');
@@ -323,12 +323,12 @@ describe('seven-item report layout', () => {
     expect(source).toContain('<SummaryCard label={copy.analysisSummary}');
     expect(source).toContain('<SectionCard title={copy.pay}>');
     expect(source).toContain('<SectionCard title={copy.benefits}>');
-    expect(source).toContain('<SectionCard title={copy.say}>');
+    expect(source).toContain('<SectionCard title={copy.say} heading={REPORT_H3}>');
     expect(source).toContain('<SectionCard title={copy.askCompany}>');
-    expect(source).toContain('<SectionCard title={copy.professional}>');
-    expect(source).toContain('<SectionCard title={copy.behavioral}>');
-    expect(source).toContain('<SectionCard title={copy.target}>');
-    expect(source).toContain('<SectionCard title={copy.ceiling}>');
+    expect(source).toContain('<SectionCard title={copy.professional} heading={REPORT_H1}>');
+    expect(source).toContain('<SectionCard title={copy.behavioral} heading={REPORT_H1}>');
+    expect(source).toContain('<SectionCard title={copy.target} heading={REPORT_H3}>');
+    expect(source).toContain('<SectionCard title={copy.ceiling} heading={REPORT_H3}>');
     expect(source).not.toMatch(
       /<ItemBlock title=\{title\[item\]\} summaryLabel=\{copy\.analysisSummary\}/,
     );

@@ -42,6 +42,16 @@ export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 export const GUIDE_SECTION_FRAME = `rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900/55 p-5`;
 
 /**
+ * Snapshot + Guide item heading scale. All blue family on navy
+ * (homepage / report-frame blue-500). Different size AND hue so
+ * readers see L1 → L2 → L3 order. Do not use green / purple / gold.
+ * Visuals live on `.report-h1/h2/h3` in `app/globals.css`.
+ */
+export const REPORT_H1 = 'report-h1';
+export const REPORT_H2 = 'report-h2';
+export const REPORT_H3 = 'report-h3';
+
+/**
  * Homepage report-type cards (step 3).
  * Dark blue fill (blue-900 / #1e3a8a family) — not indigo/purple.
  * Selected card keeps the same fill plus the white 2px box (border-2 + border-white).
