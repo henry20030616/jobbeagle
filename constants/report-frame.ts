@@ -55,11 +55,20 @@ export const REPORT_TYPE_LAUNCH_BOX =
   `border-2 ${REPORT_TYPE_CARD_ACTIVE} text-zinc-100`;
 
 /**
+ * Step-header pill type (Chrome / saved resumes / credits).
+ * 1.5× the previous Tailwind scale (text-base / sm:text-lg / lg:text-xl / xl:text-2xl).
+ * Homepage desktop pairs with `.step-header-pill` → calc(var(--type-ui) * 1.5).
+ * Icons must stay 1em so they track the text.
+ */
+export const HOMEPAGE_STEP_PILL_TYPE =
+  'step-header-pill text-[1.5rem] sm:text-[1.6875rem] lg:text-[1.875rem] xl:text-[2.25rem]';
+
+/**
  * Homepage step pills (Chrome extension / saved resumes / credits).
  * Same dark-blue fill as step 3 cards and the step 4 launch box.
  */
 export const HOMEPAGE_STEP_PILL =
-  `text-zinc-100 ${REPORT_TYPE_CARD_FILL} hover:bg-blue-800 border-blue-700`;
+  `${HOMEPAGE_STEP_PILL_TYPE} text-zinc-100 ${REPORT_TYPE_CARD_FILL} hover:bg-blue-800 border-blue-700`;
 
 /**
  * Homepage step column shell (steps 1–4). White 2px outline lives on the

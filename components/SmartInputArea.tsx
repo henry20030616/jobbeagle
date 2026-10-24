@@ -81,8 +81,8 @@ export default function SmartInputArea({
     classification.kind === 'plain' && trimmedLen > 0 && trimmedLen < MIN_JD_CHARS;
 
   return (
-    <div className={`min-w-0 max-w-full ${compact ? 'flex h-full min-h-0 flex-1 flex-col gap-2' : 'space-y-0'}`}>
-      <div className={`relative min-w-0 max-w-full ${compact ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
+    <div className={`min-w-0 max-w-full ${compact ? 'relative flex h-full min-h-0 flex-1 flex-col' : 'space-y-0'}`}>
+      <div className={`relative min-w-0 max-w-full ${compact ? 'flex h-full min-h-0 flex-1 flex-col' : ''}`}>
         {classification.kind === 'public_ats' && (
           <div className={`${compact ? 'mb-1.5' : 'mb-3'} flex justify-end`}>
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/50 border border-emerald-500/30 rounded-full px-2.5 py-1 transition-all">
@@ -124,11 +124,11 @@ export default function SmartInputArea({
           )
         )}
 
-        <div className={`relative min-w-0 max-w-full ${compact ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
+        <div className={`relative min-w-0 max-w-full ${compact ? 'flex h-full min-h-0 flex-1 flex-col' : ''}`}>
           <textarea
             ref={textareaRef}
             disabled={disabled || parsing}
-            className={`${promptType} w-full max-w-full min-w-0 ${compact ? 'min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+            className={`${promptType} w-full max-w-full min-w-0 ${compact ? 'h-full min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
             placeholder={resolvedPlaceholder}
             aria-label={resolvedPlaceholder}
             value={value}
@@ -175,7 +175,7 @@ export default function SmartInputArea({
       </div>
 
       {!value.trim() && classification.kind !== 'blocked_board' && (
-        <p className="mt-2 text-xs leading-snug text-slate-500">{jdEmptyHint(language)}</p>
+        <p className="jd-empty-hint mt-2 text-xs leading-snug text-slate-500">{jdEmptyHint(language)}</p>
       )}
 
       {showCharProgress && (

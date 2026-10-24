@@ -28,6 +28,9 @@ describe('homepage prompt type scale', () => {
     expect(css).toContain('.homepage-steps .jd-paste-prompt.\\32xl\\:text-4xl');
     expect(css).toContain('.homepage-steps .upload-prompt.\\32xl\\:text-4xl');
     expect(css).toContain('font-size: var(--type-step)');
+    expect(input).toContain('jd-empty-hint');
+    expect(css).toContain('.homepage-steps .jd-empty-hint');
+    expect(css).toMatch(/\.homepage-steps \.jd-empty-hint \{[\s\S]*?position:\s*absolute/);
   });
 
   it('sizes step-3 report blurbs with the same desktop type as step-2 upload', () => {

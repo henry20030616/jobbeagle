@@ -17,24 +17,25 @@ import BrandLogo from '@/components/BrandLogo';
 import {
   HOMEPAGE_STEP_COL_SURFACE,
   HOMEPAGE_STEP_PILL,
+  HOMEPAGE_STEP_PILL_TYPE,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_IDLE,
   REPORT_TYPE_LAUNCH_BOX,
 } from '@/constants/report-frame';
 
 const PILL_BOX =
-  'inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border transition-all';
+  `inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-3 ${HOMEPAGE_STEP_PILL_TYPE} px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border transition-all`;
 const PILL = `${PILL_BOX} ${HOMEPAGE_STEP_PILL}`;
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
   `relative flex h-full min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-6 lg:p-7`;
 const STEP_TITLE =
-  'step-title flex shrink-0 items-center pb-3 lg:pb-4 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
+  'step-title flex shrink-0 items-center overflow-visible pb-3 lg:pb-4 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
-  'mb-3 lg:mb-4 flex min-h-0 w-full min-w-0 shrink-0 items-center';
-/** Empty step-4 spacer only — one-pill floor so launch top matches 適配快照. */
-const STEP_PILL_ROW_EMPTY = `${STEP_PILL_ROW} min-h-[2.75rem]`;
+  'mb-3 lg:mb-4 flex min-h-[4.125rem] w-full min-w-0 shrink-0 items-center overflow-visible';
+/** Empty step-4 spacer — same min-height as steps 1–3 so launch top matches 適配快照. */
+const STEP_PILL_ROW_EMPTY = STEP_PILL_ROW;
 /** Mobile floor; desktop bodies grow with the flex-1 step row. */
 const STEP_BODY_MIN = 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-0';
 const STEP_BODY = `flex ${STEP_BODY_MIN} min-w-0 flex-1 flex-col overflow-hidden`;
@@ -936,17 +937,15 @@ const InputForm: React.FC<InputFormProps> = ({
                     </button>
                   </div>
                   {!compactChrome && (
-                    <div className="flex h-full min-h-0 w-full flex-col justify-start">
-                      <Link
-                        href="/samples"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="compare-panel-label report-choice-title flex h-[60%] w-full min-h-0 shrink-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-2xl font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50"
-                      >
-                        <FileText className="h-[5.625rem] w-[5.625rem] shrink-0 text-indigo-300" aria-hidden />
-                        {t.sampleLink}
-                      </Link>
-                    </div>
+                    <Link
+                      href="/samples"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="compare-panel-label report-choice-title flex h-full w-full min-h-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-2xl font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50"
+                    >
+                      <FileText className="h-[5.625rem] w-[5.625rem] shrink-0 text-indigo-300" aria-hidden />
+                      {t.sampleLink}
+                    </Link>
                   )}
                 </div>
               ) : (

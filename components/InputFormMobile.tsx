@@ -34,7 +34,7 @@ const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-3
 const MOBILE_STEP_TITLE = 'flex items-center gap-2 text-sm font-bold text-white/90';
 const MOBILE_STEP_BADGE = 'h-5 w-1 rounded-full shrink-0';
 const MOBILE_BUTTON_PRIMARY = 'w-full py-4 text-base font-bold rounded-xl transition-all active:scale-[0.98] shadow-lg';
-const MOBILE_PILL = 'inline-flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/50 px-2.5 py-1 text-xs text-slate-300 font-medium';
+const MOBILE_PILL = 'step-header-pill inline-flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/50 px-2.5 py-1 text-[1.125rem] leading-snug text-slate-300 font-medium';
 
 interface SavedResume extends ResumeInput {
   id: string;
@@ -555,7 +555,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               className={MOBILE_PILL}
               title={zh ? '職缺頁可一鍵抓 JD，免手動貼上' : 'On a job page? Grab the JD in one click — no paste'}
             >
-              <Puzzle className="h-4 w-4 shrink-0" />
+              <Puzzle className="h-6 w-6 shrink-0" />
               <span className="font-bold">
                 {zh ? 'Chrome 外掛一鍵抓職缺 →' : 'Grab JD with Chrome extension →'}
               </span>
@@ -591,7 +591,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
               className={MOBILE_PILL}
             >
-              <History className="h-4 w-4 shrink-0" />
+              <History className="h-6 w-6 shrink-0" />
               <span>{t.resumeLibrary}</span>
               {resumeHistory.length > 0 && <span>({resumeHistory.length})</span>}
             </button>
@@ -702,7 +702,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               className={`${MOBILE_PILL} group max-w-full`}
               title={`${creditsPillShort}${creditsPillDetail} → — ${creditsPillTitle}`}
             >
-              <CreditCard className="h-4 w-4 shrink-0" />
+              <CreditCard className="h-6 w-6 shrink-0" />
               <span className="font-bold leading-snug">
                 {creditsPillShort}
                 <span className="hidden group-hover:inline group-focus-within:inline">
