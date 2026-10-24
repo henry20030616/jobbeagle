@@ -26,7 +26,7 @@ Return JSON only:
   "base": "$150K or null",
   "equity": "RSU string or null",
   "bonus": "bonus string or null",
-  "rationale": "Exactly three lines, separated by newlines. Each line is 'Kind: fact' (or CJK ：). Line 1 Target/目標價: the dollar, place, title/level, and the resume fact that holds it there. Line 2 Ceiling/天花板: where it stops and why. Line 3 Mix/結構: base, equity, bonus, and which of those are not existing rights. Do not invent a competing offer or a metric that is not in the resume.",
+  "rationale": "Exactly three lines, separated by newlines. Each line is 'Kind: fact' (or CJK ：). Line 1 Target/目標價: the dollar, place, title/level, and the resume fact that holds it there. Line 2 Ceiling/天花板: where it stops and why. Line 3 Mix/結構: base, equity, bonus, and that equity/bonus are a target mix — not guaranteed or already-earned pay. Never say resume-as-rights or 履歷已拿到的權利. Do not invent a competing offer or a metric that is not in the resume.",
   "buyer_seller": "Exactly two lines, separated by one newline, with no labels. Write like a retained-search partner: cold, specific, no conversational filler. Line 1 is the employer position at the table: whether the seat is still posted, any cited start deadline / hiring freeze / headcount signal, and what that implies for a first offer (mid-band vs ceiling). Line 2 is the candidate position: the quantified resume fact that supports the ask, and the JD requirement that is not evidenced and must not be claimed as completed scope. Ban casual phrasing such as 'they need someone and can keep waiting', '這個位子還沒補上', '也可以繼續等'. Do not say buyer, seller, leverage, or 籌碼. Use only searched facts and resume facts.",
   "sources": [ { "title": string, "url": "https://..." } ]
 }
@@ -59,7 +59,7 @@ export const QUESTION_RETRIEVAL_PROMPT = `You retrieve interview questions from 
 Search Glassdoor, Blind, Reddit, and Levels.fyi. Prefer: same company + same role, then same industry + same role, then other industries + same role.
 Return JSON only:
 {
-  "summary": "Two or three newline-separated 'Kind: fact' lines (Process/流程, Professional/專業題, Behavioral/行為題). One driver per line. Empty if search found nothing.",
+  "summary": "Two or three newline-separated 'Kind: fact' lines (Hiring process/招募流程, Professional/專業題, Behavioral/行為題). One driver per line. Empty if search found nothing.",
   "process": "rounds, interviewer roles, and typical timing from real shares, or empty",
   "questions": [
     {

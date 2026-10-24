@@ -13,6 +13,7 @@ import {
   resolveGuideModuleRoute,
   selectInterviewBank,
 } from '@/lib/guide-modules';
+import { QUESTION_RETRIEVAL_PROMPT } from '@/lib/prompts/guide-modules';
 import type { GuideInterviewBank, GuideQuestion } from '@/types';
 import { isCitableSourceUrl } from '@/lib/provenance';
 
@@ -78,6 +79,11 @@ describe('guide module routes', () => {
         search: false,
       });
     }
+  });
+
+  it('labels the questions summary process line as Hiring process / 招募流程', () => {
+    expect(QUESTION_RETRIEVAL_PROMPT).toContain('Hiring process/招募流程');
+    expect(QUESTION_RETRIEVAL_PROMPT).not.toContain('Process/流程,');
   });
 
   it('never routes intel or snapshot to Anthropic', () => {

@@ -15,13 +15,12 @@ import {
   REPORT_H2,
   REPORT_H3,
 } from '@/constants/report-frame';
-import { formatOfferRange, marketBandDisclaimer, payEstimateScope } from '@/lib/offer-display';
+import { formatOfferRange, marketBandDisclaimer, parseMoneyAmount, payEstimateScope } from '@/lib/offer-display';
 import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
 import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-email';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
-import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
@@ -106,7 +105,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     return {
       core: s ? '职位核心解析' : '職位核心解析',
       market: s ? '市场薪资水准' : '市場薪資水準',
-      fit: s ? '匹配分数、履历分析' : '匹配分數、履歷分析',
+      fit: '匹配度分析',
       land: s ? '个人化薪资落点' : '個人化薪資落點',
       company: s ? '公司与职位评价' : '公司與職位評價',
       questions: s ? '面试真题准备' : '面試真題準備',
@@ -173,7 +172,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
       askCompany: s ? '建议问公司的问题' : '建議問公司的問題',
       followUp: s ? '建议面试后寄给公司的信（如果需要）' : '建議面試後寄給公司的信（如果需要）',
       subject: '主旨',
-      sources: s ? '来源' : '來源',
+      sources: s ? '资料来源' : '資料來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
       noBand: s ? '这次没有足够的薪酬信号。' : '這次沒有足夠的薪酬信號。',
       badge: {
@@ -190,7 +189,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
   return {
     core: 'Role core',
     market: 'Market pay',
-    fit: 'Fit score and resume',
+    fit: 'Fit analysis',
     land: 'Personalized pay landing',
     company: 'Company and role reputation',
     questions: 'Interview questions',
@@ -217,7 +216,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     keywords: 'Missing hard keywords',
     keywordsNote:
       'These are keywords the applicant tracking system uses to screen resumes. If the resume does not contain them, the application can be filtered out before a recruiter reads it.',
-    apply: 'Whether to apply',
+    apply: 'Apply advice',
     lockPay: '🔒 Upgrade to Interview Guide for your pay landing and TC split',
     lockRewrite: '🔒 Upgrade to Interview Guide for line-by-line rewrites of these gaps',
     before: 'Before',
@@ -252,7 +251,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     askCompany: 'Questions to ask the company',
     followUp: 'Note to send after the interview, if one is needed',
     subject: 'Subject',
-    sources: 'Sources',
+    sources: 'Data sources',
     empty: 'This section came back empty.',
     noBand: 'Not enough pay signal for a market range.',
     badge: {
@@ -351,6 +350,93 @@ function PayMixPie({
             </span>
           </li>
         ))}
+      </ul>
+    </div>
+  );
+}
+
+function bandEnds(offer: LiteReport['expected_offer']): { low: string | null; high: string | null } {
+  const range = formatOfferRange(offer);
+  if (!range) return { low: null, high: null };
+  const parts = range.split(/\s*[–—-]\s*/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length >= 2) {
+    return { low: parts[0] ?? null, high: parts[parts.length - 1] ?? null };
+  }
+  return { low: range, high: null };
+}
+
+function markerPercent(value: number | null, min: number, span: number): number | null {
+  if (value === null) return null;
+  if (span <= 0) return 50;
+  return Math.max(2, Math.min(98, ((value - min) / span) * 100));
+}
+
+function PayRangeLine({
+  offer,
+  targetLabel,
+  targetValue,
+  ceilingLabel,
+  ceilingValue,
+}: {
+  offer: LiteReport['expected_offer'];
+  targetLabel: string;
+  targetValue: string;
+  ceilingLabel: string;
+  ceilingValue: string;
+}) {
+  const { low, high } = bandEnds(offer);
+  const rangeText = formatOfferRange(offer);
+  const amounts = [
+    parseMoneyAmount(low),
+    parseMoneyAmount(high),
+    parseMoneyAmount(targetValue),
+    parseMoneyAmount(ceilingValue),
+  ].filter((n): n is number => n !== null);
+  const min = amounts.length > 0 ? Math.min(...amounts) : null;
+  const max = amounts.length > 0 ? Math.max(...amounts) : null;
+  const span = min !== null && max !== null && max > min ? max - min : 0;
+  const targetPct = min !== null ? markerPercent(parseMoneyAmount(targetValue), min, span) : null;
+  const ceilingPct = min !== null ? markerPercent(parseMoneyAmount(ceilingValue), min, span) : null;
+  return (
+    <div className="min-w-0">
+      {rangeText ? (
+        <p className={`${BODY} mb-4 font-semibold text-white`}>{rangeText}</p>
+      ) : null}
+      <div className="relative mx-1 mt-6 mb-10 h-2 rounded-full bg-slate-700">
+        {targetPct !== null ? (
+          <span
+            className="absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-emerald-400"
+            style={{ left: `${targetPct}%` }}
+            title={`${targetLabel} ${targetValue}`}
+          />
+        ) : null}
+        {ceilingPct !== null ? (
+          <span
+            className="absolute top-1/2 z-[1] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-sky-400"
+            style={{ left: `${ceilingPct}%` }}
+            title={`${ceilingLabel} ${ceilingValue}`}
+          />
+        ) : null}
+        <div className="pointer-events-none absolute left-0 right-0 top-5 flex justify-between">
+          <span className={`${BODY} tabular-nums text-slate-300`}>{low ?? ''}</span>
+          <span className={`${BODY} tabular-nums text-slate-300`}>{high ?? ''}</span>
+        </div>
+      </div>
+      <ul className="space-y-1.5">
+        {targetValue ? (
+          <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400" aria-hidden />
+            <span className={REPORT_H3}>{targetLabel}</span>
+            <span className={`${BODY} font-semibold text-white`}>{targetValue}</span>
+          </li>
+        ) : null}
+        {ceilingValue ? (
+          <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-sky-400" aria-hidden />
+            <span className={REPORT_H3}>{ceilingLabel}</span>
+            <span className={`${BODY} font-semibold text-white`}>{ceilingValue}</span>
+          </li>
+        ) : null}
       </ul>
     </div>
   );
@@ -515,6 +601,24 @@ function SectionCard({
   );
 }
 
+/** L3 label inside a shared GUIDE_SECTION_FRAME — no extra outer card. */
+function InnerSection({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={className ? `min-w-0 ${className}` : 'min-w-0'}>
+      <h3 className={REPORT_H3}>{title}</h3>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
 function SummaryCard({ label, summary }: { label: string; summary: string }) {
   const points = splitSummaryPoints(summary);
   if (points.length === 0) return null;
@@ -560,38 +664,30 @@ function ReviewColumn({
 function SourceList({
   title,
   sources,
-  framed = false,
 }: {
   title: string;
   sources: GuideSource[];
-  framed?: boolean;
 }) {
   const cited = sources.filter((source) => isCitableSourceUrl(source.url));
   if (cited.length === 0) return null;
-  const list = (
-    <ul className="space-y-1.5">
-      {cited.map((source) => (
-        <li key={source.url}>
-          <a
-            href={source.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`inline-flex items-center gap-1.5 ${BODY} font-semibold text-sky-300 hover:text-sky-200`}
-          >
-            <ExternalLink className="h-4 w-4" aria-hidden />
-            {source.title || source.url.replace(/^https?:\/\//, '')}
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
-  if (framed) {
-    return <SectionCard title={title} heading={REPORT_H3}>{list}</SectionCard>;
-  }
   return (
     <div className="mt-3">
       <p className={`${REPORT_H3} mb-2`}>{title}</p>
-      {list}
+      <ul className="space-y-1.5">
+        {cited.map((source) => (
+          <li key={source.url}>
+            <a
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-1.5 ${BODY} font-semibold text-sky-300 hover:text-sky-200`}
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden />
+              {source.title || source.url.replace(/^https?:\/\//, '')}
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -707,7 +803,6 @@ function FitBody({
   locked: boolean;
   rewrites: GuideResumeRewrite[];
 }) {
-  const ui = getSnapshotUiCopy(language);
   const score = report.fit_score?.score ?? report.match_score ?? 0;
   const scoreInfo = getScoreInfo(score, language);
   const keywords = report.ats_warning?.missing_keywords ?? [];
@@ -751,57 +846,61 @@ function FitBody({
             </div>
           </div>
         </div>
-        <p className={`text-2xl font-black mt-3 ${scoreInfo.color}`}>{scoreInfo.level}</p>
-        <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
-        {verdictLines.length > 0 ? (
-          <ul className="mt-3 space-y-3">
-            {verdictLines.map((point) => (
-              <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                <span>{point}</span>
+        <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
+          <div className="min-w-0">
+            <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
+            <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
+            {verdictLines.length > 0 ? (
+              <ul className="mt-3 space-y-3">
+                {verdictLines.map((point) => (
+                  <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                    <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+          <section className="min-w-0">
+            <h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>
+            {apply?.next_best_action ? (
+              <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
+                {apply.next_best_action}
+              </p>
+            ) : (
+              <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+            )}
+          </section>
+        </div>
+      </section>
+      <section className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4">
+        <h3 className={`mb-2 ${REPORT_H2}`}>{copy.keywords}</h3>
+        <p className={`${BODY} mb-3 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
+        {keywords.length > 0 ? (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {keywords.slice(0, 8).map((word) => (
+              <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
+                {word}
+              </span>
+            ))}
+          </div>
+        ) : null}
+        {gaps.length > 0 ? (
+          <ul className="space-y-2">
+            {gaps.map((item) => (
+              <li key={item.gap} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
+                <span>
+                  <span className="font-semibold text-slate-100">{item.gap}</span>
+                  {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
+                </span>
               </li>
             ))}
           </ul>
+        ) : keywords.length === 0 ? (
+          <p className={BODY_MUTED}>{copy.empty}</p>
         ) : null}
       </section>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <BriefColumn title={(apply?.label && ui.applyLabels[apply.label]) || apply?.label || copy.apply}>
-          {apply?.next_best_action ? (
-            <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
-              {apply.next_best_action}
-            </p>
-          ) : (
-            <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
-          )}
-        </BriefColumn>
-        <BriefColumn title={copy.keywords}>
-          <p className={`${BODY} mb-3 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
-          {keywords.length > 0 ? (
-            <div className="mb-3 flex flex-wrap gap-2">
-              {keywords.slice(0, 8).map((word) => (
-                <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
-                  {word}
-                </span>
-              ))}
-            </div>
-          ) : null}
-          {gaps.length > 0 ? (
-            <ul className="space-y-2">
-              {gaps.map((item) => (
-                <li key={item.gap} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
-                  <span>
-                    <span className="font-semibold text-slate-100">{item.gap}</span>
-                    {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : keywords.length === 0 ? (
-            <p className={BODY_MUTED}>{copy.empty}</p>
-          ) : null}
-        </BriefColumn>
-      </div>
       {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
       {!locked && rewrites.length > 0 ? (
         <RewriteGroups rewrites={rewrites} beforeLabel={copy.before} afterLabel={copy.after} />
@@ -957,20 +1056,38 @@ export function GuideItemPage({
       [copy.bonus, salary?.bonus],
     ].filter((row): row is [string, string] => Boolean(row[1]));
     const stances = splitBuyerSellerStances(salary?.buyer_seller ?? '');
+    const landPoints = splitSummaryPoints(salary?.rationale ?? '');
     body = salary ? (
       <div className="space-y-4">
-        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <SectionCard title={copy.target} heading={REPORT_H3}>
+        <section className={GUIDE_SECTION_FRAME}>
+          <h2 className={REPORT_H1}>{copy.land}</h2>
+          <div className="mt-4 grid grid-cols-1 items-center gap-6 lg:grid-cols-[auto_minmax(0,1fr)]">
             {mix.length > 0 ? (
               <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
             ) : (
               <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
             )}
-          </SectionCard>
-          <SectionCard title={copy.ceiling} heading={REPORT_H3}>
-            <p className="text-3xl font-black text-white">{salary.ceiling || '—'}</p>
-          </SectionCard>
-        </div>
+            <InnerSection title={copy.band}>
+              <PayRangeLine
+                offer={report.expected_offer}
+                targetLabel={copy.target}
+                targetValue={salary.target}
+                ceilingLabel={copy.ceiling}
+                ceilingValue={salary.ceiling}
+              />
+            </InnerSection>
+          </div>
+          {landPoints.length > 0 ? (
+            <div className="mt-4">
+              {landPoints.length > 1 ? (
+                <BriefRows items={landPoints} />
+              ) : (
+                <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{landPoints[0]}</p>
+              )}
+            </div>
+          ) : null}
+          <SourceList title={copy.sources} sources={salary.sources} />
+        </section>
         {salary.buyer_seller ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <SectionCard title={copy.companyStance}>
@@ -989,7 +1106,6 @@ export function GuideItemPage({
             </SectionCard>
           </div>
         ) : null}
-        <SourceList title={copy.sources} sources={salary.sources} framed />
       </div>
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
   }
@@ -1038,7 +1154,7 @@ export function GuideItemPage({
         <SectionCard title={copy.roleReviews}>
           <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.role_reviews || '—'}</p>
         </SectionCard>
-        <SourceList title={copy.sources} sources={company.sources} framed />
+        <SourceList title={copy.sources} sources={company.sources} />
       </div>
       )
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
@@ -1059,11 +1175,6 @@ export function GuideItemPage({
             <ExtraList items={bank.behavioral_extra} title={copy.extra} />
           </SectionCard>
         ) : null}
-        {bank.process && bank.summary ? (
-          <SectionCard title={copy.process}>
-            <p className={`${BODY} text-slate-200 leading-relaxed`}>{bank.process}</p>
-          </SectionCard>
-        ) : null}
       </div>
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
   }
@@ -1071,26 +1182,40 @@ export function GuideItemPage({
     const negotiation = modules?.negotiation;
     const followUp = parseFollowUpEmail(negotiation?.follow_up_email ?? '');
     const followUpParagraphs = followUpLetterParagraphs(followUp.body);
-    body = negotiation && (negotiation.pay_strategy || negotiation.benefits_strategy || negotiation.script || negotiation.company_questions || negotiation.follow_up_email) ? (
+    const playbook = Boolean(
+      negotiation?.pay_strategy || negotiation?.benefits_strategy || negotiation?.script,
+    );
+    body = negotiation && (playbook || negotiation.company_questions || negotiation.follow_up_email) ? (
       <div className="space-y-4">
-      {negotiation.pay_strategy || negotiation.benefits_strategy ? (
-        <div className={`grid grid-cols-1 gap-4 ${negotiation.pay_strategy && negotiation.benefits_strategy ? 'md:grid-cols-2' : ''}`}>
-          {negotiation.pay_strategy ? (
-            <SectionCard title={copy.pay}>
-              <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
-            </SectionCard>
+      {playbook ? (
+        <section className={GUIDE_SECTION_FRAME}>
+          {negotiation.pay_strategy || negotiation.benefits_strategy ? (
+            <div
+              className={`grid grid-cols-1 gap-4 ${
+                negotiation.pay_strategy && negotiation.benefits_strategy ? 'md:grid-cols-2' : ''
+              }`}
+            >
+              {negotiation.pay_strategy ? (
+                <InnerSection title={copy.pay}>
+                  <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
+                </InnerSection>
+              ) : null}
+              {negotiation.benefits_strategy ? (
+                <InnerSection title={copy.benefits}>
+                  <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
+                </InnerSection>
+              ) : null}
+            </div>
           ) : null}
-          {negotiation.benefits_strategy ? (
-            <SectionCard title={copy.benefits}>
-              <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
-            </SectionCard>
+          {negotiation.script ? (
+            <InnerSection
+              title={copy.say}
+              className={negotiation.pay_strategy || negotiation.benefits_strategy ? 'mt-4' : undefined}
+            >
+              <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
+            </InnerSection>
           ) : null}
-        </div>
-      ) : null}
-      {negotiation.script ? (
-        <SectionCard title={copy.say} heading={REPORT_H3}>
-          <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
-        </SectionCard>
+        </section>
       ) : null}
       {negotiation.company_questions ? (
         <SectionCard title={copy.askCompany}>
@@ -1139,7 +1264,9 @@ export function GuideItemPage({
   };
   return (
     <div className="space-y-4">
-      <SummaryCard label={copy.analysisSummary} summary={summaryByItem[item]} />
+      {item === 'land' ? null : (
+        <SummaryCard label={copy.analysisSummary} summary={summaryByItem[item]} />
+      )}
       {body}
     </div>
   );

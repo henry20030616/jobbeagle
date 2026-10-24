@@ -80,7 +80,7 @@ const en: SampleGuideNarrative = {
     },
   ],
   rationale:
-    'Target: $168K. US remote Senior Business Analyst band is about $145K–$190K; SQL/Looker cut reconciliation cycle time 28%, ACH returns ownership is only adjacent, so the number stays mid-band.\nCeiling: $185K. No Staff-level scope and no second offer.\nMix: $145K base, about $12K a year of equity, $11K bonus. Equity and bonus are not rights the resume already holds.',
+    'Target: $168K. US remote Senior Business Analyst band is about $145K–$190K; SQL/Looker cut reconciliation cycle time 28%, ACH returns ownership is only adjacent, so the number stays mid-band.\nCeiling: $185K. No Staff-level scope and no second offer.\nMix: $145K base, about $12K a year of equity, $11K bonus. Equity and bonus are a target mix, not guaranteed or already-earned pay.',
   buyer_seller:
     'The requisition is still posted, so the employer has an open seat to fill, but public sources cite no start deadline or hiring freeze. With no competing offer in play, they can hold a mid-band first offer and keep screening.\nThe evidenced ask is a 28% reconciliation cycle-time cut with SQL and Looker. ACH returns ownership is not on the resume and cannot be treated as completed scope in negotiation.',
   levelsTitle: 'Levels.fyi — Business Analyst',
@@ -117,7 +117,7 @@ const en: SampleGuideNarrative = {
   company_summary:
     'Culture: public reviews describe a written, remote-friendly ops culture with tight cutoffs.\nRisk: no WARN in the sample window; H-1B filings exist, but sponsorship for this seat is unconfirmed.\nConfirm: ask the recruiter about ops headcount and visa before treating either as settled.',
   questions_summary:
-    'Process: recruiter screen, hiring-manager settlement-break case, then a panel, about three weeks.\nProfessional: ACH returns, cutoff, and SQL checks.\nBehavioral: written status and cross-team misses.',
+    'Hiring process: recruiter screen, hiring-manager settlement-break case, then a panel, about three weeks.\nProfessional: ACH returns, cutoff, and SQL checks.\nBehavioral: written status and cross-team misses.',
   negotiate_summary:
     'Open: $168K total, $145K base, using only the 28% reconciliation cycle-time proof.\nCap: $185K. No Staff scope and no second offer.\nBan: do not invent a competing bid, and do not trade base for a benefit the employer did not offer.',
   pay_strategy:
@@ -175,7 +175,7 @@ const zhTW: SampleGuideNarrative = {
     },
   ],
   rationale:
-    '目標價：$168K。美國遠端 Senior Business Analyst 市場帶約 $145K–$190K；履歷可證 SQL／Looker 將對帳週期縮短 28%，ACH 退票僅相鄰，故不站上緣。\n天花板：$185K。沒有 Staff 級範圍，也沒有第二份 offer。\n結構：底薪 $145K、股票約 $12K／年、獎金 $11K。股票與獎金不是履歷已拿到的權利。',
+    '目標價：$168K。美國遠端 Senior Business Analyst 市場帶約 $145K–$190K；履歷可證 SQL／Looker 將對帳週期縮短 28%，ACH 退票僅相鄰，故不站上緣。\n天花板：$185K。沒有 Staff 級範圍，也沒有第二份 offer。\n結構：底薪 $145K、股票約 $12K／年、獎金 $11K。股票與獎金為目標總薪酬的結構拆分，實際以錄取條件為準。',
   buyer_seller:
     '職缺仍在公開招募，雇主有補位需求，但公開來源未顯示到職時程或人力緊縮。在沒有第二份競爭 offer 的情況下，雇主可維持中帶首報、繼續篩選。\n履歷可主張的證據是以 SQL 與 Looker 將對帳週期縮短 28%。ACH 退票擁有權未記載於履歷，不得在談判中列為已完成的工作範圍。',
   levelsTitle: 'Levels.fyi — Business Analyst',
@@ -210,7 +210,7 @@ const zhTW: SampleGuideNarrative = {
   company_summary:
     '文化：公開評價寫重視書面溝通、可遠端的營運文化，截止時間很緊。\n風險：範例區間沒有 WARN；近三年有 H-1B 申請，此席是否贊助尚未確認。\n待確認：入職前向招募確認人力變動與簽證。',
   questions_summary:
-    '流程：招募篩選、用人主管清算差異案例、小組面試，約三週。\n專業題：ACH 退票、截止、SQL 核對。\n行為題：書面狀態與跨團隊失誤。',
+    '招募流程：招募篩選、用人主管清算差異案例、小組面試，約三週。\n專業題：ACH 退票、截止、SQL 核對。\n行為題：書面狀態與跨團隊失誤。',
   negotiate_summary:
     '開價：總薪酬 $168K，底薪 $145K，依據是對帳週期縮短 28%。\n上限：$185K。沒有 Staff 範圍，也沒有第二份 offer。\n禁區：不要編競爭方案，也不用底薪去換對方沒提出的福利。',
   pay_strategy:
@@ -268,7 +268,7 @@ const zhCN: SampleGuideNarrative = {
     },
   ],
   rationale:
-    '目标价：$168K。美国远程 Senior Business Analyst 市场带约 $145K–$190K；简历可证 SQL／Looker 将对账周期缩短 28%，ACH 退票仅相邻，故不站上沿。\n天花板：$185K。没有 Staff 级范围，也没有第二份 offer。\n结构：底薪 $145K、股票约 $12K／年、奖金 $11K。股票与奖金不是简历已拿到的权利。',
+    '目标价：$168K。美国远程 Senior Business Analyst 市场带约 $145K–$190K；简历可证 SQL／Looker 将对账周期缩短 28%，ACH 退票仅相邻，故不站上沿。\n天花板：$185K。没有 Staff 级范围，也没有第二份 offer。\n结构：底薪 $145K、股票约 $12K／年、奖金 $11K。股票与奖金为目标总薪酬的结构拆分，实际以录取条件为准。',
   buyer_seller:
     '职位仍在公开招聘，雇主有补位需求，但公开来源未显示到职时程或人力紧缩。在没有第二份竞争 offer 的情况下，雇主可维持中带首报、继续筛选。\n简历可主张的证据是以 SQL 与 Looker 将对账周期缩短 28%。ACH 退票所有权未记载于简历，不得在谈判中列为已完成的工作范围。',
   levelsTitle: 'Levels.fyi — Business Analyst',
@@ -303,7 +303,7 @@ const zhCN: SampleGuideNarrative = {
   company_summary:
     '文化：公开评价写重视书面沟通、可远程的运营文化，截止时间很紧。\n风险：示例区间没有 WARN；近三年有 H-1B 申请，此席是否赞助尚未确认。\n待确认：入职前向招聘确认人力变动与签证。',
   questions_summary:
-    '流程：招聘筛选、用人主管清算差异案例、小组面试，约三周。\n专业题：ACH 退票、截止、SQL 核对。\n行为题：书面状态与跨团队失误。',
+    '招聘流程：招聘筛选、用人主管清算差异案例、小组面试，约三周。\n专业题：ACH 退票、截止、SQL 核对。\n行为题：书面状态与跨团队失误。',
   negotiate_summary:
     '开价：总薪酬 $168K，底薪 $145K，依据是对账周期缩短 28%。\n上限：$185K。没有 Staff 范围，也没有第二份 offer。\n禁区：不要编竞争方案，也不用底薪去换对方没提出的福利。',
   pay_strategy:
@@ -363,7 +363,7 @@ const es: SampleGuideNarrative = {
     },
   ],
   rationale:
-    'Objetivo: $168K. Banda de Senior Business Analyst remoto en EE. UU. ~$145K–$190K; el CV prueba un recorte del 28% en conciliación con SQL y Looker, y las devoluciones ACH solo son adyacentes, así que queda a mitad de banda.\nTecho: $185K. No hay alcance Staff ni una segunda oferta.\nMix: base $145K, unos $12K al año en acciones, bono $11K. Acciones y bono no son derechos que el CV ya tenga.',
+    'Objetivo: $168K. Banda de Senior Business Analyst remoto en EE. UU. ~$145K–$190K; el CV prueba un recorte del 28% en conciliación con SQL y Looker, y las devoluciones ACH solo son adyacentes, así que queda a mitad de banda.\nTecho: $185K. No hay alcance Staff ni una segunda oferta.\nMix: base $145K, unos $12K al año en acciones, bono $11K. Acciones y bono son un mix objetivo, no retribución garantizada ni ya consolidada.',
   buyer_seller:
     'La vacante sigue publicada, así que el empleador tiene un puesto por cubrir, pero las fuentes públicas no citan fecha de incorporación ni congelación de contrataciones. Sin una segunda oferta en juego, puede mantener una primera oferta a mitad de banda y seguir filtrando.\nEl hecho acreditado es un recorte del 28% en el ciclo de conciliación con SQL y Looker. La propiedad de devoluciones ACH no figura en el CV y no puede presentarse en la negociación como alcance ya ejecutado.',
   levelsTitle: 'Levels.fyi — Business Analyst',
@@ -400,7 +400,7 @@ const es: SampleGuideNarrative = {
   company_summary:
     'Cultura: reseñas públicas describen operaciones escritas y remotas, con plazos muy ajustados.\nRiesgo: no hay WARN en la ventana de muestra; hay presentaciones H-1B, pero el patrocinio de este puesto no está confirmado.\nConfirmar: pregunta al reclutador por la plantilla de ops y el visado.',
   questions_summary:
-    'Proceso: filtro del reclutador, caso de liquidación y panel, unas tres semanas.\nProfesional: devoluciones ACH, corte y SQL.\nConductual: estatus escrito y fallos entre equipos.',
+    'Proceso de contratación: filtro del reclutador, caso de liquidación y panel, unas tres semanas.\nProfesional: devoluciones ACH, corte y SQL.\nConductual: estatus escrito y fallos entre equipos.',
   negotiate_summary:
     'Apertura: $168K total, base $145K, solo con la prueba del 28% en conciliación.\nTope: $185K. No hay alcance Staff ni una segunda oferta.\nProhibido: no inventes una oferta competidora ni cambies la base por un beneficio no ofrecido.',
   pay_strategy:
@@ -460,7 +460,7 @@ const hi: SampleGuideNarrative = {
     },
   ],
   rationale:
-    'लक्ष्य: $168K। अमेरिका में दूरस्थ Senior Business Analyst पट्टी ~$145K–$190K; SQL/Looker से मिलान चक्र −28%, ACH रिटर्न केवल आसन्न, इसलिए मध्य पट्टी।\nछत: $185K। Staff दायरा नहीं, दूसरा ऑफ़र नहीं।\nमिश्रण: आधार $145K, ~$12K/वर्ष इक्विटी, बोनस $11K। इक्विटी और बोनस रिज़्यूमे के मौजूदा अधिकार नहीं।',
+    'लक्ष्य: $168K। अमेरिका में दूरस्थ Senior Business Analyst पट्टी ~$145K–$190K; SQL/Looker से मिलान चक्र −28%, ACH रिटर्न केवल आसन्न, इसलिए मध्य पट्टी।\nछत: $185K। Staff दायरा नहीं, दूसरा ऑफ़र नहीं।\nमिश्रण: आधार $145K, ~$12K/वर्ष इक्विटी, बोनस $11K। इक्विटी और बोनस लक्ष्य मिश्रण हैं, गारंटीशुदा या पहले से अर्जित वेतन नहीं।',
   buyer_seller:
     'पद अभी प्रकाशित है, इसलिए नियोक्ता के पास भरने वाली सीट है, लेकिन सार्वजनिक स्रोतों में ज्वॉइन की समयसीमा या हायरिंग फ्रीज नहीं है। बिना दूसरे ऑफ़र के वे मिड-बैंड पहली पेशकश रख सकते हैं और स्क्रीनिंग जारी रख सकते हैं।\nसिद्ध माँग SQL और Looker से मिलान चक्र में 28% की कमी है। रिज़्यूमे में ACH रिटर्न की मालिकी नहीं है, और इसे बातचीत में पूरा हो चुका दायरा नहीं माना जा सकता।',
   levelsTitle: 'Levels.fyi — Business Analyst',
@@ -496,7 +496,7 @@ const hi: SampleGuideNarrative = {
   company_summary:
     'संस्कृति: सार्वजनिक समीक्षाएँ लिखित, दूरस्थ-अनुकूल ops और कड़े कटऑफ बताती हैं।\nजोखिम: नमूना अवधि में WARN नहीं; H-1B दाखिले हैं, इस सीट का प्रायोजन पुष्ट नहीं।\nपुष्टि: ops हेडकाउंट और वीज़ा भर्तीकर्ता से पूछें।',
   questions_summary:
-    'प्रक्रिया: भर्तीकर्ता स्क्रीन, सेटलमेंट-ब्रेक केस, पैनल—लगभग तीन सप्ताह।\nपेशेवर: ACH रिटर्न, कटऑफ, SQL।\nव्यवहारिक: लिखित स्टेटस और क्रॉस-टीम चूक।',
+    'भर्ती प्रक्रिया: भर्तीकर्ता स्क्रीन, सेटलमेंट-ब्रेक केस, पैनल—लगभग तीन सप्ताह।\nपेशेवर: ACH रिटर्न, कटऑफ, SQL।\nव्यवहारिक: लिखित स्टेटस और क्रॉस-टीम चूक।',
   negotiate_summary:
     'खोलें: कुल $168K, आधार $145K, केवल 28% मिलान चक्र प्रमाण।\nऊपरी सीमा: $185K। Staff दायरा या दूसरा ऑफ़र नहीं।\nनिषेध: प्रतिस्पर्धी बोली न गढ़ें, न दी सुविधा के बदले आधार न दें।',
   pay_strategy:
@@ -556,7 +556,7 @@ const ar: SampleGuideNarrative = {
     },
   ],
   rationale:
-    'الهدف: $168K. نطاق Senior Business Analyst عن بُعد في الولايات المتحدة ~$145K–$190K؛ اختصار المطابقة 28% بـ SQL/Looker، وملكية مرتجعات ACH مجاورة فقط، فيبقى الرقم في منتصف النطاق.\nالسقف: $185K. لا نطاق Staff ولا عرض ثانٍ.\nالتركيبة: أساس $145K، نحو $12K سنوياً أسهماً، مكافأة $11K. الأسهم والمكافأة ليست حقوقاً تملكها السيرة.',
+    'الهدف: $168K. نطاق Senior Business Analyst عن بُعد في الولايات المتحدة ~$145K–$190K؛ اختصار المطابقة 28% بـ SQL/Looker، وملكية مرتجعات ACH مجاورة فقط، فيبقى الرقم في منتصف النطاق.\nالسقف: $185K. لا نطاق Staff ولا عرض ثانٍ.\nالتركيبة: أساس $145K، نحو $12K سنوياً أسهماً، مكافأة $11K. الأسهم والمكافأة توزيع مستهدف لإجمالي الأجر، وليست أجراً مضموناً أو مكتسباً.',
   buyer_seller:
     'الإعلان ما يزال منشوراً، فلصاحب العمل مقعد شاغر، لكن المصادر العامة لا تذكر موعد مباشرة أو تجميداً للتوظيف. من دون عرض منافس يمكنه الإبقاء على عرض أول في منتصف النطاق ومواصلة الفرز.\nالمطلب المثبت هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. ملكية مرتجعات ACH ليست في السيرة ولا يجوز معاملتها في التفاوض كنطاق منجز.',
   levelsTitle: 'Levels.fyi — Business Analyst',
@@ -592,7 +592,7 @@ const ar: SampleGuideNarrative = {
   company_summary:
     'الثقافة: مراجعات تصف عمليات مكتوبة ومرنة للعمل عن بُعد مع مواعيد قطع ضيقة.\nالمخاطر: لا WARN في نافذة العينة؛ إيداعات H-1B موجودة ورعاية هذا المقعد غير مؤكدة.\nتأكيد: اسأل المسؤول عن عدد موظفي العمليات والتأشيرة.',
   questions_summary:
-    'العملية: فرز المسؤول، حالة فرق تسوية، لجنة، نحو ثلاثة أسابيع.\nمهني: مرتجعات ACH والقطع وSQL.\nسلوكي: التحديث المكتوب وإخفاقات الفرق.',
+    'عملية التوظيف: فرز المسؤول، حالة فرق تسوية، لجنة، نحو ثلاثة أسابيع.\nمهني: مرتجعات ACH والقطع وSQL.\nسلوكي: التحديث المكتوب وإخفاقات الفرق.',
   negotiate_summary:
     'الافتتاح: إجمالي $168K وأساس $145K، فقط باختصار المطابقة 28%.\nالسقف: $185K. لا نطاق Staff ولا عرض ثانٍ.\nمحظور: لا تخترع عرضاً منافساً ولا تستبدل الأساس بميزة لم تُعرض.',
   pay_strategy:

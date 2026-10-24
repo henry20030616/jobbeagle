@@ -1,11 +1,13 @@
+import { createElement } from 'react';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import {
   getSampleSnapshotReport,
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
-import { GUIDE_ITEM_IDS, guideItemNav } from '@/components/report/SevenItemPages';
+import { GUIDE_ITEM_IDS, GuideItemPage, SnapshotItemStack, guideItemNav } from '@/components/report/SevenItemPages';
 import { isFullReport, isLiteReport } from '@/lib/normalize-lite-report';
 import { fitBandFromScore } from '@/lib/report-rules';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
@@ -158,8 +160,22 @@ describe('sample reports', () => {
     expect(modules!.salary_land.rationale).toMatch(/\$168K/);
     expect(modules!.salary_land.rationale).toMatch(/\$185K/);
     expect(modules!.salary_land.rationale).toMatch(/28%/);
+    expect(modules!.salary_land.rationale).toMatch(/target mix/);
+    expect(modules!.salary_land.rationale).not.toMatch(/resume already holds|rights the resume/i);
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
       /目標價：/,
+    );
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
+      /結構拆分/,
+    );
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).not.toMatch(
+      /已拿到的權利|履歷已拿到/,
+    );
+    expect(getSampleStrategyGuideReport('zh-CN').guide_modules?.salary_land.rationale).toMatch(
+      /结构拆分/,
+    );
+    expect(getSampleStrategyGuideReport('zh-CN').guide_modules?.salary_land.rationale).not.toMatch(
+      /已拿到的权利|简历已拿到/,
     );
     expect(
       getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale.split('\n'),
@@ -311,24 +327,85 @@ describe('seven-item report layout', () => {
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{group.title}</h3>');
     expect(source).toContain('className="w-full min-w-0 rounded-lg border border-emerald-400/30');
-    expect(source.indexOf('<RewriteGroups')).toBeGreaterThan(source.indexOf('</BriefColumn>\n      </div>'));
+    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>');
+    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{copy.keywords}</h3>');
+    expect(source).toContain("apply: 'Apply advice'");
+    expect(source).toContain("apply: s ? '应征建议' : '應徵建議'");
+    expect(source).toContain("fit: 'Fit analysis'");
+    expect(source).toContain("fit: '匹配度分析'");
+    expect(source).not.toContain('匹配分數、履歷分析');
+    expect(source).not.toContain('Fit score and resume');
+    expect(source.indexOf('{copy.apply}')).toBeGreaterThan(source.indexOf('{scoreInfo.level}'));
+    expect(source.indexOf('{copy.keywords}')).toBeGreaterThan(source.indexOf('{copy.apply}'));
+    expect(source.indexOf('<RewriteGroups')).toBeGreaterThan(source.indexOf('{copy.keywords}'));
     expect(source).toContain('{beforeLabel}');
     expect(source).toContain('{afterLabel}');
     expect(source).not.toContain('${BODY} font-semibold text-emerald-100');
+    expect(source).not.toContain('ui.applyLabels');
+    expect(source).not.toMatch(/md:grid-cols-2[\s\S]{0,200}copy\.keywords/);
+  });
+
+  it('renders Snapshot and Guide fit samples with apply advice beside Beagle Scale', () => {
+    const snapshot = getSampleSnapshotReport('zh-TW');
+    const guide = getSampleStrategyGuideReport('zh-TW');
+    const snapHtml = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: snapshot,
+        language: 'zh-TW',
+        locked: true,
+      }),
+    );
+    const guideHtml = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: guide,
+        language: 'zh-TW',
+        locked: false,
+        rewrites: guide.guide_modules?.resume_rewrites ?? [],
+      }),
+    );
+    for (const html of [snapHtml, guideHtml]) {
+      expect(html).toContain('匹配度分析');
+      expect(html).not.toContain('匹配分數、履歷分析');
+      expect(html).toContain('應徵建議');
+      expect(html).toContain('藍寶米格魯');
+      expect(html).toContain('欠缺的硬性關鍵字');
+      expect(html).not.toContain('建議履歷調整後再應徵');
+      expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('應徵建議'));
+      expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('欠缺的硬性關鍵字'));
+      expect(html).toContain('border-emerald-400/30');
+    }
+    expect(guideHtml).toContain('履歷缺少的關鍵項目');
+    expect(guideHtml.indexOf('欠缺的硬性關鍵字')).toBeLessThan(
+      guideHtml.indexOf('履歷缺少的關鍵項目'),
+    );
+    expect(snapHtml).not.toContain('履歷缺少的關鍵項目');
+    expect(snapHtml).toContain(snapshot.apply_decision.next_best_action);
+    expect(guideHtml).toContain(guide.apply_decision.next_best_action);
   });
 
   it('frames company, pay, questions, and negotiate inner blocks with GUIDE_SECTION_FRAME', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('GUIDE_SECTION_FRAME');
     expect(source).toContain('<SummaryCard label={copy.analysisSummary}');
-    expect(source).toContain('<SectionCard title={copy.pay}>');
-    expect(source).toContain('<SectionCard title={copy.benefits}>');
-    expect(source).toContain('<SectionCard title={copy.say} heading={REPORT_H3}>');
+    expect(source).toContain('<InnerSection title={copy.pay}>');
+    expect(source).toContain('<InnerSection title={copy.benefits}>');
+    expect(source).toContain('title={copy.say}');
+    expect(source).toContain('<h3 className={REPORT_H3}>{title}</h3>');
+    expect(source).not.toContain('<SectionCard title={copy.pay}>');
+    expect(source).not.toContain('<SectionCard title={copy.benefits}>');
+    expect(source).not.toContain('<SectionCard title={copy.say}');
     expect(source).toContain('<SectionCard title={copy.askCompany}>');
     expect(source).toContain('<SectionCard title={copy.professional} heading={REPORT_H1}>');
     expect(source).toContain('<SectionCard title={copy.behavioral} heading={REPORT_H1}>');
-    expect(source).toContain('<SectionCard title={copy.target} heading={REPORT_H3}>');
-    expect(source).toContain('<SectionCard title={copy.ceiling} heading={REPORT_H3}>');
+    expect(source).toContain('<h2 className={REPORT_H1}>{copy.land}</h2>');
+    expect(source).toContain('<PayRangeLine');
+    expect(source).toContain('targetLabel={copy.target}');
+    expect(source).toContain('ceilingLabel={copy.ceiling}');
+    expect(source).toContain("sources: s ? '资料来源' : '資料來源'");
+    expect(source).toContain("sources: 'Data sources'");
+    expect(source).not.toContain('<SectionCard title={copy.target} heading={REPORT_H3}>');
+    expect(source).not.toContain('<SectionCard title={copy.ceiling} heading={REPORT_H3}>');
+    expect(source).not.toContain('framed');
     expect(source).not.toMatch(
       /<ItemBlock title=\{title\[item\]\} summaryLabel=\{copy\.analysisSummary\}/,
     );
@@ -343,6 +420,91 @@ describe('seven-item report layout', () => {
     expect(zh.negotiation.benefits_strategy.length).toBeGreaterThan(20);
     expect(zh.negotiation.script.length).toBeGreaterThan(20);
     expect(zh.negotiation.company_questions.length).toBeGreaterThan(20);
+  });
+
+  it('merges Guide pay landing into one frame with range, ceiling, and unframed data sources', () => {
+    const html = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report: getSampleStrategyGuideReport('zh-TW'),
+        item: 'land',
+        language: 'zh-TW',
+      }),
+    );
+    expect(html).toContain('個人化薪資落點');
+    expect(html).toContain('市場總薪酬區間');
+    expect(html).toContain('$168K');
+    expect(html).toContain('$185K');
+    expect(html).toContain('議價天花板');
+    expect(html).toContain('資料來源');
+    expect(html).toContain('Levels.fyi');
+    expect(html).toContain('結構拆分');
+    expect(html).not.toContain('已拿到的權利');
+    expect(html).not.toContain('總結分析');
+    expect(html.split('border-2 border-blue-500').length - 1).toBe(3);
+  });
+
+  it('renders pay, benefits, and script as one negotiate playbook frame', () => {
+    const html = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report: getSampleStrategyGuideReport('zh-TW'),
+        item: 'negotiate',
+        language: 'zh-TW',
+      }),
+    );
+    expect(html).toContain('薪資籌碼策略');
+    expect(html).toContain('權益與福利爭取');
+    expect(html).toContain('開口這樣說');
+    expect(html).toContain('先報總薪酬');
+    expect(html).toContain('report-h3');
+    const playbook = html.slice(
+      html.indexOf('薪資籌碼策略'),
+      html.indexOf('開口這樣說') + '開口這樣說'.length,
+    );
+    expect(playbook).toContain('權益與福利爭取');
+    expect(playbook).not.toContain('border-2 border-blue-500');
+    expect(html).toContain('建議問公司的問題');
+    expect(html.split('border-2 border-blue-500').length - 1).toBe(4);
+  });
+
+  it('keeps hiring-process facts in 總結分析 and does not render a duplicate process card', () => {
+    const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    const spec = readFileSync(join(process.cwd(), 'components/guide/GuideSpecModules.tsx'), 'utf8');
+    expect(source).not.toContain('<SectionCard title={copy.process}>');
+    expect(spec).not.toContain('{t.process}');
+
+    const zh = getSampleStrategyGuideReport('zh-TW').guide_modules!.interview_bank;
+    expect(zh.summary).toMatch(/^招募流程：/);
+    expect(zh.summary).toMatch(/招募篩選/);
+    expect(zh.summary).toMatch(/約三週/);
+    expect(zh.summary).toMatch(/專業題/);
+    expect(zh.summary).toMatch(/行為題/);
+    expect(zh.process).toMatch(/招募篩選/);
+
+    const html = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report: getSampleStrategyGuideReport('zh-TW'),
+        item: 'questions',
+        language: 'zh-TW',
+      }),
+    );
+    expect(html).toContain('總結分析');
+    expect(html).toContain('招募流程');
+    expect(html).toContain('招募篩選');
+    expect(html).toContain('約三週');
+    expect(html).not.toContain('面試流程');
+
+    const labels = {
+      en: 'Hiring process:',
+      'zh-TW': '招募流程：',
+      'zh-CN': '招聘流程：',
+      es: 'Proceso de contratación:',
+      hi: 'भर्ती प्रक्रिया:',
+      ar: 'عملية التوظيف:',
+    } as const;
+    for (const lang of Object.keys(labels) as Array<keyof typeof labels>) {
+      const summary = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank.summary;
+      expect(summary.startsWith(labels[lang])).toBe(true);
+    }
   });
 });
 

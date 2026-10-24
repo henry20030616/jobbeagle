@@ -45,7 +45,7 @@ function copyFor(language: AppLanguage) {
       process: s ? '面试流程' : '面試流程',
       pay: s ? '薪资筹码策略' : '薪資籌碼策略',
       benefits: s ? '权益与福利争取' : '權益與福利爭取',
-      source: s ? '来源' : '來源',
+      source: s ? '资料来源' : '資料來源',
     };
   }
   return {
@@ -75,7 +75,7 @@ function copyFor(language: AppLanguage) {
     process: 'Interview process',
     pay: 'Pay leverage',
     benefits: 'Benefits to negotiate',
-    source: 'Source',
+    source: 'Data sources',
   };
 }
 
@@ -321,12 +321,6 @@ export default function GuideSpecModules({
             </details>
           ) : null}
         </section>
-        {bank.process ? (
-          <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
-            <p className={`${SECTION_TITLE} text-sky-300 mb-2`}>{t.process}</p>
-            <p className={`${BODY} text-slate-200 leading-relaxed`}>{bank.process}</p>
-          </section>
-        ) : null}
       </div>
     </GuideSlideShell>
   );
