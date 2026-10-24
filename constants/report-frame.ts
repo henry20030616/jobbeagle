@@ -166,6 +166,12 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
 export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
+ * Snapshot hero + Guide compact salary range track.
+ * Half of the parent pay block, horizontally centered — not full-bleed.
+ */
+export const PAY_RANGE_LINE_WIDTH = 'w-1/2 max-w-[50%] mx-auto min-w-0';
+
+/**
  * Homepage `<main>` horizontal gutters (`app/page.tsx`).
  * vw padding so left AND right stay inset on any monitor — not rem-capped,
  * not a centered 1024px island.

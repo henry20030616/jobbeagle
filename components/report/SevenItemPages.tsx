@@ -11,6 +11,7 @@ import {
 } from '@/components/guide/GuideSlideChrome';
 import {
   GUIDE_SECTION_FRAME,
+  PAY_RANGE_LINE_WIDTH,
   REPORT_H1,
   REPORT_H2,
   REPORT_H3,
@@ -496,7 +497,7 @@ function PayRangeLine({
   ].filter(Boolean).join('. ');
   return (
     <div
-      className={hero ? 'min-w-0' : 'w-full min-w-0'}
+      className={PAY_RANGE_LINE_WIDTH}
       data-pay-range={variant}
       role="img"
       aria-label={aria}
@@ -1276,7 +1277,7 @@ export function GuideItemPage({
             ) : (
               <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
             )}
-            <InnerSection title={copy.band} className="w-full max-w-sm sm:min-w-[20rem] lg:ml-auto lg:w-[24rem] lg:shrink-0">
+            <InnerSection title={copy.band} className="w-full lg:flex-1">
               <PayRangeLine
                 offer={report.expected_offer}
                 targetLabel={copy.target}

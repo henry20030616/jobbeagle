@@ -416,6 +416,9 @@ describe('seven-item report layout', () => {
     const caveat = '職缺未公布薪資；此區間依職稱、地點與年資對照市場水準，非該公司數據。';
     for (const html of [snapHtml, guideHtml]) {
       expect(html).toContain('data-pay-range="hero"');
+      expect(html).toContain('w-1/2');
+      expect(html).toContain('max-w-[50%]');
+      expect(html).toContain('mx-auto');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
       expect(html).toContain('市場總薪酬區間');
@@ -452,7 +455,9 @@ describe('seven-item report layout', () => {
     expect(source).toContain('targetLabel={copy.target}');
     expect(source).toContain('ceilingLabel={copy.ceiling}');
     expect(source).toContain('lg:flex-row lg:items-center lg:justify-between');
-    expect(source).toContain('lg:ml-auto lg:w-[24rem] lg:shrink-0');
+    expect(source).toContain('className={PAY_RANGE_LINE_WIDTH}');
+    expect(source).toContain('className="w-full lg:flex-1"');
+    expect(source).not.toContain('lg:ml-auto lg:w-[24rem] lg:shrink-0');
     expect(source).toContain('data-range-label={tone}');
     expect(source).not.toContain('lg:grid-cols-[auto_minmax(0,1fr)]');
     expect(source).toContain("sources: s ? '资料来源' : '資料來源'");
@@ -525,7 +530,9 @@ describe('seven-item report layout', () => {
     expect(html).toContain('data-pay-range="compact"');
     expect(html).toContain('data-range-label="target"');
     expect(html).toContain('data-range-label="ceiling"');
-    expect(html).toContain('max-w-sm');
+    expect(html).toContain('w-1/2');
+    expect(html).toContain('max-w-[50%]');
+    expect(html).toContain('mx-auto');
     expect(html).toContain('資料來源');
     expect(html).toContain('Levels.fyi');
     expect(html).toContain('結構拆分');
