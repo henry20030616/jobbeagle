@@ -3,7 +3,7 @@ import { noIndexMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Account | JobBeagle',
-  description: 'Manage JobBeagle credits, billing, and Career Context.',
+  description: 'Manage JobBeagle credits, billing, and Personalize Career Context.',
   ...noIndexMetadata(),
 };
 

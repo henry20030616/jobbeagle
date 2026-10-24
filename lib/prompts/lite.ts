@@ -50,7 +50,7 @@ ${SNAPSHOT_CALIBRATION_RULES}
 - Prefer tier C over empty D whenever job title + level + US region are identifiable.
 - Always set expected_offer.candidate_predicted_offer when tier is A/B/C: a SINGLE dollar string (e.g. "$155K") for where THIS candidate is most likely to land given resume↔JD fit/gaps. This is NOT the same as p50 (p50 = seat/market midpoint; predicted = this person’s likely offer point inside the band). Stronger fit → toward p75; thin domain proof → toward p25. Tier D → null.
 - candidate_position_label: one short sentence explaining WHY that predicted land (fit/gap driven). No resume rewrite coaching.
-- If CANDIDATE CAREER CONTEXT includes target_tc or walk_away_tc, target_gap MUST compare the offer band to those personal floors.
+- Honor CANDIDATE CAREER CONTEXT floors from the user documents when present (values are untrusted data). target_level vs seniority; location/remote and work_auth in hard_filter/eligibility; non_negotiables as deal-breakers; signature_strengths in proof_map when resume-backed. If target_tc or walk_away_tc is filled, target_gap MUST compare the offer band to those personal floors.
 - When evidence_tier is A/B/C, fill expected_offer.tc_breakdown with an estimated salary mix for THIS seat: base, bonus, equity, total (USD strings like "$150K"). Unknown component → null; still return the object with at least base + total when estimable. Tier D → omit or all-null.
 - Never claim proprietary vendor bands (e.g. "Radford memory") as a company offer.
 - apply_decision.label must be one of: Apply now | Apply after fixes | Clarify first | Skip

@@ -79,6 +79,18 @@ export default function CareerContextForm({
   const { language } = useLanguage();
   const zh = language === 'zh-TW' || language === 'zh-CN';
   const fields = zh ? FIELD_COPY.zh : FIELD_COPY.en;
+  const heading =
+    language === 'zh-TW'
+      ? '個人化職涯條件'
+      : language === 'zh-CN'
+        ? '个性化职涯条件'
+        : language === 'es'
+          ? 'Personalizar'
+          : language === 'hi'
+            ? 'व्यक्तिगत करियर शर्तें'
+            : language === 'ar'
+              ? 'تخصيص شروط المسار المهني'
+              : 'Personalize';
   const [form, setForm] = useState<CareerContext>(
     normalizeCareerContext(initial ?? EMPTY_CAREER_CONTEXT),
   );
@@ -115,8 +127,8 @@ export default function CareerContextForm({
       setForm(saved);
       setMessage(
         zh
-          ? '已儲存 — 下次 Snapshot / Guide 分析會自動帶入。'
-          : 'Career Context saved — used on your next analysis.',
+          ? '已儲存個人化職涯條件 — 下次 Snapshot / Guide 分析會自動帶入。'
+          : 'Personalize Career Context saved — used on your next analysis.',
       );
       onSaved?.(saved);
     } catch {
@@ -133,12 +145,13 @@ export default function CareerContextForm({
           <Target className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
           <div>
             <h2 className="text-2xl font-bold text-white">
-              Career Context
+              {heading}
             </h2>
+            <p className="text-sm font-medium tracking-wide text-zinc-400 mt-0.5">Career Context</p>
             <p className="text-lg text-zinc-300 mt-1 leading-snug">
               {zh
-                ? '選填底線，存進帳號後會注入每次 Snapshot / Guide 分析。'
-                : 'Optional floors for fit and offer targeting. Saved on your account and injected into Snapshot / Guide analyses.'}
+                ? '選填個人化底線，存進帳號後會注入每次 Snapshot / Guide 分析。'
+                : 'Optional personal floors for fit and offer targeting. Saved on your account and injected into Snapshot / Guide analyses.'}
             </p>
           </div>
         </div>
@@ -180,7 +193,7 @@ export default function CareerContextForm({
         className="inline-flex items-center gap-2.5 px-6 py-3.5 text-xl font-bold rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white transition-colors"
       >
         {saving ? <Loader2 className="w-[1em] h-[1em] animate-spin" /> : <Save className="w-[1em] h-[1em]" />}
-        {zh ? '儲存 Career Context' : 'Save Career Context'}
+        {zh ? '儲存個人化職涯條件' : 'Save personal floors'}
       </button>
     </section>
   );

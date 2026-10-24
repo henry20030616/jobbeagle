@@ -50,7 +50,9 @@ describe('account function nav', () => {
       'danger',
     ]);
     expect(copy.overview).toBe('總覽');
-    expect(copy.careerContext).toBe('職涯條件');
+    expect(copy.careerContext).toBe('個人化職涯條件');
+    expect(getAccountNavCopy('en').careerContext).toBe('Personalize');
+    expect(getAccountNavCopy('zh-CN').careerContext).toBe('个性化职涯条件');
     expect(copy.plans).toBe('購買方案');
     expect(copy.billing).toBe('帳單紀錄');
     expect(copy.referrals).toBe('推薦紀錄');
@@ -151,7 +153,7 @@ describe('account function nav', () => {
     expect(html).not.toContain('href="#subscription-actions"');
     expect(html).not.toContain('href="#sponsor"');
     expect(html).toContain('總覽');
-    expect(html).toContain('職涯條件');
+    expect(html).toContain('個人化職涯條件');
     expect(html).toContain('購買方案');
     expect(html).toContain('帳單紀錄');
     expect(html).toContain('推薦紀錄');

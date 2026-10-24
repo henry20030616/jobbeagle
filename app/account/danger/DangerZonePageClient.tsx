@@ -48,7 +48,7 @@ const copy: Record<
     needLogin: 'Sign in to pause or delete your account.',
     pauseTitle: 'Pause account',
     pauseBody:
-      'Temporarily stop analyze and checkout. Your profile, Career Context, and reports stay. You can reactivate anytime.',
+      'Temporarily stop analyze and checkout. Your profile, Personalize Career Context, and reports stay. You can reactivate anytime.',
     pauseNote:
       'Pause does not cancel a paid subscription. Cancel monthly billing from Account → Subscription.',
     deactivate: 'Deactivate account',
@@ -69,7 +69,7 @@ const copy: Record<
     backHome: '返回首頁',
     needLogin: '請登入以暫停或刪除帳戶。',
     pauseTitle: '暫停帳戶',
-    pauseBody: '暫時無法分析與結帳。資料、Career Context 與報告都會保留，可隨時重新啟用。',
+    pauseBody: '暫時無法分析與結帳。資料、個人化職涯條件與報告都會保留，可隨時重新啟用。',
     pauseNote: '暫停不會取消付費訂閱。若要停扣款，請到「帳戶管理 → 訂閱與額度」一鍵取消。',
     deactivate: '停用帳戶',
     reactivate: '重新啟用',
@@ -88,7 +88,7 @@ const copy: Record<
     backHome: '返回首页',
     needLogin: '请登录以暂停或删除账户。',
     pauseTitle: '暂停账户',
-    pauseBody: '暂时无法分析与结账。资料、Career Context 与报告都会保留，可随时重新启用。',
+    pauseBody: '暂时无法分析与结账。资料、个性化职涯条件与报告都会保留，可随时重新启用。',
     pauseNote: '暂停不会取消付费订阅。若要停扣款，请到「账户管理 → 订阅与额度」一键取消。',
     deactivate: '停用账户',
     reactivate: '重新启用',
@@ -108,7 +108,7 @@ const copy: Record<
     needLogin: 'Inicia sesión para pausar o eliminar tu cuenta.',
     pauseTitle: 'Pausar cuenta',
     pauseBody:
-      'Detiene análisis y checkout. Tu perfil, Career Context e informes se conservan. Puedes reactivar cuando quieras.',
+      'Detiene análisis y checkout. Tu perfil, Personalizar Career Context e informes se conservan. Puedes reactivar cuando quieras.',
     pauseNote:
       'Pausar no cancela una suscripción de pago. Cancela el cobro mensual en Cuenta → Suscripción.',
     deactivate: 'Desactivar cuenta',
@@ -129,7 +129,7 @@ const copy: Record<
     needLogin: 'खाता रोकने या हटाने के लिए साइन इन करें।',
     pauseTitle: 'खाता रोकें',
     pauseBody:
-      'विश्लेषण और चेकआउट रुकते हैं। प्रोफ़ाइल, Career Context और रिपोर्ट सुरक्षित रहती हैं।',
+      'विश्लेषण और चेकआउट रुकते हैं। प्रोफ़ाइल, व्यक्तिगत करियर शर्तें और रिपोर्ट सुरक्षित रहती हैं।',
     pauseNote: 'रोकने से भुगतान वाली सदस्यता रद्द नहीं होती। मासिक बिलिंग खाता → सदस्यता से रद्द करें।',
     deactivate: 'खाता निष्क्रिय करें',
     reactivate: 'पुनः सक्रिय करें',
@@ -148,7 +148,7 @@ const copy: Record<
     backHome: 'العودة للرئيسية',
     needLogin: 'سجّل الدخول لإيقاف أو حذف حسابك.',
     pauseTitle: 'إيقاف الحساب',
-    pauseBody: 'يتوقف التحليل والدفع. تبقى بياناتك وCareer Context والتقارير. يمكنك إعادة التفعيل.',
+    pauseBody: 'يتوقف التحليل والدفع. تبقى بياناتك وشروط المسار المهني المخصصة والتقارير. يمكنك إعادة التفعيل.',
     pauseNote: 'الإيقاف لا يلغي اشتراكًا مدفوعًا. ألغِ الفوترة الشهرية من الحساب ← الاشتراك.',
     deactivate: 'تعطيل الحساب',
     reactivate: 'إعادة التفعيل',

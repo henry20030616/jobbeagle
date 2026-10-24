@@ -42,7 +42,10 @@ import type {
 } from '@/types';
 import { normalizeGuideModules } from '@/lib/guide-modules';
 import { fitBandFromScore, resolveApplyDecision } from '@/lib/report-rules';
-import { enrichTargetGapWithCareerContext } from '@/lib/career-context';
+import {
+  enrichOfferStrategyWithCareerContext,
+  enrichTargetGapWithCareerContext,
+} from '@/lib/career-context';
 import { buildProvenanceRecord, scrubInsightUrls } from '@/lib/provenance';
 import { scoreSummaryPoints } from '@/lib/score-summary';
 import { calibrateLiteReport, rescaleBreakdownWeights } from '@/lib/report-calibration';
@@ -859,7 +862,11 @@ function normalizeReferenceCitations(raw: unknown): ReferenceCitation[] | undefi
   return out.length ? out : undefined;
 }
 
-function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: LiteReport): StrategyIntelFields {
+function normalizeStrategyIntel(
+  raw: Partial<StrategyIntelFields>,
+  snapshot: LiteReport,
+  careerContext?: CareerContext | null,
+): StrategyIntelFields {
   const hiring_context: HiringContext = raw.hiring_context
     ? {
         insights: scrubInsightUrls(
@@ -1026,7 +1033,8 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
     normalizeTcBreakdown((raw.offer_strategy as OfferStrategy | undefined)?.tc_breakdown)
     || snapshot.expected_offer.tc_breakdown;
 
-  const offer_strategy: OfferStrategy = raw.offer_strategy
+  const offer_strategy: OfferStrategy = enrichOfferStrategyWithCareerContext(
+    raw.offer_strategy
     ? {
         target: asString(raw.offer_strategy.target),
         acceptable: asString(raw.offer_strategy.acceptable),
@@ -1073,7 +1081,9 @@ function normalizeStrategyIntel(raw: Partial<StrategyIntelFields>, snapshot: Lit
                 'How does total compensation split between cash, bonus, and equity?',
               ]
             : [],
-      };
+      },
+    careerContext,
+  );
 
   let candidate_case: CandidateCase | undefined;
   const rawCase = (raw as Partial<FullReport>).candidate_case;
@@ -1215,6 +1225,6 @@ export function normalizeFullReport(
   options?: { careerContext?: CareerContext | null },
 ): FullReport {
   const snapshot = normalizeLiteReport(raw, options);
-  const intel = normalizeStrategyIntel(raw, snapshot);
+  const intel = normalizeStrategyIntel(raw, snapshot, options?.careerContext);
   return { ...snapshot, ...intel };
 }

@@ -67,7 +67,7 @@ export interface PdfInlineAttachment {
   mimeType: string;
 }
 
-function buildUserParts(
+export function buildUserParts(
   rawJd: string,
   resumeText: string,
   pdfInline?: PdfInlineAttachment,

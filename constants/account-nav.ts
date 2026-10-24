@@ -46,7 +46,7 @@ export const ACCOUNT_NAV_COPY: Record<AppLanguage, AccountNavCopy> = {
   en: {
     ariaLabel: 'Account functions',
     overview: 'Overview',
-    careerContext: 'Career Context',
+    careerContext: 'Personalize',
     plans: 'Buy credits',
     billing: 'Billing history',
     referrals: 'Referrals',
@@ -55,7 +55,7 @@ export const ACCOUNT_NAV_COPY: Record<AppLanguage, AccountNavCopy> = {
   'zh-TW': {
     ariaLabel: '帳戶功能',
     overview: '總覽',
-    careerContext: '職涯條件',
+    careerContext: '個人化職涯條件',
     plans: '購買方案',
     billing: '帳單紀錄',
     referrals: '推薦紀錄',
@@ -64,7 +64,7 @@ export const ACCOUNT_NAV_COPY: Record<AppLanguage, AccountNavCopy> = {
   'zh-CN': {
     ariaLabel: '账户功能',
     overview: '总览',
-    careerContext: '职涯条件',
+    careerContext: '个性化职涯条件',
     plans: '购买方案',
     billing: '账单记录',
     referrals: '推荐记录',
@@ -73,7 +73,7 @@ export const ACCOUNT_NAV_COPY: Record<AppLanguage, AccountNavCopy> = {
   es: {
     ariaLabel: 'Funciones de la cuenta',
     overview: 'Resumen',
-    careerContext: 'Condiciones profesionales',
+    careerContext: 'Personalizar',
     plans: 'Comprar créditos',
     billing: 'Historial de facturación',
     referrals: 'Referidos',
@@ -82,7 +82,7 @@ export const ACCOUNT_NAV_COPY: Record<AppLanguage, AccountNavCopy> = {
   hi: {
     ariaLabel: 'खाता फ़ंक्शन',
     overview: 'अवलोकन',
-    careerContext: 'करियर शर्तें',
+    careerContext: 'व्यक्तिगत करियर शर्तें',
     plans: 'क्रेडिट खरीदें',
     billing: 'बिलिंग इतिहास',
     referrals: 'रेफरल',
@@ -91,7 +91,7 @@ export const ACCOUNT_NAV_COPY: Record<AppLanguage, AccountNavCopy> = {
   ar: {
     ariaLabel: 'وظائف الحساب',
     overview: 'نظرة عامة',
-    careerContext: 'شروط المسار المهني',
+    careerContext: 'تخصيص شروط المسار المهني',
     plans: 'شراء الرصيد',
     billing: 'سجل الفوترة',
     referrals: 'الإحالات',

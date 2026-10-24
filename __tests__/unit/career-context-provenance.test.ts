@@ -1,9 +1,13 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+  enrichOfferStrategyWithCareerContext,
   enrichTargetGapWithCareerContext,
   formatCareerContextForPrompt,
   normalizeCareerContext,
 } from '@/lib/career-context';
+import { buildUserParts } from '@/lib/gemini-analyze';
 import {
   buildProvenanceRecord,
   isValidHttpUrl,
@@ -34,6 +38,65 @@ describe('career context', () => {
     });
     expect(gap).toContain('Your target TC: $180K');
     expect(gap).toContain('Your walk-away: $155K');
+  });
+
+  it('enriches offer_strategy with personal floors when the model omitted them', () => {
+    const enriched = enrichOfferStrategyWithCareerContext(
+      { target: '$170K market mid', acceptable: '$160K', walk_away: '' },
+      normalizeCareerContext({ target_tc: '$180K', walk_away_tc: '$155K' }),
+    );
+    expect(enriched.target).toContain('Your target TC: $180K');
+    expect(enriched.walk_away).toContain('Your walk-away: $155K');
+  });
+
+  it('includes career_context in the analyze user prompt when present', () => {
+    const ctx = normalizeCareerContext({
+      target_level: 'Senior BA',
+      target_tc: '$180K',
+      walk_away_tc: '$155K',
+      work_auth: 'US citizen',
+    });
+    const parts = buildUserParts(
+      'We need a Senior BA in NYC.',
+      'SQL analyst, 6 YOE.',
+      undefined,
+      ctx,
+      'https://www.linkedin.com/jobs/view/123',
+    );
+    const text = parts.map((part) => ('text' in part ? part.text : '')).join('\n');
+    expect(text).toContain('kind="career_context"');
+    expect(text).toContain('Senior BA');
+    expect(text).toContain('$180K');
+    expect(text).toContain('$155K');
+    expect(text).toContain('US citizen');
+    expect(text).toContain('kind="job_description"');
+    expect(text).toContain('kind="resume"');
+    expect(text.indexOf('kind="career_context"')).toBeLessThan(
+      text.indexOf('kind="job_description"'),
+    );
+    expect(text).toContain('expected_offer.target_gap MUST compare');
+    expect(text).toContain('offer_strategy target / acceptable / walk_away MUST reference');
+  });
+
+  it('omits the career_context fence when the account has no floors', () => {
+    const parts = buildUserParts(
+      'JD text',
+      'Resume text',
+      undefined,
+      normalizeCareerContext({}),
+      null,
+    );
+    const text = parts.map((part) => ('text' in part ? part.text : '')).join('\n');
+    expect(text).not.toContain('kind="career_context"');
+    expect(text).toContain('kind="job_description"');
+  });
+
+  it('passes careerContext into Snapshot and Guide analyze paths', () => {
+    const src = readFileSync(join(process.cwd(), 'lib/gemini-analyze.ts'), 'utf8');
+    expect(src).toContain('careerContextBlock: careerBlock || undefined');
+    expect(src).toMatch(/executeLiteAnalysis[\s\S]*buildUserParts\([\s\S]*careerContext/);
+    expect(src).toMatch(/runPaidGuideModules\(\{[\s\S]*buildUserParts\([\s\S]*careerContext/);
+    expect(src).not.toMatch(/systemInstruction:[\s\S]{0,80}careerBlock/);
   });
 });
 
@@ -76,8 +139,10 @@ describe('sample guide extras', () => {
     expect(report.fit_score.breakdown.length).toBe(5);
 
     const withCareer = normalizeFullReport(report, {
-      careerContext: normalizeCareerContext({ target_tc: '$200K' }),
+      careerContext: normalizeCareerContext({ target_tc: '$200K', walk_away_tc: '$155K' }),
     });
     expect(withCareer.expected_offer.target_gap).toContain('Your target TC');
+    expect(withCareer.offer_strategy.target).toContain('Your target TC');
+    expect(withCareer.offer_strategy.walk_away).toContain('Your walk-away: $155K');
   });
 });

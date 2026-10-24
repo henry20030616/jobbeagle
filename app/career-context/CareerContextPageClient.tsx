@@ -22,9 +22,19 @@ import { PAGE_SHELL_GUTTER } from '@/constants/report-frame';
 import type { CareerContext } from '@/types';
 import { normalizeCareerContext } from '@/lib/career-context';
 
+function productName(language: string): string {
+  if (language === 'zh-TW') return '個人化職涯條件';
+  if (language === 'zh-CN') return '个性化职涯条件';
+  if (language === 'es') return 'Personalizar';
+  if (language === 'hi') return 'व्यक्तिगत करियर शर्तें';
+  if (language === 'ar') return 'تخصيص شروط المسار المهني';
+  return 'Personalize';
+}
+
 export default function CareerContextPageClient() {
   const { language } = useLanguage();
   const zh = language === 'zh-TW' || language === 'zh-CN';
+  const name = productName(language);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [initial, setInitial] = useState<CareerContext | null>(null);
   const [loading, setLoading] = useState(true);
@@ -145,15 +155,16 @@ export default function CareerContextPageClient() {
             </Link>
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/40 bg-blue-950/40 px-4 py-1.5 text-base font-semibold text-zinc-100">
               <Target className="h-[1em] w-[1em]" />
-              Career Context
+              {name}
             </div>
+            <p className="mt-2 text-sm font-medium tracking-wide text-zinc-400">Career Context</p>
             <h1 className="mt-4 text-4xl font-black tracking-tight text-white md:text-5xl">
               {zh ? '用你的底線看每一份職缺' : 'Score every job against your floors'}
             </h1>
             <p className="mt-4 max-w-none text-xl leading-relaxed text-zinc-400">
               {zh
-                ? '履歷告訴 JobBeagle 你做過什麼。Career Context 告訴它你不願妥協什麼。存進帳號後，每次適配快照與面試指南都會自動帶入。'
-                : 'Your resume tells JobBeagle what you have done. Career Context tells it what you will not compromise. Saved on your account and injected into every Fit Snapshot and Interview Guide.'}
+                ? `履歷告訴 JobBeagle 你做過什麼。${name} 告訴它你不願妥協什麼。存進帳號後，每次適配快照與面試指南都會自動帶入。`
+                : `Your resume tells JobBeagle what you have done. ${name} (Career Context) tells it what you will not compromise. Saved on your account and injected into every Fit Snapshot and Interview Guide.`}
             </p>
           </div>
 
