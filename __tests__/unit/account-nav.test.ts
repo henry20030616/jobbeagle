@@ -15,6 +15,9 @@ import {
 import {
   PAGE_SHELL_GUTTER,
   SAMPLE_RAIL_ICON,
+  SAMPLE_RAIL_ITEM_GAP,
+  SAMPLE_RAIL_ROW,
+  SAMPLE_RAIL_SHELL,
   SAMPLE_RAIL_TEXT,
   SAMPLE_RAIL_WIDTH,
   SAMPLE_REPORT_TAB_ACTIVE,
@@ -73,11 +76,11 @@ describe('account function nav', () => {
     expect(ACCOUNT_PAGE).toContain(
       '<AccountSectionNav language={language} activeId={activeSection} />',
     );
-    expect(ACCOUNT_PAGE).toContain('lg:flex-row');
+    expect(SAMPLE_RAIL_ROW).toContain('lg:flex-row');
     // Desktop rail↔panel gap is 3× the previous lg:gap-8 (2rem → 6rem). Mobile stays gap-6.
-    expect(ACCOUNT_PAGE).toContain(
-      'flex flex-col items-stretch gap-6 lg:flex-row lg:items-start lg:gap-24',
-    );
+    expect(SAMPLE_RAIL_ROW).toContain('lg:gap-24');
+    expect(SAMPLE_RAIL_ROW).toContain('gap-6');
+    expect(ACCOUNT_PAGE).toContain('SAMPLE_RAIL_ROW');
     expect(ACCOUNT_PAGE).not.toContain('lg:gap-8');
     expect(ACCOUNT_PAGE).not.toContain('我的帳號管理');
   });
@@ -187,10 +190,11 @@ describe('account function nav', () => {
     expect(SAMPLE_RAIL_TEXT).toMatch(/text-6xl/);
     expect(SAMPLE_RAIL_ICON).toMatch(/w-16 h-16/);
     expect(nav).toContain('SAMPLE_REPORT_TAB_LAYOUT');
-    expect(nav).toContain('SAMPLE_REPORT_TAB_ACTIVE');
-    expect(nav).toContain('SAMPLE_REPORT_TAB_IDLE');
+    expect(nav).toContain('sampleReportTabClass');
     expect(nav).toContain('SAMPLE_RAIL_ICON');
-    expect(nav).toContain('lg:w-[42rem]');
+    expect(nav).toContain('FunctionRail');
+    expect(nav).toContain('SAMPLE_RAIL_ITEM_GAP');
+    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[42rem]');
     expect(nav).not.toContain('lg:w-[22rem]');
     expect(nav).not.toContain('text-base');
     expect(nav).not.toContain('px-3 py-2');

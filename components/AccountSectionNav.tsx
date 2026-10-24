@@ -20,10 +20,11 @@ import {
 } from '@/constants/account-nav';
 import {
   SAMPLE_RAIL_ICON,
-  SAMPLE_REPORT_TAB_ACTIVE,
-  SAMPLE_REPORT_TAB_IDLE,
+  SAMPLE_RAIL_ITEM_GAP,
   SAMPLE_REPORT_TAB_LAYOUT,
+  sampleReportTabClass,
 } from '@/constants/report-frame';
+import FunctionRail from '@/components/FunctionRail';
 
 const ICONS: Record<AccountNavItem['id'], typeof LayoutList> = {
   overview: LayoutList,
@@ -44,9 +45,7 @@ function itemClassName(item: AccountNavItem, active: boolean): string {
   if (item.id === 'danger') {
     return `${SAMPLE_REPORT_TAB_LAYOUT} ${active ? DANGER_ACTIVE : DANGER_IDLE}`;
   }
-  return `${SAMPLE_REPORT_TAB_LAYOUT} ${
-    active ? SAMPLE_REPORT_TAB_ACTIVE : SAMPLE_REPORT_TAB_IDLE
-  }`;
+  return sampleReportTabClass(active);
 }
 
 export default function AccountSectionNav({
@@ -59,12 +58,8 @@ export default function AccountSectionNav({
   const copy = getAccountNavCopy(language);
 
   return (
-    <nav
-      aria-label={copy.ariaLabel}
-      data-account-nav=""
-      className="w-full lg:sticky lg:top-6 lg:w-[42rem] lg:shrink-0 lg:self-start"
-    >
-      <ul className="flex flex-col gap-6">
+    <FunctionRail label={copy.ariaLabel} data-account-nav="">
+      <ul className={`flex flex-col ${SAMPLE_RAIL_ITEM_GAP}`}>
         {ACCOUNT_NAV_ITEMS.map((item) => {
           const label = accountNavLabel(item, copy);
           const Icon = ICONS[item.id];
@@ -92,6 +87,6 @@ export default function AccountSectionNav({
           );
         })}
       </ul>
-    </nav>
+    </FunctionRail>
   );
 }

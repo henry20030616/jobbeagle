@@ -119,14 +119,38 @@ export const SAMPLE_REPORT_TAB_ACTIVE =
   `rounded-2xl border border-white ${REPORT_TYPE_CARD_FILL} text-white ring-4 ring-white/90`;
 
 /**
- * Type-switcher card layout (padding, type, gap). Used by /samples left rail
- * and /account function nav so both stay the same size.
+ * Type-switcher card layout (padding, type, gap). Used by the shared left
+ * rail on /account, live /report, and /samples — one size, not a fourth look.
  */
 export const SAMPLE_REPORT_TAB_LAYOUT =
   `inline-flex h-full w-full items-center justify-center gap-5 px-8 py-6 ${SAMPLE_RAIL_TEXT} shrink-0 text-center leading-snug whitespace-normal transition-colors`;
 
-/** Desktop left-rail width for /samples type-switcher and /account function nav. */
+export function sampleReportTabClass(active: boolean): string {
+  return `${SAMPLE_REPORT_TAB_LAYOUT} ${
+    active ? SAMPLE_REPORT_TAB_ACTIVE : SAMPLE_REPORT_TAB_IDLE
+  }`;
+}
+
+/** Desktop left-rail width for /samples, /account, and live /report. */
 export const SAMPLE_RAIL_WIDTH = 'w-[42rem]';
+
+/** Sticky top-left rail under the header (42rem on desktop, full width when stacked). */
+export const SAMPLE_RAIL_SHELL =
+  'w-full lg:sticky lg:top-6 lg:w-[42rem] lg:shrink-0 lg:self-start';
+
+/** Vertical gap BETWEEN rail cards. */
+export const SAMPLE_RAIL_ITEM_GAP = 'gap-6';
+
+/**
+ * Gap FROM the left rail TO main content.
+ * Desktop `lg:gap-24` = 6rem = 3× the previous account `lg:gap-8` (2rem).
+ * Mobile stacked stays `gap-6`. Same string on /account, /report, and /samples.
+ */
+export const SAMPLE_RAIL_CONTENT_GAP = 'gap-6 lg:gap-24';
+
+/** Flex row that places the rail top-left and the panel beside it. */
+export const SAMPLE_RAIL_ROW =
+  `flex flex-col items-stretch ${SAMPLE_RAIL_CONTENT_GAP} lg:flex-row lg:items-start`;
 
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =

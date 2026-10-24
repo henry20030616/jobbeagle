@@ -19,6 +19,10 @@ import {
   REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
   REPORT_TYPE_LAUNCH_BOX,
+  SAMPLE_RAIL_CONTENT_GAP,
+  SAMPLE_RAIL_ITEM_GAP,
+  SAMPLE_RAIL_ROW,
+  SAMPLE_RAIL_SHELL,
   SAMPLE_RAIL_TEXT,
   SAMPLE_RAIL_WIDTH,
   SAMPLE_REPORT_TAB_ACTIVE,
@@ -32,13 +36,20 @@ describe('report chrome type scale', () => {
     expect(REPORT_ACTION_TEXT).toMatch(/text-6xl/);
   });
 
-  it('shares type-switcher card layout and rail width with /account nav', () => {
+  it('shares type-switcher card layout, rail width, and content gap across account / report / samples', () => {
     expect(SAMPLE_RAIL_WIDTH).toBe('w-[42rem]');
+    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[42rem]');
+    expect(SAMPLE_RAIL_ITEM_GAP).toBe('gap-6');
+    expect(SAMPLE_RAIL_CONTENT_GAP).toBe('gap-6 lg:gap-24');
+    expect(SAMPLE_RAIL_ROW).toContain(SAMPLE_RAIL_CONTENT_GAP);
+    expect(SAMPLE_RAIL_ROW).toContain('lg:flex-row');
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain(SAMPLE_RAIL_TEXT);
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('px-8 py-6');
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('gap-5');
     expect(SAMPLE_REPORT_TAB_IDLE).toMatch(/rounded-2xl/);
     expect(SAMPLE_REPORT_TAB_ACTIVE).toMatch(/rounded-2xl/);
+    expect(SAMPLE_REPORT_TAB_ACTIVE).toMatch(/bg-blue-900/);
+    expect(SAMPLE_REPORT_TAB_ACTIVE).toMatch(/ring-4 ring-white/);
 
     const samples = readFileSync(
       join(process.cwd(), 'app/samples/SampleReportClient.tsx'),
@@ -48,10 +59,33 @@ describe('report chrome type scale', () => {
       join(process.cwd(), 'components/AccountSectionNav.tsx'),
       'utf8',
     );
-    expect(samples).toContain('SAMPLE_REPORT_TAB_LAYOUT');
-    expect(samples).toContain('SAMPLE_RAIL_WIDTH');
-    expect(accountNav).toContain('SAMPLE_REPORT_TAB_LAYOUT');
-    expect(accountNav).toContain('lg:w-[42rem]');
+    const accountPage = readFileSync(
+      join(process.cwd(), 'app/account/page.tsx'),
+      'utf8',
+    );
+    const report = readFileSync(
+      join(process.cwd(), 'app/report/page.tsx'),
+      'utf8',
+    );
+    const rail = readFileSync(
+      join(process.cwd(), 'components/FunctionRail.tsx'),
+      'utf8',
+    );
+
+    expect(rail).toContain('SAMPLE_RAIL_SHELL');
+    expect(rail).toContain('SAMPLE_RAIL_ITEM_GAP');
+    expect(samples).toContain('FunctionRail');
+    expect(samples).toContain('sampleReportTabClass');
+    expect(samples).toContain('SAMPLE_RAIL_ROW');
+    expect(samples).toContain('SAMPLE_NOTICE_SURFACE');
+    expect(samples).not.toContain('border-r border-slate-800 p-10');
+    expect(accountNav).toContain('FunctionRail');
+    expect(accountNav).toContain('sampleReportTabClass');
+    expect(accountPage).toContain('SAMPLE_RAIL_ROW');
+    expect(report).toContain('FunctionRail');
+    expect(report).toContain('sampleReportTabClass');
+    expect(report).toContain('SAMPLE_RAIL_ROW');
+    expect(report).toContain('hideInnerNav');
   });
 });
 
@@ -182,6 +216,27 @@ describe('Guide inner section cards', () => {
     expect(pages).toContain('GUIDE_SECTION_FRAME');
     expect(pages).toContain('function SectionCard');
     expect(pages).toContain('function SummaryCard');
+  });
+
+  it('puts pay, benefits, and script inside one negotiate GUIDE_SECTION_FRAME', () => {
+    const pages = readFileSync(
+      join(process.cwd(), 'components/report/SevenItemPages.tsx'),
+      'utf8',
+    );
+    const negotiate = pages.slice(pages.indexOf("if (item === 'negotiate')"));
+    expect(negotiate).toContain('<section className={GUIDE_SECTION_FRAME}>');
+    expect(negotiate).toContain('<InnerSection title={copy.pay}>');
+    expect(negotiate).toContain('<InnerSection title={copy.benefits}>');
+    expect(negotiate).toContain('title={copy.say}');
+    expect(negotiate).toMatch(/md:grid-cols-2/);
+    expect(negotiate.indexOf('title={copy.say}')).toBeGreaterThan(
+      negotiate.indexOf('<InnerSection title={copy.benefits}>'),
+    );
+    expect(negotiate).not.toContain('<SectionCard title={copy.pay}>');
+    expect(negotiate).not.toContain('<SectionCard title={copy.benefits}>');
+    expect(negotiate).not.toContain('<SectionCard title={copy.say}');
+    expect(negotiate).toContain('<SectionCard title={copy.askCompany}>');
+    expect(pages).toContain('<h3 className={REPORT_H3}>{title}</h3>');
   });
 });
 

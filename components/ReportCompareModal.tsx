@@ -14,8 +14,9 @@ import {
 import {
   REPORT_ACTION_TEXT,
   REPORT_ACTION_ICON,
-  SAMPLE_HEADER_BTN,
   SAMPLE_HEADER_ICON,
+  SAMPLE_RAIL_ICON,
+  sampleReportTabClass,
 } from '@/constants/report-frame';
 import ReportCompareTable from '@/components/ReportCompareTable';
 import BrandLogo from '@/components/BrandLogo';
@@ -62,7 +63,7 @@ export default function ReportCompareModal({
 
   const triggerClass =
     variant === 'button'
-      ? `${SAMPLE_HEADER_BTN} border-slate-400 bg-slate-900/80 text-slate-100 hover:bg-slate-800 hover:border-slate-300 ${className}`
+      ? `${sampleReportTabClass(false)} ${className}`
       : variant === 'panel'
         ? `compare-panel-label flex h-full w-full min-h-0 items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 px-3.5 py-3 text-2xl font-semibold leading-snug text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/50 ${className}`
         : variant === 'compact'
@@ -72,9 +73,11 @@ export default function ReportCompareModal({
   const iconClass =
     variant === 'compact'
       ? 'w-4 h-4 shrink-0'
-      : variant === 'button' || variant === 'panel'
-        ? SAMPLE_HEADER_ICON
-        : REPORT_ACTION_ICON;
+      : variant === 'button'
+        ? SAMPLE_RAIL_ICON
+        : variant === 'panel'
+          ? SAMPLE_HEADER_ICON
+          : REPORT_ACTION_ICON;
 
   const drawer =
     open && mounted

@@ -28,7 +28,7 @@ import type { CareerContext, MembershipTier, UserProfile } from '@/types';
 import { careerContextHasSignal } from '@/lib/career-context';
 import { FitStage } from '@/components/FitStage';
 import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
-import { PAGE_SHELL_GUTTER } from '@/constants/report-frame';
+import { PAGE_SHELL_GUTTER, SAMPLE_RAIL_ROW } from '@/constants/report-frame';
 import AccountSectionNav from '@/components/AccountSectionNav';
 import {
   ACCOUNT_HASH_IDS,
@@ -786,7 +786,7 @@ export default function AccountPage() {
               </p>
             )}
 
-            <div className="flex flex-col items-stretch gap-6 lg:flex-row lg:items-start lg:gap-24">
+            <div className={SAMPLE_RAIL_ROW}>
             <AccountSectionNav language={language} activeId={activeSection} />
             <div className="min-w-0 flex-1 space-y-8 sm:space-y-10">
 
