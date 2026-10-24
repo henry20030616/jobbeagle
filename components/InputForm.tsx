@@ -20,8 +20,10 @@ import {
   REPORT_TYPE_CARD_IDLE,
 } from '@/constants/report-frame';
 
-const PILL =
-  'inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border border-indigo-500/20 transition-all';
+const PILL_BOX =
+  'inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl xl:text-2xl px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border transition-all';
+/** Same dark-blue fill as step 3 report cards (`REPORT_TYPE_CARD_*`). */
+const PILL = `${PILL_BOX} text-zinc-100 bg-blue-900 hover:bg-blue-800 border-blue-700`;
 const STEP_CONNECTOR =
   'hidden lg:flex items-center justify-center self-stretch px-1';
 const STEP_COL =
@@ -677,7 +679,7 @@ const InputForm: React.FC<InputFormProps> = ({
               <div className={STEP_PILL_ROW}>
                 {extensionCapture ? (
                   <span
-                    className={`${PILL} border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20`}
+                    className={`${PILL_BOX} border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20`}
                     title={captureParts.join(' · ') || undefined}
                   >
                     <Puzzle className="h-[1em] w-[1em] shrink-0" />
@@ -945,7 +947,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <StepSequenceMark />
 
             {/* 4. Launch — same title/pill spacers so content box aligns */}
-            <div className={`${STEP_COL} relative z-0 bg-slate-700/30`}>
+            <div className={`${STEP_COL} relative z-0 bg-blue-900/30`}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
                 <span className="min-w-0 leading-snug">{t.launchStep}</span>
@@ -964,16 +966,16 @@ const InputForm: React.FC<InputFormProps> = ({
                           : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-100 shadow-lg shadow-indigo-500/30 transition-all ${
+                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-100 shadow-lg shadow-blue-900/30 transition-all ${
                     submitDisabled
-                      ? 'cursor-not-allowed bg-indigo-600/35 text-zinc-100 shadow-none'
+                      ? 'cursor-not-allowed bg-blue-900/35 text-zinc-100 shadow-none'
                       : publicAts
                         ? 'bg-emerald-600 shadow-emerald-500/30 hover:-translate-y-1 hover:bg-emerald-500 active:translate-y-0 active:bg-emerald-700'
                         : jdError
                           ? 'bg-red-600 shadow-red-500/30 hover:-translate-y-1 hover:bg-red-500 active:translate-y-0 active:bg-red-700'
                           : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                            ? 'bg-indigo-600 shadow-[0_0_42px_rgba(99,102,241,0.75)] ring-2 ring-indigo-300/80 hover:-translate-y-1 hover:bg-indigo-500 active:translate-y-0 active:bg-indigo-700'
-                            : 'bg-indigo-600 hover:-translate-y-1 hover:bg-indigo-500 active:translate-y-0 active:bg-indigo-700'
+                            ? 'bg-blue-800 shadow-[0_0_42px_rgba(30,64,175,0.75)] ring-2 ring-blue-300/80 hover:-translate-y-1 hover:bg-blue-700 active:translate-y-0 active:bg-blue-900'
+                            : 'bg-blue-800 hover:-translate-y-1 hover:bg-blue-700 active:translate-y-0 active:bg-blue-900'
                   }`}
                 >
                   {isLoading || isParsingUrl ? (
