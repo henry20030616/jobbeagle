@@ -180,7 +180,7 @@ const copy: Record<
       'Optional floors for fit and offer targeting. Lives on its own page — not mixed with billing.',
     careerContextCta: 'Set Career Context →',
     careerContextEdit: 'Edit Career Context →',
-    sponsorTitle: 'Sponsor the author',
+    sponsorTitle: 'Sponsor JobBeagle',
     sponsorNote:
       'Any amount from $0.50 to $1,000. Does not add credits — a thank-you only.',
     sponsorAmount: 'USD amount',
@@ -236,7 +236,7 @@ const copy: Record<
     careerContextBlurb: '選填底線，用來對齊 fit 與薪資目標。獨立頁設定，不跟買額度混在一起。',
     careerContextCta: '設定 Career Context →',
     careerContextEdit: '編輯 Career Context →',
-    sponsorTitle: '贊助作者',
+    sponsorTitle: '贊助 JobBeagle',
     sponsorNote: '金額 $0.50–$1,000，不會增加額度，僅作為支持。',
     sponsorAmount: '美元金額',
     sponsorCta: '贊助',
@@ -289,7 +289,7 @@ const copy: Record<
     careerContextBlurb: '可选底线，用于对齐 fit 与薪酬目标。在独立页设置，不和买额度混在一起。',
     careerContextCta: '设置 Career Context →',
     careerContextEdit: '编辑 Career Context →',
-    sponsorTitle: '赞助作者',
+    sponsorTitle: '赞助 JobBeagle',
     sponsorNote: '金额 $0.50–$1,000，不会增加额度，仅作为支持。',
     sponsorAmount: '美元金额',
     sponsorCta: '赞助',
@@ -345,7 +345,7 @@ const copy: Record<
       'Pisos opcionales para fit y compensación. En su propia página, no mezclado con facturación.',
     careerContextCta: 'Configurar Career Context →',
     careerContextEdit: 'Editar Career Context →',
-    sponsorTitle: 'Patrocinar al autor',
+    sponsorTitle: 'Patrocinar JobBeagle',
     sponsorNote:
       'Cualquier monto de $0.50 a $1,000. No suma créditos — solo un agradecimiento.',
     sponsorAmount: 'Monto en USD',
@@ -402,7 +402,7 @@ const copy: Record<
       'Fit और ऑफर के लिए वैकल्पिक floors। अलग पेज पर सेट करें — बिलिंग के साथ नहीं।',
     careerContextCta: 'Career Context सेट करें →',
     careerContextEdit: 'Career Context संपादित करें →',
-    sponsorTitle: 'लेखक को स्पॉन्सर करें',
+    sponsorTitle: 'JobBeagle को स्पॉन्सर करें',
     sponsorNote: '$0.50 से $1,000 तक। क्रेडिट नहीं मिलते — सिर्फ़ समर्थन।',
     sponsorAmount: 'USD राशि',
     sponsorCta: 'स्पॉन्सर',
@@ -458,7 +458,7 @@ const copy: Record<
       'حدود اختيارية للملاءمة والعرض. صفحة مستقلة — ليست مع الفوترة.',
     careerContextCta: 'تعيين Career Context →',
     careerContextEdit: 'تعديل Career Context →',
-    sponsorTitle: 'ادعم المؤلف',
+    sponsorTitle: 'ادعم JobBeagle',
     sponsorNote: 'أي مبلغ من $0.50 إلى $1,000. لا يضيف رصيدًا — شكر فقط.',
     sponsorAmount: 'المبلغ بالدولار',
     sponsorCta: 'ادعم',
@@ -854,12 +854,12 @@ export default function AccountPage() {
                   );
                 })}
               </ul>
-              <div className="rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4 space-y-3">
-                <div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4">
+                <div className="min-w-0 sm:flex-1">
                   <p className="text-lg font-semibold text-amber-100">{t.sponsorTitle}</p>
                   <p className="text-base text-slate-400 mt-1">{t.sponsorNote}</p>
                 </div>
-                <div className="flex flex-wrap items-end gap-3">
+                <div className="flex flex-wrap items-end gap-3 shrink-0">
                   <label className="flex flex-col gap-1">
                     <span className="text-sm text-slate-400">{t.sponsorAmount}</span>
                     <div className="flex items-center gap-2">

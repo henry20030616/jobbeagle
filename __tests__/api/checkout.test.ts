@@ -38,6 +38,8 @@ describe('checkout plans (Unified Master Spec 2026)', () => {
     expect(ACTIVE_CHECKOUT_PLAN_TYPES).not.toContain('author_sponsor');
     expect(CHECKOUT_PLANS.author_sponsor.isSubscription).toBe(false);
     expect(CHECKOUT_PLANS.author_sponsor.jobFitSnapshotCredits).toBeUndefined();
+    expect(CHECKOUT_PLANS.author_sponsor.labelEn).toBe('Sponsor JobBeagle');
+    expect(CHECKOUT_PLANS.author_sponsor.labelZhTW).toBe('贊助 JobBeagle');
   });
 
   it('parses sponsor USD amounts', () => {

@@ -102,8 +102,8 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanType, CheckoutPlan> = {
   author_sponsor: withCreditAliases({
     type: 'author_sponsor',
     amountCents: 50,
-    labelEn: 'Sponsor the author',
-    labelZhTW: '贊助作者',
+    labelEn: 'Sponsor JobBeagle',
+    labelZhTW: '贊助 JobBeagle',
     isSubscription: false,
   }),
 };
