@@ -503,10 +503,10 @@ function PayRangeLine({
           ) : null}
         </div>
       ) : rangeText ? (
-        <p className={`${BODY} mb-1 font-semibold text-white`}>{rangeText}</p>
+        <p className={`${BODY} mb-2 font-semibold text-white`}>{rangeText}</p>
       ) : null}
       <div className={hero ? undefined : 'px-[3.25rem]'}>
-        <div className={`relative ${hero ? 'mx-1 mt-1 mb-2 h-3.5' : 'mt-9 mb-11 h-2.5'} rounded-full bg-slate-700`}>
+        <div className={`relative ${hero ? 'mx-1 mt-1 mb-2 h-3.5' : 'mt-12 mb-12 h-2.5'} rounded-full bg-slate-700`}>
           <span
             className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
             style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}
