@@ -49,6 +49,10 @@ const en: SampleGuideNarrative = {
     'What would you inspect first if return volume jumped week over week?',
     'Which ops metric would you put on a daily settlement standup?',
     'How do you document an exception so the next shift can finish it?',
+    'How do you cut off a settlement file that is still posting after the SLA?',
+    'What would you check if ACH origination volume dropped overnight?',
+    'Walk me through how you would rebuild a returns aging report in SQL.',
+    'How do you explain a Fed settlement miss to finance without a root cause yet?',
   ],
   behavioral: [
     'Tell me about a time you pushed back on a deadline that would have missed a cutoff.',
@@ -62,6 +66,11 @@ const en: SampleGuideNarrative = {
     'Tell me about a written update that changed a leadership decision.',
     'Describe a reconciliation mistake and how you contained it.',
     'Tell me about coaching someone through their first incident.',
+    'Tell me about covering a teammate’s queue during a cutoff week.',
+    'Describe a time you had to redo a status pack the night before a review.',
+    'When have you said no to a dashboard request that would have missed close?',
+    'Tell me about learning a payment rail from a runbook instead of a manager.',
+    'Describe how you handled an on-call ping that was not actually an incident.',
   ],
   rewrites: [
     {

@@ -767,7 +767,7 @@ function sampleGuideQuestion(
   index: number,
   answer: string,
 ): GuideQuestion {
-  const year = index <= 8 ? '2025' : index <= 16 ? '2024' : '2023';
+  const year = index <= 8 ? '2025' : index <= 10 ? '2024' : '2023';
   const month = String(((index * 3) % 12) + 1).padStart(2, '0');
   return {
     question,

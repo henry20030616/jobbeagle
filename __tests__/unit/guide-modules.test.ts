@@ -125,6 +125,60 @@ describe('selectInterviewBank', () => {
     expect(bank.behavioral).toHaveLength(0);
   });
 
+  it('keeps every remaining reported question in extras, not a two-item cap', () => {
+    const questions = parseGuideQuestions(
+      Array.from({ length: 16 }, (_, index) => ({
+        question: `Pro ${index}`,
+        track: 'professional',
+        origin: 'reported',
+        proximity: index < 12 ? 'same_company_role' : 'same_industry_role',
+        source_url: `https://www.glassdoor.com/Interview/${index}`,
+        source_date: `2024-${String((index % 12) + 1).padStart(2, '0')}`,
+      })),
+    );
+    const bank = selectInterviewBank(questions);
+    expect(bank.professional).toHaveLength(10);
+    expect(bank.professional_extra).toHaveLength(6);
+    const bodyQuestions = new Set(bank.professional.map((item) => item.question));
+    expect(bodyQuestions.has('Pro 0')).toBe(false);
+    expect(bodyQuestions.has('Pro 12')).toBe(false);
+    expect(bank.professional_extra.map((item) => item.question).sort()).toEqual([
+      'Pro 0',
+      'Pro 1',
+      'Pro 12',
+      'Pro 13',
+      'Pro 14',
+      'Pro 15',
+    ]);
+    for (const extra of bank.professional_extra) {
+      expect(bodyQuestions.has(extra.question)).toBe(false);
+      expect(extra.origin).toBe('reported');
+    }
+  });
+
+  it('lists same-industry overflow in extras when same-company is at or under 10', () => {
+    const questions = parseGuideQuestions(
+      Array.from({ length: 14 }, (_, index) => ({
+        question: `Ind ${index}`,
+        track: 'professional',
+        origin: 'reported',
+        proximity: 'same_industry_role',
+        source_url: `https://www.teamblind.com/post/${index}`,
+        source_date: `2025-${String((index % 12) + 1).padStart(2, '0')}`,
+      })),
+    );
+    const bank = selectInterviewBank(questions);
+    expect(bank.professional).toHaveLength(10);
+    expect(bank.professional_extra).toHaveLength(4);
+  });
+
+  it('tells retrieval to keep extras from the last three years', () => {
+    expect(QUESTION_RETRIEVAL_PROMPT).toContain('Do not stop at 10');
+    expect(QUESTION_RETRIEVAL_PROMPT).toMatch(/extra list/i);
+    expect(QUESTION_RETRIEVAL_PROMPT).toMatch(/last three years/i);
+    expect(QUESTION_RETRIEVAL_PROMPT).toMatch(/Never drop a cited real question/i);
+  });
+
   it('demotes a reported question with no URL and fills the rest with predictions', () => {
     const questions = parseGuideQuestions([
       {

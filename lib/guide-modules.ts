@@ -260,14 +260,10 @@ function bankForTrack(items: GuideQuestion[], track: GuideQuestionTrack): {
   const predicted = mine.filter((item) => item.origin === 'predicted');
   const sameCompany = reported.filter((item) => item.proximity === 'same_company_role');
 
-  let body: GuideQuestion[];
-  let extra: GuideQuestion[] = [];
-  if (sameCompany.length > 10) {
-    body = sameCompany.slice(0, 10);
-    extra = sameCompany.slice(10);
-  } else {
-    body = reported.slice(0, 10);
-  }
+  const body = (sameCompany.length > 10 ? sameCompany : reported).slice(0, 10);
+  const bodyKeys = new Set(body.map((item) => item.question));
+  // Remaining cited real questions from the last ~3 years — never drop, never cap at 2.
+  const extra = reported.filter((item) => !bodyKeys.has(item.question));
 
   for (const item of predicted) {
     if (body.length >= 10) break;
@@ -278,7 +274,7 @@ function bankForTrack(items: GuideQuestion[], track: GuideQuestionTrack): {
   return { body: body.slice(0, 10), extra };
 }
 
-/** Body is 10 professional + 10 behavioral. Same-company overflow stays in extra. */
+/** Body is 10 professional + 10 behavioral (recent / highest-proximity). Remaining reported questions stay in extra. */
 export function selectInterviewBank(
   questions: GuideQuestion[],
   process = '',

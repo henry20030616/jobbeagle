@@ -126,8 +126,8 @@ describe('sample reports', () => {
     const bank = modules!.interview_bank;
     expect(bank.professional).toHaveLength(10);
     expect(bank.behavioral).toHaveLength(10);
-    expect(bank.professional_extra.length).toBeGreaterThan(0);
-    expect(bank.behavioral_extra.length).toBeGreaterThan(0);
+    expect(bank.professional_extra.length).toBeGreaterThan(2);
+    expect(bank.behavioral_extra.length).toBeGreaterThan(2);
     const items = [
       ...bank.professional,
       ...bank.behavioral,
@@ -499,6 +499,35 @@ describe('seven-item report layout', () => {
     expect(playbook).not.toContain('border-2 border-blue-500');
     expect(html).toContain('建議問公司的問題');
     expect(html.split('border-2 border-blue-500').length - 1).toBe(4);
+  });
+
+  it('lists every overflow question in 補充資料列表 and explains the ten-question rule', () => {
+    const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    expect(source).not.toMatch(/professional_extra\.slice\(\s*0\s*,\s*2\s*\)/);
+    expect(source).not.toMatch(/behavioral_extra\.slice\(\s*0\s*,\s*2\s*\)/);
+    expect(source).toContain('{items.map((item) => (');
+    expect(source).toContain('以下十題為近期最重要的面試題；近三年其餘真題列於補充資料列表。');
+
+    const report = getSampleStrategyGuideReport('zh-TW');
+    const bank = report.guide_modules!.interview_bank;
+    const extras = [...bank.professional_extra, ...bank.behavioral_extra];
+    expect(extras.length).toBeGreaterThan(2);
+    expect(bank.professional_extra.length).toBeGreaterThan(2);
+    expect(bank.behavioral_extra.length).toBeGreaterThan(2);
+
+    const html = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report,
+        item: 'questions',
+        language: 'zh-TW',
+      }),
+    );
+    expect(html).toContain('以下十題為近期最重要的面試題');
+    expect(html).toContain('近三年其餘真題列於補充資料列表');
+    expect(html).toContain('補充資料列表');
+    for (const item of extras) {
+      expect(html).toContain(item.question);
+    }
   });
 
   it('keeps hiring-process facts in 總結分析 and does not render a duplicate process card', () => {

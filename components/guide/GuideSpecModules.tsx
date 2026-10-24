@@ -15,6 +15,23 @@ import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { isCitableSourceUrl } from '@/lib/provenance';
 
+function extraRuleFor(language: AppLanguage): string {
+  switch (language) {
+    case 'zh-TW':
+      return '以下十題為近期最重要的面試題；近三年其餘真題列於補充資料列表。';
+    case 'zh-CN':
+      return '以下十题为近期最重要的面试题；近三年其余真题列于补充资料列表。';
+    case 'es':
+      return 'Estas diez son las de mayor prioridad reciente. El resto de preguntas reales de los últimos tres años aparece abajo.';
+    case 'hi':
+      return 'ये दस हाल की प्राथमिकता वाले प्रश्न हैं। पिछले तीन वर्षों के शेष वास्तविक प्रश्न नीचे हैं।';
+    case 'ar':
+      return 'هذه العشر هي المجموعة الأحدث والأولى أولوية. بقية الأسئلة الحقيقية من السنوات الثلاث الماضية أدناه.';
+    default:
+      return 'These ten are the most recent priority set. Remaining reported questions from the last three years appear below.';
+  }
+}
+
 function copyFor(language: AppLanguage) {
   if (language === 'zh-TW' || language === 'zh-CN') {
     const s = language === 'zh-CN';
@@ -41,6 +58,7 @@ function copyFor(language: AppLanguage) {
       reported: s ? '网络真题' : '網路真題',
       predicted: s ? 'AI 预测题' : 'AI 預測題',
       extra: s ? '补充资料列表' : '補充資料列表',
+      extraRule: extraRuleFor(language),
       answer: s ? '建议答案' : '建議答案',
       process: s ? '面试流程' : '面試流程',
       pay: s ? '薪资筹码策略' : '薪資籌碼策略',
@@ -71,6 +89,7 @@ function copyFor(language: AppLanguage) {
     reported: 'Reported question',
     predicted: 'AI prediction',
     extra: 'Additional reported questions',
+    extraRule: extraRuleFor(language),
     answer: 'Suggested answer',
     process: 'Interview process',
     pay: 'Pay leverage',
@@ -263,6 +282,7 @@ export default function GuideSpecModules({
     <GuideSlideShell>
       <PageHeaderBar pageOf="" title={t.item6} badge="" badgeTone="sky" />
       <div className="px-5 py-3.5 space-y-5">
+        <p className={`${BODY} font-medium leading-relaxed text-slate-200`}>{t.extraRule}</p>
         <section>
           <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{t.professional}</p>
           <QuestionList

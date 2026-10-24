@@ -73,6 +73,7 @@ Return JSON only:
   ]
 }
 Reported questions MUST have a real source_url from search. Copy each reported question in the language of that source page. Do not translate it. Predicted questions fill gaps only, have origin "predicted" and source_url null, and are written in the output language.
+Rank reported questions: same company + same role first, then same industry + same role, then recency within the last three years. The first 10 per track are the prepared set. Remaining cited reported questions from the last three years MUST still be returned in this same questions array — they become the extra list. Never drop a cited real question to stay at 10 or 12. Predicted questions fill a track to 10 only when reported count is below 10. Do not invent questions or URLs.
 Return as many real reported questions as search actually found. Do not stop at 10. Do not pad with invented reported questions.
 ${NO_INVENTED_URLS}`;
 
