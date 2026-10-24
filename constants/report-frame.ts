@@ -37,13 +37,13 @@ export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 
 /**
  * Homepage report-type cards (step 3).
- * Fill matches the step-4 Launch button as it sits on that column
- * (indigo-600 at 35% → about #3d3c7c). Selected card keeps the same fill.
+ * Dark blue fill (blue-900 / #1e3a8a family) — not indigo/purple.
+ * Selected card keeps the same fill plus the white ring.
  */
 export const REPORT_TYPE_CARD_IDLE =
-  'border-solid border-[#5a598f] bg-[#3d3c7c] text-white hover:bg-[#4a498e]';
+  'border-solid border-blue-700 bg-blue-900 text-white hover:bg-blue-800';
 export const REPORT_TYPE_CARD_ACTIVE =
-  'border-solid border-white bg-[#3d3c7c] text-white ring-4 ring-white/90';
+  'border-solid border-white bg-blue-900 text-white ring-4 ring-white/90';
 
 /**
  * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.
