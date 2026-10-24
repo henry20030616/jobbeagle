@@ -22,8 +22,8 @@ import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import {
   REPORT_TYPE_CARD_ACTIVE,
-  REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
+  REPORT_TYPE_LAUNCH_BOX,
 } from '@/constants/report-frame';
 import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import BrandLogo from '@/components/BrandLogo';
@@ -818,14 +818,12 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             }
             className={`${MOBILE_BUTTON_PRIMARY} flex flex-col items-center justify-center gap-2 ${
               submitDisabled
-                ? 'bg-blue-900/35 text-zinc-100 cursor-not-allowed'
+                ? `${REPORT_TYPE_LAUNCH_BOX} cursor-not-allowed opacity-80`
                 : publicAts
-                  ? 'bg-emerald-600 text-white'
+                  ? 'border-2 border-solid border-white bg-emerald-600 text-zinc-100'
                   : jdError
-                    ? 'bg-red-600 text-white'
-                    : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                      ? `${REPORT_TYPE_CARD_FILL} text-white shadow-[0_0_28px_rgba(30,58,138,0.75)] ring-2 ring-blue-300/80`
-                      : `${REPORT_TYPE_CARD_FILL} hover:bg-blue-800 active:bg-blue-900 text-white`
+                    ? 'border-2 border-solid border-white bg-red-600 text-zinc-100'
+                    : REPORT_TYPE_LAUNCH_BOX
             }`}
           >
             {isLoading || isParsingUrl ? (

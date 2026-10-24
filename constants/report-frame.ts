@@ -38,14 +38,21 @@ export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 /**
  * Homepage report-type cards (step 3).
  * Dark blue fill (blue-900 / #1e3a8a family) — not indigo/purple.
- * Selected card keeps the same fill plus the white ring.
- * Step-4 launch box must use REPORT_TYPE_CARD_FILL (not indigo / blue-800).
+ * Selected card keeps the same fill plus the white 2px box (border-2 + border-white).
+ * Step-4 launch inner box must reuse these classes — no indigo, glow, or blue-800 fill.
  */
 export const REPORT_TYPE_CARD_FILL = 'bg-blue-900';
 export const REPORT_TYPE_CARD_IDLE =
   `border-solid border-blue-700 ${REPORT_TYPE_CARD_FILL} text-white hover:bg-blue-800`;
 export const REPORT_TYPE_CARD_ACTIVE =
   `border-solid border-white ${REPORT_TYPE_CARD_FILL} text-white ring-4 ring-white/90`;
+
+/**
+ * Step-4 launch inner 方匡 — same fill + white 2px box as the selected Snapshot card.
+ * Disabled may dim via opacity only; do not swap to /35 overlay or blue-800.
+ */
+export const REPORT_TYPE_LAUNCH_BOX =
+  `border-2 ${REPORT_TYPE_CARD_ACTIVE} text-zinc-100`;
 
 /**
  * Homepage step pills (Chrome extension / saved resumes / credits).
@@ -55,8 +62,8 @@ export const HOMEPAGE_STEP_PILL =
   `text-zinc-100 ${REPORT_TYPE_CARD_FILL} hover:bg-blue-800 border-blue-700`;
 
 /**
- * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.
- * /samples Fit Snapshot + Interview Guide tabs match this — not the step-3 report cards.
+ * Homepage step column shell (steps 1–4). White 2px outline lives on the
+ * step-4 launch inner box (REPORT_TYPE_LAUNCH_BOX), not on this column.
  */
 export const HOMEPAGE_STEP_COL_SURFACE =
   'rounded-2xl border border-slate-500/70 bg-gradient-to-b from-slate-500/45 to-slate-600/70 shadow-xl';

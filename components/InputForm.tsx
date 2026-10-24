@@ -18,8 +18,8 @@ import {
   HOMEPAGE_STEP_COL_SURFACE,
   HOMEPAGE_STEP_PILL,
   REPORT_TYPE_CARD_ACTIVE,
-  REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
+  REPORT_TYPE_LAUNCH_BOX,
 } from '@/constants/report-frame';
 
 const PILL_BOX =
@@ -950,7 +950,7 @@ const InputForm: React.FC<InputFormProps> = ({
             <StepSequenceMark />
 
             {/* 4. Launch — same title/pill spacers so content box aligns */}
-            <div className={`${STEP_COL} relative z-0 bg-blue-900/30`}>
+            <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
                 <span className="min-w-0 leading-snug">{t.launchStep}</span>
@@ -958,7 +958,7 @@ const InputForm: React.FC<InputFormProps> = ({
               <div className={STEP_PILL_ROW_EMPTY} aria-hidden>
                 <span className={`${PILL} invisible pointer-events-none select-none`}>&nbsp;</span>
               </div>
-              <div className={`${STEP_BODY} relative z-10`}>
+              <div className={STEP_BODY}>
                 <button
                   type="submit"
                   disabled={submitDisabled}
@@ -971,16 +971,14 @@ const InputForm: React.FC<InputFormProps> = ({
                           : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-100 shadow-lg shadow-blue-900/30 transition-all ${
+                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-100 transition-all ${
                     submitDisabled
-                      ? 'cursor-not-allowed bg-blue-900/35 text-zinc-100 shadow-none'
+                      ? `${REPORT_TYPE_LAUNCH_BOX} cursor-not-allowed opacity-80`
                       : publicAts
-                        ? 'bg-emerald-600 shadow-emerald-500/30 hover:-translate-y-1 hover:bg-emerald-500 active:translate-y-0 active:bg-emerald-700'
+                        ? 'border-2 border-solid border-white bg-emerald-600 hover:-translate-y-1 hover:bg-emerald-500 active:translate-y-0 active:bg-emerald-700'
                         : jdError
-                          ? 'bg-red-600 shadow-red-500/30 hover:-translate-y-1 hover:bg-red-500 active:translate-y-0 active:bg-red-700'
-                          : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                            ? `${REPORT_TYPE_CARD_FILL} shadow-[0_0_42px_rgba(30,58,138,0.75)] ring-2 ring-blue-300/80 hover:-translate-y-1 hover:bg-blue-800 active:translate-y-0 active:bg-blue-900`
-                            : `${REPORT_TYPE_CARD_FILL} hover:-translate-y-1 hover:bg-blue-800 active:translate-y-0 active:bg-blue-900`
+                          ? 'border-2 border-solid border-white bg-red-600 hover:-translate-y-1 hover:bg-red-500 active:translate-y-0 active:bg-red-700'
+                          : `${REPORT_TYPE_LAUNCH_BOX} hover:-translate-y-1 active:translate-y-0`
                   }`}
                 >
                   {isLoading || isParsingUrl ? (
