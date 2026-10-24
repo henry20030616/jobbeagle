@@ -52,6 +52,14 @@ export const REPORT_H2 = 'report-h2';
 export const REPORT_H3 = 'report-h3';
 
 /**
+ * Guide in-report tab labels (職位核心 | 薪資落點 | …).
+ * Same type SIZE as REPORT_H1 / 職位核心解析 (1.5rem = text-2xl).
+ * Chip selected/idle colors stay on the button, not this class.
+ */
+export const REPORT_GUIDE_TAB_TYPE =
+  'text-2xl font-black tracking-tight leading-tight';
+
+/**
  * Homepage report-type cards (step 3).
  * Dark blue fill (blue-900 / #1e3a8a family) — not indigo/purple.
  * Selected card keeps the same fill plus the white 2px box (border-2 + border-white).

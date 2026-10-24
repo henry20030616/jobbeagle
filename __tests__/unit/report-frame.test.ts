@@ -7,6 +7,7 @@ import {
   REPORT_H1,
   REPORT_H2,
   REPORT_H3,
+  REPORT_GUIDE_TAB_TYPE,
   HOMEPAGE_STEP_PILL_TYPE,
   HOMEPAGE_TITLE_TYPE,
   PAGE_SHELL_GUTTER,
@@ -206,6 +207,28 @@ describe('report item heading scale', () => {
     expect(pages).toContain('REPORT_H3');
     expect(pages).not.toMatch(/className=\{`mb-2 \$\{SUBHEAD\}`\}/);
     expect(pages).not.toContain('text-2xl font-black text-blue-400');
+  });
+
+  it('sizes Guide in-report tab labels to REPORT_H1 / 職位核心解析 (1.5rem)', () => {
+    expect(REPORT_GUIDE_TAB_TYPE).toMatch(/text-2xl/);
+    expect(REPORT_GUIDE_TAB_TYPE).toMatch(/font-black/);
+
+    const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8');
+    expect(css).toMatch(/\.report-h1 \{[\s\S]*?font-size:\s*1\.5rem/);
+
+    const dashboard = readFileSync(
+      join(process.cwd(), 'components/FullReportDashboard.tsx'),
+      'utf8',
+    );
+    expect(dashboard).toContain('REPORT_GUIDE_TAB_TYPE');
+    expect(dashboard).not.toMatch(/text-base sm:text-lg font-bold/);
+
+    const pages = readFileSync(
+      join(process.cwd(), 'components/report/SevenItemPages.tsx'),
+      'utf8',
+    );
+    expect(pages).toContain('<h2 className={REPORT_H1}>{title}</h2>');
+    expect(pages).toContain('<ItemBlock title={copy.core}');
   });
 });
 
