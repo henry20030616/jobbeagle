@@ -118,9 +118,11 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
             <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-10 lg:h-10 text-indigo-400 shrink-0" />
             <span className="flex-1 min-w-0">
               <span className="block text-sm sm:text-base lg:text-2xl font-bold text-white">{t.contactTitle}</span>
-              <span className="mt-0.5 block text-xs sm:text-sm lg:text-lg leading-snug text-slate-400 whitespace-normal break-words">
-                {open ? t.contactDesc : t.expandHint}
-              </span>
+              {open ? (
+                <span className="mt-0.5 block text-xs sm:text-sm lg:text-lg leading-snug text-slate-400 whitespace-normal break-words">
+                  {t.contactDesc}
+                </span>
+              ) : null}
             </span>
             <ChevronDown
               className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-8 lg:h-8 text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}

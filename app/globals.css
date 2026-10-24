@@ -199,15 +199,46 @@ main input {
   .homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: var(--type-rest) !important; line-height: 1.3 !important; }
   .homepage-font-large .homepage-header-controls .lg\:h-16 { height: 5.5rem !important; }
 
-  .homepage-font-large .homepage-referral .text-lg,
-  .homepage-font-large .homepage-referral .text-xl {
-    font-size: var(--type-rest) !important;
-    line-height: 1.35 !important;
+  .homepage-font-large .homepage-referral .referral-title {
+    font-size: var(--type-step) !important;
+    line-height: 1.2 !important;
   }
-  .homepage-font-large .homepage-referral .w-6,
-  .homepage-font-large .homepage-referral .h-6 { width: 2.75rem !important; height: 2.75rem !important; }
-  .homepage-font-large .homepage-referral .w-5,
-  .homepage-font-large .homepage-referral .h-5 { width: 2.5rem !important; height: 2.5rem !important; }
+  .homepage-font-large .homepage-referral .referral-desc {
+    font-size: var(--type-chrome) !important;
+    line-height: 1.4 !important;
+  }
+
+  /* History drawer: 2.5× current max-w-md (28rem) panel, capped at 90vw. */
+  .homepage-history-panel {
+    width: min(70rem, 90vw) !important;
+    max-width: min(70rem, 90vw) !important;
+    font-size: 250%;
+  }
+  .homepage-history-panel .text-sm { font-size: 0.875em !important; line-height: 1.4 !important; }
+  .homepage-history-panel .text-base { font-size: 1em !important; line-height: 1.4 !important; }
+  .homepage-history-panel .text-xl { font-size: 1.25em !important; line-height: 1.25 !important; }
+  .homepage-history-panel .text-2xl { font-size: 1.5em !important; line-height: 1.2 !important; }
+  .homepage-history-panel .px-6 { padding-left: 1.5em !important; padding-right: 1.5em !important; }
+  .homepage-history-panel .py-5 { padding-top: 1.25em !important; padding-bottom: 1.25em !important; }
+  .homepage-history-panel .p-5 { padding: 1.25em !important; }
+  .homepage-history-panel .p-2 { padding: 0.5em !important; }
+  .homepage-history-panel .py-16 { padding-top: 4em !important; padding-bottom: 4em !important; }
+  .homepage-history-panel .gap-3 { gap: 0.75em !important; }
+  .homepage-history-panel .gap-4 { gap: 1em !important; }
+  .homepage-history-panel .mt-1\.5 { margin-top: 0.375em !important; }
+  .homepage-history-panel .mt-2 { margin-top: 0.5em !important; }
+  .homepage-history-panel .mb-4 { margin-bottom: 1em !important; }
+  .homepage-history-panel .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1em !important; }
+  .homepage-history-panel .rounded-xl { border-radius: 0.75em !important; }
+  .homepage-history-panel .w-5 { width: 1.25em !important; }
+  .homepage-history-panel .h-5 { height: 1.25em !important; }
+  .homepage-history-panel .w-6 { width: 1.5em !important; }
+  .homepage-history-panel .h-6 { height: 1.5em !important; }
+  .homepage-history-panel .w-8 { width: 2em !important; }
+  .homepage-history-panel .h-8 { height: 2em !important; }
+  .homepage-history-panel .w-16 { width: 4em !important; }
+  .homepage-history-panel .h-16 { height: 4em !important; }
+  .homepage-history-panel .h-32 { height: 8em !important; }
 
   .homepage-font-large .homepage-footer { margin-top: 0.75rem !important; }
   .homepage-font-large .homepage-footer .text-xs,
