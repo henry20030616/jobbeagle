@@ -15,6 +15,7 @@ import {
   GEMINI_LITE_MODEL,
 } from '@/constants/models';
 import { isCitableSourceUrl } from '@/lib/provenance';
+import { mergeInterviewSummary, QUESTIONS_SUMMARY_MAX } from '@/lib/questions-summary';
 
 export type GuideModuleId =
   | 'snapshot'
@@ -288,7 +289,7 @@ export function selectInterviewBank(
     professional_extra: professional.extra,
     behavioral_extra: behavioral.extra,
     process: process.slice(0, 1500),
-    summary: summary.slice(0, 800),
+    summary: summary.slice(0, QUESTIONS_SUMMARY_MAX),
   };
 }
 
@@ -382,8 +383,11 @@ export function applyInterviewAnswers(
   raw: unknown,
 ): GuideInterviewBank {
   if (!raw || typeof raw !== 'object') return bank;
-  const answers = (raw as { answers?: unknown }).answers;
-  if (!Array.isArray(answers)) return bank;
+  const row = raw as Record<string, unknown>;
+  const summary = mergeInterviewSummary(bank.summary ?? '', row);
+  const withSummary = { ...bank, summary };
+  const answers = row.answers;
+  if (!Array.isArray(answers)) return withSummary;
   const byQuestion = new Map<string, string>();
   for (const item of answers) {
     if (!item || typeof item !== 'object') continue;
@@ -408,7 +412,7 @@ export function applyInterviewAnswers(
       for (const [question, answer] of byQuestion) {
         if (answer === clone) byQuestion.delete(question);
       }
-      if (byQuestion.size === 0) return bank;
+      if (byQuestion.size === 0) return withSummary;
     }
   }
   const fill = (items: GuideQuestion[]) =>
@@ -417,7 +421,7 @@ export function applyInterviewAnswers(
       answer: byQuestion.get(item.question) ?? item.answer,
     }));
   return {
-    ...bank,
+    ...withSummary,
     professional: fill(bank.professional),
     behavioral: fill(bank.behavioral),
     professional_extra: fill(bank.professional_extra),
@@ -445,7 +449,7 @@ export function normalizeGuideModules(raw: unknown): GuideModules | undefined {
       professional_extra: parseGuideQuestions(bank.professional_extra),
       behavioral_extra: parseGuideQuestions(bank.behavioral_extra),
       process: asString(bank.process).slice(0, 1500),
-      summary: asString(bank.summary).slice(0, 800),
+      summary: asString(bank.summary).slice(0, QUESTIONS_SUMMARY_MAX),
     },
     negotiation: parseNegotiation(row.negotiation) ?? emptyGuideModules().negotiation,
     limitations,

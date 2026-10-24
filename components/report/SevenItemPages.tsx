@@ -20,6 +20,7 @@ import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
 import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-email';
+import { parseQuestionsSummary } from '@/lib/questions-summary';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
@@ -82,6 +83,8 @@ type ItemCopy = {
   roleReviews: string;
   professional: string;
   behavioral: string;
+  professionalAnalysis: string;
+  behavioralAnalysis: string;
   reported: string;
   predicted: string;
   extra: string;
@@ -179,6 +182,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
       roleReviews: s ? '职位评价' : '職位評價',
       professional: s ? '专业题' : '專業題',
       behavioral: s ? '行为题' : '行為題',
+      professionalAnalysis: s ? '专业题分析' : '專業題分析',
+      behavioralAnalysis: s ? '行为题分析' : '行為題分析',
       reported: s ? '网络真题' : '網路真題',
       predicted: s ? 'AI 预测题' : 'AI 預測題',
       extra: s ? '补充资料列表' : '補充資料列表',
@@ -259,6 +264,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
     roleReviews: 'Role reviews',
     professional: 'Professional',
     behavioral: 'Behavioral',
+    professionalAnalysis: 'Professional analysis',
+    behavioralAnalysis: 'Behavioral analysis',
     reported: 'Reported question',
     predicted: 'AI prediction',
     extra: 'Additional reported questions',
@@ -742,6 +749,47 @@ function SummaryCard({ label, summary }: { label: string; summary: string }) {
       ) : (
         <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{points[0]}</p>
       )}
+    </SectionCard>
+  );
+}
+
+function AnalysisBody({ lines }: { lines: string[] }) {
+  if (lines.length === 0) return null;
+  if (lines.length === 1) {
+    return <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{lines[0]}</p>;
+  }
+  return <PointList items={lines} dot="bg-indigo-300" />;
+}
+
+function QuestionsSummaryCard({
+  label,
+  summary,
+  professionalTitle,
+  behavioralTitle,
+}: {
+  label: string;
+  summary: string;
+  professionalTitle: string;
+  behavioralTitle: string;
+}) {
+  const parts = parseQuestionsSummary(summary);
+  const hasColumns = parts.professional.length > 0 || parts.behavioral.length > 0;
+  if (!parts.process && !hasColumns) {
+    return <SummaryCard label={label} summary={summary} />;
+  }
+  return (
+    <SectionCard title={label} heading={REPORT_H1}>
+      {parts.process ? <BriefRows items={[parts.process]} /> : null}
+      {hasColumns ? (
+        <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 ${parts.process ? 'mt-4' : ''}`}>
+          <InnerSection title={professionalTitle}>
+            <AnalysisBody lines={parts.professional} />
+          </InnerSection>
+          <InnerSection title={behavioralTitle}>
+            <AnalysisBody lines={parts.behavioral} />
+          </InnerSection>
+        </div>
+      ) : null}
     </SectionCard>
   );
 }
@@ -1397,7 +1445,14 @@ export function GuideItemPage({
   };
   return (
     <div className="space-y-4">
-      {item === 'land' ? null : (
+      {item === 'land' ? null : item === 'questions' ? (
+        <QuestionsSummaryCard
+          label={copy.analysisSummary}
+          summary={summaryByItem.questions}
+          professionalTitle={copy.professionalAnalysis}
+          behavioralTitle={copy.behavioralAnalysis}
+        />
+      ) : (
         <SummaryCard label={copy.analysisSummary} summary={summaryByItem[item]} />
       )}
       {body}

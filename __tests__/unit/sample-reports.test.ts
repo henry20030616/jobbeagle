@@ -424,6 +424,9 @@ describe('seven-item report layout', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('GUIDE_SECTION_FRAME');
     expect(source).toContain('<SummaryCard label={copy.analysisSummary}');
+    expect(source).toContain('<QuestionsSummaryCard');
+    expect(source).toContain('professionalTitle={copy.professionalAnalysis}');
+    expect(source).toContain('behavioralTitle={copy.behavioralAnalysis}');
     expect(source).toContain('<InnerSection title={copy.pay}>');
     expect(source).toContain('<InnerSection title={copy.benefits}>');
     expect(source).toContain('title={copy.say}');
@@ -446,7 +449,7 @@ describe('seven-item report layout', () => {
     expect(source).toContain("sources: 'Data sources'");
     expect(source).not.toContain('<SectionCard title={copy.target} heading={REPORT_H3}>');
     expect(source).not.toContain('<SectionCard title={copy.ceiling} heading={REPORT_H3}>');
-    expect(source).not.toContain('framed');
+    expect(source).not.toContain('function framed');
     expect(source).not.toMatch(
       /<ItemBlock title=\{title\[item\]\} summaryLabel=\{copy\.analysisSummary\}/,
     );
@@ -583,8 +586,12 @@ describe('seven-item report layout', () => {
     expect(zh.summary).toMatch(/^招募流程：/);
     expect(zh.summary).toMatch(/招募篩選/);
     expect(zh.summary).toMatch(/約三週/);
-    expect(zh.summary).toMatch(/專業題/);
-    expect(zh.summary).toMatch(/行為題/);
+    expect(zh.summary).toMatch(/專業題分析/);
+    expect(zh.summary).toMatch(/行為題分析/);
+    expect(zh.summary).toMatch(/ACH/);
+    expect(zh.summary).toMatch(/書面狀態/);
+    expect(zh.summary).not.toMatch(/專業題：ACH 退票、截止、SQL 核對/);
+    expect(zh.summary).not.toMatch(/行為題：書面狀態與跨團隊失誤/);
     expect(zh.process).toMatch(/招募篩選/);
 
     const html = renderToStaticMarkup(
@@ -598,7 +605,16 @@ describe('seven-item report layout', () => {
     expect(html).toContain('招募流程');
     expect(html).toContain('招募篩選');
     expect(html).toContain('約三週');
+    expect(html).toContain('專業題分析');
+    expect(html).toContain('行為題分析');
+    expect(html).toContain('ACH');
+    expect(html).toContain('截止');
+    expect(html).toContain('SQL');
+    expect(html).toContain('書面狀態');
+    expect(html).toContain('跨團隊');
     expect(html).not.toContain('面試流程');
+    expect(html).not.toContain('專業題：ACH 退票、截止、SQL 核對');
+    expect(html).not.toContain('行為題：書面狀態與跨團隊失誤');
 
     const labels = {
       en: 'Hiring process:',

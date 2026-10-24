@@ -13,7 +13,7 @@ import {
   resolveGuideModuleRoute,
   selectInterviewBank,
 } from '@/lib/guide-modules';
-import { QUESTION_RETRIEVAL_PROMPT } from '@/lib/prompts/guide-modules';
+import { QUESTION_ANSWER_PROMPT, QUESTION_RETRIEVAL_PROMPT } from '@/lib/prompts/guide-modules';
 import type { GuideInterviewBank, GuideQuestion } from '@/types';
 import { isCitableSourceUrl } from '@/lib/provenance';
 
@@ -84,6 +84,12 @@ describe('guide module routes', () => {
   it('labels the questions summary process line as Hiring process / 招募流程', () => {
     expect(QUESTION_RETRIEVAL_PROMPT).toContain('Hiring process/招募流程');
     expect(QUESTION_RETRIEVAL_PROMPT).not.toContain('Process/流程,');
+    expect(QUESTION_RETRIEVAL_PROMPT).toContain('Professional analysis/專業題分析');
+    expect(QUESTION_RETRIEVAL_PROMPT).toContain('Behavioral analysis/行為題分析');
+    expect(QUESTION_RETRIEVAL_PROMPT).not.toContain('One driver per line');
+    expect(QUESTION_ANSWER_PROMPT).toContain('professional_analysis');
+    expect(QUESTION_ANSWER_PROMPT).toContain('behavioral_analysis');
+    expect(QUESTION_ANSWER_PROMPT).toContain('Not a keyword dump');
   });
 
   it('never routes intel or snapshot to Anthropic', () => {
@@ -261,6 +267,29 @@ describe('applyInterviewAnswers', () => {
     expect(filled.professional[0]?.answer).toMatch(/Queue ranking/);
     expect(filled.professional[1]?.answer).toMatch(/SQL match/);
     expect(filled.professional_extra[0]?.answer).toMatch(/Handoff/);
+  });
+
+  it('merges professional and behavioral analysis onto the interview summary', () => {
+    const filled = applyInterviewAnswers(
+      {
+        ...bankOf(['A', 'B', 'C', 'D']),
+        summary: 'Hiring process: recruiter screen, then a panel, about three weeks.',
+      },
+      {
+        answers: [
+          { question: 'A', answer: 'Queue ranking with the Looker board.' },
+          { question: 'B', answer: 'SQL match then Looker triage.' },
+        ],
+        professional_analysis: 'Probe ACH returns against cutoff.\nPrepare a SQL close from the resume.',
+        behavioral_analysis: 'Probe written status.\nPrepare a cross-team miss STAR.',
+      },
+    );
+    expect(filled.summary).toMatch(/^Hiring process:/);
+    expect(filled.summary).toMatch(/Professional analysis/);
+    expect(filled.summary).toMatch(/Behavioral analysis/);
+    expect(filled.summary).toMatch(/ACH returns/);
+    expect(filled.summary).toMatch(/written status/);
+    expect(filled.professional[0]?.answer).toMatch(/Queue ranking/);
   });
 
   it('drops a cloned majority so identical answers never stamp the bank', () => {

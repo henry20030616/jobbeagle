@@ -126,7 +126,7 @@ const en: SampleGuideNarrative = {
   company_summary:
     'Culture: public reviews describe a written, remote-friendly ops culture with tight cutoffs.\nRisk: no WARN in the sample window; H-1B filings exist, but sponsorship for this seat is unconfirmed.\nConfirm: ask the recruiter about ops headcount and visa before treating either as settled.',
   questions_summary:
-    'Hiring process: recruiter screen, hiring-manager settlement-break case, then a panel, about three weeks.\nProfessional: ACH returns, cutoff, and SQL checks.\nBehavioral: written status and cross-team misses.',
+    'Hiring process: recruiter screen, hiring-manager settlement-break case, then a panel, about three weeks.\nProfessional analysis:\nThe professional round tests whether you can sequence an ACH returns queue against cutoff, and close a bank-file vs ledger break with SQL the next shift can defend.\nThat is day-one work on this Senior BA seat: returns, cutoff, and tie-out. The hiring-manager settlement-break case is built to see if you can run that line, not recite the acronyms.\nPrepare by walking the resume’s 28% SQL/Looker cycle-time cut through one cutoff queue and one SQL close. ACH returns ownership is not on the resume — do not present it as completed scope.\nBehavioral analysis:\nThe behavioral round tests whether a written status can be acted on, and how you recover when a cross-team miss hits cutoff.\nThis ops seat is remote and written; a vague update is a missed cutoff, and a cross-team miss lands on settlement.\nPrepare two STARs from resume facts only: one written update that changed a decision, and one cross-team miss after which you changed a process. Do not invent the story.',
   negotiate_summary:
     'Open: $168K total, $145K base, using only the 28% reconciliation cycle-time proof.\nCap: $185K. No Staff scope and no second offer.\nBan: do not invent a competing bid, and do not trade base for a benefit the employer did not offer.',
   pay_strategy:
@@ -219,7 +219,7 @@ const zhTW: SampleGuideNarrative = {
   company_summary:
     '文化：公開評價寫重視書面溝通、可遠端的營運文化，截止時間很緊。\n風險：範例區間沒有 WARN；近三年有 H-1B 申請，此席是否贊助尚未確認。\n待確認：入職前向招募確認人力變動與簽證。',
   questions_summary:
-    '招募流程：招募篩選、用人主管清算差異案例、小組面試，約三週。\n專業題：ACH 退票、截止、SQL 核對。\n行為題：書面狀態與跨團隊失誤。',
+    '招募流程：招募篩選、用人主管清算差異案例、小組面試，約三週。\n專業題分析：\n面試在測截止前如何排列 ACH 退票佇列，以及銀行檔與帳本不一致時，如何用 SQL 核到下一班接得走。\n這份 Senior BA 席位第一天的工作就是退票、截止與對帳；用人主管的清算差異案例就是在看這條線能不能獨立做。\n準備時用履歷已有的 SQL／Looker 對帳週期縮短 28%，走完一筆截止佇列與一次核對。ACH 退票擁有權不在履歷上，不要講成已完成的範圍。\n行為題分析：\n面試在測書面狀態能不能讓別人接著做，以及跨團隊失誤撞上截止時，你怎麼收斂、事後改了什麼。\n這份營運工作是遠端、靠書面交接；狀態寫不清楚就等於錯過截止，跨團隊失誤會直接打到清算。\n準備兩則 STAR：一則是書面狀態改變決策，一則是跨團隊失誤後你改了流程——只使用履歷事實，不要編造。',
   negotiate_summary:
     '開價：總薪酬 $168K，底薪 $145K，依據是對帳週期縮短 28%。\n上限：$185K。沒有 Staff 範圍，也沒有第二份 offer。\n禁區：不要編競爭方案，也不用底薪去換對方沒提出的福利。',
   pay_strategy:
@@ -312,7 +312,7 @@ const zhCN: SampleGuideNarrative = {
   company_summary:
     '文化：公开评价写重视书面沟通、可远程的运营文化，截止时间很紧。\n风险：示例区间没有 WARN；近三年有 H-1B 申请，此席是否赞助尚未确认。\n待确认：入职前向招聘确认人力变动与签证。',
   questions_summary:
-    '招聘流程：招聘筛选、用人主管清算差异案例、小组面试，约三周。\n专业题：ACH 退票、截止、SQL 核对。\n行为题：书面状态与跨团队失误。',
+    '招聘流程：招聘筛选、用人主管清算差异案例、小组面试，约三周。\n专业题分析：\n面试在测截止前如何排列 ACH 退票队列，以及银行档与账本不一致时，如何用 SQL 核到下一班接得走。\n这份 Senior BA 席位第一天的工作就是退票、截止与对账；用人主管的清算差异案例就是在看这条线能不能独立做。\n准备时用简历已有的 SQL／Looker 对账周期缩短 28%，走完一笔截止队列与一次核对。ACH 退票所有权不在简历上，不要讲成已完成的范围。\n行为题分析：\n面试在测书面状态能不能让别人接着做，以及跨团队失误撞上截止时，你怎么收敛、事后改了什么。\n这份运营工作是远程、靠书面交接；状态写不清楚就等于错过截止，跨团队失误会直接打到清算。\n准备两则 STAR：一则是书面状态改变决策，一则是跨团队失误后你改了流程——只使用简历事实，不要编造。',
   negotiate_summary:
     '开价：总薪酬 $168K，底薪 $145K，依据是对账周期缩短 28%。\n上限：$185K。没有 Staff 范围，也没有第二份 offer。\n禁区：不要编竞争方案，也不用底薪去换对方没提出的福利。',
   pay_strategy:
@@ -409,7 +409,7 @@ const es: SampleGuideNarrative = {
   company_summary:
     'Cultura: reseñas públicas describen operaciones escritas y remotas, con plazos muy ajustados.\nRiesgo: no hay WARN en la ventana de muestra; hay presentaciones H-1B, pero el patrocinio de este puesto no está confirmado.\nConfirmar: pregunta al reclutador por la plantilla de ops y el visado.',
   questions_summary:
-    'Proceso de contratación: filtro del reclutador, caso de liquidación y panel, unas tres semanas.\nProfesional: devoluciones ACH, corte y SQL.\nConductual: estatus escrito y fallos entre equipos.',
+    'Proceso de contratación: filtro del reclutador, caso de liquidación y panel, unas tres semanas.\nAnálisis profesional:\nLa ronda profesional comprueba si puedes ordenar una cola de devoluciones ACH antes del corte y cerrar un descuadre banco-libro con SQL que el siguiente turno pueda defender.\nEse es el trabajo del primer día en este puesto de Senior BA: devoluciones, corte y conciliación. El caso del responsable de contratación existe para ver si puedes operar esa línea, no recitar siglas.\nPrepárate recorriendo el recorte del 28% en el ciclo de conciliación con SQL y Looker en una cola de corte y un cierre SQL. La propiedad de devoluciones ACH no está en el CV: no la presentes como alcance ya cerrado.\nAnálisis conductual:\nLa ronda conductual comprueba si un estatus escrito se puede ejecutar, y cómo recuperas cuando un fallo entre equipos choca con el corte.\nEste puesto de ops es remoto y escrito; un update vago es un corte perdido, y un fallo entre equipos aterriza en la liquidación.\nPrepara dos STAR solo con hechos del CV: un estatus escrito que cambió una decisión, y un fallo entre equipos tras el cual cambiaste un proceso. No inventes la historia.',
   negotiate_summary:
     'Apertura: $168K total, base $145K, solo con la prueba del 28% en conciliación.\nTope: $185K. No hay alcance Staff ni una segunda oferta.\nProhibido: no inventes una oferta competidora ni cambies la base por un beneficio no ofrecido.',
   pay_strategy:
@@ -505,7 +505,7 @@ const hi: SampleGuideNarrative = {
   company_summary:
     'संस्कृति: सार्वजनिक समीक्षाएँ लिखित, दूरस्थ-अनुकूल ops और कड़े कटऑफ बताती हैं।\nजोखिम: नमूना अवधि में WARN नहीं; H-1B दाखिले हैं, इस सीट का प्रायोजन पुष्ट नहीं।\nपुष्टि: ops हेडकाउंट और वीज़ा भर्तीकर्ता से पूछें।',
   questions_summary:
-    'भर्ती प्रक्रिया: भर्तीकर्ता स्क्रीन, सेटलमेंट-ब्रेक केस, पैनल—लगभग तीन सप्ताह।\nपेशेवर: ACH रिटर्न, कटऑफ, SQL।\nव्यवहारिक: लिखित स्टेटस और क्रॉस-टीम चूक।',
+    'भर्ती प्रक्रिया: भर्तीकर्ता स्क्रीन, सेटलमेंट-ब्रेक केस, पैनल—लगभग तीन सप्ताह।\nपेशेवर विश्लेषण:\nपेशेवर दौर यह जाँचता है कि कटऑफ से पहले आप ACH रिटर्न कतार क्रम में लगा सकते हैं या नहीं, और बैंक फ़ाइल बनाम खाता अंतर को SQL से ऐसे बंद कर सकते हैं कि अगली शिफ्ट उसे बचा सके।\nइस Senior BA सीट का पहले दिन का काम रिटर्न, कटऑफ और मिलान है। नियुक्ति प्रबंधक का सेटलमेंट-ब्रेक केस यही लाइन चलाने के लिए है, संक्षेप दोहराने के लिए नहीं।\nरिज़्यूमे के SQL/Looker से 28% मिलान चक्र कटौती को एक कटऑफ कतार और एक SQL बंद में चलाकर तैयारी करें। ACH रिटर्न की मालिकी रिज़्यूमे में नहीं है — इसे पूरा हो चुका दायरा न बताएँ।\nव्यवहारिक विश्लेषण:\nव्यवहारिक दौर यह जाँचता है कि लिखित स्टेटस पर काम हो सकता है या नहीं, और क्रॉस-टीम चूक जब कटऑफ से टकराए तो आप कैसे सँभालते हैं।\nयह ops सीट दूरस्थ और लिखित है; अस्पष्ट अपडेट छूटा कटऑफ है, और क्रॉस-टीम चूक सेटलमेंट पर गिरती है।\nकेवल रिज़्यूमे तथ्यों से दो STAR तैयार करें: एक लिखित अपडेट जिसने निर्णय बदला, और एक क्रॉस-टीम चूक जिसके बाद आपने प्रक्रिया बदली। कहानी न गढ़ें।',
   negotiate_summary:
     'खोलें: कुल $168K, आधार $145K, केवल 28% मिलान चक्र प्रमाण।\nऊपरी सीमा: $185K। Staff दायरा या दूसरा ऑफ़र नहीं।\nनिषेध: प्रतिस्पर्धी बोली न गढ़ें, न दी सुविधा के बदले आधार न दें।',
   pay_strategy:
@@ -601,7 +601,7 @@ const ar: SampleGuideNarrative = {
   company_summary:
     'الثقافة: مراجعات تصف عمليات مكتوبة ومرنة للعمل عن بُعد مع مواعيد قطع ضيقة.\nالمخاطر: لا WARN في نافذة العينة؛ إيداعات H-1B موجودة ورعاية هذا المقعد غير مؤكدة.\nتأكيد: اسأل المسؤول عن عدد موظفي العمليات والتأشيرة.',
   questions_summary:
-    'عملية التوظيف: فرز المسؤول، حالة فرق تسوية، لجنة، نحو ثلاثة أسابيع.\nمهني: مرتجعات ACH والقطع وSQL.\nسلوكي: التحديث المكتوب وإخفاقات الفرق.',
+    'عملية التوظيف: فرز المسؤول، حالة فرق تسوية، لجنة، نحو ثلاثة أسابيع.\nالتحليل المهني:\nتختبر الجولة المهنية ما إذا كنت ترتّب طابور مرتجعات ACH قبل القطع، وتغلق فرق ملف البنك عن الدفتر بـ SQL يستطيع الورد التالي الدفاع عنه.\nهذا عمل اليوم الأول في مقعد Senior BA: المرتجعات والقطع والمطابقة. حالة فرق التسوية لدى مدير التوظيف مبنية لرؤية إن كنت تشغّل هذا الخط، لا لتكرار الاختصارات.\nجهّز نفسك بتمرير اختصار دورة المطابقة 28% بـ SQL وLooker عبر طابور قطع وإغلاق SQL واحد. ملكية مرتجعات ACH ليست في السيرة — لا تقدّمها كنطاق منجز.\nالتحليل السلوكي:\nتختبر الجولة السلوكية ما إذا كان التحديث المكتوب قابلاً للتنفيذ، وكيف تتعافى عندما يصطدم إخفاق بين الفرق بالقطع.\nهذا مقعد عمليات عن بُعد ومكتوب؛ تحديث مبهم يعني قطعاً فائتاً، وإخفاق بين الفرق يهبط على التسوية.\nجهّز قصتي STAR من حقائق السيرة فقط: تحديثاً مكتوباً غيّر قراراً، وإخفاقاً بين الفرق غيّرت بعده عملية. لا تخترع القصة.',
   negotiate_summary:
     'الافتتاح: إجمالي $168K وأساس $145K، فقط باختصار المطابقة 28%.\nالسقف: $185K. لا نطاق Staff ولا عرض ثانٍ.\nمحظور: لا تخترع عرضاً منافساً ولا تستبدل الأساس بميزة لم تُعرض.',
   pay_strategy:

@@ -656,7 +656,7 @@ export interface GuideInterviewBank {
   professional_extra: GuideQuestion[];
   behavioral_extra: GuideQuestion[];
   process: string;
-  /** Two or three sentences on how this company interviews this role. */
+  /** Hiring process line plus professional-analysis and behavioral-analysis blocks. */
   summary?: string;
 }
 
