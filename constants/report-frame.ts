@@ -39,18 +39,20 @@ export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
  * Homepage report-type cards (step 3).
  * Dark blue fill (blue-900 / #1e3a8a family) — not indigo/purple.
  * Selected card keeps the same fill plus the white ring.
+ * Step-4 launch box must use REPORT_TYPE_CARD_FILL (not indigo / blue-800).
  */
+export const REPORT_TYPE_CARD_FILL = 'bg-blue-900';
 export const REPORT_TYPE_CARD_IDLE =
-  'border-solid border-blue-700 bg-blue-900 text-white hover:bg-blue-800';
+  `border-solid border-blue-700 ${REPORT_TYPE_CARD_FILL} text-white hover:bg-blue-800`;
 export const REPORT_TYPE_CARD_ACTIVE =
-  'border-solid border-white bg-blue-900 text-white ring-4 ring-white/90';
+  `border-solid border-white ${REPORT_TYPE_CARD_FILL} text-white ring-4 ring-white/90`;
 
 /**
  * Homepage step pills (Chrome extension / saved resumes / credits).
  * Same dark-blue fill as step 3 cards and the step 4 launch box.
  */
 export const HOMEPAGE_STEP_PILL =
-  'text-zinc-100 bg-blue-900 hover:bg-blue-800 border-blue-700';
+  `text-zinc-100 ${REPORT_TYPE_CARD_FILL} hover:bg-blue-800 border-blue-700`;
 
 /**
  * Homepage step column shell (steps 1–4). Step 4 Launch uses this + muted overlay.
@@ -61,9 +63,9 @@ export const HOMEPAGE_STEP_COL_SURFACE =
 
 /** /samples Fit Snapshot + Interview Guide — same dark-blue fill as step 3 cards / step-4 Launch */
 export const SAMPLE_REPORT_TAB_IDLE =
-  'rounded-2xl border border-blue-700 bg-blue-900 text-white hover:bg-blue-800';
+  `rounded-2xl border border-blue-700 ${REPORT_TYPE_CARD_FILL} text-white hover:bg-blue-800`;
 export const SAMPLE_REPORT_TAB_ACTIVE =
-  'rounded-2xl border border-white bg-blue-900 text-white ring-4 ring-white/90';
+  `rounded-2xl border border-white ${REPORT_TYPE_CARD_FILL} text-white ring-4 ring-white/90`;
 
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =

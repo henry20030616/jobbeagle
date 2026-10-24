@@ -18,6 +18,7 @@ import {
   HOMEPAGE_STEP_COL_SURFACE,
   HOMEPAGE_STEP_PILL,
   REPORT_TYPE_CARD_ACTIVE,
+  REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
 } from '@/constants/report-frame';
 
@@ -32,6 +33,8 @@ const STEP_TITLE =
   'step-title flex shrink-0 items-center pb-3 lg:pb-4 text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white';
 const STEP_PILL_ROW =
   'mb-3 lg:mb-4 flex min-h-0 w-full min-w-0 shrink-0 items-center';
+/** Empty step-4 spacer only — one-pill floor so launch top matches 適配快照. */
+const STEP_PILL_ROW_EMPTY = `${STEP_PILL_ROW} min-h-[2.75rem]`;
 /** Mobile floor; desktop bodies grow with the flex-1 step row. */
 const STEP_BODY_MIN = 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-0';
 const STEP_BODY = `flex ${STEP_BODY_MIN} min-w-0 flex-1 flex-col overflow-hidden`;
@@ -952,7 +955,9 @@ const InputForm: React.FC<InputFormProps> = ({
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />
                 <span className="min-w-0 leading-snug">{t.launchStep}</span>
               </h2>
-              <div className={STEP_PILL_ROW} aria-hidden />
+              <div className={STEP_PILL_ROW_EMPTY} aria-hidden>
+                <span className={`${PILL} invisible pointer-events-none select-none`}>&nbsp;</span>
+              </div>
               <div className={`${STEP_BODY} relative z-10`}>
                 <button
                   type="submit"
@@ -974,8 +979,8 @@ const InputForm: React.FC<InputFormProps> = ({
                         : jdError
                           ? 'bg-red-600 shadow-red-500/30 hover:-translate-y-1 hover:bg-red-500 active:translate-y-0 active:bg-red-700'
                           : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                            ? 'bg-blue-800 shadow-[0_0_42px_rgba(30,64,175,0.75)] ring-2 ring-blue-300/80 hover:-translate-y-1 hover:bg-blue-700 active:translate-y-0 active:bg-blue-900'
-                            : 'bg-blue-800 hover:-translate-y-1 hover:bg-blue-700 active:translate-y-0 active:bg-blue-900'
+                            ? `${REPORT_TYPE_CARD_FILL} shadow-[0_0_42px_rgba(30,58,138,0.75)] ring-2 ring-blue-300/80 hover:-translate-y-1 hover:bg-blue-800 active:translate-y-0 active:bg-blue-900`
+                            : `${REPORT_TYPE_CARD_FILL} hover:-translate-y-1 hover:bg-blue-800 active:translate-y-0 active:bg-blue-900`
                   }`}
                 >
                   {isLoading || isParsingUrl ? (

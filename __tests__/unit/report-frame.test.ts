@@ -3,6 +3,7 @@ import {
   HOMEPAGE_STEP_PILL,
   REPORT_ACTION_TEXT,
   REPORT_TYPE_CARD_ACTIVE,
+  REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
   SAMPLE_RAIL_TEXT,
   SAMPLE_REPORT_TAB_ACTIVE,
@@ -18,6 +19,7 @@ describe('report chrome type scale', () => {
 
 describe('homepage step 3 / sample tab fill', () => {
   it('uses dark blue, not indigo or the old purple hex', () => {
+    expect(REPORT_TYPE_CARD_FILL).toBe('bg-blue-900');
     const tokens = [
       HOMEPAGE_STEP_PILL,
       REPORT_TYPE_CARD_IDLE,
@@ -27,6 +29,7 @@ describe('homepage step 3 / sample tab fill', () => {
     ];
     for (const token of tokens) {
       expect(token).toMatch(/bg-blue-900/);
+      expect(token).toContain(REPORT_TYPE_CARD_FILL);
       expect(token).not.toMatch(/indigo|#3d3c7c|#5a598f|#4a498e/);
     }
     expect(REPORT_TYPE_CARD_ACTIVE).toMatch(/ring-4 ring-white/);

@@ -22,6 +22,7 @@ import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import {
   REPORT_TYPE_CARD_ACTIVE,
+  REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
 } from '@/constants/report-frame';
 import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
@@ -823,8 +824,8 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   : jdError
                     ? 'bg-red-600 text-white'
                     : reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-                      ? 'bg-blue-800 text-white shadow-[0_0_28px_rgba(30,64,175,0.75)] ring-2 ring-blue-300/80'
-                      : 'bg-blue-800 hover:bg-blue-700 active:bg-blue-900 text-white'
+                      ? `${REPORT_TYPE_CARD_FILL} text-white shadow-[0_0_28px_rgba(30,58,138,0.75)] ring-2 ring-blue-300/80`
+                      : `${REPORT_TYPE_CARD_FILL} hover:bg-blue-800 active:bg-blue-900 text-white`
             }`}
           >
             {isLoading || isParsingUrl ? (
