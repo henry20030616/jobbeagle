@@ -463,6 +463,38 @@ describe('seven-item report layout', () => {
     expect(zh.negotiation.company_questions.length).toBeGreaterThan(20);
   });
 
+  it('aligns company and role review 優點 / 缺點 / 資料來源 on a shared subgrid', () => {
+    const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    expect(source).toContain('md:grid-rows-[auto_auto_auto_auto]');
+    expect(source).toContain('md:grid-rows-subgrid');
+    expect(source).toContain('md:row-span-4');
+    expect(source).toContain('columnClass="md:col-start-1"');
+    expect(source).toContain('columnClass="md:col-start-2"');
+    expect(source).toContain('<h2 className={REPORT_H2}>{title}</h2>');
+    expect(source).not.toContain('<SectionCard title={title} className="min-w-0">');
+
+    const html = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report: getSampleStrategyGuideReport('zh-TW'),
+        item: 'company',
+        language: 'zh-TW',
+      }),
+    );
+    expect(html).toContain('grid-rows-subgrid');
+    expect(html).toContain('row-span-4');
+    expect(html).toContain('公司評價');
+    expect(html).toContain('職位評價');
+    expect(html.split('優點').length - 1).toBe(2);
+    expect(html.split('缺點').length - 1).toBe(2);
+    expect(html.split('資料來源').length - 1).toBe(2);
+    expect(html).toContain('Blind 營運討論');
+    expect(html).toContain('Glassdoor 職位評價');
+    expect(html.indexOf('公司評價')).toBeLessThan(html.indexOf('職位評價'));
+    expect(html.split('border-2 border-blue-500').length - 1).toBe(3);
+    const company = getSampleStrategyGuideReport('zh-TW').guide_modules!.company_eval;
+    expect(company.company_cons.length).toBeGreaterThan(company.role_cons.length);
+  });
+
   it('merges Guide pay landing into one frame with range, ceiling, and unframed data sources', () => {
     const html = renderToStaticMarkup(
       createElement(GuideItemPage, {
