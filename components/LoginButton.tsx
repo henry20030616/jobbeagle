@@ -1,26 +1,100 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { LogOut, User, UserCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
-import { LogIn, LogOut, User } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
+import { getLoginButtonCopy, type LoginButtonCopy } from '@/constants/login-button-copy';
+import type { User as AuthUser } from '@supabase/supabase-js';
+
+export const HEADER_ACCOUNT_HREF = '/account';
+
+const HEADER_ACCOUNT_BTN =
+  'inline-flex h-9 sm:h-10 lg:h-16 shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all';
+
+const HEADER_LOGOUT_BTN =
+  'inline-flex h-9 sm:h-10 lg:h-16 shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-semibold';
+
+type LoggedInHeaderControlsProps = {
+  avatarUrl: string | undefined;
+  displayName: string;
+  displayEmail: string;
+  copy: LoginButtonCopy;
+  onLogout: () => void;
+};
+
+export function LoggedInHeaderControls({
+  avatarUrl,
+  displayName,
+  displayEmail,
+  copy,
+  onLogout,
+}: LoggedInHeaderControlsProps) {
+  return (
+    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+      <Link
+        href={HEADER_ACCOUNT_HREF}
+        className={HEADER_ACCOUNT_BTN}
+        title={copy.accountTitle}
+        aria-label={copy.accountTitle}
+      >
+        <UserCircle className="w-4 h-4 lg:w-7 lg:h-7 shrink-0" />
+        <span className="hidden sm:inline">{copy.account}</span>
+      </Link>
+      <Link
+        href={HEADER_ACCOUNT_HREF}
+        className="flex items-center gap-1.5 sm:gap-2 text-slate-300 min-w-0 rounded-lg hover:text-white transition-colors"
+        title={copy.accountTitle}
+        aria-label={copy.accountTitle}
+      >
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={displayName}
+            className="h-7 w-7 sm:h-8 sm:w-8 lg:h-14 lg:w-14 shrink-0 rounded-full border border-slate-600 object-cover hover:border-indigo-500 transition-colors"
+          />
+        ) : (
+          <div className="flex h-7 w-7 sm:h-8 sm:w-8 lg:h-14 lg:w-14 shrink-0 items-center justify-center rounded-full bg-indigo-600 border border-slate-600 hover:border-indigo-500 transition-colors">
+            <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-7 lg:h-7 text-white" />
+          </div>
+        )}
+        <div className="min-w-0 hidden min-[420px]:flex flex-col">
+          <span className="text-sm font-semibold text-white truncate max-w-[7.5rem] sm:max-w-[10rem] lg:max-w-[18rem]">
+            {displayName}
+          </span>
+          {displayEmail ? (
+            <span className="hidden lg:block text-xs text-slate-400 truncate max-w-[18rem]">
+              {displayEmail}
+            </span>
+          ) : null}
+        </div>
+      </Link>
+      <button type="button" onClick={onLogout} className={HEADER_LOGOUT_BTN}>
+        <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-6 lg:h-6" />
+        <span>{copy.logout}</span>
+      </button>
+    </div>
+  );
+}
 
 const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
   redirectTo,
   referralCode,
 }) => {
-  const [user, setUser] = useState<any>(null);
+  const { language } = useLanguage();
+  const copy = getLoginButtonCopy(language);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
 
-    // 獲取當前用戶
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+    supabase.auth.getUser().then(({ data: { user: nextUser } }) => {
+      setUser(nextUser);
       setLoading(false);
     });
 
-    // 監聽認證狀態變化
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -33,11 +107,10 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
   const handleLogin = async () => {
     try {
       const supabase = createClient();
-      
-      // 檢查環境變數
+
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      
+
       if (!supabaseUrl || !supabaseKey) {
         console.error('❌ Supabase 環境變數未設定');
         alert('配置錯誤：Supabase 環境變數未設定。請檢查 .env.local 文件。');
@@ -80,23 +153,22 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
           message: error.message,
           status: error.status,
         });
-        
-        // 提供更友善的錯誤訊息
+
         let errorMessage = error.message;
-        if (error.message?.includes('provider is not enabled') || 
+        if (error.message?.includes('provider is not enabled') ||
             error.message?.includes('Unsupported provider') ||
             error.status === 400) {
           errorMessage = `Google 登入尚未啟用。\n\n請按照以下步驟設定：\n\n1. 前往 Supabase Dashboard\n2. 選擇您的專案\n3. 前往 Authentication → Providers\n4. 找到 Google 並點擊\n5. 啟用該 Provider\n6. 設定 OAuth 憑證（Client ID 和 Secret）\n\n詳細步驟請參考 GOOGLE_OAUTH_SETUP.md 文件`;
         }
-        
+
         alert(`登入失敗：${errorMessage}`);
       } else if (data) {
         console.log('✅ 登入請求成功，正在跳轉...', data);
-        // OAuth 會自動跳轉，不需要手動處理
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ 登入時發生例外錯誤:', err);
-      alert(`登入時發生錯誤：${err.message || '未知錯誤'}\n\n請檢查瀏覽器控制台以獲取更多信息。`);
+      const message = err instanceof Error ? err.message : '未知錯誤';
+      alert(`登入時發生錯誤：${message}\n\n請檢查瀏覽器控制台以獲取更多信息。`);
     }
   };
 
@@ -117,57 +189,38 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
     return (
       <div className="flex items-center gap-2 text-slate-400">
         <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-sm">載入中...</span>
+        <span className="text-sm">{copy.loading}</span>
       </div>
     );
   }
 
   if (user) {
-    // 獲取用戶頭像（優先使用 avatar_url，否則使用 user_metadata 中的頭像）
-    const avatarUrl = user.user_metadata?.avatar_url || 
-                     user.user_metadata?.picture || 
-                     user.app_metadata?.avatar_url;
-    const displayName = user.user_metadata?.name || 
-                       user.user_metadata?.full_name || 
-                       user.email?.split('@')[0] || 
-                       '用戶';
+    const avatarUrl =
+      (typeof user.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : undefined) ||
+      (typeof user.user_metadata?.picture === 'string' ? user.user_metadata.picture : undefined) ||
+      (typeof user.app_metadata?.avatar_url === 'string' ? user.app_metadata.avatar_url : undefined);
+    const displayName =
+      (typeof user.user_metadata?.name === 'string' ? user.user_metadata.name : undefined) ||
+      (typeof user.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : undefined) ||
+      user.email?.split('@')[0] ||
+      copy.userFallback;
     const displayEmail = user.email || '';
 
     return (
-      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-        <div className="flex items-center gap-1.5 sm:gap-2 text-slate-300 min-w-0">
-          {avatarUrl ? (
-            <img 
-              src={avatarUrl} 
-              alt={displayName}
-              className="h-7 w-7 sm:h-8 sm:w-8 lg:h-14 lg:w-14 shrink-0 rounded-full border border-slate-600 object-cover hover:border-indigo-500 transition-colors"
-            />
-          ) : (
-            <div className="flex h-7 w-7 sm:h-8 sm:w-8 lg:h-14 lg:w-14 shrink-0 items-center justify-center rounded-full bg-indigo-600 border border-slate-600 hover:border-indigo-500 transition-colors">
-              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-7 lg:h-7 text-white" />
-            </div>
-          )}
-          <div className="min-w-0 hidden min-[420px]:flex flex-col">
-            <span className="text-sm font-semibold text-white truncate max-w-[7.5rem] sm:max-w-[10rem] lg:max-w-[18rem]">{displayName}</span>
-            {displayEmail && (
-              <span className="hidden lg:block text-xs text-slate-400 truncate max-w-[18rem]">{displayEmail}</span>
-            )}
-          </div>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="inline-flex h-9 sm:h-10 lg:h-16 shrink-0 items-center gap-1.5 lg:gap-2.5 px-2.5 sm:px-3 lg:px-5 bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg transition-colors text-sm font-semibold"
-        >
-          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-6 lg:h-6" />
-          <span>登出</span>
-        </button>
-      </div>
+      <LoggedInHeaderControls
+        avatarUrl={avatarUrl}
+        displayName={displayName}
+        displayEmail={displayEmail}
+        copy={copy}
+        onLogout={handleLogout}
+      />
     );
   }
 
   return (
     <div className="flex items-center">
       <button
+        type="button"
         onClick={handleLogin}
         className="inline-flex h-9 sm:h-10 lg:h-16 items-center gap-2 lg:gap-3 px-2.5 sm:px-3 lg:px-5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-semibold border border-gray-300"
       >
