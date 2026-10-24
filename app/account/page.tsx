@@ -503,6 +503,13 @@ function fillDate(template: string, iso: string | null, language: AppLanguage): 
   return template.replace('{date}', formatDate(iso, language));
 }
 
+/** Visible billing-history data rows before the list scrolls. Header stays sticky. */
+const BILLING_HISTORY_VISIBLE_ROWS = 5;
+/** py-3 (1.5rem) + text-lg leading-7 (1.75rem). Border is added per row in the max-height calc. */
+const BILLING_HISTORY_ROW_HEIGHT = '3.25rem';
+/** Header + 5 rows, plus slack so the 5th status line is not clipped by the scrollport. */
+const BILLING_HISTORY_VIEWPORT_MAX_HEIGHT = `calc((${BILLING_HISTORY_ROW_HEIGHT} + 1px) * ${BILLING_HISTORY_VISIBLE_ROWS + 1} + 0.25rem)`;
+
 export default function AccountPage() {
   const { language } = useLanguage();
   const t = copy[language] ?? copy.en;
@@ -889,27 +896,35 @@ export default function AccountPage() {
               {data.orders.length === 0 ? (
                 <p className="text-lg text-slate-500">{t.billingEmpty}</p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-lg text-left">
-                    <thead className="text-slate-500 border-b border-slate-700">
+                <div
+                  className="overflow-x-auto overflow-y-auto overscroll-contain"
+                  style={{ maxHeight: BILLING_HISTORY_VIEWPORT_MAX_HEIGHT }}
+                  data-billing-history-visible-rows={BILLING_HISTORY_VISIBLE_ROWS}
+                >
+                  <table className="w-full border-separate border-spacing-0 text-lg text-left">
+                    <thead className="sticky top-0 z-10 bg-slate-900 text-slate-500 shadow-[0_1px_0_0_#334155]">
                       <tr>
                         <th className="py-3 pr-4 font-medium">{t.date}</th>
                         <th className="py-3 pr-4 font-medium">{t.plan}</th>
                         <th className="py-3 pr-4 font-medium">{t.amount}</th>
-                        <th className="py-3 font-medium">{t.status}</th>
+                        <th className="py-3 pr-3 font-medium">{t.status}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.orders.map((o) => (
-                        <tr key={o.id} className="border-b border-slate-800/80">
-                          <td className="py-3 pr-4 text-slate-300 whitespace-nowrap">
+                        <tr key={o.id}>
+                          <td className="border-b border-slate-800/80 py-3 pr-4 text-slate-300 whitespace-nowrap">
                             {formatDate(o.created_at, language)}
                           </td>
-                          <td className="py-3 pr-4 text-slate-200">{o.plan_type}</td>
-                          <td className="py-3 pr-4 text-slate-200">
+                          <td className="border-b border-slate-800/80 py-3 pr-4 text-slate-200 whitespace-nowrap">
+                            {o.plan_type}
+                          </td>
+                          <td className="border-b border-slate-800/80 py-3 pr-4 text-slate-200 whitespace-nowrap">
                             {formatMoney(Number(o.amount), o.currency)}
                           </td>
-                          <td className="py-3 text-slate-400">{o.status}</td>
+                          <td className="border-b border-slate-800/80 py-3 pr-3 text-slate-400 whitespace-nowrap">
+                            {o.status}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
