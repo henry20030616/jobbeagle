@@ -315,11 +315,9 @@ main input {
   .homepage-font-large .upload-prompt,
   .homepage-font-large .upload-support,
   .homepage-font-large .jd-paste-prompt,
-  .homepage-font-large .compare-panel-label,
   .homepage-font-large .homepage-steps .upload-prompt,
   .homepage-font-large .homepage-steps .upload-support,
-  .homepage-font-large .homepage-steps .jd-paste-prompt,
-  .homepage-font-large .homepage-steps .compare-panel-label {
+  .homepage-font-large .homepage-steps .jd-paste-prompt {
     font-size: var(--type-ui) !important;
     line-height: 1.35 !important;
   }
@@ -372,7 +370,9 @@ main input {
     font-size: var(--type-step) !important;
     line-height: 1.2 !important;
   }
-  .homepage-font-large .homepage-steps .report-choice-title {
+  .homepage-font-large .homepage-steps .report-choice-title,
+  .homepage-font-large .compare-panel-label,
+  .homepage-font-large .homepage-steps .compare-panel-label {
     font-size: calc(var(--type-ui) * 1.5) !important;
     line-height: 1.2 !important;
   }
