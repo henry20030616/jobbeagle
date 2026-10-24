@@ -335,15 +335,16 @@ describe('seven-item report layout', () => {
     expect(source).toContain("fit: '匹配度分析'");
     expect(source).not.toContain('匹配分數、履歷分析');
     expect(source).not.toContain('Fit score and resume');
-    expect(source.indexOf('{copy.score}')).toBeLessThan(
-      source.indexOf('<SectionOverview label={copy.analysisSummary}'),
+    const fitBody = source.slice(
+      source.indexOf('function FitBody'),
+      source.indexOf('export function SnapshotItemStack'),
     );
-    expect(source.indexOf('<SectionOverview label={copy.analysisSummary}')).toBeLessThan(
-      source.indexOf('{scoreInfo.level}'),
-    );
-    expect(source.indexOf('{copy.apply}')).toBeGreaterThan(source.indexOf('{scoreInfo.level}'));
-    expect(source.indexOf('{copy.keywords}')).toBeGreaterThan(source.indexOf('{copy.apply}'));
-    expect(source.indexOf('<RewriteGroups')).toBeGreaterThan(source.indexOf('{copy.keywords}'));
+    expect(fitBody.indexOf('{copy.score}')).toBeLessThan(fitBody.indexOf('md:grid-cols-2'));
+    expect(fitBody.indexOf('md:grid-cols-2')).toBeLessThan(fitBody.indexOf('label={copy.analysisSummary}'));
+    expect(fitBody.indexOf('label={copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{scoreInfo.level}'));
+    expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
+    expect(fitBody.indexOf('{copy.apply}')).toBeLessThan(fitBody.indexOf('{copy.keywords}'));
+    expect(source.indexOf('{copy.keywords}')).toBeLessThan(source.indexOf('<RewriteGroups'));
     expect(source).toContain('{beforeLabel}');
     expect(source).toContain('{afterLabel}');
     expect(source).not.toContain('${BODY} font-semibold text-emerald-100');
@@ -351,7 +352,7 @@ describe('seven-item report layout', () => {
     expect(source).not.toMatch(/md:grid-cols-2[\s\S]{0,200}copy\.keywords/);
   });
 
-  it('renders Snapshot and Guide fit samples with apply advice beside Beagle Scale', () => {
+  it('renders Snapshot and Guide fit samples with 總結分析 left of stacked Beagle Scale and apply advice', () => {
     const snapshot = getSampleSnapshotReport('zh-TW');
     const guide = getSampleStrategyGuideReport('zh-TW');
     const snapHtml = renderToStaticMarkup(

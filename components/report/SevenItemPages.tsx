@@ -866,11 +866,19 @@ function SourceList({
   );
 }
 
-function SectionOverview({ label, summary }: { label: string; summary: string }) {
+function SectionOverview({
+  label,
+  summary,
+  className = 'mt-4',
+}: {
+  label: string;
+  summary: string;
+  className?: string;
+}) {
   const points = splitSummaryPoints(summary);
   if (points.length === 0) return null;
   return (
-    <div className="mt-4">
+    <div className={className}>
       <p className={REPORT_H2}>{label}</p>
       {points.length > 1 ? (
         <div className="mt-2">
@@ -1031,32 +1039,40 @@ function FitBody({
             </div>
           </div>
         </div>
-        <SectionOverview label={copy.analysisSummary} summary={analysisSummary} />
-        <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
           <div className="min-w-0">
-            <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
-            <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
-            {verdictLines.length > 0 ? (
-              <ul className="mt-3 space-y-3">
-                {verdictLines.map((point) => (
-                  <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                    <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+            <SectionOverview
+              label={copy.analysisSummary}
+              summary={analysisSummary}
+              className="min-w-0"
+            />
           </div>
-          <section className="min-w-0">
-            <h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>
-            {apply?.next_best_action ? (
-              <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
-                {apply.next_best_action}
-              </p>
-            ) : (
-              <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
-            )}
-          </section>
+          <div className="min-w-0 space-y-4">
+            <div className="min-w-0">
+              <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
+              <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
+              {verdictLines.length > 0 ? (
+                <ul className="mt-3 space-y-3">
+                  {verdictLines.map((point) => (
+                    <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+            <section className="min-w-0">
+              <h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>
+              {apply?.next_best_action ? (
+                <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
+                  {apply.next_best_action}
+                </p>
+              ) : (
+                <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+              )}
+            </section>
+          </div>
         </div>
       </section>
       <section className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4">
