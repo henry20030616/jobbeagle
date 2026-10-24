@@ -446,9 +446,10 @@ button.launch-submit:disabled,
   width: 6rem !important;
   height: 6rem !important;
 }
+/* Stars sit on the label baseline; 5×2.5rem stars overflowed the product columns. */
 .compare-font-large .compare-star {
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 1.15rem !important;
+  height: 1.15rem !important;
 }
 @media (min-width: 640px) {
   .compare-font-large .compare-brand-logo svg {
