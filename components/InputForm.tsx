@@ -582,7 +582,7 @@ const InputForm: React.FC<InputFormProps> = ({
           className="justify-center"
         />
         <p
-          className={`homepage-hero-desc mx-auto w-full text-pretty text-center font-semibold text-zinc-400 ${
+          className={`homepage-hero-desc mx-auto w-full text-pretty text-center font-semibold text-zinc-100 ${
             compactChrome ? 'text-sm sm:text-base md:text-lg' : ''
           }`}
         >
@@ -646,7 +646,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="feature-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-400">{item.title}</span>
+                        <span className="feature-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-100">{item.title}</span>
                         <ChevronDown
                           className={`mt-0.5 h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 shrink-0 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                           aria-hidden
