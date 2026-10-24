@@ -233,12 +233,18 @@ export default function DangerZonePageClient() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <FitStage designWidth={ACCOUNT_DESIGN_WIDTH} minScale={1} maxScale={2} className="w-full">
-        <main className="mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 space-y-8 sm:space-y-10" data-fit-ref="account-danger">
+    <div className="account-font-large flex min-h-screen w-full flex-col items-stretch bg-slate-950 text-zinc-100">
+      <FitStage
+        designWidth={ACCOUNT_DESIGN_WIDTH}
+        minScale={1}
+        maxScale={1}
+        mode="fill"
+        className="w-full min-h-screen !justify-start !items-start"
+      >
+        <main className="mx-0 w-full max-w-none px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-8 sm:space-y-10" data-fit-ref="account-danger">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <BrandLogo size="nav" showIcon />
-            <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
               <LanguageSwitcher variant="dark" size="lg" />
               <LoginButton redirectTo="/account/danger" />
             </div>
@@ -248,35 +254,35 @@ export default function DangerZonePageClient() {
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
               <Link
                 href="/account"
-                className="inline-flex items-center gap-2 text-lg text-slate-400 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-lg text-zinc-400 hover:text-white transition-colors"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-[1em] h-[1em]" />
                 {t.backAccount}
               </Link>
               <Link
                 href="/"
-                className="text-lg text-slate-500 hover:text-slate-300 transition-colors"
+                className="text-lg text-zinc-500 hover:text-zinc-300 transition-colors"
               >
                 {t.backHome}
               </Link>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-950/40 px-3 py-1 text-sm font-semibold text-red-200">
-              <ShieldAlert className="h-4 w-4" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-red-800/70 bg-red-950/25 px-3 py-1 text-sm font-semibold text-red-100">
+              <ShieldAlert className="h-[1em] w-[1em]" />
               {t.title}
             </div>
             <h1 className="mt-4 text-4xl font-bold text-white">{t.title}</h1>
-            <p className="mt-3 max-w-2xl text-lg leading-relaxed text-slate-400">{t.lead}</p>
+            <p className="mt-3 max-w-none text-lg leading-relaxed text-zinc-400">{t.lead}</p>
           </div>
 
           {loading && (
-            <div className="flex items-center gap-2 text-slate-400 py-12 justify-center">
-              <Loader2 className="w-5 h-5 animate-spin" />
+            <div className="flex items-center gap-2 text-zinc-400 py-12 justify-center">
+              <Loader2 className="w-[1em] h-[1em] animate-spin" />
             </div>
           )}
 
           {!loading && signedIn === false && (
-            <div className="rounded-xl border border-red-900/40 bg-red-950/20 p-8 text-center space-y-4">
-              <p className="text-xl text-slate-300">{t.needLogin}</p>
+            <div className="rounded-xl border border-blue-500 bg-blue-950/40 p-8 text-center space-y-4">
+              <p className="text-xl text-zinc-200">{t.needLogin}</p>
               <LoginButton redirectTo="/account/danger" />
             </div>
           )}
@@ -289,27 +295,27 @@ export default function DangerZonePageClient() {
                 </p>
               )}
 
-              <section className="rounded-xl border border-amber-700/40 bg-amber-950/15 p-7 space-y-4">
+              <section className="rounded-xl border border-blue-500 bg-blue-950/40 p-7 space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-xl font-semibold text-amber-100">{t.pauseTitle}</h2>
+                  <h2 className="text-xl font-semibold text-zinc-100">{t.pauseTitle}</h2>
                   {deactivated && (
-                    <span className="rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-1 text-sm font-semibold text-amber-200">
+                    <span className="rounded-full border border-blue-500/50 bg-blue-900/40 px-3 py-1 text-sm font-semibold text-zinc-100">
                       {t.pausedBadge}
                     </span>
                   )}
                 </div>
-                <p className="text-lg text-slate-400 leading-snug">
+                <p className="text-lg text-zinc-400 leading-snug">
                   {deactivated ? t.reactivateHint : t.pauseBody}
                 </p>
-                <p className="text-base text-slate-500 leading-snug">{t.pauseNote}</p>
+                <p className="text-base text-zinc-500 leading-snug">{t.pauseNote}</p>
                 {deactivated ? (
                   <button
                     type="button"
                     disabled={actionBusy}
                     onClick={() => void handleReactivate()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-lg font-bold disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-lg font-bold disabled:opacity-50"
                   >
-                    <PlayCircle className="w-5 h-5" />
+                    <PlayCircle className="w-[1em] h-[1em]" />
                     {t.reactivate}
                   </button>
                 ) : (
@@ -317,17 +323,17 @@ export default function DangerZonePageClient() {
                     type="button"
                     disabled={actionBusy}
                     onClick={() => void handleDeactivate()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-amber-700/60 text-amber-200 hover:bg-amber-950/40 text-lg font-medium disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-blue-500 bg-blue-950/40 text-zinc-100 hover:bg-blue-900 text-lg font-medium disabled:opacity-50"
                   >
-                    <PauseCircle className="w-5 h-5" />
+                    <PauseCircle className="w-[1em] h-[1em]" />
                     {t.deactivate}
                   </button>
                 )}
               </section>
 
-              <section className="rounded-xl border border-red-900/50 bg-red-950/20 p-7 space-y-4">
-                <h2 className="text-xl font-semibold text-red-200">{t.deleteTitle}</h2>
-                <p className="text-lg text-slate-400 leading-snug">{t.deleteBody}</p>
+              <section className="rounded-xl border border-red-800/70 bg-red-950/20 p-7 space-y-4">
+                <h2 className="text-xl font-semibold text-red-100">{t.deleteTitle}</h2>
+                <p className="text-lg text-zinc-400 leading-snug">{t.deleteBody}</p>
                 <DeleteAccountButton language={language} />
               </section>
             </>

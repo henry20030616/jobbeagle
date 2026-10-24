@@ -416,6 +416,90 @@ button.launch-submit:disabled,
 }
 
 /*
+ * Account / career-context / danger type — same tokens as homepage desktop
+ * `.homepage-font-large` (≥1024px). Titles use --type-rest / --type-ui;
+ * body and chrome use --type-chrome. Do not attach homepage-font-large here
+ * (that class also remaps homepage-only wrappers).
+ */
+.account-font-large {
+  --type-ui: 1.35rem;
+  --type-step: 1.6rem;
+  --type-rest: 1.85rem;
+  --type-chrome: 1.15rem;
+}
+
+.account-font-large .text-xs,
+.account-font-large .text-sm,
+.account-font-large .text-base,
+.account-font-large .text-lg {
+  font-size: var(--type-chrome) !important;
+  line-height: 1.35 !important;
+}
+.account-font-large .text-xl,
+.account-font-large .text-2xl {
+  font-size: var(--type-ui) !important;
+  line-height: 1.3 !important;
+}
+.account-font-large .text-3xl,
+.account-font-large .text-4xl,
+.account-font-large .text-5xl {
+  font-size: var(--type-rest) !important;
+  line-height: 1.25 !important;
+}
+
+.account-font-large [data-account-nav] svg {
+  width: 1em;
+  height: 1em;
+}
+
+.account-font-large [data-billing-history-visible-rows] {
+  max-height: calc((1.35em + 1.2em + 1px) * 6 + 0.25rem);
+}
+
+@media (min-width: 640px) {
+  .account-font-large .sm\:text-xs,
+  .account-font-large .sm\:text-sm,
+  .account-font-large .sm\:text-base,
+  .account-font-large .sm\:text-lg {
+    font-size: var(--type-chrome) !important;
+    line-height: 1.35 !important;
+  }
+  .account-font-large .sm\:text-xl,
+  .account-font-large .sm\:text-2xl {
+    font-size: var(--type-ui) !important;
+    line-height: 1.3 !important;
+  }
+  .account-font-large .sm\:text-3xl,
+  .account-font-large .sm\:text-4xl,
+  .account-font-large .sm\:text-5xl {
+    font-size: var(--type-rest) !important;
+    line-height: 1.25 !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .account-font-large {
+    --type-ui: 2.75rem;
+    --type-step: 3.75rem;
+    --type-rest: 4rem;
+    --type-chrome: 3.15rem;
+  }
+
+  .account-font-large .lg\:text-lg {
+    font-size: var(--type-chrome) !important;
+    line-height: 1.35 !important;
+  }
+  .account-font-large .lg\:text-xl,
+  .account-font-large .lg\:text-2xl {
+    font-size: var(--type-ui) !important;
+    line-height: 1.3 !important;
+  }
+  .account-font-large .lg\:h-16 {
+    height: 5.5rem !important;
+  }
+}
+
+/*
  * Compare overlay (portaled to body — does not inherit homepage type).
  * Was 350% of default Tailwind; now 280% (20% smaller than previous overlay).
  */

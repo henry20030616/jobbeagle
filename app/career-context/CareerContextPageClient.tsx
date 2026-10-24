@@ -114,15 +114,21 @@ export default function CareerContextPageClient() {
       ];
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-100">
-      <FitStage designWidth={ACCOUNT_DESIGN_WIDTH} minScale={1} maxScale={2} className="w-full">
+    <div className="account-font-large flex min-h-screen w-full flex-col items-stretch bg-slate-950 text-zinc-100">
+      <FitStage
+        designWidth={ACCOUNT_DESIGN_WIDTH}
+        minScale={1}
+        maxScale={1}
+        mode="fill"
+        className="w-full min-h-screen !justify-start !items-start"
+      >
         <div
-          className="mx-auto w-full space-y-8 sm:space-y-10 px-4 sm:px-8 py-6 sm:py-10"
+          className="mx-0 w-full max-w-none space-y-8 sm:space-y-10 px-4 sm:px-8 lg:px-10 py-6 sm:py-10"
           data-fit-ref="career-context"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <BrandLogo size="nav" showIcon />
-            <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
               <LanguageSwitcher variant="dark" size="lg" />
               <LoginButton redirectTo="/career-context" />
             </div>
@@ -130,20 +136,20 @@ export default function CareerContextPageClient() {
 
           <div>
             <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-lg text-slate-400 hover:text-white transition-colors mb-4"
+              href="/account#career-context"
+              className="inline-flex items-center gap-2 text-lg text-zinc-400 hover:text-white transition-colors mb-4"
             >
-              <ArrowLeft className="w-5 h-5" />
-              {zh ? '返回首頁' : 'Back to home'}
+              <ArrowLeft className="w-[1em] h-[1em]" />
+              {zh ? '返回帳戶' : 'Back to account'}
             </Link>
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-1.5 text-base font-semibold text-emerald-200">
-              <Target className="h-5 w-5" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/40 bg-blue-950/40 px-4 py-1.5 text-base font-semibold text-zinc-100">
+              <Target className="h-[1em] w-[1em]" />
               Career Context
             </div>
             <h1 className="mt-4 text-4xl font-black tracking-tight text-white md:text-5xl">
               {zh ? '用你的底線看每一份職缺' : 'Score every job against your floors'}
             </h1>
-            <p className="mt-4 max-w-3xl text-xl leading-relaxed text-slate-400">
+            <p className="mt-4 max-w-none text-xl leading-relaxed text-zinc-400">
               {zh
                 ? '履歷告訴 JobBeagle 你做過什麼。Career Context 告訴它你不願妥協什麼。存進帳號後，每次適配快照與面試指南都會自動帶入。'
                 : 'Your resume tells JobBeagle what you have done. Career Context tells it what you will not compromise. Saved on your account and injected into every Fit Snapshot and Interview Guide.'}
@@ -151,14 +157,14 @@ export default function CareerContextPageClient() {
           </div>
 
           {loading && (
-            <div className="flex items-center gap-2 text-slate-400 py-6 justify-center">
-              <Loader2 className="w-5 h-5 animate-spin" />
+            <div className="flex items-center gap-2 text-zinc-400 py-6 justify-center">
+              <Loader2 className="w-[1em] h-[1em] animate-spin" />
             </div>
           )}
 
           {!loading && signedIn === false && (
-            <div className="rounded-2xl border-2 border-emerald-400/50 bg-emerald-950/20 p-8 text-center space-y-4">
-              <p className="text-xl text-slate-200">
+            <div className="rounded-xl border border-blue-500 bg-blue-950/40 p-8 text-center space-y-4">
+              <p className="text-xl text-zinc-200">
                 {zh
                   ? '登入後即可把底線存進帳號，之後每次分析自動使用。'
                   : 'Sign in to save your floors. Every later analysis uses them automatically.'}
@@ -180,26 +186,26 @@ export default function CareerContextPageClient() {
             {benefits.map((item) => (
               <li
                 key={item.title}
-                className="rounded-xl border border-slate-800 bg-slate-900/80 px-5 py-5 space-y-2"
+                className="rounded-xl border border-blue-500 bg-blue-950/40 px-5 py-5 space-y-2"
               >
-                <item.icon className="h-6 w-6 text-emerald-400" />
+                <item.icon className="h-[1em] w-[1em] text-blue-300" />
                 <p className="text-lg font-bold text-white">{item.title}</p>
-                <p className="text-base leading-relaxed text-slate-400">{item.body}</p>
+                <p className="text-base leading-relaxed text-zinc-400">{item.body}</p>
               </li>
             ))}
           </ul>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-7 space-y-4">
-            <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
+          <div className="rounded-xl border border-blue-500 bg-blue-950/40 p-7 space-y-4">
+            <h2 className="text-xl font-semibold tracking-wide text-zinc-100">
               {zh ? '會注入分析的七項底線' : 'Seven floors injected into analysis'}
             </h2>
             <ul className="grid gap-3 sm:grid-cols-2">
               {floors.map((f) => (
                 <li key={f.label} className="flex items-start gap-2 text-lg">
-                  <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-emerald-400" />
+                  <CheckCircle2 className="mt-1 h-[1em] w-[1em] shrink-0 text-blue-300" />
                   <span>
-                    <span className="font-semibold text-slate-200">{f.label}</span>
-                    <span className="text-slate-500"> — {f.hint}</span>
+                    <span className="font-semibold text-zinc-100">{f.label}</span>
+                    <span className="text-zinc-400"> — {f.hint}</span>
                   </span>
                 </li>
               ))}

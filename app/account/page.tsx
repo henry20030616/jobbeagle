@@ -29,6 +29,19 @@ import { careerContextHasSignal } from '@/lib/career-context';
 import { FitStage } from '@/components/FitStage';
 import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
 import AccountSectionNav from '@/components/AccountSectionNav';
+import {
+  getAccountNavCopy,
+  isAccountHashId,
+  type AccountHashId,
+} from '@/constants/account-nav';
+
+const ACCOUNT_CARD =
+  'scroll-mt-4 rounded-xl border border-blue-500 bg-blue-950/40 p-7 space-y-4';
+const ACCOUNT_HEADING = 'text-xl font-semibold tracking-wide text-zinc-100';
+const PRIMARY_BTN =
+  'px-5 py-2.5 text-lg font-bold rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors';
+const SECONDARY_BTN =
+  'px-5 py-2.5 text-lg font-bold rounded-lg border border-blue-500 bg-blue-950/40 text-zinc-100 hover:bg-blue-900 disabled:opacity-50 transition-colors';
 
 type AccountOrder = {
   id: string;
@@ -515,10 +528,6 @@ function fillDate(template: string, iso: string | null, language: AppLanguage): 
 
 /** Visible billing-history data rows before the list scrolls. Header stays sticky. */
 const BILLING_HISTORY_VISIBLE_ROWS = 5;
-/** py-3 (1.5rem) + text-lg leading-7 (1.75rem). Border is added per row in the max-height calc. */
-const BILLING_HISTORY_ROW_HEIGHT = '3.25rem';
-/** Header + 5 rows, plus slack so the 5th status line is not clipped by the scrollport. */
-const BILLING_HISTORY_VIEWPORT_MAX_HEIGHT = `calc((${BILLING_HISTORY_ROW_HEIGHT} + 1px) * ${BILLING_HISTORY_VISIBLE_ROWS + 1} + 0.25rem)`;
 
 export default function AccountPage() {
   const { language } = useLanguage();
@@ -534,6 +543,8 @@ export default function AccountPage() {
   const [billingLoaded, setBillingLoaded] = useState(false);
   const [portalBusy, setPortalBusy] = useState(false);
   const [cancelBusy, setCancelBusy] = useState(false);
+  const [panel, setPanel] = useState<AccountHashId>('overview');
+  const navCopy = getAccountNavCopy(language);
 
   const loadBilling = useCallback(async () => {
     try {
@@ -611,6 +622,16 @@ export default function AccountPage() {
     });
   }, [load]);
 
+  useEffect(() => {
+    const sync = () => {
+      const next = window.location.hash.replace(/^#/, '');
+      if (isAccountHashId(next)) setPanel(next);
+    };
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+
   const handleCheckout = async (plan: CheckoutPlanType, amountUsd?: string) => {
     setBusyPlan(plan);
     setError(null);
@@ -686,12 +707,18 @@ export default function AccountPage() {
   const deactivated = Boolean(data?.profile.deactivated_at);
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-200">
-      <FitStage designWidth={ACCOUNT_DESIGN_WIDTH} minScale={1} maxScale={2} className="w-full">
-      <main className="mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 space-y-8 sm:space-y-10" data-fit-ref="account">
+    <div className="account-font-large flex min-h-screen w-full flex-col items-stretch bg-slate-950 text-zinc-100">
+      <FitStage
+        designWidth={ACCOUNT_DESIGN_WIDTH}
+        minScale={1}
+        maxScale={1}
+        mode="fill"
+        className="w-full min-h-screen !justify-start !items-start"
+      >
+      <main className="mx-0 w-full max-w-none px-4 sm:px-8 lg:px-10 py-6 sm:py-10 space-y-8 sm:space-y-10" data-fit-ref="account">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <BrandLogo size="nav" showIcon />
-          <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
             <LanguageSwitcher variant="dark" size="lg" />
             <LoginButton redirectTo="/account" />
           </div>
@@ -701,23 +728,23 @@ export default function AccountPage() {
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="inline-flex items-center gap-2 text-lg text-slate-400 hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-lg text-zinc-400 hover:text-white transition-colors mb-4"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-[1em] h-[1em]" />
             {t.back}
           </button>
           <h1 className="text-4xl font-bold text-white">{t.title}</h1>
         </div>
 
         {loading && (
-          <div className="flex items-center gap-2 text-slate-400 py-12 justify-center">
-            <Loader2 className="w-5 h-5 animate-spin" />
+          <div className="flex items-center gap-2 text-zinc-400 py-12 justify-center">
+            <Loader2 className="w-[1em] h-[1em] animate-spin" />
           </div>
         )}
 
         {!loading && signedIn === false && (
-          <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-8 text-center space-y-4">
-            <p className="text-xl text-slate-300">{t.needLogin}</p>
+          <div className={`${ACCOUNT_CARD} text-center`}>
+            <p className="text-xl text-zinc-200">{t.needLogin}</p>
             <LoginButton redirectTo="/account" />
           </div>
         )}
@@ -730,28 +757,24 @@ export default function AccountPage() {
               </p>
             )}
 
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-            <AccountSectionNav language={language} />
-            <div className="min-w-0 flex-1 space-y-8 sm:space-y-10">
+            <div className="flex flex-col items-stretch gap-6 lg:flex-row lg:items-start lg:gap-8">
+            <AccountSectionNav language={language} activeId={panel} />
+            <div className="min-w-0 flex-1">
 
-            <section
-              id="overview"
-              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4"
-            >
-              <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
-                {t.overview}
-              </h2>
+            {panel === 'overview' && (
+            <section id="overview" role="tabpanel" className={ACCOUNT_CARD}>
+              <h2 className={ACCOUNT_HEADING}>{navCopy.overview}</h2>
               <dl className="grid gap-3 text-lg sm:grid-cols-2">
                 <div>
-                  <dt className="text-slate-500">{t.email}</dt>
+                  <dt className="text-zinc-400">{t.email}</dt>
                   <dd className="text-white">{data.email ?? '—'}</dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500">{t.tier}</dt>
+                  <dt className="text-zinc-400">{t.tier}</dt>
                   <dd className="text-white">{tierLabel(data.profile.membership_tier)}</dd>
                 </div>
                 <div className="sm:col-span-2">
-                  <dt className="text-slate-500 mb-1.5">{t.remainingCredits}</dt>
+                  <dt className="text-zinc-400 mb-1.5">{t.remainingCredits}</dt>
                   <dd>
                     <CreditsBadge
                       profile={{
@@ -771,66 +794,89 @@ export default function AccountPage() {
                   </dd>
                 </div>
                 <div className="sm:col-span-2">
-                  <dt className="text-slate-500">Status</dt>
-                  <dd
-                    className={
-                      deactivated ? 'text-amber-300 font-medium' : 'text-emerald-300 font-medium'
-                    }
-                  >
+                  <dt className="text-zinc-400">Status</dt>
+                  <dd className="text-zinc-100 font-medium">
                     {deactivated ? t.statusDeactivated : t.statusActive}
                   </dd>
                 </div>
               </dl>
             </section>
+            )}
 
-            <section
-              id="career-context"
-              className="scroll-mt-4 rounded-xl border border-emerald-500/25 bg-emerald-950/20 p-7 space-y-4"
-            >
+            {panel === 'career-context' && (
+            <section id="career-context" role="tabpanel" className={ACCOUNT_CARD}>
               <div className="flex items-start gap-3">
-                <Target className="w-7 h-7 text-emerald-400 shrink-0 mt-0.5" />
+                <Target className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
                 <div>
-                  <h2 className="text-xl font-semibold uppercase tracking-wide text-emerald-200/90">
-                    {t.careerContextTitle}
-                  </h2>
+                  <h2 className={ACCOUNT_HEADING}>{navCopy.careerContext}</h2>
                   {t.careerContextSubtitle ? (
-                    <p className="text-sm font-medium tracking-wide text-emerald-200/60 mt-0.5">
+                    <p className="text-sm font-medium tracking-wide text-zinc-400 mt-0.5">
                       {t.careerContextSubtitle}
                     </p>
                   ) : null}
-                  <p className="text-lg text-slate-400 mt-1 leading-snug">{t.careerContextBlurb}</p>
+                  <p className="text-lg text-zinc-400 mt-1 leading-snug">{t.careerContextBlurb}</p>
                 </div>
               </div>
-              <Link
-                href="/career-context"
-                className="inline-flex items-center px-5 py-2.5 text-lg font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
-              >
+              <Link href="/career-context" className={`inline-flex items-center ${PRIMARY_BTN}`}>
                 {careerContextHasSignal(data.profile.career_context)
                   ? t.careerContextEdit
                   : t.careerContextCta}
               </Link>
             </section>
+            )}
 
-            <section
-              id="subscription"
-              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5"
-            >
+            {panel === 'plans' && (
+            <section id="plans" role="tabpanel" className={`${ACCOUNT_CARD} space-y-5`}>
               <div className="flex items-start gap-3">
-                <CreditCard className="w-7 h-7 text-indigo-400 shrink-0 mt-0.5" />
+                <CreditCard className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
                 <div>
-                  <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
-                    {t.subscription}
-                  </h2>
-                  <p className="text-lg text-slate-500 mt-1 leading-snug">{t.subscriptionNote}</p>
+                  <h2 className={ACCOUNT_HEADING}>{navCopy.plans}</h2>
+                  <p className="text-lg text-zinc-400 mt-1 leading-snug">{t.subscriptionNote}</p>
                 </div>
               </div>
-              <div id="subscription-actions" className="scroll-mt-4 flex flex-wrap items-center gap-3">
+              {billingLoaded
+                && !billing
+                && (data.profile.membership_tier === 'standard_sub'
+                  || data.profile.membership_tier === 'advanced_sub') ? (
+                <p className="text-lg text-zinc-200">{t.subUnmatched}</p>
+              ) : null}
+              <ul className="space-y-3">
+                {ACTIVE_CHECKOUT_PLAN_TYPES.map((planType) => {
+                  const plan = CHECKOUT_PLANS[planType];
+                  const label =
+                    language === 'zh-TW' || language === 'zh-CN' ? plan.labelZhTW : plan.labelEn;
+                  return (
+                    <li
+                      key={planType}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-500/40 bg-slate-950/50 px-5 py-3.5"
+                    >
+                      <span className="text-lg text-zinc-100">{label}</span>
+                      <button
+                        type="button"
+                        disabled={Boolean(busyPlan) || deactivated}
+                        onClick={() => void handleCheckout(planType)}
+                        className={PRIMARY_BTN}
+                      >
+                        {busyPlan === planType ? t.buying : t.buy}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+            )}
+
+            {panel === 'subscription-actions' && (
+            <section id="subscription-actions" role="tabpanel" className={ACCOUNT_CARD}>
+              <h2 className={ACCOUNT_HEADING}>{navCopy.subscriptionActions}</h2>
+              <p className="text-lg text-zinc-400 leading-snug">{t.subscriptionNote}</p>
+              <div className="flex flex-wrap items-center gap-3">
                 {billing?.canManage ? (
                   <button
                     type="button"
                     disabled={portalBusy || deactivated}
                     onClick={() => void handleManageBilling()}
-                    className="px-5 py-2.5 text-lg font-bold rounded-lg border border-slate-500 bg-slate-800 text-slate-100 hover:bg-slate-700 disabled:opacity-50 transition-colors"
+                    className={SECONDARY_BTN}
                   >
                     {portalBusy ? t.managingBilling : t.manageBilling}
                   </button>
@@ -840,61 +886,37 @@ export default function AccountPage() {
                     type="button"
                     disabled={cancelBusy || deactivated}
                     onClick={() => void handleCancelSubscription()}
-                    className="px-5 py-2.5 text-lg font-bold rounded-lg border border-rose-400/60 bg-rose-500/10 text-rose-100 hover:bg-rose-500/20 disabled:opacity-50 transition-colors"
+                    className={SECONDARY_BTN}
                   >
                     {cancelBusy ? t.cancelling : t.cancelSub}
                   </button>
                 ) : null}
+                {billingLoaded && !billing?.canManage && !billing?.canCancel ? (
+                  <p className="text-lg text-zinc-400">{t.cancelNone}</p>
+                ) : null}
               </div>
               {billingLoaded && billing ? (
-                <p className="text-lg text-slate-400">
+                <p className="text-lg text-zinc-400">
                   {billing.cancelled || billing.status === 'cancelled'
                     ? `${t.subCancelledNote} ${fillDate(t.subEnds, billing.endsAt, language)}`.trim()
                     : fillDate(t.subRenews, billing.renewsAt ?? billing.endsAt, language)}
                 </p>
               ) : null}
-              {billingLoaded
-                && !billing
-                && (data.profile.membership_tier === 'standard_sub'
-                  || data.profile.membership_tier === 'advanced_sub') ? (
-                <p className="text-lg text-amber-200/80">{t.subUnmatched}</p>
-              ) : null}
-              <ul id="plans" className="scroll-mt-4 space-y-3">
-                {ACTIVE_CHECKOUT_PLAN_TYPES.map((planType) => {
-                  const plan = CHECKOUT_PLANS[planType];
-                  const label =
-                    language === 'zh-TW' || language === 'zh-CN' ? plan.labelZhTW : plan.labelEn;
-                  return (
-                    <li
-                      key={planType}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-700/80 bg-slate-950/50 px-5 py-3.5"
-                    >
-                      <span className="text-lg text-slate-200">{label}</span>
-                      <button
-                        type="button"
-                        disabled={Boolean(busyPlan) || deactivated}
-                        onClick={() => void handleCheckout(planType)}
-                        className="px-5 py-2.5 text-lg font-bold rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors"
-                      >
-                        {busyPlan === planType ? t.buying : t.buy}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-              <div
-                id="sponsor"
-                className="scroll-mt-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 rounded-lg border border-amber-400/30 bg-amber-500/5 px-5 py-4"
-              >
+            </section>
+            )}
+
+            {panel === 'sponsor' && (
+            <section id="sponsor" role="tabpanel" className={ACCOUNT_CARD}>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 sm:flex-1">
-                  <p className="text-lg font-semibold text-amber-100">{t.sponsorTitle}</p>
-                  <p className="text-base text-slate-400 mt-1">{t.sponsorNote}</p>
+                  <h2 className={ACCOUNT_HEADING}>{navCopy.sponsor}</h2>
+                  <p className="text-base text-zinc-400 mt-1">{t.sponsorNote}</p>
                 </div>
                 <div className="flex flex-wrap items-end gap-3 shrink-0">
                   <label className="flex flex-col gap-1">
-                    <span className="text-sm text-slate-400">{t.sponsorAmount}</span>
+                    <span className="text-sm text-zinc-400">{t.sponsorAmount}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg text-slate-300">$</span>
+                      <span className="text-lg text-zinc-300">$</span>
                       <input
                         type="number"
                         inputMode="decimal"
@@ -904,7 +926,7 @@ export default function AccountPage() {
                         value={sponsorAmount}
                         disabled={Boolean(busyPlan) || deactivated}
                         onChange={(e) => setSponsorAmount(e.target.value)}
-                        className="w-32 rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-lg text-slate-100"
+                        className="w-32 rounded-lg border border-blue-500/50 bg-slate-950 px-3 py-2 text-lg text-zinc-100"
                       />
                     </div>
                   </label>
@@ -919,24 +941,20 @@ export default function AccountPage() {
                 </div>
               </div>
             </section>
+            )}
 
-            <section
-              id="billing"
-              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-4"
-            >
-              <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
-                {t.billing}
-              </h2>
+            {panel === 'billing' && (
+            <section id="billing" role="tabpanel" className={ACCOUNT_CARD}>
+              <h2 className={ACCOUNT_HEADING}>{navCopy.billing}</h2>
               {data.orders.length === 0 ? (
-                <p className="text-lg text-slate-500">{t.billingEmpty}</p>
+                <p className="text-lg text-zinc-400">{t.billingEmpty}</p>
               ) : (
                 <div
                   className="overflow-x-auto overflow-y-auto overscroll-contain"
-                  style={{ maxHeight: BILLING_HISTORY_VIEWPORT_MAX_HEIGHT }}
                   data-billing-history-visible-rows={BILLING_HISTORY_VISIBLE_ROWS}
                 >
                   <table className="w-full border-separate border-spacing-0 text-lg text-left">
-                    <thead className="sticky top-0 z-10 bg-slate-900 text-slate-500 shadow-[0_1px_0_0_#334155]">
+                    <thead className="sticky top-0 z-10 bg-blue-950 text-zinc-400 shadow-[0_1px_0_0_rgb(59_130_246)]">
                       <tr>
                         <th className="py-3 pr-4 font-medium">{t.date}</th>
                         <th className="py-3 pr-4 font-medium">{t.plan}</th>
@@ -947,16 +965,16 @@ export default function AccountPage() {
                     <tbody>
                       {data.orders.map((o) => (
                         <tr key={o.id}>
-                          <td className="border-b border-slate-800/80 py-3 pr-4 text-slate-300 whitespace-nowrap">
+                          <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-300 whitespace-nowrap">
                             {formatDate(o.created_at, language)}
                           </td>
-                          <td className="border-b border-slate-800/80 py-3 pr-4 text-slate-200 whitespace-nowrap">
+                          <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-100 whitespace-nowrap">
                             {o.plan_type}
                           </td>
-                          <td className="border-b border-slate-800/80 py-3 pr-4 text-slate-200 whitespace-nowrap">
+                          <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-100 whitespace-nowrap">
                             {formatMoney(Number(o.amount), o.currency)}
                           </td>
-                          <td className="border-b border-slate-800/80 py-3 pr-3 text-slate-400 whitespace-nowrap">
+                          <td className="border-b border-blue-500/20 py-3 pr-3 text-zinc-400 whitespace-nowrap">
                             {o.status}
                           </td>
                         </tr>
@@ -966,18 +984,15 @@ export default function AccountPage() {
                 </div>
               )}
             </section>
+            )}
 
-            <section
-              id="referrals"
-              className="scroll-mt-4 rounded-xl border border-slate-700 bg-slate-900/40 p-7 space-y-5"
-            >
+            {panel === 'referrals' && (
+            <section id="referrals" role="tabpanel" className={`${ACCOUNT_CARD} space-y-5`}>
               <div className="flex items-start gap-3">
-                <Gift className="w-7 h-7 text-indigo-400 shrink-0 mt-0.5" />
+                <Gift className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
                 <div>
-                  <h2 className="text-xl font-semibold uppercase tracking-wide text-slate-400">
-                    {t.referrals}
-                  </h2>
-                  <p className="text-lg text-slate-500 mt-1">
+                  <h2 className={ACCOUNT_HEADING}>{navCopy.referrals}</h2>
+                  <p className="text-lg text-zinc-400 mt-1">
                     {t.earned}: {data.referral_earned_snapshot_credits}
                   </p>
                 </div>
@@ -999,18 +1014,18 @@ export default function AccountPage() {
                 } satisfies UserProfile}
               />
               {data.referrals.length === 0 ? (
-                <p className="text-lg text-slate-500">{t.referralEmpty}</p>
+                <p className="text-lg text-zinc-400">{t.referralEmpty}</p>
               ) : (
                 <ul className="space-y-2 text-lg">
                   {data.referrals.map((r) => (
                     <li
                       key={r.id}
-                      className="flex justify-between gap-2 rounded-lg border border-slate-700/60 px-4 py-3"
+                      className="flex justify-between gap-2 rounded-lg border border-blue-500/40 px-4 py-3"
                     >
-                      <span className="text-slate-400 font-mono text-base truncate">
+                      <span className="text-zinc-400 font-mono text-base truncate">
                         {r.referee_id.slice(0, 8)}…
                       </span>
-                      <span className="text-slate-300 whitespace-nowrap">
+                      <span className="text-zinc-200 whitespace-nowrap">
                         {formatDate(r.created_at, language)} ·{' '}
                         {r.is_activated ? t.activated : t.pending}
                       </span>
@@ -1019,6 +1034,7 @@ export default function AccountPage() {
                 </ul>
               )}
             </section>
+            )}
             </div>
             </div>
           </>

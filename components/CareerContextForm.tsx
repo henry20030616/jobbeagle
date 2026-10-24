@@ -127,15 +127,15 @@ export default function CareerContextForm({
   };
 
   return (
-    <section className="rounded-2xl border-2 border-emerald-400/50 bg-slate-900 p-8 space-y-6">
+    <section className="rounded-xl border border-blue-500 bg-blue-950/40 p-8 space-y-6">
       {!hideIntro && (
         <div className="flex items-start gap-3">
-          <Target className="w-7 h-7 text-emerald-400 shrink-0 mt-0.5" />
+          <Target className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
           <div>
             <h2 className="text-2xl font-bold text-white">
               Career Context
             </h2>
-            <p className="text-lg text-slate-300 mt-1 leading-snug">
+            <p className="text-lg text-zinc-300 mt-1 leading-snug">
               {zh
                 ? '選填底線，存進帳號後會注入每次 Snapshot / Guide 分析。'
                 : 'Optional floors for fit and offer targeting. Saved on your account and injected into Snapshot / Guide analyses.'}
@@ -150,13 +150,13 @@ export default function CareerContextForm({
             key={key}
             className={`block ${key === 'signature_strengths' ? 'sm:col-span-2' : 'sm:col-span-1'}`}
           >
-            <span className="text-slate-100 text-lg font-semibold">{fields[key].label}</span>
+            <span className="text-zinc-100 text-lg font-semibold">{fields[key].label}</span>
             <input
               type="text"
               value={form[key]}
               onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
               placeholder={fields[key].placeholder}
-              className="mt-2 w-full rounded-xl border-2 border-slate-400 bg-slate-950 px-4 py-3.5 text-xl text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/40"
+              className="mt-2 w-full rounded-xl border border-blue-500/50 bg-slate-950 px-4 py-3.5 text-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
             />
           </label>
         ))}
@@ -168,7 +168,7 @@ export default function CareerContextForm({
         </p>
       )}
       {message && (
-        <p className="text-lg text-emerald-300" role="status">
+        <p className="text-lg text-blue-200" role="status">
           {message}
         </p>
       )}
@@ -177,9 +177,9 @@ export default function CareerContextForm({
         type="button"
         onClick={() => void save()}
         disabled={saving}
-        className="inline-flex items-center gap-2.5 px-6 py-3.5 text-xl font-bold rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-white transition-colors"
+        className="inline-flex items-center gap-2.5 px-6 py-3.5 text-xl font-bold rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white transition-colors"
       >
-        {saving ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+        {saving ? <Loader2 className="w-[1em] h-[1em] animate-spin" /> : <Save className="w-[1em] h-[1em]" />}
         {zh ? '儲存 Career Context' : 'Save Career Context'}
       </button>
     </section>

@@ -1,7 +1,7 @@
 import type { AppLanguage } from '@/lib/report-language';
 
 /**
- * Hash targets for on-page /account sections. Keep in sync with ids in
+ * Hash targets for on-page /account tab panels. Keep in sync with ids in
  * `app/account/page.tsx`. Pause/delete already lives on `/account/danger`.
  */
 export const ACCOUNT_HASH_IDS = [
@@ -15,6 +15,10 @@ export const ACCOUNT_HASH_IDS = [
 ] as const;
 
 export type AccountHashId = (typeof ACCOUNT_HASH_IDS)[number];
+
+export function isAccountHashId(value: string): value is AccountHashId {
+  return (ACCOUNT_HASH_IDS as readonly string[]).includes(value);
+}
 
 export type AccountNavItem =
   | { id: AccountHashId; href: `#${AccountHashId}` }
