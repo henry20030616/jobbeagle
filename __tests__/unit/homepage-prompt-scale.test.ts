@@ -49,23 +49,34 @@ describe('homepage prompt type scale', () => {
   it('sizes the step-4 launch label with the same report-choice-title type as 適配快照', () => {
     const form = read('components/InputForm.tsx');
     const mobile = read('components/InputFormMobile.tsx');
+    const css = read('app/globals.css');
 
     expect(form).toContain(
-      "const REPORT_CHOICE_TITLE =\n  'report-choice-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white'",
+      "const REPORT_CHOICE_TITLE =\n  'report-choice-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white opacity-100'",
+    );
+    expect(form).toContain(
+      "const LAUNCH_POINTER = 'h-[1.15em] w-[1.15em] shrink-0 text-white stroke-white'",
     );
     expect(form).toMatch(
-      /REPORT_CHOICE_TITLE[\s\S]{0,120}\{submitLabel\}[\s\S]{0,80}Pointer className="h-\[1\.15em\] w-\[1\.15em\]/,
+      /REPORT_CHOICE_TITLE[\s\S]{0,160}\{submitLabel\}[\s\S]{0,80}Pointer className=\{LAUNCH_POINTER\}/,
     );
+    expect(form).toContain('disabled:text-white');
     expect(form).toContain('disabled:opacity-100');
+    expect(form).toContain('launch-submit-label');
     expect(form).not.toMatch(/REPORT_TYPE_LAUNCH_BOX\} cursor-not-allowed opacity-80/);
     expect(form).not.toMatch(
       /text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-100/,
     );
+    expect(form).not.toMatch(/text-zinc-300|text-zinc-400/);
     expect(mobile).toMatch(
-      /report-choice-title flex flex-col items-center justify-center gap-\[0\.35em\] text-sm font-bold text-white[\s\S]{0,80}\{submitLabel\}[\s\S]{0,80}Pointer className="h-\[1\.15em\] w-\[1\.15em\]/,
+      /launch-submit-label report-choice-title flex flex-col items-center justify-center gap-\[0\.35em\] text-sm font-bold text-white opacity-100[\s\S]{0,120}\{submitLabel\}[\s\S]{0,80}Pointer className="h-\[1\.15em\] w-\[1\.15em\] shrink-0 text-white stroke-white/,
     );
+    expect(mobile).toContain('disabled:text-white');
     expect(mobile).toContain('disabled:opacity-100');
     expect(mobile).not.toMatch(/REPORT_TYPE_LAUNCH_BOX\} cursor-not-allowed opacity-80/);
+    expect(css).toContain('button.launch-submit:disabled');
+    expect(css).toContain('.launch-submit-label svg');
+    expect(css).toMatch(/-webkit-text-fill-color:\s*rgb\(255 255 255\)/);
   });
 
   it('puts matching leading icons before step-3 Snapshot and Guide titles', () => {

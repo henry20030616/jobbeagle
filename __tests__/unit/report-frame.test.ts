@@ -48,8 +48,12 @@ describe('homepage step 3 / sample tab fill', () => {
     expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/border-2/);
     expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/border-white/);
     expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/text-white/);
-    expect(REPORT_TYPE_LAUNCH_BOX).toBe(`border-2 ${REPORT_TYPE_CARD_ACTIVE}`);
-    expect(REPORT_TYPE_LAUNCH_BOX).not.toMatch(/indigo|bg-blue-800|#3d3c7c|opacity|text-zinc-100/);
+    expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/hover:text-white/);
+    expect(REPORT_TYPE_LAUNCH_BOX).toMatch(/disabled:text-white/);
+    expect(REPORT_TYPE_LAUNCH_BOX).toBe(
+      `border-2 ${REPORT_TYPE_CARD_ACTIVE} text-white hover:text-white disabled:text-white`,
+    );
+    expect(REPORT_TYPE_LAUNCH_BOX).not.toMatch(/indigo|bg-blue-800|#3d3c7c|opacity|text-zinc-100|text-zinc-300|text-zinc-400/);
   });
 
   it('fills the desktop sample leftover box so the four step inner boxes share one bottom', () => {

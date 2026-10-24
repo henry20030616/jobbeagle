@@ -35,7 +35,8 @@ const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-3
 const MOBILE_TITLE_TYPE = 'homepage-title-type text-xs';
 const MOBILE_STEP_TITLE = `step-title flex items-center gap-2 ${MOBILE_TITLE_TYPE} font-bold text-white`;
 const MOBILE_STEP_BADGE = 'h-5 w-1 rounded-full shrink-0';
-const MOBILE_BUTTON_PRIMARY = 'w-full py-4 rounded-xl transition-all active:scale-[0.98] disabled:opacity-100';
+const MOBILE_BUTTON_PRIMARY =
+  'launch-submit w-full py-4 rounded-xl text-white transition-all hover:text-white active:scale-[0.98] disabled:text-white disabled:opacity-100';
 const MOBILE_PILL = `step-header-pill ${MOBILE_TITLE_TYPE} inline-flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/50 px-2.5 py-1 leading-snug text-slate-300 font-medium`;
 
 interface SavedResume extends ResumeInput {
@@ -840,9 +841,9 @@ const InputFormMobile: React.FC<InputFormProps> = ({
             ) : isSaving ? (
               <span className="text-sm text-white/70">{t.waitingSave}</span>
             ) : (
-              <span className="report-choice-title flex flex-col items-center justify-center gap-[0.35em] text-sm font-bold text-white">
-                <span>{submitLabel}</span>
-                <Pointer className="h-[1.15em] w-[1.15em] shrink-0" aria-hidden />
+              <span className="launch-submit-label report-choice-title flex flex-col items-center justify-center gap-[0.35em] text-sm font-bold text-white opacity-100">
+                <span className="text-white">{submitLabel}</span>
+                <Pointer className="h-[1.15em] w-[1.15em] shrink-0 text-white stroke-white" aria-hidden />
               </span>
             )}
           </button>

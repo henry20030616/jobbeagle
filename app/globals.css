@@ -396,6 +396,25 @@ main input {
   }
 }
 
+/*
+ * Step-4 「AI戰略分析」 + pointer. Native button:disabled uses GrayText /
+ * -webkit-text-fill-color, which muted text-white and the lucide currentColor
+ * stroke. Lock both to bright white in every state (idle/disabled/hover).
+ */
+button.launch-submit,
+button.launch-submit:hover,
+button.launch-submit:disabled,
+.launch-submit-label {
+  color: rgb(255 255 255) !important;
+  -webkit-text-fill-color: rgb(255 255 255);
+  opacity: 1;
+}
+.launch-submit-label svg {
+  color: rgb(255 255 255) !important;
+  stroke: rgb(255 255 255) !important;
+  opacity: 1;
+}
+
 .homepage-steps .jd-empty-hint {
   position: absolute;
   inset-inline: 0.75rem;

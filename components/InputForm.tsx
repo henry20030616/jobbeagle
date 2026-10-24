@@ -50,7 +50,8 @@ const STEP_PROMPT_TYPE =
   'upload-prompt text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl';
 /** Same classes as the step-3 適配快照 card title — reuse on 「AI戰略分析」. */
 const REPORT_CHOICE_TITLE =
-  'report-choice-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white';
+  'report-choice-title text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white opacity-100';
+const LAUNCH_POINTER = 'h-[1.15em] w-[1.15em] shrink-0 text-white stroke-white';
 
 function ReportChoiceMark({ selected }: { selected: boolean }) {
   return (
@@ -981,7 +982,7 @@ const InputForm: React.FC<InputFormProps> = ({
                           : 'Paste the full job posting and upload a resume first'
                       : undefined
                   }
-                  className={`flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center transition-all disabled:opacity-100 ${
+                  className={`launch-submit flex h-full ${STEP_BODY_MIN} w-full flex-1 flex-col items-center justify-center gap-4 sm:gap-5 lg:gap-6 rounded-xl px-6 sm:px-8 lg:px-10 py-8 sm:py-9 lg:py-10 text-center text-white transition-all hover:text-white disabled:text-white disabled:opacity-100 ${
                     submitDisabled
                       ? `${REPORT_TYPE_LAUNCH_BOX} cursor-not-allowed`
                       : publicAts
@@ -1004,9 +1005,9 @@ const InputForm: React.FC<InputFormProps> = ({
                   ) : isSaving ? (
                     <span className="text-lg text-white/70">{t.waitingSave}</span>
                   ) : (
-                    <span className={`${REPORT_CHOICE_TITLE} flex flex-col items-center justify-center gap-[0.35em] px-1`}>
-                      <span className="leading-snug">{submitLabel}</span>
-                      <Pointer className="h-[1.15em] w-[1.15em] shrink-0" aria-hidden />
+                    <span className={`${REPORT_CHOICE_TITLE} launch-submit-label flex flex-col items-center justify-center gap-[0.35em] px-1`}>
+                      <span className="leading-snug text-white">{submitLabel}</span>
+                      <Pointer className={LAUNCH_POINTER} aria-hidden />
                     </span>
                   )}
                 </button>

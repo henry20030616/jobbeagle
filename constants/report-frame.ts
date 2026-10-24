@@ -53,7 +53,7 @@ export const REPORT_TYPE_CARD_ACTIVE =
  * column through bg-blue-900 and reads as a different/duller blue.
  */
 export const REPORT_TYPE_LAUNCH_BOX =
-  `border-2 ${REPORT_TYPE_CARD_ACTIVE}`;
+  `border-2 ${REPORT_TYPE_CARD_ACTIVE} text-white hover:text-white disabled:text-white`;
 
 /**
  * Shared homepage title type: 四大優點 feature titles, step 1–4 headings,
