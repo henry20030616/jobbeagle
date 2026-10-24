@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { CheckCircle2, Loader2, Puzzle } from 'lucide-react';
 import { classifyJobInput, type JobInputClassification } from '@/lib/url-parser-logic';
 import ErrorStateUI from '@/components/ErrorStateUI';
+import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import {
   jdCharProgress,
   jdEmptyHint,
   jdUrlOnlyMessage,
   MIN_JD_CHARS,
 } from '@/lib/jd-paste-help';
+import { normalizeReportLanguage } from '@/lib/report-language';
 
 export interface SmartInputAreaProps {
   value: string;
@@ -28,11 +30,6 @@ export interface SmartInputAreaProps {
   /** Overrides default empty-state placeholder */
   placeholder?: string;
 }
-
-const PLACEHOLDER_ZH =
-  '請貼上完整職缺：公司名稱、職缺名稱，以及完整職缺內容（條件、職責等）。\n勿只貼網址或片段';
-const PLACEHOLDER_EN =
-  'Paste the full job posting: company name, job title, and full description (requirements, responsibilities…).\nDo not paste only a URL or a short excerpt';
 
 /** Same type scale as InputForm “Click to upload Resume” / upload-support. */
 const HOMEPAGE_STEP_BODY_TYPE =
@@ -76,7 +73,8 @@ export default function SmartInputArea({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const focusPaste = () => textareaRef.current?.focus();
 
-  const resolvedPlaceholder = placeholder ?? (zh ? PLACEHOLDER_ZH : PLACEHOLDER_EN);
+  const resolvedPlaceholder =
+    placeholder ?? getHomepageFormCopy(normalizeReportLanguage(language)).jobUrlPlaceholder;
   const promptType = compact ? JD_PROMPT_TYPE_COMPACT : JD_PROMPT_TYPE;
   const trimmedLen = value.trim().length;
   const showCharProgress =
