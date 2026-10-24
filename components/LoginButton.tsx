@@ -18,16 +18,12 @@ const HEADER_LOGOUT_BTN =
 
 type LoggedInHeaderControlsProps = {
   avatarUrl: string | undefined;
-  displayName: string;
-  displayEmail: string;
   copy: LoginButtonCopy;
   onLogout: () => void;
 };
 
 export function LoggedInHeaderControls({
   avatarUrl,
-  displayName,
-  displayEmail,
   copy,
   onLogout,
 }: LoggedInHeaderControlsProps) {
@@ -42,7 +38,7 @@ export function LoggedInHeaderControls({
         {avatarUrl ? (
           <img
             src={avatarUrl}
-            alt={displayName}
+            alt=""
             className="h-7 w-7 sm:h-8 sm:w-8 lg:h-14 lg:w-14 shrink-0 rounded-full border border-slate-600 object-cover hover:border-indigo-500 transition-colors"
           />
         ) : (
@@ -50,16 +46,9 @@ export function LoggedInHeaderControls({
             <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-7 lg:h-7 text-white" />
           </div>
         )}
-        <div className="hidden min-[420px]:flex max-sm:min-w-0 flex-col justify-center text-left">
-          <span className="text-sm font-semibold text-white leading-tight max-sm:max-w-[12rem] max-sm:truncate sm:whitespace-nowrap">
-            {displayName}
-          </span>
-          {displayEmail ? (
-            <span className="hidden lg:block text-xs text-slate-400 leading-tight whitespace-nowrap">
-              {displayEmail}
-            </span>
-          ) : null}
-        </div>
+        <span className="hidden min-[420px]:inline text-sm font-semibold text-white leading-tight whitespace-nowrap">
+          {copy.accountTitle}
+        </span>
       </Link>
       <button type="button" onClick={onLogout} className={HEADER_LOGOUT_BTN}>
         <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-6 lg:h-6" />
@@ -190,18 +179,10 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
       (typeof user.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : undefined) ||
       (typeof user.user_metadata?.picture === 'string' ? user.user_metadata.picture : undefined) ||
       (typeof user.app_metadata?.avatar_url === 'string' ? user.app_metadata.avatar_url : undefined);
-    const displayName =
-      (typeof user.user_metadata?.name === 'string' ? user.user_metadata.name : undefined) ||
-      (typeof user.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : undefined) ||
-      user.email?.split('@')[0] ||
-      copy.userFallback;
-    const displayEmail = user.email || '';
 
     return (
       <LoggedInHeaderControls
         avatarUrl={avatarUrl}
-        displayName={displayName}
-        displayEmail={displayEmail}
         copy={copy}
         onLogout={handleLogout}
       />

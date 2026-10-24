@@ -22,9 +22,13 @@ describe('login button copy', () => {
     }
   });
 
-  it('uses account-management titles for the merged identity control', () => {
-    expect(LOGIN_BUTTON_COPY['zh-TW'].accountTitle).toBe('帳戶管理');
-    expect(LOGIN_BUTTON_COPY.en.accountTitle).toBe('Account management');
+  it('uses my-account titles for the merged identity control', () => {
+    expect(LOGIN_BUTTON_COPY['zh-TW'].accountTitle).toBe('我的帳號管理');
+    expect(LOGIN_BUTTON_COPY['zh-CN'].accountTitle).toBe('我的帐号管理');
+    expect(LOGIN_BUTTON_COPY.en.accountTitle).toBe('My account');
+    expect(LOGIN_BUTTON_COPY.es.accountTitle).toBe('Mi cuenta');
+    expect(LOGIN_BUTTON_COPY.hi.accountTitle).toBe('मेरा खाता');
+    expect(LOGIN_BUTTON_COPY.ar.accountTitle).toBe('حسابي');
   });
 });
 
@@ -33,8 +37,6 @@ describe('LoggedInHeaderControls', () => {
     const html = renderToStaticMarkup(
       createElement(LoggedInHeaderControls, {
         avatarUrl: undefined,
-        displayName: 'Ada',
-        displayEmail: 'ada@example.com',
         copy: getLoginButtonCopy('zh-TW'),
         onLogout: () => undefined,
       }),
@@ -43,10 +45,9 @@ describe('LoggedInHeaderControls', () => {
     expect(HEADER_ACCOUNT_HREF).toBe('/account');
     expect(html).toContain('href="/account"');
     expect(html.match(/href="\/account"/g)?.length).toBe(1);
-    expect(html).toContain('Ada');
-    expect(html).toContain('ada@example.com');
-    expect(html).toContain('帳戶管理');
+    expect(html).toContain('我的帳號管理');
     expect(html).not.toContain('>帳戶<');
+    expect(html).not.toContain('>帳戶管理<');
     expect(html).toContain('登出');
   });
 
@@ -54,8 +55,6 @@ describe('LoggedInHeaderControls', () => {
     const html = renderToStaticMarkup(
       createElement(LoggedInHeaderControls, {
         avatarUrl: 'https://example.com/ada.png',
-        displayName: 'Ada',
-        displayEmail: '',
         copy: getLoginButtonCopy('en'),
         onLogout: () => undefined,
       }),
@@ -64,30 +63,32 @@ describe('LoggedInHeaderControls', () => {
     expect(html).toContain('href="/account"');
     expect(html.match(/href="\/account"/g)?.length).toBe(1);
     expect(html).not.toContain('href="/account/danger"');
-    expect(html).toContain('Account management');
+    expect(html).toContain('My account');
     expect(html).not.toContain('>Account<');
+    expect(html).not.toContain('Account management');
     expect(html).toContain('Log out');
   });
 
-  it('shows a typical Google name and email without a tight truncate max-width', () => {
+  it('shows the localized account label without Google identity or truncation', () => {
     const html = renderToStaticMarkup(
       createElement(LoggedInHeaderControls, {
         avatarUrl: undefined,
-        displayName: 'henry20030616',
-        displayEmail: 'henry061680@gmail.com',
-        copy: getLoginButtonCopy('en'),
+        copy: getLoginButtonCopy('zh-TW'),
         onLogout: () => undefined,
       }),
     );
 
-    expect(html).toContain('henry20030616');
-    expect(html).toContain('henry061680@gmail.com');
+    expect(html).toContain('我的帳號管理');
+    expect(html).not.toContain('henry20030616');
+    expect(html).not.toContain('henry061680@gmail.com');
+    expect(html).not.toContain('@gmail.com');
     expect(html).not.toContain('max-w-[7.5rem]');
     expect(html).not.toContain('max-w-[10rem]');
+    expect(html).not.toContain('max-w-[12rem]');
     expect(html).not.toContain('max-w-[18rem]');
-    expect(html).toContain('max-sm:truncate');
-    expect(html).toContain('sm:whitespace-nowrap');
+    expect(html).not.toContain('truncate');
+    expect(html).toContain('whitespace-nowrap');
     expect(html.match(/href="\/account"/g)?.length).toBe(1);
-    expect(html).toContain('Log out');
+    expect(html).toContain('登出');
   });
 });
