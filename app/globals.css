@@ -177,7 +177,8 @@ main input {
 
 /*
  * Desktop homepage type — hero / UI / step / chrome.
- * Header, features, referral, and footer use the same scale as the operator.
+ * Header, features, and footer use the same scale as the operator.
+ * Homepage referral type is 80% of that scale (see .homepage-referral).
  */
 @media (min-width: 1024px) {
   .homepage-font-large {
@@ -199,12 +200,13 @@ main input {
   .homepage-font-large .homepage-header-controls .sm\:text-xl { font-size: var(--type-rest) !important; line-height: 1.3 !important; }
   .homepage-font-large .homepage-header-controls .lg\:h-16 { height: 5.5rem !important; }
 
+  /* Homepage referral only — 80% of the desktop step/chrome scale. Icons use 1em. */
   .homepage-font-large .homepage-referral .referral-title {
-    font-size: var(--type-step) !important;
+    font-size: calc(var(--type-step) * 0.8) !important;
     line-height: 1.2 !important;
   }
   .homepage-font-large .homepage-referral .referral-desc {
-    font-size: var(--type-chrome) !important;
+    font-size: calc(var(--type-chrome) * 0.8) !important;
     line-height: 1.4 !important;
   }
 
