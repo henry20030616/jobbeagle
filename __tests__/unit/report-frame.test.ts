@@ -5,7 +5,9 @@ import {
   HOMEPAGE_STEP_PILL,
   HOMEPAGE_STEP_PILL_TYPE,
   HOMEPAGE_TITLE_TYPE,
+  PAGE_SHELL_GUTTER,
   REPORT_ACTION_TEXT,
+  REPORT_SHELL_WIDTH,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
@@ -132,5 +134,26 @@ describe('homepage step-header pills', () => {
     expect(mobile).toContain("Puzzle className=\"h-[1em] w-[1em] shrink-0\"");
     expect(mobile).toContain("History className=\"h-[1em] w-[1em] shrink-0\"");
     expect(mobile).toContain("CreditCard className=\"h-[1em] w-[1em] shrink-0\"");
+  });
+});
+
+describe('page shell gutters', () => {
+  it('matches homepage left/right vw padding on samples and live report shells', () => {
+    expect(PAGE_SHELL_GUTTER).toBe('px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]');
+    expect(REPORT_SHELL_WIDTH).toBe('w-full max-w-full');
+    expect(REPORT_SHELL_WIDTH).not.toMatch(/\d+rem/);
+
+    const homepage = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
+    const samples = readFileSync(
+      join(process.cwd(), 'app/samples/SampleReportClient.tsx'),
+      'utf8',
+    );
+    const report = readFileSync(join(process.cwd(), 'app/report/page.tsx'), 'utf8');
+
+    expect(homepage).toContain(PAGE_SHELL_GUTTER);
+    expect(samples).toContain('PAGE_SHELL_GUTTER');
+    expect(report).toContain('PAGE_SHELL_GUTTER');
+    expect(samples).not.toMatch(/header className="[^"]*px-6 py-6 sm:px-8/);
+    expect(report).not.toMatch(/header className="[^"]*px-6 py-4/);
   });
 });

@@ -14,7 +14,7 @@ import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import BrandLogo from '@/components/BrandLogo';
 import { ReportFitStage } from '@/components/ReportFitStage';
-import { REPORT_ACTION_BTN, REPORT_ACTION_ICON } from '@/constants/report-frame';
+import { PAGE_SHELL_GUTTER, REPORT_ACTION_BTN, REPORT_ACTION_ICON } from '@/constants/report-frame';
 import { Loader2, Home, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
@@ -73,8 +73,8 @@ export default function ReportPage() {
   const chrome = strategy ? getGuideUiCopy(lang) : getSnapshotUiCopy(lang);
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200 flex flex-col">
-      <div className="border-b border-slate-800/80 bg-slate-950 px-4 sm:px-6 py-3 shrink-0">
+    <div className={`min-h-screen w-full max-w-full overflow-x-clip bg-slate-950 text-slate-200 flex flex-col ${PAGE_SHELL_GUTTER}`}>
+      <div className="border-b border-slate-800/80 bg-slate-950 py-3 shrink-0">
         <div className="mx-auto w-full max-w-full flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={REPORT_ACTION_BTN}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
@@ -87,7 +87,7 @@ export default function ReportPage() {
         </div>
       </div>
 
-      <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
+      <header className="border-b border-slate-800 py-4 flex items-center justify-between shrink-0">
         <BrandLogo size="nav" showIcon />
         <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
           {strategy
@@ -95,7 +95,7 @@ export default function ReportPage() {
             : getSnapshotUiCopy(lang).productTitle}
         </span>
       </header>
-      <main className="flex flex-1 min-h-0 w-full min-w-0 flex-col items-center overflow-auto p-6">
+      <main className="flex flex-1 min-h-0 w-full min-w-0 flex-col items-center overflow-auto py-6">
         <ReportFitStage className="w-full flex-1 min-h-0">
           {strategy ? (
             <FullReportDashboard
