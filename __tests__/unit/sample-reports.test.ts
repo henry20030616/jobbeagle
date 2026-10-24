@@ -190,7 +190,7 @@ describe('sample reports', () => {
     expect(stanceBullets.candidate).toHaveLength(2);
     expect(stanceBullets.candidate[1]).toMatch(/ACH/);
     const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
-    expect(zhGuide?.resume_rewrites[0]?.category).toBe('履歷缺少的關鍵項目');
+    expect(zhGuide?.resume_rewrites[0]?.category).toBe('建議履歷優化方向');
     expect(zhGuide?.resume_rewrites[0]?.gap).toMatch(/ACH|清算|退票/);
     expect(zhGuide?.resume_rewrites.map((item) => item.category).join()).not.toMatch(/擁有權/);
     expect(zhGuide?.resume_rewrites[1]?.category).toBe(zhGuide?.resume_rewrites[0]?.category);
@@ -244,6 +244,9 @@ describe('sample reports', () => {
       const rewrites = guide.guide_modules!.resume_rewrites;
       expect(rewrites).toHaveLength(2);
       expect(rewrites[0].category).toBe(rewrites[1].category);
+      expect(rewrites[0].category).toMatch(
+        /Suggested resume direction|建議履歷優化方向|建议简历优化方向|Dirección sugerida para el CV|सुझाई गई रिज़्यूमे दिशा|اتجاه مقترح لتحسين السيرة/,
+      );
       expect(rewrites[0].gap).not.toBe(rewrites[1].gap);
       expect(rewrites[0].before.length).toBeGreaterThan(0);
       expect(rewrites[0].after.length).toBeGreaterThan(0);
@@ -325,8 +328,9 @@ describe('seven-item report layout', () => {
   it('keeps rewrite category headings on REPORT_H2 and the card outside the keyword column', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>');
-    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{group.title}</h3>');
+    expect(source).toContain('title={copy.rewriteDirection}');
     expect(source).toContain('className="w-full min-w-0 rounded-lg border border-emerald-400/30');
+    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{copy.keywords}</h3>');
     expect(source).toContain("apply: 'Apply advice'");
@@ -339,10 +343,9 @@ describe('seven-item report layout', () => {
       source.indexOf('function FitBody'),
       source.indexOf('export function SnapshotItemStack'),
     );
-    expect(fitBody.indexOf('{copy.score}')).toBeLessThan(fitBody.indexOf('md:grid-cols-2'));
-    expect(fitBody.indexOf('md:grid-cols-2')).toBeLessThan(fitBody.indexOf('label={copy.analysisSummary}'));
-    expect(fitBody.indexOf('label={copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{scoreInfo.level}'));
-    expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
+    expect(fitBody.indexOf('{copy.score}')).toBeLessThan(fitBody.indexOf('{scoreInfo.level}'));
+    expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.analysisSummary}'));
+    expect(fitBody.indexOf('{copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
     expect(fitBody.indexOf('{copy.apply}')).toBeLessThan(fitBody.indexOf('{copy.keywords}'));
     expect(source.indexOf('{copy.keywords}')).toBeLessThan(source.indexOf('<RewriteGroups'));
     expect(source).toContain('{beforeLabel}');
@@ -352,7 +355,7 @@ describe('seven-item report layout', () => {
     expect(source).not.toMatch(/md:grid-cols-2[\s\S]{0,200}copy\.keywords/);
   });
 
-  it('renders Snapshot and Guide fit samples with 總結分析 left of stacked Beagle Scale and apply advice', () => {
+  it('renders Snapshot and Guide fit samples with score beside Beagle Scale and 總結分析 beside apply advice', () => {
     const snapshot = getSampleSnapshotReport('zh-TW');
     const guide = getSampleStrategyGuideReport('zh-TW');
     const snapHtml = renderToStaticMarkup(
@@ -375,22 +378,28 @@ describe('seven-item report layout', () => {
       expect(html).not.toContain('匹配分數、履歷分析');
       expect(html).toContain('應徵建議');
       expect(html).toContain('藍寶米格魯');
-      expect(html).toContain('欠缺的硬性關鍵字');
+      expect(html).toContain('履歷缺少的關鍵');
       expect(html).not.toContain('建議履歷調整後再應徵');
       expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('匹配分數與燈號'));
-      expect(html.indexOf('匹配分數與燈號')).toBeLessThan(html.indexOf('總結分析'));
-      expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('藍寶米格魯'));
-      expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('應徵建議'));
-      expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('欠缺的硬性關鍵字'));
+      expect(html.indexOf('匹配分數與燈號')).toBeLessThan(html.indexOf('藍寶米格魯'));
+      expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('總結分析'));
+      expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('應徵建議'));
+      expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('履歷缺少的關鍵'));
       expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('市場薪資水準'));
       expect(html.indexOf('市場薪資水準')).toBeLessThan(html.indexOf('職位核心解析'));
+      const summaryHeading = html.slice(
+        Math.max(0, html.indexOf('總結分析') - 120),
+        html.indexOf('總結分析') + '總結分析'.length,
+      );
+      expect(summaryHeading).toContain('report-h1');
+      expect(summaryHeading).not.toContain('report-h2');
       expect(html).toContain('border-emerald-400/30');
     }
-    expect(guideHtml).toContain('履歷缺少的關鍵項目');
-    expect(guideHtml.indexOf('欠缺的硬性關鍵字')).toBeLessThan(
-      guideHtml.indexOf('履歷缺少的關鍵項目'),
+    expect(guideHtml).toContain('建議履歷優化方向');
+    expect(guideHtml.indexOf('履歷缺少的關鍵')).toBeLessThan(
+      guideHtml.indexOf('建議履歷優化方向'),
     );
-    expect(snapHtml).not.toContain('履歷缺少的關鍵項目');
+    expect(snapHtml).not.toContain('建議履歷優化方向');
     expect(snapHtml).toContain(snapshot.apply_decision.next_best_action);
     expect(guideHtml).toContain(guide.apply_decision.next_best_action);
   });

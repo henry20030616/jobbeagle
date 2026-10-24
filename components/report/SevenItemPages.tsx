@@ -60,6 +60,7 @@ type ItemCopy = {
   score: string;
   keywords: string;
   keywordsNote: string;
+  rewriteDirection: string;
   apply: string;
   lockPay: string;
   lockRewrite: string;
@@ -121,6 +122,40 @@ function extraRuleCopy(language: AppLanguage): string {
   }
 }
 
+function missingKeysTitle(language: AppLanguage): string {
+  switch (language) {
+    case 'zh-CN':
+      return '简历缺少的关键';
+    case 'zh-TW':
+      return '履歷缺少的關鍵';
+    case 'es':
+      return 'Claves que faltan en el CV';
+    case 'hi':
+      return 'रिज़्यूमे में कमी वाले मुख्य बिंदु';
+    case 'ar':
+      return 'المفاتيح الناقصة في السيرة';
+    default:
+      return 'Missing keys on the resume';
+  }
+}
+
+function rewriteDirectionTitle(language: AppLanguage): string {
+  switch (language) {
+    case 'zh-CN':
+      return '建议简历优化方向';
+    case 'zh-TW':
+      return '建議履歷優化方向';
+    case 'es':
+      return 'Dirección sugerida para el CV';
+    case 'hi':
+      return 'सुझाई गई रिज़्यूमे दिशा';
+    case 'ar':
+      return 'اتجاه مقترح لتحسين السيرة';
+    default:
+      return 'Suggested resume direction';
+  }
+}
+
 function itemCopy(language: AppLanguage): ItemCopy {
   if (language === 'zh-TW' || language === 'zh-CN') {
     const s = language === 'zh-CN';
@@ -151,10 +186,11 @@ function itemCopy(language: AppLanguage): ItemCopy {
       role: s ? '职位' : '職位',
       level: s ? '职级或年资' : '職級或年資',
       score: s ? '匹配分数与灯号' : '匹配分數與燈號',
-      keywords: s ? '欠缺的硬性关键字' : '欠缺的硬性關鍵字',
+      keywords: missingKeysTitle(language),
       keywordsNote: s
         ? '这些是人力资源筛选系统用来比对简历的重要关键字。简历里没有这些词，申请可能在招聘人员阅读之前就被系统排除。'
         : '這些是人資篩選系統用來比對履歷的重要關鍵字。履歷裡沒有這些詞，申請可能在招募人員閱讀之前就被系統排除。',
+      rewriteDirection: rewriteDirectionTitle(language),
       apply: s ? '应征建议' : '應徵建議',
       lockPay: s
         ? '🔒 升级 Interview Guide 可解锁个人化精准落点与 TC 结构拆解'
@@ -238,9 +274,10 @@ function itemCopy(language: AppLanguage): ItemCopy {
     role: 'Role',
     level: 'Level or years',
     score: 'Score and signal',
-    keywords: 'Missing hard keywords',
+    keywords: missingKeysTitle(language),
     keywordsNote:
       'These are keywords the applicant tracking system uses to screen resumes. If the resume does not contain them, the application can be filtered out before a recruiter reads it.',
+    rewriteDirection: rewriteDirectionTitle(language),
     apply: 'Apply advice',
     lockPay: '🔒 Upgrade to Interview Guide for your pay landing and TC split',
     lockRewrite: '🔒 Upgrade to Interview Guide for line-by-line rewrites of these gaps',
@@ -613,72 +650,54 @@ function LockLine({ children }: { children: string }) {
   );
 }
 
-function groupRewrites(items: GuideResumeRewrite[]): Array<{ title: string; items: GuideResumeRewrite[] }> {
-  const groups: Array<{ title: string; items: GuideResumeRewrite[] }> = [];
-  for (const item of items) {
-    const title = item.category?.trim() || item.gap;
-    const last = groups[groups.length - 1];
-    if (last && last.title === title) last.items.push(item);
-    else groups.push({ title, items: [item] });
-  }
-  return groups;
-}
-
 function RewriteGroups({
   rewrites,
+  title,
   beforeLabel,
   afterLabel,
 }: {
   rewrites: GuideResumeRewrite[];
+  title: string;
   beforeLabel: string;
   afterLabel: string;
 }) {
+  if (rewrites.length === 0) return null;
   return (
-    <div className="w-full min-w-0 space-y-3">
-      {groupRewrites(rewrites).map((group) => (
-        <section
-          key={group.title}
-          className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4"
-        >
-          <h3 className={`mb-2 ${REPORT_H2}`}>{group.title}</h3>
-          <ul className="space-y-4">
-            {group.items.map((item) => {
-              const showGap = item.gap.trim() !== group.title;
-              return (
-                <li key={`${item.gap}-${item.after}`}>
-                  {showGap ? (
-                    <p className={`flex gap-2.5 ${BODY} font-semibold text-slate-100 leading-snug`}>
-                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
-                      <span>{item.gap}</span>
-                    </p>
-                  ) : null}
-                  <ul className={showGap ? 'mt-2 space-y-2 pl-5' : 'space-y-2'}>
-                    {item.before ? (
-                      <li className={`flex gap-2.5 ${BODY_MUTED} leading-snug`}>
-                        <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-400/80" aria-hidden />
-                        <span>
-                          <span className="font-semibold text-slate-300">{beforeLabel}</span>
-                          {': '}
-                          {item.before}
-                        </span>
-                      </li>
-                    ) : null}
-                    <li className={`flex gap-2.5 ${BODY} text-slate-100 leading-snug`}>
-                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
-                      <span>
-                        <span className="font-semibold">{afterLabel}</span>
-                        {': '}
-                        {item.after}
-                      </span>
-                    </li>
-                  </ul>
+    <section className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4">
+      <h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>
+      <ul className="space-y-4">
+        {rewrites.map((item) => (
+          <li key={`${item.gap}-${item.after}`}>
+            {item.gap.trim() ? (
+              <p className={`flex gap-2.5 ${BODY} font-semibold text-slate-100 leading-snug`}>
+                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
+                <span>{item.gap}</span>
+              </p>
+            ) : null}
+            <ul className={item.gap.trim() ? 'mt-2 space-y-2 pl-5' : 'space-y-2'}>
+              {item.before ? (
+                <li className={`flex gap-2.5 ${BODY_MUTED} leading-snug`}>
+                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-400/80" aria-hidden />
+                  <span>
+                    <span className="font-semibold text-slate-300">{beforeLabel}</span>
+                    {': '}
+                    {item.before}
+                  </span>
                 </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
-    </div>
+              ) : null}
+              <li className={`flex gap-2.5 ${BODY} text-slate-100 leading-snug`}>
+                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
+                <span>
+                  <span className="font-semibold">{afterLabel}</span>
+                  {': '}
+                  {item.after}
+                </span>
+              </li>
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -1010,70 +1029,74 @@ function FitBody({
     .map((point) => point.trim())
     .filter(Boolean);
   const verdictLines = verdictPoints.length >= 2 ? verdictPoints : splitDecisionBrief(verdict);
+  const summaryPoints = splitSummaryPoints(analysisSummary);
   return (
     <div className="space-y-5">
-      <section>
-        <p className={`${REPORT_H2} mb-3`}>{copy.score}</p>
-        <div className="flex items-center gap-4">
-          <BeagleIcon
-            className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
-            color={scoreInfo.fill}
-            spotColor={scoreInfo.spotColor}
-            glassesColor={scoreInfo.fill}
-          />
-          <div className="relative h-32 w-32 shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadialBarChart
-                innerRadius="68%"
-                outerRadius="100%"
-                barSize={12}
-                data={[{ name: 'Score', value: score, fill: scoreInfo.fill }]}
-                startAngle={90}
-                endAngle={-270}
-              >
-                <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-                <RadialBar background dataKey="value" cornerRadius={30} />
-              </RadialBarChart>
-            </ResponsiveContainer>
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <span className={`text-4xl font-black tabular-nums ${scoreInfo.color}`}>{score}</span>
+      <section className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
+          <div className="min-w-0">
+            <p className={`${REPORT_H2} mb-3`}>{copy.score}</p>
+            <div className="flex items-center gap-4">
+              <BeagleIcon
+                className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
+                color={scoreInfo.fill}
+                spotColor={scoreInfo.spotColor}
+                glassesColor={scoreInfo.fill}
+              />
+              <div className="relative h-32 w-32 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadialBarChart
+                    innerRadius="68%"
+                    outerRadius="100%"
+                    barSize={12}
+                    data={[{ name: 'Score', value: score, fill: scoreInfo.fill }]}
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+                    <RadialBar background dataKey="value" cornerRadius={30} />
+                  </RadialBarChart>
+                </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <span className={`text-4xl font-black tabular-nums ${scoreInfo.color}`}>{score}</span>
+                </div>
+              </div>
             </div>
+          </div>
+          <div className="min-w-0">
+            <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
+            <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
+            {verdictLines.length > 0 ? (
+              <ul className="mt-3 space-y-3">
+                {verdictLines.map((point) => (
+                  <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                    <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </div>
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
-          <div className="min-w-0">
-            <SectionOverview
-              label={copy.analysisSummary}
-              summary={analysisSummary}
-              className="min-w-0"
-            />
-          </div>
-          <div className="min-w-0 space-y-4">
-            <div className="min-w-0">
-              <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
-              <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
-              {verdictLines.length > 0 ? (
-                <ul className="mt-3 space-y-3">
-                  {verdictLines.map((point) => (
-                    <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-            <section className="min-w-0">
-              <h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>
-              {apply?.next_best_action ? (
-                <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
-                  {apply.next_best_action}
-                </p>
-              ) : (
-                <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
-              )}
-            </section>
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
+          <section className="min-w-0">
+            <h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>
+            {summaryPoints.length > 1 ? (
+              <BriefRows items={summaryPoints} />
+            ) : summaryPoints[0] ? (
+              <p className={`${BODY} font-medium text-slate-100 leading-snug`}>{summaryPoints[0]}</p>
+            ) : null}
+          </section>
+          <section className="min-w-0">
+            <h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>
+            {apply?.next_best_action ? (
+              <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
+                {apply.next_best_action}
+              </p>
+            ) : (
+              <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+            )}
+          </section>
         </div>
       </section>
       <section className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4">
@@ -1106,7 +1129,12 @@ function FitBody({
       </section>
       {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
       {!locked && rewrites.length > 0 ? (
-        <RewriteGroups rewrites={rewrites} beforeLabel={copy.before} afterLabel={copy.after} />
+        <RewriteGroups
+          rewrites={rewrites}
+          title={copy.rewriteDirection}
+          beforeLabel={copy.before}
+          afterLabel={copy.after}
+        />
       ) : null}
     </div>
   );

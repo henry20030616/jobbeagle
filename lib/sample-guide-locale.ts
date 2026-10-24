@@ -74,14 +74,14 @@ const en: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'Missing hard requirements on the resume',
+      category: 'Suggested resume direction',
       gap: 'Resume does not show ACH returns or settlement',
       before: 'Supported payment operations and reconciliation.',
       after:
         'Cut reconciliation cycle time 28% with SQL and Looker on a banking-ops book. The resume does not show ACH returns or settlement; do not add them.',
     },
     {
-      category: 'Missing hard requirements on the resume',
+      category: 'Suggested resume direction',
       gap: 'Resume does not show NACHA or a named processor',
       before: 'Worked with vendors on payment issues.',
       after:
@@ -171,13 +171,13 @@ const zhTW: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: '履歷缺少的關鍵項目',
+      category: '建議履歷優化方向',
       gap: '履歷缺少 ACH 退票與清算經驗',
       before: '支援支付營運與對帳。',
       after: '在銀行營運帳上，用 SQL 與 Looker 把對帳週期縮短 28%。履歷沒有 ACH 退票或清算經驗，改寫時不要補上。',
     },
     {
-      category: '履歷缺少的關鍵項目',
+      category: '建議履歷優化方向',
       gap: '履歷缺少 NACHA 與支付處理商經驗',
       before: '與供應商處理支付問題。',
       after: '與工程一起處理遲到的例外檔。履歷沒有處理商或 NACHA 職稱，不要自行加上。',
@@ -264,13 +264,13 @@ const zhCN: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: '简历缺少的关键项目',
+      category: '建议简历优化方向',
       gap: '简历缺少 ACH 退票与清算经验',
       before: '支持支付运营与对账。',
       after: '在银行运营账上，用 SQL 与 Looker 把对账周期缩短 28%。简历没有 ACH 退票或清算经验，改写时不要补上。',
     },
     {
-      category: '简历缺少的关键项目',
+      category: '建议简历优化方向',
       gap: '简历缺少 NACHA 与支付处理商经验',
       before: '与供应商处理支付问题。',
       after: '与工程一起处理迟到的例外档。简历没有处理商或 NACHA 职称，不要自行加上。',
@@ -357,14 +357,14 @@ const es: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'Requisitos clave que faltan en el CV',
+      category: 'Dirección sugerida para el CV',
       gap: 'El CV no muestra devoluciones ACH ni liquidación',
       before: 'Apoyé operaciones de pago y conciliación.',
       after:
         'En un libro de operaciones bancarias, reduje el ciclo de conciliación un 28% con SQL y Looker. El CV no muestra devoluciones ACH ni liquidación; no las añadas al reescribir.',
     },
     {
-      category: 'Requisitos clave que faltan en el CV',
+      category: 'Dirección sugerida para el CV',
       gap: 'El CV no muestra NACHA ni un procesador concreto',
       before: 'Trabajé con proveedores en incidencias de pago.',
       after:
@@ -454,14 +454,14 @@ const hi: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'रिज़्यूमे में कमी वाले मुख्य आइटम',
+      category: 'सुझाई गई रिज़्यूमे दिशा',
       gap: 'रिज़्यूमे में ACH रिटर्न या सेटलमेंट नहीं है',
       before: 'भुगतान संचालन और मिलान में सहयोग किया।',
       after:
         'बैंकिंग संचालन की किताब पर SQL और Looker से मिलान चक्र 28% छोटा किया। रिज़्यूमे में ACH रिटर्न या सेटलमेंट नहीं है; पुनर्लेखन में जोड़ें नहीं।',
     },
     {
-      category: 'रिज़्यूमे में कमी वाले मुख्य आइटम',
+      category: 'सुझाई गई रिज़्यूमे दिशा',
       gap: 'रिज़्यूमे में NACHA या नामित प्रोसेसर नहीं है',
       before: 'भुगतान समस्याओं पर विक्रेताओं के साथ काम किया।',
       after:
@@ -550,14 +550,14 @@ const ar: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'البنود الأساسية الناقصة في السيرة',
+      category: 'اتجاه مقترح لتحسين السيرة',
       gap: 'السيرة لا تُظهر مرتجعات ACH أو التسوية',
       before: 'دعمت عمليات الدفع والمطابقة.',
       after:
         'على دفتر عمليات مصرفية، اختصرت زمن المطابقة بنسبة 28% باستخدام SQL وLooker. السيرة لا تُظهر مرتجعات ACH أو التسوية؛ لا تضفها عند إعادة الصياغة.',
     },
     {
-      category: 'البنود الأساسية الناقصة في السيرة',
+      category: 'اتجاه مقترح لتحسين السيرة',
       gap: 'السيرة لا تُظهر NACHA أو معالجاً مسمى',
       before: 'عملت مع الموردين على مشكلات الدفع.',
       after:
