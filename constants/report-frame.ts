@@ -36,6 +36,12 @@ export const SAMPLE_HEADER_BTN =
 export const REPORT_FRAME_BORDER = 'border-2 border-blue-500';
 
 /**
+ * Guide inner section cards (總結分析, 公司評價, 談判區塊, 面試真題 groups).
+ * Same chrome as ItemBlock on the interview-questions page.
+ */
+export const GUIDE_SECTION_FRAME = `rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900/55 p-5`;
+
+/**
  * Homepage report-type cards (step 3).
  * Dark blue fill (blue-900 / #1e3a8a family) — not indigo/purple.
  * Selected card keeps the same fill plus the white 2px box (border-2 + border-white).

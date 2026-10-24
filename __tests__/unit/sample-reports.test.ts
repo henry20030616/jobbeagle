@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   getSampleSnapshotReport,
@@ -6,6 +8,7 @@ import {
 import { GUIDE_ITEM_IDS, guideItemNav } from '@/components/report/SevenItemPages';
 import { isFullReport, isLiteReport } from '@/lib/normalize-lite-report';
 import { fitBandFromScore } from '@/lib/report-rules';
+import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 
 describe('sample reports', () => {
   it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
@@ -166,6 +169,10 @@ describe('sample reports', () => {
     expect(stance).not.toMatch(/還沒補上|也可以繼續等|需要人/);
     expect(modules!.salary_land.buyer_seller).not.toMatch(/keep waiting|need someone/i);
     expect(modules!.salary_land.buyer_seller).toMatch(/28%/);
+    const stanceBullets = splitBuyerSellerStances(stance);
+    expect(stanceBullets.company).toHaveLength(2);
+    expect(stanceBullets.candidate).toHaveLength(2);
+    expect(stanceBullets.candidate[1]).toMatch(/ACH/);
     const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
     expect(zhGuide?.resume_rewrites[0]?.category).toBe('履歷缺少的關鍵項目');
     expect(zhGuide?.resume_rewrites[0]?.gap).toMatch(/ACH|清算|退票/);
@@ -173,6 +180,15 @@ describe('sample reports', () => {
     expect(zhGuide?.resume_rewrites[1]?.category).toBe(zhGuide?.resume_rewrites[0]?.category);
     expect(zhGuide?.resume_rewrites[0]?.before).toMatch(/支援/);
     expect(zhGuide?.resume_rewrites[0]?.before).not.toMatch(/Supported payment/);
+    expect(zhGuide?.resume_rewrites[0]?.after.length).toBeGreaterThan(10);
+    expect(zhGuide?.resume_rewrites[1]?.before.length).toBeGreaterThan(0);
+    expect(zhGuide?.resume_rewrites[1]?.after.length).toBeGreaterThan(10);
+    expect(getSampleSnapshotReport('zh-TW').proof_map.gaps.some((item) => item.gap === '美國法規關鍵字')).toBe(
+      true,
+    );
+    expect(getSampleStrategyGuideReport('zh-TW').proof_map.gaps.some((item) => item.gap === '美國法規關鍵字')).toBe(
+      true,
+    );
     expect(zhGuide?.interview_bank.professional[0]?.question).toMatch(/ACH return queue/);
     expect(zhGuide?.interview_bank.professional[0]?.answer).toMatch(/履歷/);
     expect(zhGuide?.interview_bank.professional[0]?.answer).toMatch(/Looker|佇列|排序/);
@@ -203,6 +219,24 @@ describe('sample reports', () => {
     expect(modules!.resume_rewrites.length).toBeGreaterThanOrEqual(1);
     expect('guide_modules' in getSampleSnapshotReport('en')).toBe(false);
   });
+
+  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+    'keeps Guide rewrite samples as category + gap + before/after bullets (%s)',
+    (lang) => {
+      const snapshot = getSampleSnapshotReport(lang);
+      const guide = getSampleStrategyGuideReport(lang);
+      const rewrites = guide.guide_modules!.resume_rewrites;
+      expect(rewrites).toHaveLength(2);
+      expect(rewrites[0].category).toBe(rewrites[1].category);
+      expect(rewrites[0].gap).not.toBe(rewrites[1].gap);
+      expect(rewrites[0].before.length).toBeGreaterThan(0);
+      expect(rewrites[0].after.length).toBeGreaterThan(0);
+      expect(rewrites[1].before.length).toBeGreaterThan(0);
+      expect(rewrites[1].after.length).toBeGreaterThan(0);
+      expect(snapshot.proof_map.gaps.length).toBeGreaterThanOrEqual(3);
+      expect(guide.proof_map.gaps).toEqual(snapshot.proof_map.gaps);
+    },
+  );
 
   it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
     'gives each sample interview question its own answer (%s)',
@@ -270,6 +304,17 @@ describe('seven-item report layout', () => {
       '面試真題',
       '談判建議',
     ]);
+  });
+
+  it('keeps rewrite category headings on SUBHEAD and the card outside the keyword column', () => {
+    const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    expect(source).toContain('<h3 className={`mb-2 ${SUBHEAD}`}>{title}</h3>');
+    expect(source).toContain('<h3 className={`mb-2 ${SUBHEAD}`}>{group.title}</h3>');
+    expect(source).toContain('className="w-full min-w-0 rounded-lg border border-emerald-400/30');
+    expect(source.indexOf('<RewriteGroups')).toBeGreaterThan(source.indexOf('</BriefColumn>\n      </div>'));
+    expect(source).toContain('{beforeLabel}');
+    expect(source).toContain('{afterLabel}');
+    expect(source).not.toContain('${BODY} font-semibold text-emerald-100');
   });
 });
 

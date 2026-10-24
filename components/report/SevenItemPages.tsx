@@ -10,7 +10,7 @@ import {
   BODY_MUTED,
   SUBHEAD,
 } from '@/components/guide/GuideSlideChrome';
-import { REPORT_FRAME_BORDER } from '@/constants/report-frame';
+import { GUIDE_SECTION_FRAME } from '@/constants/report-frame';
 import { formatOfferRange, marketBandDisclaimer, payEstimateScope } from '@/lib/offer-display';
 import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
@@ -18,6 +18,7 @@ import { splitLabeledFact } from '@/lib/score-summary';
 import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-email';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
+import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 
@@ -412,6 +413,64 @@ function groupRewrites(items: GuideResumeRewrite[]): Array<{ title: string; item
   return groups;
 }
 
+function RewriteGroups({
+  rewrites,
+  beforeLabel,
+  afterLabel,
+}: {
+  rewrites: GuideResumeRewrite[];
+  beforeLabel: string;
+  afterLabel: string;
+}) {
+  return (
+    <div className="w-full min-w-0 space-y-3">
+      {groupRewrites(rewrites).map((group) => (
+        <section
+          key={group.title}
+          className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4"
+        >
+          <h3 className={`mb-2 ${SUBHEAD}`}>{group.title}</h3>
+          <ul className="space-y-4">
+            {group.items.map((item) => {
+              const showGap = item.gap.trim() !== group.title;
+              return (
+                <li key={`${item.gap}-${item.after}`}>
+                  {showGap ? (
+                    <p className={`flex gap-2.5 ${BODY} font-semibold text-slate-100 leading-snug`}>
+                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
+                      <span>{item.gap}</span>
+                    </p>
+                  ) : null}
+                  <ul className={showGap ? 'mt-2 space-y-2 pl-5' : 'space-y-2'}>
+                    {item.before ? (
+                      <li className={`flex gap-2.5 ${BODY_MUTED} leading-snug`}>
+                        <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-400/80" aria-hidden />
+                        <span>
+                          <span className="font-semibold text-slate-300">{beforeLabel}</span>
+                          {': '}
+                          {item.before}
+                        </span>
+                      </li>
+                    ) : null}
+                    <li className={`flex gap-2.5 ${BODY} text-slate-100 leading-snug`}>
+                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
+                      <span>
+                        <span className="font-semibold">{afterLabel}</span>
+                        {': '}
+                        {item.after}
+                      </span>
+                    </li>
+                  </ul>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </div>
+  );
+}
+
 function briefLines(text: string): string[] {
   const lined = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
   if (lined.length > 1) return lined;
@@ -433,6 +492,37 @@ function PointList({ items, dot }: { items: string[]; dot: string }) {
   );
 }
 
+function SectionCard({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={className ? `${GUIDE_SECTION_FRAME} ${className}` : GUIDE_SECTION_FRAME}>
+      <h2 className="text-2xl font-black text-blue-400">{title}</h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function SummaryCard({ label, summary }: { label: string; summary: string }) {
+  const points = splitSummaryPoints(summary);
+  if (points.length === 0) return null;
+  return (
+    <SectionCard title={label}>
+      {points.length > 1 ? (
+        <BriefRows items={points} />
+      ) : (
+        <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{points[0]}</p>
+      )}
+    </SectionCard>
+  );
+}
+
 function ReviewColumn({
   title,
   prosLabel,
@@ -451,38 +541,51 @@ function ReviewColumn({
   sources: GuideSource[];
 }) {
   return (
-    <section className="min-w-0">
-      <h3 className={`mb-4 ${SUBHEAD}`}>{title}</h3>
+    <SectionCard title={title} className="min-w-0">
       <p className={`${SUBHEAD} mb-2`}>{prosLabel}</p>
       <PointList items={pros} dot="bg-emerald-300" />
       <p className={`${SUBHEAD} mb-2 mt-4`}>{consLabel}</p>
       <PointList items={cons} dot="bg-slate-300" />
       <SourceList title={sourcesTitle} sources={sources} />
-    </section>
+    </SectionCard>
   );
 }
 
-function SourceList({ title, sources }: { title: string; sources: GuideSource[] }) {
+function SourceList({
+  title,
+  sources,
+  framed = false,
+}: {
+  title: string;
+  sources: GuideSource[];
+  framed?: boolean;
+}) {
   const cited = sources.filter((source) => isCitableSourceUrl(source.url));
   if (cited.length === 0) return null;
+  const list = (
+    <ul className="space-y-1.5">
+      {cited.map((source) => (
+        <li key={source.url}>
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-1.5 ${BODY} font-semibold text-sky-300 hover:text-sky-200`}
+          >
+            <ExternalLink className="h-4 w-4" aria-hidden />
+            {source.title || source.url.replace(/^https?:\/\//, '')}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+  if (framed) {
+    return <SectionCard title={title}>{list}</SectionCard>;
+  }
   return (
     <div className="mt-3">
       <p className={`${SUBHEAD} mb-2`}>{title}</p>
-      <ul className="space-y-1.5">
-        {cited.map((source) => (
-          <li key={source.url}>
-            <a
-              href={source.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-1.5 ${BODY} font-semibold text-sky-300 hover:text-sky-200`}
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden />
-              {source.title || source.url.replace(/^https?:\/\//, '')}
-            </a>
-          </li>
-        ))}
-      </ul>
+      {list}
     </div>
   );
 }
@@ -500,7 +603,7 @@ function ItemBlock({
 }) {
   const points = splitSummaryPoints(summary);
   return (
-    <section className={`rounded-xl ${REPORT_FRAME_BORDER} bg-slate-900/55 p-5`}>
+    <section className={GUIDE_SECTION_FRAME}>
       <h2 className="text-2xl font-black text-blue-400">{title}</h2>
       {points.length > 0 ? (
         <div className="mt-4">
@@ -691,30 +794,12 @@ function FitBody({
           ) : keywords.length === 0 ? (
             <p className={BODY_MUTED}>{copy.empty}</p>
           ) : null}
-          {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
-          {!locked && rewrites.length > 0 ? (
-            <ul className="mt-3 space-y-2 border-t border-amber-400/30 pt-3">
-              {groupRewrites(rewrites).map((group) => (
-                <li key={group.title} className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3">
-                  <p className={`${BODY} font-semibold text-emerald-100`}>{group.title}</p>
-                  {group.items.map((item, index) => (
-                    <div
-                      key={`${item.gap}-${item.after}`}
-                      className={index === 0 ? 'mt-2' : 'mt-3 border-t border-white/10 pt-3'}
-                    >
-                      {group.items.length > 1 && item.gap !== group.title ? (
-                        <p className={`${BODY} font-semibold text-slate-100`}>{item.gap}</p>
-                      ) : null}
-                      {item.before ? <p className={`${BODY_MUTED} mt-1`}>{copy.before}: {item.before}</p> : null}
-                      <p className={`${BODY} mt-1 text-slate-100`}>{copy.after}: {item.after}</p>
-                    </div>
-                  ))}
-                </li>
-              ))}
-            </ul>
-          ) : null}
         </BriefColumn>
       </div>
+      {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
+      {!locked && rewrites.length > 0 ? (
+        <RewriteGroups rewrites={rewrites} beforeLabel={copy.before} afterLabel={copy.after} />
+      ) : null}
     </div>
   );
 }
@@ -831,15 +916,6 @@ export function GuideItemPage({
   const lang = normalizeReportLanguage(language);
   const copy = itemCopy(lang);
   const modules = report.guide_modules;
-  const title: Record<GuideItemId, string> = {
-    core: copy.core,
-    market: copy.market,
-    fit: copy.fit,
-    land: copy.land,
-    company: copy.company,
-    questions: copy.questions,
-    negotiate: copy.negotiate,
-  };
 
   if (item === 'core') {
     return (
@@ -874,37 +950,40 @@ export function GuideItemPage({
       [copy.equity, salary?.equity],
       [copy.bonus, salary?.bonus],
     ].filter((row): row is [string, string] => Boolean(row[1]));
+    const stances = splitBuyerSellerStances(salary?.buyer_seller ?? '');
     body = salary ? (
-      <div className="space-y-5">
-        <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <section>
-            <p className={`${SUBHEAD} mb-3`}>{copy.target}</p>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <SectionCard title={copy.target}>
             {mix.length > 0 ? (
               <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
             ) : (
               <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
             )}
-          </section>
-          <section>
-            <p className={`${SUBHEAD} mb-2`}>{copy.ceiling}</p>
+          </SectionCard>
+          <SectionCard title={copy.ceiling}>
             <p className="text-3xl font-black text-white">{salary.ceiling || '—'}</p>
-          </section>
+          </SectionCard>
         </div>
         {salary.buyer_seller ? (
-          <div className="grid grid-cols-1 gap-5 border-t border-white/10 pt-5 md:grid-cols-2">
-            <section>
-              <p className={`${SUBHEAD} mb-2`}>{copy.companyStance}</p>
-              <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{briefLines(salary.buyer_seller)[0]}</p>
-            </section>
-            <section>
-              <p className={`${SUBHEAD} mb-2`}>{copy.candidateStance}</p>
-              <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>
-                {briefLines(salary.buyer_seller).slice(1).join('')}
-              </p>
-            </section>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <SectionCard title={copy.companyStance}>
+              {stances.company.length > 0 ? (
+                <BriefRows items={stances.company} />
+              ) : (
+                <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+              )}
+            </SectionCard>
+            <SectionCard title={copy.candidateStance}>
+              {stances.candidate.length > 0 ? (
+                <BriefRows items={stances.candidate} />
+              ) : (
+                <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+              )}
+            </SectionCard>
           </div>
         ) : null}
-        <SourceList title={copy.sources} sources={salary.sources} />
+        <SourceList title={copy.sources} sources={salary.sources} framed />
       </div>
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
   }
@@ -915,7 +994,7 @@ export function GuideItemPage({
       : false;
     body = company ? (
       split ? (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <ReviewColumn
             title={copy.companyReview}
             prosLabel={copy.pros}
@@ -936,28 +1015,24 @@ export function GuideItemPage({
           />
         </div>
       ) : (
-      <div className="space-y-5">
-        <section>
-          <p className={`${SUBHEAD} mb-2`}>{copy.culture}</p>
+      <div className="space-y-4">
+        <SectionCard title={copy.culture}>
           <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.culture || '—'}</p>
-        </section>
-        <div className="grid grid-cols-1 gap-5 border-t border-white/10 pt-5 md:grid-cols-2">
-          <section>
-            <p className={`${SUBHEAD} mb-2`}>{copy.layoff}</p>
+        </SectionCard>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <SectionCard title={copy.layoff}>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.layoff_risk || '—'}</p>
             {company.labor_risk ? <p className={`${BODY_MUTED} mt-2`}>{copy.labor}: {company.labor_risk}</p> : null}
-          </section>
-          <section>
-            <p className={`${SUBHEAD} mb-2`}>{copy.h1b}</p>
+          </SectionCard>
+          <SectionCard title={copy.h1b}>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.h1b || '—'}</p>
             <p className={`${BODY_MUTED} mt-2`}>{copy.remote}: {company.remote_sponsorship || '—'}</p>
-          </section>
+          </SectionCard>
         </div>
-        <section className="border-t border-white/10 pt-5">
-          <p className={`${SUBHEAD} mb-2`}>{copy.roleReviews}</p>
+        <SectionCard title={copy.roleReviews}>
           <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.role_reviews || '—'}</p>
-        </section>
-        <SourceList title={copy.sources} sources={company.sources} />
+        </SectionCard>
+        <SourceList title={copy.sources} sources={company.sources} framed />
       </div>
       )
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
@@ -965,22 +1040,23 @@ export function GuideItemPage({
   if (item === 'questions') {
     const bank = modules?.interview_bank;
     body = bank && (bank.professional.length > 0 || bank.behavioral.length > 0) ? (
-      <div className="space-y-5">
-        <section>
-          <p className={`${SUBHEAD} mb-2`}>{copy.professional}</p>
-          <QuestionList items={bank.professional} copy={copy} />
-          <ExtraList items={bank.professional_extra} title={copy.extra} />
-        </section>
-        <section>
-          <p className={`${SUBHEAD} mb-2`}>{copy.behavioral}</p>
-          <QuestionList items={bank.behavioral} copy={copy} />
-          <ExtraList items={bank.behavioral_extra} title={copy.extra} />
-        </section>
+      <div className="space-y-4">
+        {bank.professional.length > 0 ? (
+          <SectionCard title={copy.professional}>
+            <QuestionList items={bank.professional} copy={copy} />
+            <ExtraList items={bank.professional_extra} title={copy.extra} />
+          </SectionCard>
+        ) : null}
+        {bank.behavioral.length > 0 ? (
+          <SectionCard title={copy.behavioral}>
+            <QuestionList items={bank.behavioral} copy={copy} />
+            <ExtraList items={bank.behavioral_extra} title={copy.extra} />
+          </SectionCard>
+        ) : null}
         {bank.process && bank.summary ? (
-          <section className="border-t border-white/10 pt-5">
-            <p className={`${SUBHEAD} mb-2`}>{copy.process}</p>
+          <SectionCard title={copy.process}>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{bank.process}</p>
-          </section>
+          </SectionCard>
         ) : null}
       </div>
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
@@ -990,32 +1066,33 @@ export function GuideItemPage({
     const followUp = parseFollowUpEmail(negotiation?.follow_up_email ?? '');
     const followUpParagraphs = followUpLetterParagraphs(followUp.body);
     body = negotiation && (negotiation.pay_strategy || negotiation.benefits_strategy || negotiation.script || negotiation.company_questions || negotiation.follow_up_email) ? (
-      <div className="space-y-5">
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <section>
-          <p className={`${SUBHEAD} mb-3`}>{copy.pay}</p>
-          <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
-          {negotiation.script ? (
-            <div className="mt-4 border-t border-white/10 pt-3">
-              <p className={`${SUBHEAD} mb-2`}>{copy.say}</p>
-              <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
-            </div>
+      <div className="space-y-4">
+      {negotiation.pay_strategy || negotiation.benefits_strategy ? (
+        <div className={`grid grid-cols-1 gap-4 ${negotiation.pay_strategy && negotiation.benefits_strategy ? 'md:grid-cols-2' : ''}`}>
+          {negotiation.pay_strategy ? (
+            <SectionCard title={copy.pay}>
+              <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
+            </SectionCard>
           ) : null}
-        </section>
-        <section>
-          <p className={`${SUBHEAD} mb-3`}>{copy.benefits}</p>
-          <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
-        </section>
-      </div>
+          {negotiation.benefits_strategy ? (
+            <SectionCard title={copy.benefits}>
+              <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
+            </SectionCard>
+          ) : null}
+        </div>
+      ) : null}
+      {negotiation.script ? (
+        <SectionCard title={copy.say}>
+          <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
+        </SectionCard>
+      ) : null}
       {negotiation.company_questions ? (
-        <section className="border-t border-white/10 pt-5">
-          <p className={`${SUBHEAD} mb-3`}>{copy.askCompany}</p>
+        <SectionCard title={copy.askCompany}>
           <PointList items={briefLines(negotiation.company_questions)} dot="bg-sky-300" />
-        </section>
+        </SectionCard>
       ) : null}
       {followUp.body || followUp.subject ? (
-        <section className="border-t border-white/10 pt-5">
-          <p className={`${SUBHEAD} mb-3`}>{copy.followUp}</p>
+        <SectionCard title={copy.followUp}>
           {followUp.when ? (
             <p className={`${BODY_MUTED} mb-4 leading-relaxed`}>{followUp.when}</p>
           ) : null}
@@ -1037,7 +1114,7 @@ export function GuideItemPage({
               ))}
             </div>
           </div>
-        </section>
+        </SectionCard>
       ) : null}
       </div>
     ) : <p className={BODY_MUTED}>{copy.empty}</p>;
@@ -1055,8 +1132,9 @@ export function GuideItemPage({
     negotiate: summaries.negotiate,
   };
   return (
-    <ItemBlock title={title[item]} summaryLabel={copy.analysisSummary} summary={summaryByItem[item]}>
+    <div className="space-y-4">
+      <SummaryCard label={copy.analysisSummary} summary={summaryByItem[item]} />
       {body}
-    </ItemBlock>
+    </div>
   );
 }

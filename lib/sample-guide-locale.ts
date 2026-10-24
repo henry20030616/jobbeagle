@@ -7,6 +7,7 @@ export type SampleGuideNarrative = {
   behavioral: string[];
   rewrites: GuideResumeRewrite[];
   rationale: string;
+  /** Two unlabeled lines (company, then candidate). The Guide UI sentence-splits each line into 關鍵條件-style bullets. */
   buyer_seller: string;
   levelsTitle: string;
   h1bWageTitle: string;
