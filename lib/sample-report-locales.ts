@@ -276,7 +276,7 @@ const ZH_TW: SampleLocalePack = {
         '這次任用 90 天成功長什麼樣？',
       ],
       company_current_pain_point:
-        '這席是要有人接手 ACH 退票與清算例外，營運團隊目前仍在臨時處理。職缺要的是能把這個佇列做成與工程、風險的每週節奏。',
+        '這職位是要有人接手 ACH 退票與清算例外，營運團隊目前仍在臨時處理。職缺要的是能把這個佇列做成與工程、風險的每週節奏。',
       strategic_alignment_pitch:
         '我用 SQL 和 Looker 把對帳週期縮短 28%，並連續 18 個月主持工程、風險、客服的每週 triage。我會先用同一套方法畫出你們的退票佇列：負責人、SLA，以及高階已經在看的五個指標。',
       macro_risk_warnings:
@@ -971,7 +971,7 @@ const ZH_CN: SampleLocalePack = {
         '这次任用 90 天成功长什么样？',
       ],
       company_current_pain_point:
-        '这席是要有人接手 ACH 退票与清算例外，运营团队目前仍在临时处理。职位要的是能把这个队列做成与工程、风险的每周节奏。',
+        '这职位是要有人接手 ACH 退票与清算例外，运营团队目前仍在临时处理。职位要的是能把这个队列做成与工程、风险的每周节奏。',
       strategic_alignment_pitch:
         '我用 SQL 和 Looker 把对账周期缩短 28%，并连续 18 个月主持工程、风险、客服的每周 triage。我会先用同一套方法画出你们的退票队列：负责人、SLA，以及高管已经在看的五个指标。',
       macro_risk_warnings:

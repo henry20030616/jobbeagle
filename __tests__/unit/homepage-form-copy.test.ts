@@ -82,6 +82,20 @@ describe('homepage form copy', () => {
     expect(zh.strategyBlurb).toMatch(/談薪|落點/);
   });
 
+  it('calls a job opening 職位, not 席', () => {
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].matchAnalysisDesc).toBe(
+      '對照職缺硬性門檻與履歷事實，判斷這職位是否真正適合你，並標示落差所在，作為應徵決策依據。',
+    );
+    expect(HOMEPAGE_FORM_COPY['zh-CN'].matchAnalysisDesc).toBe(
+      '对照职位硬性门槛与简历事实，判断这职位是否真正适合你，并标示落差所在，作为应征决策依据。',
+    );
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toContain('此職位市場薪資水準');
+    expect(HOMEPAGE_FORM_COPY['zh-CN'].snapshotBlurb).toContain('此职位市场薪资水准');
+    for (const copy of [HOMEPAGE_FORM_COPY['zh-TW'], HOMEPAGE_FORM_COPY['zh-CN']]) {
+      expect(JSON.stringify(copy)).not.toMatch(/這席|这席|此席/);
+    }
+  });
+
   it('covers every app language', () => {
     expect(Object.keys(HOMEPAGE_FORM_COPY).sort()).toEqual(
       ['ar', 'en', 'es', 'hi', 'zh-CN', 'zh-TW'].sort(),

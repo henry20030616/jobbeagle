@@ -26,7 +26,7 @@ export const REPORT_PRODUCT = {
     shortZh: '適配快照',
     blurbEn:
       'HR-screen this seat before you apply: hard requirements, missing keywords, an apply call, and the market pay band.',
-    blurbZh: '投遞前用人資標準核對：硬性門檻、缺漏關鍵字、應徵判定，以及此席市場薪資水準。',
+    blurbZh: '投遞前用人資標準核對：硬性門檻、缺漏關鍵字、應徵判定，以及此職位市場薪資水準。',
     legacyCodes: ['lite'] as const,
     creditField: 'job_fit_snapshot_credits' as const,
     dbCreditColumn: 'available_job_fit_snapshot_credits' as const,

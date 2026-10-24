@@ -209,8 +209,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     },
     help: help(
       'Who should buy which report: Snapshot for a fast apply / skip call; Guide when you will interview and negotiate this seat.',
-      '誰該買哪一種：Snapshot 適合快速決定投不投；Guide 適合這席你真的會面試、談薪。',
-      '谁该买哪一种：Snapshot 适合快速决定投不投；Guide 适合这席你真的会面试、谈薪。',
+      '誰該買哪一種：Snapshot 適合快速決定投不投；Guide 適合這職位你真的會面試、談薪。',
+      '谁该买哪一种：Snapshot 适合快速决定投不投；Guide 适合这职位你真的会面试、谈薪。',
     ),
     snapshot: t('Decide whether to apply', '決定要不要投', '决定要不要投'),
     guide: t('Prepare interviews & negotiate', '面試準備與談薪', '面试准备与谈薪'),
@@ -239,8 +239,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     },
     help: help(
       'Job overview plus the must-haves and real duties for this seat, read from the posting.',
-      '職位概述，以及這席的關鍵條件與關鍵職責，依職缺內文整理。',
-      '职位概述，以及这席的关键条件与关键职责，依职位正文整理。',
+      '職位概述，以及這職位的關鍵條件與關鍵職責，依職缺內文整理。',
+      '职位概述，以及这职位的关键条件与关键职责，依职位正文整理。',
     ),
     snapshot: t('Overview, must-haves, duties', '職位概述、條件、職責', '职位概述、条件、职责', 4),
     guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
