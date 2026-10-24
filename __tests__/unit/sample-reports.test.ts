@@ -316,6 +316,34 @@ describe('seven-item report layout', () => {
     expect(source).toContain('{afterLabel}');
     expect(source).not.toContain('${BODY} font-semibold text-emerald-100');
   });
+
+  it('frames company, pay, questions, and negotiate inner blocks with GUIDE_SECTION_FRAME', () => {
+    const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    expect(source).toContain('GUIDE_SECTION_FRAME');
+    expect(source).toContain('<SummaryCard label={copy.analysisSummary}');
+    expect(source).toContain('<SectionCard title={copy.pay}>');
+    expect(source).toContain('<SectionCard title={copy.benefits}>');
+    expect(source).toContain('<SectionCard title={copy.say}>');
+    expect(source).toContain('<SectionCard title={copy.askCompany}>');
+    expect(source).toContain('<SectionCard title={copy.professional}>');
+    expect(source).toContain('<SectionCard title={copy.behavioral}>');
+    expect(source).toContain('<SectionCard title={copy.target}>');
+    expect(source).toContain('<SectionCard title={copy.ceiling}>');
+    expect(source).not.toMatch(
+      /<ItemBlock title=\{title\[item\]\} summaryLabel=\{copy\.analysisSummary\}/,
+    );
+    const zh = getSampleStrategyGuideReport('zh-TW').guide_modules!;
+    expect(zh.company_eval.summary.split('\n')).toHaveLength(3);
+    expect(zh.company_eval.company_pros.length).toBeGreaterThan(0);
+    expect(zh.company_eval.role_pros.length).toBeGreaterThan(0);
+    expect(zh.negotiation.summary).toMatch(/開價/);
+    expect(zh.negotiation.summary).toMatch(/上限/);
+    expect(zh.negotiation.summary).toMatch(/禁區/);
+    expect(zh.negotiation.pay_strategy.length).toBeGreaterThan(20);
+    expect(zh.negotiation.benefits_strategy.length).toBeGreaterThan(20);
+    expect(zh.negotiation.script.length).toBeGreaterThan(20);
+    expect(zh.negotiation.company_questions.length).toBeGreaterThan(20);
+  });
 });
 
 describe('guide page copy', () => {

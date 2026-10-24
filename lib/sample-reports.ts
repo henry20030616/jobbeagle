@@ -783,6 +783,8 @@ function sampleGuideQuestion(
 function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
   const copy = SAMPLE_GUIDE_NARRATIVE[language];
   const answers = SAMPLE_GUIDE_ANSWERS[language];
+  // Each Guide sample field below maps to its own GUIDE_SECTION_FRAME card
+  // (總結分析, 公司評價, 職位評價, pay/questions/negotiate inner blocks).
   // Sample sources are English web posts, so the question text stays English.
   const sourceQuestions = SAMPLE_GUIDE_NARRATIVE.en;
   const professional = sourceQuestions.professional.map((question, index) =>

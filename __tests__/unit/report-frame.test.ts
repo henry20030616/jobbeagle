@@ -2,11 +2,13 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+  GUIDE_SECTION_FRAME,
   HOMEPAGE_STEP_PILL,
   HOMEPAGE_STEP_PILL_TYPE,
   HOMEPAGE_TITLE_TYPE,
   PAGE_SHELL_GUTTER,
   REPORT_ACTION_TEXT,
+  REPORT_FRAME_BORDER,
   REPORT_SHELL_WIDTH,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_FILL,
@@ -158,6 +160,23 @@ describe('homepage step-header pills', () => {
     expect(mobile).toContain("Puzzle className=\"h-[1em] w-[1em] shrink-0\"");
     expect(mobile).toContain("History className=\"h-[1em] w-[1em] shrink-0\"");
     expect(mobile).toContain("CreditCard className=\"h-[1em] w-[1em] shrink-0\"");
+  });
+});
+
+describe('Guide inner section cards', () => {
+  it('reuses the interview-question blue chrome (border-blue-500, rounded, padded)', () => {
+    expect(GUIDE_SECTION_FRAME).toContain(REPORT_FRAME_BORDER);
+    expect(GUIDE_SECTION_FRAME).toMatch(/rounded-xl/);
+    expect(GUIDE_SECTION_FRAME).toMatch(/border-2 border-blue-500/);
+    expect(GUIDE_SECTION_FRAME).toMatch(/p-5/);
+    expect(GUIDE_SECTION_FRAME).toMatch(/bg-slate-900\/55/);
+    const pages = readFileSync(
+      join(process.cwd(), 'components/report/SevenItemPages.tsx'),
+      'utf8',
+    );
+    expect(pages).toContain('GUIDE_SECTION_FRAME');
+    expect(pages).toContain('function SectionCard');
+    expect(pages).toContain('function SummaryCard');
   });
 });
 
