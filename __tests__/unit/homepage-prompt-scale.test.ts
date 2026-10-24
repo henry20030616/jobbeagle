@@ -92,7 +92,7 @@ describe('homepage prompt type scale', () => {
     expect(logo).toContain("nav: 'text-2xl sm:text-3xl font-black tracking-tight'");
   });
 
-  it('scales only the features-to-steps gap by 1.5× and leaves logo/intro spacing alone', () => {
+  it('scales only intro↔features and features↔steps gaps by 1.5× and leaves logo/intro spacing alone', () => {
     const form = read('components/InputForm.tsx');
     const mobile = read('components/InputFormMobile.tsx');
 
@@ -100,10 +100,16 @@ describe('homepage prompt type scale', () => {
       "flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-5 sm:gap-6 lg:gap-7'}",
     );
     expect(form).toContain(
-      "flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-[1.875rem] sm:gap-[2.25rem] lg:gap-[2.625rem]'}",
+      "mb-[1.5625rem] space-y-[4.5rem] pt-2 sm:mb-[1.875rem] sm:pt-4 lg:mb-[2.1875rem] pb-1",
+    );
+    expect(form).toContain(
+      "flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-[2.8125rem] sm:gap-[3.375rem] lg:gap-[3.9375rem]'}",
     );
     expect(form).toContain('space-y-[4.5rem]');
-    expect(mobile).toContain('homepage-features mb-[1.125rem] [&+*]:!mt-0');
+    expect(form).not.toContain('mb-[0.625rem]');
+    expect(form).not.toContain('gap-[1.875rem] sm:gap-[2.25rem] lg:gap-[2.625rem]');
+    expect(mobile).toContain('text-center space-y-1 mb-[0.375rem]');
+    expect(mobile).toContain('homepage-features mb-[1.6875rem] [&+*]:!mt-0');
     expect(mobile).toContain('<form onSubmit={handleSubmit} className="space-y-3">');
   });
 });

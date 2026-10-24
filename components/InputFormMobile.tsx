@@ -429,7 +429,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
   return (
     <div className={MOBILE_CONTAINER}>
       {/* Hero: Simplified mobile version */}
-      <div className="text-center space-y-1">
+      <div className="text-center space-y-1 mb-[0.375rem]">
         <BrandLogo size="nav" showIcon as="h1" className="justify-center" />
         <p className="homepage-hero-desc px-2 text-center text-[0.6rem] font-semibold leading-snug text-slate-400">
           {t.description}
@@ -437,7 +437,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="homepage-features mb-[1.125rem] [&+*]:!mt-0 rounded-xl border border-indigo-500/30 bg-slate-800/80 overflow-hidden shadow-sm">
+        <div className="homepage-features mb-[1.6875rem] [&+*]:!mt-0 rounded-xl border border-indigo-500/30 bg-slate-800/80 overflow-hidden shadow-sm">
           <button
             type="button"
             aria-expanded={featuresOpen}
