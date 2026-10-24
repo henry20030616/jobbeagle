@@ -574,7 +574,7 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <div className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-5 sm:gap-6 lg:gap-7'}`}>
       {/* Hero: large centered brand + tagline (matches prior homepage design) */}
-      <div className={`homepage-hero-wrap w-full min-w-0 shrink-0 px-2 text-center ${compactChrome ? 'space-y-3 py-1' : 'mb-[0.625rem] space-y-[1.125rem] pt-2 sm:mb-[0.75rem] sm:pt-4 lg:mb-[0.875rem] pb-1'}`}>
+      <div className={`homepage-hero-wrap w-full min-w-0 shrink-0 px-2 text-center ${compactChrome ? 'space-y-3 py-1' : 'mb-[0.625rem] space-y-[2.25rem] pt-2 sm:mb-[0.75rem] sm:pt-4 lg:mb-[0.875rem] pb-1'}`}>
         <BrandLogo
           size={compactChrome ? 'nav' : 'hero'}
           showIcon
