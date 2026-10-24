@@ -1,13 +1,17 @@
 import { test, expect, type Page } from '@playwright/test';
 
-async function expectFitSectionBeforeRoleCore(page: Page): Promise<void> {
+async function expectSnapshotPage1Order(page: Page): Promise<void> {
   const fit = page.locator('h2').filter({ hasText: /^(Fit analysis|匹配度分析)$/ }).first();
+  const market = page.locator('h2').filter({ hasText: /^(Market pay|市場薪資水準|市场薪资水准)$/ }).first();
   const core = page.locator('h2').filter({ hasText: /^(Role core|職位核心解析|职位核心解析)$/ }).first();
   await expect(fit).toBeVisible({ timeout: 15_000 });
+  await expect(market).toBeVisible();
   await expect(core).toBeVisible();
   const fitY = await fit.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const marketY = await market.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
   const coreY = await core.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-  expect(fitY).toBeLessThan(coreY);
+  expect(fitY).toBeLessThan(marketY);
+  expect(marketY).toBeLessThan(coreY);
 }
 
 async function expectPageScrollsPastFold(page: Page): Promise<void> {
@@ -115,7 +119,7 @@ test.describe('Full funnel — public surfaces', () => {
     await page.goto('/samples?type=interview_strategy_guide');
     await expect(page.getByText('SAMPLE').first()).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText(/Interview Guide|面試指南/i).first()).toBeVisible();
-    await expectFitSectionBeforeRoleCore(page);
+    await expectSnapshotPage1Order(page);
     await expectPageScrollsPastFold(page);
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.getByRole('button', { name: /^Questions$|^面試真題$|^面试真题$/ }).click();
@@ -125,7 +129,7 @@ test.describe('Full funnel — public surfaces', () => {
   test('Fit Snapshot sample page scrolls and puts fit analysis first', async ({ page }) => {
     await page.goto('/samples?type=job_fit_snapshot');
     await expect(page.getByText('SAMPLE').first()).toBeVisible({ timeout: 15_000 });
-    await expectFitSectionBeforeRoleCore(page);
+    await expectSnapshotPage1Order(page);
     await expectPageScrollsPastFold(page);
   });
 

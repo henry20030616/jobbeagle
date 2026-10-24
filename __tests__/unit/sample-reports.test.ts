@@ -335,6 +335,12 @@ describe('seven-item report layout', () => {
     expect(source).toContain("fit: '匹配度分析'");
     expect(source).not.toContain('匹配分數、履歷分析');
     expect(source).not.toContain('Fit score and resume');
+    expect(source.indexOf('{copy.score}')).toBeLessThan(
+      source.indexOf('<SectionOverview label={copy.analysisSummary}'),
+    );
+    expect(source.indexOf('<SectionOverview label={copy.analysisSummary}')).toBeLessThan(
+      source.indexOf('{scoreInfo.level}'),
+    );
     expect(source.indexOf('{copy.apply}')).toBeGreaterThan(source.indexOf('{scoreInfo.level}'));
     expect(source.indexOf('{copy.keywords}')).toBeGreaterThan(source.indexOf('{copy.apply}'));
     expect(source.indexOf('<RewriteGroups')).toBeGreaterThan(source.indexOf('{copy.keywords}'));
@@ -370,10 +376,13 @@ describe('seven-item report layout', () => {
       expect(html).toContain('藍寶米格魯');
       expect(html).toContain('欠缺的硬性關鍵字');
       expect(html).not.toContain('建議履歷調整後再應徵');
-      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('職位核心解析'));
-      expect(html.indexOf('職位核心解析')).toBeLessThan(html.indexOf('市場總薪酬區間'));
+      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('匹配分數與燈號'));
+      expect(html.indexOf('匹配分數與燈號')).toBeLessThan(html.indexOf('總結分析'));
+      expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('藍寶米格魯'));
       expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('應徵建議'));
       expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('欠缺的硬性關鍵字'));
+      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('市場薪資水準'));
+      expect(html.indexOf('市場薪資水準')).toBeLessThan(html.indexOf('職位核心解析'));
       expect(html).toContain('border-emerald-400/30');
     }
     expect(guideHtml).toContain('履歷缺少的關鍵項目');

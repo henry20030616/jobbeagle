@@ -866,6 +866,23 @@ function SourceList({
   );
 }
 
+function SectionOverview({ label, summary }: { label: string; summary: string }) {
+  const points = splitSummaryPoints(summary);
+  if (points.length === 0) return null;
+  return (
+    <div className="mt-4">
+      <p className={REPORT_H2}>{label}</p>
+      {points.length > 1 ? (
+        <div className="mt-2">
+          <BriefRows items={points} />
+        </div>
+      ) : (
+        <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{points[0]}</p>
+      )}
+    </div>
+  );
+}
+
 function ItemBlock({
   title,
   summaryLabel,
@@ -873,26 +890,14 @@ function ItemBlock({
   children,
 }: {
   title: string;
-  summaryLabel: string;
-  summary: string;
+  summaryLabel?: string;
+  summary?: string;
   children: React.ReactNode;
 }) {
-  const points = splitSummaryPoints(summary);
   return (
     <section className={GUIDE_SECTION_FRAME}>
       <h2 className={REPORT_H1}>{title}</h2>
-      {points.length > 0 ? (
-        <div className="mt-4">
-          <p className={REPORT_H2}>{summaryLabel}</p>
-          {points.length > 1 ? (
-            <div className="mt-2">
-              <BriefRows items={points} />
-            </div>
-          ) : (
-            <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{points[0]}</p>
-          )}
-        </div>
-      ) : null}
+      {summaryLabel ? <SectionOverview label={summaryLabel} summary={summary ?? ''} /> : null}
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -974,12 +979,14 @@ function FitBody({
   language,
   locked,
   rewrites,
+  analysisSummary = '',
 }: {
   report: LiteReport;
   copy: ItemCopy;
   language: AppLanguage;
   locked: boolean;
   rewrites: GuideResumeRewrite[];
+  analysisSummary?: string;
 }) {
   const score = report.fit_score?.score ?? report.match_score ?? 0;
   const scoreInfo = getScoreInfo(score, language);
@@ -1024,6 +1031,7 @@ function FitBody({
             </div>
           </div>
         </div>
+        <SectionOverview label={copy.analysisSummary} summary={analysisSummary} />
         <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
           <div className="min-w-0">
             <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
@@ -1103,14 +1111,21 @@ export function SnapshotItemStack({
   const summaries = snapshotItemSummaries(report);
   return (
     <div className="space-y-4 px-5 py-4">
-      <ItemBlock title={copy.fit} summaryLabel={copy.analysisSummary} summary={summaries.fit}>
-        <FitBody report={report} copy={copy} language={lang} locked={locked} rewrites={rewrites} />
-      </ItemBlock>
-      <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
-        <CoreBody report={report} copy={copy} />
+      <ItemBlock title={copy.fit}>
+        <FitBody
+          report={report}
+          copy={copy}
+          language={lang}
+          locked={locked}
+          rewrites={rewrites}
+          analysisSummary={summaries.fit}
+        />
       </ItemBlock>
       <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market}>
         <MarketBody report={report} copy={copy} language={lang} locked={locked} />
+      </ItemBlock>
+      <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
+        <CoreBody report={report} copy={copy} />
       </ItemBlock>
     </div>
   );

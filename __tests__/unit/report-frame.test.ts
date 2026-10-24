@@ -290,10 +290,10 @@ describe('report item heading scale', () => {
     expect(pages).toContain('<h2 className={REPORT_H1}>{title}</h2>');
     expect(pages).toContain('<ItemBlock title={copy.core}');
     expect(pages.indexOf('<ItemBlock title={copy.fit}')).toBeLessThan(
-      pages.indexOf('<ItemBlock title={copy.core}'),
-    );
-    expect(pages.indexOf('<ItemBlock title={copy.core}')).toBeLessThan(
       pages.indexOf('<ItemBlock title={copy.market}'),
+    );
+    expect(pages.indexOf('<ItemBlock title={copy.market}')).toBeLessThan(
+      pages.indexOf('<ItemBlock title={copy.core}'),
     );
   });
 });

@@ -223,27 +223,12 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '匹配度分析',
     },
     help: help(
-      'Fit summary, score, Beagle Scale with apply advice beside it, then full-width missing hard keywords. Guide adds line-by-line resume rewrites for those gaps.',
-      '總結分析、匹配分數；藍寶米格魯左側、應徵建議右側；下方全寬欠缺的硬性關鍵字。面試指南再加上針對缺口的履歷改寫。',
-      '总结分析、匹配分数；蓝宝米格鲁左侧、应征建议右侧；下方全宽欠缺的硬性关键字。面试指南再加上针对缺口的简历改写。',
+      'Score and signal, then fit summary; Beagle Scale with apply advice beside it, then full-width missing hard keywords. Guide adds line-by-line resume rewrites for those gaps.',
+      '匹配分數、總結分析；藍寶米格魯左側、應徵建議右側；下方全寬欠缺的硬性關鍵字。面試指南再加上針對缺口的履歷改寫。',
+      '匹配分数、总结分析；蓝宝米格鲁左侧、应征建议右侧；下方全宽欠缺的硬性关键字。面试指南再加上针对缺口的简历改写。',
     ),
     snapshot: t('Score, apply call, keywords', '分數、應徵建議、關鍵字', '分数、应征建议、关键字', 4),
     guide: t('Snapshot + resume rewrites', '快照內容 + 履歷改寫', '快照内容 + 简历改写', 5),
-  },
-  {
-    section: 'shared',
-    feature: {
-      en: 'Role core',
-      'zh-TW': '職位核心解析',
-      'zh-CN': '职位核心解析',
-    },
-    help: help(
-      'Job overview plus the must-haves and real duties for this seat, read from the posting.',
-      '職位概述，以及這職位的關鍵條件與關鍵職責，依職缺內文整理。',
-      '职位概述，以及这职位的关键条件与关键职责，依职位正文整理。',
-    ),
-    snapshot: t('Overview, must-haves, duties', '職位概述、條件、職責', '职位概述、条件、职责', 4),
-    guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
   },
   {
     section: 'shared',
@@ -258,6 +243,21 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '依职位的职称、地点与职级估计的市场总薪酬区间。非公司数据，为市场薪资水准。个人化落点在面试指南专属项目。',
     ),
     snapshot: t('Market total-comp range', '市場總薪酬區間', '市场总薪酬区间', 4),
+    guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
+  },
+  {
+    section: 'shared',
+    feature: {
+      en: 'Role core',
+      'zh-TW': '職位核心解析',
+      'zh-CN': '职位核心解析',
+    },
+    help: help(
+      'Job overview plus the must-haves and real duties for this seat, read from the posting.',
+      '職位概述，以及這職位的關鍵條件與關鍵職責，依職缺內文整理。',
+      '职位概述，以及这职位的关键条件与关键职责，依职位正文整理。',
+    ),
+    snapshot: t('Overview, must-haves, duties', '職位概述、條件、職責', '职位概述、条件、职责', 4),
     guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
   },
   {
