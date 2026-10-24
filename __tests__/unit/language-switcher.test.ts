@@ -24,12 +24,13 @@ describe('LanguageSwitcher label layout', () => {
     expect(source).toContain("chrome ? 'min-w-[28rem] w-max' : 'min-w-[16rem] w-max'");
     expect(source).not.toMatch(/w-48 sm:w-56 lg:w-80/);
     expect(source).toMatch(/className=\{`w-full flex items-center gap-3 px-4 whitespace-nowrap/);
-    expect(source).toContain('font-medium whitespace-nowrap');
+    expect(source).toContain('ms-2 font-medium whitespace-nowrap');
+    expect(source).toMatch(/ml-auto shrink-0 text-indigo-400/);
   });
 
   it('does not truncate or wrap the closed trigger label', () => {
-    expect(source).toMatch(/inline-flex items-center whitespace-nowrap/);
-    expect(source).toMatch(/span className=\{`whitespace-nowrap \$\{chrome/);
+    expect(source).toMatch(/inline-flex items-center gap-2 whitespace-nowrap/);
+    expect(source).toMatch(/span className=\{`ms-2 whitespace-nowrap \$\{chrome/);
     expect(source).not.toMatch(/truncate max-w-\[4\.5rem\]/);
   });
 });
