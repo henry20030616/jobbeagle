@@ -29,7 +29,7 @@ describe('report item summaries', () => {
     expect(splitSummaryPoints(summaries.land)).toEqual([
       '目標價：$168K。美國遠端 Senior Business Analyst 市場帶約 $145K–$190K；履歷可證 SQL／Looker 將對帳週期縮短 28%，ACH 退票僅相鄰，故不站上緣。',
       '天花板：$185K。沒有 Staff 級範圍，也沒有第二份 offer。',
-      '結構：底薪 $145K、股票約 $12K／年、獎金 $11K。股票與獎金不是履歷已拿到的權利。',
+      '結構：底薪 $145K、股票約 $12K／年、獎金 $11K。股票與獎金為目標總薪酬的結構拆分，實際以錄取條件為準。',
     ]);
   });
 

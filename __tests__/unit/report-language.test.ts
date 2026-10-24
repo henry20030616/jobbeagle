@@ -24,6 +24,8 @@ describe('report language', () => {
     const guide = getGuideUiCopy('en');
     expect(snap.atsWarningTitle).toMatch(/ATS/i);
     expect(snap.atsWarningTitle).not.toMatch(/淘汰/);
+    expect(snap.applyDecision).toBe('Apply advice');
+    expect(snap.applyLabels['Apply after fixes']).toBe('Apply advice');
     expect(guide.page2Title).toMatch(/Role|team/i);
     expect(guide.page2Title).not.toMatch(/職位/);
     expect(guide.nav.hiring.label).not.toMatch(/職位/);
@@ -34,6 +36,9 @@ describe('report language', () => {
     const guide = getGuideUiCopy('zh-TW');
     expect(snap.atsWarningTitle).toMatch(/ATS/);
     expect(snap.hardSkill).toBe('硬技能');
+    expect(snap.applyDecision).toBe('應徵建議');
+    expect(snap.applyLabels['Apply after fixes']).toBe('應徵建議');
+    expect(snap.applyLabels['Apply after fixes']).not.toMatch(/履歷調整後再應徵/);
     expect(guide.nav.hiring.label).toBe('職位與團隊');
     expect(guide.teamSampleInsufficient).toMatch(/樣本不足/);
   });

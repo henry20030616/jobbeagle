@@ -238,9 +238,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '匹配度分析',
     },
     help: help(
-      'Fit summary, score, apply advice on the left, and missing hard keywords on the right. Guide adds line-by-line resume rewrites for those gaps.',
-      '總結分析、匹配分數；左欄應徵建議、右欄欠缺的硬性關鍵字。面試指南再加上針對缺口的履歷改寫。',
-      '总结分析、匹配分数；左栏应征建议、右栏欠缺的硬性关键字。面试指南再加上针对缺口的简历改写。',
+      'Fit summary, score, Beagle Scale with apply advice beside it, then full-width missing hard keywords. Guide adds line-by-line resume rewrites for those gaps.',
+      '總結分析、匹配分數；藍寶米格魯左側、應徵建議右側；下方全寬欠缺的硬性關鍵字。面試指南再加上針對缺口的履歷改寫。',
+      '总结分析、匹配分数；蓝宝米格鲁左侧、应征建议右侧；下方全宽欠缺的硬性关键字。面试指南再加上针对缺口的简历改写。',
     ),
     snapshot: t('Score, apply call, keywords', '分數、應徵建議、關鍵字', '分数、应征建议、关键字', 4),
     guide: t('Snapshot + resume rewrites', '快照內容 + 履歷改寫', '快照内容 + 简历改写', 5),
