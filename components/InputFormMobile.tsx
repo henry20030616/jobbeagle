@@ -468,12 +468,12 @@ const InputFormMobile: React.FC<InputFormProps> = ({
               </span>
             </span>
             <span
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-indigo-400/40 bg-indigo-500/15 transition-transform ${
+              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-indigo-400/50 bg-indigo-500/20 transition-transform ${
                 featuresOpen ? 'rotate-180' : ''
               }`}
               aria-hidden
             >
-              <ChevronDown className="h-5 w-5 text-indigo-300" strokeWidth={2.5} />
+              <ChevronDown className="h-8 w-8 text-indigo-200" strokeWidth={2.75} />
             </span>
           </button>
           {featuresOpen && (

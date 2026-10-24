@@ -653,7 +653,8 @@ const InputForm: React.FC<InputFormProps> = ({
                       <span className="relative inline-block min-w-0 max-w-full">
                         <span className="feature-title block text-left text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold leading-snug text-zinc-100">{item.title}</span>
                         <ChevronDown
-                          className={`pointer-events-none absolute left-full top-1/2 ml-1 h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 shrink-0 -translate-y-1/2 text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          className={`pointer-events-none absolute left-full top-1/2 ml-1.5 h-8 w-8 sm:h-9 sm:w-9 lg:h-12 lg:w-12 shrink-0 -translate-y-1/2 text-indigo-200 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          strokeWidth={2.75}
                           aria-hidden
                         />
                       </span>
