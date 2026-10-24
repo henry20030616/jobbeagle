@@ -18,6 +18,12 @@ import {
   type AccountHashId,
   type AccountNavItem,
 } from '@/constants/account-nav';
+import {
+  SAMPLE_RAIL_ICON,
+  SAMPLE_REPORT_TAB_ACTIVE,
+  SAMPLE_REPORT_TAB_IDLE,
+  SAMPLE_REPORT_TAB_LAYOUT,
+} from '@/constants/report-frame';
 
 const ICONS: Record<AccountNavItem['id'], typeof LayoutList> = {
   overview: LayoutList,
@@ -28,19 +34,19 @@ const ICONS: Record<AccountNavItem['id'], typeof LayoutList> = {
   danger: ShieldAlert,
 };
 
-const ITEM_CLASS =
-  'inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-base font-semibold transition-colors lg:w-full';
-const IDLE_CLASS =
-  'border-blue-500/40 bg-blue-950/30 text-zinc-100 hover:border-blue-400 hover:text-white';
-const ACTIVE_CLASS = 'border-blue-500 bg-blue-900 text-white';
-const DANGER_IDLE_CLASS =
-  'border-red-800/70 bg-red-950/25 text-red-100 hover:border-red-500 hover:text-white';
+/** Same card size as /samples idle/active tabs; red fill only. */
+const DANGER_IDLE =
+  'rounded-2xl border border-red-700 bg-red-950 text-white hover:bg-red-900';
+const DANGER_ACTIVE =
+  'rounded-2xl border border-white bg-red-900 text-white ring-4 ring-white/90';
 
 function itemClassName(item: AccountNavItem, active: boolean): string {
   if (item.id === 'danger') {
-    return `${ITEM_CLASS} ${active ? ACTIVE_CLASS : DANGER_IDLE_CLASS}`;
+    return `${SAMPLE_REPORT_TAB_LAYOUT} ${active ? DANGER_ACTIVE : DANGER_IDLE}`;
   }
-  return `${ITEM_CLASS} ${active ? ACTIVE_CLASS : IDLE_CLASS}`;
+  return `${SAMPLE_REPORT_TAB_LAYOUT} ${
+    active ? SAMPLE_REPORT_TAB_ACTIVE : SAMPLE_REPORT_TAB_IDLE
+  }`;
 }
 
 export default function AccountSectionNav({
@@ -56,9 +62,9 @@ export default function AccountSectionNav({
     <nav
       aria-label={copy.ariaLabel}
       data-account-nav=""
-      className="lg:sticky lg:top-6 lg:w-[22rem] lg:shrink-0 lg:self-start"
+      className="w-full lg:sticky lg:top-6 lg:w-[42rem] lg:shrink-0 lg:self-start"
     >
-      <ul className="flex flex-wrap gap-2 lg:flex-col lg:flex-nowrap lg:gap-1.5">
+      <ul className="flex flex-col gap-6">
         {ACCOUNT_NAV_ITEMS.map((item) => {
           const label = accountNavLabel(item, copy);
           const Icon = ICONS[item.id];
@@ -66,20 +72,20 @@ export default function AccountSectionNav({
           const active = item.id === activeId;
           const className = itemClassName(item, active);
           return (
-            <li key={item.id}>
+            <li key={item.id} className="w-full">
               {isHash ? (
                 <a
                   href={item.href}
                   className={className}
                   aria-current={active ? 'location' : undefined}
                 >
-                  <Icon className="h-[1em] w-[1em] shrink-0" aria-hidden />
-                  {label}
+                  <Icon className={SAMPLE_RAIL_ICON} aria-hidden />
+                  <span className="min-w-0 text-left">{label}</span>
                 </a>
               ) : (
                 <Link href={item.href} className={className}>
-                  <Icon className="h-[1em] w-[1em] shrink-0" aria-hidden />
-                  {label}
+                  <Icon className={SAMPLE_RAIL_ICON} aria-hidden />
+                  <span className="min-w-0 text-left">{label}</span>
                 </Link>
               )}
             </li>

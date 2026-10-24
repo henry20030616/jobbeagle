@@ -24,8 +24,10 @@ import {
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
   REPORT_SLIDE_DESIGN_WIDTH,
+  SAMPLE_RAIL_WIDTH,
   SAMPLE_REPORT_TAB_ACTIVE,
   SAMPLE_REPORT_TAB_IDLE,
+  SAMPLE_REPORT_TAB_LAYOUT,
 } from '@/constants/report-frame';
 import ReportCompareModal from '@/components/ReportCompareModal';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -59,7 +61,7 @@ export default function SampleReportClient() {
   };
 
   const sampleTabClass = (active: boolean) =>
-    `inline-flex h-full w-full items-center justify-center gap-5 px-8 py-6 ${SAMPLE_RAIL_TEXT} shrink-0 text-center leading-snug whitespace-normal transition-colors ${
+    `${SAMPLE_REPORT_TAB_LAYOUT} ${
       active ? SAMPLE_REPORT_TAB_ACTIVE : SAMPLE_REPORT_TAB_IDLE
     }`;
 
@@ -84,7 +86,7 @@ export default function SampleReportClient() {
       </header>
 
       <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-        <aside className="flex h-full w-[42rem] flex-shrink-0 flex-col gap-6 overflow-y-auto border-r border-slate-800 p-10">
+        <aside className={`flex h-full ${SAMPLE_RAIL_WIDTH} flex-shrink-0 flex-col gap-6 overflow-y-auto border-r border-slate-800 p-10`}>
           <div
             className={`${SAMPLE_NOTICE_SURFACE} w-full px-6 py-5 flex flex-col gap-3 rounded-xl`}
           >

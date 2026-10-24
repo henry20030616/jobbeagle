@@ -13,14 +13,38 @@ import {
   REPORT_TYPE_CARD_IDLE,
   REPORT_TYPE_LAUNCH_BOX,
   SAMPLE_RAIL_TEXT,
+  SAMPLE_RAIL_WIDTH,
   SAMPLE_REPORT_TAB_ACTIVE,
   SAMPLE_REPORT_TAB_IDLE,
+  SAMPLE_REPORT_TAB_LAYOUT,
 } from '@/constants/report-frame';
 
 describe('report chrome type scale', () => {
   it('keeps sample-rail and action buttons at display size (not compact chips)', () => {
     expect(SAMPLE_RAIL_TEXT).toMatch(/text-6xl/);
     expect(REPORT_ACTION_TEXT).toMatch(/text-6xl/);
+  });
+
+  it('shares type-switcher card layout and rail width with /account nav', () => {
+    expect(SAMPLE_RAIL_WIDTH).toBe('w-[42rem]');
+    expect(SAMPLE_REPORT_TAB_LAYOUT).toContain(SAMPLE_RAIL_TEXT);
+    expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('px-8 py-6');
+    expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('gap-5');
+    expect(SAMPLE_REPORT_TAB_IDLE).toMatch(/rounded-2xl/);
+    expect(SAMPLE_REPORT_TAB_ACTIVE).toMatch(/rounded-2xl/);
+
+    const samples = readFileSync(
+      join(process.cwd(), 'app/samples/SampleReportClient.tsx'),
+      'utf8',
+    );
+    const accountNav = readFileSync(
+      join(process.cwd(), 'components/AccountSectionNav.tsx'),
+      'utf8',
+    );
+    expect(samples).toContain('SAMPLE_REPORT_TAB_LAYOUT');
+    expect(samples).toContain('SAMPLE_RAIL_WIDTH');
+    expect(accountNav).toContain('SAMPLE_REPORT_TAB_LAYOUT');
+    expect(accountNav).toContain('lg:w-[42rem]');
   });
 });
 

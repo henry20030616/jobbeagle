@@ -91,6 +91,16 @@ export const SAMPLE_REPORT_TAB_IDLE =
 export const SAMPLE_REPORT_TAB_ACTIVE =
   `rounded-2xl border border-white ${REPORT_TYPE_CARD_FILL} text-white ring-4 ring-white/90`;
 
+/**
+ * Type-switcher card layout (padding, type, gap). Used by /samples left rail
+ * and /account function nav so both stay the same size.
+ */
+export const SAMPLE_REPORT_TAB_LAYOUT =
+  `inline-flex h-full w-full items-center justify-center gap-5 px-8 py-6 ${SAMPLE_RAIL_TEXT} shrink-0 text-center leading-snug whitespace-normal transition-colors`;
+
+/** Desktop left-rail width for /samples type-switcher and /account function nav. */
+export const SAMPLE_RAIL_WIDTH = 'w-[42rem]';
+
 /** Sample notice (← Analyze) — same shell as Compare the two reports */
 export const SAMPLE_NOTICE_SURFACE =
   'rounded-xl border-2 border-slate-400 bg-slate-900/80';

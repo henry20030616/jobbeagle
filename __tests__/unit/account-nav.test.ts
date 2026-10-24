@@ -12,7 +12,15 @@ import {
   getAccountNavCopy,
   isAccountHashId,
 } from '@/constants/account-nav';
-import { PAGE_SHELL_GUTTER } from '@/constants/report-frame';
+import {
+  PAGE_SHELL_GUTTER,
+  SAMPLE_RAIL_ICON,
+  SAMPLE_RAIL_TEXT,
+  SAMPLE_RAIL_WIDTH,
+  SAMPLE_REPORT_TAB_ACTIVE,
+  SAMPLE_REPORT_TAB_IDLE,
+  SAMPLE_REPORT_TAB_LAYOUT,
+} from '@/constants/report-frame';
 import AccountSectionNav from '@/components/AccountSectionNav';
 
 const ACCOUNT_PAGE = readFileSync(join(process.cwd(), 'app/account/page.tsx'), 'utf8');
@@ -124,7 +132,7 @@ describe('account function nav', () => {
     expect(ACCOUNT_PAGE).not.toContain('bg-violet-');
   });
 
-  it('renders a wrapping mobile row and a left desktop stack without duplicating the header title', () => {
+  it('renders a samples-sized left stack without duplicating the header title', () => {
     const html = renderToStaticMarkup(
       createElement(AccountSectionNav, { language: 'zh-TW' }),
     );
@@ -145,12 +153,41 @@ describe('account function nav', () => {
     expect(html).toContain('暫停／刪除帳戶');
     expect(html).not.toContain('取消訂閱');
     expect(html).not.toContain('贊助 JobBeagle');
-    expect(html).toContain('flex-wrap');
-    expect(html).toContain('lg:flex-col');
+    expect(html).toContain('flex-col');
+    expect(html).toContain('gap-6');
+    expect(html).toContain('lg:w-[42rem]');
+    expect(html).toContain('text-6xl');
+    expect(html).toContain('px-8');
+    expect(html).toContain('py-6');
+    expect(html).toContain('rounded-2xl');
+    expect(html).not.toContain('flex-wrap');
     expect(html).not.toContain('role="tablist"');
     expect(html).toContain('bg-blue-900');
+    expect(html).toContain('border-red-700');
     expect(html).not.toContain('indigo-500');
     expect(html).not.toContain('我的帳號管理');
     expect(html).not.toContain('帳戶管理');
+  });
+
+  it('reuses the /samples type-switcher card chrome', () => {
+    const nav = readFileSync(
+      join(process.cwd(), 'components/AccountSectionNav.tsx'),
+      'utf8',
+    );
+    expect(SAMPLE_RAIL_WIDTH).toBe('w-[42rem]');
+    expect(SAMPLE_REPORT_TAB_LAYOUT).toContain(SAMPLE_RAIL_TEXT);
+    expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('px-8 py-6');
+    expect(SAMPLE_RAIL_TEXT).toMatch(/text-6xl/);
+    expect(SAMPLE_RAIL_ICON).toMatch(/w-16 h-16/);
+    expect(nav).toContain('SAMPLE_REPORT_TAB_LAYOUT');
+    expect(nav).toContain('SAMPLE_REPORT_TAB_ACTIVE');
+    expect(nav).toContain('SAMPLE_REPORT_TAB_IDLE');
+    expect(nav).toContain('SAMPLE_RAIL_ICON');
+    expect(nav).toContain('lg:w-[42rem]');
+    expect(nav).not.toContain('lg:w-[22rem]');
+    expect(nav).not.toContain('text-base');
+    expect(nav).not.toContain('px-3 py-2');
+    expect(SAMPLE_REPORT_TAB_ACTIVE).toMatch(/bg-blue-900/);
+    expect(SAMPLE_REPORT_TAB_IDLE).toMatch(/border-blue-700/);
   });
 });
