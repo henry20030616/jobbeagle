@@ -152,7 +152,7 @@ export const SAMPLE_RAIL_CONTENT_GAP = 'gap-6 lg:gap-24';
 export const SAMPLE_RAIL_ROW =
   `flex flex-col items-stretch ${SAMPLE_RAIL_CONTENT_GAP} lg:flex-row lg:items-start`;
 
-/** Sample notice (← Analyze) — same shell as Compare the two reports */
+/** Sample notice (← Analyze) — same shell as the two-report compare trigger */
 export const SAMPLE_NOTICE_SURFACE =
   'rounded-xl border-2 border-slate-400 bg-slate-900/80';
 

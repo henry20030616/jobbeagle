@@ -30,7 +30,9 @@ describe('report-compare', () => {
   });
 
   it('puts Best for first, then shared (stars) → guide-only → price', () => {
-    expect(REPORT_COMPARE_TRIGGER.en).toMatch(/Compare/i);
+    expect(REPORT_COMPARE_TRIGGER.en).toBe('Report differences');
+    expect(REPORT_COMPARE_TRIGGER['zh-TW']).toBe('兩種報告差異');
+    expect(REPORT_COMPARE_TRIGGER['zh-CN']).toBe('两种报告差异');
 
     const sections = REPORT_COMPARE_ROWS.map((r) => r.section);
     expect(REPORT_COMPARE_ROWS[0]?.feature.en).toBe('Best for');
@@ -38,7 +40,7 @@ describe('report-compare', () => {
     const shared = REPORT_COMPARE_ROWS.filter((r) => r.section === 'shared');
     expect(shared.map((r) => r.feature['zh-TW'])).toEqual([
       '職位核心解析',
-      '匹配分數、履歷分析',
+      '匹配度分析',
       '市場薪資水準',
     ]);
     const guideOnly = REPORT_COMPARE_ROWS.filter((r) => r.section === 'guide_only');

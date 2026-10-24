@@ -128,9 +128,9 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
 };
 
 export const REPORT_COMPARE_TRIGGER: Record<ReportCompareLang, string> = {
-  en: 'Compare the two reports',
-  'zh-TW': '查看兩種報告差異',
-  'zh-CN': '查看两种报告差异',
+  en: 'Report differences',
+  'zh-TW': '兩種報告差異',
+  'zh-CN': '两种报告差异',
 };
 
 export const REPORT_COMPARE_CLOSE: Record<ReportCompareLang, string> = {
@@ -233,9 +233,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     section: 'shared',
     feature: {
-      en: 'Fit score and resume',
-      'zh-TW': '匹配分數、履歷分析',
-      'zh-CN': '匹配分数、简历分析',
+      en: 'Fit analysis',
+      'zh-TW': '匹配度分析',
+      'zh-CN': '匹配度分析',
     },
     help: help(
       'Fit summary, score, apply advice on the left, and missing hard keywords on the right. Guide adds line-by-line resume rewrites for those gaps.',
