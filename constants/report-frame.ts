@@ -52,7 +52,7 @@ export const REPORT_H2 = 'report-h2';
 export const REPORT_H3 = 'report-h3';
 
 /**
- * Guide in-report tab labels (職位核心 | 薪資落點 | …).
+ * Guide in-report tab labels (職位核心分析 | 個人薪資落點 | …).
  * Same type SIZE as REPORT_H1 / 職位核心解析 (1.5rem = text-2xl).
  * Chip selected/idle colors stay on the button, not this class.
  */
@@ -61,13 +61,13 @@ export const REPORT_GUIDE_TAB_TYPE =
 
 /**
  * Guide frame header — two stacked lines under 面試指南 / Interview Guide:
- * company, then role. Same type as in-report tab 「職位核心」
+ * company, then role. Same type as in-report tab 「職位核心分析」
  * (`REPORT_GUIDE_TAB_TYPE` = 1.5rem / font-black). Bright zinc-100, not muted slate-400.
  */
 export const REPORT_HEADER_JOB_LINE = `${REPORT_GUIDE_TAB_TYPE} text-zinc-100`;
 
-/** Horizontal gap between Guide in-report tabs. 2× the previous `gap-2` (8px → 16px). */
-export const REPORT_GUIDE_TAB_GAP = 'gap-4';
+/** Horizontal gap between Guide in-report tabs. Slightly tight so five long labels fit; do not shrink type. */
+export const REPORT_GUIDE_TAB_GAP = 'gap-3';
 
 /**
  * Homepage report-type cards (step 3).

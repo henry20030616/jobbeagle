@@ -257,6 +257,8 @@ describe('report item heading scale', () => {
     expect(css).toMatch(/\.report-h2 \{[\s\S]*?color:\s*rgb\(96 165 250\)/);
     expect(css).toMatch(/\.report-h3 \{[\s\S]*?font-size:\s*1\.125rem/);
     expect(css).toMatch(/\.report-h3 \{[\s\S]*?color:\s*rgb\(59 130 246\)/);
+    expect(css).toMatch(/\.report-body \{[\s\S]*?font-size:\s*1\.125rem/);
+    expect(css).toMatch(/\.report-body \{[\s\S]*?color:\s*rgb\(241 245 249\)/);
 
     const pages = readFileSync(
       join(process.cwd(), 'components/report/SevenItemPages.tsx'),
@@ -272,7 +274,7 @@ describe('report item heading scale', () => {
   it('sizes Guide in-report tab labels to REPORT_H1 / 職位核心解析 (1.5rem)', () => {
     expect(REPORT_GUIDE_TAB_TYPE).toMatch(/text-2xl/);
     expect(REPORT_GUIDE_TAB_TYPE).toMatch(/font-black/);
-    expect(REPORT_GUIDE_TAB_GAP).toBe('gap-4');
+    expect(REPORT_GUIDE_TAB_GAP).toBe('gap-3');
 
     const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8');
     expect(css).toMatch(/\.report-h1 \{[\s\S]*?font-size:\s*1\.5rem/);

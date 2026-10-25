@@ -111,7 +111,7 @@ export default function FullReportDashboard({
                 key={item.id}
                 type="button"
                 onClick={() => selectTab(item.id)}
-                className={`flex items-center gap-2 rounded-xl px-3.5 py-2 ${REPORT_GUIDE_TAB_TYPE} transition-colors border ${
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 ${REPORT_GUIDE_TAB_TYPE} transition-colors border ${
                   active
                     ? 'border-blue-500 bg-blue-500/10 text-sky-100'
                     : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'

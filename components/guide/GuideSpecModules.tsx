@@ -37,9 +37,9 @@ function copyFor(language: AppLanguage) {
   if (language === 'zh-TW' || language === 'zh-CN') {
     const s = language === 'zh-CN';
     return {
-      item4: s ? '个人化薪资落点' : '個人化薪資落點',
-      item5: s ? '公司与职位评价' : '公司與職位評價',
-      item6: s ? '面试真题准备' : '面試真題準備',
+      item4: s ? '个人薪资落点' : '個人薪資落點',
+      item5: s ? '公司及职位评价' : '公司及職位評價',
+      item6: s ? '网络真实题目' : '網路真實題目',
       item7: s ? '面试谈判建议' : '面試談判建議',
       target: s ? '个人战略目标薪资' : '個人戰略目標薪資',
       ceiling: s ? '议价天花板' : '議價天花板',
@@ -68,10 +68,10 @@ function copyFor(language: AppLanguage) {
     };
   }
   return {
-    item4: 'Personalized pay landing',
-    item5: 'Company and role reputation',
-    item6: 'Interview questions',
-    item7: 'Negotiation',
+    item4: 'Personal pay landing',
+    item5: 'Company & role review',
+    item6: 'Web interview questions',
+    item7: 'Interview negotiation',
     target: 'Personal target compensation',
     ceiling: 'Ceiling',
     buyer: 'Company position / candidate position',

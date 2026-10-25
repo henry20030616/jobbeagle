@@ -249,18 +249,18 @@ function itemCopy(language: AppLanguage): ItemCopy {
       core: s ? '职位核心解析' : '職位核心解析',
       market: s ? '市场薪资水准' : '市場薪資水準',
       fit: '匹配度分析',
-      land: s ? '个人化薪资落点' : '個人化薪資落點',
-      company: s ? '公司与职位评价' : '公司與職位評價',
-      questions: s ? '面试真题准备' : '面試真題準備',
+      land: s ? '个人薪资落点' : '個人薪資落點',
+      company: s ? '公司及职位评价' : '公司及職位評價',
+      questions: s ? '网络真实题目' : '網路真實題目',
       negotiate: s ? '面试谈判建议' : '面試談判建議',
       nav: {
-        core: s ? '职位核心' : '職位核心',
+        core: s ? '职位核心分析' : '職位核心分析',
         market: s ? '市场薪资' : '市場薪資',
         fit: s ? '匹配履历' : '匹配履歷',
-        land: s ? '薪资落点' : '薪資落點',
-        company: s ? '公司评价' : '公司評價',
-        questions: s ? '面试真题' : '面試真題',
-        negotiate: s ? '谈判建议' : '談判建議',
+        land: s ? '个人薪资落点' : '個人薪資落點',
+        company: s ? '公司及职位评价' : '公司及職位評價',
+        questions: s ? '网络真实题目' : '網路真實題目',
+        negotiate: s ? '面试谈判建议' : '面試談判建議',
       },
       summary: s ? '职位概述' : '職位概述',
       analysisSummary: s ? '总结分析' : '總結分析',
@@ -338,18 +338,18 @@ function itemCopy(language: AppLanguage): ItemCopy {
     core: 'Role core',
     market: 'Market pay',
     fit: 'Fit analysis',
-    land: 'Personalized pay landing',
-    company: 'Company and role reputation',
-    questions: 'Interview questions',
-    negotiate: 'Negotiation',
+    land: 'Personal pay landing',
+    company: 'Company & role review',
+    questions: 'Web interview questions',
+    negotiate: 'Interview negotiation',
     nav: {
-      core: 'Role core',
+      core: 'Role-core analysis',
       market: 'Market pay',
       fit: 'Fit',
-      land: 'Pay landing',
-      company: 'Company',
-      questions: 'Questions',
-      negotiate: 'Negotiation',
+      land: 'Personal pay landing',
+      company: 'Company & role review',
+      questions: 'Web interview questions',
+      negotiate: 'Interview negotiation',
     },
     summary: 'Job overview',
     analysisSummary: 'Analysis summary',
@@ -676,7 +676,7 @@ function BriefRows({ items }: { items: string[] }) {
         return (
           <li key={item} className="flex gap-2.5">
             <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-            <span className={`${BODY} font-medium text-slate-100 leading-snug`}>
+            <span className={BODY_COPY}>
               {detail ? (
                 <>
                   <span className="font-bold text-blue-300">{label}</span>

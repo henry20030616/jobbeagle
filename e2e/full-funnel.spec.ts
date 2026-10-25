@@ -128,7 +128,7 @@ test.describe('Full funnel — public surfaces', () => {
     await expectSnapshotPage1Order(page);
     await expectPageScrollsPastFold(page);
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.getByRole('button', { name: /^Questions$|^面試真題$|^面试真题$/ }).click();
+    await page.getByRole('button', { name: /^Web interview questions$|^網路真實題目$|^网络真实题目$/ }).click();
     await expect(page.getByText(/Professional|專業題|专业题/).first()).toBeVisible();
   });
 

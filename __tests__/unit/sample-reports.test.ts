@@ -352,11 +352,25 @@ describe('seven-item report layout', () => {
       'negotiate',
     ]);
     expect(guideItemNav('zh-TW').map((item) => item.label)).toEqual([
-      '職位核心',
-      '薪資落點',
-      '公司評價',
-      '面試真題',
-      '談判建議',
+      '職位核心分析',
+      '個人薪資落點',
+      '公司及職位評價',
+      '網路真實題目',
+      '面試談判建議',
+    ]);
+    expect(guideItemNav('zh-CN').map((item) => item.label)).toEqual([
+      '职位核心分析',
+      '个人薪资落点',
+      '公司及职位评价',
+      '网络真实题目',
+      '面试谈判建议',
+    ]);
+    expect(guideItemNav('en').map((item) => item.label)).toEqual([
+      'Role-core analysis',
+      'Personal pay landing',
+      'Company & role review',
+      'Web interview questions',
+      'Interview negotiation',
     ]);
   });
 
@@ -608,7 +622,7 @@ describe('seven-item report layout', () => {
         language: 'zh-TW',
       }),
     );
-    expect(html).toContain('個人化薪資落點');
+    expect(html).toContain('個人薪資落點');
     expect(html).toContain('市場總薪酬區間');
     expect(html).toContain('$168K');
     expect(html).toContain('$185K');
@@ -627,7 +641,7 @@ describe('seven-item report layout', () => {
     expect(html.split('border-2 border-blue-500').length - 1).toBe(3);
   });
 
-  it('uses the same compact pay-range on Guide 職位核心 市場薪資水準 and 薪資落點', () => {
+  it('uses the same compact pay-range on Guide 職位核心解析 市場薪資水準 and 個人薪資落點', () => {
     const report = getSampleStrategyGuideReport('zh-TW');
     const coreHtml = renderToStaticMarkup(
       createElement(GuideItemPage, { report, item: 'core', language: 'zh-TW' }),
@@ -654,7 +668,8 @@ describe('seven-item report layout', () => {
       expect(html).toContain('mt-16 mb-16');
     }
     expect(coreHtml).toContain('市場薪資水準');
-    expect(landHtml).toContain('個人化薪資落點');
+    expect(coreHtml).toContain('職位核心解析');
+    expect(landHtml).toContain('個人薪資落點');
   });
 
   it('renders pay, benefits, and script as one negotiate playbook frame', () => {
@@ -728,7 +743,7 @@ describe('seven-item report layout', () => {
       expect(detail.length).toBeGreaterThan(0);
     }
     expect(html).toContain('面試結束、對方還沒開始談薪資時寄');
-    expect(html).toContain('text-lg font-medium leading-snug text-slate-100 mb-4');
+    expect(html).toContain('report-body mb-4');
     expect(html).not.toContain('text-lg text-slate-400 mb-4');
     expect(html.split('border-2 border-blue-500').length - 1).toBe(4);
   });
@@ -814,6 +829,46 @@ describe('seven-item report layout', () => {
       const summary = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank.summary ?? '';
       expect(summary.startsWith(labels[lang])).toBe(true);
     }
+  });
+
+  it('applies the same report-body class to 行為題分析 copy and 建議答案 content', () => {
+    const chrome = readFileSync(join(process.cwd(), 'components/guide/GuideSlideChrome.tsx'), 'utf8');
+    const pages = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    const spec = readFileSync(join(process.cwd(), 'components/guide/GuideSpecModules.tsx'), 'utf8');
+    expect(chrome).toContain("export const BODY_COPY = 'report-body'");
+    expect(pages).toContain('<span className={BODY_COPY}>');
+    expect(pages).toContain('<p className={BODY_COPY}>');
+    expect(pages).toContain('<p className={`${BODY_COPY} mt-2`}>{item.answer || \'—\'}</p>');
+    expect(spec).toContain('<p className={`${BODY_COPY} mt-2`}>{item.answer || \'—\'}</p>');
+    expect(pages).toContain('<p className={REPORT_H3}>{copy.answer}</p>');
+    expect(pages).not.toMatch(/item\.answer[^;]*text-slate-400/);
+    expect(pages).not.toMatch(/item\.answer[^;]*BODY_MUTED/);
+
+    const html = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report: getSampleStrategyGuideReport('zh-TW'),
+        item: 'questions',
+        language: 'zh-TW',
+      }),
+    );
+    const classBefore = (needle: string): string => {
+      const index = html.indexOf(needle);
+      expect(index).toBeGreaterThan(-1);
+      const open = html.lastIndexOf('<', index);
+      const tag = html.slice(open, index);
+      const match = tag.match(/class="([^"]*)"/);
+      expect(match?.[1]).toBeTruthy();
+      return match?.[1] ?? '';
+    };
+    const analysisClass = classBefore('面試在測書面狀態能不能讓別人接著做');
+    const answerClass = classBefore('用 SQL 例外佇列依截止風險排序');
+    expect(analysisClass).toContain('report-body');
+    expect(answerClass).toContain('report-body');
+    expect(answerClass.split(/\s+/).filter((token) => token === 'report-body' || token.startsWith('text-') || token.startsWith('font-') || token.startsWith('leading-'))).toEqual(['report-body']);
+
+    const labelSlice = html.slice(html.indexOf('建議答案') - 80, html.indexOf('建議答案'));
+    expect(labelSlice).toContain('report-h3');
+    expect(labelSlice).not.toContain('report-body');
   });
 });
 

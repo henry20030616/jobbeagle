@@ -45,10 +45,16 @@ describe('report-compare', () => {
     ]);
     const guideOnly = REPORT_COMPARE_ROWS.filter((r) => r.section === 'guide_only');
     expect(guideOnly.map((r) => r.feature['zh-TW'])).toEqual([
-      '個人化薪資落點',
-      '公司與職位評價',
-      '面試真題準備',
+      '個人薪資落點',
+      '公司及職位評價',
+      '網路真實題目',
       '面試談判建議',
+    ]);
+    expect(guideOnly.map((r) => r.feature.en)).toEqual([
+      'Personal pay landing',
+      'Company & role review',
+      'Web interview questions',
+      'Interview negotiation',
     ]);
     expect(REPORT_COMPARE_ROWS.some((r) => r.feature.en === 'Live web search')).toBe(false);
     expect(shared[0]?.snapshot.text.en).not.toMatch(/no web/i);

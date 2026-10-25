@@ -120,9 +120,9 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
     'zh-CN': '星星＝深度（满分 5）。这三项就是适配快照；面试指南含这三项，简历分析会再加深。',
   },
   guide_only: {
-    en: 'Interview Guide only: pay landing, company and role intel, sourced interview questions, and negotiation.',
-    'zh-TW': '僅面試指南：個人化薪資落點、公司與職位評價、面試真題準備、面試談判建議。',
-    'zh-CN': '仅面试指南：个人化薪资落点、公司与职位评价、面试真题准备、面试谈判建议。',
+    en: 'Interview Guide only: personal pay landing, company & role review, web interview questions, and interview negotiation.',
+    'zh-TW': '僅面試指南：個人薪資落點、公司及職位評價、網路真實題目、面試談判建議。',
+    'zh-CN': '仅面试指南：个人薪资落点、公司及职位评价、网络真实题目、面试谈判建议。',
   },
   meta: null,
 };
@@ -263,9 +263,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     section: 'guide_only',
     feature: {
-      en: 'Personalized pay landing',
-      'zh-TW': '個人化薪資落點',
-      'zh-CN': '个人化薪资落点',
+      en: 'Personal pay landing',
+      'zh-TW': '個人薪資落點',
+      'zh-CN': '个人薪资落点',
     },
     help: help(
       'Where you are likely to land, with a base / equity / bonus split, a ceiling, and company vs candidate stance. Uses live public pay pages when search finds them.',
@@ -278,9 +278,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     section: 'guide_only',
     feature: {
-      en: 'Company and role reputation',
-      'zh-TW': '公司與職位評價',
-      'zh-CN': '公司与职位评价',
+      en: 'Company & role review',
+      'zh-TW': '公司及職位評價',
+      'zh-CN': '公司及职位评价',
     },
     help: help(
       'Cited public intel on this employer and this seat: culture, layoff or WARN, visa sponsorship, and role reviews.',
@@ -293,9 +293,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     section: 'guide_only',
     feature: {
-      en: 'Interview questions',
-      'zh-TW': '面試真題準備',
-      'zh-CN': '面试真题准备',
+      en: 'Web interview questions',
+      'zh-TW': '網路真實題目',
+      'zh-CN': '网络真实题目',
     },
     help: help(
       'Ten professional and ten behavioral questions from the last three years, with sources on reported items and answers mapped to your resume.',
@@ -308,7 +308,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
   {
     section: 'guide_only',
     feature: {
-      en: 'Negotiation',
+      en: 'Interview negotiation',
       'zh-TW': '面試談判建議',
       'zh-CN': '面试谈判建议',
     },
