@@ -534,7 +534,7 @@ describe('seven-item report layout', () => {
     );
     expect(snapHtml).toContain('ACH／支付軌道深度');
     expect(snapHtml).not.toContain('用 SQL 與 Looker 把對帳週期縮短 28%');
-    expect(snapHtml).toContain('升級 Interview Guide 可解鎖對應調整建議');
+    expect(snapHtml).toContain('（🔒 升級 Interview Guide 可解鎖對應調整建議）');
     expect(snapHtml).toContain(snapshot.apply_decision.next_best_action);
     expect(guideHtml).toContain(guide.apply_decision.next_best_action);
   });
@@ -592,13 +592,13 @@ describe('seven-item report layout', () => {
     expect(snapHtml).not.toContain('個人目標');
     expect(snapHtml).not.toContain('data-range-label="target"');
     expect(snapHtml).not.toContain('data-range-label="ceiling"');
-    expect(snapHtml).toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
+    expect(snapHtml).toContain('（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
     expect(guideHtml).not.toContain('議價天花板');
     expect(guideHtml).not.toContain('個人目標');
     expect(guideHtml).not.toContain('$168K');
     expect(guideHtml).not.toContain('data-range-label="target"');
     expect(guideHtml).not.toContain('data-range-label="ceiling"');
-    expect(guideHtml).not.toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
+    expect(guideHtml).not.toContain('（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
   });
 
   it('frames company, pay, questions, and negotiate inner blocks with GUIDE_SECTION_FRAME', () => {
