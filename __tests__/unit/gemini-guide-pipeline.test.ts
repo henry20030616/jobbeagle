@@ -52,7 +52,7 @@ describe('runPaidGuideModules provider split', () => {
     const claudeSystems = generateAnthropicJson.mock.calls.map(
       (call) => (call[0] as { system: string }).system,
     );
-    expect(claudeSystems.some((system) => system.includes('resume bullet rewrites'))).toBe(true);
+    expect(claudeSystems.some((system) => system.includes('resume-adjustment'))).toBe(true);
     expect(claudeSystems.some((system) => system.includes('personalized answer directions'))).toBe(true);
     expect(claudeSystems.some((system) => system.includes('negotiation guidance'))).toBe(true);
     for (const system of claudeSystems) {
