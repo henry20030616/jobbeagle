@@ -391,7 +391,7 @@ describe('pay-range widths', () => {
     expect(PAY_RANGE_SNAPSHOT_COLUMN).toBe(
       'flex min-w-0 flex-1 justify-center',
     );
-    expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-[90%] max-w-[90%] mx-auto min-w-0');
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-[45%] max-w-[45%] mx-auto min-w-0');
     expect(PAY_RANGE_LINE_WIDTH).toBe('w-1/2 mx-auto min-w-0');
     expect(PAY_RANGE_LINE_WIDTH).toContain('mx-auto');
     expect(PAY_RANGE_LINE_WIDTH).not.toContain('w-full');

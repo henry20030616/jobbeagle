@@ -229,10 +229,10 @@ export const PAY_RANGE_SNAPSHOT_COLUMN =
 
 /**
  * Snapshot / Guide page-1 市場薪資水準 track (`PayRangeLine` hero).
- * Slightly inset within leftover `PAY_RANGE_SNAPSHOT_COLUMN` and centered —
- * not full-bleed of leftover, not stacked under the heading.
+ * About half of leftover `PAY_RANGE_SNAPSHOT_COLUMN` (90% → 45%) and
+ * centered — not full-bleed of leftover, not stacked under the heading.
  */
-export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-[90%] max-w-[90%] mx-auto min-w-0';
+export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-[45%] max-w-[45%] mx-auto min-w-0';
 
 /**
  * Guide 個人薪資落點 track (`PayRangeLine` compact, with target/ceiling markers).

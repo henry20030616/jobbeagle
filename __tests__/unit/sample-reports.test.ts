@@ -674,7 +674,7 @@ describe('seven-item report layout', () => {
       expect(html).not.toContain('md:ml-auto');
       expect(html).toContain('justify-center');
       expect(html).toContain('md:flex-row md:items-center');
-      expect(html).toContain('w-[90%] max-w-[90%] mx-auto min-w-0');
+      expect(html).toContain('w-[45%] max-w-[45%] mx-auto min-w-0');
       expect(html).not.toContain('w-1/2 max-w-[50%]');
       expect(html).not.toContain('w-full mx-auto min-w-0');
       expect(html).toContain('$145K');
@@ -983,7 +983,7 @@ describe('seven-item report layout', () => {
     expect(coreHtml).not.toContain('md:ml-auto');
     expect(coreHtml).toContain('justify-center');
     expect(coreHtml).toContain('md:flex-row md:items-center');
-    expect(coreHtml).toContain('w-[90%] max-w-[90%] mx-auto min-w-0');
+    expect(coreHtml).toContain('w-[45%] max-w-[45%] mx-auto min-w-0');
     expect(coreHtml).not.toContain('w-1/2 max-w-[50%]');
     expect(coreHtml).not.toContain('w-full mx-auto min-w-0');
     expect(coreHtml).toContain(' · USD');
