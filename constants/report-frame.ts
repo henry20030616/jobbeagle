@@ -59,12 +59,16 @@ export const REPORT_H3 = 'report-h3';
 export const REPORT_GUIDE_TAB_TYPE =
   'text-2xl font-black tracking-tight leading-tight';
 
-/**
- * Guide frame header — two stacked lines under 面試指南 / Interview Guide:
- * company, then role. Same type as in-report tab 「職位核心分析」
- * (`REPORT_GUIDE_TAB_TYPE` = 1.5rem / font-black). Bright zinc-100, not muted slate-400.
- */
-export const REPORT_HEADER_JOB_LINE = `${REPORT_GUIDE_TAB_TYPE} text-zinc-100`;
+export {
+  REPORT_HEADER_SHELL,
+  REPORT_HEADER_PRODUCT_LABEL,
+  REPORT_HEADER_JOB_LINE,
+  REPORT_HEADER_JOB_ICON,
+  REPORT_HEADER_META,
+  REPORT_HEADER_META_ROW,
+  REPORT_HEADER_META_ICON,
+  REPORT_HEADER_META_LABEL,
+} from './report-header';
 
 /** Horizontal gap between Guide in-report tabs. Slightly tight so five long labels fit; do not shrink type. */
 export const REPORT_GUIDE_TAB_GAP = 'gap-3';

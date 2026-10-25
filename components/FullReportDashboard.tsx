@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import type { FullReport } from '@/types';
 import { Home, RotateCcw } from 'lucide-react';
 import { GuideItemPage, guideItemNav, type GuideItemId } from '@/components/report/SevenItemPages';
+import { ReportJobHeader } from '@/components/report/ReportJobHeader';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getGuideUiCopy } from '@/lib/report-ui-copy';
@@ -13,10 +14,8 @@ import {
   REPORT_ACTION_ICON,
   REPORT_GUIDE_TAB_TYPE,
   REPORT_GUIDE_TAB_GAP,
-  REPORT_HEADER_JOB_LINE,
   REPORT_SHELL_WIDTH,
 } from '@/constants/report-frame';
-import { SampleMark } from '@/components/SampleMark';
 
 type GuideTab = GuideItemId;
 
@@ -63,10 +62,6 @@ export default function FullReportDashboard({
     else window.location.href = '/';
   };
 
-  const isZh = lang === 'zh-TW' || lang === 'zh-CN';
-  const companyLine = report.company_name || (isZh ? '' : 'Company');
-  const roleLine = report.job_title || (isZh ? '' : 'Role');
-
   return (
     <div
       className={`w-full min-w-0 mx-auto ${
@@ -87,20 +82,12 @@ export default function FullReportDashboard({
       )}
 
       <div className={`@container/report relative min-w-0 overflow-x-auto ${REPORT_SLIDE_SURFACE}`}>
-        <div className="flex flex-wrap items-start justify-between gap-3 px-4 sm:px-6 py-4 border-b border-slate-700">
-          <div className="min-w-0">
-            <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-              {copy.productTitle}
-            </p>
-            <p className={`${REPORT_HEADER_JOB_LINE} mt-1.5`}>{companyLine}</p>
-            <p className={REPORT_HEADER_JOB_LINE}>{roleLine}</p>
-          </div>
-          {isSample ? (
-            <div className="shrink-0 self-start">
-              <SampleMark />
-            </div>
-          ) : null}
-        </div>
+        <ReportJobHeader
+          productTitle={copy.productTitle}
+          report={report}
+          language={lang}
+          isSample={isSample}
+        />
 
         {hideInnerNav ? null : (
         <nav className={`px-4 sm:px-6 py-3 border-b border-slate-700 bg-slate-900/60 flex flex-wrap sm:flex-nowrap ${REPORT_GUIDE_TAB_GAP}`}>
