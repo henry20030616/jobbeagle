@@ -428,7 +428,9 @@ describe('seven-item report layout', () => {
     expect(fitBody).toContain('h-56 w-56');
     expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.analysisSummary}'));
     expect(fitBody.indexOf('{copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
-    expect(fitBody).toContain('${BODY_COPY} mt-1');
+    expect(fitBody).toContain('flex items-baseline gap-3');
+    expect(fitBody).toContain('<p className={BODY_COPY}>{scoreInfo.label}</p>');
+    expect(fitBody).not.toContain('${BODY_COPY} mt-1');
     expect(fitBody).toContain('<span className={BODY_COPY}>{point}</span>');
     expect(fitBody).toContain('<p className={BODY_COPY}>{summaryPoints[0]}</p>');
     expect(fitBody).not.toContain('text-slate-300 mt-1');
@@ -509,8 +511,13 @@ describe('seven-item report layout', () => {
       );
       expect(summaryHeading).toContain('report-h1');
       expect(summaryHeading).not.toContain('report-h2');
-      const beagleSlice = html.slice(html.indexOf('藍寶米格魯'), html.indexOf('總結分析'));
+      const beagleSlice = html.slice(
+        Math.max(0, html.indexOf('藍寶米格魯') - 160),
+        html.indexOf('總結分析'),
+      );
+      expect(beagleSlice).toContain('flex items-baseline gap-3');
       expect(beagleSlice).toContain('強勢契合');
+      expect(beagleSlice.indexOf('藍寶米格魯')).toBeLessThan(beagleSlice.indexOf('強勢契合'));
       expect(beagleSlice).toContain('report-body');
       expect(beagleSlice).not.toContain('text-slate-300');
       expect(beagleSlice).not.toContain('text-slate-200');

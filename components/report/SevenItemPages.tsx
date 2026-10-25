@@ -1175,8 +1175,10 @@ function FitBody({
             </div>
           </div>
           <div className="min-w-0">
-            <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
-            <p className={`${BODY_COPY} mt-1`}>{scoreInfo.label}</p>
+            <div className="flex items-baseline gap-3">
+              <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
+              <p className={BODY_COPY}>{scoreInfo.label}</p>
+            </div>
             {verdictLines.length > 0 ? (
               <ul className="mt-3 space-y-2">
                 {verdictLines.map((point) => (
