@@ -1,38 +1,14 @@
 import React from 'react';
-/** Navy rim — high contrast on every Beagle fill (header slate, report tier blues). */
-export const BRAND_BEAGLE_GLASSES = '#1e3a8a';
-const LOUPE_LENS_FILL = 'rgba(255,255,255,0.72)';
-const LOUPE_HANDLE_CORE = '#93c5fd';
-const LOUPE_SHINE = '#ffffff';
 
-/** Magnifying glass: thick navy rim, light lens, visible handle. Reads at 48px nav and 160px report. */
-const BeagleLoupe = ({ accent = BRAND_BEAGLE_GLASSES }: { accent?: string }) => (
-  <g aria-hidden="true">
-    <circle cx="60" cy="40" r="12.5" fill={LOUPE_LENS_FILL} stroke={BRAND_BEAGLE_GLASSES} strokeWidth="4.5" />
-    <circle cx="60" cy="40" r="12.5" fill="none" stroke={accent} strokeWidth="1.25" />
-    <path d="M69.2 49.2 L86.5 64.5" stroke={BRAND_BEAGLE_GLASSES} strokeWidth="7" strokeLinecap="round" />
-    <path d="M69.2 49.2 L86.5 64.5" stroke={LOUPE_HANDLE_CORE} strokeWidth="3.5" strokeLinecap="round" />
-  </g>
-);
-
-const BeagleLoupeShine = () => (
-  <path
-    d="M52.5 34.5 A8.5 8.5 0 0 1 62 30"
-    stroke={LOUPE_SHINE}
-    strokeWidth="2.4"
-    strokeLinecap="round"
-    fill="none"
-    opacity="0.95"
-    aria-hidden="true"
-  />
-);
+/** Tailwind blue-500 — matches BrandLogo wordmark “beagle” */
+export const BRAND_BEAGLE_GLASSES = '#3B82F6';
 
 export const BeagleIcon = ({
   className,
   color = '#475569',
   spotColor = '#5d4037',
   bellyColor = '#5d4037',
-  /** Inner accent on the loupe; outer rim stays navy so score dogs never camouflage the glass. */
+  /** Monocle / glasses stroke; defaults to brand blue (score dogs pass body color to keep tier look) */
   glassesColor = BRAND_BEAGLE_GLASSES,
 }: {
   className?: string;
@@ -48,11 +24,11 @@ export const BeagleIcon = ({
     <path d="M50 20 C65 20 75 30 75 45 C75 55 65 65 50 65 C35 65 25 55 25 45 C25 30 35 20 50 20Z" fill={color} stroke={color} strokeWidth="2" />
     <path d="M28 28 C20 30 15 45 15 55 C15 65 22 70 28 65" fill={spotColor} stroke={color} strokeWidth="1.5" />
     <path d="M72 28 C80 30 85 45 85 55 C85 65 78 70 72 65" fill={spotColor} stroke={color} strokeWidth="1.5" />
-    <BeagleLoupe accent={glassesColor} />
+    <circle cx="58" cy="40" r="8" stroke={glassesColor} strokeWidth="1.5" fill="rgba(255,255,255,0.2)" />
+    <path d="M64 46 L82 50" stroke={glassesColor} strokeWidth="2.5" strokeLinecap="round" />
     <circle cx="42" cy="40" r="3" fill="#333" />
     <circle cx="58" cy="40" r="3" fill="#333" />
     <ellipse cx="50" cy="46" rx="4" ry="2.5" fill="#000" />
-    <BeagleLoupeShine />
   </svg>
 );
 
@@ -71,13 +47,10 @@ export const getBeagleIconSvg = (
     <path d="M50 20 C65 20 75 30 75 45 C75 55 65 65 50 65 C35 65 25 55 25 45 C25 30 35 20 50 20Z" fill="${color}" stroke="${color}" stroke-width="2" />
     <path d="M28 28 C20 30 15 45 15 55 C15 65 22 70 28 65" fill="${spotColor}" stroke="${color}" stroke-width="1.5" />
     <path d="M72 28 C80 30 85 45 85 55 C85 65 78 70 72 65" fill="${spotColor}" stroke="${color}" stroke-width="1.5" />
-    <circle cx="60" cy="40" r="12.5" fill="${LOUPE_LENS_FILL}" stroke="${BRAND_BEAGLE_GLASSES}" stroke-width="4.5" />
-    <circle cx="60" cy="40" r="12.5" fill="none" stroke="${glassesColor}" stroke-width="1.25" />
-    <path d="M69.2 49.2 L86.5 64.5" stroke="${BRAND_BEAGLE_GLASSES}" stroke-width="7" stroke-linecap="round" />
-    <path d="M69.2 49.2 L86.5 64.5" stroke="${LOUPE_HANDLE_CORE}" stroke-width="3.5" stroke-linecap="round" />
+    <circle cx="58" cy="40" r="8" stroke="${glassesColor}" stroke-width="1.5" fill="rgba(255,255,255,0.2)" />
+    <path d="M64 46 L82 50" stroke="${glassesColor}" stroke-width="2.5" stroke-linecap="round" />
     <circle cx="42" cy="40" r="3" fill="#333" />
     <circle cx="58" cy="40" r="3" fill="#333" />
     <ellipse cx="50" cy="46" rx="4" ry="2.5" fill="#000" />
-    <path d="M52.5 34.5 A8.5 8.5 0 0 1 62 30" stroke="${LOUPE_SHINE}" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0.95" />
   </svg>`;
 };
