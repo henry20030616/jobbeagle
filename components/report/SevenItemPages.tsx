@@ -636,9 +636,6 @@ function PayRangeLine({
       role="img"
       aria-label={aria}
     >
-      {rangeText && !hero ? (
-        <p className={`${BODY} mb-2 font-semibold text-white`}>{rangeText}</p>
-      ) : null}
       <div className={`flex items-center gap-3 ${hero ? 'py-1' : ''}`}>
         <span
           className={`${BODY} shrink-0 whitespace-nowrap tabular-nums text-slate-300`}

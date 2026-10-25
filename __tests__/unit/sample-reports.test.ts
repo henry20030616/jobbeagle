@@ -614,6 +614,9 @@ describe('seven-item report layout', () => {
       expect(html).not.toContain('w-full mx-auto min-w-0');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
+      expect(html).toContain('data-pay-low');
+      expect(html).toContain('data-pay-high');
+      expect(html).not.toContain('>$145K – $190K<');
       expect(html).toContain('市場總薪酬區間');
       expect(html).toContain(' · USD');
       const bandSlice = html.slice(
@@ -812,6 +815,9 @@ describe('seven-item report layout', () => {
     expect(html).toContain('data-pay-range="compact"');
     expect(html).toContain('data-range-label="target"');
     expect(html).toContain('data-range-label="ceiling"');
+    expect(html).toContain('data-pay-low');
+    expect(html).toContain('data-pay-high');
+    expect(html).not.toContain('>$145K – $190K<');
     expect(html).toContain('w-full mx-auto min-w-0');
     expect(html).not.toContain('max-w-[50%]');
     expect(html).not.toContain('w-1/2');
@@ -841,7 +847,8 @@ describe('seven-item report layout', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('variant="hero"');
     expect(source).toContain('variant="compact"');
-    expect(source).toContain('rangeText && !hero');
+    expect(source).not.toContain('rangeText && !hero');
+    expect(source).not.toContain('{rangeText}</p>');
     expect(source.split('function PayRangeLine').length - 1).toBe(1);
     for (const html of [coreHtml, landHtml]) {
       expect(html).toContain('市場總薪酬區間');
@@ -850,6 +857,9 @@ describe('seven-item report layout', () => {
     }
     expect(coreHtml).toContain('data-pay-range="hero"');
     expect(coreHtml).not.toContain('data-pay-range="compact"');
+    expect(coreHtml).not.toContain('>$145K – $190K<');
+    expect(coreHtml).toContain('data-pay-low');
+    expect(coreHtml).toContain('data-pay-high');
     expect(coreHtml).toContain('md:w-1/2');
     expect(coreHtml).toContain('justify-center');
     expect(coreHtml).toContain('md:flex-row md:items-center');
@@ -875,6 +885,9 @@ describe('seven-item report layout', () => {
     expect(landBand).toContain('report-body');
     expect(landHtml).toContain('data-pay-range="compact"');
     expect(landHtml).not.toContain('data-pay-range="hero"');
+    expect(landHtml).not.toContain('>$145K – $190K<');
+    expect(landHtml).toContain('data-pay-low');
+    expect(landHtml).toContain('data-pay-high');
     expect(landHtml).toContain('w-full mx-auto min-w-0');
     expect(landHtml).not.toContain('max-w-[50%]');
     expect(landHtml).not.toContain('w-1/2');
