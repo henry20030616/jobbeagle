@@ -13,6 +13,7 @@ import {
 import {
   GUIDE_SECTION_FRAME,
   PAY_RANGE_LINE_WIDTH,
+  PAY_RANGE_SNAPSHOT_COLUMN,
   PAY_RANGE_SNAPSHOT_WIDTH,
   REPORT_H1,
   REPORT_H2,
@@ -1080,14 +1081,14 @@ function MarketBody({
     { title: copy.level, lines: levelLines.length > 0 ? levelLines : [scope.level] },
   ];
   return (
-    <div className="space-y-2">
-      <div>
-        <p className={`${REPORT_H2} flex flex-wrap items-baseline gap-x-2`}>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center">
+        <p className={`${REPORT_H2} flex shrink-0 flex-wrap items-baseline gap-x-2`}>
           <span>{copy.band}</span>
           {range ? <span className={BODY_COPY}> · {money}</span> : null}
         </p>
         {range ? (
-          <div className="mt-1.5">
+          <div className={PAY_RANGE_SNAPSHOT_COLUMN}>
             <PayRangeLine
               offer={offer}
               currency={money}
@@ -1095,7 +1096,7 @@ function MarketBody({
             />
           </div>
         ) : (
-          <p className={`${BODY} mt-1 font-semibold text-white leading-snug`}>{copy.noBand}</p>
+          <p className={`${BODY} font-semibold text-white leading-snug`}>{copy.noBand}</p>
         )}
       </div>
       <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -1321,7 +1322,7 @@ export function SnapshotItemStack({
           analysisSummary={summaries.fit}
         />
       </ItemBlock>
-      <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market} bodyClassName="mt-2">
+      <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market} bodyClassName="mt-6">
         <MarketBody
           report={report}
           copy={copy}

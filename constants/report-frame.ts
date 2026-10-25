@@ -199,11 +199,19 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
 export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
- * Snapshot / Guide page-1 市場薪資水準 track (`PayRangeLine` hero).
- * Half of the parent pay card, left-aligned with the range heading — not
- * full-bleed, not centered (leftover width must not become a void).
+ * Snapshot / Guide page-1 市場薪資水準 — right-half column for the hero bar.
+ * Heading stays left on the same row; this column is the right 50% and
+ * centers its child so the track is not flush to the card edge.
  */
-export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-1/2 max-w-[50%] min-w-0';
+export const PAY_RANGE_SNAPSHOT_COLUMN =
+  'flex w-full min-w-0 justify-center md:ml-auto md:w-1/2';
+
+/**
+ * Snapshot / Guide page-1 市場薪資水準 track (`PayRangeLine` hero).
+ * Slightly inset within `PAY_RANGE_SNAPSHOT_COLUMN` and centered — not
+ * full-bleed of the right column, not stacked under the heading.
+ */
+export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-[90%] max-w-[90%] mx-auto min-w-0';
 
 /**
  * Guide 個人薪資落點 track (`PayRangeLine` compact, with target/ceiling markers).

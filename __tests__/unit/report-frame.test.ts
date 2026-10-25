@@ -34,6 +34,7 @@ import {
   SAMPLE_REPORT_TAB_IDLE,
   SAMPLE_REPORT_TAB_LAYOUT,
   PAY_RANGE_LINE_WIDTH,
+  PAY_RANGE_SNAPSHOT_COLUMN,
   PAY_RANGE_SNAPSHOT_WIDTH,
 } from '@/constants/report-frame';
 
@@ -350,18 +351,26 @@ describe('report item heading scale', () => {
 });
 
 describe('pay-range widths', () => {
-  it('keeps Snapshot market at half the card and Guide land full width', () => {
-    expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-1/2 max-w-[50%] min-w-0');
+  it('keeps Snapshot market in a right-half column and Guide land full width', () => {
+    expect(PAY_RANGE_SNAPSHOT_COLUMN).toBe(
+      'flex w-full min-w-0 justify-center md:ml-auto md:w-1/2',
+    );
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-[90%] max-w-[90%] mx-auto min-w-0');
     expect(PAY_RANGE_LINE_WIDTH).toBe('w-full mx-auto min-w-0');
-    expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('w-1/2');
-    expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('max-w-[50%]');
-    expect(PAY_RANGE_SNAPSHOT_WIDTH).not.toContain('mx-auto');
+    expect(PAY_RANGE_SNAPSHOT_COLUMN).toContain('md:w-1/2');
+    expect(PAY_RANGE_SNAPSHOT_COLUMN).toContain('justify-center');
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('mx-auto');
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).not.toContain('w-1/2');
     const pages = readFileSync(
       join(process.cwd(), 'components/report/SevenItemPages.tsx'),
       'utf8',
     );
     expect(pages).toContain('variant="hero"');
+    expect(pages).toContain('PAY_RANGE_SNAPSHOT_COLUMN');
     expect(pages).toContain('PAY_RANGE_SNAPSHOT_WIDTH');
+    expect(pages).toContain('md:flex-row md:items-center');
+    expect(pages).toContain('space-y-6');
+    expect(pages).toContain('bodyClassName="mt-6"');
     expect(pages).not.toContain('PAY_RANGE_LINE_MARKET_WIDTH');
   });
 });

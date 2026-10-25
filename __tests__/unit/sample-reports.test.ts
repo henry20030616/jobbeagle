@@ -554,8 +554,11 @@ describe('seven-item report layout', () => {
     for (const html of [snapHtml, guideHtml]) {
       expect(html).toContain('data-pay-range="hero"');
       expect(html).not.toContain('data-pay-range="compact"');
-      expect(html).toContain('w-1/2 max-w-[50%] min-w-0');
-      expect(html).not.toContain('w-1/2 max-w-[50%] mx-auto');
+      expect(html).toContain('md:w-1/2');
+      expect(html).toContain('justify-center');
+      expect(html).toContain('md:flex-row md:items-center');
+      expect(html).toContain('w-[90%] max-w-[90%] mx-auto min-w-0');
+      expect(html).not.toContain('w-1/2 max-w-[50%]');
       expect(html).not.toContain('w-full mx-auto min-w-0');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
@@ -617,8 +620,11 @@ describe('seven-item report layout', () => {
     expect(source).toContain('targetLabel={copy.target}');
     expect(source).toContain('ceilingLabel={copy.ceiling}');
     expect(source).toContain('lg:flex-row lg:items-center lg:justify-between');
+    expect(source).toContain('PAY_RANGE_SNAPSHOT_COLUMN');
     expect(source).toContain('PAY_RANGE_SNAPSHOT_WIDTH');
     expect(source).toContain('PAY_RANGE_LINE_WIDTH');
+    expect(source).toContain('md:flex-row md:items-center');
+    expect(source).toContain('bodyClassName="mt-6"');
     expect(source).toContain('className="w-full lg:flex-1"');
     expect(source).toContain('max-w-[12rem]');
     expect(source).toContain('mt-16 mb-16');
@@ -737,8 +743,11 @@ describe('seven-item report layout', () => {
     }
     expect(coreHtml).toContain('data-pay-range="hero"');
     expect(coreHtml).not.toContain('data-pay-range="compact"');
-    expect(coreHtml).toContain('w-1/2 max-w-[50%] min-w-0');
-    expect(coreHtml).not.toContain('w-1/2 max-w-[50%] mx-auto');
+    expect(coreHtml).toContain('md:w-1/2');
+    expect(coreHtml).toContain('justify-center');
+    expect(coreHtml).toContain('md:flex-row md:items-center');
+    expect(coreHtml).toContain('w-[90%] max-w-[90%] mx-auto min-w-0');
+    expect(coreHtml).not.toContain('w-1/2 max-w-[50%]');
     expect(coreHtml).not.toContain('w-full mx-auto min-w-0');
     expect(coreHtml).toContain(' · USD');
     expect(coreHtml).toContain('mt-1.5 mb-2');
