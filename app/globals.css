@@ -147,6 +147,17 @@ body > div {
   color: rgb(59 130 246); /* blue-500 */
 }
 
+/*
+ * Guide body copy: 行為題分析 bullets and 建議答案 CONTENT (not the label).
+ * Explicit CSS so this cannot silently miss Tailwind generation.
+ */
+.report-body {
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.375; /* leading-snug */
+  font-weight: 500;
+  color: rgb(241 245 249); /* slate-100 */
+}
+
 /* Compare modal: always viewport-centered (escape parent transforms via portal + fixed). */
 .jb-compare-overlay {
   position: fixed !important;
