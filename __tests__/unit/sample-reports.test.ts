@@ -411,7 +411,7 @@ describe('seven-item report layout', () => {
     expect(source).not.toContain('履歷缺少的關鍵項目');
     expect(source).not.toContain('className="w-full min-w-0 rounded-lg border border-emerald-400/30');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>');
-    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>');
+    expect(source).toContain('<h3 className={REPORT_H1}>{copy.apply}</h3>');
     expect(source).toContain('<h3 className={REPORT_H3}>{copy.keywords}</h3>');
     expect(source).toContain('<h3 className={REPORT_H3}>{copy.rewriteDirection}</h3>');
     expect(source).toContain("apply: 'Apply advice'");
@@ -439,7 +439,8 @@ describe('seven-item report layout', () => {
     expect(fitBody).not.toContain('${BODY_COPY} mt-1');
     expect(fitBody).toContain('<span className={BODY_COPY}>{localizeLabeledFactLine(point, language)}</span>');
     expect(fitBody).toContain('<p className={BODY_COPY}>{summaryPoints[0]}</p>');
-    expect(fitBody).toContain('<ApplyCallBody apply={apply} language={language} empty={copy.empty} />');
+    expect(fitBody).toContain('<p className={BODY_COPY}>{applyCallLabel(apply.label, language)}</p>');
+    expect(fitBody).toContain('<ApplyCallBody apply={apply} empty={copy.empty} />');
     expect(fitBody).not.toContain('next_best_action');
     expect(fitBody).not.toContain('text-slate-300 mt-1');
     expect(fitBody).not.toContain('text-slate-200 leading-snug');
@@ -540,6 +541,15 @@ describe('seven-item report layout', () => {
       expect(beagleSlice).toContain('report-body');
       expect(beagleSlice).not.toContain('text-slate-300');
       expect(beagleSlice).not.toContain('text-slate-200');
+      const applyHeadingIdx = html.indexOf('應徵建議');
+      const applyLabelIdx = html.indexOf('謹慎應徵');
+      expect(applyHeadingIdx).toBeGreaterThan(-1);
+      expect(applyLabelIdx).toBeGreaterThan(applyHeadingIdx);
+      const applySlice = html.slice(Math.max(0, applyHeadingIdx - 160), applyLabelIdx + '謹慎應徵'.length);
+      expect(applySlice).toContain('flex items-baseline gap-3');
+      expect(applySlice).toContain('report-h1');
+      expect(applySlice).toContain('report-body');
+      expect(applySlice).not.toContain('font-black text-white');
       expect(html).not.toContain('border-emerald-400/30');
       expect(html).toContain('grid-rows-subgrid');
     }

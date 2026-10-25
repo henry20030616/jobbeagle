@@ -40,6 +40,7 @@ import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
+import { applyCallLabel } from '@/lib/report-ui-copy';
 import { ApplyCallBody } from '@/components/report/ApplyCallBody';
 
 export const GUIDE_ITEM_IDS = [
@@ -1254,8 +1255,13 @@ function FitBody({
             ) : null}
           </section>
           <section className="min-w-0">
-            <h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>
-            <ApplyCallBody apply={apply} language={language} empty={copy.empty} />
+            <div className="flex items-baseline gap-3">
+              <h3 className={REPORT_H1}>{copy.apply}</h3>
+              {apply?.label ? (
+                <p className={BODY_COPY}>{applyCallLabel(apply.label, language)}</p>
+              ) : null}
+            </div>
+            <ApplyCallBody apply={apply} empty={copy.empty} />
           </section>
         </div>
       </section>
