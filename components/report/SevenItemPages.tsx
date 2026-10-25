@@ -13,6 +13,7 @@ import {
 import {
   GUIDE_SECTION_FRAME,
   PAY_RANGE_LINE_WIDTH,
+  PAY_RANGE_SNAPSHOT_WIDTH,
   REPORT_H1,
   REPORT_H2,
   REPORT_H3,
@@ -579,6 +580,7 @@ function PayRangeLine({
   targetValue,
   ceilingLabel,
   ceilingValue,
+  variant = 'compact',
 }: {
   offer: LiteReport['expected_offer'];
   currency?: string;
@@ -586,6 +588,7 @@ function PayRangeLine({
   targetValue?: string;
   ceilingLabel?: string;
   ceilingValue?: string;
+  variant?: 'hero' | 'compact';
 }) {
   const { low, high } = bandEnds(offer);
   const rangeText = formatOfferRange(offer);
@@ -614,8 +617,8 @@ function PayRangeLine({
   ].filter(Boolean).join('. ');
   return (
     <div
-      className={PAY_RANGE_LINE_WIDTH}
-      data-pay-range="compact"
+      className={variant === 'hero' ? PAY_RANGE_SNAPSHOT_WIDTH : PAY_RANGE_LINE_WIDTH}
+      data-pay-range={variant}
       role="img"
       aria-label={aria}
     >
@@ -712,55 +715,38 @@ function LockLine({ children }: { children: string }) {
   );
 }
 
-function RewriteGroups({
-  rewrites,
-  title,
-  beforeLabel,
-  afterLabel,
-}: {
-  rewrites: GuideResumeRewrite[];
-  title: string;
-  beforeLabel: string;
-  afterLabel: string;
-}) {
-  if (rewrites.length === 0) return null;
-  return (
-    <section className="w-full min-w-0">
-      <h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>
-      <ul className="space-y-4">
-        {rewrites.map((item) => (
-          <li key={`${item.gap}-${item.after}`}>
-            {item.gap.trim() ? (
-              <p className={`flex gap-2.5 ${BODY} font-semibold text-slate-100 leading-snug`}>
-                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                <span>{item.gap}</span>
-              </p>
-            ) : null}
-            <ul className={item.gap.trim() ? 'mt-2 space-y-2 pl-5' : 'space-y-2'}>
-              {item.before ? (
-                <li className={`flex gap-2.5 ${BODY_MUTED} leading-snug`}>
-                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-400/80" aria-hidden />
-                  <span>
-                    <span className="font-semibold text-slate-300">{beforeLabel}</span>
-                    {': '}
-                    {item.before}
-                  </span>
-                </li>
-              ) : null}
-              <li className={`flex gap-2.5 ${BODY} text-slate-100 leading-snug`}>
-                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-slate-300/80" aria-hidden />
-                <span>
-                  <span className="font-semibold">{afterLabel}</span>
-                  {': '}
-                  {item.after}
-                </span>
-              </li>
-            </ul>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
+function resumeAdviceLayout(pairCount: number): {
+  gridRows: string;
+  colSpan: string;
+  dataSpan: string;
+} {
+  const count = Math.max(1, Math.min(4, pairCount));
+  if (count === 1) {
+    return {
+      gridRows: 'md:grid-rows-[auto_auto]',
+      colSpan: 'md:row-span-2',
+      dataSpan: 'md:row-span-1',
+    };
+  }
+  if (count === 2) {
+    return {
+      gridRows: 'md:grid-rows-[auto_auto_auto]',
+      colSpan: 'md:row-span-3',
+      dataSpan: 'md:row-span-2',
+    };
+  }
+  if (count === 3) {
+    return {
+      gridRows: 'md:grid-rows-[auto_auto_auto_auto]',
+      colSpan: 'md:row-span-4',
+      dataSpan: 'md:row-span-3',
+    };
+  }
+  return {
+    gridRows: 'md:grid-rows-[auto_auto_auto_auto_auto]',
+    colSpan: 'md:row-span-5',
+    dataSpan: 'md:row-span-4',
+  };
 }
 
 function briefLines(text: string): string[] {
@@ -1094,6 +1080,7 @@ function MarketBody({
             <PayRangeLine
               offer={offer}
               currency={money}
+              variant="hero"
             />
           </div>
         ) : (
@@ -1227,46 +1214,74 @@ function ResumeAdviceBody({
   rewrites: GuideResumeRewrite[];
 }) {
   const keywords = report.ats_warning?.missing_keywords ?? [];
-  const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
+  const snapshotGaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
+  const pairs: Array<{ key: string; left: string; leftDetail?: string; right: string | null }> =
+    !locked && rewrites.length > 0
+      ? rewrites.slice(0, 4).map((item) => ({
+          key: `${item.gap}-${item.after}`,
+          left: item.gap,
+          right: item.after,
+        }))
+      : snapshotGaps.map((item) => ({
+          key: item.gap,
+          left: item.gap,
+          leftDetail: item.description || undefined,
+          right: null,
+        }));
+  const layout = resumeAdviceLayout(pairs.length);
   return (
-    <div className="space-y-5">
-      <section className="w-full min-w-0">
-        <h3 className={`mb-2 ${REPORT_H2}`}>{copy.keywords}</h3>
-        <p className={`${BODY} mb-3 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
-        {keywords.length > 0 ? (
-          <div className="mb-3 flex flex-wrap gap-2">
-            {keywords.slice(0, 8).map((word) => (
-              <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
-                {word}
-              </span>
-            ))}
-          </div>
-        ) : null}
-        {gaps.length > 0 ? (
-          <ul className="space-y-2">
-            {gaps.map((item) => (
-              <li key={item.gap} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                <span>
-                  <span className="font-semibold text-slate-100">{item.gap}</span>
-                  {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : keywords.length === 0 ? (
-          <p className={BODY_MUTED}>{copy.empty}</p>
-        ) : null}
-      </section>
-      {locked ? <LockLine>{copy.lockRewrite}</LockLine> : null}
-      {!locked && rewrites.length > 0 ? (
-        <RewriteGroups
-          rewrites={rewrites}
-          title={copy.rewriteDirection}
-          beforeLabel={copy.before}
-          afterLabel={copy.after}
-        />
+    <div className="space-y-4">
+      <p className={`${BODY} leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
+      {keywords.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {keywords.slice(0, 8).map((word) => (
+            <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
+              {word}
+            </span>
+          ))}
+        </div>
       ) : null}
+      <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 ${layout.gridRows}`}>
+        <section className={`min-w-0 ${layout.colSpan} md:col-start-1 md:grid md:grid-rows-subgrid`}>
+          <h3 className={REPORT_H3}>{copy.keywords}</h3>
+          {pairs.length > 0 ? (
+            pairs.map((item) => (
+              <div key={item.key} className="mt-4 min-w-0 md:mt-0">
+                <p className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                  <span>
+                    <span className="font-semibold text-slate-100">{item.left}</span>
+                    {item.leftDetail ? <span className="text-slate-300"> — {item.leftDetail}</span> : null}
+                  </span>
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className={`${BODY_MUTED} mt-4 md:mt-0`}>{copy.empty}</p>
+          )}
+        </section>
+        <section className={`min-w-0 ${layout.colSpan} md:col-start-2 md:grid md:grid-rows-subgrid`}>
+          <h3 className={REPORT_H3}>{copy.rewriteDirection}</h3>
+          {locked ? (
+            <div className={`mt-4 min-w-0 md:mt-0 ${layout.dataSpan}`}>
+              <p className="text-base font-semibold text-slate-300">{copy.lockRewrite}</p>
+            </div>
+          ) : pairs.some((item) => item.right) ? (
+            pairs.map((item) => (
+              <div key={item.key} className="mt-4 min-w-0 md:mt-0">
+                {item.right ? (
+                  <p className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                    <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                    <span>{item.right}</span>
+                  </p>
+                ) : null}
+              </div>
+            ))
+          ) : (
+            <p className={`${BODY_MUTED} mt-4 md:mt-0`}>{copy.empty}</p>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
@@ -1459,6 +1474,7 @@ export function GuideItemPage({
                 targetValue={salary.target}
                 ceilingLabel={copy.ceiling}
                 ceilingValue={salary.ceiling}
+                variant="compact"
               />
             </InnerSection>
           </div>

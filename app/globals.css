@@ -586,10 +586,10 @@ button.launch-submit:disabled,
   width: 6rem !important;
   height: 6rem !important;
 }
-/* Stars sit on the label baseline; 5×2.5rem stars overflowed the product columns. */
+/* 1em = cell copy (parent has text-base / text-lg, remapped above). */
 .compare-font-large .compare-star {
-  width: 1.15rem !important;
-  height: 1.15rem !important;
+  width: 1em !important;
+  height: 1em !important;
 }
 @media (min-width: 640px) {
   .compare-font-large .compare-brand-logo svg {

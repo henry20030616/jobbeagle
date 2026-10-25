@@ -74,13 +74,13 @@ const en: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'Suggested resume direction',
+      category: 'Adjustment advice',
       gap: 'ACH returns and settlement',
       before: 'Supported payment operations and reconciliation.',
       after: 'Cut reconciliation cycle time 28% with SQL and Looker; do not add ACH returns.',
     },
     {
-      category: 'Suggested resume direction',
+      category: 'Adjustment advice',
       gap: 'NACHA and a named processor',
       before: 'Worked with vendors on payment issues.',
       after: 'Partnered with engineering on late exception files; do not add a processor or NACHA title.',
@@ -169,13 +169,13 @@ const zhTW: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: '建議履歷優化方向',
+      category: '調整建議',
       gap: 'ACH 退票與清算',
       before: '支援支付營運與對帳。',
       after: '用 SQL 與 Looker 把對帳週期縮短 28%；不要補上 ACH 退票。',
     },
     {
-      category: '建議履歷優化方向',
+      category: '調整建議',
       gap: 'NACHA 與支付處理商',
       before: '與供應商處理支付問題。',
       after: '與工程處理遲到的例外檔；不要加上 NACHA 或處理商職稱。',
@@ -262,13 +262,13 @@ const zhCN: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: '建议简历优化方向',
+      category: '调整建议',
       gap: 'ACH 退票与清算',
       before: '支持支付运营与对账。',
       after: '用 SQL 与 Looker 把对账周期缩短 28%；不要补上 ACH 退票。',
     },
     {
-      category: '建议简历优化方向',
+      category: '调整建议',
       gap: 'NACHA 与支付处理商',
       before: '与供应商处理支付问题。',
       after: '与工程处理迟到的例外档；不要加上 NACHA 或处理商职称。',
@@ -355,13 +355,13 @@ const es: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'Dirección sugerida para el CV',
+      category: 'Ajustes sugeridos',
       gap: 'Devoluciones ACH y liquidación',
       before: 'Apoyé operaciones de pago y conciliación.',
       after: 'Reduje el ciclo de conciliación un 28% con SQL y Looker; no añadas devoluciones ACH.',
     },
     {
-      category: 'Dirección sugerida para el CV',
+      category: 'Ajustes sugeridos',
       gap: 'NACHA y un procesador concreto',
       before: 'Trabajé con proveedores en incidencias de pago.',
       after: 'Trabajé con ingeniería en archivos de excepción tardíos; no añadas un cargo de procesador ni NACHA.',
@@ -450,13 +450,13 @@ const hi: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'सुझाई गई रिज़्यूमे दिशा',
+      category: 'समायोजन सुझाव',
       gap: 'ACH रिटर्न और सेटलमेंट',
       before: 'भुगतान संचालन और मिलान में सहयोग किया।',
       after: 'SQL और Looker से मिलान चक्र 28% छोटा किया; ACH रिटर्न न जोड़ें।',
     },
     {
-      category: 'सुझाई गई रिज़्यूमे दिशा',
+      category: 'समायोजन सुझाव',
       gap: 'NACHA और नामित प्रोसेसर',
       before: 'भुगतान समस्याओं पर विक्रेताओं के साथ काम किया।',
       after: 'देर से आई अपवाद फ़ाइलों पर इंजीनियरिंग के साथ काम किया; प्रोसेसर या NACHA पद न जोड़ें।',
@@ -544,13 +544,13 @@ const ar: SampleGuideNarrative = {
   ],
   rewrites: [
     {
-      category: 'اتجاه مقترح لتحسين السيرة',
+      category: 'اقتراحات التعديل',
       gap: 'مرتجعات ACH والتسوية',
       before: 'دعمت عمليات الدفع والمطابقة.',
       after: 'اختصرت زمن المطابقة 28% بـ SQL وLooker؛ لا تضف مرتجعات ACH.',
     },
     {
-      category: 'اتجاه مقترح لتحسين السيرة',
+      category: 'اقتراحات التعديل',
       gap: 'NACHA ومعالج مسمى',
       before: 'عملت مع الموردين على مشكلات الدفع.',
       after: 'عملت مع الهندسة على ملفات استثناء متأخرة؛ لا تضف مسمى معالج أو NACHA.',

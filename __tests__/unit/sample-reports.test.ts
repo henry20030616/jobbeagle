@@ -197,7 +197,7 @@ describe('sample reports', () => {
     expect(stanceBullets.candidate).toHaveLength(2);
     expect(stanceBullets.candidate[1]).toMatch(/ACH/);
     const zhGuide = getSampleStrategyGuideReport('zh-TW').guide_modules;
-    expect(zhGuide?.resume_rewrites[0]?.category).toBe('建議履歷優化方向');
+    expect(zhGuide?.resume_rewrites[0]?.category).toBe('調整建議');
     expect(zhGuide?.resume_rewrites[0]?.gap).toBe('ACH 退票與清算');
     expect(zhGuide?.resume_rewrites[1]?.gap).toBe('NACHA 與支付處理商');
     expect(zhGuide?.resume_rewrites.map((item) => item.gap).join()).not.toMatch(/履歷缺少/);
@@ -246,7 +246,7 @@ describe('sample reports', () => {
   });
 
   it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
-    'keeps Guide rewrite samples as category + gap + before/after bullets (%s)',
+    'keeps Guide rewrite samples as paired gap + adjustment rows (%s)',
     (lang) => {
       const snapshot = getSampleSnapshotReport(lang);
       const guide = getSampleStrategyGuideReport(lang);
@@ -254,7 +254,7 @@ describe('sample reports', () => {
       expect(rewrites).toHaveLength(2);
       expect(rewrites[0].category).toBe(rewrites[1].category);
       expect(rewrites[0].category).toMatch(
-        /Suggested resume direction|建議履歷優化方向|建议简历优化方向|Dirección sugerida para el CV|सुझाई गई रिज़्यूमे दिशा|اتجاه مقترح لتحسين السيرة/,
+        /Adjustment advice|調整建議|调整建议|Ajustes sugeridos|समायोजन सुझाव|اقتراحات التعديل/,
       );
       expect(rewrites[0].gap).not.toBe(rewrites[1].gap);
       expect(`${rewrites[0].gap} ${rewrites[1].gap}`).not.toMatch(
@@ -270,12 +270,12 @@ describe('sample reports', () => {
       expect(snapshot.proof_map.gaps.length).toBeGreaterThanOrEqual(3);
       expect(guide.proof_map.gaps).toEqual(snapshot.proof_map.gaps);
       const titles = {
-        en: { missing: 'Missing keys on the resume', direction: 'Suggested resume direction' },
-        'zh-TW': { missing: '履歷缺少的關鍵', direction: '建議履歷優化方向' },
-        'zh-CN': { missing: '简历缺少的关键', direction: '建议简历优化方向' },
-        es: { missing: 'Claves que faltan en el CV', direction: 'Dirección sugerida para el CV' },
-        hi: { missing: 'रिज़्यूमे में कमी वाले मुख्य बिंदु', direction: 'सुझाई गई रिज़्यूमे दिशा' },
-        ar: { missing: 'المفاتيح الناقصة في السيرة', direction: 'اتجاه مقترح لتحسين السيرة' },
+        en: { outer: 'Resume optimization advice', missing: 'To improve', direction: 'Adjustment advice' },
+        'zh-TW': { outer: '履歷優化建議', missing: '待優化改善', direction: '調整建議' },
+        'zh-CN': { outer: '简历优化建议', missing: '待优化改善', direction: '调整建议' },
+        es: { outer: 'Sugerencias para el CV', missing: 'Pendiente de mejorar', direction: 'Ajustes sugeridos' },
+        hi: { outer: 'रिज़्यूमे अनुकूलन सुझाव', missing: 'सुधार बाकी', direction: 'समायोजन सुझाव' },
+        ar: { outer: 'اقتراحات تحسين السيرة', missing: 'بحاجة إلى تحسين', direction: 'اقتراحات التعديل' },
       } as const;
       const snapHtml = renderToStaticMarkup(
         createElement(SnapshotItemStack, { report: snapshot, language: lang, locked: true }),
@@ -288,13 +288,24 @@ describe('sample reports', () => {
           rewrites,
         }),
       );
+      expect(snapHtml).toContain(titles[lang].outer);
       expect(snapHtml).toContain(titles[lang].missing);
-      expect(snapHtml).not.toContain(titles[lang].direction);
+      expect(snapHtml).toContain(titles[lang].direction);
+      expect(guideHtml).toContain(titles[lang].outer);
       expect(guideHtml).toContain(titles[lang].missing);
       expect(guideHtml).toContain(titles[lang].direction);
+      expect(guideHtml).toContain(rewrites[0].gap);
+      expect(guideHtml).toContain(rewrites[0].after);
+      expect(guideHtml).toContain(rewrites[1].gap);
+      expect(guideHtml).toContain(rewrites[1].after);
+      expect(guideHtml).not.toContain(rewrites[0].before);
+      expect(guideHtml).not.toContain(rewrites[1].before);
+      expect(snapHtml).not.toContain(rewrites[0].after);
+      expect(snapHtml).not.toContain(rewrites[0].before);
       expect(guideHtml.indexOf(titles[lang].missing)).toBeLessThan(
         guideHtml.indexOf(titles[lang].direction),
       );
+      expect(guideHtml.indexOf(rewrites[0].gap)).toBeLessThan(guideHtml.indexOf(rewrites[0].after));
     },
   );
 
@@ -380,19 +391,23 @@ describe('seven-item report layout', () => {
     ]);
   });
 
-  it('keeps missing-keys and rewrite-direction headings on REPORT_H2 in an independent last block', () => {
+  it('keeps resume-advice headings on REPORT_H3 as paired columns in an independent last block', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>');
-    expect(source).toContain('title={copy.rewriteDirection}');
-    expect(source).toContain("return '履歷缺少的關鍵'");
-    expect(source).toContain("return '建議履歷優化方向'");
-    expect(source).toContain("return '履歷缺少與優化建議'");
+    expect(source).toContain('{copy.rewriteDirection}');
+    expect(source).toContain("return '待優化改善'");
+    expect(source).toContain("return '調整建議'");
+    expect(source).toContain("return '履歷優化建議'");
+    expect(source).not.toContain('履歷缺少與優化建議');
+    expect(source).not.toContain('履歷缺少的關鍵');
+    expect(source).not.toContain('建議履歷優化方向');
     expect(source).not.toContain('欠缺的硬性關鍵字');
     expect(source).not.toContain('履歷缺少的關鍵項目');
     expect(source).not.toContain('className="w-full min-w-0 rounded-lg border border-emerald-400/30');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>');
     expect(source).toContain('<h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>');
-    expect(source).toContain('<h3 className={`mb-2 ${REPORT_H2}`}>{copy.keywords}</h3>');
+    expect(source).toContain('<h3 className={REPORT_H3}>{copy.keywords}</h3>');
+    expect(source).toContain('<h3 className={REPORT_H3}>{copy.rewriteDirection}</h3>');
     expect(source).toContain("apply: 'Apply advice'");
     expect(source).toContain("apply: s ? '应征建议' : '應徵建議'");
     expect(source).toContain("fit: 'Fit analysis'");
@@ -417,12 +432,21 @@ describe('seven-item report layout', () => {
     expect(stack.indexOf('title={copy.fit}')).toBeLessThan(stack.indexOf('title={copy.market}'));
     expect(stack.indexOf('title={copy.market}')).toBeLessThan(stack.indexOf('title={copy.core}'));
     expect(stack.indexOf('title={copy.core}')).toBeLessThan(stack.indexOf('title={copy.resumeAdvice}'));
-    expect(source.indexOf('{copy.keywords}')).toBeLessThan(source.indexOf('<RewriteGroups'));
-    expect(source).toContain('{beforeLabel}');
-    expect(source).toContain('{afterLabel}');
+    const advice = source.slice(
+      source.indexOf('function ResumeAdviceBody'),
+      source.indexOf('export function SnapshotItemStack'),
+    );
+    expect(advice.indexOf('{copy.keywords}')).toBeLessThan(advice.indexOf('{copy.rewriteDirection}'));
+    expect(advice).toContain('md:grid-cols-2');
+    expect(advice).toContain('md:grid-rows-subgrid');
+    expect(source).not.toContain('{beforeLabel}');
+    expect(source).not.toContain('{afterLabel}');
+    expect(source).not.toContain("before: 'Before'");
+    expect(source).not.toContain('修改前');
+    expect(source).not.toContain('修改後');
+    expect(source).not.toContain('修改后');
     expect(source).not.toContain('${BODY} font-semibold text-emerald-100');
     expect(source).not.toContain('ui.applyLabels');
-    expect(source).not.toMatch(/md:grid-cols-2[\s\S]{0,200}copy\.keywords/);
   });
 
   it('renders Snapshot and Guide fit samples with score beside Beagle Scale and 總結分析 beside apply advice', () => {
@@ -448,10 +472,17 @@ describe('seven-item report layout', () => {
       expect(html).not.toContain('匹配分數、履歷分析');
       expect(html).toContain('應徵建議');
       expect(html).toContain('藍寶米格魯');
-      expect(html).toContain('履歷缺少的關鍵');
+      expect(html).toContain('待優化改善');
+      expect(html).toContain('調整建議');
+      expect(html).toContain('履歷優化建議');
+      expect(html).not.toContain('履歷缺少的關鍵');
       expect(html).not.toContain('欠缺的硬性關鍵字');
       expect(html).not.toContain('履歷缺少的關鍵項目');
+      expect(html).not.toContain('履歷缺少與優化建議');
+      expect(html).not.toContain('建議履歷優化方向');
       expect(html).not.toContain('建議履歷調整後再應徵');
+      expect(html).not.toContain('修改前');
+      expect(html).not.toContain('修改後');
       expect(html).not.toContain('匹配分數與燈號');
       expect(html).not.toContain('匹配分数与灯号');
       expect(html).not.toContain('Score and signal');
@@ -463,9 +494,10 @@ describe('seven-item report layout', () => {
       expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('應徵建議'));
       expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('市場薪資水準'));
       expect(html.indexOf('市場薪資水準')).toBeLessThan(html.indexOf('職位核心解析'));
-      expect(html.indexOf('職位核心解析')).toBeLessThan(html.indexOf('履歷缺少與優化建議'));
-      expect(html.indexOf('履歷缺少與優化建議')).toBeLessThan(html.indexOf('履歷缺少的關鍵'));
-      expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('履歷缺少的關鍵'));
+      expect(html.indexOf('職位核心解析')).toBeLessThan(html.indexOf('履歷優化建議'));
+      expect(html.indexOf('履歷優化建議')).toBeLessThan(html.indexOf('待優化改善'));
+      expect(html.indexOf('待優化改善')).toBeLessThan(html.indexOf('調整建議'));
+      expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('待優化改善'));
       const summaryHeading = html.slice(
         Math.max(0, html.indexOf('總結分析') - 120),
         html.indexOf('總結分析') + '總結分析'.length,
@@ -473,15 +505,19 @@ describe('seven-item report layout', () => {
       expect(summaryHeading).toContain('report-h1');
       expect(summaryHeading).not.toContain('report-h2');
       expect(html).not.toContain('border-emerald-400/30');
-      expect(html).toContain('履歷缺少與優化建議');
+      expect(html).toContain('grid-rows-subgrid');
     }
-    expect(guideHtml).toContain('建議履歷優化方向');
     expect(guideHtml).toContain('ACH 退票與清算');
+    expect(guideHtml).toContain('用 SQL 與 Looker 把對帳週期縮短 28%');
+    expect(guideHtml).toContain('NACHA 與支付處理商');
     expect(guideHtml).not.toContain('履歷缺少 ACH');
-    expect(guideHtml.indexOf('履歷缺少的關鍵')).toBeLessThan(
-      guideHtml.indexOf('建議履歷優化方向'),
+    expect(guideHtml).not.toContain('支援支付營運與對帳');
+    expect(guideHtml.indexOf('ACH 退票與清算')).toBeLessThan(
+      guideHtml.indexOf('用 SQL 與 Looker 把對帳週期縮短 28%'),
     );
-    expect(snapHtml).not.toContain('建議履歷優化方向');
+    expect(snapHtml).toContain('ACH／支付軌道深度');
+    expect(snapHtml).not.toContain('用 SQL 與 Looker 把對帳週期縮短 28%');
+    expect(snapHtml).toContain('升級 Interview Guide 可解鎖對應調整建議');
     expect(snapHtml).toContain(snapshot.apply_decision.next_best_action);
     expect(guideHtml).toContain(guide.apply_decision.next_best_action);
   });
@@ -506,10 +542,10 @@ describe('seven-item report layout', () => {
     );
     const caveat = '職缺未公布薪資；此區間依職稱、地點與年資對照市場水準，非該公司數據。';
     for (const html of [snapHtml, guideHtml]) {
-      expect(html).toContain('data-pay-range="compact"');
-      expect(html).not.toContain('data-pay-range="hero"');
-      expect(html).toContain('w-full mx-auto min-w-0');
-      expect(html).not.toContain('max-w-[50%]');
+      expect(html).toContain('data-pay-range="hero"');
+      expect(html).not.toContain('data-pay-range="compact"');
+      expect(html).toContain('w-1/2 max-w-[50%] mx-auto');
+      expect(html).not.toContain('w-full mx-auto min-w-0');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
       expect(html).toContain('市場總薪酬區間');
@@ -557,14 +593,15 @@ describe('seven-item report layout', () => {
     expect(source).toContain('targetLabel={copy.target}');
     expect(source).toContain('ceilingLabel={copy.ceiling}');
     expect(source).toContain('lg:flex-row lg:items-center lg:justify-between');
-    expect(source).toContain('className={PAY_RANGE_LINE_WIDTH}');
+    expect(source).toContain('PAY_RANGE_SNAPSHOT_WIDTH');
+    expect(source).toContain('PAY_RANGE_LINE_WIDTH');
     expect(source).toContain('className="w-full lg:flex-1"');
     expect(source).toContain('max-w-[12rem]');
     expect(source).toContain('mt-16 mb-16');
-    expect(source).toContain('data-pay-range="compact"');
-    expect(source).not.toContain('variant="hero"');
-    expect(source).not.toContain("variant?: 'hero' | 'compact'");
-    expect(source).not.toContain('w-1/2 max-w-[50%]');
+    expect(source).toContain('data-pay-range={variant}');
+    expect(source).toContain('variant="hero"');
+    expect(source).toContain('variant="compact"');
+    expect(source).toContain("variant?: 'hero' | 'compact'");
     expect(source).not.toContain('lg:ml-auto lg:w-[24rem] lg:shrink-0');
     expect(source).toContain('data-range-label={tone}');
     expect(source).not.toContain('lg:grid-cols-[auto_minmax(0,1fr)]');
@@ -640,6 +677,7 @@ describe('seven-item report layout', () => {
     expect(html).toContain('data-range-label="ceiling"');
     expect(html).toContain('w-full mx-auto min-w-0');
     expect(html).not.toContain('max-w-[50%]');
+    expect(html).not.toContain('w-1/2');
     expect(html).toContain('資料來源');
     expect(html).toContain('Levels.fyi');
     expect(html).toContain('結構拆分');
@@ -664,17 +702,24 @@ describe('seven-item report layout', () => {
       createElement(GuideItemPage, { report, item: 'land', language: 'zh-TW' }),
     );
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
-    expect(source).not.toContain('variant="hero"');
+    expect(source).toContain('variant="hero"');
+    expect(source).toContain('variant="compact"');
     expect(source.split('function PayRangeLine').length - 1).toBe(1);
     for (const html of [coreHtml, landHtml]) {
-      expect(html).toContain('data-pay-range="compact"');
-      expect(html).not.toContain('data-pay-range="hero"');
       expect(html).toContain('市場總薪酬區間');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
-      expect(html).toContain('w-full mx-auto min-w-0');
       expect(html).toContain('mt-16 mb-16');
     }
+    expect(coreHtml).toContain('data-pay-range="hero"');
+    expect(coreHtml).not.toContain('data-pay-range="compact"');
+    expect(coreHtml).toContain('w-1/2 max-w-[50%] mx-auto');
+    expect(coreHtml).not.toContain('w-full mx-auto min-w-0');
+    expect(landHtml).toContain('data-pay-range="compact"');
+    expect(landHtml).not.toContain('data-pay-range="hero"');
+    expect(landHtml).toContain('w-full mx-auto min-w-0');
+    expect(landHtml).not.toContain('max-w-[50%]');
+    expect(landHtml).not.toContain('w-1/2');
     expect(coreHtml).toContain('市場薪資水準');
     expect(coreHtml).toContain('職位核心解析');
     expect(coreHtml).not.toContain('個人目標');

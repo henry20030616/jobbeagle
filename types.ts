@@ -661,10 +661,12 @@ export interface GuideInterviewBank {
 }
 
 export interface GuideResumeRewrite {
-  /** Shared label for gaps of the same kind. UI chrome titles the direction card. */
+  /** Shared grouping label. UI chrome uses fixed 調整建議 / Adjustment advice headings. */
   category?: string;
   gap: string;
+  /** Resume-line grounding for the model. Not shown in the report UI. */
   before: string;
+  /** Directional adjustment shown in the right column. */
   after: string;
 }
 

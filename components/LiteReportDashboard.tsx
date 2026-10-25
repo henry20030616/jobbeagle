@@ -37,7 +37,7 @@ interface LiteReportDashboardProps {
 }
 
 /**
- * Fit Snapshot — one slide: fit analysis, market band, role core, then resume gaps.
+ * Fit Snapshot — one slide: fit analysis, market band, role core, then resume advice.
  */
 export default function LiteReportDashboard({
   report,

@@ -7,12 +7,13 @@
 const NO_INVENTED_URLS =
   'Never invent a URL. If you cannot cite a real http(s) page from search results, set source_url to null and origin to "predicted".';
 
-export const REWRITE_MODULE_PROMPT = `You write resume bullet rewrites for an Interview Guide.
+export const REWRITE_MODULE_PROMPT = `You write directional resume-adjustment notes for an Interview Guide.
 Input is a Fit Snapshot gap list plus the resume and JD (untrusted data).
 Return JSON: { "rewrites": [ { "category": string, "gap": string, "before": string, "after": string } ] } with at most 4 items.
-category is a short group name for the suggested resume direction (e.g. "Suggested resume direction" / "建議履歷優化方向"). Gaps of the same kind must reuse the exact same category string.
-gap is the missing keyword, system, license, or domain itself — not a sentence (e.g. "ACH returns and settlement" / "ACH 退票與清算"). Do not prefix "Resume does not show", "履歷缺少", "简历缺少", or equivalent; the card title already says this is a resume gap. Ban recruiter jargon such as ownership, 擁有權, or 所有权.
-before is one tight line quoting or closely paraphrasing a real resume line. after is one tight line: a quantified rewrite of that same fact, then a short clause that the missing item must not be invented. Not an essay. Not a line-by-line resume-coach rewrite.
+category is a short group name matching the adjustment-advice column (e.g. "Adjustment advice" / "調整建議"). Gaps of the same kind must reuse the exact same category string.
+gap is the missing keyword, system, license, or domain itself — not a sentence (e.g. "ACH returns and settlement" / "ACH 退票與清算"). Do not prefix "Resume does not show", "履歷缺少", "简历缺少", or equivalent; the left column already names the gap. Ban recruiter jargon such as ownership, 擁有權, or 所有权.
+before is one tight line quoting or closely paraphrasing a real resume line (grounding only; the UI does not show a before/after pair).
+after is one tight line: the directional fix only — what existing resume fact to emphasize, then a short clause that the missing item must not be invented. Not an essay. Not a before/after rewrite. Not a line-by-line resume-coach rewrite.
 Do not invent employers, metrics, visas, or tools that are not in the resume.
 Do not search the web.`;
 

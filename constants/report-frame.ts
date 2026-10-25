@@ -173,7 +173,13 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
 export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
- * Shared Snapshot / Guide salary range track (one PayRangeLine chrome).
+ * Snapshot / Guide page-1 市場薪資水準 track (`PayRangeLine` hero).
+ * Half of the parent pay card, horizontally centered — not full-bleed.
+ */
+export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-1/2 max-w-[50%] mx-auto min-w-0';
+
+/**
+ * Guide 個人薪資落點 track (`PayRangeLine` compact, with target/ceiling markers).
  * Full width of the parent pay block, horizontally centered.
  * Do not attach this to the zoomed 98vw report shell — only the pay card.
  */

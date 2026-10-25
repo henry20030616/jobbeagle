@@ -29,6 +29,8 @@ import {
   SAMPLE_REPORT_TAB_ACTIVE,
   SAMPLE_REPORT_TAB_IDLE,
   SAMPLE_REPORT_TAB_LAYOUT,
+  PAY_RANGE_LINE_WIDTH,
+  PAY_RANGE_SNAPSHOT_WIDTH,
 } from '@/constants/report-frame';
 
 describe('report chrome type scale', () => {
@@ -336,6 +338,22 @@ describe('report item heading scale', () => {
   });
 });
 
+describe('pay-range widths', () => {
+  it('keeps Snapshot market at half the card and Guide land full width', () => {
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-1/2 max-w-[50%] mx-auto min-w-0');
+    expect(PAY_RANGE_LINE_WIDTH).toBe('w-full mx-auto min-w-0');
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('w-1/2');
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('max-w-[50%]');
+    const pages = readFileSync(
+      join(process.cwd(), 'components/report/SevenItemPages.tsx'),
+      'utf8',
+    );
+    expect(pages).toContain('variant="hero"');
+    expect(pages).toContain('PAY_RANGE_SNAPSHOT_WIDTH');
+    expect(pages).not.toContain('PAY_RANGE_LINE_MARKET_WIDTH');
+  });
+});
+
 describe('pay-mix legend', () => {
   it('clusters label, amount, and percent instead of stretching across the report', () => {
     const pages = readFileSync(
@@ -361,10 +379,15 @@ describe('page shell gutters', () => {
       'utf8',
     );
     const report = readFileSync(join(process.cwd(), 'app/report/page.tsx'), 'utf8');
+    const compareModal = readFileSync(
+      join(process.cwd(), 'components/ReportCompareModal.tsx'),
+      'utf8',
+    );
 
     expect(homepage).toContain(PAGE_SHELL_GUTTER);
     expect(samples).toContain('PAGE_SHELL_GUTTER');
     expect(report).toContain('PAGE_SHELL_GUTTER');
+    expect(compareModal).toContain('PAGE_SHELL_GUTTER');
     expect(samples).not.toMatch(/header className="[^"]*px-6 py-6 sm:px-8/);
     expect(report).not.toMatch(/header className="[^"]*px-6 py-4/);
   });

@@ -1,6 +1,10 @@
 /**
  * Snapshot vs Strategy Guide — comparison rows for homepage + samples modal.
  * Structure: Best for → shared (star depth) → Guide-only → price.
+ *
+ * Keep shared + Guide-only labels in lockstep with SnapshotItemStack and
+ * GUIDE_PAGE_IDS in `components/report/SevenItemPages.tsx` (core page = the
+ * Snapshot stack; land / company / questions / negotiate = Guide-only tabs).
  */
 
 export type ReportCompareLang = 'en' | 'zh-TW' | 'zh-CN';
@@ -115,9 +119,9 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
 > = {
   best_for: null,
   shared: {
-    en: 'Stars = depth (out of 5). These three items are the Snapshot; the Guide includes them and goes deeper on fit.',
-    'zh-TW': '星星＝深度（滿分 5）。這三項就是適配快照；面試指南含這三項，履歷分析會再加深。',
-    'zh-CN': '星星＝深度（满分 5）。这三项就是适配快照；面试指南含这三项，简历分析会再加深。',
+    en: 'Stars = depth (out of 5). These four items are the Snapshot; the Guide includes them and unlocks resume adjustments.',
+    'zh-TW': '星星＝深度（滿分 5）。這四項就是適配快照；面試指南含這四項，履歷優化會解鎖調整建議。',
+    'zh-CN': '星星＝深度（满分 5）。这四项就是适配快照；面试指南含这四项，简历优化会解锁调整建议。',
   },
   guide_only: {
     en: 'Interview Guide only: personal pay landing, company & role review, web interview questions, and interview negotiation.',
@@ -223,12 +227,12 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '匹配度分析',
     },
     help: help(
-      'Score, Beagle Scale, fit summary, and apply advice in the first frame. Market pay, then role core. Missing keys and resume direction sit last. Guide unlocks the suggested direction.',
-      '匹配分數、藍寶米格魯、總結分析與應徵建議在第一框。其下市場薪資水準、職位核心解析；頁面最下為履歷缺少與優化建議。面試指南解鎖優化方向。',
-      '匹配分数、蓝宝米格鲁、总结分析与应征建议在第一框。其下市场薪资水准、职位核心解析；页面最下为简历缺少与优化建议。面试指南解锁优化方向。',
+      'Score, Beagle Scale, analysis summary, and apply advice. Market pay, role core, and resume advice are separate Snapshot blocks below.',
+      '匹配分數、藍寶米格魯、總結分析與應徵建議。市場薪資水準、職位核心解析、履歷優化建議是下面獨立的快照區塊。',
+      '匹配分数、蓝宝米格鲁、总结分析与应征建议。市场薪资水准、职位核心解析、简历优化建议是下面独立的快照区块。',
     ),
-    snapshot: t('Score, apply call, missing keys', '分數、應徵建議、缺少的關鍵', '分数、应征建议、缺少的关键', 4),
-    guide: t('Snapshot + resume direction', '快照內容 + 優化方向', '快照内容 + 优化方向', 5),
+    snapshot: t('Score, apply call, analysis summary', '分數、應徵建議、總結分析', '分数、应征建议、总结分析', 4),
+    guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
   },
   {
     section: 'shared',
@@ -259,6 +263,21 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     ),
     snapshot: t('Overview, must-haves, duties', '職位概述、條件、職責', '职位概述、条件、职责', 4),
     guide: t('Same Snapshot section', '同適配快照這一項', '同适配快照这一项', 4),
+  },
+  {
+    section: 'shared',
+    feature: {
+      en: 'Resume optimization advice',
+      'zh-TW': '履歷優化建議',
+      'zh-CN': '简历优化建议',
+    },
+    help: help(
+      'Gaps to improve plus matching adjustment advice. Snapshot lists the gaps; Interview Guide unlocks the adjustments.',
+      '待優化改善的缺口，以及對應調整建議。適配快照列出缺口；面試指南解鎖調整建議。',
+      '待优化改善的缺口，以及对应调整建议。适配快照列出缺口；面试指南解锁调整建议。',
+    ),
+    snapshot: t('Gaps to improve', '待優化改善', '待优化改善', 3),
+    guide: t('Gaps + adjustment advice', '待優化改善 + 調整建議', '待优化改善 + 调整建议', 5),
   },
   {
     section: 'guide_only',
@@ -318,7 +337,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '谈薪策略、问公司的问题，以及需要时的面试后信件。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Script, asks, follow-up note', '談薪說法、提問、面試後信', '谈薪说法、提问、面试后信'),
+    guide: t('Pay strategy, script, follow-up note', '談薪策略、開口稿、面試後信件', '谈薪策略、开口稿、面试后信件'),
   },
   // ── C. Price ──
   {

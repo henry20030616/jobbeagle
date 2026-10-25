@@ -52,13 +52,13 @@ function StarRating({
   const filled = Math.max(0, Math.min(max, Math.round(value)));
   return (
     <span
-      className="compare-star-row inline-flex shrink-0 flex-nowrap items-center gap-0.5"
+      className="compare-star-row inline-flex shrink-0 flex-nowrap items-center gap-[0.12em]"
       aria-label={`${filled} of ${max} stars`}
     >
       {Array.from({ length: max }, (_, i) => (
         <Star
           key={i}
-          className={`compare-star h-4 w-4 ${
+          className={`compare-star h-[1em] w-[1em] ${
             i < filled
               ? 'fill-amber-400 text-amber-400'
               : 'fill-transparent text-slate-600'
@@ -85,9 +85,9 @@ function CompareCell({
 
   if (typeof cell.stars === 'number') {
     return (
-      <span className="flex min-w-0 items-center gap-2">
+      <span className={`flex min-w-0 flex-wrap items-center gap-2 ${body}`}>
         <StarRating value={cell.stars} />
-        <span className={`min-w-0 text-slate-400 ${body}`}>{text}</span>
+        <span className="min-w-0 text-slate-400">{text}</span>
       </span>
     );
   }

@@ -42,6 +42,13 @@ describe('report-compare', () => {
       '匹配度分析',
       '市場薪資水準',
       '職位核心解析',
+      '履歷優化建議',
+    ]);
+    expect(shared.map((r) => r.feature.en)).toEqual([
+      'Fit analysis',
+      'Market pay',
+      'Role core',
+      'Resume optimization advice',
     ]);
     const guideOnly = REPORT_COMPARE_ROWS.filter((r) => r.section === 'guide_only');
     expect(guideOnly.map((r) => r.feature['zh-TW'])).toEqual([
@@ -58,7 +65,7 @@ describe('report-compare', () => {
     ]);
     expect(REPORT_COMPARE_ROWS.some((r) => r.feature.en === 'Live web search')).toBe(false);
     expect(shared[0]?.snapshot.text.en).not.toMatch(/no web/i);
-    expect(sections.filter((s) => s === 'shared').length).toBe(3);
+    expect(sections.filter((s) => s === 'shared').length).toBe(4);
     expect(sections.filter((s) => s === 'guide_only').length).toBe(4);
     expect(sections.filter((s) => s === 'meta').length).toBeGreaterThanOrEqual(1);
 
@@ -111,13 +118,53 @@ describe('report-compare', () => {
     expect(TABLE_SRC).not.toMatch(/text-right/);
     expect(TABLE_SRC).not.toMatch(/inline-flex flex-col gap-1/);
     expect(TABLE_SRC).toContain('inline-flex shrink-0 flex-nowrap items-center');
-    expect(TABLE_SRC).toContain('flex min-w-0 items-center gap-2');
+    expect(TABLE_SRC).toContain('flex min-w-0 flex-wrap items-center gap-2');
+    expect(TABLE_SRC).toContain('compare-star h-[1em] w-[1em]');
     expect(CSS_SRC).toMatch(
+      /\.compare-font-large \.compare-star \{[\s\S]*?width: 1em !important;/,
+    );
+    expect(CSS_SRC).not.toMatch(
       /\.compare-font-large \.compare-star \{[\s\S]*?width: 1\.15rem !important;/,
     );
     expect(CSS_SRC).not.toMatch(
       /\.compare-font-large \.compare-star \{[\s\S]*?width: 2\.5rem !important;/,
     );
+  });
+
+  it('insets the overlay table with PAGE_SHELL_GUTTER like /samples and /account', () => {
+    const modal = readFileSync(
+      join(process.cwd(), 'components/ReportCompareModal.tsx'),
+      'utf8',
+    );
+    expect(modal).toContain('PAGE_SHELL_GUTTER');
+    expect(modal).toContain('absolute inset-0');
+    expect(modal).not.toMatch(/inset-x-12/);
+    expect(modal).not.toMatch(/px-20 py-8 sm:px-32/);
+  });
+
+  it('keeps compare row titles aligned with current Snapshot / Guide sections', () => {
+    const pages = readFileSync(
+      join(process.cwd(), 'components/report/SevenItemPages.tsx'),
+      'utf8',
+    );
+    for (const title of [
+      '匹配度分析',
+      '市場薪資水準',
+      '職位核心解析',
+      '履歷優化建議',
+      '個人薪資落點',
+      '公司及職位評價',
+      '網路真實題目',
+      '面試談判建議',
+    ]) {
+      expect(pages).toContain(title);
+    }
+    const resume = REPORT_COMPARE_ROWS.find(
+      (r) => r.feature['zh-TW'] === '履歷優化建議',
+    );
+    expect(resume?.section).toBe('shared');
+    expect(resume?.snapshot.text['zh-TW']).toBe('待優化改善');
+    expect(resume?.guide.text['zh-TW']).toContain('調整建議');
   });
 
   it('keeps $3 / $9.99 in separate Snapshot and Guide cells', () => {
@@ -132,6 +179,9 @@ describe('report-compare', () => {
     expect(html).toContain('僅面試指南');
     expect(html).toContain('決定要不要投');
     expect(html).toContain('面試準備與談薪');
+    expect(html).toContain('履歷優化建議');
+    expect(html).toContain('待優化改善 + 調整建議');
+    expect(html).toContain('談薪策略、開口稿、面試後信件');
     expect(html).toContain('compare-section-title text-lg sm:text-xl font-bold');
     expect(html).toContain('compare-row-label text-base sm:text-lg font-medium');
     expect(html).toContain('compare-col-snapshot');
