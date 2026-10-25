@@ -232,10 +232,11 @@ export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-[90%] max-w-[90%] mx-auto min-w-0';
 
 /**
  * Guide 個人薪資落點 track (`PayRangeLine` compact, with target/ceiling markers).
- * Full width of the parent pay block, horizontally centered.
+ * Half of the parent pay block, horizontally centered in the section.
+ * Markers keep percent positions along this shorter track.
  * Do not attach this to the zoomed 98vw report shell — only the pay card.
  */
-export const PAY_RANGE_LINE_WIDTH = 'w-full mx-auto min-w-0';
+export const PAY_RANGE_LINE_WIDTH = 'w-1/2 mx-auto min-w-0';
 
 /**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,

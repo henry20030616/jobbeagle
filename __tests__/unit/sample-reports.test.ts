@@ -883,9 +883,9 @@ describe('seven-item report layout', () => {
     expect(html).toContain('data-pay-low');
     expect(html).toContain('data-pay-high');
     expect(html).not.toContain('>$145K – $190K<');
-    expect(html).toContain('w-full mx-auto min-w-0');
+    expect(html).toContain('w-1/2 mx-auto min-w-0');
+    expect(html).not.toContain('w-full mx-auto min-w-0');
     expect(html).not.toContain('max-w-[50%]');
-    expect(html).not.toContain('w-1/2');
     expect(html).toContain('資料來源');
     expect(html).toContain('Levels.fyi');
     expect(html).toContain('結構拆分');
@@ -956,9 +956,9 @@ describe('seven-item report layout', () => {
     expect(landHtml).not.toContain('>$145K – $190K<');
     expect(landHtml).toContain('data-pay-low');
     expect(landHtml).toContain('data-pay-high');
-    expect(landHtml).toContain('w-full mx-auto min-w-0');
+    expect(landHtml).toContain('w-1/2 mx-auto min-w-0');
+    expect(landHtml).not.toContain('w-full mx-auto min-w-0');
     expect(landHtml).not.toContain('max-w-[50%]');
-    expect(landHtml).not.toContain('w-1/2');
     expect(coreHtml).toContain('市場薪資水準');
     expect(coreHtml).toContain('職位核心解析');
     expect(coreHtml).not.toContain('個人目標');
