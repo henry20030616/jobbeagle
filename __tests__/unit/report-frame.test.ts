@@ -383,14 +383,16 @@ describe('report item heading scale', () => {
 });
 
 describe('pay-range widths', () => {
-  it('keeps Snapshot market in a right-half column and Guide land full width', () => {
+  it('centers Snapshot market in leftover space after the heading, Guide land full width', () => {
     expect(PAY_RANGE_SNAPSHOT_COLUMN).toBe(
-      'flex w-full min-w-0 justify-center md:ml-auto md:w-1/2',
+      'flex min-w-0 flex-1 justify-center',
     );
     expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-[90%] max-w-[90%] mx-auto min-w-0');
     expect(PAY_RANGE_LINE_WIDTH).toBe('w-full mx-auto min-w-0');
-    expect(PAY_RANGE_SNAPSHOT_COLUMN).toContain('md:w-1/2');
+    expect(PAY_RANGE_SNAPSHOT_COLUMN).toContain('flex-1');
     expect(PAY_RANGE_SNAPSHOT_COLUMN).toContain('justify-center');
+    expect(PAY_RANGE_SNAPSHOT_COLUMN).not.toContain('md:w-1/2');
+    expect(PAY_RANGE_SNAPSHOT_COLUMN).not.toContain('md:ml-auto');
     expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('mx-auto');
     expect(PAY_RANGE_SNAPSHOT_WIDTH).not.toContain('w-1/2');
     const pages = readFileSync(
@@ -401,8 +403,10 @@ describe('pay-range widths', () => {
     expect(pages).toContain('PAY_RANGE_SNAPSHOT_COLUMN');
     expect(pages).toContain('PAY_RANGE_SNAPSHOT_WIDTH');
     expect(pages).toContain('md:flex-row md:items-center');
+    expect(pages).toContain('flex shrink-0 flex-wrap items-baseline gap-x-2');
     expect(pages).toContain('space-y-8');
     expect(pages).toContain('bodyClassName="mt-8"');
+    expect(pages).not.toContain('md:w-1/2');
     expect(pages).not.toContain('PAY_RANGE_LINE_MARKET_WIDTH');
   });
 });

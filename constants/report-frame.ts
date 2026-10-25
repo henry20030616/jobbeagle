@@ -215,17 +215,17 @@ export const REPORT_SLIDE_SURFACE = `rounded-2xl ${REPORT_FRAME_BORDER} bg-slate
 export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
- * Snapshot / Guide page-1 市場薪資水準 — right-half column for the hero bar.
- * Heading stays left on the same row; this column is the right 50% and
- * centers its child so the track is not flush to the card edge.
+ * Snapshot / Guide page-1 市場薪資水準 — leftover column after the heading.
+ * Heading is shrink-0 on the same row; this column is flex-1 leftover and
+ * centers the existing track (not md:w-1/2 of the full row, not flush right).
  */
 export const PAY_RANGE_SNAPSHOT_COLUMN =
-  'flex w-full min-w-0 justify-center md:ml-auto md:w-1/2';
+  'flex min-w-0 flex-1 justify-center';
 
 /**
  * Snapshot / Guide page-1 市場薪資水準 track (`PayRangeLine` hero).
- * Slightly inset within `PAY_RANGE_SNAPSHOT_COLUMN` and centered — not
- * full-bleed of the right column, not stacked under the heading.
+ * Slightly inset within leftover `PAY_RANGE_SNAPSHOT_COLUMN` and centered —
+ * not full-bleed of leftover, not stacked under the heading.
  */
 export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-[90%] max-w-[90%] mx-auto min-w-0';
 

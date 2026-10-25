@@ -616,7 +616,10 @@ describe('seven-item report layout', () => {
     for (const html of [snapHtml, guideHtml]) {
       expect(html).toContain('data-pay-range="hero"');
       expect(html).not.toContain('data-pay-range="compact"');
-      expect(html).toContain('md:w-1/2');
+      expect(html).toContain('flex min-w-0 flex-1 justify-center');
+      expect(html).toContain('report-h2 flex shrink-0 flex-wrap items-baseline gap-x-2');
+      expect(html).not.toContain('md:w-1/2');
+      expect(html).not.toContain('md:ml-auto');
       expect(html).toContain('justify-center');
       expect(html).toContain('md:flex-row md:items-center');
       expect(html).toContain('w-[90%] max-w-[90%] mx-auto min-w-0');
@@ -870,7 +873,10 @@ describe('seven-item report layout', () => {
     expect(coreHtml).not.toContain('>$145K – $190K<');
     expect(coreHtml).toContain('data-pay-low');
     expect(coreHtml).toContain('data-pay-high');
-    expect(coreHtml).toContain('md:w-1/2');
+    expect(coreHtml).toContain('flex min-w-0 flex-1 justify-center');
+    expect(coreHtml).toContain('report-h2 flex shrink-0 flex-wrap items-baseline gap-x-2');
+    expect(coreHtml).not.toContain('md:w-1/2');
+    expect(coreHtml).not.toContain('md:ml-auto');
     expect(coreHtml).toContain('justify-center');
     expect(coreHtml).toContain('md:flex-row md:items-center');
     expect(coreHtml).toContain('w-[90%] max-w-[90%] mx-auto min-w-0');

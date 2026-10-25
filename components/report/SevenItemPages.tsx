@@ -1137,7 +1137,7 @@ function MarketBody({
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-6 pt-2 pb-2 md:flex-row md:items-center">
-        <p className={`${REPORT_H2} flex min-w-0 flex-wrap items-baseline gap-x-2 md:w-1/2`}>
+        <p className={`${REPORT_H2} flex shrink-0 flex-wrap items-baseline gap-x-2`}>
           <span>{copy.band}</span>
           {range ? <span className={BODY_COPY}> · {money}</span> : null}
         </p>
