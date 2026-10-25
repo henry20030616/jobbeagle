@@ -14,10 +14,14 @@ import {
 } from '@/constants/account-nav';
 import {
   PAGE_SHELL_GUTTER,
+  PAGE_SHELL_GUTTER_LEFT,
+  PAGE_SHELL_GUTTER_RIGHT,
   SAMPLE_RAIL_ICON,
   SAMPLE_RAIL_ITEM_GAP,
   SAMPLE_RAIL_ROW,
+  SAMPLE_RAIL_ROW_GUTTER_LEFT,
   SAMPLE_RAIL_SHELL,
+  SAMPLE_RAIL_SHELL_GUTTER,
   SAMPLE_RAIL_TEXT,
   SAMPLE_RAIL_WIDTH,
   SAMPLE_REPORT_TAB_ACTIVE,
@@ -80,6 +84,8 @@ describe('account function nav', () => {
     // Desktop rail↔panel gap is 3× the previous lg:gap-8 (2rem → 6rem). Mobile stays gap-6.
     expect(SAMPLE_RAIL_ROW).toContain('lg:gap-24');
     expect(SAMPLE_RAIL_ROW).toContain('gap-6');
+    expect(SAMPLE_RAIL_ROW).toContain(SAMPLE_RAIL_ROW_GUTTER_LEFT);
+    expect(SAMPLE_RAIL_SHELL).toContain(SAMPLE_RAIL_SHELL_GUTTER);
     expect(ACCOUNT_PAGE).toContain('SAMPLE_RAIL_ROW');
     expect(ACCOUNT_PAGE).not.toContain('lg:gap-8');
     expect(ACCOUNT_PAGE).not.toContain('我的帳號管理');
@@ -130,8 +136,15 @@ describe('account function nav', () => {
 
   it('matches homepage left/right gutters without a centered zoom island', () => {
     expect(PAGE_SHELL_GUTTER).toBe('px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]');
+    expect(PAGE_SHELL_GUTTER_LEFT).toBe(
+      'pl-[3.5vw] sm:pl-[4vw] lg:pl-[4vw] xl:pl-[4.5vw]',
+    );
+    expect(PAGE_SHELL_GUTTER_RIGHT).toBe(
+      'pr-[3.5vw] sm:pr-[4vw] lg:pr-[4vw] xl:pr-[4.5vw]',
+    );
     expect(HOMEPAGE).toContain(PAGE_SHELL_GUTTER);
-    expect(ACCOUNT_PAGE).toContain('PAGE_SHELL_GUTTER');
+    expect(ACCOUNT_PAGE).toContain('PAGE_SHELL_GUTTER_LEFT');
+    expect(ACCOUNT_PAGE).toContain('PAGE_SHELL_GUTTER_RIGHT');
     expect(ACCOUNT_PAGE).toContain('mx-0 w-full max-w-full');
     expect(ACCOUNT_PAGE).toContain('account-font-large');
     expect(ACCOUNT_PAGE).toContain('mode="fill"');

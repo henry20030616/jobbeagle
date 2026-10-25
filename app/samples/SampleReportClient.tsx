@@ -20,7 +20,8 @@ import {
   SAMPLE_NOTICE_SURFACE,
   SAMPLE_RAIL_ICON,
   SAMPLE_RAIL_TEXT,
-  PAGE_SHELL_GUTTER,
+  PAGE_SHELL_GUTTER_LEFT,
+  PAGE_SHELL_GUTTER_RIGHT,
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
   REPORT_SLIDE_DESIGN_WIDTH,
@@ -63,8 +64,8 @@ export default function SampleReportClient() {
   const guideLabel = reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, language);
 
   return (
-    <div className={`flex min-h-screen w-full min-w-0 flex-col bg-slate-950 text-slate-200 ${PAGE_SHELL_GUTTER}`}>
-      <header className="flex shrink-0 flex-wrap items-center justify-between gap-4 border-b border-slate-800 py-6">
+    <div className={`flex min-h-screen w-full min-w-0 flex-col bg-slate-950 text-slate-200 ${PAGE_SHELL_GUTTER_RIGHT}`}>
+      <header className={`flex shrink-0 flex-wrap items-center justify-between gap-4 border-b border-slate-800 py-6 ${PAGE_SHELL_GUTTER_LEFT}`}>
         <BrandLogo size="hero" showIcon />
         <div className="flex flex-wrap items-center justify-end gap-3">
           <LanguageSwitcher size="chrome" />

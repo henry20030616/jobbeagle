@@ -30,7 +30,11 @@ import type { CareerContext, MembershipTier, UserProfile } from '@/types';
 import { careerContextHasSignal } from '@/lib/career-context';
 import { FitStage } from '@/components/FitStage';
 import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
-import { PAGE_SHELL_GUTTER, SAMPLE_RAIL_ROW } from '@/constants/report-frame';
+import {
+  PAGE_SHELL_GUTTER_LEFT,
+  PAGE_SHELL_GUTTER_RIGHT,
+  SAMPLE_RAIL_ROW,
+} from '@/constants/report-frame';
 import AccountSectionNav from '@/components/AccountSectionNav';
 import {
   getAccountNavCopy,
@@ -831,9 +835,11 @@ export default function AccountPage() {
         className="w-full min-h-screen !justify-start !items-start"
       >
       <main
-        className={`mx-0 w-full max-w-full ${PAGE_SHELL_GUTTER} py-6 sm:py-10 space-y-8 sm:space-y-10`}
+        className={`mx-0 w-full max-w-full ${PAGE_SHELL_GUTTER_RIGHT} py-6 sm:py-10 space-y-8 sm:space-y-10`}
         data-fit-ref="account"
       >
+        <div className={`${PAGE_SHELL_GUTTER_LEFT} space-y-8 sm:space-y-10`}>
+        <div className={`${PAGE_SHELL_GUTTER_LEFT} space-y-8 sm:space-y-10`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <BrandLogo size="hero" showIcon />
           <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
@@ -866,11 +872,13 @@ export default function AccountPage() {
             <LoginButton redirectTo="/account" />
           </div>
         )}
+        </div>
+        </div>
 
         {!loading && signedIn && data && (
           <>
             {error && (
-              <p className="text-lg text-red-400" role="alert">
+              <p className={`${PAGE_SHELL_GUTTER_LEFT} text-lg text-red-400`} role="alert">
                 {error}
               </p>
             )}

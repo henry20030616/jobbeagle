@@ -18,7 +18,8 @@ type FunctionRailProps = {
 /**
  * Shared top-left function rail for /account, live /report, and /samples.
  * Card chrome lives on children via `sampleReportTabClass` — this is the
- * width, sticky position, and vertical gap only.
+ * width, sticky position, homepage left gutter (SAMPLE_RAIL_SHELL_GUTTER),
+ * and vertical gap only.
  */
 export default function FunctionRail({
   children,

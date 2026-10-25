@@ -16,7 +16,8 @@ import BrandLogo from '@/components/BrandLogo';
 import { ReportFitStage } from '@/components/ReportFitStage';
 import FunctionRail, { FunctionRailCheck } from '@/components/FunctionRail';
 import {
-  PAGE_SHELL_GUTTER,
+  PAGE_SHELL_GUTTER_LEFT,
+  PAGE_SHELL_GUTTER_RIGHT,
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
   SAMPLE_RAIL_ROW,
@@ -82,8 +83,8 @@ export default function ReportPage() {
   const chrome = strategy ? getGuideUiCopy(lang) : getSnapshotUiCopy(lang);
 
   return (
-    <div className={`min-h-screen w-full max-w-full bg-slate-950 text-slate-200 flex flex-col ${PAGE_SHELL_GUTTER}`}>
-      <div className="border-b border-slate-800/80 bg-slate-950 py-3 shrink-0">
+    <div className={`min-h-screen w-full max-w-full bg-slate-950 text-slate-200 flex flex-col ${PAGE_SHELL_GUTTER_RIGHT}`}>
+      <div className={`border-b border-slate-800/80 bg-slate-950 py-3 shrink-0 ${PAGE_SHELL_GUTTER_LEFT}`}>
         <div className="mx-auto w-full max-w-full flex flex-wrap items-center gap-2 sm:gap-3">
           <button type="button" onClick={handleNewAnalysis} className={REPORT_ACTION_BTN}>
             <Home className={REPORT_ACTION_ICON} aria-hidden />
@@ -96,7 +97,7 @@ export default function ReportPage() {
         </div>
       </div>
 
-      <header className="border-b border-slate-800 py-4 flex items-center justify-between shrink-0">
+      <header className={`border-b border-slate-800 py-4 flex items-center justify-between shrink-0 ${PAGE_SHELL_GUTTER_LEFT}`}>
         <BrandLogo size="nav" showIcon />
         <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
           {strategy
@@ -106,7 +107,7 @@ export default function ReportPage() {
       </header>
       <div
         className={`py-6 ${
-          strategy ? SAMPLE_RAIL_ROW : 'flex flex-col items-center'
+          strategy ? SAMPLE_RAIL_ROW : `flex flex-col items-center ${PAGE_SHELL_GUTTER_LEFT}`
         }`}
       >
         {strategy ? (
