@@ -23,6 +23,7 @@ import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
 import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-email';
 import { parseQuestionsSummary, type AnalysisPoint } from '@/lib/questions-summary';
+import { guideSalaryLand } from '@/lib/guide-report';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
@@ -1284,11 +1285,6 @@ function ResumeAdviceBody({
   );
 }
 
-function salaryLandFrom(report: LiteReport | FullReport) {
-  if (!('guide_modules' in report)) return undefined;
-  return report.guide_modules?.salary_land;
-}
-
 export function SnapshotItemStack({
   report,
   language = 'en',
@@ -1303,7 +1299,7 @@ export function SnapshotItemStack({
   const lang = normalizeReportLanguage(language);
   const copy = itemCopy(lang);
   const summaries = snapshotItemSummaries(report);
-  const salaryLand = salaryLandFrom(report);
+  const salaryLand = guideSalaryLand(report);
   return (
     <div className="space-y-4 px-5 py-4">
       <ItemBlock title={copy.fit}>
