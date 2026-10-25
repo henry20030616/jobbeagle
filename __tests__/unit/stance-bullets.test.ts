@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getSampleStrategyGuideReport } from '@/lib/sample-reports';
+import { splitLabeledFact } from '@/lib/score-summary';
 import { splitBuyerSellerStances, splitSentenceBullets } from '@/lib/stance-bullets';
 
 describe('splitSentenceBullets', () => {
@@ -46,22 +47,48 @@ describe('splitBuyerSellerStances', () => {
     });
   });
 
-  it('splits both Guide sample locales into two bullets per column', () => {
-    const zh = splitBuyerSellerStances(
-      getSampleStrategyGuideReport('zh-TW').guide_modules!.salary_land.buyer_seller,
+  it('splits four titled lines into two company and two candidate bullets', () => {
+    const split = splitBuyerSellerStances(
+      '招募狀態：職缺仍在公開招募，雇主有補位需求。\n首報空間：沒有第二份 offer，可維持中帶首報。\n履歷證據：SQL 與 Looker 將對帳週期縮短 28%。\n範圍未記載：ACH 退票未記載於履歷。',
     );
-    expect(zh.company).toHaveLength(2);
-    expect(zh.candidate).toHaveLength(2);
-    expect(zh.company[0]).toMatch(/公開招募|補位/);
-    expect(zh.candidate[0]).toMatch(/28%/);
-    expect(zh.candidate[1]).toMatch(/ACH/);
-
-    const en = splitBuyerSellerStances(
-      getSampleStrategyGuideReport('en').guide_modules!.salary_land.buyer_seller,
-    );
-    expect(en.company.length).toBeGreaterThanOrEqual(2);
-    expect(en.candidate.length).toBeGreaterThanOrEqual(2);
-    expect(en.company.join(' ')).toMatch(/posted|requisition/i);
-    expect(en.candidate.join(' ')).toMatch(/28%/);
+    expect(split.company).toEqual([
+      '招募狀態：職缺仍在公開招募，雇主有補位需求。',
+      '首報空間：沒有第二份 offer，可維持中帶首報。',
+    ]);
+    expect(split.candidate).toEqual([
+      '履歷證據：SQL 與 Looker 將對帳週期縮短 28%。',
+      '範圍未記載：ACH 退票未記載於履歷。',
+    ]);
   });
+
+  it('keeps a titled bullet intact when the gist has two sentences', () => {
+    expect(
+      splitBuyerSellerStances(
+        '招募狀態：職缺仍在公開招募。公開來源未顯示到職時程。\n履歷證據：對帳週期縮短 28%。ACH 未記載。',
+      ),
+    ).toEqual({
+      company: ['招募狀態：職缺仍在公開招募。公開來源未顯示到職時程。'],
+      candidate: ['履歷證據：對帳週期縮短 28%。ACH 未記載。'],
+    });
+  });
+
+  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+    'splits the Guide sample into titled bullets per column (%s)',
+    (lang) => {
+      const split = splitBuyerSellerStances(
+        getSampleStrategyGuideReport(lang).guide_modules!.salary_land.buyer_seller,
+      );
+      expect(split.company).toHaveLength(2);
+      expect(split.candidate).toHaveLength(2);
+      for (const bullet of [...split.company, ...split.candidate]) {
+        const { label, detail } = splitLabeledFact(bullet);
+        expect(label.length).toBeGreaterThan(0);
+        expect(label.length).toBeLessThanOrEqual(48);
+        expect(detail.length).toBeGreaterThan(0);
+      }
+      expect(split.company.join(' ')).toMatch(/posted|招募|招聘|vacante|प्रकाशित|منشور/i);
+      expect(split.candidate.join(' ')).toMatch(/28%/);
+      expect(split.candidate.join(' ')).toMatch(/ACH/);
+    },
+  );
 });

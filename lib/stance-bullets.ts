@@ -1,13 +1,21 @@
 /**
  * Split Interview Guide company / candidate stance copy into scannable bullets.
- * Model field is still one string (`salary_land.buyer_seller`): two unlabeled lines,
- * then sentences inside each line. Arrays are not in the JSON schema.
+ * Model field is still one string (`salary_land.buyer_seller`): four titled lines
+ * (company ×2, then candidate ×2), same 'Short title: gist' shape as pay_strategy.
+ * Older reports used two unlabeled lines; those still sentence-split. Arrays are
+ * not in the JSON schema.
  */
+
+import { splitLabeledFact } from '@/lib/score-summary';
 
 const SENTENCE_SPLIT = /(?<=[。！？؟।])\s*|(?<=[.!?])(?:\s+|$)/;
 
 function stripBulletPrefix(line: string): string {
   return line.replace(/^[-*•●]\s+/, '').trim();
+}
+
+function isTitledBullet(line: string): boolean {
+  return splitLabeledFact(line).detail.length > 0;
 }
 
 /** Newlines win; otherwise sentence/period split. Does not split $1.2K-style decimals. */
@@ -20,6 +28,10 @@ export function splitSentenceBullets(text: string): string[] {
     .filter(Boolean);
   const bullets: string[] = [];
   for (const chunk of chunks) {
+    if (isTitledBullet(chunk)) {
+      bullets.push(chunk);
+      continue;
+    }
     const sentences = chunk
       .split(SENTENCE_SPLIT)
       .map((item) => item.trim())
@@ -29,14 +41,25 @@ export function splitSentenceBullets(text: string): string[] {
   return bullets;
 }
 
-/** Line 1 = company stance; remaining lines = candidate stance. Each side → bullets. */
+function stanceLines(text: string): string[] {
+  return text
+    .split(/\n+/)
+    .map((line) => stripBulletPrefix(line))
+    .filter(Boolean);
+}
+
+/** Titled 4-line reports: first half company, second half candidate. Older 2-line unlabeled reports: line 1 vs the rest, then sentence-split. */
 export function splitBuyerSellerStances(text: string): {
   company: string[];
   candidate: string[];
 } {
   const trimmed = text.trim();
   if (!trimmed) return { company: [], candidate: [] };
-  const lined = trimmed.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  const lined = stanceLines(trimmed);
+  if (lined.length >= 2 && lined.every(isTitledBullet)) {
+    const mid = Math.ceil(lined.length / 2);
+    return { company: lined.slice(0, mid), candidate: lined.slice(mid) };
+  }
   if (lined.length >= 2) {
     return {
       company: splitSentenceBullets(lined[0] ?? ''),

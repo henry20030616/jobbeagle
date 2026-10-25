@@ -182,10 +182,16 @@ describe('sample reports', () => {
       getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale.split('\n'),
     ).toHaveLength(3);
     const stance = getSampleStrategyGuideReport('zh-TW').guide_modules!.salary_land.buyer_seller;
+    expect(stance.split('\n')).toHaveLength(4);
+    expect(stance.split('\n')[0]).toMatch(/^招募狀態：/);
     expect(stance.split('\n')[0]).toMatch(/公開招募|補位/);
+    expect(stance.split('\n')[1]).toMatch(/^首報空間：/);
+    expect(stance.split('\n')[2]).toMatch(/^履歷證據：/);
+    expect(stance.split('\n')[3]).toMatch(/^範圍未記載：/);
     expect(stance).not.toMatch(/還沒補上|也可以繼續等|需要人/);
     expect(modules!.salary_land.buyer_seller).not.toMatch(/keep waiting|need someone/i);
     expect(modules!.salary_land.buyer_seller).toMatch(/28%/);
+    expect(modules!.salary_land.buyer_seller.split('\n')[0]).toMatch(/^Seat still posted:/);
     const stanceBullets = splitBuyerSellerStances(stance);
     expect(stanceBullets.company).toHaveLength(2);
     expect(stanceBullets.candidate).toHaveLength(2);
@@ -638,6 +644,13 @@ describe('seven-item report layout', () => {
     expect(html).toContain('結構拆分');
     expect(html).not.toContain('已拿到的權利');
     expect(html).not.toContain('總結分析');
+    expect(html).toContain('公司立場');
+    expect(html).toContain('求職者立場');
+    expect(html).toContain('招募狀態');
+    expect(html).toContain('首報空間');
+    expect(html).toContain('履歷證據');
+    expect(html).toContain('範圍未記載');
+    expect(html).toContain('font-bold text-blue-300');
     expect(html.split('border-2 border-blue-500').length - 1).toBe(3);
   });
 

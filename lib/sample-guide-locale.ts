@@ -7,7 +7,7 @@ export type SampleGuideNarrative = {
   behavioral: string[];
   rewrites: GuideResumeRewrite[];
   rationale: string;
-  /** Two unlabeled lines (company, then candidate). The Guide UI sentence-splits each line into 關鍵條件-style bullets. */
+  /** Four titled lines (company ×2, then candidate ×2). Same 短標題：gist shape as pay_strategy. */
   buyer_seller: string;
   levelsTitle: string;
   h1bWageTitle: string;
@@ -89,7 +89,7 @@ const en: SampleGuideNarrative = {
   rationale:
     'Target: $168K. US remote Senior Business Analyst band is about $145K–$190K; SQL/Looker cut reconciliation cycle time 28%, ACH returns ownership is only adjacent, so the number stays mid-band.\nCeiling: $185K. No Staff-level scope and no second offer.\nMix: $145K base, about $12K a year of equity, $11K bonus. Equity and bonus are a target mix, not guaranteed or already-earned pay.',
   buyer_seller:
-    'The requisition is still posted, so the employer has an open seat to fill, but public sources cite no start deadline or hiring freeze. With no competing offer in play, they can hold a mid-band first offer and keep screening.\nThe evidenced ask is a 28% reconciliation cycle-time cut with SQL and Looker. ACH returns ownership is not on the resume and cannot be treated as completed scope in negotiation.',
+    'Seat still posted: The requisition is still posted, so the employer has an open seat to fill, but public sources cite no start deadline or hiring freeze.\nFirst-offer room: With no competing offer in play, they can hold a mid-band first offer and keep screening.\nResume proof: The evidenced ask is a 28% reconciliation cycle-time cut with SQL and Looker.\nScope not on resume: ACH returns ownership is not on the resume and cannot be treated as completed scope in negotiation.',
   levelsTitle: 'Levels.fyi — Business Analyst',
   h1bWageTitle: 'H-1B wage data',
   culture: 'Public reviews describe a written, remote-friendly ops culture with tight cutoff deadlines.',
@@ -184,7 +184,7 @@ const zhTW: SampleGuideNarrative = {
   rationale:
     '目標價：$168K。美國遠端 Senior Business Analyst 市場帶約 $145K–$190K；履歷可證 SQL／Looker 將對帳週期縮短 28%，ACH 退票僅相鄰，故不站上緣。\n天花板：$185K。沒有 Staff 級範圍，也沒有第二份 offer。\n結構：底薪 $145K、股票約 $12K／年、獎金 $11K。股票與獎金為目標總薪酬的結構拆分，實際以錄取條件為準。',
   buyer_seller:
-    '職缺仍在公開招募，雇主有補位需求，但公開來源未顯示到職時程或人力緊縮。在沒有第二份競爭 offer 的情況下，雇主可維持中帶首報、繼續篩選。\n履歷可主張的證據是以 SQL 與 Looker 將對帳週期縮短 28%。ACH 退票擁有權未記載於履歷，不得在談判中列為已完成的工作範圍。',
+    '招募狀態：職缺仍在公開招募，雇主有補位需求，但公開來源未顯示到職時程或人力緊縮。\n首報空間：在沒有第二份競爭 offer 的情況下，雇主可維持中帶首報、繼續篩選。\n履歷證據：履歷可主張的證據是以 SQL 與 Looker 將對帳週期縮短 28%。\n範圍未記載：ACH 退票擁有權未記載於履歷，不得在談判中列為已完成的工作範圍。',
   levelsTitle: 'Levels.fyi — Business Analyst',
   h1bWageTitle: 'H-1B 薪資資料',
   culture: '公開評價描述的是重視書面、可遠端的營運文化，截止時間很緊。',
@@ -277,7 +277,7 @@ const zhCN: SampleGuideNarrative = {
   rationale:
     '目标价：$168K。美国远程 Senior Business Analyst 市场带约 $145K–$190K；简历可证 SQL／Looker 将对账周期缩短 28%，ACH 退票仅相邻，故不站上沿。\n天花板：$185K。没有 Staff 级范围，也没有第二份 offer。\n结构：底薪 $145K、股票约 $12K／年、奖金 $11K。股票与奖金为目标总薪酬的结构拆分，实际以录取条件为准。',
   buyer_seller:
-    '职位仍在公开招聘，雇主有补位需求，但公开来源未显示到职时程或人力紧缩。在没有第二份竞争 offer 的情况下，雇主可维持中带首报、继续筛选。\n简历可主张的证据是以 SQL 与 Looker 将对账周期缩短 28%。ACH 退票所有权未记载于简历，不得在谈判中列为已完成的工作范围。',
+    '招聘状态：职位仍在公开招聘，雇主有补位需求，但公开来源未显示到职时程或人力紧缩。\n首报空间：在没有第二份竞争 offer 的情况下，雇主可维持中带首报、继续筛选。\n简历证据：简历可主张的证据是以 SQL 与 Looker 将对账周期缩短 28%。\n范围未记载：ACH 退票所有权未记载于简历，不得在谈判中列为已完成的工作范围。',
   levelsTitle: 'Levels.fyi — Business Analyst',
   h1bWageTitle: 'H-1B 薪资资料',
   culture: '公开评价描述的是重视书面、可远程的运营文化，截止时间很紧。',
@@ -370,7 +370,7 @@ const es: SampleGuideNarrative = {
   rationale:
     'Objetivo: $168K. Banda de Senior Business Analyst remoto en EE. UU. ~$145K–$190K; el CV prueba un recorte del 28% en conciliación con SQL y Looker, y las devoluciones ACH solo son adyacentes, así que queda a mitad de banda.\nTecho: $185K. No hay alcance Staff ni una segunda oferta.\nMix: base $145K, unos $12K al año en acciones, bono $11K. Acciones y bono son un mix objetivo, no retribución garantizada ni ya consolidada.',
   buyer_seller:
-    'La vacante sigue publicada, así que el empleador tiene un puesto por cubrir, pero las fuentes públicas no citan fecha de incorporación ni congelación de contrataciones. Sin una segunda oferta en juego, puede mantener una primera oferta a mitad de banda y seguir filtrando.\nEl hecho acreditado es un recorte del 28% en el ciclo de conciliación con SQL y Looker. La propiedad de devoluciones ACH no figura en el CV y no puede presentarse en la negociación como alcance ya ejecutado.',
+    'Vacante publicada: La vacante sigue publicada, así que el empleador tiene un puesto por cubrir, pero las fuentes públicas no citan fecha de incorporación ni congelación de contrataciones.\nPrimera oferta: Sin una segunda oferta en juego, puede mantener una primera oferta a mitad de banda y seguir filtrando.\nPrueba del CV: El hecho acreditado es un recorte del 28% en el ciclo de conciliación con SQL y Looker.\nAlcance no en el CV: La propiedad de devoluciones ACH no figura en el CV y no puede presentarse en la negociación como alcance ya ejecutado.',
   levelsTitle: 'Levels.fyi — Business Analyst',
   h1bWageTitle: 'Datos salariales H-1B',
   culture: 'Las reseñas públicas describen una cultura de operaciones por escrito, compatible con remoto y con cortes muy ajustados.',
@@ -465,7 +465,7 @@ const hi: SampleGuideNarrative = {
   rationale:
     'लक्ष्य: $168K। अमेरिका में दूरस्थ Senior Business Analyst पट्टी ~$145K–$190K; SQL/Looker से मिलान चक्र −28%, ACH रिटर्न केवल आसन्न, इसलिए मध्य पट्टी।\nछत: $185K। Staff दायरा नहीं, दूसरा ऑफ़र नहीं।\nमिश्रण: आधार $145K, ~$12K/वर्ष इक्विटी, बोनस $11K। इक्विटी और बोनस लक्ष्य मिश्रण हैं, गारंटीशुदा या पहले से अर्जित वेतन नहीं।',
   buyer_seller:
-    'पद अभी प्रकाशित है, इसलिए नियोक्ता के पास भरने वाली सीट है, लेकिन सार्वजनिक स्रोतों में ज्वॉइन की समयसीमा या हायरिंग फ्रीज नहीं है। बिना दूसरे ऑफ़र के वे मिड-बैंड पहली पेशकश रख सकते हैं और स्क्रीनिंग जारी रख सकते हैं।\nसिद्ध माँग SQL और Looker से मिलान चक्र में 28% की कमी है। रिज़्यूमे में ACH रिटर्न की मालिकी नहीं है, और इसे बातचीत में पूरा हो चुका दायरा नहीं माना जा सकता।',
+    'पद अभी प्रकाशित: पद अभी प्रकाशित है, इसलिए नियोक्ता के पास भरने वाली सीट है, लेकिन सार्वजनिक स्रोतों में ज्वॉइन की समयसीमा या हायरिंग फ्रीज नहीं है।\nपहली पेशकश: बिना दूसरे ऑफ़र के वे मिड-बैंड पहली पेशकश रख सकते हैं और स्क्रीनिंग जारी रख सकते हैं।\nरिज़्यूमे प्रमाण: सिद्ध माँग SQL और Looker से मिलान चक्र में 28% की कमी है।\nदायरा दर्ज नहीं: रिज़्यूमे में ACH रिटर्न की मालिकी नहीं है, और इसे बातचीत में पूरा हो चुका दायरा नहीं माना जा सकता।',
   levelsTitle: 'Levels.fyi — Business Analyst',
   h1bWageTitle: 'H-1B वेतन डेटा',
   culture: 'सार्वजनिक समीक्षाएँ लिखित, दूरस्थ-अनुकूल संचालन संस्कृति बताती हैं, जिसमें कटऑफ बहुत कड़े हैं।',
@@ -559,7 +559,7 @@ const ar: SampleGuideNarrative = {
   rationale:
     'الهدف: $168K. نطاق Senior Business Analyst عن بُعد في الولايات المتحدة ~$145K–$190K؛ اختصار المطابقة 28% بـ SQL/Looker، وملكية مرتجعات ACH مجاورة فقط، فيبقى الرقم في منتصف النطاق.\nالسقف: $185K. لا نطاق Staff ولا عرض ثانٍ.\nالتركيبة: أساس $145K، نحو $12K سنوياً أسهماً، مكافأة $11K. الأسهم والمكافأة توزيع مستهدف لإجمالي الأجر، وليست أجراً مضموناً أو مكتسباً.',
   buyer_seller:
-    'الإعلان ما يزال منشوراً، فلصاحب العمل مقعد شاغر، لكن المصادر العامة لا تذكر موعد مباشرة أو تجميداً للتوظيف. من دون عرض منافس يمكنه الإبقاء على عرض أول في منتصف النطاق ومواصلة الفرز.\nالمطلب المثبت هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker. ملكية مرتجعات ACH ليست في السيرة ولا يجوز معاملتها في التفاوض كنطاق منجز.',
+    'المقعد منشور: الإعلان ما يزال منشوراً، فلصاحب العمل مقعد شاغر، لكن المصادر العامة لا تذكر موعد مباشرة أو تجميداً للتوظيف.\nالعرض الأول: من دون عرض منافس يمكنه الإبقاء على عرض أول في منتصف النطاق ومواصلة الفرز.\nدليل السيرة: المطلب المثبت هو اختصار زمن المطابقة بنسبة 28% باستخدام SQL وLooker.\nنطاق غير وارد: ملكية مرتجعات ACH ليست في السيرة ولا يجوز معاملتها في التفاوض كنطاق منجز.',
   levelsTitle: 'Levels.fyi — Business Analyst',
   h1bWageTitle: 'بيانات أجور H-1B',
   culture: 'تصف المراجعات العامة ثقافة عمليات مكتوبة وصديقة للعمل عن بُعد، مع مواعيد قطع ضيقة.',

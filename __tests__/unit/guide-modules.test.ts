@@ -18,6 +18,7 @@ import {
   QUESTION_ANSWER_PROMPT,
   QUESTION_RETRIEVAL_PROMPT,
   REWRITE_MODULE_PROMPT,
+  SALARY_MODULE_PROMPT,
 } from '@/lib/prompts/guide-modules';
 import type { GuideInterviewBank, GuideQuestion } from '@/types';
 import { isCitableSourceUrl } from '@/lib/provenance';
@@ -101,6 +102,15 @@ describe('guide module routes', () => {
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not invent facts or dollars');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix a bullet title');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix titles onto the questions');
+  });
+
+  it('asks salary buyer_seller bullets for the same 短標題：gist shape', () => {
+    expect(SALARY_MODULE_PROMPT).toContain('Short title: gist then body');
+    expect(SALARY_MODULE_PROMPT).toContain('短標題：gist');
+    expect(SALARY_MODULE_PROMPT).toContain('數據要求：公司需要有五年數據處理經驗');
+    expect(SALARY_MODULE_PROMPT).toContain('Exactly four newline-separated lines');
+    expect(SALARY_MODULE_PROMPT).toContain('招募狀態');
+    expect(SALARY_MODULE_PROMPT).not.toContain('with no labels');
   });
 
   it('labels the questions summary process line as Hiring process / 招募流程', () => {

@@ -684,6 +684,7 @@ export interface GuideModules {
     bonus: string | null;
     /** Why the target, ceiling, and base / equity / bonus split are these numbers. */
     rationale: string;
+    /** Four 短標題：gist lines: company ×2, then candidate ×2. */
     buyer_seller: string;
     sources: GuideSource[];
   };

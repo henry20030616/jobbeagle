@@ -317,7 +317,7 @@ export function parseSalaryLand(raw: unknown): GuideModules['salary_land'] | nul
     equity: asString(row.equity).slice(0, 80) || null,
     bonus: asString(row.bonus).slice(0, 80) || null,
     rationale: asString(row.rationale).slice(0, 1200),
-    buyer_seller: asString(row.buyer_seller).slice(0, 800),
+    buyer_seller: asString(row.buyer_seller).slice(0, 1200),
     sources: sources(row.sources),
   };
 }
