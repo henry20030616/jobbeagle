@@ -36,8 +36,12 @@ const HOMEPAGE_STEP_BODY_TYPE =
 
 const JD_PROMPT_TYPE = `upload-prompt ${HOMEPAGE_STEP_BODY_TYPE}`;
 
-/** Compact Step 1 paste — same class/size as step-2 `.upload-prompt` (2xl:text-4xl → --type-step). */
-const JD_PROMPT_TYPE_COMPACT = `jd-paste-prompt ${JD_PROMPT_TYPE}`;
+/**
+ * Compact Step 1 paste. Phone floor stays below mobile step titles (`text-base`).
+ * lg+ keeps 2xl:text-4xl so homepage-font-large still maps desktop to --type-step.
+ */
+const JD_PROMPT_TYPE_COMPACT =
+  'jd-paste-prompt upload-prompt text-xs leading-snug font-bold lg:text-2xl xl:text-3xl 2xl:text-4xl';
 
 /**
  * Progressive job-input surface: plain JD, public ATS URL, or blocked-board URL.

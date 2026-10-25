@@ -19,6 +19,9 @@ describe('homepage prompt type scale', () => {
     expect(input).toContain('jd-paste-prompt');
     expect(input).toContain('JD_PROMPT_TYPE_COMPACT');
     expect(input).toContain('compact ? JD_PROMPT_TYPE_COMPACT : JD_PROMPT_TYPE');
+    expect(input).toContain(
+      "'jd-paste-prompt upload-prompt text-xs leading-snug font-bold lg:text-2xl xl:text-3xl 2xl:text-4xl'",
+    );
     expect(input).not.toMatch(/jd-paste-prompt text-sm/);
     expect(input).toContain('min-h-[16rem]');
     expect(input).toContain('overflow-hidden');
@@ -47,8 +50,12 @@ describe('homepage prompt type scale', () => {
     expect(form).toMatch(/STEP_PROMPT_TYPE[\s\S]{0,80}snapshotBlurb/);
     expect(form).toMatch(/STEP_PROMPT_TYPE[\s\S]{0,80}strategyBlurb/);
     expect(form).toMatch(/report-choice-title[^"]*text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white/);
-    expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.snapshotBlurb\}/);
-    expect(mobile).toMatch(/upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">\{t\.strategyBlurb\}/);
+    expect(mobile).toContain(
+      'upload-prompt whitespace-normal ${MOBILE_STEP_BODY} text-indigo-100`}>{t.snapshotBlurb}',
+    );
+    expect(mobile).toContain(
+      'upload-prompt whitespace-normal ${MOBILE_STEP_BODY} text-indigo-100`}>{t.strategyBlurb}',
+    );
   });
 
   it('sizes the step-4 launch label with the same report-choice-title type as 適配快照', () => {

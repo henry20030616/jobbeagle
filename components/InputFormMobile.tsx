@@ -33,9 +33,11 @@ import BrandLogo from '@/components/BrandLogo';
 // Mobile-specific constants (NO responsive classes) - Ultra compact v2
 const MOBILE_CONTAINER = 'w-full space-y-3 px-3 py-4';
 const MOBILE_STEP_CARD = 'rounded-xl border border-slate-600 bg-slate-800/80 p-3 space-y-2.5 shadow-lg';
-/** Same type size as each 四大優點 feature title (`text-xs`). */
+/** Advantage-chip titles only — not step 1–4 headings. */
 const MOBILE_TITLE_TYPE = 'homepage-title-type text-xs';
-const MOBILE_STEP_TITLE = `step-title flex items-center gap-2 ${MOBILE_TITLE_TYPE} font-bold text-white`;
+/** Step 1–4 headings outrank card body (`MOBILE_STEP_BODY` / `text-xs`). */
+const MOBILE_STEP_TITLE = 'step-title flex items-center gap-2 text-base font-bold leading-snug text-white';
+const MOBILE_STEP_BODY = 'text-xs leading-snug';
 const MOBILE_STEP_BADGE = 'h-5 w-1 rounded-full shrink-0';
 const MOBILE_BUTTON_PRIMARY =
   'launch-submit w-full py-4 rounded-xl text-white transition-all hover:text-white active:scale-[0.98] disabled:text-white disabled:opacity-100';
@@ -549,7 +551,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           {extensionCapture ? (
             <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
               <Puzzle className="h-5 w-5 shrink-0 text-emerald-400" />
-              <span className="text-base text-emerald-300 font-bold truncate">
+              <span className={`${MOBILE_STEP_BODY} text-emerald-300 font-bold truncate`}>
                 {zh ? '外掛已抓取 ✓' : 'Captured ✓'}
                 {(() => {
                   const parts = [extensionCapture.company_name, extensionCapture.job_title].filter(
@@ -655,8 +657,8 @@ const InputFormMobile: React.FC<InputFormProps> = ({
           {!resume ? (
             <label className="block w-full min-h-[100px] border-2 border-dashed border-slate-600 rounded-lg p-3 text-left cursor-pointer hover:bg-slate-700/30 transition-colors">
               <Upload className="w-6 h-6 mb-1.5 text-slate-400" />
-              <p className="text-sm font-bold text-slate-400 mb-0.5">{t.upload}</p>
-              <p className="text-sm font-bold text-slate-400 leading-tight">{t.uploadSupport}</p>
+              <p className={`${MOBILE_STEP_BODY} font-bold text-slate-400 mb-0.5`}>{t.upload}</p>
+              <p className={`${MOBILE_STEP_BODY} font-bold text-slate-400`}>{t.uploadSupport}</p>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -672,8 +674,8 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   <FileText className="h-4 w-4 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-white truncate">{resume.fileName}</p>
-                  <p className="text-xs text-indigo-300">✓ {zh ? '已準備' : 'Ready'}</p>
+                  <p className={`${MOBILE_STEP_BODY} font-bold text-white truncate`}>{resume.fileName}</p>
+                  <p className={`${MOBILE_STEP_BODY} text-indigo-300`}>✓ {zh ? '已準備' : 'Ready'}</p>
                 </div>
                 <button
                   type="button"
@@ -687,7 +689,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                 type="button"
                 onClick={handleManualSave}
                 disabled={isSaving}
-                className={`inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-base font-bold transition-all ${
+                className={`inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 ${MOBILE_STEP_BODY} font-bold transition-all ${
                   isSaving
                     ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400/50'
                     : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
@@ -740,7 +742,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="w-full text-left"
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <p className="flex items-center gap-1.5 text-sm font-bold text-white">
+                    <p className={`flex items-center gap-1.5 ${MOBILE_STEP_BODY} font-bold text-white`}>
                       <Camera className="h-4 w-4 shrink-0 text-indigo-100" aria-hidden />
                       {reportLabel(REPORT_CODES.JOB_FIT_SNAPSHOT, currentLanguage)}
                     </p>
@@ -757,7 +759,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       ) : null}
                     </span>
                   </div>
-                  <p className="upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">{t.snapshotBlurb}</p>
+                  <p className={`upload-prompt whitespace-normal ${MOBILE_STEP_BODY} text-indigo-100`}>{t.snapshotBlurb}</p>
                 </button>
               </div>
 
@@ -775,7 +777,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="w-full text-left"
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <p className="flex items-center gap-1.5 text-sm font-bold text-white">
+                    <p className={`flex items-center gap-1.5 ${MOBILE_STEP_BODY} font-bold text-white`}>
                       <Sparkles className="h-4 w-4 shrink-0 text-indigo-100" aria-hidden />
                       {reportLabel(REPORT_CODES.INTERVIEW_STRATEGY_GUIDE, currentLanguage)}
                     </p>
@@ -792,7 +794,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       ) : null}
                     </span>
                   </div>
-                  <p className="upload-prompt whitespace-normal text-sm leading-snug text-indigo-100">{t.strategyBlurb}</p>
+                  <p className={`upload-prompt whitespace-normal ${MOBILE_STEP_BODY} text-indigo-100`}>{t.strategyBlurb}</p>
                 </button>
               </div>
 
@@ -800,7 +802,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                 href="/samples"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-600 bg-slate-900/40 px-3 py-2 text-sm font-semibold text-slate-100 hover:border-slate-500 transition-colors"
+                className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-600 bg-slate-900/40 px-3 py-2 ${MOBILE_STEP_BODY} font-semibold text-slate-100 hover:border-slate-500 transition-colors`}
               >
                 <FileText className="h-9 w-9 shrink-0 text-indigo-300" aria-hidden />
                 {t.sampleLink}

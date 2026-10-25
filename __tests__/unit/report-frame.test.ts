@@ -214,7 +214,11 @@ describe('homepage step-header pills', () => {
 
     expect(mobile).toContain('step-header-pill');
     expect(mobile).toContain('homepage-title-type text-xs');
-    expect(mobile).toMatch(/MOBILE_STEP_TITLE = `step-title[\s\S]*?text-white/);
+    expect(mobile).toContain(
+      "const MOBILE_STEP_TITLE = 'step-title flex items-center gap-2 text-base font-bold leading-snug text-white'",
+    );
+    expect(mobile).toContain("const MOBILE_STEP_BODY = 'text-xs leading-snug'");
+    expect(mobile).not.toMatch(/MOBILE_STEP_TITLE = [`'][^`']*\$\{MOBILE_TITLE_TYPE\}/);
     expect(mobile).not.toContain('text-white/90');
     expect(mobile).not.toContain('text-[1.125rem]');
     expect(mobile).toContain("Puzzle className=\"h-[1em] w-[1em] shrink-0\"");
@@ -394,12 +398,15 @@ describe('report item heading scale', () => {
 });
 
 describe('pay-range widths', () => {
-  it('centers Snapshot market in leftover space after the heading, Guide land full width', () => {
+  it('centers Snapshot market in leftover space after the heading, Guide land half width', () => {
     expect(PAY_RANGE_SNAPSHOT_COLUMN).toBe(
       'flex min-w-0 flex-1 justify-center',
     );
     expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-[90%] max-w-[90%] mx-auto min-w-0');
-    expect(PAY_RANGE_LINE_WIDTH).toBe('w-full mx-auto min-w-0');
+    expect(PAY_RANGE_LINE_WIDTH).toBe('w-1/2 mx-auto min-w-0');
+    expect(PAY_RANGE_LINE_WIDTH).toContain('mx-auto');
+    expect(PAY_RANGE_LINE_WIDTH).not.toContain('w-full');
+
     expect(PAY_RANGE_SNAPSHOT_COLUMN).toContain('flex-1');
     expect(PAY_RANGE_SNAPSHOT_COLUMN).toContain('justify-center');
     expect(PAY_RANGE_SNAPSHOT_COLUMN).not.toContain('md:w-1/2');

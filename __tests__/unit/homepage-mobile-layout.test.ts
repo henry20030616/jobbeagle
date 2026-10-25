@@ -73,4 +73,19 @@ describe('homepage mobile layout guards', () => {
     expect(input).not.toMatch(/absolute inset-0[^\n]*overflow-visible/);
     expect(mobile).toMatch(/language !== currentLanguage/);
   });
+
+  it('keeps mobile step titles larger than step-card body copy', () => {
+    const mobile = read('components/InputFormMobile.tsx');
+    const input = read('components/SmartInputArea.tsx');
+
+    expect(mobile).toContain(
+      "const MOBILE_STEP_TITLE = 'step-title flex items-center gap-2 text-base font-bold leading-snug text-white'",
+    );
+    expect(mobile).toContain("const MOBILE_STEP_BODY = 'text-xs leading-snug'");
+    expect(mobile).toContain('homepage-title-type text-xs');
+    expect(mobile).not.toMatch(/MOBILE_STEP_TITLE = [`'][^`']*\$\{MOBILE_TITLE_TYPE\}/);
+    expect(mobile).toMatch(/className=\{MOBILE_STEP_TITLE\}/);
+    expect(mobile).toMatch(/\$\{MOBILE_STEP_BODY\}/);
+    expect(input).toContain('text-xs leading-snug font-bold lg:text-2xl');
+  });
 });
