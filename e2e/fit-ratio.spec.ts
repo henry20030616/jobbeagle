@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 
 /**
  * FitStage ratio acceptance — proportions must stay consistent across viewports.
- * Shorts requires NEXT_PUBLIC_SHORTS_ENABLED=true (dev server / built with flag).
+ * Shorts is on unless NEXT_PUBLIC_SHORTS_ENABLED=false (dev server / built with flag).
  */
 
 const VIEWPORTS = [
@@ -88,7 +88,7 @@ test.describe('FitStage ratios', () => {
 
     // Frozen → redirected home; skip suite
     if (!page.url().includes('/shorts')) {
-      test.skip(true, 'Shorts frozen (NEXT_PUBLIC_SHORTS_ENABLED≠true)');
+      test.skip(true, 'Shorts frozen (NEXT_PUBLIC_SHORTS_ENABLED=false)');
       return;
     }
 

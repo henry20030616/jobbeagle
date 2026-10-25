@@ -10,9 +10,10 @@ test.describe('Smoke — core pages load', () => {
     ).toBeVisible({ timeout: 15_000 });
   });
 
-  test('shorts is frozen by default (redirect home)', async ({ page }) => {
+  test('shorts feed loads', async ({ page }) => {
     await page.goto('/shorts');
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/shorts/);
+    await expect(page.getByText('Shorts').first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('career context intro page renders', async ({ page }) => {
@@ -38,8 +39,9 @@ test.describe('Smoke — core pages load', () => {
     await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10_000 });
   });
 
-  test('employer routes frozen by default', async ({ page }) => {
+  test('employer login page loads', async ({ page }) => {
     await page.goto('/employer/login');
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/employer\/login/);
+    await expect(page.locator('body')).toContainText(/Employer Login|企業會員登入|企业会员登录/i);
   });
 });

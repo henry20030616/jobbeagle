@@ -81,7 +81,7 @@ Implemented in repo:
 - Privacy/Terms updated for extension whitelist + CCPA hard delete
 - Rate limit on analyze + extension-capture (Redis or memory fallback)
 - Account delete clears reports + Shorts storage folders
-- Shorts frozen unless `NEXT_PUBLIC_SHORTS_ENABLED=true`
+- Shorts enabled unless `NEXT_PUBLIC_SHORTS_ENABLED=false`
 - Stripe package/`lib/stripe.ts` removed
 - Web Store listing draft: `browser-extension/STORE_LISTING.md`
 

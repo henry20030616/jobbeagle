@@ -2,19 +2,17 @@
 
 /**
  * Shorts / employer video recruiting surface.
- * Temporarily frozen (2026-10-23) so the analyze funnel stays primary.
- * Restore with: return process.env.NEXT_PUBLIC_SHORTS_ENABLED === 'true';
+ * Enabled by default. Set NEXT_PUBLIC_SHORTS_ENABLED=false to freeze
+ * (middleware then redirects /shorts, /employer, and /api/shorts home).
  */
 export function isShortsEnabled(): boolean {
-  return false;
+  return process.env.NEXT_PUBLIC_SHORTS_ENABLED !== 'false';
 }
 
 /**
  * Homepage "Explore Job Shorts" promo banner.
- * Temporarily hidden (2026-07) so the analyze funnel stays primary.
- * When you resume detailed Shorts development, set this to `true`
- * (or env-gate it) and confirm the banner on `app/page.tsx` is visible again.
+ * Restored 2026-10-25 so the /shorts entry is visible from the homepage.
  */
 export function isHomepageShortsBannerEnabled(): boolean {
-  return false;
+  return true;
 }

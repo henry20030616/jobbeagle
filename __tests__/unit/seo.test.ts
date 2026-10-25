@@ -28,7 +28,7 @@ describe('seo helpers', () => {
     expect(urls).not.toContain(`${SITE_URL}/confirm`);
     expect(urls).not.toContain(`${SITE_URL}/account`);
     expect(urls).not.toContain(`${SITE_URL}/report`);
-    expect(urls).not.toContain(`${SITE_URL}/shorts`);
+    expect(urls).toContain(`${SITE_URL}/shorts`);
   });
 
   it('emits Organization + SoftwareApplication JSON-LD', () => {
