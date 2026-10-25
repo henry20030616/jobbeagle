@@ -61,6 +61,7 @@ type ItemCopy = {
   keywords: string;
   keywordsNote: string;
   rewriteDirection: string;
+  resumeAdvice: string;
   apply: string;
   lockPay: string;
   lockRewrite: string;
@@ -154,6 +155,23 @@ function rewriteDirectionTitle(language: AppLanguage): string {
       return 'اتجاه مقترح لتحسين السيرة';
     default:
       return 'Suggested resume direction';
+  }
+}
+
+function resumeAdviceTitle(language: AppLanguage): string {
+  switch (language) {
+    case 'zh-CN':
+      return '简历缺少与优化建议';
+    case 'zh-TW':
+      return '履歷缺少與優化建議';
+    case 'es':
+      return 'Claves y dirección del CV';
+    case 'hi':
+      return 'रिज़्यूमे कमी और दिशा';
+    case 'ar':
+      return 'نقص السيرة واتجاه التحسين';
+    default:
+      return 'Resume gaps and direction';
   }
 }
 
@@ -258,6 +276,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
         ? '这些是人力资源筛选系统用来比对简历的重要关键字。简历里没有这些词，申请可能在招聘人员阅读之前就被系统排除。'
         : '這些是人資篩選系統用來比對履歷的重要關鍵字。履歷裡沒有這些詞，申請可能在招募人員閱讀之前就被系統排除。',
       rewriteDirection: rewriteDirectionTitle(language),
+      resumeAdvice: resumeAdviceTitle(language),
       apply: s ? '应征建议' : '應徵建議',
       lockPay: s
         ? '🔒 升级 Interview Guide 可解锁个人化精准落点与 TC 结构拆解'
@@ -345,6 +364,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     keywordsNote:
       'These are keywords the applicant tracking system uses to screen resumes. If the resume does not contain them, the application can be filtered out before a recruiter reads it.',
     rewriteDirection: rewriteDirectionTitle(language),
+    resumeAdvice: resumeAdviceTitle(language),
     apply: 'Apply advice',
     lockPay: '🔒 Upgrade to Interview Guide for your pay landing and TC split',
     lockRewrite: '🔒 Upgrade to Interview Guide for line-by-line rewrites of these gaps',
@@ -710,14 +730,14 @@ function RewriteGroups({
 }) {
   if (rewrites.length === 0) return null;
   return (
-    <section className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4">
+    <section className="w-full min-w-0">
       <h3 className={`mb-2 ${REPORT_H2}`}>{title}</h3>
       <ul className="space-y-4">
         {rewrites.map((item) => (
           <li key={`${item.gap}-${item.after}`}>
             {item.gap.trim() ? (
               <p className={`flex gap-2.5 ${BODY} font-semibold text-slate-100 leading-snug`}>
-                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
+                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
                 <span>{item.gap}</span>
               </p>
             ) : null}
@@ -1117,21 +1137,15 @@ function FitBody({
   report,
   copy,
   language,
-  locked,
-  rewrites,
   analysisSummary = '',
 }: {
   report: LiteReport;
   copy: ItemCopy;
   language: AppLanguage;
-  locked: boolean;
-  rewrites: GuideResumeRewrite[];
   analysisSummary?: string;
 }) {
   const score = report.fit_score?.score ?? report.match_score ?? 0;
   const scoreInfo = getScoreInfo(score, language);
-  const keywords = report.ats_warning?.missing_keywords ?? [];
-  const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
   const apply = report.apply_decision;
   const verdict = report.fit_score?.sharp_verdict
     || report.recruiter_verdict
@@ -1210,7 +1224,26 @@ function FitBody({
           </section>
         </div>
       </section>
-      <section className="w-full min-w-0 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-4">
+    </div>
+  );
+}
+
+function ResumeAdviceBody({
+  report,
+  copy,
+  locked,
+  rewrites,
+}: {
+  report: LiteReport;
+  copy: ItemCopy;
+  locked: boolean;
+  rewrites: GuideResumeRewrite[];
+}) {
+  const keywords = report.ats_warning?.missing_keywords ?? [];
+  const gaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
+  return (
+    <div className="space-y-5">
+      <section className="w-full min-w-0">
         <h3 className={`mb-2 ${REPORT_H2}`}>{copy.keywords}</h3>
         <p className={`${BODY} mb-3 leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
         {keywords.length > 0 ? (
@@ -1226,7 +1259,7 @@ function FitBody({
           <ul className="space-y-2">
             {gaps.map((item) => (
               <li key={item.gap} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
-                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300/90" aria-hidden />
+                <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
                 <span>
                   <span className="font-semibold text-slate-100">{item.gap}</span>
                   {item.description ? <span className="text-slate-300"> — {item.description}</span> : null}
@@ -1272,8 +1305,6 @@ export function SnapshotItemStack({
           report={report}
           copy={copy}
           language={lang}
-          locked={locked}
-          rewrites={rewrites}
           analysisSummary={summaries.fit}
         />
       </ItemBlock>
@@ -1289,6 +1320,14 @@ export function SnapshotItemStack({
       </ItemBlock>
       <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
         <CoreBody report={report} copy={copy} />
+      </ItemBlock>
+      <ItemBlock title={copy.resumeAdvice}>
+        <ResumeAdviceBody
+          report={report}
+          copy={copy}
+          locked={locked}
+          rewrites={rewrites}
+        />
       </ItemBlock>
     </div>
   );
@@ -1408,8 +1447,6 @@ export function GuideItemPage({
         report={report}
         copy={copy}
         language={lang}
-        locked={false}
-        rewrites={modules?.resume_rewrites ?? []}
       />
     );
   }

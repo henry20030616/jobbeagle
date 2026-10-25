@@ -11,8 +11,8 @@ export const REWRITE_MODULE_PROMPT = `You write resume bullet rewrites for an In
 Input is a Fit Snapshot gap list plus the resume and JD (untrusted data).
 Return JSON: { "rewrites": [ { "category": string, "gap": string, "before": string, "after": string } ] } with at most 4 items.
 category is a short group name for the suggested resume direction (e.g. "Suggested resume direction" / "建議履歷優化方向"). Gaps of the same kind must reuse the exact same category string.
-gap must name the missing keyword, system, license, or domain from the JD (e.g. "Resume does not show ACH returns or settlement" / "履歷缺少 ACH 退票與清算經驗"). Ban recruiter jargon such as ownership, 擁有權, or 所有权 in category and gap — say the missing item.
-before must quote or closely paraphrase a real resume line. after is a quantified rewrite of that same fact, and must not invent the missing item.
+gap is the missing keyword, system, license, or domain itself — not a sentence (e.g. "ACH returns and settlement" / "ACH 退票與清算"). Do not prefix "Resume does not show", "履歷缺少", "简历缺少", or equivalent; the card title already says this is a resume gap. Ban recruiter jargon such as ownership, 擁有權, or 所有权.
+before is one tight line quoting or closely paraphrasing a real resume line. after is one tight line: a quantified rewrite of that same fact, then a short clause that the missing item must not be invented. Not an essay. Not a line-by-line resume-coach rewrite.
 Do not invent employers, metrics, visas, or tools that are not in the resume.
 Do not search the web.`;
 

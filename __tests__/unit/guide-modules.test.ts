@@ -17,6 +17,7 @@ import {
   NEGOTIATION_MODULE_PROMPT,
   QUESTION_ANSWER_PROMPT,
   QUESTION_RETRIEVAL_PROMPT,
+  REWRITE_MODULE_PROMPT,
 } from '@/lib/prompts/guide-modules';
 import type { GuideInterviewBank, GuideQuestion } from '@/types';
 import { isCitableSourceUrl } from '@/lib/provenance';
@@ -83,6 +84,13 @@ describe('guide module routes', () => {
         search: false,
       });
     }
+  });
+
+  it('asks rewrite gaps for the missing item, not a 履歷缺少 sentence', () => {
+    expect(REWRITE_MODULE_PROMPT).toContain('ACH 退票與清算');
+    expect(REWRITE_MODULE_PROMPT).toContain('one tight line');
+    expect(REWRITE_MODULE_PROMPT).not.toContain('履歷缺少 ACH');
+    expect(REWRITE_MODULE_PROMPT).not.toContain('Resume does not show ACH');
   });
 
   it('asks negotiation pay and benefits bullets for short titles, not question lines', () => {

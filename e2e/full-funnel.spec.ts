@@ -4,14 +4,20 @@ async function expectSnapshotPage1Order(page: Page): Promise<void> {
   const fit = page.locator('h2').filter({ hasText: /^(Fit analysis|匹配度分析)$/ }).first();
   const market = page.locator('h2').filter({ hasText: /^(Market pay|市場薪資水準|市场薪资水准)$/ }).first();
   const core = page.locator('h2').filter({ hasText: /^(Role core|職位核心解析|职位核心解析)$/ }).first();
+  const resume = page.locator('h2').filter({
+    hasText: /^(Resume gaps and direction|履歷缺少與優化建議|简历缺少与优化建议)$/,
+  }).first();
   await expect(fit).toBeVisible({ timeout: 15_000 });
   await expect(market).toBeVisible();
   await expect(core).toBeVisible();
+  await expect(resume).toBeVisible();
   const fitY = await fit.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
   const marketY = await market.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
   const coreY = await core.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const resumeY = await resume.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
   expect(fitY).toBeLessThan(marketY);
   expect(marketY).toBeLessThan(coreY);
+  expect(coreY).toBeLessThan(resumeY);
 }
 
 async function expectPageScrollsPastFold(page: Page): Promise<void> {

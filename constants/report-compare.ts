@@ -223,9 +223,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '匹配度分析',
     },
     help: help(
-      'Score and signal, then fit summary; Beagle Scale with apply advice beside it, then full-width missing keys on the resume. Guide adds suggested resume direction for those gaps.',
-      '匹配分數、總結分析；藍寶米格魯左側、應徵建議右側；下方全寬履歷缺少的關鍵。面試指南再加上建議履歷優化方向。',
-      '匹配分数、总结分析；蓝宝米格鲁左侧、应征建议右侧；下方全宽简历缺少的关键。面试指南再加上建议简历优化方向。',
+      'Score, Beagle Scale, fit summary, and apply advice in the first frame. Market pay, then role core. Missing keys and resume direction sit last. Guide unlocks the suggested direction.',
+      '匹配分數、藍寶米格魯、總結分析與應徵建議在第一框。其下市場薪資水準、職位核心解析；頁面最下為履歷缺少與優化建議。面試指南解鎖優化方向。',
+      '匹配分数、蓝宝米格鲁、总结分析与应征建议在第一框。其下市场薪资水准、职位核心解析；页面最下为简历缺少与优化建议。面试指南解锁优化方向。',
     ),
     snapshot: t('Score, apply call, missing keys', '分數、應徵建議、缺少的關鍵', '分数、应征建议、缺少的关键', 4),
     guide: t('Snapshot + resume direction', '快照內容 + 優化方向', '快照内容 + 优化方向', 5),
