@@ -279,6 +279,9 @@ describe('Guide inner section cards', () => {
     expect(negotiate).not.toContain('<SectionCard title={copy.benefits}>');
     expect(negotiate).not.toContain('<SectionCard title={copy.say}');
     expect(negotiate).toContain('<SectionCard title={copy.askCompany}>');
+    expect(negotiate).toContain('<NumberedList items={briefLines(negotiation.company_questions)} />');
+    expect(negotiate).not.toContain('PointList items={briefLines(negotiation.company_questions)}');
+    expect(pages).toContain('list-outside list-decimal');
     expect(negotiate).toContain('labeled');
     expect(negotiate).toContain('${BODY_COPY} mb-4');
     expect(negotiate).not.toContain('${BODY_MUTED} mb-4');

@@ -716,6 +716,8 @@ describe('seven-item report layout', () => {
     expect(source).not.toContain('<SectionCard title={copy.benefits}>');
     expect(source).not.toContain('<SectionCard title={copy.say}');
     expect(source).toContain('<SectionCard title={copy.askCompany}>');
+    expect(source).toContain('<NumberedList items={briefLines(negotiation.company_questions)} />');
+    expect(source).toContain('list-outside list-decimal');
     expect(source).toContain('playbook: n.playbook');
     expect(source).toContain("playbook: '談薪策略'");
     expect(source).toContain('<SectionCard title={copy.professional} heading={REPORT_H1}>');
@@ -917,6 +919,14 @@ describe('seven-item report layout', () => {
     expect(playbook).not.toContain('border-2 border-blue-500');
     expect(html).toContain('問公司的問題');
     expect(html).toContain('面試後信件');
+    const askCompany = html.slice(
+      html.indexOf('問公司的問題'),
+      html.indexOf('面試後信件'),
+    );
+    expect(askCompany).toContain('list-decimal');
+    expect(askCompany).toContain('report-body');
+    expect(askCompany).not.toContain('list-disc');
+    expect(askCompany).toContain('這個職位第一天就要獨立負責 ACH 退票');
     const bannedChrome = [
       '薪資籌碼策略',
       '權益與福利爭取',

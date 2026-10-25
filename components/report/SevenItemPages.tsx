@@ -820,6 +820,19 @@ function PointList({
   );
 }
 
+function NumberedList({ items }: { items: string[] }) {
+  if (items.length === 0) return null;
+  return (
+    <ol className="list-outside list-decimal space-y-2 overflow-visible ps-[1.75em]">
+      {items.map((item) => (
+        <li key={item} className={BODY_COPY}>
+          {item}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function SectionCard({
   title,
   children,
@@ -1678,7 +1691,7 @@ export function GuideItemPage({
       ) : null}
       {negotiation.company_questions ? (
         <SectionCard title={copy.askCompany}>
-          <PointList items={briefLines(negotiation.company_questions)} dot="bg-sky-300" />
+          <NumberedList items={briefLines(negotiation.company_questions)} />
         </SectionCard>
       ) : null}
       {followUp.body || followUp.subject ? (
