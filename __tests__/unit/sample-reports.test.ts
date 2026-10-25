@@ -208,7 +208,7 @@ describe('sample reports', () => {
     expect(modules!.salary_land.rationale).toMatch(/target mix/);
     expect(modules!.salary_land.rationale).not.toMatch(/resume already holds|rights the resume/i);
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
-      /目標價：/,
+      /目標總酬：/,
     );
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.salary_land.rationale).toMatch(
       /結構拆分/,
@@ -272,7 +272,7 @@ describe('sample reports', () => {
     );
     expect(modules!.negotiation.pay_strategy).toMatch(/28%/);
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.negotiation.pay_strategy).toMatch(
-      /先報總薪酬/,
+      /先報總酬/,
     );
     expect(modules!.negotiation.benefits_strategy.length).toBeGreaterThan(20);
     expect(getSampleStrategyGuideReport('zh-TW').guide_modules?.negotiation.company_questions).toMatch(/ACH 退票/);
@@ -822,9 +822,9 @@ describe('seven-item report layout', () => {
     expect(zh.company_eval.summary?.split('\n').length).toBeGreaterThanOrEqual(5);
     expect(zh.company_eval.company_pros.length).toBeGreaterThan(0);
     expect(zh.company_eval.role_pros.length).toBeGreaterThan(0);
-    expect(zh.negotiation.summary).toMatch(/開價/);
-    expect(zh.negotiation.summary).toMatch(/上限/);
-    expect(zh.negotiation.summary).toMatch(/禁區/);
+    expect(zh.negotiation.summary).toMatch(/建議報價/);
+    expect(zh.negotiation.summary).toMatch(/議價上限/);
+    expect(zh.negotiation.summary).toMatch(/談判底線/);
     expect(zh.negotiation.pay_strategy.length).toBeGreaterThan(20);
     expect(zh.negotiation.benefits_strategy.length).toBeGreaterThan(20);
     expect(zh.negotiation.script.length).toBeGreaterThan(20);
@@ -1023,6 +1023,9 @@ describe('seven-item report layout', () => {
     expect(landHtml).toContain('$185K');
     expect(landHtml).toContain('個人目標');
     expect(landHtml).toContain('議價天花板');
+    expect(landHtml).toContain('目標總酬');
+    expect(landHtml).toContain('議價上限');
+    expect(landHtml).toContain('薪酬結構');
     expect(landHtml).toContain('data-range-label="target"');
     expect(landHtml).toContain('data-range-label="ceiling"');
   });
@@ -1036,24 +1039,27 @@ describe('seven-item report layout', () => {
       }),
     );
     expect(html).toContain('談薪策略');
-    expect(html).toContain('籌碼');
+    expect(html).toContain('談判籌碼');
     expect(html).toContain('福利');
-    expect(html).toContain('開口稿');
-    expect(html).toContain('先報總薪酬');
-    expect(html).toContain('先鎖底薪');
+    expect(html).toContain('開場講稿');
+    expect(html).toContain('先報總酬');
+    expect(html).toContain('底薪先鎖');
+    expect(html).toContain('建議報價');
+    expect(html).toContain('議價上限');
+    expect(html).toContain('談判底線');
     expect(html).toContain('report-h2');
     expect(html).toContain('report-h3');
     const playbook = html.slice(
       html.indexOf('談薪策略'),
-      html.indexOf('開口稿') + '開口稿'.length,
+      html.indexOf('開場講稿') + '開場講稿'.length,
     );
-    expect(playbook).toContain('籌碼');
+    expect(playbook).toContain('談判籌碼');
     expect(playbook).toContain('福利');
     expect(playbook).not.toContain('border-2 border-blue-500');
-    expect(html).toContain('問公司的問題');
+    expect(html).toContain('問公司問題');
     expect(html).toContain('面試後信件');
     const askCompany = html.slice(
-      html.indexOf('問公司的問題'),
+      html.indexOf('問公司問題'),
       html.indexOf('面試後信件'),
     );
     expect(askCompany).toContain('list-decimal');
@@ -1065,11 +1071,13 @@ describe('seven-item report layout', () => {
       '權益與福利爭取',
       '開口這樣說',
       '建議問公司的問題',
+      '問公司的問題',
       '建議面試後寄給公司的信',
       '薪资筹码策略',
       '权益与福利争取',
       '开口这样说',
       '建议问公司的问题',
+      '问公司的问题',
       '建议面试后寄给公司的信',
       'Questions to ask the company',
       'Note to send after the interview, if one is needed',

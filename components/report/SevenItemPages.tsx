@@ -37,7 +37,6 @@ import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-em
 import { parseQuestionsSummary, type AnalysisPoint } from '@/lib/questions-summary';
 import { guideSalaryLand } from '@/lib/guide-report';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
-import { resolveCompanyEvalSummaries } from '@/lib/company-eval-summary';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
@@ -202,19 +201,19 @@ function negotiateHeadings(language: AppLanguage): {
     case 'zh-CN':
       return {
         playbook: '谈薪策略',
-        pay: '筹码',
+        pay: '谈判筹码',
         benefits: '福利',
-        say: '开口稿',
-        askCompany: '问公司的问题',
+        say: '开场讲稿',
+        askCompany: '问公司问题',
         followUp: '面试后信件',
       };
     case 'zh-TW':
       return {
         playbook: '談薪策略',
-        pay: '籌碼',
+        pay: '談判籌碼',
         benefits: '福利',
-        say: '開口稿',
-        askCompany: '問公司的問題',
+        say: '開場講稿',
+        askCompany: '問公司問題',
         followUp: '面試後信件',
       };
     case 'es':
@@ -247,9 +246,9 @@ function negotiateHeadings(language: AppLanguage): {
     default:
       return {
         playbook: 'Pay strategy',
-        pay: 'Leverage',
+        pay: 'Pay leverage',
         benefits: 'Benefits',
-        say: 'Script',
+        say: 'Opening script',
         askCompany: 'Company questions',
         followUp: 'Follow-up note',
       };
@@ -792,16 +791,26 @@ function PointList({
   items,
   dot,
   labeled = false,
+  language,
 }: {
   items: string[];
   dot: string;
   labeled?: boolean;
+  language?: AppLanguage;
 }) {
   if (items.length === 0) return null;
   return (
     <ul className="space-y-2">
       {items.map((item) => {
-        const { label, detail } = labeled ? splitLabeledFact(item) : { label: item, detail: '' };
+        const parts = labeled
+          ? language
+            ? localizeLabeledFactParts(item, language)
+            : {
+                ...splitLabeledFact(item),
+                separator: item.includes('：') ? '：' : ': ',
+              }
+          : { label: item, detail: '', separator: '' };
+        const { label, detail, separator } = parts;
         return (
           <li key={item} className="flex gap-2.5">
             <span className={`mt-2.5 h-2 w-2 shrink-0 rounded-full ${dot}`} aria-hidden />
@@ -809,7 +818,7 @@ function PointList({
               {detail ? (
                 <>
                   <span className={REPORT_H3}>{label}</span>
-                  {item.includes('：') ? '：' : ': '}
+                  {separator}
                   {detail}
                 </>
               ) : (
@@ -878,66 +887,26 @@ function InnerSection({
   );
 }
 
-function SummaryCard({ label, summary }: { label: string; summary: string }) {
+function SummaryCard({
+  label,
+  summary,
+  language,
+}: {
+  label: string;
+  summary: string;
+  language?: AppLanguage;
+}) {
   const points = splitSummaryPoints(summary);
   if (points.length === 0) return null;
   return (
     <SectionCard title={label} heading={REPORT_H1} className="overflow-visible">
       {points.length > 1 ? (
-        <BriefRows items={points} relaxed />
+        <BriefRows items={points} language={language} relaxed />
       ) : (
-        <p className={`${BODY_COPY} overflow-visible whitespace-normal break-words`}>{points[0]}</p>
+        <p className={`${BODY_COPY} overflow-visible whitespace-normal break-words`}>
+          {language ? localizeLabeledFactLine(points[0], language) : points[0]}
+        </p>
       )}
-    </SectionCard>
-  );
-}
-
-function CompanySummaryCard({
-  label,
-  companyTitle,
-  roleTitle,
-  summaryCompany,
-  summaryRole,
-  fallbackSummary,
-  language,
-}: {
-  label: string;
-  companyTitle: string;
-  roleTitle: string;
-  summaryCompany: string;
-  summaryRole: string;
-  fallbackSummary: string;
-  language: AppLanguage;
-}) {
-  const resolved = resolveCompanyEvalSummaries({
-    summary_company: summaryCompany,
-    summary_role: summaryRole,
-    summary: fallbackSummary,
-  });
-  const companyPoints = splitSummaryPoints(resolved.summary_company);
-  const rolePoints = splitSummaryPoints(resolved.summary_role);
-  if (companyPoints.length === 0 && rolePoints.length === 0) return null;
-  const twoCol = companyPoints.length > 0 && rolePoints.length > 0;
-  return (
-    <SectionCard title={label} heading={REPORT_H1} className="overflow-visible">
-      <div
-        className={
-          twoCol
-            ? 'grid grid-cols-1 gap-4 overflow-visible md:grid-cols-2'
-            : 'overflow-visible'
-        }
-      >
-        {companyPoints.length > 0 ? (
-          <InnerSection title={companyTitle}>
-            <BriefRows items={companyPoints} language={language} relaxed />
-          </InnerSection>
-        ) : null}
-        {rolePoints.length > 0 ? (
-          <InnerSection title={roleTitle}>
-            <BriefRows items={rolePoints} language={language} relaxed />
-          </InnerSection>
-        ) : null}
-      </div>
     </SectionCard>
   );
 }
@@ -1248,9 +1217,9 @@ function FitBody({
       <section className="space-y-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
           <div className="min-w-0 flex items-center justify-center">
-            <div className="flex items-center gap-6">
+            <div className="flex h-56 items-center gap-6">
               <BeagleIcon
-                className={`h-40 w-40 shrink-0 ${scoreInfo.glowClass}`}
+                className={`h-56 w-56 shrink-0 ${scoreInfo.glowClass}`}
                 color={scoreInfo.fill}
                 spotColor={scoreInfo.spotColor}
                 glassesColor={scoreInfo.fill}
@@ -1277,29 +1246,27 @@ function FitBody({
           </div>
           <section className="min-w-0">
             <h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>
-            {summaryPoints.length > 1 ? (
-              <BriefRows items={summaryPoints} />
-            ) : summaryPoints[0] ? (
-              <p className={`${BODY_COPY} overflow-visible whitespace-normal break-words`}>{summaryPoints[0]}</p>
-            ) : null}
+            <ReportProse text={analysisSummary} />
           </section>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
-          <div className="min-w-0">
-            <div className="flex items-baseline gap-3">
-              <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
-              <p className={BODY_COPY}>{scoreInfo.label}</p>
+          <div className="min-w-0 flex items-center justify-center self-stretch">
+            <div className="w-fit text-left">
+              <div className="flex items-baseline gap-3">
+                <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
+                <p className={BODY_COPY}>{scoreInfo.label}</p>
+              </div>
+              {verdictLines.length > 0 ? (
+                <ul className="mt-3 space-y-2">
+                  {verdictLines.map((point) => (
+                    <li key={point} className="flex gap-2.5">
+                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
+                      <span className={BODY_COPY}>{localizeLabeledFactLine(point, language)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
-            {verdictLines.length > 0 ? (
-              <ul className="mt-3 space-y-2">
-                {verdictLines.map((point) => (
-                  <li key={point} className="flex gap-2.5">
-                    <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                    <span className={BODY_COPY}>{localizeLabeledFactLine(point, language)}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
           </div>
           <section className="min-w-0">
             <div className="flex items-baseline gap-3">
@@ -1599,7 +1566,7 @@ export function GuideItemPage({
           {landPoints.length > 0 ? (
             <div className="mt-4">
               {landPoints.length > 1 ? (
-                <BriefRows items={landPoints} />
+                <BriefRows items={landPoints} language={lang} />
               ) : (
                 <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{landPoints[0]}</p>
               )}
@@ -1719,12 +1686,12 @@ export function GuideItemPage({
             >
               {negotiation.pay_strategy ? (
                 <InnerSection title={copy.pay}>
-                  <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" labeled />
+                  <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" labeled language={lang} />
                 </InnerSection>
               ) : null}
               {negotiation.benefits_strategy ? (
                 <InnerSection title={copy.benefits}>
-                  <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" labeled />
+                  <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" labeled language={lang} />
                 </InnerSection>
               ) : null}
             </div>
@@ -1793,18 +1760,8 @@ export function GuideItemPage({
           professionalTitle={copy.professionalAnalysis}
           behavioralTitle={copy.behavioralAnalysis}
         />
-      ) : item === 'company' ? (
-        <CompanySummaryCard
-          label={copy.analysisSummary}
-          companyTitle={copy.companyReview}
-          roleTitle={copy.roleReviews}
-          summaryCompany={modules?.company_eval.summary_company ?? ''}
-          summaryRole={modules?.company_eval.summary_role ?? ''}
-          fallbackSummary={summaryByItem.company}
-          language={lang}
-        />
       ) : (
-        <SummaryCard label={copy.analysisSummary} summary={summaryByItem[item]} />
+        <SummaryCard label={copy.analysisSummary} summary={summaryByItem[item]} language={lang} />
       )}
       {body}
     </div>

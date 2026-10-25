@@ -333,11 +333,11 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     },
     help: help(
       'Pay strategy, company questions, and a follow-up note when one is needed.',
-      '談薪策略、問公司的問題，以及需要時的面試後信件。',
-      '谈薪策略、问公司的问题，以及需要时的面试后信件。',
+      '談薪策略、問公司問題，以及需要時的面試後信件。',
+      '谈薪策略、问公司问题，以及需要时的面试后信件。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Pay strategy, script, follow-up note', '談薪策略、開口稿、面試後信件', '谈薪策略、开口稿、面试后信件'),
+    guide: t('Pay strategy, opening script, follow-up note', '談薪策略、開場講稿、面試後信件', '谈薪策略、开场讲稿、面试后信件'),
   },
   // ── C. Price ──
   {
