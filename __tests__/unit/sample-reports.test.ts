@@ -360,6 +360,7 @@ describe('sample reports', () => {
     expect(report.hiring_context?.strategic_alignment_pitch).toMatch(/28%/);
     expect(report.hiring_context?.strategic_alignment_pitch).toMatch(/對帳/);
     expect(report.offer_strategy.negotiation_script?.counter).toMatch(/簽約金/);
+    expect(JSON.stringify(report)).not.toMatch(/擁有權|所有权|拥有权/);
   });
 });
 
@@ -430,8 +431,11 @@ describe('seven-item report layout', () => {
     expect(fitBody).not.toContain('{copy.keywords}');
     expect(fitBody).not.toContain('<RewriteGroups');
     expect(fitBody).toContain('min-w-0 flex items-center justify-center');
-    expect(fitBody).toContain('h-40 w-40');
-    expect(fitBody).toContain('h-56 w-56');
+    expect(fitBody).toContain('min-w-0 flex items-center justify-center self-stretch');
+    expect(fitBody).toContain('w-fit text-left');
+    expect(fitBody).toContain('flex h-56 items-center gap-6');
+    expect(fitBody).toContain('h-56 w-56 shrink-0');
+    expect(fitBody).not.toContain('h-40 w-40');
     expect(fitBody.indexOf('{copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{scoreInfo.level}'));
     expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
     expect(fitBody).toContain('flex items-baseline gap-3');
@@ -513,9 +517,11 @@ describe('seven-item report layout', () => {
       expect(html).not.toContain('匹配分數與燈號');
       expect(html).not.toContain('匹配分数与灯号');
       expect(html).not.toContain('Score and signal');
-      expect(html).toContain('h-40 w-40');
       expect(html).toContain('h-56 w-56');
+      expect(html).not.toContain('h-40 w-40');
       expect(html).toContain('min-w-0 flex items-center justify-center');
+      expect(html).toContain('min-w-0 flex items-center justify-center self-stretch');
+      expect(html).toContain('w-fit text-left');
       expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('總結分析'));
       expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('藍寶米格魯'));
       expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('應徵建議'));
@@ -532,9 +538,11 @@ describe('seven-item report layout', () => {
       expect(summaryHeading).toContain('report-h1');
       expect(summaryHeading).not.toContain('report-h2');
       const beagleSlice = html.slice(
-        Math.max(0, html.indexOf('藍寶米格魯') - 160),
+        Math.max(0, html.indexOf('藍寶米格魯') - 320),
         html.indexOf('應徵建議'),
       );
+      expect(beagleSlice).toContain('flex items-center justify-center self-stretch');
+      expect(beagleSlice).toContain('w-fit text-left');
       expect(beagleSlice).toContain('flex items-baseline gap-3');
       expect(beagleSlice).toContain('強勢契合');
       expect(beagleSlice.indexOf('藍寶米格魯')).toBeLessThan(beagleSlice.indexOf('強勢契合'));

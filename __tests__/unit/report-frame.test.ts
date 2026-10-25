@@ -364,38 +364,27 @@ describe('report item heading scale', () => {
     );
   });
 
-  it('renders Guide header as two bright-white lines: company then role', () => {
-    expect(REPORT_HEADER_JOB_LINE).toContain(REPORT_GUIDE_TAB_TYPE);
-    expect(REPORT_HEADER_JOB_LINE).toMatch(/text-2xl/);
+  it('re-exports Snapshot/Guide header chrome from report-header', () => {
+    expect(REPORT_HEADER_JOB_LINE).toMatch(/text-4xl/);
     expect(REPORT_HEADER_JOB_LINE).toMatch(/font-black/);
-    expect(REPORT_HEADER_JOB_LINE).toMatch(/text-zinc-100/);
-    expect(REPORT_HEADER_JOB_LINE).not.toMatch(/slate-400/);
-
-    const dashboard = readFileSync(
-      join(process.cwd(), 'components/FullReportDashboard.tsx'),
+    expect(REPORT_HEADER_JOB_LINE).toMatch(/text-white/);
+    expect(REPORT_HEADER_JOB_LINE).not.toContain(REPORT_GUIDE_TAB_TYPE);
+    const frame = readFileSync(
+      join(process.cwd(), 'constants/report-frame.ts'),
       'utf8',
     );
-    expect(dashboard).toContain('REPORT_HEADER_JOB_LINE');
-    expect(dashboard).not.toMatch(/text-lg text-slate-400 mt-1.5/);
-    expect(dashboard).not.toMatch(/job_title[\s\S]{0,80}·[\s\S]{0,80}company_name/);
-    expect(dashboard).not.toMatch(/company_name[\s\S]{0,80}·[\s\S]{0,80}job_title/);
-
-    const headerStart = dashboard.indexOf('{copy.productTitle}');
-    const headerEnd = dashboard.indexOf('{isSample ?');
-    const header = dashboard.slice(headerStart, headerEnd);
-    expect(header).toContain('companyLine');
-    expect(header).toContain('roleLine');
-    expect(header.match(/REPORT_HEADER_JOB_LINE/g)?.length).toBe(2);
-    expect(header.indexOf('companyLine')).toBeLessThan(header.indexOf('roleLine'));
-
+    expect(frame).toContain("from './report-header'");
     const snapshot = readFileSync(
       join(process.cwd(), 'components/LiteReportDashboard.tsx'),
       'utf8',
     );
-    expect(snapshot).not.toContain('REPORT_HEADER_JOB_LINE');
-    expect(snapshot).not.toMatch(/text-lg text-slate-400 mt-1.5/);
+    const guide = readFileSync(
+      join(process.cwd(), 'components/FullReportDashboard.tsx'),
+      'utf8',
+    );
+    expect(snapshot).toContain('ReportJobHeader');
+    expect(guide).toContain('ReportJobHeader');
   });
-});
 
 describe('pay-range widths', () => {
   it('centers Snapshot market in leftover space after the heading, Guide land half width', () => {
