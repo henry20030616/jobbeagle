@@ -167,13 +167,13 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
   apply_decision: {
     label: 'Apply after fixes',
     reason:
-      'Six years of fintech ops and quantified reconciliation results clear the Senior BA bar on requirements ownership. The JD treats ACH returns and settlement as core, and the resume shows adjacent banking ops only. The label reflects an unconfirmed core requirement, not a weak profile.',
+      'Six years of fintech ops and quantified reconciliation results clear the Senior BA bar on requirements ownership.\nThe JD treats ACH returns and settlement as core, and the resume shows adjacent banking ops only.\nThe label reflects an unconfirmed core requirement, not a weak profile.',
     next_best_action:
       'Apply with caution: ACH/returns ownership is adjacent only, so this is not a clear apply.',
   },
   role_read: {
     mission:
-      'This seat is a Senior Business Analyst for payments operations. The company needs this person to turn settlement and ACH-returns problems into scheduled requirements, and to write the acceptance criteria with engineering. The bar is five or more years as a business analyst or in product operations, plus independent SQL and ownership of a production operations dashboard.',
+      'This seat is a Senior Business Analyst for payments operations.\nThe company needs this person to turn settlement and ACH-returns problems into scheduled requirements, and to write the acceptance criteria with engineering.\nThe bar is five or more years as a business analyst or in product operations, plus independent SQL and ownership of a production operations dashboard.',
     responsibilities: [
       'Requirements backlog: turn settlement and ACH-returns issues into scheduled work and set build order (for engineering).',
       'Acceptance criteria: write settlement and ACH-returns specs with engineering.',

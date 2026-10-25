@@ -22,6 +22,24 @@ export function splitSummaryPoints(text: string): string[] {
   return [trimmed];
 }
 
+/**
+ * Split a prose blob (職位概述, 總結分析, 應徵建議 reason) into stacked sentences.
+ * Newlines win. Else split after CJK/Indic/Arabic stops, or ASCII .!? when a
+ * space or end follows. Does not split mid-clause (commas / 、). Do not use on
+ * bullet lists such as 關鍵條件 or Beagle bullets.
+ */
+export function splitProseSentences(text: string): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  const lined = trimmed.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  if (lined.length > 1) return lined;
+  const sentences = trimmed
+    .split(/(?<=[。！？।؟])|(?<=[.!?])(?=\s+|$)/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return sentences.length > 0 ? sentences : [trimmed];
+}
+
 /** First n sentences or newline-separated lines, for a section overview. */
 export function firstSummarySentences(text: string, count = 2): string {
   return splitSummaryPoints(text).slice(0, count).join(' ');

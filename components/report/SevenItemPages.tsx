@@ -37,11 +37,13 @@ import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-em
 import { parseQuestionsSummary, type AnalysisPoint } from '@/lib/questions-summary';
 import { guideSalaryLand } from '@/lib/guide-report';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
+import { resolveCompanyEvalSummaries } from '@/lib/company-eval-summary';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { applyCallLabel } from '@/lib/report-ui-copy';
 import { ApplyCallBody } from '@/components/report/ApplyCallBody';
+import { ReportProse } from '@/components/report/ReportProse';
 
 export const GUIDE_ITEM_IDS = [
   'core',
@@ -890,6 +892,56 @@ function SummaryCard({ label, summary }: { label: string; summary: string }) {
   );
 }
 
+function CompanySummaryCard({
+  label,
+  companyTitle,
+  roleTitle,
+  summaryCompany,
+  summaryRole,
+  fallbackSummary,
+  language,
+}: {
+  label: string;
+  companyTitle: string;
+  roleTitle: string;
+  summaryCompany: string;
+  summaryRole: string;
+  fallbackSummary: string;
+  language: AppLanguage;
+}) {
+  const resolved = resolveCompanyEvalSummaries({
+    summary_company: summaryCompany,
+    summary_role: summaryRole,
+    summary: fallbackSummary,
+  });
+  const companyPoints = splitSummaryPoints(resolved.summary_company);
+  const rolePoints = splitSummaryPoints(resolved.summary_role);
+  if (companyPoints.length === 0 && rolePoints.length === 0) return null;
+  const twoCol = companyPoints.length > 0 && rolePoints.length > 0;
+  return (
+    <SectionCard title={label} heading={REPORT_H1} className="overflow-visible">
+      <div
+        className={
+          twoCol
+            ? 'grid grid-cols-1 gap-4 overflow-visible md:grid-cols-2'
+            : 'overflow-visible'
+        }
+      >
+        {companyPoints.length > 0 ? (
+          <InnerSection title={companyTitle}>
+            <BriefRows items={companyPoints} language={language} relaxed />
+          </InnerSection>
+        ) : null}
+        {rolePoints.length > 0 ? (
+          <InnerSection title={roleTitle}>
+            <BriefRows items={rolePoints} language={language} relaxed />
+          </InnerSection>
+        ) : null}
+      </div>
+    </SectionCard>
+  );
+}
+
 function analysisColon(title: string): string {
   return /[\u4e00-\u9fff]/.test(title) ? '：' : ': ';
 }
@@ -1045,18 +1097,11 @@ function SectionOverview({
   summary: string;
   className?: string;
 }) {
-  const points = splitSummaryPoints(summary);
-  if (points.length === 0) return null;
+  if (!summary.trim()) return null;
   return (
     <div className={className}>
       <p className={REPORT_H2}>{label}</p>
-      {points.length > 1 ? (
-        <div className="mt-2">
-          <BriefRows items={points} />
-        </div>
-      ) : (
-        <p className={`${BODY} mt-2 font-medium leading-relaxed text-slate-100`}>{points[0]}</p>
-      )}
+      <ReportProse text={summary} className="mt-2" />
     </div>
   );
 }
@@ -1198,7 +1243,6 @@ function FitBody({
     .map((point) => point.trim())
     .filter(Boolean);
   const verdictLines = verdictPoints.length >= 2 ? verdictPoints : splitDecisionBrief(verdict);
-  const summaryPoints = splitSummaryPoints(analysisSummary);
   return (
     <div className="space-y-5">
       <section className="space-y-4">
@@ -1236,7 +1280,7 @@ function FitBody({
             {summaryPoints.length > 1 ? (
               <BriefRows items={summaryPoints} />
             ) : summaryPoints[0] ? (
-              <p className={BODY_COPY}>{summaryPoints[0]}</p>
+              <p className={`${BODY_COPY} overflow-visible whitespace-normal break-words`}>{summaryPoints[0]}</p>
             ) : null}
           </section>
         </div>
@@ -1748,6 +1792,16 @@ export function GuideItemPage({
           summary={summaryByItem.questions}
           professionalTitle={copy.professionalAnalysis}
           behavioralTitle={copy.behavioralAnalysis}
+        />
+      ) : item === 'company' ? (
+        <CompanySummaryCard
+          label={copy.analysisSummary}
+          companyTitle={copy.companyReview}
+          roleTitle={copy.roleReviews}
+          summaryCompany={modules?.company_eval.summary_company ?? ''}
+          summaryRole={modules?.company_eval.summary_role ?? ''}
+          fallbackSummary={summaryByItem.company}
+          language={lang}
         />
       ) : (
         <SummaryCard label={copy.analysisSummary} summary={summaryByItem[item]} />

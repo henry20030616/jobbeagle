@@ -202,6 +202,7 @@ ${SNAPSHOT_CALIBRATION_RULES}
 - apply_decision.next_best_action: one sentence restating the apply/don't-apply call and the gap that drives it. Never “ask the recruiter”.
 - proof_map.strengths: 3–4 evidence-backed points. proof_map.gaps: 3–4 mismatches.
 - proof_map.resume_actions: 0–3 missing-proof facts only (not how-to edits).
+- role_read.mission = EXACTLY 2–3 short sentences (each ends with 。！？ or . ! ?). One idea per sentence: title, what this person owns, the bar for the seat. Never a single 80+ character run-on.
 - role_read.hiring_signals = 3–5 "Kind: extractable fact" lines. Kind MUST match OUTPUT LANGUAGE (Years / Skill / License / Domain / Degree / System, or 年資／技能／證照／領域／學歷／系統). Never emit English Kind keys when OUTPUT LANGUAGE is Chinese. Name the JD keyword, number, license, system, or domain. Ban vague paraphrases. Do not invent licenses the JD does not name. role_read.responsibilities = 3–5 "Work-product keyword: who + named system/rail/metric" lines in the OUTPUT LANGUAGE (需求 backlog／驗收標準／營運指標, not Deliverable / Requirements backlog). Lead with the work-product keyword. Ban generic duties.
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps.
 

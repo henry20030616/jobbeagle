@@ -12,6 +12,7 @@ import { isFullReport, isLiteReport, normalizeLiteReport } from '@/lib/normalize
 import { fitBandFromScore } from '@/lib/report-rules';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import { splitLabeledFact } from '@/lib/score-summary';
+import { splitProseSentences } from '@/lib/report-item-summaries';
 
 describe('sample reports', () => {
   it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
@@ -73,6 +74,43 @@ describe('sample reports', () => {
     expect(guide.guide_modules?.company_eval.summary?.length).toBeGreaterThan(20);
     expect(guide.guide_modules?.interview_bank.summary?.length).toBeGreaterThan(20);
     expect(guide.guide_modules?.negotiation.summary?.length).toBeGreaterThan(20);
+  });
+
+  it('stacks 職位概述 and apply-reason sentences instead of a full-bleed run-on', () => {
+    const snapshot = getSampleSnapshotReport('zh-TW');
+    const missionLines = splitProseSentences(snapshot.role_read.mission);
+    const reasonLines = splitProseSentences(snapshot.apply_decision.reason);
+    expect(missionLines.length).toBeGreaterThanOrEqual(2);
+    expect(reasonLines.length).toBeGreaterThanOrEqual(2);
+
+    const html = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: snapshot,
+        language: 'zh-TW',
+        locked: true,
+      }),
+    );
+    const overview = html.slice(html.indexOf('職位概述'), html.indexOf('關鍵條件'));
+    expect(overview).toContain('max-w-[42rem]');
+    expect(overview).toContain('report-body');
+    expect(overview.match(/report-body/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(overview).not.toContain('<ul');
+    expect(overview).not.toContain('overflow-hidden');
+    for (const sentence of missionLines) {
+      expect(overview).toContain(sentence);
+    }
+
+    const conditions = html.slice(html.indexOf('關鍵條件'), html.indexOf('關鍵職責'));
+    expect(conditions).toContain('<ul');
+    expect(conditions).not.toContain('max-w-[42rem]');
+
+    const pages = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    expect(pages).toContain('<ReportProse text={summary} className="mt-2" />');
+    expect(pages).toContain('<ReportProse text={analysisSummary} />');
+    const applySource = readFileSync(join(process.cwd(), 'components/report/ApplyCallBody.tsx'), 'utf8');
+    expect(applySource).toContain('<ReportProse text={reason} className="mt-3" />');
+    const liteDash = readFileSync(join(process.cwd(), 'components/LiteReportDashboard.tsx'), 'utf8');
+    expect(liteDash).not.toContain('guide_modules');
   });
 
   it('builds a valid Strategy Guide sample with STAR templates', () => {
@@ -442,7 +480,7 @@ describe('seven-item report layout', () => {
     expect(fitBody).toContain('<p className={BODY_COPY}>{scoreInfo.label}</p>');
     expect(fitBody).not.toContain('${BODY_COPY} mt-1');
     expect(fitBody).toContain('<span className={BODY_COPY}>{localizeLabeledFactLine(point, language)}</span>');
-    expect(fitBody).toContain('<p className={BODY_COPY}>{summaryPoints[0]}</p>');
+    expect(fitBody).toContain('<p className={`${BODY_COPY} overflow-visible whitespace-normal break-words`}>{summaryPoints[0]}</p>');
     expect(fitBody).toContain('<p className={BODY_COPY}>{applyCallLabel(apply.label, language)}</p>');
     expect(fitBody).toContain('<ApplyCallBody apply={apply} empty={copy.empty} />');
     expect(fitBody).not.toContain('next_best_action');
@@ -499,7 +537,9 @@ describe('seven-item report layout', () => {
       expect(html).not.toContain('匹配分數、履歷分析');
       expect(html).toContain('應徵建議');
       expect(html).toContain('謹慎應徵');
-      expect(html).toContain(snapshot.apply_decision.reason);
+      for (const sentence of splitProseSentences(snapshot.apply_decision.reason)) {
+        expect(html).toContain(sentence);
+      }
       expect(html).not.toContain(snapshot.apply_decision.next_best_action);
       expect(html).not.toMatch(/先向招募|詢問招募/);
       expect(html).toContain('藍寶米格魯');
@@ -595,10 +635,14 @@ describe('seven-item report layout', () => {
     expect(rewriteSlice).toContain('report-body');
     expect(rewriteSlice).not.toContain('text-slate-200');
     expect(snapHtml).toContain('謹慎應徵');
-    expect(snapHtml).toContain(snapshot.apply_decision.reason);
+    for (const sentence of splitProseSentences(snapshot.apply_decision.reason)) {
+      expect(snapHtml).toContain(sentence);
+    }
     expect(snapHtml).not.toContain(snapshot.apply_decision.next_best_action);
     expect(guideHtml).toContain('謹慎應徵');
-    expect(guideHtml).toContain(guide.apply_decision.reason);
+    for (const sentence of splitProseSentences(guide.apply_decision.reason)) {
+      expect(guideHtml).toContain(sentence);
+    }
     expect(guideHtml).not.toContain(guide.apply_decision.next_best_action);
   });
 

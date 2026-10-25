@@ -160,12 +160,12 @@ const ZH_TW: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        '六年金融科技營運經驗與可量化的對帳成果，在需求擁有權上已過 Senior BA 門檻。JD 將 ACH 退件與清算列為核心，而履歷僅顯示相鄰的銀行營運經驗。此標籤反映核心要求尚未確認，而非履歷薄弱。',
+        '六年金融科技營運經驗與可量化的對帳成果，在需求擁有權上已過 Senior BA 門檻。\nJD 將 ACH 退件與清算列為核心，而履歷僅顯示相鄰的銀行營運經驗。\n此標籤反映核心要求尚未確認，而非履歷薄弱。',
       next_best_action: '謹慎應徵：ACH／退票擁有權僅有相鄰證明，不是明確建議應徵。',
     },
     role_read: {
       mission:
-        '這個職位是支付營運的 Senior Business Analyst。公司要這個人把清算與退票的營運問題整理成可排程的需求，並和工程一起寫驗收標準。錄取條件是 5 年以上 Business Analyst 或產品營運經驗，而且要能獨立使用 SQL、負責正式環境的營運儀表板。',
+        '這個職位是支付營運的 Senior Business Analyst。\n公司要這個人把清算與退票的營運問題整理成可排程的需求，並和工程一起寫驗收標準。\n錄取條件是 5 年以上 Business Analyst 或產品營運經驗，而且要能獨立使用 SQL、負責正式環境的營運儀表板。',
       responsibilities: [
         '需求 backlog：把清算與 ACH 退票問題寫成可排程需求，並排處理順序（給工程）。',
         '驗收標準：與工程共同撰寫清算／ACH 退票流程的需求與驗收標準。',

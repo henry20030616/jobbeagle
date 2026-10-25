@@ -15,4 +15,10 @@ describe('Fit Snapshot salary prompt', () => {
     expect(source).not.toContain('google search');
     expect(source).not.toContain('google_search');
   });
+
+  it('asks Flash-Lite for 2–3 short 職位概述 sentences, not one run-on', () => {
+    expect(LITE_SYSTEM_PROMPT).toMatch(/role_read\.mission = EXACTLY 2–3 short sentences/);
+    expect(LITE_SYSTEM_PROMPT).toMatch(/80\+ character run-on/);
+    expect(LITE_SYSTEM_PROMPT).toMatch(/closed-book; no web search/);
+  });
 });

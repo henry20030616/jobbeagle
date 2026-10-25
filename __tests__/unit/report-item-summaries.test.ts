@@ -7,6 +7,7 @@ import {
   firstSummarySentences,
   guideItemSummaries,
   snapshotItemSummaries,
+  splitProseSentences,
   splitSummaryPoints,
 } from '@/lib/report-item-summaries';
 
@@ -43,6 +44,23 @@ describe('report item summaries', () => {
       '第一句。',
       '第二句。',
       '第三句。',
+    ]);
+  });
+
+  it('stacks CJK prose on 。 without needing a following space', () => {
+    expect(splitProseSentences('這個職位是支付營運的 Senior Business Analyst。公司要這個人把清算與退票的營運問題整理成可排程的需求。錄取條件是 5 年以上。')).toEqual([
+      '這個職位是支付營運的 Senior Business Analyst。',
+      '公司要這個人把清算與退票的營運問題整理成可排程的需求。',
+      '錄取條件是 5 年以上。',
+    ]);
+    expect(splitProseSentences('One idea. Two ideas. Three ideas.')).toEqual([
+      'One idea.',
+      'Two ideas.',
+      'Three ideas.',
+    ]);
+    expect(splitProseSentences('職缺仍在公開招募。')).toEqual(['職缺仍在公開招募。']);
+    expect(splitProseSentences('條件A、條件B，以及條件C。')).toEqual([
+      '條件A、條件B，以及條件C。',
     ]);
   });
 
