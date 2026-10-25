@@ -83,16 +83,38 @@ describe('homepage form copy', () => {
   });
 
   it('calls a job opening 職位, not 席', () => {
-    expect(HOMEPAGE_FORM_COPY['zh-TW'].matchAnalysisDesc).toBe(
-      '對照職缺硬性門檻與履歷事實，判斷這職位是否真正適合你，並標示落差所在，作為應徵決策依據。',
-    );
-    expect(HOMEPAGE_FORM_COPY['zh-CN'].matchAnalysisDesc).toBe(
-      '对照职位硬性门槛与简历事实，判断这职位是否真正适合你，并标示落差所在，作为应征决策依据。',
-    );
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].interviewPrepDesc).toContain('該職位');
+    expect(HOMEPAGE_FORM_COPY['zh-CN'].interviewPrepDesc).toContain('该职位');
     expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toContain('此職位市場薪資水準');
     expect(HOMEPAGE_FORM_COPY['zh-CN'].snapshotBlurb).toContain('此职位市场薪资水准');
     for (const copy of [HOMEPAGE_FORM_COPY['zh-TW'], HOMEPAGE_FORM_COPY['zh-CN']]) {
       expect(JSON.stringify(copy)).not.toMatch(/席位|這席|该席|該席|此席|一席|本席|这席/);
+    }
+  });
+
+  it('explains the four homepage feature chips with the current product pitch', () => {
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].matchAnalysisDesc).toBe(
+      '內建專業 HR 級 ATS 評分框架，抓出履歷缺漏的硬性關鍵字，解決一般 AI「每次問分數都不一樣」的盲點。',
+    );
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].salaryResearchDesc).toBe(
+      '串聯多款頂尖推理模型交叉定價，算準您的真實市場身價，並直接給出能多談下 10% 薪水的談判籌碼。',
+    );
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].industryAnalysisDesc).toBe(
+      '結合深度檢索工作流，自動過濾網路農場文、深挖目標職缺的真實部門痛點，省去爬文一整天的苦工。',
+    );
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].interviewPrepDesc).toBe(
+      '自動鎖定該職位「近三年真實面試題」，並透過獨立算力將考題與你的履歷經歷深度對齊，產出專屬實戰擬答。',
+    );
+    expect(HOMEPAGE_FORM_COPY['zh-CN'].matchAnalysisDesc).toBe(
+      '内建专业 HR 级 ATS 评分框架，抓出简历缺漏的硬性关键字，解决一般 AI「每次问分数都不一样」的盲点。',
+    );
+    expect(HOMEPAGE_FORM_COPY.en.matchAnalysisDesc).toMatch(/ATS/);
+    expect(HOMEPAGE_FORM_COPY.en.salaryResearchDesc).toMatch(/10%/);
+    expect(HOMEPAGE_FORM_COPY.en.industryAnalysisDesc).toMatch(/content-farm|deep-retrieval/i);
+    expect(HOMEPAGE_FORM_COPY.en.interviewPrepDesc).toMatch(/three years|practice answers/i);
+    for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
+      expect(copy.matchAnalysisDesc).toMatch(/ATS/);
+      expect(copy.salaryResearchDesc).toMatch(/10%/);
     }
   });
 
