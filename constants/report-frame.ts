@@ -138,12 +138,38 @@ export function sampleReportTabClass(active: boolean): string {
   }`;
 }
 
+/**
+ * Homepage `<main>` horizontal gutters (`app/page.tsx`).
+ * vw padding so left AND right stay inset on any monitor — not rem-capped,
+ * not a centered 1024px island.
+ */
+export const PAGE_SHELL_GUTTER =
+  'px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]';
+
+/** Left-only / right-only splits of PAGE_SHELL_GUTTER. */
+export const PAGE_SHELL_GUTTER_LEFT =
+  'pl-[3.5vw] sm:pl-[4vw] lg:pl-[4vw] xl:pl-[4.5vw]';
+export const PAGE_SHELL_GUTTER_RIGHT =
+  'pr-[3.5vw] sm:pr-[4vw] lg:pr-[4vw] xl:pr-[4.5vw]';
+
+/**
+ * Desktop sticky FunctionRail inset. Margin (not padding) so the 42rem card
+ * width is unchanged. Lives on the sticky element: parent `px` gutters are
+ * lost when `html { overflow-x: hidden }` makes the viewport the sticky
+ * containing block, and FitStage zoom overflow must not be clipped with
+ * overflow-hidden (that kills page scroll).
+ */
+export const SAMPLE_RAIL_SHELL_GUTTER = 'lg:ml-[4vw] xl:ml-[4.5vw]';
+
+/** Stacked (sub-lg) left inset on the FunctionRail row; lg+ uses SAMPLE_RAIL_SHELL_GUTTER. */
+export const SAMPLE_RAIL_ROW_GUTTER_LEFT = 'pl-[3.5vw] sm:pl-[4vw] lg:pl-0';
+
 /** Desktop left-rail width for /samples, /account, and live /report. */
 export const SAMPLE_RAIL_WIDTH = 'w-[42rem]';
 
 /** Sticky top-left rail under the header (42rem on desktop, full width when stacked). */
 export const SAMPLE_RAIL_SHELL =
-  'w-full lg:sticky lg:top-6 lg:w-[42rem] lg:shrink-0 lg:self-start';
+  `w-full lg:sticky lg:top-6 lg:w-[42rem] lg:shrink-0 lg:self-start ${SAMPLE_RAIL_SHELL_GUTTER}`;
 
 /** Vertical gap BETWEEN rail cards. */
 export const SAMPLE_RAIL_ITEM_GAP = 'gap-6';
@@ -157,7 +183,7 @@ export const SAMPLE_RAIL_CONTENT_GAP = 'gap-6 lg:gap-24';
 
 /** Flex row that places the rail top-left and the panel beside it. */
 export const SAMPLE_RAIL_ROW =
-  `flex flex-col items-stretch ${SAMPLE_RAIL_CONTENT_GAP} lg:flex-row lg:items-start`;
+  `flex flex-col items-stretch ${SAMPLE_RAIL_CONTENT_GAP} ${SAMPLE_RAIL_ROW_GUTTER_LEFT} lg:flex-row lg:items-start`;
 
 /** Sample notice (← Analyze) — same shell as the two-report compare trigger */
 export const SAMPLE_NOTICE_SURFACE =
@@ -174,9 +200,10 @@ export const REPORT_SHELL_WIDTH = 'w-full max-w-full';
 
 /**
  * Snapshot / Guide page-1 市場薪資水準 track (`PayRangeLine` hero).
- * Half of the parent pay card, horizontally centered — not full-bleed.
+ * Half of the parent pay card, left-aligned with the range heading — not
+ * full-bleed, not centered (leftover width must not become a void).
  */
-export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-1/2 max-w-[50%] mx-auto min-w-0';
+export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-1/2 max-w-[50%] min-w-0';
 
 /**
  * Guide 個人薪資落點 track (`PayRangeLine` compact, with target/ceiling markers).
@@ -184,14 +211,6 @@ export const PAY_RANGE_SNAPSHOT_WIDTH = 'w-1/2 max-w-[50%] mx-auto min-w-0';
  * Do not attach this to the zoomed 98vw report shell — only the pay card.
  */
 export const PAY_RANGE_LINE_WIDTH = 'w-full mx-auto min-w-0';
-
-/**
- * Homepage `<main>` horizontal gutters (`app/page.tsx`).
- * vw padding so left AND right stay inset on any monitor — not rem-capped,
- * not a centered 1024px island.
- */
-export const PAGE_SHELL_GUTTER =
-  'px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]';
 
 /**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,

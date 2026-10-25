@@ -20,7 +20,7 @@ describe('parseQuestionsSummary', () => {
       title: '數據專業要求',
       gist: '面試重點考察 SQL 等數據能力',
     });
-    expect(parsed.professional[1]?.title).toBe('席位第一天工作');
+    expect(parsed.professional[1]?.title).toBe('職位第一天工作');
     expect(parsed.professional[2]?.title).toBe('履歷準備範圍');
     expect(parsed.behavioral[0]?.title).toBe('書面狀態交接');
     expect(parsed.behavioral[1]?.title).toBe('遠端書面營運');
@@ -31,6 +31,8 @@ describe('parseQuestionsSummary', () => {
     expect(analysisSearchText(parsed.behavioral)).toMatch(/書面狀態/);
     expect(analysisSearchText(parsed.behavioral)).toMatch(/跨團隊/);
     expect(analysisSearchText(parsed.professional)).not.toMatch(/^ACH 退票、截止、SQL 核對/);
+    expect(SAMPLE_GUIDE_NARRATIVE['zh-TW'].questions_summary).not.toMatch(/席位|這席|該席|此席|一席|本席/);
+    expect(SAMPLE_GUIDE_NARRATIVE['zh-CN'].questions_summary).not.toMatch(/席位|这席|该席|此席|一席|本席/);
   });
 
   it('reads English titled points', () => {

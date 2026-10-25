@@ -428,6 +428,11 @@ describe('seven-item report layout', () => {
     expect(fitBody).toContain('h-56 w-56');
     expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.analysisSummary}'));
     expect(fitBody.indexOf('{copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
+    expect(fitBody).toContain('${BODY_COPY} mt-1');
+    expect(fitBody).toContain('<span className={BODY_COPY}>{point}</span>');
+    expect(fitBody).toContain('<p className={BODY_COPY}>{summaryPoints[0]}</p>');
+    expect(fitBody).not.toContain('text-slate-300 mt-1');
+    expect(fitBody).not.toContain('text-slate-200 leading-snug');
     const stack = source.slice(source.indexOf('export function SnapshotItemStack'));
     expect(stack.indexOf('title={copy.fit}')).toBeLessThan(stack.indexOf('title={copy.market}'));
     expect(stack.indexOf('title={copy.market}')).toBeLessThan(stack.indexOf('title={copy.core}'));
@@ -504,6 +509,11 @@ describe('seven-item report layout', () => {
       );
       expect(summaryHeading).toContain('report-h1');
       expect(summaryHeading).not.toContain('report-h2');
+      const beagleSlice = html.slice(html.indexOf('藍寶米格魯'), html.indexOf('總結分析'));
+      expect(beagleSlice).toContain('強勢契合');
+      expect(beagleSlice).toContain('report-body');
+      expect(beagleSlice).not.toContain('text-slate-300');
+      expect(beagleSlice).not.toContain('text-slate-200');
       expect(html).not.toContain('border-emerald-400/30');
       expect(html).toContain('grid-rows-subgrid');
     }
@@ -544,11 +554,24 @@ describe('seven-item report layout', () => {
     for (const html of [snapHtml, guideHtml]) {
       expect(html).toContain('data-pay-range="hero"');
       expect(html).not.toContain('data-pay-range="compact"');
-      expect(html).toContain('w-1/2 max-w-[50%] mx-auto');
+      expect(html).toContain('w-1/2 max-w-[50%] min-w-0');
+      expect(html).not.toContain('w-1/2 max-w-[50%] mx-auto');
       expect(html).not.toContain('w-full mx-auto min-w-0');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
       expect(html).toContain('市場總薪酬區間');
+      expect(html).toContain(' · USD');
+      const bandSlice = html.slice(
+        html.indexOf('市場總薪酬區間'),
+        html.indexOf('市場總薪酬區間') + 220,
+      );
+      expect(bandSlice).toContain(' · USD');
+      expect(bandSlice).toContain('report-body');
+      expect(html.indexOf('市場總薪酬區間')).toBeLessThan(html.indexOf(' · USD'));
+      expect(html.indexOf(' · USD')).toBeLessThan(html.indexOf('$145K'));
+      expect(html).toContain('mt-1.5 mb-2');
+      expect(html).not.toContain('mt-16 mb-16');
+      expect(html).not.toContain('text-lg mb-1 font-semibold text-white');
       expect(html).toContain(caveat);
       expect(html).not.toContain('依職稱（Senior Business Analyst）');
       expect(html).not.toContain('對照依據');
@@ -579,7 +602,8 @@ describe('seven-item report layout', () => {
     expect(source).toContain('<InnerSection title={copy.pay}>');
     expect(source).toContain('<InnerSection title={copy.benefits}>');
     expect(source).toContain('title={copy.say}');
-    expect(source).toContain('<h3 className={REPORT_H3}>{title}</h3>');
+    expect(source).toContain('${REPORT_H3}');
+    expect(source).toContain('<span>{title}</span>');
     expect(source).not.toContain('<SectionCard title={copy.pay}>');
     expect(source).not.toContain('<SectionCard title={copy.benefits}>');
     expect(source).not.toContain('<SectionCard title={copy.say}');
@@ -704,17 +728,35 @@ describe('seven-item report layout', () => {
     const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     expect(source).toContain('variant="hero"');
     expect(source).toContain('variant="compact"');
+    expect(source).toContain('rangeText && !hero');
     expect(source.split('function PayRangeLine').length - 1).toBe(1);
     for (const html of [coreHtml, landHtml]) {
       expect(html).toContain('市場總薪酬區間');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
-      expect(html).toContain('mt-16 mb-16');
     }
     expect(coreHtml).toContain('data-pay-range="hero"');
     expect(coreHtml).not.toContain('data-pay-range="compact"');
-    expect(coreHtml).toContain('w-1/2 max-w-[50%] mx-auto');
+    expect(coreHtml).toContain('w-1/2 max-w-[50%] min-w-0');
+    expect(coreHtml).not.toContain('w-1/2 max-w-[50%] mx-auto');
     expect(coreHtml).not.toContain('w-full mx-auto min-w-0');
+    expect(coreHtml).toContain(' · USD');
+    expect(coreHtml).toContain('mt-1.5 mb-2');
+    expect(coreHtml).not.toContain('mt-16 mb-16');
+    const coreBand = coreHtml.slice(
+      coreHtml.indexOf('市場總薪酬區間'),
+      coreHtml.indexOf('市場總薪酬區間') + 220,
+    );
+    expect(coreBand).toContain(' · USD');
+    expect(coreBand).toContain('report-body');
+    expect(landHtml).toContain('mt-16 mb-16');
+    expect(landHtml).toContain(' · USD');
+    const landBand = landHtml.slice(
+      landHtml.indexOf('市場總薪酬區間'),
+      landHtml.indexOf('市場總薪酬區間') + 220,
+    );
+    expect(landBand).toContain(' · USD');
+    expect(landBand).toContain('report-body');
     expect(landHtml).toContain('data-pay-range="compact"');
     expect(landHtml).not.toContain('data-pay-range="hero"');
     expect(landHtml).toContain('w-full mx-auto min-w-0');
@@ -895,16 +937,21 @@ describe('seven-item report layout', () => {
     }
   });
 
-  it('applies the same report-body class to 行為題分析 copy and 建議答案 content', () => {
+  it('applies the same report-body class to 行為題分析 copy, English stems, and 建議答案 content', () => {
     const chrome = readFileSync(join(process.cwd(), 'components/guide/GuideSlideChrome.tsx'), 'utf8');
     const pages = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
     const spec = readFileSync(join(process.cwd(), 'components/guide/GuideSpecModules.tsx'), 'utf8');
     expect(chrome).toContain("export const BODY_COPY = 'report-body'");
     expect(pages).toContain('<span className={BODY_COPY}>');
     expect(pages).toContain('<p className={BODY_COPY}>');
+    expect(pages).toContain('<p className={BODY_COPY}>{item.question}</p>');
+    expect(spec).toContain('<p className={BODY_COPY}>{item.question}</p>');
     expect(pages).toContain('<p className={`${BODY_COPY} mt-2`}>{item.answer || \'—\'}</p>');
     expect(spec).toContain('<p className={`${BODY_COPY} mt-2`}>{item.answer || \'—\'}</p>');
     expect(pages).toContain('<p className={REPORT_H3}>{copy.answer}</p>');
+    expect(spec).toContain('<p className={REPORT_H3}>{answerLabel}</p>');
+    expect(pages).not.toMatch(/<p className="text-2xl font-bold leading-snug text-slate-100">\{item\.question\}<\/p>/);
+    expect(spec).not.toMatch(/<p className="text-2xl font-bold leading-snug text-slate-100">\{item\.question\}<\/p>/);
     expect(pages).not.toMatch(/item\.answer[^;]*text-slate-400/);
     expect(pages).not.toMatch(/item\.answer[^;]*BODY_MUTED/);
 
@@ -925,10 +972,16 @@ describe('seven-item report layout', () => {
       return match?.[1] ?? '';
     };
     const analysisClass = classBefore('面試在測書面狀態能不能讓別人接著做');
+    const stemClass = classBefore('Walk me through how you prioritized');
     const answerClass = classBefore('用 SQL 例外佇列依截止風險排序');
+    const typeTokens = (className: string) =>
+      className.split(/\s+/).filter((token) => token === 'report-body' || token.startsWith('text-') || token.startsWith('font-') || token.startsWith('leading-'));
     expect(analysisClass).toContain('report-body');
+    expect(stemClass).toContain('report-body');
     expect(answerClass).toContain('report-body');
-    expect(answerClass.split(/\s+/).filter((token) => token === 'report-body' || token.startsWith('text-') || token.startsWith('font-') || token.startsWith('leading-'))).toEqual(['report-body']);
+    expect(typeTokens(analysisClass)).toEqual(['report-body']);
+    expect(typeTokens(stemClass)).toEqual(['report-body']);
+    expect(typeTokens(answerClass)).toEqual(['report-body']);
 
     const labelSlice = html.slice(html.indexOf('建議答案') - 80, html.indexOf('建議答案'));
     expect(labelSlice).toContain('report-h3');

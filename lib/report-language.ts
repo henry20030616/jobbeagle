@@ -33,5 +33,10 @@ export function geminiLanguageDirective(language: AppLanguage): string {
     language === 'en'
       ? 'Do not mix Chinese or other languages into English narrative fields. Leave a question in its source language when that page is not English.'
       : `Do not leave English UI chrome or English fallback boilerplate inside ${name} narrative fields. A question copied from an English source page is not boilerplate; leave that question in English.`,
-  ].join('\n');
+    language === 'zh-TW'
+      ? 'A job opening is 職位 / 這職位 — never 席位, 這席, 該席, 此席, 一席, or 本席. Do not change 主席, 出席, 聯席, 筵席, or 主席台.'
+      : language === 'zh-CN'
+        ? 'A job opening is 职位 / 这职位 — never 席位, 这席, 该席, 此席, 一席, or 本席. Do not change 主席, 出席, 联席, 筵席, or 主席台.'
+        : '',
+  ].filter(Boolean).join('\n');
 }

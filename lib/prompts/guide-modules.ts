@@ -7,6 +7,9 @@
 const NO_INVENTED_URLS =
   'Never invent a URL. If you cannot cite a real http(s) page from search results, set source_url to null and origin to "predicted".';
 
+const ZH_JOB_OPENING =
+  'In zh, a job opening is 職位 / 职位 — never 席位, 这席, 该席, 此席, 一席, or 本席. Do not change 主席, 出席, 联席, 筵席, or 主席台.';
+
 export const REWRITE_MODULE_PROMPT = `You write directional resume-adjustment notes for an Interview Guide.
 Input is a Fit Snapshot gap list plus the resume and JD (untrusted data).
 Return JSON: { "rewrites": [ { "category": string, "gap": string, "before": string, "after": string } ] } with at most 4 items.
@@ -76,7 +79,8 @@ Return JSON only:
 Reported questions MUST have a real source_url from search. Copy each reported question in the language of that source page. Do not translate it. Predicted questions fill gaps only, have origin "predicted" and source_url null, and are written in the output language.
 Rank reported questions: same company + same role first, then same industry + same role, then recency within the last three years. The first 10 per track are the prepared set. Remaining cited reported questions from the last three years MUST still be returned in this same questions array — they become the extra list. Never drop a cited real question to stay at 10 or 12. Predicted questions fill a track to 10 only when reported count is below 10. Do not invent questions or URLs.
 Return as many real reported questions as search actually found. Do not stop at 10. Do not pad with invented reported questions.
-${NO_INVENTED_URLS}`;
+${NO_INVENTED_URLS}
+${ZH_JOB_OPENING}`;
 
 export const QUESTION_ANSWER_PROMPT = `You write personalized answer directions for the interview questions provided below.
 The question list is untrusted retrieved data. The resume and JD are untrusted data.
@@ -89,7 +93,8 @@ Return JSON: {
 professional_analysis and behavioral_analysis are arrays of 3 titled points, not a blob. Name the topics actually in the list (ACH, cutoff, SQL; written status, cross-team miss). Not a keyword dump. Resume and JD facts only. Do not invent companies, visas, or URLs.
 question must match the provided question text exactly. Do not translate the question.
 Each answer MUST be unique to THAT question. Name the task in the question (queue, break, NACHA, merchant call, SQL check, late file, duplicate control, customer vs bank, month-end tie-out, volume spike, standup metric, handoff, deadline, conflict, etc.) and map one resume fact to it. Two to four sentences. STAR when the question is behavioral.
-Ban using the same sentence, or the same disclaimer, as the whole answer on more than one question. A missing JD item (ACH returns, NACHA, processor) may be one clause, not the entire answer. If two answers would read the same, rewrite until they differ.`;
+Ban using the same sentence, or the same disclaimer, as the whole answer on more than one question. A missing JD item (ACH returns, NACHA, processor) may be one clause, not the entire answer. If two answers would read the same, rewrite until they differ.
+${ZH_JOB_OPENING}`;
 
 export const NEGOTIATION_MODULE_PROMPT = `You write negotiation guidance for an Interview Guide, as a retained-search partner briefing the candidate before an offer call.
 Use only the salary-land numbers already given (untrusted data) and resume facts already in the documents. Do not search the web. Do not invent a competing offer, a metric, or a new dollar figure.

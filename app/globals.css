@@ -148,7 +148,8 @@ body > div {
 }
 
 /*
- * Guide body copy: 行為題分析 bullets and 建議答案 CONTENT (not the label).
+ * Guide body copy: 總結分析 / 行為題分析, English question stems, and
+ * 建議答案 CONTENT (not the 網路真題 / 建議答案 labels).
  * Explicit CSS so this cannot silently miss Tailwind generation.
  */
 .report-body {

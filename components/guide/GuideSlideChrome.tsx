@@ -8,7 +8,7 @@ export const SECTION_TITLE = 'text-lg font-bold uppercase tracking-[0.14em]';
 export const SUBHEAD = 'text-xl font-black text-white';
 export const BODY = 'text-lg';
 export const BODY_MUTED = 'text-lg text-slate-400';
-/** 行為題分析 bullets and 建議答案 content — same size, weight, color, leading. */
+/** 總結分析 / 行為題分析 body, English question stems, and 建議答案 content — same size, weight, color, leading. */
 export const BODY_COPY = 'report-body';
 export const META = 'text-base';
 

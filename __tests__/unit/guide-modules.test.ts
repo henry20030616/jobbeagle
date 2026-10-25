@@ -122,6 +122,8 @@ describe('guide module routes', () => {
     expect(QUESTION_ANSWER_PROMPT).toContain('professional_analysis');
     expect(QUESTION_ANSWER_PROMPT).toContain('behavioral_analysis');
     expect(QUESTION_ANSWER_PROMPT).toContain('Not a keyword dump');
+    expect(QUESTION_RETRIEVAL_PROMPT).toContain('never 席位');
+    expect(QUESTION_ANSWER_PROMPT).toContain('never 席位');
   });
 
   it('never routes intel or snapshot to Anthropic', () => {

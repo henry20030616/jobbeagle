@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   geminiLanguageDirective,
@@ -15,7 +17,11 @@ describe('report language', () => {
 
   it('builds a Gemini directive that names the target language', () => {
     expect(geminiLanguageDirective('zh-TW')).toMatch(/Traditional Chinese/);
+    expect(geminiLanguageDirective('zh-TW')).toMatch(/職位 \/ 這職位/);
+    expect(geminiLanguageDirective('zh-TW')).toMatch(/never 席位/);
+    expect(geminiLanguageDirective('zh-CN')).toMatch(/职位 \/ 这职位/);
     expect(geminiLanguageDirective('en')).toMatch(/English/);
+    expect(geminiLanguageDirective('en')).not.toMatch(/席位/);
     expect(geminiLanguageDirective('es')).toMatch(/Spanish/);
   });
 
@@ -41,5 +47,24 @@ describe('report language', () => {
     expect(snap.applyLabels['Apply after fixes']).not.toMatch(/履歷調整後再應徵/);
     expect(guide.nav.hiring.label).toBe('職位與團隊');
     expect(guide.teamSampleInsufficient).toMatch(/樣本不足/);
+  });
+
+  it('does not call a job opening 席位 in user-facing copy', () => {
+    const files = [
+      'lib/sample-guide-locale.ts',
+      'lib/report-ui-copy.ts',
+      'lib/executive-ui-copy.ts',
+      'lib/sample-reports.ts',
+      'lib/sample-report-locales.ts',
+      'constants/homepage-form-copy.ts',
+      'constants/report-compare.ts',
+      'constants/account-nav.ts',
+      'constants/features.ts',
+    ];
+    const banned = /席位|這席|該席|此席|一席|本席|这席|该席/;
+    for (const file of files) {
+      const text = readFileSync(join(process.cwd(), file), 'utf8');
+      expect(text, file).not.toMatch(banned);
+    }
   });
 });

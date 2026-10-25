@@ -12,6 +12,7 @@ import {
   PageHeaderBar,
   SECTION_TITLE,
 } from '@/components/guide/GuideSlideChrome';
+import { REPORT_H3 } from '@/constants/report-frame';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { isCitableSourceUrl } from '@/lib/provenance';
@@ -136,12 +137,12 @@ function QuestionList({
                     </a>
                   ) : null}
                 </div>
-                <p className="text-2xl font-bold leading-snug text-slate-100">{item.question}</p>
+                <p className={BODY_COPY}>{item.question}</p>
               </div>
             </div>
           </div>
           <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
-            <p className="text-xl font-black text-slate-100">{answerLabel}</p>
+            <p className={REPORT_H3}>{answerLabel}</p>
             <p className={`${BODY_COPY} mt-2`}>{item.answer || '—'}</p>
           </div>
         </li>
@@ -297,7 +298,7 @@ export default function GuideSpecModules({
               <summary className={`${BODY} font-semibold text-slate-200 cursor-pointer`}>{t.extra}</summary>
               <ul className="mt-3 space-y-1.5">
                 {bank.professional_extra.map((item) => (
-                  <li key={item.question} className="text-xl font-semibold leading-snug text-slate-200">
+                  <li key={item.question} className={BODY_COPY}>
                     {item.question}
                     {isCitableSourceUrl(item.source_url) ? (
                       <>
@@ -326,7 +327,7 @@ export default function GuideSpecModules({
               <summary className={`${BODY} font-semibold text-slate-200 cursor-pointer`}>{t.extra}</summary>
               <ul className="mt-3 space-y-1.5">
                 {bank.behavioral_extra.map((item) => (
-                  <li key={item.question} className="text-xl font-semibold leading-snug text-slate-200">
+                  <li key={item.question} className={BODY_COPY}>
                     {item.question}
                     {isCitableSourceUrl(item.source_url) ? (
                       <>

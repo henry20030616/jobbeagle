@@ -92,7 +92,7 @@ describe('homepage form copy', () => {
     expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toContain('此職位市場薪資水準');
     expect(HOMEPAGE_FORM_COPY['zh-CN'].snapshotBlurb).toContain('此职位市场薪资水准');
     for (const copy of [HOMEPAGE_FORM_COPY['zh-TW'], HOMEPAGE_FORM_COPY['zh-CN']]) {
-      expect(JSON.stringify(copy)).not.toMatch(/這席|这席|此席/);
+      expect(JSON.stringify(copy)).not.toMatch(/席位|這席|该席|該席|此席|一席|本席|这席/);
     }
   });
 

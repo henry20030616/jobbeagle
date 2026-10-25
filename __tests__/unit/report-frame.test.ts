@@ -13,6 +13,8 @@ import {
   HOMEPAGE_STEP_PILL_TYPE,
   HOMEPAGE_TITLE_TYPE,
   PAGE_SHELL_GUTTER,
+  PAGE_SHELL_GUTTER_LEFT,
+  PAGE_SHELL_GUTTER_RIGHT,
   REPORT_ACTION_TEXT,
   REPORT_FRAME_BORDER,
   REPORT_SHELL_WIDTH,
@@ -23,7 +25,9 @@ import {
   SAMPLE_RAIL_CONTENT_GAP,
   SAMPLE_RAIL_ITEM_GAP,
   SAMPLE_RAIL_ROW,
+  SAMPLE_RAIL_ROW_GUTTER_LEFT,
   SAMPLE_RAIL_SHELL,
+  SAMPLE_RAIL_SHELL_GUTTER,
   SAMPLE_RAIL_TEXT,
   SAMPLE_RAIL_WIDTH,
   SAMPLE_REPORT_TAB_ACTIVE,
@@ -45,7 +49,12 @@ describe('report chrome type scale', () => {
     expect(SAMPLE_RAIL_ITEM_GAP).toBe('gap-6');
     expect(SAMPLE_RAIL_CONTENT_GAP).toBe('gap-6 lg:gap-24');
     expect(SAMPLE_RAIL_ROW).toContain(SAMPLE_RAIL_CONTENT_GAP);
+    expect(SAMPLE_RAIL_ROW).toContain(SAMPLE_RAIL_ROW_GUTTER_LEFT);
     expect(SAMPLE_RAIL_ROW).toContain('lg:flex-row');
+    expect(SAMPLE_RAIL_ROW).not.toMatch(/overflow-hidden/);
+    expect(SAMPLE_RAIL_SHELL).toContain(SAMPLE_RAIL_SHELL_GUTTER);
+    expect(SAMPLE_RAIL_SHELL_GUTTER).toBe('lg:ml-[4vw] xl:ml-[4.5vw]');
+    expect(SAMPLE_RAIL_ROW_GUTTER_LEFT).toBe('pl-[3.5vw] sm:pl-[4vw] lg:pl-0');
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain(SAMPLE_RAIL_TEXT);
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('px-8 py-6');
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('gap-5');
@@ -76,6 +85,7 @@ describe('report chrome type scale', () => {
     );
 
     expect(rail).toContain('SAMPLE_RAIL_SHELL');
+    expect(rail).toContain('SAMPLE_RAIL_SHELL_GUTTER');
     expect(rail).toContain('SAMPLE_RAIL_ITEM_GAP');
     expect(samples).toContain('FunctionRail');
     expect(samples).toContain('sampleReportTabClass');
@@ -242,7 +252,8 @@ describe('Guide inner section cards', () => {
     expect(negotiate).toContain('labeled');
     expect(negotiate).toContain('${BODY_COPY} mb-4');
     expect(negotiate).not.toContain('${BODY_MUTED} mb-4');
-    expect(pages).toContain('<h3 className={REPORT_H3}>{title}</h3>');
+    expect(pages).toContain('${REPORT_H3}');
+    expect(pages).toContain('<span>{title}</span>');
   });
 });
 
@@ -340,10 +351,11 @@ describe('report item heading scale', () => {
 
 describe('pay-range widths', () => {
   it('keeps Snapshot market at half the card and Guide land full width', () => {
-    expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-1/2 max-w-[50%] mx-auto min-w-0');
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).toBe('w-1/2 max-w-[50%] min-w-0');
     expect(PAY_RANGE_LINE_WIDTH).toBe('w-full mx-auto min-w-0');
     expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('w-1/2');
     expect(PAY_RANGE_SNAPSHOT_WIDTH).toContain('max-w-[50%]');
+    expect(PAY_RANGE_SNAPSHOT_WIDTH).not.toContain('mx-auto');
     const pages = readFileSync(
       join(process.cwd(), 'components/report/SevenItemPages.tsx'),
       'utf8',
@@ -370,6 +382,12 @@ describe('pay-mix legend', () => {
 describe('page shell gutters', () => {
   it('matches homepage left/right vw padding on samples and live report shells', () => {
     expect(PAGE_SHELL_GUTTER).toBe('px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]');
+    expect(PAGE_SHELL_GUTTER_LEFT).toBe(
+      'pl-[3.5vw] sm:pl-[4vw] lg:pl-[4vw] xl:pl-[4.5vw]',
+    );
+    expect(PAGE_SHELL_GUTTER_RIGHT).toBe(
+      'pr-[3.5vw] sm:pr-[4vw] lg:pr-[4vw] xl:pr-[4.5vw]',
+    );
     expect(REPORT_SHELL_WIDTH).toBe('w-full max-w-full');
     expect(REPORT_SHELL_WIDTH).not.toMatch(/\d+rem/);
 
@@ -379,14 +397,22 @@ describe('page shell gutters', () => {
       'utf8',
     );
     const report = readFileSync(join(process.cwd(), 'app/report/page.tsx'), 'utf8');
+    const account = readFileSync(join(process.cwd(), 'app/account/page.tsx'), 'utf8');
     const compareModal = readFileSync(
       join(process.cwd(), 'components/ReportCompareModal.tsx'),
       'utf8',
     );
 
     expect(homepage).toContain(PAGE_SHELL_GUTTER);
-    expect(samples).toContain('PAGE_SHELL_GUTTER');
-    expect(report).toContain('PAGE_SHELL_GUTTER');
+    expect(samples).toContain('PAGE_SHELL_GUTTER_LEFT');
+    expect(samples).toContain('PAGE_SHELL_GUTTER_RIGHT');
+    expect(samples).toContain('SAMPLE_RAIL_ROW');
+    expect(report).toContain('PAGE_SHELL_GUTTER_LEFT');
+    expect(report).toContain('PAGE_SHELL_GUTTER_RIGHT');
+    expect(report).toContain('SAMPLE_RAIL_ROW');
+    expect(account).toContain('PAGE_SHELL_GUTTER_LEFT');
+    expect(account).toContain('PAGE_SHELL_GUTTER_RIGHT');
+    expect(account).toContain('SAMPLE_RAIL_ROW');
     expect(compareModal).toContain('PAGE_SHELL_GUTTER');
     expect(samples).not.toMatch(/header className="[^"]*px-6 py-6 sm:px-8/);
     expect(report).not.toMatch(/header className="[^"]*px-6 py-4/);

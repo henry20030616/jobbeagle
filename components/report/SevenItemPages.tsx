@@ -610,6 +610,7 @@ function PayRangeLine({
   const fillRight = 100 - (highPct ?? 100);
   const staggerCeiling =
     targetPct !== null && ceilingPct !== null;
+  const hero = variant === 'hero';
   const aria = [
     rangeText ? `${rangeText} (${money})` : money,
     targetLabel && targetValue ? `${targetLabel} ${targetValue}` : null,
@@ -617,16 +618,16 @@ function PayRangeLine({
   ].filter(Boolean).join('. ');
   return (
     <div
-      className={variant === 'hero' ? PAY_RANGE_SNAPSHOT_WIDTH : PAY_RANGE_LINE_WIDTH}
+      className={hero ? PAY_RANGE_SNAPSHOT_WIDTH : PAY_RANGE_LINE_WIDTH}
       data-pay-range={variant}
       role="img"
       aria-label={aria}
     >
-      {rangeText ? (
+      {rangeText && !hero ? (
         <p className={`${BODY} mb-2 font-semibold text-white`}>{rangeText}</p>
       ) : null}
       <div className="px-16">
-        <div className="relative mt-16 mb-16 h-2.5 rounded-full bg-slate-700">
+        <div className={`relative h-2.5 rounded-full bg-slate-700 ${hero ? 'mt-1.5 mb-2' : 'mt-16 mb-16'}`}>
           <span
             className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
             style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}
@@ -813,16 +814,21 @@ function SectionCard({
 /** L3 label inside a shared GUIDE_SECTION_FRAME — no extra outer card. */
 function InnerSection({
   title,
+  aside,
   children,
   className,
 }: {
   title: string;
+  aside?: string;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
     <div className={className ? `min-w-0 ${className}` : 'min-w-0'}>
-      <h3 className={REPORT_H3}>{title}</h3>
+      <h3 className={`${REPORT_H3} flex flex-wrap items-baseline gap-x-2`}>
+        <span>{title}</span>
+        {aside ? <span className={BODY_COPY}> · {aside}</span> : null}
+      </h3>
       <div className="mt-4">{children}</div>
     </div>
   );
@@ -1018,17 +1024,19 @@ function ItemBlock({
   summaryLabel,
   summary,
   children,
+  bodyClassName = 'mt-4',
 }: {
   title: string;
   summaryLabel?: string;
   summary?: string;
   children: React.ReactNode;
+  bodyClassName?: string;
 }) {
   return (
     <section className={GUIDE_SECTION_FRAME}>
       <h2 className={REPORT_H1}>{title}</h2>
       {summaryLabel ? <SectionOverview label={summaryLabel} summary={summary ?? ''} /> : null}
-      <div className="mt-4">{children}</div>
+      <div className={bodyClassName}>{children}</div>
     </section>
   );
 }
@@ -1072,11 +1080,14 @@ function MarketBody({
     { title: copy.level, lines: levelLines.length > 0 ? levelLines : [scope.level] },
   ];
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div>
-        <p className={REPORT_H2}>{copy.band}</p>
+        <p className={`${REPORT_H2} flex flex-wrap items-baseline gap-x-2`}>
+          <span>{copy.band}</span>
+          {range ? <span className={BODY_COPY}> · {money}</span> : null}
+        </p>
         {range ? (
-          <div className="mt-3">
+          <div className="mt-1.5">
             <PayRangeLine
               offer={offer}
               currency={money}
@@ -1164,13 +1175,13 @@ function FitBody({
           </div>
           <div className="min-w-0">
             <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
-            <p className={`${BODY} text-slate-300 mt-1`}>{scoreInfo.label}</p>
+            <p className={`${BODY_COPY} mt-1`}>{scoreInfo.label}</p>
             {verdictLines.length > 0 ? (
-              <ul className="mt-3 space-y-3">
+              <ul className="mt-3 space-y-2">
                 {verdictLines.map((point) => (
-                  <li key={point} className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                  <li key={point} className="flex gap-2.5">
                     <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                    <span>{point}</span>
+                    <span className={BODY_COPY}>{point}</span>
                   </li>
                 ))}
               </ul>
@@ -1183,7 +1194,7 @@ function FitBody({
             {summaryPoints.length > 1 ? (
               <BriefRows items={summaryPoints} />
             ) : summaryPoints[0] ? (
-              <p className={`${BODY} font-medium text-slate-100 leading-snug`}>{summaryPoints[0]}</p>
+              <p className={BODY_COPY}>{summaryPoints[0]}</p>
             ) : null}
           </section>
           <section className="min-w-0">
@@ -1310,7 +1321,7 @@ export function SnapshotItemStack({
           analysisSummary={summaries.fit}
         />
       </ItemBlock>
-      <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market}>
+      <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market} bodyClassName="mt-2">
         <MarketBody
           report={report}
           copy={copy}
@@ -1366,7 +1377,7 @@ function QuestionList({
                     </a>
                   ) : null}
                 </div>
-                <p className="text-2xl font-bold leading-snug text-slate-100">{item.question}</p>
+                <p className={BODY_COPY}>{item.question}</p>
               </div>
             </div>
           </div>
@@ -1387,7 +1398,7 @@ function ExtraList({ items, title }: { items: GuideQuestion[]; title: string }) 
       <summary className={`${BODY} font-semibold text-slate-200 cursor-pointer`}>{title}</summary>
       <ul className="mt-3 space-y-1.5">
         {items.map((item) => (
-          <li key={item.question} className="text-xl font-semibold leading-snug text-slate-200">
+          <li key={item.question} className={BODY_COPY}>
             {item.question}
             {isCitableSourceUrl(item.source_url) ? (
               <>
@@ -1467,7 +1478,11 @@ export function GuideItemPage({
             ) : (
               <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
             )}
-            <InnerSection title={copy.band} className="w-full lg:flex-1">
+            <InnerSection
+              title={copy.band}
+              aside={report.expected_offer?.currency?.trim() || 'USD'}
+              className="w-full lg:flex-1"
+            >
               <PayRangeLine
                 offer={report.expected_offer}
                 targetLabel={copy.target}
