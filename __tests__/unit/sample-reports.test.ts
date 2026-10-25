@@ -520,14 +520,15 @@ describe('seven-item report layout', () => {
       expect(html.indexOf('$145K')).toBeLessThan(html.indexOf(caveat));
     }
     expect(snapHtml).not.toContain('議價天花板');
+    expect(snapHtml).not.toContain('個人目標');
     expect(snapHtml).not.toContain('data-range-label="target"');
+    expect(snapHtml).not.toContain('data-range-label="ceiling"');
     expect(snapHtml).toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
-    expect(guideHtml).toContain('議價天花板');
-    expect(guideHtml).toContain('個人目標');
-    expect(guideHtml).toContain('$168K');
-    expect(guideHtml).toContain('$185K');
-    expect(guideHtml).toContain('data-range-label="target"');
-    expect(guideHtml).toContain('data-range-label="ceiling"');
+    expect(guideHtml).not.toContain('議價天花板');
+    expect(guideHtml).not.toContain('個人目標');
+    expect(guideHtml).not.toContain('$168K');
+    expect(guideHtml).not.toContain('data-range-label="target"');
+    expect(guideHtml).not.toContain('data-range-label="ceiling"');
     expect(guideHtml).not.toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
   });
 
@@ -654,7 +655,7 @@ describe('seven-item report layout', () => {
     expect(html.split('border-2 border-blue-500').length - 1).toBe(3);
   });
 
-  it('uses the same compact pay-range on Guide 職位核心解析 市場薪資水準 and 個人薪資落點', () => {
+  it('keeps personal target and ceiling on Guide 個人薪資落點, not 職位核心解析 市場薪資水準', () => {
     const report = getSampleStrategyGuideReport('zh-TW');
     const coreHtml = renderToStaticMarkup(
       createElement(GuideItemPage, { report, item: 'core', language: 'zh-TW' }),
@@ -671,18 +672,23 @@ describe('seven-item report layout', () => {
       expect(html).toContain('市場總薪酬區間');
       expect(html).toContain('$145K');
       expect(html).toContain('$190K');
-      expect(html).toContain('$168K');
-      expect(html).toContain('$185K');
-      expect(html).toContain('個人目標');
-      expect(html).toContain('議價天花板');
-      expect(html).toContain('data-range-label="target"');
-      expect(html).toContain('data-range-label="ceiling"');
       expect(html).toContain('w-full mx-auto min-w-0');
       expect(html).toContain('mt-16 mb-16');
     }
     expect(coreHtml).toContain('市場薪資水準');
     expect(coreHtml).toContain('職位核心解析');
+    expect(coreHtml).not.toContain('個人目標');
+    expect(coreHtml).not.toContain('議價天花板');
+    expect(coreHtml).not.toContain('$168K');
+    expect(coreHtml).not.toContain('data-range-label="target"');
+    expect(coreHtml).not.toContain('data-range-label="ceiling"');
     expect(landHtml).toContain('個人薪資落點');
+    expect(landHtml).toContain('$168K');
+    expect(landHtml).toContain('$185K');
+    expect(landHtml).toContain('個人目標');
+    expect(landHtml).toContain('議價天花板');
+    expect(landHtml).toContain('data-range-label="target"');
+    expect(landHtml).toContain('data-range-label="ceiling"');
   });
 
   it('renders pay, benefits, and script as one negotiate playbook frame', () => {

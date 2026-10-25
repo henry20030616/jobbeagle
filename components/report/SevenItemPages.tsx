@@ -66,8 +66,6 @@ type ItemCopy = {
   apply: string;
   lockPay: string;
   lockRewrite: string;
-  before: string;
-  after: string;
   target: string;
   ceiling: string;
   judgment: string;
@@ -128,51 +126,51 @@ function extraRuleCopy(language: AppLanguage): string {
 function missingKeysTitle(language: AppLanguage): string {
   switch (language) {
     case 'zh-CN':
-      return '简历缺少的关键';
+      return '待优化改善';
     case 'zh-TW':
-      return '履歷缺少的關鍵';
+      return '待優化改善';
     case 'es':
-      return 'Claves que faltan en el CV';
+      return 'Pendiente de mejorar';
     case 'hi':
-      return 'रिज़्यूमे में कमी वाले मुख्य बिंदु';
+      return 'सुधार बाकी';
     case 'ar':
-      return 'المفاتيح الناقصة في السيرة';
+      return 'بحاجة إلى تحسين';
     default:
-      return 'Missing keys on the resume';
+      return 'To improve';
   }
 }
 
 function rewriteDirectionTitle(language: AppLanguage): string {
   switch (language) {
     case 'zh-CN':
-      return '建议简历优化方向';
+      return '调整建议';
     case 'zh-TW':
-      return '建議履歷優化方向';
+      return '調整建議';
     case 'es':
-      return 'Dirección sugerida para el CV';
+      return 'Ajustes sugeridos';
     case 'hi':
-      return 'सुझाई गई रिज़्यूमे दिशा';
+      return 'समायोजन सुझाव';
     case 'ar':
-      return 'اتجاه مقترح لتحسين السيرة';
+      return 'اقتراحات التعديل';
     default:
-      return 'Suggested resume direction';
+      return 'Adjustment advice';
   }
 }
 
 function resumeAdviceTitle(language: AppLanguage): string {
   switch (language) {
     case 'zh-CN':
-      return '简历缺少与优化建议';
+      return '简历优化建议';
     case 'zh-TW':
-      return '履歷缺少與優化建議';
+      return '履歷優化建議';
     case 'es':
-      return 'Claves y dirección del CV';
+      return 'Sugerencias para el CV';
     case 'hi':
-      return 'रिज़्यूमे कमी और दिशा';
+      return 'रिज़्यूमे अनुकूलन सुझाव';
     case 'ar':
-      return 'نقص السيرة واتجاه التحسين';
+      return 'اقتراحات تحسين السيرة';
     default:
-      return 'Resume gaps and direction';
+      return 'Resume optimization advice';
   }
 }
 
@@ -283,10 +281,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
         ? '🔒 升级 Interview Guide 可解锁个人化精准落点与 TC 结构拆解'
         : '🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解',
       lockRewrite: s
-        ? '🔒 升级 Interview Guide 可解锁针对该硬伤的具体修改范例与满分话术'
-        : '🔒 升級 Interview Guide 可解鎖針對該硬傷的具體修改範例與滿分話術',
-      before: s ? '修改前' : '修改前',
-      after: s ? '修改后' : '修改後',
+        ? '🔒 升级 Interview Guide 可解锁对应调整建议'
+        : '🔒 升級 Interview Guide 可解鎖對應調整建議',
       target: s ? '个人战略目标薪资' : '個人戰略目標薪資',
       ceiling: s ? '议价天花板' : '議價天花板',
       judgment: s ? '判断：为什么是这些数字' : '判斷：為什麼是這些數字',
@@ -368,9 +364,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     resumeAdvice: resumeAdviceTitle(language),
     apply: 'Apply advice',
     lockPay: '🔒 Upgrade to Interview Guide for your pay landing and TC split',
-    lockRewrite: '🔒 Upgrade to Interview Guide for line-by-line rewrites of these gaps',
-    before: 'Before',
-    after: 'After',
+    lockRewrite: '🔒 Upgrade to Interview Guide to unlock matching adjustment advice',
     target: 'Personal target compensation',
     ceiling: 'Ceiling',
     judgment: 'Judgment: why these numbers',
@@ -1073,15 +1067,11 @@ function MarketBody({
   copy,
   language,
   locked,
-  targetValue,
-  ceilingValue,
 }: {
   report: LiteReport;
   copy: ItemCopy;
   language: AppLanguage;
   locked: boolean;
-  targetValue?: string;
-  ceilingValue?: string;
 }) {
   const offer = report.expected_offer;
   const range = formatOfferRange(offer);
@@ -1104,10 +1094,6 @@ function MarketBody({
             <PayRangeLine
               offer={offer}
               currency={money}
-              targetLabel={targetValue ? copy.target : undefined}
-              targetValue={targetValue}
-              ceilingLabel={ceilingValue ? copy.ceiling : undefined}
-              ceilingValue={ceilingValue}
             />
           </div>
         ) : (
@@ -1299,7 +1285,6 @@ export function SnapshotItemStack({
   const lang = normalizeReportLanguage(language);
   const copy = itemCopy(lang);
   const summaries = snapshotItemSummaries(report);
-  const salaryLand = guideSalaryLand(report);
   return (
     <div className="space-y-4 px-5 py-4">
       <ItemBlock title={copy.fit}>
@@ -1316,8 +1301,6 @@ export function SnapshotItemStack({
           copy={copy}
           language={lang}
           locked={locked}
-          targetValue={salaryLand?.target}
-          ceilingValue={salaryLand?.ceiling}
         />
       </ItemBlock>
       <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
@@ -1438,8 +1421,6 @@ export function GuideItemPage({
         copy={copy}
         language={lang}
         locked={false}
-        targetValue={modules?.salary_land?.target}
-        ceilingValue={modules?.salary_land?.ceiling}
       />
     );
   }
@@ -1453,7 +1434,7 @@ export function GuideItemPage({
     );
   }
   if (item === 'land') {
-    const salary = modules?.salary_land;
+    const salary = guideSalaryLand(report);
     const mix = [
       [copy.base, salary?.base],
       [copy.equity, salary?.equity],

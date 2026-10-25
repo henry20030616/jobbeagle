@@ -34,7 +34,7 @@ describe('guideSalaryLand', () => {
     expect(land?.ceiling).toMatch(/\$185K/);
   });
 
-  it('does not let SnapshotItemStack read report.guide_modules on LiteReport', () => {
+  it('does not let SnapshotItemStack read salary land or guide_modules', () => {
     const source = readFileSync(
       join(process.cwd(), 'components/report/SevenItemPages.tsx'),
       'utf8',
@@ -43,9 +43,18 @@ describe('guideSalaryLand', () => {
       source.indexOf('export function SnapshotItemStack'),
       source.indexOf('function QuestionList'),
     );
-    expect(stack).toContain('guideSalaryLand(report)');
+    expect(stack).not.toContain('guideSalaryLand');
     expect(stack).not.toContain('report.guide_modules');
+    expect(stack).not.toContain('targetValue');
+    expect(stack).not.toContain('ceilingValue');
     expect(source).not.toContain('salaryLandFrom');
     expect(source).not.toContain('as any');
+    const land = source.slice(
+      source.indexOf("if (item === 'land')"),
+      source.indexOf("if (item === 'company')"),
+    );
+    expect(land).toContain('guideSalaryLand(report)');
+    expect(land).toContain('targetValue={salary.target}');
+    expect(land).toContain('ceilingValue={salary.ceiling}');
   });
 });
