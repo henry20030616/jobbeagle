@@ -153,7 +153,7 @@ export function analysisSearchText(points: AnalysisPoint[]): string {
 function splitGistFromBody(title: string, text: string): AnalysisPoint {
   const trimmed = text.trim();
   if (!trimmed) return { title, gist: '', body: '' };
-  const match = trimmed.match(/^(.+?[.。！？])\s+(.+)$/s);
+  const match = trimmed.match(/^(.+?[.。！？])\s+([\s\S]+)$/);
   if (match?.[1] && match[2]) {
     return { title, gist: match[1].trim(), body: match[2].trim() };
   }

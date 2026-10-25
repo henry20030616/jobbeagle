@@ -1284,13 +1284,18 @@ function ResumeAdviceBody({
   );
 }
 
+function salaryLandFrom(report: LiteReport | FullReport) {
+  if (!('guide_modules' in report)) return undefined;
+  return report.guide_modules?.salary_land;
+}
+
 export function SnapshotItemStack({
   report,
   language = 'en',
   locked = true,
   rewrites = [],
 }: {
-  report: LiteReport;
+  report: LiteReport | FullReport;
   language?: AppLanguage | string;
   locked?: boolean;
   rewrites?: GuideResumeRewrite[];
@@ -1298,6 +1303,7 @@ export function SnapshotItemStack({
   const lang = normalizeReportLanguage(language);
   const copy = itemCopy(lang);
   const summaries = snapshotItemSummaries(report);
+  const salaryLand = salaryLandFrom(report);
   return (
     <div className="space-y-4 px-5 py-4">
       <ItemBlock title={copy.fit}>
@@ -1314,8 +1320,8 @@ export function SnapshotItemStack({
           copy={copy}
           language={lang}
           locked={locked}
-          targetValue={report.guide_modules?.salary_land?.target}
-          ceilingValue={report.guide_modules?.salary_land?.ceiling}
+          targetValue={salaryLand?.target}
+          ceilingValue={salaryLand?.ceiling}
         />
       </ItemBlock>
       <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
