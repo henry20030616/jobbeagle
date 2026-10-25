@@ -1305,7 +1305,7 @@ function ResumeAdviceBody({
       {keywords.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {keywords.slice(0, 8).map((word) => (
-            <span key={word} className="rounded-md bg-slate-900 px-2 py-1 text-base font-semibold text-slate-100">
+            <span key={word} className={`rounded-md bg-slate-900 px-2 py-1 ${BODY_COPY}`}>
               {word}
             </span>
           ))}
@@ -1327,7 +1327,7 @@ function ResumeAdviceBody({
               </div>
             ))
           ) : (
-            <p className={`${BODY_MUTED} mt-4 md:mt-0`}>{copy.empty}</p>
+            <p className={`${BODY_COPY} mt-4 md:mt-0`}>{copy.empty}</p>
           )}
         </section>
         <section className={`min-w-0 ${layout.colSpan} md:col-start-2 md:grid md:grid-rows-subgrid`}>
@@ -1348,7 +1348,7 @@ function ResumeAdviceBody({
               </div>
             ))
           ) : (
-            <p className={`${BODY_MUTED} mt-4 md:mt-0`}>{copy.empty}</p>
+            <p className={`${BODY_COPY} mt-4 md:mt-0`}>{copy.empty}</p>
           )}
         </section>
       </div>
