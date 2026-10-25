@@ -14,7 +14,7 @@ describe('homepage form copy', () => {
     expect(t.reportTypeStep).toBe('3. Choose report type');
     expect(t.launchStep).toBe('4. Launch');
     expect(t.jobUrlPlaceholder).toBe(
-      'Paste the full job posting: company name, job title, requirements, and responsibilities\nDo not paste only a URL or a short excerpt\nYou can also install the Chrome extension to capture the posting in one click',
+      'Paste the full job posting: company name, job title, requirements, and responsibilities\nDo not paste only a URL or a short excerpt\nWe recommend installing the Chrome extension to capture the posting in one click',
     );
     expect(t.snapshotBlurb).toMatch(/hard requirements|missing keywords|pay band/i);
     expect(t.strategyBlurb).toMatch(/web search/i);
@@ -127,13 +127,13 @@ describe('homepage form copy', () => {
   it('does not end the job-paste placeholder with an ellipsis', () => {
     const expected: Record<keyof typeof HOMEPAGE_FORM_COPY, string> = {
       'zh-TW':
-        '請貼上完整職缺正文：公司名稱、職缺名稱，以及條件與職責\n請勿只貼網址或片段\n也可安裝 Chrome 外掛，一鍵抓取職缺內容',
+        '請貼上完整職缺正文：公司名稱、職缺名稱，以及條件與職責\n請勿只貼網址或片段\n推薦安裝 Chrome 外掛，一鍵抓取職缺內容',
       'zh-CN':
-        '请粘贴完整职位正文：公司名称、职位名称，以及条件与职责\n请勿只贴网址或片段\n也可安装 Chrome 插件，一键抓取职位内容',
-      en: 'Paste the full job posting: company name, job title, requirements, and responsibilities\nDo not paste only a URL or a short excerpt\nYou can also install the Chrome extension to capture the posting in one click',
-      es: 'Pega la oferta completa: empresa, puesto, requisitos y responsabilidades\nNo pegues solo una URL o un extracto\nTambién puedes instalar la extensión de Chrome para capturar la oferta en un clic',
-      hi: 'पूरी जॉब पोस्टिंग पेस्ट करें: कंपनी नाम, पदनाम, आवश्यकताएँ और जिम्मेदारियाँ\nकेवल URL या छोटा अंश न पेस्ट करें\nChrome एक्सटेंशन इंस्टॉल करके एक क्लिक में जॉब पोस्टिंग कैप्चर भी कर सकते हैं',
-      ar: 'الصق إعلان الوظيفة بالكامل: اسم الشركة والمسمى والمتطلبات والمسؤوليات\nلا تلصق الرابط فقط أو مقتطفًا قصيرًا\nيمكنك أيضًا تثبيت إضافة Chrome لالتقاط الإعلان بنقرة واحدة',
+        '请粘贴完整职位正文：公司名称、职位名称，以及条件与职责\n请勿只贴网址或片段\n推荐安装 Chrome 插件，一键抓取职位内容',
+      en: 'Paste the full job posting: company name, job title, requirements, and responsibilities\nDo not paste only a URL or a short excerpt\nWe recommend installing the Chrome extension to capture the posting in one click',
+      es: 'Pega la oferta completa: empresa, puesto, requisitos y responsabilidades\nNo pegues solo una URL o un extracto\nRecomendamos instalar la extensión de Chrome para capturar la oferta en un clic',
+      hi: 'पूरी जॉब पोस्टिंग पेस्ट करें: कंपनी नाम, पदनाम, आवश्यकताएँ और जिम्मेदारियाँ\nकेवल URL या छोटा अंश न पेस्ट करें\nहम Chrome एक्सटेंशन इंस्टॉल करने की सलाह देते हैं, एक क्लिक में जॉब पोस्टिंग कैप्चर करें',
+      ar: 'الصق إعلان الوظيفة بالكامل: اسم الشركة والمسمى والمتطلبات والمسؤوليات\nلا تلصق الرابط فقط أو مقتطفًا قصيرًا\nنوصي بتثبيت إضافة Chrome لالتقاط الإعلان بنقرة واحدة',
     };
     for (const [lang, placeholder] of Object.entries(expected)) {
       expect(HOMEPAGE_FORM_COPY[lang as keyof typeof HOMEPAGE_FORM_COPY].jobUrlPlaceholder).toBe(
@@ -148,19 +148,21 @@ describe('homepage form copy', () => {
     expect(HOMEPAGE_FORM_COPY['zh-TW'].jobUrlPlaceholder).not.toContain('請貼職缺正文，不要貼連結');
   });
 
-  it('keeps the existing paste instructions and reminds users they can install the Chrome extension', () => {
+  it('keeps the existing paste instructions and recommends installing the Chrome extension', () => {
     const chromeReminder: Record<keyof typeof HOMEPAGE_FORM_COPY, RegExp> = {
-      'zh-TW': /也可安裝 Chrome 外掛，一鍵抓取職缺內容/,
-      'zh-CN': /也可安装 Chrome 插件，一键抓取职位内容/,
-      en: /install the Chrome extension to capture the posting in one click/,
-      es: /extensión de Chrome/,
-      hi: /Chrome एक्सटेंशन/,
-      ar: /إضافة Chrome/,
+      'zh-TW': /推薦安裝 Chrome 外掛，一鍵抓取職缺內容/,
+      'zh-CN': /推荐安装 Chrome 插件，一键抓取职位内容/,
+      en: /We recommend installing the Chrome extension to capture the posting in one click/,
+      es: /Recomendamos instalar la extensión de Chrome/,
+      hi: /Chrome एक्सटेंशन इंस्टॉल करने की सलाह/,
+      ar: /نوصي بتثبيت إضافة Chrome/,
     };
     for (const [lang, reminder] of Object.entries(chromeReminder)) {
       const placeholder = HOMEPAGE_FORM_COPY[lang as keyof typeof HOMEPAGE_FORM_COPY].jobUrlPlaceholder;
+      const chromeLine = placeholder.split('\n')[2] ?? '';
       expect(placeholder).toMatch(reminder);
       expect(placeholder.split('\n')).toHaveLength(3);
+      expect(chromeLine).not.toMatch(/也可|也可以|You can also|also install|También puedes|भी कर सकते|أيضًا/i);
       expect(placeholder).not.toMatch(/一間/);
       expect(placeholder).not.toMatch(/chromewebstore\.google\.com|Lemon Squeezy/i);
     }
