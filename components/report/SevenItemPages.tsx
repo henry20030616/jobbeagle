@@ -496,7 +496,6 @@ function PayRangeLine({
   targetValue,
   ceilingLabel,
   ceilingValue,
-  variant = 'compact',
 }: {
   offer: LiteReport['expected_offer'];
   currency?: string;
@@ -504,7 +503,6 @@ function PayRangeLine({
   targetValue?: string;
   ceilingLabel?: string;
   ceilingValue?: string;
-  variant?: 'hero' | 'compact';
 }) {
   const { low, high } = bandEnds(offer);
   const rangeText = formatOfferRange(offer);
@@ -524,7 +522,6 @@ function PayRangeLine({
   const ceilingPct = min !== null ? markerPercent(parseMoneyAmount(ceilingValue), min, span) : null;
   const fillLeft = lowPct ?? 0;
   const fillRight = 100 - (highPct ?? 100);
-  const hero = variant === 'hero';
   const staggerCeiling =
     targetPct !== null && ceilingPct !== null;
   const aria = [
@@ -535,33 +532,19 @@ function PayRangeLine({
   return (
     <div
       className={PAY_RANGE_LINE_WIDTH}
-      data-pay-range={variant}
+      data-pay-range="compact"
       role="img"
       aria-label={aria}
     >
-      {hero ? (
-        <div className="mb-3 flex items-end justify-between gap-3">
-          <span className="text-3xl font-black tabular-nums tracking-tight text-white">{low ?? rangeText ?? '—'}</span>
-          <span className={`${BODY_MUTED} mb-0.5 shrink-0`}>{money}</span>
-          {high ? (
-            <span className="text-3xl font-black tabular-nums tracking-tight text-white">{high}</span>
-          ) : null}
-        </div>
-      ) : rangeText ? (
+      {rangeText ? (
         <p className={`${BODY} mb-2 font-semibold text-white`}>{rangeText}</p>
       ) : null}
-      <div className={hero ? undefined : 'px-16'}>
-        <div className={`relative ${hero ? 'mx-1 mt-1 mb-2 h-3.5' : 'mt-16 mb-16 h-2.5'} rounded-full bg-slate-700`}>
+      <div className="px-16">
+        <div className="relative mt-16 mb-16 h-2.5 rounded-full bg-slate-700">
           <span
             className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
             style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}
           />
-          {hero ? (
-            <>
-              <span className="absolute left-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
-              <span className="absolute right-0 top-1/2 h-5 w-1.5 -translate-y-1/2 rounded-full bg-white" aria-hidden />
-            </>
-          ) : null}
           {targetPct !== null && targetValue ? (
             <PayRangeMark
               pct={targetPct}
@@ -580,20 +563,16 @@ function PayRangeLine({
               side={staggerCeiling ? 'below' : 'above'}
             />
           ) : null}
-          {!hero ? (
-            <>
-              <span
-                className={`pointer-events-none absolute left-0 top-1/2 -translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
-              >
-                {low ?? ''}
-              </span>
-              <span
-                className={`pointer-events-none absolute right-0 top-1/2 translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
-              >
-                {high ?? ''}
-              </span>
-            </>
-          ) : null}
+          <span
+            className={`pointer-events-none absolute left-0 top-1/2 -translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
+          >
+            {low ?? ''}
+          </span>
+          <span
+            className={`pointer-events-none absolute right-0 top-1/2 translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
+          >
+            {high ?? ''}
+          </span>
         </div>
       </div>
     </div>
@@ -951,11 +930,15 @@ function MarketBody({
   copy,
   language,
   locked,
+  targetValue,
+  ceilingValue,
 }: {
   report: LiteReport;
   copy: ItemCopy;
   language: AppLanguage;
   locked: boolean;
+  targetValue?: string;
+  ceilingValue?: string;
 }) {
   const offer = report.expected_offer;
   const range = formatOfferRange(offer);
@@ -975,7 +958,14 @@ function MarketBody({
         <p className={REPORT_H2}>{copy.band}</p>
         {range ? (
           <div className="mt-3">
-            <PayRangeLine offer={offer} currency={money} variant="hero" />
+            <PayRangeLine
+              offer={offer}
+              currency={money}
+              targetLabel={targetValue ? copy.target : undefined}
+              targetValue={targetValue}
+              ceilingLabel={ceilingValue ? copy.ceiling : undefined}
+              ceilingValue={ceilingValue}
+            />
           </div>
         ) : (
           <p className={`${BODY} mt-1 font-semibold text-white leading-snug`}>{copy.noBand}</p>
@@ -1167,7 +1157,14 @@ export function SnapshotItemStack({
         />
       </ItemBlock>
       <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market}>
-        <MarketBody report={report} copy={copy} language={lang} locked={locked} />
+        <MarketBody
+          report={report}
+          copy={copy}
+          language={lang}
+          locked={locked}
+          targetValue={report.guide_modules?.salary_land?.target}
+          ceilingValue={report.guide_modules?.salary_land?.ceiling}
+        />
       </ItemBlock>
       <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
         <CoreBody report={report} copy={copy} />
@@ -1273,7 +1270,16 @@ export function GuideItemPage({
 
   let body: React.ReactNode = null;
   if (item === 'market') {
-    body = <MarketBody report={report} copy={copy} language={lang} locked={false} />;
+    body = (
+      <MarketBody
+        report={report}
+        copy={copy}
+        language={lang}
+        locked={false}
+        targetValue={modules?.salary_land?.target}
+        ceilingValue={modules?.salary_land?.ceiling}
+      />
+    );
   }
   if (item === 'fit') {
     body = (

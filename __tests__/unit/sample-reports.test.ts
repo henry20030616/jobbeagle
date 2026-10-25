@@ -456,7 +456,8 @@ describe('seven-item report layout', () => {
     );
     const caveat = '職缺未公布薪資；此區間依職稱、地點與年資對照市場水準，非該公司數據。';
     for (const html of [snapHtml, guideHtml]) {
-      expect(html).toContain('data-pay-range="hero"');
+      expect(html).toContain('data-pay-range="compact"');
+      expect(html).not.toContain('data-pay-range="hero"');
       expect(html).toContain('w-full mx-auto min-w-0');
       expect(html).not.toContain('max-w-[50%]');
       expect(html).toContain('$145K');
@@ -465,11 +466,18 @@ describe('seven-item report layout', () => {
       expect(html).toContain(caveat);
       expect(html).not.toContain('依職稱（Senior Business Analyst）');
       expect(html).not.toContain('對照依據');
-      expect(html).not.toContain('議價天花板');
       expect(html.indexOf('市場總薪酬區間')).toBeLessThan(html.indexOf('地點'));
       expect(html.indexOf('$145K')).toBeLessThan(html.indexOf(caveat));
     }
+    expect(snapHtml).not.toContain('議價天花板');
+    expect(snapHtml).not.toContain('data-range-label="target"');
     expect(snapHtml).toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
+    expect(guideHtml).toContain('議價天花板');
+    expect(guideHtml).toContain('個人目標');
+    expect(guideHtml).toContain('$168K');
+    expect(guideHtml).toContain('$185K');
+    expect(guideHtml).toContain('data-range-label="target"');
+    expect(guideHtml).toContain('data-range-label="ceiling"');
     expect(guideHtml).not.toContain('升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解');
   });
 
@@ -499,6 +507,9 @@ describe('seven-item report layout', () => {
     expect(source).toContain('className="w-full lg:flex-1"');
     expect(source).toContain('max-w-[12rem]');
     expect(source).toContain('mt-16 mb-16');
+    expect(source).toContain('data-pay-range="compact"');
+    expect(source).not.toContain('variant="hero"');
+    expect(source).not.toContain("variant?: 'hero' | 'compact'");
     expect(source).not.toContain('w-1/2 max-w-[50%]');
     expect(source).not.toContain('lg:ml-auto lg:w-[24rem] lg:shrink-0');
     expect(source).toContain('data-range-label={tone}');
@@ -581,6 +592,36 @@ describe('seven-item report layout', () => {
     expect(html).not.toContain('已拿到的權利');
     expect(html).not.toContain('總結分析');
     expect(html.split('border-2 border-blue-500').length - 1).toBe(3);
+  });
+
+  it('uses the same compact pay-range on Guide 職位核心 市場薪資水準 and 薪資落點', () => {
+    const report = getSampleStrategyGuideReport('zh-TW');
+    const coreHtml = renderToStaticMarkup(
+      createElement(GuideItemPage, { report, item: 'core', language: 'zh-TW' }),
+    );
+    const landHtml = renderToStaticMarkup(
+      createElement(GuideItemPage, { report, item: 'land', language: 'zh-TW' }),
+    );
+    const source = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    expect(source).not.toContain('variant="hero"');
+    expect(source.split('function PayRangeLine').length - 1).toBe(1);
+    for (const html of [coreHtml, landHtml]) {
+      expect(html).toContain('data-pay-range="compact"');
+      expect(html).not.toContain('data-pay-range="hero"');
+      expect(html).toContain('市場總薪酬區間');
+      expect(html).toContain('$145K');
+      expect(html).toContain('$190K');
+      expect(html).toContain('$168K');
+      expect(html).toContain('$185K');
+      expect(html).toContain('個人目標');
+      expect(html).toContain('議價天花板');
+      expect(html).toContain('data-range-label="target"');
+      expect(html).toContain('data-range-label="ceiling"');
+      expect(html).toContain('w-full mx-auto min-w-0');
+      expect(html).toContain('mt-16 mb-16');
+    }
+    expect(coreHtml).toContain('市場薪資水準');
+    expect(landHtml).toContain('個人化薪資落點');
   });
 
   it('renders pay, benefits, and script as one negotiate playbook frame', () => {
