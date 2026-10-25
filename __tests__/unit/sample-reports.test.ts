@@ -432,8 +432,8 @@ describe('seven-item report layout', () => {
     expect(fitBody).toContain('min-w-0 flex items-center justify-center');
     expect(fitBody).toContain('h-40 w-40');
     expect(fitBody).toContain('h-56 w-56');
-    expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.analysisSummary}'));
-    expect(fitBody.indexOf('{copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
+    expect(fitBody.indexOf('{copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{scoreInfo.level}'));
+    expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
     expect(fitBody).toContain('flex items-baseline gap-3');
     expect(fitBody).toContain('<p className={BODY_COPY}>{scoreInfo.label}</p>');
     expect(fitBody).not.toContain('${BODY_COPY} mt-1');
@@ -472,7 +472,7 @@ describe('seven-item report layout', () => {
     expect(source).not.toContain('ui.applyLabels');
   });
 
-  it('renders Snapshot and Guide fit samples with score beside Beagle Scale and 總結分析 beside apply advice', () => {
+  it('renders Snapshot and Guide fit samples with score beside 總結分析 and Beagle Scale beside apply advice', () => {
     const snapshot = getSampleSnapshotReport('zh-TW');
     const guide = getSampleStrategyGuideReport('zh-TW');
     const snapHtml = renderToStaticMarkup(
@@ -516,9 +516,9 @@ describe('seven-item report layout', () => {
       expect(html).toContain('h-40 w-40');
       expect(html).toContain('h-56 w-56');
       expect(html).toContain('min-w-0 flex items-center justify-center');
-      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('藍寶米格魯'));
-      expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('總結分析'));
-      expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('應徵建議'));
+      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('總結分析'));
+      expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('藍寶米格魯'));
+      expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('應徵建議'));
       expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('市場薪資水準'));
       expect(html.indexOf('市場薪資水準')).toBeLessThan(html.indexOf('職位核心解析'));
       expect(html.indexOf('職位核心解析')).toBeLessThan(html.indexOf('履歷優化建議'));
@@ -533,7 +533,7 @@ describe('seven-item report layout', () => {
       expect(summaryHeading).not.toContain('report-h2');
       const beagleSlice = html.slice(
         Math.max(0, html.indexOf('藍寶米格魯') - 160),
-        html.indexOf('總結分析'),
+        html.indexOf('應徵建議'),
       );
       expect(beagleSlice).toContain('flex items-baseline gap-3');
       expect(beagleSlice).toContain('強勢契合');

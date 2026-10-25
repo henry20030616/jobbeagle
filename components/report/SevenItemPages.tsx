@@ -1231,6 +1231,16 @@ function FitBody({
               </div>
             </div>
           </div>
+          <section className="min-w-0">
+            <h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>
+            {summaryPoints.length > 1 ? (
+              <BriefRows items={summaryPoints} />
+            ) : summaryPoints[0] ? (
+              <p className={BODY_COPY}>{summaryPoints[0]}</p>
+            ) : null}
+          </section>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
           <div className="min-w-0">
             <div className="flex items-baseline gap-3">
               <p className={`${REPORT_H1} ${scoreInfo.color}`}>{scoreInfo.level}</p>
@@ -1247,16 +1257,6 @@ function FitBody({
               </ul>
             ) : null}
           </div>
-        </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
-          <section className="min-w-0">
-            <h3 className={`mb-2 ${REPORT_H1}`}>{copy.analysisSummary}</h3>
-            {summaryPoints.length > 1 ? (
-              <BriefRows items={summaryPoints} />
-            ) : summaryPoints[0] ? (
-              <p className={BODY_COPY}>{summaryPoints[0]}</p>
-            ) : null}
-          </section>
           <section className="min-w-0">
             <div className="flex items-baseline gap-3">
               <h3 className={REPORT_H1}>{copy.apply}</h3>
