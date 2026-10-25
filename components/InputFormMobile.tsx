@@ -93,6 +93,12 @@ const InputFormMobile: React.FC<InputFormProps> = ({
     }
   }, [initialJobDescription]);
 
+  useEffect(() => {
+    if (language !== currentLanguage) {
+      setCurrentLanguage(language);
+    }
+  }, [language]);
+
   const loadResumeHistory = async () => {
     try {
       const supabase = createClient();

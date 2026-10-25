@@ -48,7 +48,7 @@ export function FunctionRailCheck({ active }: { active: boolean }) {
       }`}
       aria-hidden
     >
-      {active ? <Check className="h-10 w-10" strokeWidth={3} /> : null}
+      {active ? <Check className="h-5 w-5 lg:h-10 lg:w-10" strokeWidth={3} /> : null}
     </span>
   );
 }

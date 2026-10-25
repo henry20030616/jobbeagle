@@ -43,8 +43,12 @@ import {
 
 describe('report chrome type scale', () => {
   it('keeps sample-rail and action buttons at display size (not compact chips)', () => {
-    expect(SAMPLE_RAIL_TEXT).toMatch(/text-6xl/);
-    expect(REPORT_ACTION_TEXT).toMatch(/text-6xl/);
+    expect(SAMPLE_RAIL_TEXT).toMatch(/lg:text-6xl/);
+    expect(REPORT_ACTION_TEXT).toMatch(/lg:text-6xl/);
+    expect(SAMPLE_RAIL_TEXT).toMatch(/\btext-xl\b/);
+    expect(REPORT_ACTION_TEXT).toMatch(/\btext-xl\b/);
+    expect(SAMPLE_RAIL_TEXT).not.toMatch(/(^|\s)text-6xl\b/);
+    expect(REPORT_ACTION_TEXT).not.toMatch(/(^|\s)text-6xl\b/);
   });
 
   it('shares type-switcher card layout, rail width, and content gap across account / report / samples', () => {
@@ -218,9 +222,11 @@ describe('homepage step-header pills', () => {
     expect(mobile).toContain("CreditCard className=\"h-[1em] w-[1em] shrink-0\"");
   });
 
-  it('shares one readable popover token across language, saved resumes, and feature explainers', () => {
+  it('shares one readable popover token across language and saved resumes, not feature chips', () => {
     expect(HOMEPAGE_POPOVER_TYPE).toContain('homepage-popover');
-    expect(HOMEPAGE_POPOVER_TYPE).toContain('text-lg sm:text-xl lg:text-2xl xl:text-3xl');
+    expect(HOMEPAGE_POPOVER_TYPE).toContain('text-sm sm:text-base lg:text-2xl xl:text-3xl');
+    expect(HOMEPAGE_POPOVER_TYPE).toMatch(/\bxl:text-3xl\b/);
+    expect(HOMEPAGE_POPOVER_TYPE).not.toMatch(/(^|\s)text-3xl\b/);
     expect(HOMEPAGE_POPOVER_PANEL).toContain(HOMEPAGE_POPOVER_TYPE);
     expect(HOMEPAGE_POPOVER_PANEL).toContain('overflow-y-auto');
     expect(HOMEPAGE_POPOVER_PANEL).not.toContain('overflow-hidden');
@@ -236,6 +242,9 @@ describe('homepage step-header pills', () => {
     expect(desktop).toContain('HOMEPAGE_POPOVER_OPTION');
     expect(desktop).toMatch(/absolute left-0 top-full min-w-\[22em\] w-max/);
     expect(desktop).not.toMatch(/feature-desc[^"]*text-sm/);
+    expect(desktop).not.toMatch(/HOMEPAGE_POPOVER_PANEL[\s\S]{0,240}feature-desc/);
+    expect(desktop).toMatch(/grid-rows-\[1fr\]/);
+    expect(desktop).toMatch(/grid-rows-\[0fr\]/);
     expect(mobile).toContain('HOMEPAGE_POPOVER_PANEL');
     expect(mobile).not.toContain('text-[10px]');
     expect(lang).toContain('HOMEPAGE_POPOVER_PANEL');

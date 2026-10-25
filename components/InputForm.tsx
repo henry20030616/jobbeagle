@@ -608,7 +608,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
       <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-[2.8125rem] sm:gap-[3.375rem] lg:gap-[3.9375rem]'}`}>
         {!compactChrome && (
-          <div className="homepage-features relative z-20 grid w-full shrink-0 grid-cols-1 gap-3 overflow-visible sm:gap-4 lg:grid-cols-4 lg:gap-5">
+          <div className="homepage-features grid w-full shrink-0 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {([
               {
                 id: 'fit',
@@ -655,7 +655,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     onFocus={() => setExpandedFeature(item.id)}
                     onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
                     onClick={() => setExpandedFeature(open ? null : item.id)}
-                    className={`relative flex w-full flex-col items-start bg-transparent p-0 text-left ${open ? 'z-30' : ''}`}
+                    className="flex w-full flex-col items-start bg-transparent p-0 text-left"
                   >
                     <div className="flex min-w-0 w-full items-center gap-2 sm:gap-3 lg:gap-4">
                       <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 sm:p-4 lg:p-5 shadow-inner ring-1 ${item.iconWrap}`}>
@@ -670,15 +670,13 @@ const InputForm: React.FC<InputFormProps> = ({
                         />
                       </span>
                     </div>
-                    {open ? (
-                      <div
-                        className={`absolute left-0 top-full min-w-[22em] w-max max-w-[min(36em,calc(100vw-2rem))] ${HOMEPAGE_POPOVER_PANEL}`}
-                      >
-                        <p className="feature-desc whitespace-normal break-words px-[0.9em] py-[0.7em] text-left text-slate-200">
+                    <div className={`grid w-full transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                      <div className="min-h-0 overflow-hidden">
+                        <p className="feature-desc w-full pb-0.5 pt-2 text-left text-base leading-normal text-slate-400 sm:pt-2.5 sm:text-lg lg:text-lg xl:text-2xl">
                           {item.desc}
                         </p>
                       </div>
-                    ) : null}
+                    </div>
                   </button>
                 );
               })}

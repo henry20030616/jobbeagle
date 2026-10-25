@@ -2,13 +2,13 @@
  * Page chrome (outside ReportFitStage zoom). Sized to stay readable
  * next to a zoomed Snapshot/Guide slide — not compact header chips.
  */
-export const REPORT_ACTION_TEXT = 'text-6xl font-bold tracking-tight leading-none';
+export const REPORT_ACTION_TEXT = 'text-xl lg:text-6xl font-bold tracking-tight leading-none';
 
-export const REPORT_ACTION_ICON = 'w-16 h-16 shrink-0';
+export const REPORT_ACTION_ICON = 'w-8 h-8 lg:w-16 lg:h-16 shrink-0';
 
 /** Back to Home / New Analysis / language chrome */
 export const REPORT_ACTION_BTN =
-  `inline-flex min-h-28 items-center gap-4 rounded-xl border-2 border-slate-400 bg-slate-900/70 px-8 py-5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
+  `inline-flex min-h-12 lg:min-h-28 items-center gap-2 lg:gap-4 rounded-xl border-2 border-slate-400 bg-slate-900/70 px-4 py-2.5 lg:px-8 lg:py-5 ${REPORT_ACTION_TEXT} text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition-colors`;
 
 /**
  * “View sample” chip on the homepage report-type cards.
@@ -22,8 +22,8 @@ export const SAMPLE_LINK_BTN =
  * Samples left-rail — ONE size for SAMPLE notice / Snapshot / Guide / Compare.
  * Keep in sync across all four boxes.
  */
-export const SAMPLE_RAIL_TEXT = 'text-6xl font-bold leading-snug tracking-tight';
-export const SAMPLE_RAIL_ICON = 'w-16 h-16 shrink-0';
+export const SAMPLE_RAIL_TEXT = 'text-xl lg:text-6xl font-bold leading-snug tracking-tight';
+export const SAMPLE_RAIL_ICON = 'w-8 h-8 lg:w-16 lg:h-16 shrink-0';
 export const SAMPLE_HEADER_TEXT = SAMPLE_RAIL_TEXT;
 export const SAMPLE_HEADER_ICON = SAMPLE_RAIL_ICON;
 /** Base shell only — active/inactive border style set by caller (solid vs dashed) */
@@ -106,14 +106,15 @@ export const HOMEPAGE_STEP_PILL_TYPE =
   `step-header-pill ${HOMEPAGE_TITLE_TYPE}`;
 
 /**
- * Open homepage menus (language, saved resumes, feature explainers).
- * Floor is report-body (`text-lg` = 1.125rem), not 11–12px chips.
- * Desktop `.homepage-font-large` maps `.homepage-popover` to `--type-chrome`.
+ * Open homepage menus (language switcher, saved resumes). Not the four
+ * advantage chips — those expand inline under the title.
+ * Mobile stays `text-sm`; `xl:text-3xl` is desktop-only. Homepage desktop
+ * `.homepage-font-large` maps `.homepage-popover` to `--type-chrome`.
  * Padding is em so row height tracks that type. Do not add overflow-hidden —
  * it clips option labels once the type scale kicks in.
  */
 export const HOMEPAGE_POPOVER_TYPE =
-  'homepage-popover text-lg sm:text-xl lg:text-2xl xl:text-3xl leading-snug';
+  'homepage-popover text-sm sm:text-base lg:text-2xl xl:text-3xl leading-snug';
 
 export const HOMEPAGE_POPOVER_PANEL =
   `z-50 mt-[0.35em] max-h-[18em] overflow-y-auto rounded-2xl border border-slate-600 bg-slate-800 shadow-2xl ${HOMEPAGE_POPOVER_TYPE}`;

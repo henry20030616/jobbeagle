@@ -127,7 +127,7 @@ export default function SmartInputArea({
           <textarea
             ref={textareaRef}
             disabled={disabled || parsing}
-            className={`${promptType} w-full max-w-full min-w-0 ${compact ? 'h-full min-h-0 flex-1' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
+            className={`${promptType} w-full max-w-full min-w-0 ${compact ? 'h-full min-h-[16rem] flex-1 lg:min-h-0' : 'min-h-[220px]'} bg-slate-900/30 border-2 border-dashed rounded-xl ${compact ? 'p-3' : 'p-5'} text-zinc-100 placeholder:opacity-0 focus:ring-2 focus:border-solid transition-all resize-y disabled:opacity-60 ${borderClass}`}
             placeholder={resolvedPlaceholder}
             aria-label={resolvedPlaceholder}
             value={value}
@@ -137,15 +137,15 @@ export default function SmartInputArea({
           {!value && (
             <div
               aria-hidden="true"
-              className={`pointer-events-none absolute inset-0 flex items-center justify-start overflow-visible rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
+              className={`pointer-events-none absolute inset-0 flex items-start justify-start overflow-hidden rounded-xl ${compact ? 'px-3 py-3' : 'px-6 py-5'}`}
             >
-              <ul className={`${promptType} w-full min-w-0 max-w-full list-outside list-disc space-y-[0.3em] overflow-visible break-words ps-[1.4em] text-left text-slate-400`}>
+              <ul className={`${promptType} w-full min-w-0 max-w-full list-outside list-disc space-y-[0.3em] break-words ps-[1.4em] text-left text-slate-400`}>
                 {resolvedPlaceholder
                   .split('\n')
                   .map((line) => line.trim())
                   .filter((line) => line.length > 0)
                   .map((line) => (
-                    <li key={line} className="overflow-visible whitespace-normal">
+                    <li key={line} className="whitespace-normal">
                       {line}
                     </li>
                   ))}

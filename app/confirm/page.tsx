@@ -19,7 +19,7 @@ import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import BrandLogo from '@/components/BrandLogo';
-import InputForm from '@/components/InputForm';
+import InputFormWrapper from '@/components/InputFormWrapper';
 import ReferralCard from '@/components/ReferralCard';
 import FooterSection from '@/components/FooterSection';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -419,7 +419,7 @@ export default function ConfirmPage() {
         )}
 
         <div className="max-w-[90rem] mx-auto">
-          <InputForm
+          <InputFormWrapper
             onSubmit={handleSubmit}
             isLoading={analyzing}
             language={language}

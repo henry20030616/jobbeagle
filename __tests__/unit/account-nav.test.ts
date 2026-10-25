@@ -237,8 +237,8 @@ describe('account function nav', () => {
     expect(SAMPLE_RAIL_WIDTH).toBe('w-[42rem]');
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain(SAMPLE_RAIL_TEXT);
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('px-8 py-6');
-    expect(SAMPLE_RAIL_TEXT).toMatch(/text-6xl/);
-    expect(SAMPLE_RAIL_ICON).toMatch(/w-16 h-16/);
+    expect(SAMPLE_RAIL_TEXT).toMatch(/lg:text-6xl/);
+    expect(SAMPLE_RAIL_ICON).toMatch(/lg:w-16 lg:h-16/);
     expect(nav).toContain('SAMPLE_REPORT_TAB_LAYOUT');
     expect(nav).toContain('sampleReportTabClass');
     expect(nav).toContain('SAMPLE_RAIL_ICON');
