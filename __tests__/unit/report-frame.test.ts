@@ -9,6 +9,7 @@ import {
   REPORT_H3,
   REPORT_GUIDE_TAB_TYPE,
   REPORT_GUIDE_TAB_GAP,
+  REPORT_HEADER_JOB_LINE,
   HOMEPAGE_STEP_PILL_TYPE,
   HOMEPAGE_TITLE_TYPE,
   PAGE_SHELL_GUTTER,
@@ -295,6 +296,28 @@ describe('report item heading scale', () => {
     expect(pages.indexOf('<ItemBlock title={copy.market}')).toBeLessThan(
       pages.indexOf('<ItemBlock title={copy.core}'),
     );
+  });
+
+  it('sizes the Guide header job·company line to the 職位核心 tab type, not muted gray', () => {
+    expect(REPORT_HEADER_JOB_LINE).toContain(REPORT_GUIDE_TAB_TYPE);
+    expect(REPORT_HEADER_JOB_LINE).toMatch(/text-2xl/);
+    expect(REPORT_HEADER_JOB_LINE).toMatch(/font-black/);
+    expect(REPORT_HEADER_JOB_LINE).toMatch(/text-zinc-100/);
+    expect(REPORT_HEADER_JOB_LINE).not.toMatch(/slate-400/);
+
+    const dashboard = readFileSync(
+      join(process.cwd(), 'components/FullReportDashboard.tsx'),
+      'utf8',
+    );
+    expect(dashboard).toContain('REPORT_HEADER_JOB_LINE');
+    expect(dashboard).not.toMatch(/text-lg text-slate-400 mt-1.5/);
+
+    const snapshot = readFileSync(
+      join(process.cwd(), 'components/LiteReportDashboard.tsx'),
+      'utf8',
+    );
+    expect(snapshot).not.toContain('REPORT_HEADER_JOB_LINE');
+    expect(snapshot).not.toMatch(/text-lg text-slate-400 mt-1.5/);
   });
 });
 

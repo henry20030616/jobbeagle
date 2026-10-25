@@ -59,6 +59,14 @@ export const REPORT_H3 = 'report-h3';
 export const REPORT_GUIDE_TAB_TYPE =
   'text-2xl font-black tracking-tight leading-tight';
 
+/**
+ * Guide frame header job · company line (under 面試指南 / Interview Guide).
+ * Same type as in-report tab 「職位核心」 (`REPORT_GUIDE_TAB_TYPE` = 1.5rem / font-black).
+ * Color matches idle tab labels when the selected chip is not blue-on-white:
+ * bright zinc-100, not muted slate-400.
+ */
+export const REPORT_HEADER_JOB_LINE = `${REPORT_GUIDE_TAB_TYPE} text-zinc-100`;
+
 /** Horizontal gap between Guide in-report tabs. 2× the previous `gap-2` (8px → 16px). */
 export const REPORT_GUIDE_TAB_GAP = 'gap-4';
 

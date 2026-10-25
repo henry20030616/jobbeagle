@@ -13,6 +13,7 @@ import {
   REPORT_ACTION_ICON,
   REPORT_GUIDE_TAB_TYPE,
   REPORT_GUIDE_TAB_GAP,
+  REPORT_HEADER_JOB_LINE,
   REPORT_SHELL_WIDTH,
 } from '@/constants/report-frame';
 import { SampleMark } from '@/components/SampleMark';
@@ -87,7 +88,7 @@ export default function FullReportDashboard({
             <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
               {copy.productTitle}
             </p>
-            <p className="text-lg text-slate-400 mt-1.5">
+            <p className={`${REPORT_HEADER_JOB_LINE} mt-1.5`}>
               {lang === 'zh-TW' || lang === 'zh-CN'
                 ? `${report.job_title || ''} · ${report.company_name || ''}`
                 : `${report.job_title || 'Role'} · ${report.company_name || 'Company'}`}
