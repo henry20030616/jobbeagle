@@ -3,6 +3,9 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   GUIDE_SECTION_FRAME,
+  HOMEPAGE_POPOVER_OPTION,
+  HOMEPAGE_POPOVER_PANEL,
+  HOMEPAGE_POPOVER_TYPE,
   HOMEPAGE_STEP_PILL,
   REPORT_H1,
   REPORT_H2,
@@ -213,6 +216,32 @@ describe('homepage step-header pills', () => {
     expect(mobile).toContain("Puzzle className=\"h-[1em] w-[1em] shrink-0\"");
     expect(mobile).toContain("History className=\"h-[1em] w-[1em] shrink-0\"");
     expect(mobile).toContain("CreditCard className=\"h-[1em] w-[1em] shrink-0\"");
+  });
+
+  it('shares one readable popover token across language, saved resumes, and feature explainers', () => {
+    expect(HOMEPAGE_POPOVER_TYPE).toContain('homepage-popover');
+    expect(HOMEPAGE_POPOVER_TYPE).toContain('text-lg sm:text-xl lg:text-2xl xl:text-3xl');
+    expect(HOMEPAGE_POPOVER_PANEL).toContain(HOMEPAGE_POPOVER_TYPE);
+    expect(HOMEPAGE_POPOVER_PANEL).toContain('overflow-y-auto');
+    expect(HOMEPAGE_POPOVER_PANEL).not.toContain('overflow-hidden');
+    expect(HOMEPAGE_POPOVER_OPTION).toContain('px-[0.9em]');
+    expect(HOMEPAGE_POPOVER_OPTION).toContain('py-[0.7em]');
+
+    const desktop = readFileSync(join(process.cwd(), 'components/InputForm.tsx'), 'utf8');
+    const mobile = readFileSync(join(process.cwd(), 'components/InputFormMobile.tsx'), 'utf8');
+    const lang = readFileSync(join(process.cwd(), 'components/LanguageSwitcher.tsx'), 'utf8');
+    const css = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8');
+
+    expect(desktop).toContain('HOMEPAGE_POPOVER_PANEL');
+    expect(desktop).toContain('HOMEPAGE_POPOVER_OPTION');
+    expect(desktop).toMatch(/absolute left-0 top-full min-w-\[22em\] w-max/);
+    expect(desktop).not.toMatch(/feature-desc[^"]*text-sm/);
+    expect(mobile).toContain('HOMEPAGE_POPOVER_PANEL');
+    expect(mobile).not.toContain('text-[10px]');
+    expect(lang).toContain('HOMEPAGE_POPOVER_PANEL');
+    expect(css).toMatch(
+      /\.homepage-font-large \.homepage-popover[\s\S]*?font-size:\s*var\(--type-chrome\)/,
+    );
   });
 });
 

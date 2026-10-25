@@ -350,6 +350,42 @@ main input {
     font-size: var(--type-chrome) !important;
     line-height: 1.4 !important;
   }
+  /*
+   * Open homepage menus (language / saved resumes / feature explainers).
+   * More specific than header `.text-sm` / `.text-2xl` remaps so option
+   * labels stay at chrome size, and nested timestamps inherit 1em.
+   */
+  .homepage-font-large .homepage-popover,
+  .homepage-font-large .homepage-header-controls .homepage-popover,
+  .homepage-font-large .homepage-steps .homepage-popover,
+  .homepage-font-large .homepage-features .homepage-popover {
+    font-size: var(--type-chrome) !important;
+    line-height: 1.35 !important;
+  }
+  .homepage-font-large .homepage-header-controls .homepage-popover .text-xs,
+  .homepage-font-large .homepage-header-controls .homepage-popover .text-sm,
+  .homepage-font-large .homepage-header-controls .homepage-popover .text-base,
+  .homepage-font-large .homepage-header-controls .homepage-popover .text-lg,
+  .homepage-font-large .homepage-header-controls .homepage-popover .text-xl,
+  .homepage-font-large .homepage-header-controls .homepage-popover .text-2xl,
+  .homepage-font-large .homepage-header-controls .homepage-popover .text-3xl,
+  .homepage-font-large .homepage-steps .homepage-popover .text-xs,
+  .homepage-font-large .homepage-steps .homepage-popover .text-sm,
+  .homepage-font-large .homepage-steps .homepage-popover .text-base,
+  .homepage-font-large .homepage-steps .homepage-popover .text-lg,
+  .homepage-font-large .homepage-steps .homepage-popover .text-xl,
+  .homepage-font-large .homepage-steps .homepage-popover .text-2xl,
+  .homepage-font-large .homepage-steps .homepage-popover .text-3xl,
+  .homepage-font-large .homepage-features .homepage-popover .text-xs,
+  .homepage-font-large .homepage-features .homepage-popover .text-sm,
+  .homepage-font-large .homepage-features .homepage-popover .text-base,
+  .homepage-font-large .homepage-features .homepage-popover .text-lg,
+  .homepage-font-large .homepage-features .homepage-popover .text-xl,
+  .homepage-font-large .homepage-features .homepage-popover .text-2xl,
+  .homepage-font-large .homepage-features .homepage-popover .text-3xl {
+    font-size: 1em !important;
+    line-height: 1.35 !important;
+  }
   .homepage-font-large .upload-prompt,
   .homepage-font-large .upload-support,
   .homepage-font-large .jd-paste-prompt,

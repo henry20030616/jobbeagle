@@ -106,6 +106,22 @@ export const HOMEPAGE_STEP_PILL_TYPE =
   `step-header-pill ${HOMEPAGE_TITLE_TYPE}`;
 
 /**
+ * Open homepage menus (language, saved resumes, feature explainers).
+ * Floor is report-body (`text-lg` = 1.125rem), not 11–12px chips.
+ * Desktop `.homepage-font-large` maps `.homepage-popover` to `--type-chrome`.
+ * Padding is em so row height tracks that type. Do not add overflow-hidden —
+ * it clips option labels once the type scale kicks in.
+ */
+export const HOMEPAGE_POPOVER_TYPE =
+  'homepage-popover text-lg sm:text-xl lg:text-2xl xl:text-3xl leading-snug';
+
+export const HOMEPAGE_POPOVER_PANEL =
+  `z-50 mt-[0.35em] max-h-[18em] overflow-y-auto rounded-2xl border border-slate-600 bg-slate-800 shadow-2xl ${HOMEPAGE_POPOVER_TYPE}`;
+
+export const HOMEPAGE_POPOVER_OPTION =
+  'flex w-full items-center gap-[0.5em] px-[0.9em] py-[0.7em] text-left leading-snug';
+
+/**
  * Homepage step pills (Chrome extension / saved resumes / credits).
  * Same dark-blue fill as step 3 cards and the step 4 launch box.
  */

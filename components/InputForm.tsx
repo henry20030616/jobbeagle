@@ -15,6 +15,8 @@ import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-
 import { getHomepageFormCopy } from '@/constants/homepage-form-copy';
 import BrandLogo from '@/components/BrandLogo';
 import {
+  HOMEPAGE_POPOVER_OPTION,
+  HOMEPAGE_POPOVER_PANEL,
   HOMEPAGE_STEP_COL_SURFACE,
   HOMEPAGE_STEP_PILL,
   HOMEPAGE_STEP_PILL_TYPE,
@@ -606,7 +608,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
       <form onSubmit={handleSubmit} className={`flex w-full min-w-0 flex-col ${compactChrome ? 'gap-4' : 'min-h-0 flex-1 gap-[2.8125rem] sm:gap-[3.375rem] lg:gap-[3.9375rem]'}`}>
         {!compactChrome && (
-          <div className="homepage-features grid w-full shrink-0 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
+          <div className="homepage-features relative z-20 grid w-full shrink-0 grid-cols-1 gap-3 overflow-visible sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {([
               {
                 id: 'fit',
@@ -653,7 +655,7 @@ const InputForm: React.FC<InputFormProps> = ({
                     onFocus={() => setExpandedFeature(item.id)}
                     onBlur={() => setExpandedFeature((cur) => (cur === item.id ? null : cur))}
                     onClick={() => setExpandedFeature(open ? null : item.id)}
-                    className="flex w-full flex-col items-start bg-transparent p-0 text-left"
+                    className={`relative flex w-full flex-col items-start bg-transparent p-0 text-left ${open ? 'z-30' : ''}`}
                   >
                     <div className="flex min-w-0 w-full items-center gap-2 sm:gap-3 lg:gap-4">
                       <div className={`shrink-0 rounded-xl bg-gradient-to-br p-3 sm:p-4 lg:p-5 shadow-inner ring-1 ${item.iconWrap}`}>
@@ -668,13 +670,15 @@ const InputForm: React.FC<InputFormProps> = ({
                         />
                       </span>
                     </div>
-                    <div className={`grid w-full transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                      <div className="overflow-hidden">
-                        <p className="feature-desc pb-0.5 pt-2 sm:pt-2.5 text-left text-sm sm:text-base lg:text-lg xl:text-2xl leading-normal text-slate-400">
+                    {open ? (
+                      <div
+                        className={`absolute left-0 top-full min-w-[22em] w-max max-w-[min(36em,calc(100vw-2rem))] ${HOMEPAGE_POPOVER_PANEL}`}
+                      >
+                        <p className="feature-desc whitespace-normal break-words px-[0.9em] py-[0.7em] text-left text-slate-200">
                           {item.desc}
                         </p>
                       </div>
-                    </div>
+                    ) : null}
                   </button>
                 );
               })}
@@ -772,13 +776,13 @@ const InputForm: React.FC<InputFormProps> = ({
                     />
                     <div
                       role="listbox"
-                      className="absolute left-0 top-full z-50 mt-[0.35em] max-h-[16em] w-[22em] max-w-[calc(100vw-2rem)] animate-fade-in overflow-y-auto rounded-2xl border border-slate-600 bg-slate-800 text-2xl shadow-2xl"
+                      className={`absolute left-0 top-full min-w-[22em] w-max max-w-[calc(100vw-2rem)] animate-fade-in ${HOMEPAGE_POPOVER_PANEL}`}
                     >
-                      <div className="sticky top-0 border-b border-slate-700 bg-slate-900/95 px-[0.8em] py-[0.55em] text-lg font-bold uppercase tracking-wider text-slate-400">
+                      <div className="sticky top-0 border-b border-slate-700 bg-slate-900/95 px-[0.9em] py-[0.55em] font-bold uppercase tracking-wider text-slate-400">
                         {t.recentlyUploaded}
                       </div>
                       {resumeHistory.length === 0 ? (
-                        <div className="p-[1.2em] text-center text-xl text-slate-500">
+                        <div className="p-[1.2em] text-center text-slate-500">
                           <p>{t.noResume}</p>
                         </div>
                       ) : (
@@ -787,12 +791,12 @@ const InputForm: React.FC<InputFormProps> = ({
                             key={historyItem.id}
                             role="option"
                             onClick={() => handleSelectResume(historyItem)}
-                            className="group relative flex cursor-pointer items-start gap-[0.45em] border-b border-slate-700/50 px-[0.8em] py-[0.65em] transition-all last:border-0 hover:bg-slate-700"
+                            className={`${HOMEPAGE_POPOVER_OPTION} group relative cursor-pointer items-start border-b border-slate-700/50 last:border-0 hover:bg-slate-700`}
                           >
                             <FileText className="mt-[0.15em] h-[1em] w-[1em] shrink-0 text-indigo-400" />
-                            <div className="min-w-0 flex-1 overflow-hidden text-left">
+                            <div className="min-w-0 flex-1 text-left">
                               <p className="truncate font-bold text-slate-200">{historyItem.fileName}</p>
-                              <p className="mt-[0.2em] flex items-center text-lg text-slate-400">
+                              <p className="mt-[0.2em] flex items-center text-[0.85em] text-slate-400">
                                 <Clock className="mr-[0.35em] h-[1em] w-[1em]" />
                                 {formatDateTime(historyItem.timestamp)}
                               </p>

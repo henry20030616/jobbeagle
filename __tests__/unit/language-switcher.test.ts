@@ -21,9 +21,13 @@ describe('LanguageSwitcher label layout', () => {
   });
 
   it('widens the menu so native names stay on one line with the check', () => {
-    expect(source).toContain("chrome ? 'min-w-[28rem] w-max' : 'min-w-[16rem] w-max'");
+    expect(source).toContain("min-w-[28rem] w-max");
+    expect(source).toContain('HOMEPAGE_POPOVER_PANEL');
+    expect(source).toContain('min-w-[18em] w-max');
     expect(source).not.toMatch(/w-48 sm:w-56 lg:w-80/);
-    expect(source).toMatch(/className=\{`w-full flex items-center gap-3 px-4 whitespace-nowrap/);
+    expect(source).not.toContain('overflow-hidden');
+    expect(source).not.toMatch(/py-2\.5 text-sm/);
+    expect(source).toContain('HOMEPAGE_POPOVER_OPTION');
     expect(source).toContain('ms-2 font-medium whitespace-nowrap');
     expect(source).toMatch(/ml-auto shrink-0 text-indigo-400/);
   });

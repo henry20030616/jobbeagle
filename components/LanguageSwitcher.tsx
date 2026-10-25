@@ -3,7 +3,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { LANGUAGE_OPTIONS, AppLanguage, useLanguage } from '@/lib/language-context';
-import { REPORT_ACTION_BTN, REPORT_ACTION_ICON } from '@/constants/report-frame';
+import {
+  HOMEPAGE_POPOVER_OPTION,
+  HOMEPAGE_POPOVER_PANEL,
+  REPORT_ACTION_BTN,
+  REPORT_ACTION_ICON,
+} from '@/constants/report-frame';
 
 interface Props {
   /** Visual variant: 'light' for dark backgrounds (Shorts), 'dark' for light/dark page header */
@@ -64,31 +69,44 @@ export default function LanguageSwitcher({ variant = 'dark', size = 'md' }: Prop
 
       {open && (
         <div
-          className={`absolute right-0 top-full mt-1.5 rounded-xl border shadow-xl z-50 overflow-hidden ${
-            chrome ? 'min-w-[28rem] w-max' : 'min-w-[16rem] w-max'
+          role="listbox"
+          className={`absolute right-0 top-full ${
+            chrome
+              ? 'z-50 mt-1.5 min-w-[28rem] w-max rounded-xl border shadow-xl'
+              : large
+                ? `${HOMEPAGE_POPOVER_PANEL} min-w-[18em] w-max max-w-[calc(100vw-2rem)]`
+                : 'z-50 mt-1.5 min-w-[18rem] w-max rounded-xl border shadow-xl'
           } ${
-            isDark
-              ? 'bg-slate-900 border-slate-700'
-              : 'bg-slate-900/95 backdrop-blur-xl border-white/15'
+            chrome || !large
+              ? isDark
+                ? 'bg-slate-900 border-slate-700'
+                : 'bg-slate-900/95 backdrop-blur-xl border-white/15'
+              : ''
           }`}
         >
           {LANGUAGE_OPTIONS.map(opt => (
             <button
               key={opt.code}
               type="button"
+              role="option"
+              aria-selected={language === opt.code}
               onClick={() => handleSelect(opt.code)}
-              className={`w-full flex items-center gap-3 px-4 whitespace-nowrap transition-colors ${
-                chrome ? 'px-6 py-5 text-4xl' : 'py-2.5 text-sm'
+              className={`w-full whitespace-nowrap transition-colors ${
+                chrome
+                  ? 'flex items-center gap-3 px-6 py-5 text-4xl'
+                  : large
+                    ? HOMEPAGE_POPOVER_OPTION
+                    : 'flex items-center gap-3 px-4 py-2.5 text-base'
               } ${
                 language === opt.code
                   ? 'bg-indigo-600/30 text-indigo-300'
                   : 'text-slate-300 hover:bg-slate-800'
               }`}
             >
-              <span className={`${chrome ? 'text-5xl w-16' : 'text-base w-6'} shrink-0 text-center`}>{opt.flag}</span>
+              <span className={`${chrome ? 'text-5xl w-16' : 'text-[1.15em] w-[1.4em]'} shrink-0 text-center`}>{opt.flag}</span>
               <span className="ms-2 font-medium whitespace-nowrap">{opt.nativeName}</span>
               {language === opt.code && (
-                <span className={`ml-auto shrink-0 text-indigo-400 ${chrome ? 'text-3xl' : 'text-xs'}`}>✓</span>
+                <span className={`ml-auto shrink-0 text-indigo-400 ${chrome ? 'text-3xl' : 'text-[0.9em]'}`}>✓</span>
               )}
             </button>
           ))}

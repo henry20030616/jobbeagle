@@ -21,6 +21,8 @@ import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import {
+  HOMEPAGE_POPOVER_OPTION,
+  HOMEPAGE_POPOVER_PANEL,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_IDLE,
   REPORT_TYPE_LAUNCH_BOX,
@@ -523,7 +525,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={`${MOBILE_TITLE_TYPE} font-bold leading-snug text-slate-200`}>{item.title}</p>
-                      <p className="pt-0.5 text-xs leading-normal text-slate-400">{item.desc}</p>
+                      <p className="pt-0.5 text-base leading-normal text-slate-300">{item.desc}</p>
                     </div>
                   </div>
                 );
@@ -605,12 +607,12 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                   className="fixed inset-0 z-40"
                   onClick={() => setShowHistoryDropdown(false)}
                 />
-                <div className="absolute left-0 top-full z-50 mt-1.5 w-full max-h-60 overflow-y-auto rounded-lg border border-slate-600 bg-slate-800 shadow-2xl">
-                  <div className="sticky top-0 bg-slate-900/95 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-700">
+                <div className={`absolute left-0 top-full w-full ${HOMEPAGE_POPOVER_PANEL}`}>
+                  <div className="sticky top-0 border-b border-slate-700 bg-slate-900/95 px-[0.9em] py-[0.55em] font-bold uppercase tracking-wider text-slate-400">
                     {t.resumeLibrary}
                   </div>
                   {resumeHistory.length === 0 ? (
-                    <div className="p-3 text-center text-xs text-slate-500">
+                    <div className="p-[1.2em] text-center text-slate-500">
                       {t.noResume}
                     </div>
                   ) : (
@@ -618,22 +620,22 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                       <div
                         key={historyItem.id}
                         onClick={() => handleSelectResume(historyItem)}
-                        className="flex items-start gap-1.5 border-b border-slate-700/50 px-2.5 py-2 cursor-pointer hover:bg-slate-700 transition-colors last:border-0"
+                        className={`${HOMEPAGE_POPOVER_OPTION} cursor-pointer items-start border-b border-slate-700/50 last:border-0 hover:bg-slate-700`}
                       >
-                        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-indigo-400" />
+                        <FileText className="mt-[0.15em] h-[1em] w-[1em] shrink-0 text-indigo-400" />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-bold text-slate-200">{historyItem.fileName}</p>
-                          <p className="flex items-center text-[10px] text-slate-400 mt-0.5">
-                            <Clock className="mr-1 h-2.5 w-2.5" />
+                          <p className="truncate font-bold text-slate-200">{historyItem.fileName}</p>
+                          <p className="mt-[0.2em] flex items-center text-[0.85em] text-slate-400">
+                            <Clock className="mr-[0.35em] h-[1em] w-[1em]" />
                             {formatDateTime(historyItem.timestamp)}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={(e) => handleDeleteResume(e, historyItem.id)}
-                          className="rounded p-0.5 text-slate-500 hover:bg-white/10 hover:text-red-400"
+                          className="rounded-lg p-[0.35em] text-slate-500 hover:bg-white/10 hover:text-red-400"
                         >
-                          <X className="h-3.5 w-3.5" />
+                          <X className="h-[1em] w-[1em]" />
                         </button>
                       </div>
                     ))
