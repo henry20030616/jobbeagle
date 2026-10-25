@@ -11,6 +11,7 @@ import { GUIDE_ITEM_IDS, GuideItemPage, SnapshotItemStack, guideItemNav } from '
 import { isFullReport, isLiteReport } from '@/lib/normalize-lite-report';
 import { fitBandFromScore } from '@/lib/report-rules';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
+import { splitLabeledFact } from '@/lib/score-summary';
 
 describe('sample reports', () => {
   it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
@@ -670,7 +671,6 @@ describe('seven-item report layout', () => {
     expect(html).toContain('開口稿');
     expect(html).toContain('先報總薪酬');
     expect(html).toContain('先鎖底薪');
-    expect(html).toContain('font-bold text-blue-300');
     expect(html).toContain('report-h2');
     expect(html).toContain('report-h3');
     const playbook = html.slice(
@@ -681,9 +681,52 @@ describe('seven-item report layout', () => {
     expect(playbook).toContain('福利');
     expect(playbook).not.toContain('border-2 border-blue-500');
     expect(html).toContain('問公司的問題');
-    expect(html).not.toContain('建議問公司的問題');
     expect(html).toContain('面試後信件');
-    expect(html).not.toContain('建議面試後寄給公司的信');
+    const bannedChrome = [
+      '薪資籌碼策略',
+      '權益與福利爭取',
+      '開口這樣說',
+      '建議問公司的問題',
+      '建議面試後寄給公司的信',
+      '薪资筹码策略',
+      '权益与福利争取',
+      '开口这样说',
+      '建议问公司的问题',
+      '建议面试后寄给公司的信',
+      'Questions to ask the company',
+      'Note to send after the interview, if one is needed',
+    ];
+    const chromeFiles = [
+      'components/report/SevenItemPages.tsx',
+      'components/guide/GuideSpecModules.tsx',
+      'constants/report-compare.ts',
+      'lib/report-ui-copy.ts',
+    ];
+    for (const phrase of bannedChrome) {
+      expect(html).not.toContain(phrase);
+      for (const file of chromeFiles) {
+        const source = readFileSync(join(process.cwd(), file), 'utf8');
+        expect(source).not.toContain(phrase);
+      }
+    }
+    const pages = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    expect(pages).toContain('<span className={REPORT_H3}>{label}</span>');
+    const payLines = getSampleStrategyGuideReport('zh-TW').guide_modules!.negotiation.pay_strategy
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const benefitLines = getSampleStrategyGuideReport('zh-TW').guide_modules!.negotiation.benefits_strategy
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(payLines).toHaveLength(4);
+    expect(benefitLines).toHaveLength(4);
+    for (const line of [...payLines, ...benefitLines]) {
+      const { label, detail } = splitLabeledFact(line);
+      expect(label.length).toBeGreaterThan(0);
+      expect(label.length).toBeLessThanOrEqual(8);
+      expect(detail.length).toBeGreaterThan(0);
+    }
     expect(html).toContain('面試結束、對方還沒開始談薪資時寄');
     expect(html).toContain('text-lg font-medium leading-snug text-slate-100 mb-4');
     expect(html).not.toContain('text-lg text-slate-400 mb-4');

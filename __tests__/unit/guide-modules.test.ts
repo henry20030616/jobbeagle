@@ -95,7 +95,10 @@ describe('guide module routes', () => {
 
   it('asks negotiation pay and benefits bullets for short titles, not question lines', () => {
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Short title: gist then body');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('短標題：gist');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('數據要求：公司需要有五年數據處理經驗');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('先報總薪酬');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not invent facts or dollars');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix a bullet title');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix titles onto the questions');
   });

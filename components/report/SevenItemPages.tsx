@@ -795,7 +795,7 @@ function PointList({
             <span className={BODY_COPY}>
               {detail ? (
                 <>
-                  <span className="font-bold text-blue-300">{label}</span>
+                  <span className={REPORT_H3}>{label}</span>
                   {item.includes('：') ? '：' : ': '}
                   {detail}
                 </>
