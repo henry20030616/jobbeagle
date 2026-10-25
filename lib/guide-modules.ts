@@ -17,6 +17,9 @@ import {
 import { isCitableSourceUrl } from '@/lib/provenance';
 import { mergeInterviewSummary, QUESTIONS_SUMMARY_MAX } from '@/lib/questions-summary';
 
+/** Company/role 總結分析 is a multi-point recruiter brief, not three one-liners. */
+export const COMPANY_EVAL_SUMMARY_MAX = 2500;
+
 export type GuideModuleId =
   | 'snapshot'
   | 'resume_rewrite'
@@ -326,7 +329,7 @@ export function parseCompanyEval(raw: unknown): GuideModules['company_eval'] | n
   if (!raw || typeof raw !== 'object') return null;
   const row = raw as Record<string, unknown>;
   return {
-    summary: asString(row.summary).slice(0, 800),
+    summary: asString(row.summary).slice(0, COMPANY_EVAL_SUMMARY_MAX),
     culture: asString(row.culture).slice(0, 800),
     labor_risk: asString(row.labor_risk).slice(0, 800),
     layoff_risk: asString(row.layoff_risk).slice(0, 800),

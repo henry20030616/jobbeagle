@@ -6,14 +6,17 @@ import {
 } from '@/constants/models';
 import {
   applyInterviewAnswers,
+  COMPANY_EVAL_SUMMARY_MAX,
   GUIDE_INTEL_MODULE_IDS,
   GUIDE_MODULE_ROUTES,
   GUIDE_WRITING_MODULE_IDS,
+  parseCompanyEval,
   parseGuideQuestions,
   resolveGuideModuleRoute,
   selectInterviewBank,
 } from '@/lib/guide-modules';
 import {
+  COMPANY_MODULE_PROMPT,
   NEGOTIATION_MODULE_PROMPT,
   QUESTION_ANSWER_PROMPT,
   QUESTION_RETRIEVAL_PROMPT,
@@ -111,6 +114,26 @@ describe('guide module routes', () => {
     expect(SALARY_MODULE_PROMPT).toContain('Exactly four newline-separated lines');
     expect(SALARY_MODULE_PROMPT).toContain('招募狀態');
     expect(SALARY_MODULE_PROMPT).not.toContain('with no labels');
+  });
+
+  it('asks company_intel summary for a company-and-role synthesis, not three one-liners', () => {
+    expect(COMPANY_MODULE_PROMPT).toContain('Five or six newline-separated');
+    expect(COMPANY_MODULE_PROMPT).toContain('1–2 full sentences');
+    expect(COMPANY_MODULE_PROMPT).toContain('Seat vs posting/職位對照');
+    expect(COMPANY_MODULE_PROMPT).toContain('do not dump company_pros');
+    expect(COMPANY_MODULE_PROMPT).toContain('Do not invent selection rates, WARN notices, layoffs, visas, or URLs');
+    expect(COMPANY_MODULE_PROMPT).not.toContain('Two or three newline-separated');
+    expect(COMPANY_MODULE_PROMPT).not.toContain('One driver per line');
+  });
+
+  it('does not clip a professional company summary at 800 characters', () => {
+    const summary = Array.from({ length: 6 }, (_, index) => (
+      `Culture ${index}: ${'A'.repeat(140)}.`
+    )).join('\n');
+    expect(summary.length).toBeGreaterThan(800);
+    expect(summary.length).toBeLessThanOrEqual(COMPANY_EVAL_SUMMARY_MAX);
+    const parsed = parseCompanyEval({ summary });
+    expect(parsed?.summary).toBe(summary);
   });
 
   it('labels the questions summary process line as Hiring process / 招募流程', () => {

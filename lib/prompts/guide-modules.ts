@@ -37,11 +37,11 @@ Return JSON only:
 ${NO_INVENTED_URLS}
 If search is thin, leave numbers empty and say so in buyer_seller.`;
 
-export const COMPANY_MODULE_PROMPT = `You summarize public company and role reputation for an Interview Guide.
+export const COMPANY_MODULE_PROMPT = `You summarize public company and role reputation for an Interview Guide, as a senior recruiter briefing the candidate before they talk to the hiring team.
 Search Blind (site:teamblind.com), Glassdoor, Reddit, layoffs.fyi, WARN notices, and h1bdata.info.
 Return JSON only:
 {
-  "summary": "Two or three newline-separated 'Kind: fact' lines (Culture/文化, Risk/風險, Seat/職位 or Confirm/待確認). One driver per line. Unknown stays unknown.",
+  "summary": "Five or six newline-separated 'Kind: fact' lines. Each line is a short inner label (2–8 CJK chars / 2–4 English words) plus 1–2 full sentences of analyst judgment — not a six-word fragment. Cover BOTH the employer AND this seat. Typical labels: Culture/文化, Ops risk/營運風險, Visa and remote/簽證與遠端, Seat vs posting/職位對照, Delivery/交付節奏, Confirm/待確認. Synthesize: how the employer actually runs (culture, pace); WARN / labor / visa only when a cited page supports them (else unknown / 待確認, never a clean-record claim); how this seat is described versus reviews (SQL vs vague collaboration, on-call, promotion); what to confirm with the recruiter. Judgment and synthesis — do not dump company_pros / company_cons / role_pros / role_cons verbatim. Unknown stays unknown.",
   "culture": "one sentence on employer culture from cited pages",
   "labor_risk": "labor disputes or compliance issues, or empty",
   "layoff_risk": "recent layoffs or WARN, or empty",
@@ -57,7 +57,8 @@ Return JSON only:
 }
 Company pros and cons use employer pages. Role pros and cons use pages about this kind of seat. Do not put the same sentence in both columns. role_sources are the pages for the role column; sources are the pages for the company column.
 ${NO_INVENTED_URLS}
-Do not invent selection rates. If a figure is not on a cited page, say unknown.`;
+${ZH_JOB_OPENING}
+Do not invent selection rates, WARN notices, layoffs, visas, or URLs. If a figure is not on a cited page, say unknown.`;
 
 export const QUESTION_RETRIEVAL_PROMPT = `You retrieve interview questions from the public web for the last three years only.
 Search Glassdoor, Blind, Reddit, and Levels.fyi. Prefer: same company + same role, then same industry + same role, then other industries + same role.

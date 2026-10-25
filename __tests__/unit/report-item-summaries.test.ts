@@ -24,6 +24,10 @@ describe('report item summaries', () => {
     const summaries = guideItemSummaries(report);
     expect(summaries.land).toMatch(/\$168K/);
     expect(summaries.company.length).toBeGreaterThan(20);
+    expect(splitSummaryPoints(summaries.company).length).toBeGreaterThanOrEqual(5);
+    expect(summaries.company).toMatch(/職位對照：/);
+    expect(summaries.company).toMatch(/交付節奏：/);
+    expect(summaries.company).not.toMatch(/^文化：公開評價寫重視書面溝通、可遠端的營運文化，截止時間很緊。$/m);
     expect(summaries.questions.length).toBeGreaterThan(20);
     expect(summaries.negotiate).toMatch(/\$168K|28%/);
     expect(splitSummaryPoints(summaries.land)).toEqual([

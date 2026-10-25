@@ -16,6 +16,35 @@ import { REPORT_H3 } from '@/constants/report-frame';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { isCitableSourceUrl } from '@/lib/provenance';
+import { splitSummaryPoints } from '@/lib/report-item-summaries';
+import { splitLabeledFact } from '@/lib/score-summary';
+
+function LabeledSummaryList({ text }: { text: string }) {
+  const points = splitSummaryPoints(text);
+  if (points.length === 0) return null;
+  return (
+    <ul className="space-y-3.5 overflow-visible">
+      {points.map((item) => {
+        const { label, detail } = splitLabeledFact(item);
+        return (
+          <li key={item} className="overflow-visible">
+            <p className={`${BODY_COPY} min-w-0 whitespace-normal break-words`}>
+              {detail ? (
+                <>
+                  <span className={REPORT_H3}>{label}</span>
+                  {item.includes('：') ? '：' : ': '}
+                  {detail}
+                </>
+              ) : (
+                item
+              )}
+            </p>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 function extraRuleFor(language: AppLanguage): string {
   switch (language) {
@@ -49,6 +78,7 @@ function copyFor(language: AppLanguage) {
       base: s ? '底薪' : '底薪',
       equity: s ? '股票' : '股票',
       bonus: s ? '奖金' : '獎金',
+      analysisSummary: s ? '总结分析' : '總結分析',
       culture: s ? '公司情报' : '公司情報',
       layoff: s ? '裁员风险' : '裁員風險',
       labor: s ? '劳工争议' : '勞工爭議',
@@ -80,6 +110,7 @@ function copyFor(language: AppLanguage) {
     base: 'Base',
     equity: 'Equity',
     bonus: 'Bonus',
+    analysisSummary: 'Analysis summary',
     culture: 'Company intel',
     layoff: 'Layoff risk',
     labor: 'Labor risk',
@@ -252,6 +283,12 @@ export default function GuideSpecModules({
       <GuideSlideShell>
         <PageHeaderBar pageOf="" title={t.item5} badge="" badgeTone="amber" />
         <div className="px-5 py-3.5 space-y-3">
+          {company.summary ? (
+            <section className="overflow-visible rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
+              <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{t.analysisSummary}</p>
+              <LabeledSummaryList text={company.summary} />
+            </section>
+          ) : null}
           <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
             <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{t.culture}</p>
             <p className={`${BODY} text-slate-200 leading-relaxed`}>{company.culture || '—'}</p>

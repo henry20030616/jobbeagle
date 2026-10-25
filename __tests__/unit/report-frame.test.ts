@@ -259,6 +259,8 @@ describe('Guide inner section cards', () => {
     expect(pages).toContain('GUIDE_SECTION_FRAME');
     expect(pages).toContain('function SectionCard');
     expect(pages).toContain('function SummaryCard');
+    expect(pages).toContain('className="overflow-visible"');
+    expect(pages).toContain('relaxed');
   });
 
   it('puts pay, benefits, and script inside one negotiate GUIDE_SECTION_FRAME', () => {

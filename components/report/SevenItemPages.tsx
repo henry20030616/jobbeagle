@@ -684,13 +684,16 @@ function PayRangeLine({
 function BriefRows({
   items,
   language,
+  relaxed = false,
 }: {
   items: string[];
   language?: AppLanguage;
+  /** Extra vertical room for 1–2 sentence synthesis (公司 總結分析). */
+  relaxed?: boolean;
 }) {
   if (items.length === 0) return null;
   return (
-    <ul className="space-y-2 py-1">
+    <ul className={`overflow-visible py-1 ${relaxed ? 'space-y-3.5' : 'space-y-2'}`}>
       {items.map((item) => {
         const { label, detail, separator } = language
           ? localizeLabeledFactParts(item, language)
@@ -699,9 +702,9 @@ function BriefRows({
               separator: item.includes('：') ? '：' : ': ',
             };
         return (
-          <li key={item} className="flex gap-2.5">
+          <li key={item} className="flex gap-2.5 overflow-visible">
             <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-            <span className={BODY_COPY}>
+            <span className={`${BODY_COPY} min-w-0 whitespace-normal break-words`}>
               {detail ? (
                 <>
                   <span className="font-bold text-blue-300">{label}</span>
@@ -877,11 +880,11 @@ function SummaryCard({ label, summary }: { label: string; summary: string }) {
   const points = splitSummaryPoints(summary);
   if (points.length === 0) return null;
   return (
-    <SectionCard title={label} heading={REPORT_H1}>
+    <SectionCard title={label} heading={REPORT_H1} className="overflow-visible">
       {points.length > 1 ? (
-        <BriefRows items={points} />
+        <BriefRows items={points} relaxed />
       ) : (
-        <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{points[0]}</p>
+        <p className={`${BODY_COPY} overflow-visible whitespace-normal break-words`}>{points[0]}</p>
       )}
     </SectionCard>
   );

@@ -691,7 +691,7 @@ export interface GuideModules {
     sources: GuideSource[];
   };
   company_eval: {
-    /** Two or three sentences: employer risk and what public reviews say about this seat. */
+    /** Labeled synthesis of employer and seat intel. Several Kind: fact lines, each 1–2 sentences. */
     summary?: string;
     culture: string;
     labor_risk: string;

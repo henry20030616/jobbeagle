@@ -767,7 +767,7 @@ describe('seven-item report layout', () => {
       /<ItemBlock title=\{title\[item\]\} summaryLabel=\{copy\.analysisSummary\}/,
     );
     const zh = getSampleStrategyGuideReport('zh-TW').guide_modules!;
-    expect(zh.company_eval.summary?.split('\n')).toHaveLength(3);
+    expect(zh.company_eval.summary?.split('\n').length).toBeGreaterThanOrEqual(5);
     expect(zh.company_eval.company_pros.length).toBeGreaterThan(0);
     expect(zh.company_eval.role_pros.length).toBeGreaterThan(0);
     expect(zh.negotiation.summary).toMatch(/開價/);
@@ -809,6 +809,58 @@ describe('seven-item report layout', () => {
     expect(html.split('border-2 border-blue-500').length - 1).toBe(3);
     const company = getSampleStrategyGuideReport('zh-TW').guide_modules!.company_eval;
     expect(company.company_cons.length).toBeGreaterThan(company.role_cons.length);
+  });
+
+  it('renders 總結分析 as a company-and-role synthesis, not three one-liners', () => {
+    const labels = {
+      en: ['Culture:', 'Ops risk:', 'Visa and remote:', 'Seat vs posting:', 'Delivery:', 'Confirm:'],
+      'zh-TW': ['文化：', '營運風險：', '簽證與遠端：', '職位對照：', '交付節奏：', '待確認：'],
+      'zh-CN': ['文化：', '运营风险：', '签证与远程：', '职位对照：', '交付节奏：', '待确认：'],
+    } as const;
+    for (const lang of Object.keys(labels) as Array<keyof typeof labels>) {
+      const summary = getSampleStrategyGuideReport(lang).guide_modules!.company_eval.summary ?? '';
+      const lines = summary.split('\n').map((line) => line.trim()).filter(Boolean);
+      expect(lines.length).toBeGreaterThanOrEqual(5);
+      for (const label of labels[lang]) {
+        expect(summary).toContain(label);
+      }
+      for (const line of lines) {
+        expect(line.length).toBeGreaterThan(40);
+      }
+    }
+    expect(getSampleStrategyGuideReport('zh-TW').guide_modules!.company_eval.summary).not.toMatch(
+      /^文化：公開評價寫重視書面溝通、可遠端的營運文化，截止時間很緊。$/m,
+    );
+
+    const html = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report: getSampleStrategyGuideReport('zh-TW'),
+        item: 'company',
+        language: 'zh-TW',
+      }),
+    );
+    expect(html).toContain('總結分析');
+    expect(html).toContain('職位對照');
+    expect(html).toContain('交付節奏');
+    expect(html).toContain('營運風險');
+    expect(html).toContain('report-body');
+    expect(html).toContain('overflow-visible');
+    const summarySlice = html.slice(
+      html.indexOf('總結分析'),
+      html.indexOf('公司評價'),
+    );
+    expect(summarySlice).toContain('遠端不等於節奏鬆');
+    expect(summarySlice).toContain('第一天就要能獨立跑退票');
+    expect(summarySlice).not.toContain('overflow-hidden');
+
+    const pages = readFileSync(join(process.cwd(), 'components/report/SevenItemPages.tsx'), 'utf8');
+    const spec = readFileSync(join(process.cwd(), 'components/guide/GuideSpecModules.tsx'), 'utf8');
+    const summaryFn = pages.slice(pages.indexOf('function SummaryCard'), pages.indexOf('function analysisColon'));
+    expect(summaryFn).toContain('overflow-visible');
+    expect(summaryFn).toContain('relaxed');
+    expect(summaryFn).not.toContain('overflow-hidden');
+    expect(spec).toContain('LabeledSummaryList');
+    expect(spec).toContain('{t.analysisSummary}');
   });
 
   it('merges Guide pay landing into one frame with range, ceiling, and unframed data sources', () => {
