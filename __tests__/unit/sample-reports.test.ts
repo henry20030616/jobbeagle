@@ -480,7 +480,7 @@ describe('seven-item report layout', () => {
     expect(fitBody).toContain('<p className={BODY_COPY}>{scoreInfo.label}</p>');
     expect(fitBody).not.toContain('${BODY_COPY} mt-1');
     expect(fitBody).toContain('<span className={BODY_COPY}>{localizeLabeledFactLine(point, language)}</span>');
-    expect(fitBody).toContain('<p className={`${BODY_COPY} overflow-visible whitespace-normal break-words`}>{summaryPoints[0]}</p>');
+    expect(fitBody).toContain('<ReportProse text={analysisSummary} />');
     expect(fitBody).toContain('<p className={BODY_COPY}>{applyCallLabel(apply.label, language)}</p>');
     expect(fitBody).toContain('<ApplyCallBody apply={apply} empty={copy.empty} />');
     expect(fitBody).not.toContain('next_best_action');
@@ -870,9 +870,12 @@ describe('seven-item report layout', () => {
       'zh-CN': ['文化：', '运营风险：', '签证与远程：', '职位对照：', '交付节奏：', '待确认：'],
     } as const;
     for (const lang of Object.keys(labels) as Array<keyof typeof labels>) {
-      const summary = getSampleStrategyGuideReport(lang).guide_modules!.company_eval.summary ?? '';
+      const evals = getSampleStrategyGuideReport(lang).guide_modules!.company_eval;
+      const summary = evals.summary ?? '';
       const lines = summary.split('\n').map((line) => line.trim()).filter(Boolean);
       expect(lines.length).toBeGreaterThanOrEqual(5);
+      expect(evals.summary_company).toBeTruthy();
+      expect(evals.summary_role).toBeTruthy();
       for (const label of labels[lang]) {
         expect(summary).toContain(label);
       }
@@ -899,8 +902,11 @@ describe('seven-item report layout', () => {
     expect(html).toContain('overflow-visible');
     const summarySlice = html.slice(
       html.indexOf('總結分析'),
-      html.indexOf('公司評價'),
+      html.indexOf('優點'),
     );
+    expect(summarySlice).toContain('公司評價');
+    expect(summarySlice).toContain('職位評價');
+    expect(summarySlice.indexOf('公司評價')).toBeLessThan(summarySlice.indexOf('職位評價'));
     expect(summarySlice).toContain('遠端不等於節奏鬆');
     expect(summarySlice).toContain('第一天就要能獨立跑退票');
     expect(summarySlice).not.toContain('overflow-hidden');
@@ -1142,6 +1148,8 @@ describe('seven-item report layout', () => {
     );
     expect(html).toContain('以下十題為近期最重要的面試題');
     expect(html).toContain('近三年其餘真題列於補充資料列表');
+    expect(html).toContain('專業題／行為題分析只引用有網址的真題');
+    expect(html).toContain('舊報告請重新分析以更新');
     expect(html).toContain('補充資料列表');
     for (const item of extras) {
       expect(html).toContain(item.question);

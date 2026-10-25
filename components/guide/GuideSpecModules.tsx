@@ -16,6 +16,7 @@ import { REPORT_H3 } from '@/constants/report-frame';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { isCitableSourceUrl } from '@/lib/provenance';
+import { resolveCompanyEvalSummaries } from '@/lib/company-eval-summary';
 import { splitSummaryPoints } from '@/lib/report-item-summaries';
 import { splitLabeledFact } from '@/lib/score-summary';
 
@@ -49,9 +50,9 @@ function LabeledSummaryList({ text }: { text: string }) {
 function extraRuleFor(language: AppLanguage): string {
   switch (language) {
     case 'zh-TW':
-      return '以下十題為近期最重要的面試題；近三年其餘真題列於補充資料列表。';
+      return '以下十題為近期最重要的面試題；近三年其餘真題列於補充資料列表。專業題／行為題分析只引用有網址的真題；預測題另標為預測。舊報告請重新分析以更新。';
     case 'zh-CN':
-      return '以下十题为近期最重要的面试题；近三年其余真题列于补充资料列表。';
+      return '以下十题为近期最重要的面试题；近三年其余真题列于补充资料列表。专业题／行为题分析只引用有网址的真题；预测题另标为预测。旧报告请重新分析以更新。';
     case 'es':
       return 'Estas diez son las de mayor prioridad reciente. El resto de preguntas reales de los últimos tres años aparece abajo.';
     case 'hi':
@@ -59,7 +60,7 @@ function extraRuleFor(language: AppLanguage): string {
     case 'ar':
       return 'هذه العشر هي المجموعة الأحدث والأولى أولوية. بقية الأسئلة الحقيقية من السنوات الثلاث الماضية أدناه.';
     default:
-      return 'These ten are the most recent priority set. Remaining reported questions from the last three years appear below.';
+      return 'These ten are the most recent priority set. Remaining reported questions from the last three years appear below. Professional and behavioral analysis uses retrieved reported questions only; predicted questions stay labeled. Re-run analysis on older reports to refresh.';
   }
 }
 
@@ -79,6 +80,7 @@ function copyFor(language: AppLanguage) {
       equity: s ? '股票' : '股票',
       bonus: s ? '奖金' : '獎金',
       analysisSummary: s ? '总结分析' : '總結分析',
+      companyReview: s ? '公司评价' : '公司評價',
       culture: s ? '公司情报' : '公司情報',
       layoff: s ? '裁员风险' : '裁員風險',
       labor: s ? '劳工争议' : '勞工爭議',
@@ -93,7 +95,7 @@ function copyFor(language: AppLanguage) {
       extraRule: extraRuleFor(language),
       answer: s ? '建议答案' : '建議答案',
       process: s ? '面试流程' : '面試流程',
-      pay: s ? '筹码' : '籌碼',
+      pay: s ? '谈判筹码' : '談判籌碼',
       benefits: s ? '福利' : '福利',
       source: s ? '资料来源' : '資料來源',
     };
@@ -111,6 +113,7 @@ function copyFor(language: AppLanguage) {
     equity: 'Equity',
     bonus: 'Bonus',
     analysisSummary: 'Analysis summary',
+    companyReview: 'Company reviews',
     culture: 'Company intel',
     layoff: 'Layoff risk',
     labor: 'Labor risk',
@@ -125,7 +128,7 @@ function copyFor(language: AppLanguage) {
     extraRule: extraRuleFor(language),
     answer: 'Suggested answer',
     process: 'Interview process',
-    pay: 'Leverage',
+    pay: 'Pay leverage',
     benefits: 'Benefits',
     source: 'Data sources',
   };
@@ -279,14 +282,24 @@ export default function GuideSpecModules({
 
   if (tab === 'hiring') {
     const company = modules.company_eval;
+    const split = resolveCompanyEvalSummaries(company);
     return (
       <GuideSlideShell>
         <PageHeaderBar pageOf="" title={t.item5} badge="" badgeTone="amber" />
         <div className="px-5 py-3.5 space-y-3">
-          {company.summary ? (
+          {split.summary_company || split.summary_role || company.summary ? (
             <section className="overflow-visible rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">
               <p className={`${SECTION_TITLE} text-indigo-300 mb-2`}>{t.analysisSummary}</p>
-              <LabeledSummaryList text={company.summary} />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <p className={`${SECTION_TITLE} text-slate-300 mb-2`}>{t.companyReview}</p>
+                  <LabeledSummaryList text={split.summary_company} />
+                </div>
+                <div>
+                  <p className={`${SECTION_TITLE} text-slate-300 mb-2`}>{t.roleReviews}</p>
+                  <LabeledSummaryList text={split.summary_role} />
+                </div>
+              </div>
             </section>
           ) : null}
           <section className="rounded-lg border border-sky-400/50 bg-indigo-500/10 p-4">

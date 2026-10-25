@@ -37,6 +37,29 @@ describe('report field labels', () => {
     expect(localizeReportFieldLabel('System analysis', 'zh-TW')).toBe('System analysis');
   });
 
+  it('maps slangy negotiation and salary-land Kind keys to professional labels', () => {
+    expect(localizeReportFieldLabel('開價', 'zh-TW')).toBe('建議報價');
+    expect(localizeReportFieldLabel('上限', 'zh-TW')).toBe('議價上限');
+    expect(localizeReportFieldLabel('禁區', 'zh-TW')).toBe('談判底線');
+    expect(localizeReportFieldLabel('目標價', 'zh-TW')).toBe('目標總酬');
+    expect(localizeReportFieldLabel('天花板', 'zh-TW')).toBe('議價上限');
+    expect(localizeReportFieldLabel('結構', 'zh-TW')).toBe('薪酬結構');
+    expect(localizeReportFieldLabel('先報總薪酬', 'zh-TW')).toBe('先報總酬');
+    expect(localizeReportFieldLabel('還一次', 'zh-TW')).toBe('讓步節奏');
+    expect(localizeReportFieldLabel('不隨競爭', 'zh-TW')).toBe('勿跟競價');
+    expect(localizeReportFieldLabel('先鎖底薪', 'zh-TW')).toBe('底薪先鎖');
+    expect(localizeReportFieldLabel('一次問完', 'zh-TW')).toBe('福利一次問清');
+    expect(localizeReportFieldLabel('簽證另問', 'zh-TW')).toBe('簽證另議');
+    expect(localizeReportFieldLabel('不換底薪', 'zh-TW')).toBe('底薪不換');
+    expect(localizeReportFieldLabel('開口稿', 'zh-TW')).toBe('開場講稿');
+    expect(localizeReportFieldLabel('Open', 'en')).toBe('Suggested quote');
+    expect(localizeReportFieldLabel('Cap', 'en')).toBe('Negotiation ceiling');
+    expect(localizeReportFieldLabel('Ban', 'en')).toBe('Walk-away line');
+    expect(localizeReportFieldLabel('开价', 'zh-CN')).toBe('建议报价');
+    expect(localizeLabeledFactLine('開價：總薪酬 $168K', 'zh-TW')).toBe('建議報價：總薪酬 $168K');
+    expect(localizeLabeledFactLine('Ceiling: $185K', 'zh-TW')).toBe('議價上限：$185K');
+  });
+
   it('rebuilds labeled lines with a CJK colon on zh-TW', () => {
     expect(
       localizeLabeledFactLine('Core fit: SQL/Looker ownership maps to the JD.', 'zh-TW'),
@@ -45,7 +68,7 @@ describe('report field labels', () => {
       localizeLabeledFactLine('Years：具備 IT、軟體或系統整合專案管理經驗', 'zh-TW'),
     ).toBe('年資：具備 IT、軟體或系統整合專案管理經驗');
     expect(
-      localizeLabeledFactLine('核心適配：SQL／Looker 擁有權對齊此 JD。', 'en'),
-    ).toBe('Core fit: SQL／Looker 擁有權對齊此 JD。');
+      localizeLabeledFactLine('核心適配：SQL／Looker 職責對齊此 JD。', 'en'),
+    ).toBe('Core fit: SQL／Looker 職責對齊此 JD。');
   });
 });

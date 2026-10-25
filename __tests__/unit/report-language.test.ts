@@ -20,6 +20,7 @@ describe('report language', () => {
     expect(geminiLanguageDirective('zh-TW')).toMatch(/Traditional Chinese/);
     expect(geminiLanguageDirective('zh-TW')).toMatch(/職位 \/ 這職位/);
     expect(geminiLanguageDirective('zh-TW')).toMatch(/never 席位/);
+    expect(geminiLanguageDirective('zh-TW')).toMatch(/never 擁有權/);
     expect(geminiLanguageDirective('zh-CN')).toMatch(/职位 \/ 这职位/);
     expect(geminiLanguageDirective('en')).toMatch(/English/);
     expect(geminiLanguageDirective('en')).not.toMatch(/席位/);
@@ -78,7 +79,7 @@ describe('report language', () => {
       'constants/account-nav.ts',
       'constants/features.ts',
     ];
-    const banned = /席位|這席|該席|此席|一席|本席|这席|该席/;
+    const banned = /席位|這席|該席|此席|一席|本席|这席|该席|擁有權|所有权|拥有权/;
     for (const file of files) {
       const text = readFileSync(join(process.cwd(), file), 'utf8');
       expect(text, file).not.toMatch(banned);

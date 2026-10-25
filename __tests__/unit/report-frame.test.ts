@@ -385,6 +385,7 @@ describe('report item heading scale', () => {
     expect(snapshot).toContain('ReportJobHeader');
     expect(guide).toContain('ReportJobHeader');
   });
+});
 
 describe('pay-range widths', () => {
   it('centers Snapshot market in leftover space after the heading, Guide land half width', () => {

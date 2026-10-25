@@ -691,8 +691,12 @@ export interface GuideModules {
     sources: GuideSource[];
   };
   company_eval: {
-    /** Labeled synthesis of employer and seat intel. Several Kind: fact lines, each 1–2 sentences. */
+    /** Labeled synthesis of employer and seat intel. Joined Kind: fact lines, or legacy 6-bullet blob. */
     summary?: string;
+    /** Employer-side 總結分析 (culture, ops risk, visa/WARN, company-level 待確認). */
+    summary_company?: string;
+    /** Seat-side 總結分析 (role vs posting, delivery, role-level 待確認). */
+    summary_role?: string;
     culture: string;
     labor_risk: string;
     layoff_risk: string;

@@ -1,3 +1,4 @@
+import React from 'react';
 /** Navy rim — high contrast on every Beagle fill (header slate, report tier blues). */
 export const BRAND_BEAGLE_GLASSES = '#1e3a8a';
 const LOUPE_LENS_FILL = 'rgba(255,255,255,0.72)';

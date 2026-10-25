@@ -23,7 +23,7 @@ const ZH_TW: SampleLocalePack = {
           evidence: '履歷列出金融科技營運相關約 6 年經驗',
         },
         {
-          requirement: 'SQL + 儀表板擁有權',
+          requirement: 'SQL + 儀表板職責',
           status: 'Pass',
           evidence: '履歷明確寫出 Looker + SQL',
         },
@@ -35,7 +35,7 @@ const ZH_TW: SampleLocalePack = {
         {
           requirement: '支付處理商／供應商管理',
           status: 'Risk',
-          evidence: '履歷未明示處理商或供應商擁有權',
+          evidence: '履歷未明示處理商或供應商職責',
         },
       ],
     },
@@ -44,18 +44,18 @@ const ZH_TW: SampleLocalePack = {
       band: 'Viable',
       evidence_coverage: 'High',
       sharp_verdict:
-        '核心適配：SQL／Looker 擁有權、對帳週期縮短 28%、跨職能分流，對齊此 JD 核心範疇。 職級／年資：六年金融科技營運經驗對上 5 年以上要求；無高於 Senior BA 範疇的證據。 主要缺口：ACH 退件與清算擁有權是 JD 核心要求；履歷僅顯示相鄰的銀行營運經驗。',
+        '核心適配：SQL／Looker 職責、對帳週期縮短 28%、跨職能分流，對齊此 JD 核心範疇。 職級／年資：六年金融科技營運經驗對上 5 年以上要求；無高於 Senior BA 範疇的證據。 主要缺口：ACH 退件與清算職責是 JD 核心要求；履歷僅顯示相鄰的銀行營運經驗。',
       sharp_verdict_points: [
-        '核心適配：SQL／Looker 擁有權、對帳週期縮短 28%、跨職能分流，對齊此 JD 核心範疇。',
+        '核心適配：SQL／Looker 職責、對帳週期縮短 28%、跨職能分流，對齊此 JD 核心範疇。',
         '職級／年資：六年金融科技營運經驗對上 5 年以上要求；無高於 Senior BA 範疇的證據。',
-        '主要缺口：ACH 退件與清算擁有權是 JD 核心要求；履歷僅顯示相鄰的銀行營運經驗。',
+        '主要缺口：ACH 退件與清算職責是 JD 核心要求；履歷僅顯示相鄰的銀行營運經驗。',
       ],
       breakdown: [
         {
           dimension: '硬性條件／可行性',
           weight_pct: 30,
           score: 72,
-          note: '72：年資與 SQL 必備條件已達，但 ACH／清算擁有權僅屬相鄰銀行營運，故硬性可行性落在七十多分。',
+          note: '72：年資與 SQL 必備條件已達，但 ACH／清算職責僅屬相鄰銀行營運，故硬性可行性落在七十多分。',
         },
         {
           dimension: '職級／範疇／年資',
@@ -114,7 +114,7 @@ const ZH_TW: SampleLocalePack = {
         },
         {
           gap: '供應商／處理商管理',
-          description: '未見具名處理商或 NACHA 合規擁有權。',
+          description: '未見具名處理商或 NACHA 合規職責。',
           skill_kind: 'hard',
         },
         {
@@ -124,7 +124,7 @@ const ZH_TW: SampleLocalePack = {
         },
       ],
       resume_actions: [
-        '所附履歷未證明 ACH／退票擁有權。',
+        '所附履歷未證明 ACH／退票職責。',
         '未證明具名支付處理商經驗。',
       ],
       screenability_note: '營運關鍵字強；支付軌道關鍵字偏薄。',
@@ -160,8 +160,8 @@ const ZH_TW: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        '六年金融科技營運經驗與可量化的對帳成果，在需求擁有權上已過 Senior BA 門檻。\nJD 將 ACH 退件與清算列為核心，而履歷僅顯示相鄰的銀行營運經驗。\n此標籤反映核心要求尚未確認，而非履歷薄弱。',
-      next_best_action: '謹慎應徵：ACH／退票擁有權僅有相鄰證明，不是明確建議應徵。',
+        '六年金融科技營運經驗與可量化的對帳成果，已達 Senior BA 的需求職責門檻。\nJD 將 ACH 退件與清算列為核心，而履歷僅顯示相鄰的銀行營運經驗。\n此標籤反映核心要求尚未確認，而非履歷薄弱。',
+      next_best_action: '謹慎應徵：ACH／退票職責僅有相鄰證明，不是明確建議應徵。',
     },
     role_read: {
       mission:
@@ -185,13 +185,13 @@ const ZH_TW: SampleLocalePack = {
     ],
     competency_map: [
       {
-        competency: 'SQL 與儀表板擁有權',
+        competency: 'SQL 與儀表板職責',
         weight: 'core',
         proficiency: 'demonstrated',
         resume_evidence: '以 SQL + Looker 流程將對帳週期縮短 28%。',
       },
       {
-        competency: '需求與 PRD 擁有權',
+        competency: '需求與 PRD 職責',
         weight: 'core',
         proficiency: 'demonstrated',
         resume_evidence: '主導三次平台上線的 PRD 與驗收標準。',
@@ -200,7 +200,7 @@ const ZH_TW: SampleLocalePack = {
         competency: 'ACH 退件與清算',
         weight: 'core',
         proficiency: 'adjacent',
-        resume_evidence: '銀行營運對帳經驗；無明確 ACH 或退件擁有權。',
+        resume_evidence: '銀行營運對帳經驗；無明確 ACH 或退件職責。',
       },
       {
         competency: '跨部門協作',
@@ -245,7 +245,7 @@ const ZH_TW: SampleLocalePack = {
     strategy_fit_salary: {
       score_implications:
         '78 分可通過多數篩選；第二輪預期會有 ACH 退件的領域深挖，因為該核心要求在履歷上只是相鄰經驗，尚無證據。',
-      offer_implications: '證據等級 C——先探索再錨定。支付擁有權可信後再瞄準中帶。',
+      offer_implications: '證據等級 C——先探索再錨定。支付職責可信後再瞄準中帶。',
       validate_with_recruiter: [
         'ACH／退票經驗是必備還是加分？',
         '此職缺核定職級帶是 Senior BA 還是 Staff？',
@@ -285,9 +285,9 @@ const ZH_TW: SampleLocalePack = {
     concerns_defenses: [
       {
         concern: 'ACH／支付軌道證據偏薄',
-        why: 'JD 強調清算與退票擁有權。',
+        why: 'JD 強調清算與退票職責。',
         evidence: '履歷有銀行營運 + 對帳週期改善。',
-        missing_proof: '具名 ACH 退票或處理商擁有權。',
+        missing_proof: '具名 ACH 退票或處理商職責。',
         answer_guide:
           '橋接：「上一份工作我擁有與支付清算相鄰的對帳 SLA。我會用同樣的 SQL + 利害關係人節奏這樣上手 ACH 退票……」',
         do_not_claim: '不要虛構你沒有擔任過的 NACHA 或處理商職稱。',
@@ -296,7 +296,7 @@ const ZH_TW: SampleLocalePack = {
         concern: '高階範疇 vs IC 分析師習慣',
         why: '履歷職稱組合可能讀起來偏中階。',
         evidence: '帶領跨職能 triage 18 個月；高階狀態包。',
-        missing_proof: '人數或預算擁有權。',
+        missing_proof: '人數或預算職責。',
         answer_guide: '以「無職權影響力」開場：你主持的節奏、你打通的決策、你擁有的指標。',
         do_not_claim: '若你是 IC，不要聲稱有管人範疇。',
       },
@@ -330,7 +330,7 @@ const ZH_TW: SampleLocalePack = {
           question: '請從頭到尾說明你如何改善一個失效的營運流程。',
           predicted: true,
           category: 'behavioral',
-          interviewer_intent: '考驗端到端擁有權與可量化影響力。',
+          interviewer_intent: '考驗端到端職責與可量化影響力。',
           resume_anchor: '可量化營運改善',
           star_blueprint:
             'S：履歷上月結對帳約 9 天卡住關帳 · T：不加人力縮短週期 · A：SQL 例外佇列 + Looker triage · R：週期 −28%、錯誤外洩 −15%（履歷列出的成果）',
@@ -370,12 +370,12 @@ const ZH_TW: SampleLocalePack = {
           question: '前 60 天你會如何上手 ACH 退票？',
           predicted: true,
           category: 'technical',
-          interviewer_intent: '學習計畫，且不虛構過去 ACH 擁有權。',
+          interviewer_intent: '學習計畫，且不虛構過去 ACH 職責。',
           resume_anchor: '可量化營運改善',
           star_blueprint:
             'S：履歷是銀行營運相鄰、非具名 ACH 負責人 · T：誠實上手 · A：用 SQL/Looker 與 −28% 週期改善肌肉做 W1–8 計畫 · R：綁定已驗證工具的 60 天計畫',
           dos_donts: '不要聲稱沒擔任過的 NACHA 職稱；從 SQL + Looker 成果橋接。',
-          missing_facts: '履歷無具名 ACH 擁有權——用相鄰營運證據 + 學習計畫。',
+          missing_facts: '履歷無具名 ACH 職責——用相鄰營運證據 + 學習計畫。',
         },
         {
           question: '你會如何設計清算週期的 KPI 包？',
@@ -404,7 +404,7 @@ const ZH_TW: SampleLocalePack = {
           interviewer_intent: '在 BA 範疇內與風險／合規合作。',
           resume_anchor: '跨職能協調',
           star_blueprint:
-            'S：JD 問 NACHA、履歷無合規擁有權 · T：以 BA 夥伴驗證 · A：對齊控制負責人＋證據清單＋每週例外檢視 · R：缺口上升且不自稱 NACHA 官',
+            'S：JD 問 NACHA、履歷無合規職責 · T：以 BA 夥伴驗證 · A：對齊控制負責人＋證據清單＋每週例外檢視 · R：缺口上升且不自稱 NACHA 官',
           dos_donts: '不要聲稱自己是 NACHA 負責人；留在履歷 BA 協調範疇。',
         },
         {
@@ -415,7 +415,7 @@ const ZH_TW: SampleLocalePack = {
           resume_anchor: '需求紀律',
           star_blueprint:
             'S：清算 SLA 燒損 · T：排序工程需求 · A：像你週期改善一樣量化影響＋MVP vs 完整修復＋PRD/AC 紀律對齊 · R：共同取捨、不虛構產能',
-          dos_donts: '不要虛構無法辯護的產能數字；引用履歷需求／驗收擁有權。',
+          dos_donts: '不要虛構無法辯護的產能數字；引用履歷需求／驗收職責。',
         },
       ],
       star_templates: [
@@ -475,7 +475,7 @@ const ZH_TW: SampleLocalePack = {
     },
     candidate_case: {
       hire_thesis:
-        '雇用已能交付的營運分析擁有權：SQL／Looker 節奏、可量化週期改善、高階可用的協調——再用結構化 60 天計畫補上 ACH 缺口。',
+        '雇用已能交付的營運分析職責：SQL／Looker 節奏、可量化週期改善、高階可用的協調——再用結構化 60 天計畫補上 ACH 缺口。',
       top_facts: [
         '以 SQL + Looker 將對帳週期縮短 28%',
         '帶領工程／風險／客服每週 triage 18 個月',
@@ -489,7 +489,7 @@ const ZH_TW: SampleLocalePack = {
       negotiation_script: {
         prepare: '通話前先寫好「核定區間」的問題，以及你的底線：低於書面底線，或範疇低於 Senior BA。',
         pitch:
-          '謝謝——在我報數字前，這個地點這個職級的核定現金區間是多少？根據相近的 Senior BA 金融科技營運職缺，以及我的週期擁有權，確認範疇後我會瞄準中帶。',
+          '謝謝——在我報數字前，這個地點這個職級的核定現金區間是多少？根據相近的 Senior BA 金融科技營運職缺，以及我的週期職責，確認範疇後我會瞄準中帶。',
         counter:
           '若現金落在中下帶，我會先看簽約金或遠端彈性，再動底薪。職缺沒寫的公司總額，我不會自己錨定。',
       },
@@ -501,7 +501,7 @@ const ZH_TW: SampleLocalePack = {
       },
       levers: ['範疇', '簽約金', '遠端彈性', '職級定級'],
       structured_levers: [
-        { name: '範疇', note: '確認是 Senior BA 擁有權而非工單分流' },
+        { name: '範疇', note: '確認是 Senior BA 職責而非工單分流' },
         { name: '簽約金', note: '現金落中下、股票爬坡時可橋接' },
         { name: '遠端彈性', note: '地點彈性時可與到辦公室權衡' },
         { name: '職級定級', note: '錨定 TC 前先鎖職級' },
@@ -514,7 +514,7 @@ const ZH_TW: SampleLocalePack = {
         total: '約 $185K TC',
       },
       script:
-        '謝謝——在我報數字前，這個地點這個職級的核定現金區間是多少？根據相近 Senior BA 金融科技營運職缺與我的週期／KPI 擁有權，確認範疇後我會瞄準中帶。',
+        '謝謝——在我報數字前，這個地點這個職級的核定現金區間是多少？根據相近 Senior BA 金融科技營運職缺與我的週期／KPI 職責，確認範疇後我會瞄準中帶。',
       discovery_questions: [
         '這個地點這個職級的核定區間是多少？',
         '總酬如何拆現金、獎金與股票？',
@@ -549,7 +549,7 @@ const ZH_TW: SampleLocalePack = {
       ],
       requirements_refined: [
         'SQL 能力是必備',
-        '高階擁有權——不是初階工單分流',
+        '高階職責——不是初階工單分流',
         '偏好支付領域勝於泛用 BA',
       ],
       rto_official: '混合制——每週到辦公室 3 天（依 JD）',
@@ -558,7 +558,7 @@ const ZH_TW: SampleLocalePack = {
       career_path_basis:
         '公司未公開內部職等表 — 依 Levels.fyi／LinkedIn 的 Senior BA→Lead BA 路徑，以及美國金融科技營運就業市場職涯階梯推估（本頁不顯示薪資金額）。',
       promotion_skill_gaps: [
-        '具名 ACH／退票擁有權',
+        '具名 ACH／退票職責',
         '處理商／供應商管理證據',
         '組織層級衝突協調',
       ],
@@ -566,7 +566,7 @@ const ZH_TW: SampleLocalePack = {
     },
     company_truth: {
       company_overview:
-        'Northstar Payments 是美國金融科技公司，主攻商戶清算、ACH 退票與營運分析，客群偏中型與成長型商戶。市場位置介於開發者友善軌道（Stripe 類）與較重的企業收單之間——這次開缺是 Senior BA 走可靠度／例外擁有權，不是消費型 neobank 故事。公開訊號顯示重視書面狀態包、跨職能分流，以及可量化的週期 KPI。',
+        'Northstar Payments 是美國金融科技公司，主攻商戶清算、ACH 退票與營運分析，客群偏中型與成長型商戶。市場位置介於開發者友善軌道（Stripe 類）與較重的企業收單之間——這次開缺是 Senior BA 走可靠度／例外職責，不是消費型 neobank 故事。公開訊號顯示重視書面狀態包、跨職能分流，以及可量化的週期 KPI。',
       recent_developments: [
         {
           headline: '營運領導層擴大清算可靠度計畫',
@@ -578,7 +578,7 @@ const ZH_TW: SampleLocalePack = {
         },
         {
           headline: 'AI 輔助退票分流導入營運流程',
-          summary: '產品賭注代表面試可能深挖 human-in-the-loop 例外設計與 KPI 擁有權。',
+          summary: '產品賭注代表面試可能深挖 human-in-the-loop 例外設計與 KPI 職責。',
           date: '2026-03',
           category: 'product',
           source_name: '科技媒體',
@@ -617,7 +617,7 @@ const ZH_TW: SampleLocalePack = {
           strengths:
             '開發者友善軌道、美國 ACH／卡覆蓋廣，產品團隊想自助接支付時品牌很強。',
           weaknesses:
-            '大型企業清算／退票擁有權較不像「營運分析師原生」；複雜 B2B 對帳常仍要大量客製。',
+            '大型企業清算／退票職責較不像「營運分析師原生」；複雜 B2B 對帳常仍要大量客製。',
         },
         {
           name: 'Adyen',
@@ -718,7 +718,7 @@ const ZH_CN: SampleLocalePack = {
           evidence: '简历列出金融科技运营相关约 6 年经验',
         },
         {
-          requirement: 'SQL + 仪表板所有权',
+          requirement: 'SQL + 仪表板职责',
           status: 'Pass',
           evidence: '简历明确写出 Looker + SQL',
         },
@@ -730,7 +730,7 @@ const ZH_CN: SampleLocalePack = {
         {
           requirement: '支付处理商／供应商管理',
           status: 'Risk',
-          evidence: '简历未明示处理商或供应商所有权',
+          evidence: '简历未明示处理商或供应商职责',
         },
       ],
     },
@@ -739,18 +739,18 @@ const ZH_CN: SampleLocalePack = {
       band: 'Viable',
       evidence_coverage: 'High',
       sharp_verdict:
-        '核心适配：SQL／Looker 所有权、对账周期缩短 28%、跨职能分流，对齐此 JD 核心范围。 职级／年资：六年金融科技运营经验对上 5 年以上要求；无高于 Senior BA 范围的证据。 主要缺口：ACH 退件与清算所有权是 JD 核心要求；简历仅显示相邻的银行运营经验。',
+        '核心适配：SQL／Looker 职责、对账周期缩短 28%、跨职能分流，对齐此 JD 核心范围。 职级／年资：六年金融科技运营经验对上 5 年以上要求；无高于 Senior BA 范围的证据。 主要缺口：ACH 退件与清算职责是 JD 核心要求；简历仅显示相邻的银行运营经验。',
       sharp_verdict_points: [
-        '核心适配：SQL／Looker 所有权、对账周期缩短 28%、跨职能分流，对齐此 JD 核心范围。',
+        '核心适配：SQL／Looker 职责、对账周期缩短 28%、跨职能分流，对齐此 JD 核心范围。',
         '职级／年资：六年金融科技运营经验对上 5 年以上要求；无高于 Senior BA 范围的证据。',
-        '主要缺口：ACH 退件与清算所有权是 JD 核心要求；简历仅显示相邻的银行运营经验。',
+        '主要缺口：ACH 退件与清算职责是 JD 核心要求；简历仅显示相邻的银行运营经验。',
       ],
       breakdown: [
         {
           dimension: '硬性条件／可行性',
           weight_pct: 30,
           score: 72,
-          note: '72：年资与 SQL 必备条件已达，但 ACH／清算所有权仅属相邻银行运营，故硬性可行性落在七十多分。',
+          note: '72：年资与 SQL 必备条件已达，但 ACH／清算职责仅属相邻银行运营，故硬性可行性落在七十多分。',
         },
         {
           dimension: '职级／范畴／年资',
@@ -809,7 +809,7 @@ const ZH_CN: SampleLocalePack = {
         },
         {
           gap: '供应商／处理商管理',
-          description: '未见具名处理商或 NACHA 合规所有权。',
+          description: '未见具名处理商或 NACHA 合规职责。',
           skill_kind: 'hard',
         },
         {
@@ -819,7 +819,7 @@ const ZH_CN: SampleLocalePack = {
         },
       ],
       resume_actions: [
-        '所附简历未证明 ACH／退票所有权。',
+        '所附简历未证明 ACH／退票职责。',
         '未证明具名支付处理商经验。',
       ],
       screenability_note: '运营关键字强；支付轨道关键字偏薄。',
@@ -855,8 +855,8 @@ const ZH_CN: SampleLocalePack = {
     apply_decision: {
       label: 'Apply after fixes',
       reason:
-        '六年金融科技运营经验与可量化的对账成果，在需求所有权上已过 Senior BA 门槛。JD 将 ACH 退件与清算列为核心，而简历仅显示相邻的银行运营经验。此标签反映核心要求尚未确认，而非简历薄弱。',
-      next_best_action: '谨慎应征：ACH／退票所有权仅有相邻证明，不是明确建议应征。',
+        '六年金融科技运营经验与可量化的对账成果，已达 Senior BA 的需求职责门槛。JD 将 ACH 退件与清算列为核心，而简历仅显示相邻的银行运营经验。此标签反映核心要求尚未确认，而非简历薄弱。',
+      next_best_action: '谨慎应征：ACH／退票职责仅有相邻证明，不是明确建议应征。',
     },
     role_read: {
       mission:
@@ -880,13 +880,13 @@ const ZH_CN: SampleLocalePack = {
     ],
     competency_map: [
       {
-        competency: 'SQL 与仪表板所有权',
+        competency: 'SQL 与仪表板职责',
         weight: 'core',
         proficiency: 'demonstrated',
         resume_evidence: '以 SQL + Looker 流程将对账周期缩短 28%。',
       },
       {
-        competency: '需求与 PRD 所有权',
+        competency: '需求与 PRD 职责',
         weight: 'core',
         proficiency: 'demonstrated',
         resume_evidence: '主导三次平台上线的 PRD 与验收标准。',
@@ -895,7 +895,7 @@ const ZH_CN: SampleLocalePack = {
         competency: 'ACH 退件与清算',
         weight: 'core',
         proficiency: 'adjacent',
-        resume_evidence: '银行运营对账经验；无明确 ACH 或退件所有权。',
+        resume_evidence: '银行运营对账经验；无明确 ACH 或退件职责。',
       },
       {
         competency: '跨部门协作',
@@ -940,7 +940,7 @@ const ZH_CN: SampleLocalePack = {
     strategy_fit_salary: {
       score_implications:
         '78 分可通过多数筛选；第二轮预期会有 ACH 退件的领域深挖，因为该核心要求在简历上只是相邻经验，尚无证据。',
-      offer_implications: '证据等级 C——先探索再锚定。支付所有权可信后再瞄准中带。',
+      offer_implications: '证据等级 C——先探索再锚定。支付职责可信后再瞄准中带。',
       validate_with_recruiter: [
         'ACH／退票经验是必备还是加分？',
         '此职位核定职级带是 Senior BA 还是 Staff？',
@@ -980,9 +980,9 @@ const ZH_CN: SampleLocalePack = {
     concerns_defenses: [
       {
         concern: 'ACH／支付轨道证据偏薄',
-        why: 'JD 强调清算与退票所有权。',
+        why: 'JD 强调清算与退票职责。',
         evidence: '简历有银行运营 + 对账周期改善。',
-        missing_proof: '具名 ACH 退票或处理商所有权。',
+        missing_proof: '具名 ACH 退票或处理商职责。',
         answer_guide:
           '桥接：「上一份工作我拥有与支付清算相邻的对账 SLA。我会用同样的 SQL + 利益相关者节奏这样上手 ACH 退票……」',
         do_not_claim: '不要虚构你没有担任过的 NACHA 或处理商职称。',
@@ -991,7 +991,7 @@ const ZH_CN: SampleLocalePack = {
         concern: '高阶范畴 vs IC 分析师习惯',
         why: '简历职称组合可能读起来偏中阶。',
         evidence: '带领跨职能 triage 18 个月；高管状态包。',
-        missing_proof: '人数或预算所有权。',
+        missing_proof: '人数或预算职责。',
         answer_guide: '以「无职权影响力」开场：你主持的节奏、你打通的决策、你拥有的指标。',
         do_not_claim: '若你是 IC，不要声称有管人范畴。',
       },
@@ -1024,7 +1024,7 @@ const ZH_CN: SampleLocalePack = {
           question: '请从头到尾说明你如何改善一个失效的运营流程。',
           predicted: true,
           category: 'behavioral',
-          interviewer_intent: '考验端到端所有权与可量化影响力。',
+          interviewer_intent: '考验端到端职责与可量化影响力。',
           star_blueprint: 'S：对账积压 · T：缩短周期 · A：SQL + 节奏 · R：−28%',
           dos_donts: '用指标开场；不要虚构 ACH 处理商标题。',
         },
@@ -1057,7 +1057,7 @@ const ZH_CN: SampleLocalePack = {
           question: '前 60 天你会如何上手 ACH 退票？',
           predicted: true,
           category: 'technical',
-          interviewer_intent: '学习计划，且不虚构过去 ACH 所有权。',
+          interviewer_intent: '学习计划，且不虚构过去 ACH 职责。',
           star_blueprint: '第 1–2 周 shadow · 第 3–4 周 SQL 地图 · 第 5–8 周拥有一个 KPI',
           dos_donts: '不要声称没担任过的 NACHA 职称。',
           missing_facts: '准备学习计划，不要虚构过去 ACH 职称。',
@@ -1154,7 +1154,7 @@ const ZH_CN: SampleLocalePack = {
     },
     candidate_case: {
       hire_thesis:
-        '雇用已能交付的运营分析所有权：SQL／Looker 节奏、可量化周期改善、高管可用的协调——再用结构化 60 天计划补上 ACH 缺口。',
+        '雇用已能交付的运营分析职责：SQL／Looker 节奏、可量化周期改善、高管可用的协调——再用结构化 60 天计划补上 ACH 缺口。',
       top_facts: [
         '以 SQL + Looker 将对账周期缩短 28%',
         '带领工程／风险／客服每周 triage 18 个月',
@@ -1168,7 +1168,7 @@ const ZH_CN: SampleLocalePack = {
       negotiation_script: {
         prepare: '通话前先写好「核定区间」的问题，以及你的底线：低于书面底线，或范畴低于 Senior BA。',
         pitch:
-          '谢谢——在我报数字前，这个地点这个职级的核定现金区间是多少？根据相近的 Senior BA 金融科技运营职位，以及我的周期所有权，确认范畴后我会瞄准中带。',
+          '谢谢——在我报数字前，这个地点这个职级的核定现金区间是多少？根据相近的 Senior BA 金融科技运营职位，以及我的周期职责，确认范畴后我会瞄准中带。',
         counter:
           '若现金落在中下带，我会先看签约金或远程弹性，再动底薪。职位没写的公司总额，我不会自己锚定。',
       },
@@ -1180,7 +1180,7 @@ const ZH_CN: SampleLocalePack = {
       },
       levers: ['范畴', '签约金', '远程弹性', '职级定级'],
       structured_levers: [
-        { name: '范畴', note: '确认是 Senior BA 所有权而非工单分流' },
+        { name: '范畴', note: '确认是 Senior BA 职责而非工单分流' },
         { name: '签约金', note: '现金落中下、股票爬坡时可桥接' },
         { name: '远程弹性', note: '地点弹性时可与到办公室权衡' },
         { name: '职级定级', note: '锚定 TC 前先锁职级' },
@@ -1193,7 +1193,7 @@ const ZH_CN: SampleLocalePack = {
         total: '约 $185K TC',
       },
       script:
-        '谢谢——在我报数字前，这个地点这个职级的核定现金区间是多少？根据相近 Senior BA 金融科技运营职位与我的周期／KPI 所有权，确认范畴后我会瞄准中带。',
+        '谢谢——在我报数字前，这个地点这个职级的核定现金区间是多少？根据相近 Senior BA 金融科技运营职位与我的周期／KPI 职责，确认范畴后我会瞄准中带。',
       discovery_questions: [
         '这个地点这个职级的核定区间是多少？',
         '总酬如何拆现金、奖金与股票？',
@@ -1228,7 +1228,7 @@ const ZH_CN: SampleLocalePack = {
       ],
       requirements_refined: [
         'SQL 能力是必备',
-        '高阶所有权——不是初级工单分流',
+        '高阶职责——不是初级工单分流',
         '偏好支付领域胜于泛用 BA',
       ],
       rto_official: '混合制——每周到办公室 3 天（依 JD）',
@@ -1237,7 +1237,7 @@ const ZH_CN: SampleLocalePack = {
       career_path_basis:
         '公司未公开内部职等表 — 依 Levels.fyi／LinkedIn 的 Senior BA→Lead BA 路径，以及美国金融科技运营就业市场职涯阶梯推估（本页不显示薪酬金额）。',
       promotion_skill_gaps: [
-        '具名 ACH／退票所有权',
+        '具名 ACH／退票职责',
         '处理商／供应商管理证据',
         '组织层级冲突协调',
       ],
@@ -1245,7 +1245,7 @@ const ZH_CN: SampleLocalePack = {
     },
     company_truth: {
       company_overview:
-        'Northstar Payments 是美国金融科技公司，主攻商户清算、ACH 退票与运营分析，客群偏中型与成长型商户。市场位置介于开发者友好轨道（Stripe 类）与较重的企业收单之间——这次开缺是 Senior BA 走可靠度／例外所有权，不是消费型 neobank 故事。公开信号显示重视书面状态包、跨职能分流，以及可量化的周期 KPI。',
+        'Northstar Payments 是美国金融科技公司，主攻商户清算、ACH 退票与运营分析，客群偏中型与成长型商户。市场位置介于开发者友好轨道（Stripe 类）与较重的企业收单之间——这次开缺是 Senior BA 走可靠度／例外职责，不是消费型 neobank 故事。公开信号显示重视书面状态包、跨职能分流，以及可量化的周期 KPI。',
       recent_developments: [
         {
           headline: '运营领导层扩大清算可靠度计划',
@@ -1257,7 +1257,7 @@ const ZH_CN: SampleLocalePack = {
         },
         {
           headline: 'AI 辅助退票分流导入运营流程',
-          summary: '产品赌注代表面试可能深挖 human-in-the-loop 例外设计与 KPI 所有权。',
+          summary: '产品赌注代表面试可能深挖 human-in-the-loop 例外设计与 KPI 职责。',
           date: '2026-03',
           category: 'product',
           source_name: '科技媒体',
@@ -1296,7 +1296,7 @@ const ZH_CN: SampleLocalePack = {
           strengths:
             '开发者友好轨道、美国 ACH／卡覆盖广，产品团队想自助接支付时品牌很强。',
           weaknesses:
-            '大型企业清算／退票所有权较不像「运营分析师原生」；复杂 B2B 对账常仍要大量定制。',
+            '大型企业清算／退票职责较不像「运营分析师原生」；复杂 B2B 对账常仍要大量定制。',
         },
         {
           name: 'Adyen',

@@ -89,7 +89,7 @@ This section MUST fulfill the promise made in Page 1's paywall UI:
      * "keyword_missing" — JD requires "SQL", resume says "database queries"
      * "quantification_weak" — JD wants "5+ years", resume says "extensive experience"
      * "experience_unclear" — JD requires "team leadership", resume only shows IC work
-   - \`jd_requirement\`: VERBATIM quote from JD (e.g., "Must have ACH returns ownership")
+   - \`jd_requirement\`: VERBATIM quote from JD (e.g., "Must have ACH returns experience")
    - \`resume_weakness\`: Specific issue (e.g., "Resume never uses 'ACH' keyword, only says 'banking ops'")
    - \`fix_strategy\`: Tactical interview talking point (e.g., "In interview, bridge: 'My reconciliation work was adjacent to ACH settlement. Here's how I'd ramp ACH returns using the same SQL muscle.'")
    - \`severity\`: "critical" (likely auto-reject) or "major" (human review)
@@ -215,7 +215,7 @@ ${SNAPSHOT_CALIBRATION_RULES}
    - star_blueprint MUST name concrete resume facts (role/employer context if present, tools, metrics, stakeholders) in S/T/A/R. FORBIDDEN: vague templates like “S→T→A→R with one proof point”, “describe a conflict”, or textbook STAR with no resume numbers/tools.
    - resume_anchor MUST point to a specific resume proof (e.g. proof_map strength title or a short resume fact). Never invent employers, titles, or metrics not on the resume.
    - dos_donts MUST call out what THIS resume can claim vs must not invent (gaps, adjacent domain).
-   - If the question probes a resume gap: still write a resume-anchored bridge plan (adjacent proof + honest learning plan) — never fake past ownership.
+   - If the question probes a resume gap: still write a resume-anchored bridge plan (adjacent proof + honest learning plan) — never fake past scope.
    EXACTLY 3–4 star_templates with title, for_question, situation, task, action, result, resume_anchor — STAR ONLY from resume facts. reverse_questions + validate_before_join. If no citable reported questions, reported=[].
 5) offer_strategy — target / acceptable / walk_away aligned to Career Context floors when provided; levers + structured_levers (name+note); tc_breakdown (base/bonus/equity/total) when estimable; copy-ready negotiation script. Weak/D evidence → prioritize discovery_questions. Never invent compensation numbers. Page 4 may show TC mix; Pages 2–3 must NOT invent dollar salary ranges.
 6) candidate_case — hire_thesis (2–3 sentences: why hire THIS candidate for THIS seat) + top_facts (exactly 3 resume-backed facts that most support an offer). Upgrade of the proof map — not a resume rewrite.

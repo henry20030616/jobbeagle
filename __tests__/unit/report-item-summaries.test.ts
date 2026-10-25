@@ -28,13 +28,15 @@ describe('report item summaries', () => {
     expect(splitSummaryPoints(summaries.company).length).toBeGreaterThanOrEqual(5);
     expect(summaries.company).toMatch(/職位對照：/);
     expect(summaries.company).toMatch(/交付節奏：/);
+    expect(report.guide_modules?.company_eval.summary_company).toMatch(/文化：/);
+    expect(report.guide_modules?.company_eval.summary_role).toMatch(/職位對照：/);
     expect(summaries.company).not.toMatch(/^文化：公開評價寫重視書面溝通、可遠端的營運文化，截止時間很緊。$/m);
     expect(summaries.questions.length).toBeGreaterThan(20);
     expect(summaries.negotiate).toMatch(/\$168K|28%/);
     expect(splitSummaryPoints(summaries.land)).toEqual([
-      '目標價：$168K。美國遠端 Senior Business Analyst 市場帶約 $145K–$190K；履歷可證 SQL／Looker 將對帳週期縮短 28%，ACH 退票僅相鄰，故不站上緣。',
-      '天花板：$185K。沒有 Staff 級範圍，也沒有第二份 offer。',
-      '結構：底薪 $145K、股票約 $12K／年、獎金 $11K。股票與獎金為目標總薪酬的結構拆分，實際以錄取條件為準。',
+      '目標總酬：$168K。美國遠端 Senior Business Analyst 市場帶約 $145K–$190K；履歷可證 SQL／Looker 將對帳週期縮短 28%，ACH 退票僅相鄰，故不站上緣。',
+      '議價上限：$185K。沒有 Staff 級範圍，也沒有第二份 offer。',
+      '薪酬結構：底薪 $145K、股票約 $12K／年、獎金 $11K。股票與獎金為目標總薪酬的結構拆分，實際以錄取條件為準。',
     ]);
   });
 

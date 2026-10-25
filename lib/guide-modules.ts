@@ -15,7 +15,9 @@ import {
   GEMINI_LITE_MODEL,
 } from '@/constants/models';
 import { isCitableSourceUrl } from '@/lib/provenance';
-import { mergeInterviewSummary, QUESTIONS_SUMMARY_MAX } from '@/lib/questions-summary';
+import { QUESTIONS_SUMMARY_MAX } from '@/lib/questions-summary';
+import { resolveCompanyEvalSummaries } from '@/lib/company-eval-summary';
+import { groundInterviewSummary } from '@/lib/questions-analysis-grounding';
 
 /** Company/role 總結分析 is a multi-point recruiter brief, not three one-liners. */
 export const COMPANY_EVAL_SUMMARY_MAX = 2500;
@@ -188,6 +190,8 @@ export function emptyGuideModules(limitations: string[] = []): GuideModules {
     },
     company_eval: {
       summary: '',
+      summary_company: '',
+      summary_role: '',
       culture: '',
       labor_risk: '',
       layoff_risk: '',
@@ -328,8 +332,11 @@ export function parseSalaryLand(raw: unknown): GuideModules['salary_land'] | nul
 export function parseCompanyEval(raw: unknown): GuideModules['company_eval'] | null {
   if (!raw || typeof raw !== 'object') return null;
   const row = raw as Record<string, unknown>;
+  const summaries = resolveCompanyEvalSummaries(row);
   return {
-    summary: asString(row.summary).slice(0, COMPANY_EVAL_SUMMARY_MAX),
+    summary: summaries.summary.slice(0, COMPANY_EVAL_SUMMARY_MAX),
+    summary_company: summaries.summary_company.slice(0, COMPANY_EVAL_SUMMARY_MAX),
+    summary_role: summaries.summary_role.slice(0, COMPANY_EVAL_SUMMARY_MAX),
     culture: asString(row.culture).slice(0, 800),
     labor_risk: asString(row.labor_risk).slice(0, 800),
     layoff_risk: asString(row.layoff_risk).slice(0, 800),
@@ -387,7 +394,7 @@ export function applyInterviewAnswers(
 ): GuideInterviewBank {
   if (!raw || typeof raw !== 'object') return bank;
   const row = raw as Record<string, unknown>;
-  const summary = mergeInterviewSummary(bank.summary ?? '', row);
+  const summary = groundInterviewSummary(bank.summary ?? '', row, bank);
   const withSummary = { ...bank, summary };
   const answers = row.answers;
   if (!Array.isArray(answers)) return withSummary;

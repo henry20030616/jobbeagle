@@ -101,7 +101,11 @@ describe('guide module routes', () => {
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Short title: gist then body');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('短標題：gist');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('數據要求：公司需要有五年數據處理經驗');
-    expect(NEGOTIATION_MODULE_PROMPT).toContain('先報總薪酬');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('先報總酬');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('建議報價');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('勿跟競價');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('底薪先鎖');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('福利一次問清');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not invent facts or dollars');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix a bullet title');
     expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix titles onto the questions');
@@ -113,27 +117,47 @@ describe('guide module routes', () => {
     expect(SALARY_MODULE_PROMPT).toContain('數據要求：公司需要有五年數據處理經驗');
     expect(SALARY_MODULE_PROMPT).toContain('Exactly four newline-separated lines');
     expect(SALARY_MODULE_PROMPT).toContain('招募狀態');
+    expect(SALARY_MODULE_PROMPT).toContain('Target total/目標總酬');
+    expect(SALARY_MODULE_PROMPT).toContain('Negotiation ceiling/議價上限');
+    expect(SALARY_MODULE_PROMPT).toContain('Pay structure/薪酬結構');
+    expect(SALARY_MODULE_PROMPT).toContain('never Target/目標價');
     expect(SALARY_MODULE_PROMPT).not.toContain('with no labels');
   });
 
   it('asks company_intel summary for a company-and-role synthesis, not three one-liners', () => {
-    expect(COMPANY_MODULE_PROMPT).toContain('Five or six newline-separated');
+    expect(COMPANY_MODULE_PROMPT).toContain('summary_company');
+    expect(COMPANY_MODULE_PROMPT).toContain('summary_role');
+    expect(COMPANY_MODULE_PROMPT).toContain('Three or four newline-separated');
+    expect(COMPANY_MODULE_PROMPT).toContain('Two or three newline-separated');
     expect(COMPANY_MODULE_PROMPT).toContain('1–2 full sentences');
     expect(COMPANY_MODULE_PROMPT).toContain('Seat vs posting/職位對照');
     expect(COMPANY_MODULE_PROMPT).toContain('do not dump company_pros');
     expect(COMPANY_MODULE_PROMPT).toContain('Do not invent selection rates, WARN notices, layoffs, visas, or URLs');
-    expect(COMPANY_MODULE_PROMPT).not.toContain('Two or three newline-separated');
+    expect(COMPANY_MODULE_PROMPT).not.toContain('Five or six newline-separated');
     expect(COMPANY_MODULE_PROMPT).not.toContain('One driver per line');
   });
 
   it('does not clip a professional company summary at 800 characters', () => {
     const summary = Array.from({ length: 6 }, (_, index) => (
-      `Culture ${index}: ${'A'.repeat(140)}.`
+      `Culture: ${index} ${'A'.repeat(140)}.`
     )).join('\n');
     expect(summary.length).toBeGreaterThan(800);
     expect(summary.length).toBeLessThanOrEqual(COMPANY_EVAL_SUMMARY_MAX);
     const parsed = parseCompanyEval({ summary });
     expect(parsed?.summary).toBe(summary);
+    expect(parsed?.summary_company).toBe(summary);
+    expect(parsed?.summary_role).toBe('');
+  });
+
+  it('keeps split company/role summaries from the writing module', () => {
+    const parsed = parseCompanyEval({
+      summary_company: 'Culture: written ops, tight cutoffs.',
+      summary_role: 'Seat vs posting: day one is returns.',
+    });
+    expect(parsed?.summary_company).toMatch(/Culture/);
+    expect(parsed?.summary_role).toMatch(/Seat vs posting/);
+    expect(parsed?.summary).toMatch(/Culture/);
+    expect(parsed?.summary).toMatch(/Seat vs posting/);
   });
 
   it('labels the questions summary process line as Hiring process / 招募流程', () => {
@@ -144,7 +168,9 @@ describe('guide module routes', () => {
     expect(QUESTION_RETRIEVAL_PROMPT).not.toContain('One driver per line');
     expect(QUESTION_ANSWER_PROMPT).toContain('professional_analysis');
     expect(QUESTION_ANSWER_PROMPT).toContain('behavioral_analysis');
-    expect(QUESTION_ANSWER_PROMPT).toContain('Not a keyword dump');
+    expect(QUESTION_ANSWER_PROMPT).toContain('retrieved reported questions only');
+    expect(QUESTION_ANSWER_PROMPT).toContain('Predicted questions');
+    expect(QUESTION_RETRIEVAL_PROMPT).toContain('retrieved reported questions only');
     expect(QUESTION_RETRIEVAL_PROMPT).toContain('never 席位');
     expect(QUESTION_ANSWER_PROMPT).toContain('never 席位');
   });
@@ -288,14 +314,14 @@ describe('selectInterviewBank', () => {
   });
 });
 
-function q(question: string, answer = ''): GuideQuestion {
+function q(question: string, answer = '', origin: GuideQuestion['origin'] = 'predicted'): GuideQuestion {
   return {
     question,
     track: 'professional',
-    origin: 'predicted',
-    proximity: null,
-    source_url: null,
-    source_date: null,
+    origin,
+    proximity: origin === 'reported' ? 'same_company_role' : null,
+    source_url: origin === 'reported' ? 'https://www.glassdoor.com/Interview/index.htm' : null,
+    source_date: origin === 'reported' ? '2025-01' : null,
     answer,
   };
 }
@@ -329,16 +355,54 @@ describe('applyInterviewAnswers', () => {
   it('merges professional and behavioral analysis onto the interview summary', () => {
     const filled = applyInterviewAnswers(
       {
-        ...bankOf(['A', 'B', 'C', 'D']),
+        professional: [
+          q('Walk me through how you prioritized an ACH return queue before cutoff.', '', 'reported'),
+          q('How do you reconcile a settlement break with SQL?', '', 'reported'),
+        ],
+        behavioral: [
+          q('Tell me about a written status under cutoff.', '', 'reported'),
+          q('Describe a cross-team miss after cutoff.', '', 'reported'),
+        ],
+        professional_extra: [],
+        behavioral_extra: [],
+        process: '',
         summary: 'Hiring process: recruiter screen, then a panel, about three weeks.',
       },
       {
         answers: [
-          { question: 'A', answer: 'Queue ranking with the Looker board.' },
-          { question: 'B', answer: 'SQL match then Looker triage.' },
+          {
+            question: 'Walk me through how you prioritized an ACH return queue before cutoff.',
+            answer: 'Queue ranking with the Looker board.',
+          },
+          {
+            question: 'How do you reconcile a settlement break with SQL?',
+            answer: 'SQL match then Looker triage.',
+          },
         ],
-        professional_analysis: 'Probe ACH returns against cutoff.\nPrepare a SQL close from the resume.',
-        behavioral_analysis: 'Probe written status.\nPrepare a cross-team miss STAR.',
+        professional_analysis: [
+          {
+            title: 'Queue',
+            question: 'Walk me through how you prioritized an ACH return queue before cutoff.',
+            body: 'Probe ACH returns against cutoff.',
+          },
+          {
+            title: 'SQL close',
+            question: 'How do you reconcile a settlement break with SQL?',
+            body: 'Prepare a SQL close from the resume.',
+          },
+        ],
+        behavioral_analysis: [
+          {
+            title: 'Written status',
+            question: 'Tell me about a written status under cutoff.',
+            body: 'Probe written status.',
+          },
+          {
+            title: 'Cross-team miss',
+            question: 'Describe a cross-team miss after cutoff.',
+            body: 'Prepare a cross-team miss STAR.',
+          },
+        ],
       },
     );
     expect(filled.summary).toMatch(/^Hiring process:/);
@@ -347,6 +411,23 @@ describe('applyInterviewAnswers', () => {
     expect(filled.summary).toMatch(/ACH returns/);
     expect(filled.summary).toMatch(/written status/);
     expect(filled.professional[0]?.answer).toMatch(/Queue ranking/);
+  });
+
+  it('drops ungrounded analysis when a track has no reported questions', () => {
+    const filled = applyInterviewAnswers(
+      {
+        ...bankOf(['A', 'B', 'C', 'D']),
+        summary: 'Hiring process: recruiter screen, then a panel, about three weeks.',
+      },
+      {
+        professional_analysis: 'Invent a NACHA curriculum that was never retrieved.',
+        behavioral_analysis: 'Invent a leadership seminar.',
+      },
+    );
+    expect(filled.summary).toMatch(/^Hiring process:/);
+    expect(filled.summary).toMatch(/No citable professional questions/);
+    expect(filled.summary).toMatch(/Predicted questions stay labeled/);
+    expect(filled.summary).not.toMatch(/NACHA curriculum/);
   });
 
   it('drops a cloned majority so identical answers never stamp the bank', () => {

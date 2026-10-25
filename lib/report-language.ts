@@ -38,6 +38,11 @@ export function geminiLanguageDirective(language: AppLanguage): string {
       : language === 'zh-CN'
         ? 'A job opening is 职位 / 这职位 — never 席位, 这席, 该席, 此席, 一席, or 本席. Do not change 主席, 出席, 联席, 筵席, or 主席台.'
         : '',
+    language === 'zh-TW'
+      ? 'Ban recruiter jargon 擁有權. Write 職責, 負責範圍, or 負責 — never 擁有權, 需求擁有權, or 所有权. Do not write ungrammatical fragments such as 在需求擁有權上已過門檻.'
+      : language === 'zh-CN'
+        ? 'Ban recruiter jargon 所有权. Write 职责, 负责范围, or 负责 — never 所有权, 需求所有权, or 擁有權. Do not write ungrammatical fragments such as 在需求所有权上已过门槛.'
+        : 'Ban recruiter jargon "ownership" as a job-scope noun (e.g. "requirements ownership", "dashboard ownership"). Write responsibility, scope, or accountability.',
     fieldLabelDirective(language),
   ].filter(Boolean).join('\n');
 }

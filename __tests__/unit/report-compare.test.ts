@@ -181,7 +181,7 @@ describe('report-compare', () => {
     expect(html).toContain('面試準備與談薪');
     expect(html).toContain('履歷優化建議');
     expect(html).toContain('待優化改善 + 調整建議');
-    expect(html).toContain('談薪策略、開口稿、面試後信件');
+    expect(html).toContain('談薪策略、開場講稿、面試後信件');
     expect(html).toContain('compare-section-title text-lg sm:text-xl font-bold');
     expect(html).toContain('compare-row-label text-base sm:text-lg font-medium');
     expect(html).toContain('compare-col-snapshot');

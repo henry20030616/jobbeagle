@@ -1,4 +1,5 @@
 import type { FullReport, LiteReport } from '@/types';
+import { resolveCompanyEvalSummaries } from '@/lib/company-eval-summary';
 
 function trimText(value: string | null | undefined): string {
   return value?.trim() ?? '';
@@ -72,7 +73,11 @@ export function guideItemSummaries(report: FullReport): {
   const negotiation = modules?.negotiation;
   return {
     land: trimText(modules?.salary_land?.rationale),
-    company: trimText(company?.summary || company?.culture),
+    company: trimText((() => {
+      if (!company) return '';
+      const split = resolveCompanyEvalSummaries(company);
+      return split.summary || [split.summary_company, split.summary_role].filter(Boolean).join('\n') || company.culture;
+    })()),
     questions: trimText(bank?.summary || bank?.process),
     negotiate: trimText(
       negotiation?.summary || firstSummarySentences(negotiation?.pay_strategy ?? '', 2),

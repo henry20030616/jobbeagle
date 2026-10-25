@@ -8,6 +8,7 @@ import { deepMerge } from '@/lib/deep-merge';
 import { SAMPLE_REPORT_LOCALES } from '@/lib/sample-report-locales';
 import { SAMPLE_GUIDE_NARRATIVE } from '@/lib/sample-guide-locale';
 import { SAMPLE_GUIDE_ANSWERS } from '@/lib/sample-guide-answers';
+import { resolveCompanyEvalSummaries } from '@/lib/company-eval-summary';
 
 /** Public demo Snapshot — fictional candidate vs fictional US role. */
 const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
@@ -804,6 +805,7 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       answers.behavioral[index] ?? '',
     ),
   );
+  const companySummaries = resolveCompanyEvalSummaries({ summary: copy.company_summary });
   return {
     resume_rewrites: copy.rewrites,
     salary_land: {
@@ -820,7 +822,9 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
       ],
     },
     company_eval: {
-      summary: copy.company_summary,
+      summary: companySummaries.summary,
+      summary_company: companySummaries.summary_company,
+      summary_role: companySummaries.summary_role,
       culture: copy.culture,
       labor_risk: copy.labor_risk,
       layoff_risk: copy.layoff_risk,
