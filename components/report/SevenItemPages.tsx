@@ -7,6 +7,7 @@ import { Cell, Pie, PieChart, PolarAngleAxis, RadialBar, RadialBarChart, Respons
 import { BeagleIcon, getScoreInfo } from '@/components/AnalysisDashboard';
 import {
   BODY,
+  BODY_COPY,
   BODY_MUTED,
 } from '@/components/guide/GuideSlideChrome';
 import {
@@ -21,7 +22,7 @@ import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
 import { splitLabeledFact } from '@/lib/score-summary';
 import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-email';
-import { parseQuestionsSummary } from '@/lib/questions-summary';
+import { parseQuestionsSummary, type AnalysisPoint } from '@/lib/questions-summary';
 import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@/lib/report-item-summaries';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
@@ -57,7 +58,6 @@ type ItemCopy = {
   where: string;
   role: string;
   level: string;
-  score: string;
   keywords: string;
   keywordsNote: string;
   rewriteDirection: string;
@@ -93,6 +93,7 @@ type ItemCopy = {
   extraRule: string;
   answer: string;
   process: string;
+  playbook: string;
   pay: string;
   benefits: string;
   say: string;
@@ -156,7 +157,74 @@ function rewriteDirectionTitle(language: AppLanguage): string {
   }
 }
 
+function negotiateHeadings(language: AppLanguage): {
+  playbook: string;
+  pay: string;
+  benefits: string;
+  say: string;
+  askCompany: string;
+  followUp: string;
+} {
+  switch (language) {
+    case 'zh-CN':
+      return {
+        playbook: '谈薪策略',
+        pay: '筹码',
+        benefits: '福利',
+        say: '开口稿',
+        askCompany: '问公司的问题',
+        followUp: '面试后信件',
+      };
+    case 'zh-TW':
+      return {
+        playbook: '談薪策略',
+        pay: '籌碼',
+        benefits: '福利',
+        say: '開口稿',
+        askCompany: '問公司的問題',
+        followUp: '面試後信件',
+      };
+    case 'es':
+      return {
+        playbook: 'Estrategia salarial',
+        pay: 'Palancas',
+        benefits: 'Beneficios',
+        say: 'Guion',
+        askCompany: 'Preguntas a la empresa',
+        followUp: 'Nota post-entrevista',
+      };
+    case 'hi':
+      return {
+        playbook: 'वेतन रणनीति',
+        pay: 'मोलभाव',
+        benefits: 'लाभ',
+        say: 'स्क्रिप्ट',
+        askCompany: 'कंपनी से प्रश्न',
+        followUp: 'इंटरव्यू के बाद पत्र',
+      };
+    case 'ar':
+      return {
+        playbook: 'استراتيجية الراتب',
+        pay: 'المساومة',
+        benefits: 'المزايا',
+        say: 'نص الافتتاح',
+        askCompany: 'أسئلة للشركة',
+        followUp: 'رسالة بعد المقابلة',
+      };
+    default:
+      return {
+        playbook: 'Pay strategy',
+        pay: 'Leverage',
+        benefits: 'Benefits',
+        say: 'Script',
+        askCompany: 'Company questions',
+        followUp: 'Follow-up note',
+      };
+  }
+}
+
 function itemCopy(language: AppLanguage): ItemCopy {
+  const n = negotiateHeadings(language);
   if (language === 'zh-TW' || language === 'zh-CN') {
     const s = language === 'zh-CN';
     return {
@@ -185,7 +253,6 @@ function itemCopy(language: AppLanguage): ItemCopy {
       where: s ? '地点' : '地點',
       role: s ? '职位' : '職位',
       level: s ? '职级或年资' : '職級或年資',
-      score: s ? '匹配分数与灯号' : '匹配分數與燈號',
       keywords: missingKeysTitle(language),
       keywordsNote: s
         ? '这些是人力资源筛选系统用来比对简历的重要关键字。简历里没有这些词，申请可能在招聘人员阅读之前就被系统排除。'
@@ -227,11 +294,12 @@ function itemCopy(language: AppLanguage): ItemCopy {
       extraRule: extraRuleCopy(language),
       answer: s ? '建议答案' : '建議答案',
       process: s ? '面试流程' : '面試流程',
-      pay: s ? '薪资筹码策略' : '薪資籌碼策略',
-      benefits: s ? '权益与福利争取' : '權益與福利爭取',
-      say: s ? '开口这样说' : '開口這樣說',
-      askCompany: s ? '建议问公司的问题' : '建議問公司的問題',
-      followUp: s ? '建议面试后寄给公司的信（如果需要）' : '建議面試後寄給公司的信（如果需要）',
+      playbook: n.playbook,
+      pay: n.pay,
+      benefits: n.benefits,
+      say: n.say,
+      askCompany: n.askCompany,
+      followUp: n.followUp,
       subject: '主旨',
       sources: s ? '资料来源' : '資料來源',
       empty: s ? '这次没有抽出这项。' : '這次沒有抽出這項。',
@@ -273,7 +341,6 @@ function itemCopy(language: AppLanguage): ItemCopy {
     where: 'Where',
     role: 'Role',
     level: 'Level or years',
-    score: 'Score and signal',
     keywords: missingKeysTitle(language),
     keywordsNote:
       'These are keywords the applicant tracking system uses to screen resumes. If the resume does not contain them, the application can be filtered out before a recruiter reads it.',
@@ -310,11 +377,12 @@ function itemCopy(language: AppLanguage): ItemCopy {
     extraRule: extraRuleCopy(language),
     answer: 'Suggested answer',
     process: 'Interview process',
-    pay: 'Pay leverage',
-    benefits: 'Benefits to negotiate',
-    say: 'What to say',
-    askCompany: 'Questions to ask the company',
-    followUp: 'Note to send after the interview, if one is needed',
+    playbook: n.playbook,
+    pay: n.pay,
+    benefits: n.benefits,
+    say: n.say,
+    askCompany: n.askCompany,
+    followUp: n.followUp,
     subject: 'Subject',
     sources: 'Data sources',
     empty: 'This section came back empty.',
@@ -687,16 +755,37 @@ function briefLines(text: string): string[] {
   return sentences.length > 0 ? sentences : lined;
 }
 
-function PointList({ items, dot }: { items: string[]; dot: string }) {
+function PointList({
+  items,
+  dot,
+  labeled = false,
+}: {
+  items: string[];
+  dot: string;
+  labeled?: boolean;
+}) {
   if (items.length === 0) return null;
   return (
     <ul className="space-y-2">
-      {items.map((item) => (
-        <li key={item} className="flex gap-2.5">
-          <span className={`mt-2.5 h-2 w-2 shrink-0 rounded-full ${dot}`} aria-hidden />
-          <span className={`${BODY} font-medium leading-snug text-slate-100`}>{item}</span>
-        </li>
-      ))}
+      {items.map((item) => {
+        const { label, detail } = labeled ? splitLabeledFact(item) : { label: item, detail: '' };
+        return (
+          <li key={item} className="flex gap-2.5">
+            <span className={`mt-2.5 h-2 w-2 shrink-0 rounded-full ${dot}`} aria-hidden />
+            <span className={BODY_COPY}>
+              {detail ? (
+                <>
+                  <span className="font-bold text-blue-300">{label}</span>
+                  {item.includes('：') ? '：' : ': '}
+                  {detail}
+                </>
+              ) : (
+                item
+              )}
+            </span>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -752,12 +841,45 @@ function SummaryCard({ label, summary }: { label: string; summary: string }) {
   );
 }
 
-function AnalysisBody({ lines }: { lines: string[] }) {
-  if (lines.length === 0) return null;
-  if (lines.length === 1) {
-    return <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{lines[0]}</p>;
+function analysisColon(title: string): string {
+  return /[\u4e00-\u9fff]/.test(title) ? '：' : ': ';
+}
+
+function AnalysisBody({ points }: { points: AnalysisPoint[] }) {
+  if (points.length === 0) return null;
+  const untitled = points.every((point) => !point.title);
+  if (untitled) {
+    const lines = points.map((point) => point.body || point.gist).filter(Boolean);
+    if (lines.length === 1) {
+      return <p className={BODY_COPY}>{lines[0]}</p>;
+    }
+    return <PointList items={lines} dot="bg-indigo-300" />;
   }
-  return <PointList items={lines} dot="bg-indigo-300" />;
+  return (
+    <ul className="space-y-3">
+      {points.map((point) => (
+        <li key={`${point.title}:${point.gist}:${point.body}`} className="flex gap-2.5">
+          <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300" aria-hidden />
+          <div className="min-w-0">
+            {point.title ? (
+              <p className={BODY_COPY}>
+                <span className={REPORT_H3}>{point.title}</span>
+                {point.gist ? (
+                  <>
+                    {analysisColon(point.title)}
+                    {point.gist}
+                  </>
+                ) : null}
+              </p>
+            ) : null}
+            {point.body ? (
+              <p className={`${BODY_COPY}${point.title ? ' mt-1' : ''}`}>{point.body}</p>
+            ) : null}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function QuestionsSummaryCard({
@@ -782,10 +904,10 @@ function QuestionsSummaryCard({
       {hasColumns ? (
         <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 ${parts.process ? 'mt-4' : ''}`}>
           <InnerSection title={professionalTitle}>
-            <AnalysisBody lines={parts.professional} />
+            <AnalysisBody points={parts.professional} />
           </InnerSection>
           <InnerSection title={behavioralTitle}>
-            <AnalysisBody lines={parts.behavioral} />
+            <AnalysisBody points={parts.behavioral} />
           </InnerSection>
         </div>
       ) : null}
@@ -1024,21 +1146,20 @@ function FitBody({
     <div className="space-y-5">
       <section className="space-y-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
-          <div className="min-w-0">
-            <p className={`${REPORT_H2} mb-3`}>{copy.score}</p>
-            <div className="flex items-center gap-4">
+          <div className="min-w-0 flex items-center justify-center">
+            <div className="flex items-center gap-6">
               <BeagleIcon
-                className={`h-24 w-24 shrink-0 ${scoreInfo.glowClass}`}
+                className={`h-40 w-40 shrink-0 ${scoreInfo.glowClass}`}
                 color={scoreInfo.fill}
                 spotColor={scoreInfo.spotColor}
                 glassesColor={scoreInfo.fill}
               />
-              <div className="relative h-32 w-32 shrink-0">
+              <div className="relative h-56 w-56 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadialBarChart
                     innerRadius="68%"
                     outerRadius="100%"
-                    barSize={12}
+                    barSize={18}
                     data={[{ name: 'Score', value: score, fill: scoreInfo.fill }]}
                     startAngle={90}
                     endAngle={-270}
@@ -1048,7 +1169,7 @@ function FitBody({
                   </RadialBarChart>
                 </ResponsiveContainer>
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <span className={`text-4xl font-black tabular-nums ${scoreInfo.color}`}>{score}</span>
+                  <span className={`text-6xl font-black tabular-nums ${scoreInfo.color}`}>{score}</span>
                 </div>
               </div>
             </div>
@@ -1212,7 +1333,7 @@ function QuestionList({
           </div>
           <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
             <p className={REPORT_H3}>{copy.answer}</p>
-            <p className={`${BODY} mt-2 text-slate-100 leading-relaxed`}>{item.answer || '—'}</p>
+            <p className={`${BODY_COPY} mt-2`}>{item.answer || '—'}</p>
           </div>
         </li>
       ))}
@@ -1435,7 +1556,7 @@ export function GuideItemPage({
     body = negotiation && (playbook || negotiation.company_questions || negotiation.follow_up_email) ? (
       <div className="space-y-4">
       {playbook ? (
-        <section className={GUIDE_SECTION_FRAME}>
+        <SectionCard title={copy.playbook}>
           {negotiation.pay_strategy || negotiation.benefits_strategy ? (
             <div
               className={`grid grid-cols-1 gap-4 ${
@@ -1444,12 +1565,12 @@ export function GuideItemPage({
             >
               {negotiation.pay_strategy ? (
                 <InnerSection title={copy.pay}>
-                  <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" />
+                  <PointList items={briefLines(negotiation.pay_strategy)} dot="bg-indigo-300" labeled />
                 </InnerSection>
               ) : null}
               {negotiation.benefits_strategy ? (
                 <InnerSection title={copy.benefits}>
-                  <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" />
+                  <PointList items={briefLines(negotiation.benefits_strategy)} dot="bg-violet-300" labeled />
                 </InnerSection>
               ) : null}
             </div>
@@ -1462,7 +1583,7 @@ export function GuideItemPage({
               <p className={`${BODY} font-medium leading-relaxed text-slate-100`}>{negotiation.script}</p>
             </InnerSection>
           ) : null}
-        </section>
+        </SectionCard>
       ) : null}
       {negotiation.company_questions ? (
         <SectionCard title={copy.askCompany}>
@@ -1472,7 +1593,7 @@ export function GuideItemPage({
       {followUp.body || followUp.subject ? (
         <SectionCard title={copy.followUp}>
           {followUp.when ? (
-            <p className={`${BODY_MUTED} mb-4 leading-relaxed`}>{followUp.when}</p>
+            <p className={`${BODY_COPY} mb-4`}>{followUp.when}</p>
           ) : null}
           <div className="rounded-xl border border-slate-600/80 bg-slate-950/50 px-6 py-5">
             {followUp.subject ? (

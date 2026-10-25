@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
+  ChevronDown,
+  ChevronUp,
   CreditCard,
   Gift,
   Loader2,
@@ -31,15 +33,15 @@ import { ACCOUNT_DESIGN_WIDTH } from '@/constants/fit-stage';
 import { PAGE_SHELL_GUTTER, SAMPLE_RAIL_ROW } from '@/constants/report-frame';
 import AccountSectionNav from '@/components/AccountSectionNav';
 import {
-  ACCOUNT_HASH_IDS,
   getAccountNavCopy,
   isAccountHashId,
   type AccountHashId,
 } from '@/constants/account-nav';
 
 const ACCOUNT_CARD =
-  'scroll-mt-4 rounded-xl border border-blue-500 bg-blue-950/40 p-7 space-y-4';
-const ACCOUNT_HEADING = 'text-xl font-semibold tracking-wide text-zinc-100';
+  'scroll-mt-4 rounded-xl border border-blue-500 bg-slate-950 p-7 space-y-4';
+const ACCOUNT_HEADING = 'text-3xl font-black tracking-tight text-sky-300';
+const ACCOUNT_SUBHEADING = 'text-2xl font-bold tracking-tight text-sky-300';
 const PRIMARY_BTN =
   'px-5 py-2.5 text-lg font-bold rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white transition-colors';
 const SECONDARY_BTN =
@@ -124,6 +126,8 @@ const copy: Record<
     buying: string;
     billing: string;
     billingEmpty: string;
+    billingScrollUp: string;
+    billingScrollDown: string;
     date: string;
     plan: string;
     amount: string;
@@ -181,6 +185,8 @@ const copy: Record<
     buying: 'Redirecting…',
     billing: 'Billing history',
     billingEmpty: 'No orders yet.',
+    billingScrollUp: 'Scroll billing history up',
+    billingScrollDown: 'Scroll billing history down',
     date: 'Date',
     plan: 'Plan',
     amount: 'Amount',
@@ -239,6 +245,8 @@ const copy: Record<
     buying: '跳轉中…',
     billing: '帳單紀錄',
     billingEmpty: '尚無訂單。',
+    billingScrollUp: '向上捲動帳單紀錄',
+    billingScrollDown: '向下捲動帳單紀錄',
     date: '日期',
     plan: '方案',
     amount: '金額',
@@ -294,6 +302,8 @@ const copy: Record<
     buying: '跳转中…',
     billing: '账单记录',
     billingEmpty: '暂无订单。',
+    billingScrollUp: '向上滚动账单记录',
+    billingScrollDown: '向下滚动账单记录',
     date: '日期',
     plan: '方案',
     amount: '金额',
@@ -351,6 +361,8 @@ const copy: Record<
     buying: 'Redirigiendo…',
     billing: 'Historial de facturación',
     billingEmpty: 'Sin pedidos aún.',
+    billingScrollUp: 'Desplazar el historial hacia arriba',
+    billingScrollDown: 'Desplazar el historial hacia abajo',
     date: 'Fecha',
     plan: 'Plan',
     amount: 'Importe',
@@ -409,6 +421,8 @@ const copy: Record<
     buying: 'रीडायरेक्ट…',
     billing: 'बिलिंग इतिहास',
     billingEmpty: 'अभी कोई ऑर्डर नहीं।',
+    billingScrollUp: 'बिलिंग इतिहास ऊपर स्क्रॉल करें',
+    billingScrollDown: 'बिलिंग इतिहास नीचे स्क्रॉल करें',
     date: 'तारीख',
     plan: 'योजना',
     amount: 'राशि',
@@ -466,6 +480,8 @@ const copy: Record<
     buying: 'جارٍ التحويل…',
     billing: 'سجل الفوترة',
     billingEmpty: 'لا طلبات بعد.',
+    billingScrollUp: 'تمرير سجل الفوترة للأعلى',
+    billingScrollDown: 'تمرير سجل الفوترة للأسفل',
     date: 'التاريخ',
     plan: 'الخطة',
     amount: 'المبلغ',
@@ -530,6 +546,99 @@ function fillDate(template: string, iso: string | null, language: AppLanguage): 
 
 /** Visible billing-history data rows before the list scrolls. Header stays sticky. */
 const BILLING_HISTORY_VISIBLE_ROWS = 5;
+
+const BILLING_SCROLL_BTN =
+  'inline-flex h-16 w-16 items-center justify-center rounded-xl border-2 border-sky-300 bg-blue-600 text-white hover:bg-blue-500 disabled:border-slate-600 disabled:bg-slate-800 disabled:text-slate-400';
+
+function BillingHistoryTable({
+  orders,
+  dateLabel,
+  planLabel,
+  amountLabel,
+  statusLabel,
+  scrollUp,
+  scrollDown,
+  language,
+}: {
+  orders: AccountOrder[];
+  dateLabel: string;
+  planLabel: string;
+  amountLabel: string;
+  statusLabel: string;
+  scrollUp: string;
+  scrollDown: string;
+  language: AppLanguage;
+}) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const canScroll = orders.length > BILLING_HISTORY_VISIBLE_ROWS;
+
+  const scrollByRow = (direction: -1 | 1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const row = el.querySelector('tbody tr');
+    const height = row instanceof HTMLElement ? row.getBoundingClientRect().height : 56;
+    el.scrollBy({ top: direction * height, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="flex items-stretch gap-3">
+      <div
+        ref={scrollerRef}
+        className="min-w-0 flex-1 overflow-x-auto overflow-y-auto overscroll-contain"
+        data-billing-history-visible-rows={BILLING_HISTORY_VISIBLE_ROWS}
+      >
+        <table className="w-full border-separate border-spacing-0 text-lg text-left">
+          <thead className="sticky top-0 z-10 bg-slate-950 text-zinc-400 shadow-[0_1px_0_0_rgb(59_130_246)]">
+            <tr>
+              <th className="py-3 pr-4 font-medium">{dateLabel}</th>
+              <th className="py-3 pr-4 font-medium">{planLabel}</th>
+              <th className="py-3 pr-4 font-medium">{amountLabel}</th>
+              <th className="py-3 pr-3 font-medium">{statusLabel}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id}>
+                <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-300 whitespace-nowrap">
+                  {formatDate(o.created_at, language)}
+                </td>
+                <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-100 whitespace-nowrap">
+                  {o.plan_type}
+                </td>
+                <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-100 whitespace-nowrap">
+                  {formatMoney(Number(o.amount), o.currency)}
+                </td>
+                <td className="border-b border-blue-500/20 py-3 pr-3 text-zinc-400 whitespace-nowrap">
+                  {o.status}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {canScroll ? (
+        <div className="flex shrink-0 flex-col justify-center gap-3 self-center">
+          <button
+            type="button"
+            onClick={() => scrollByRow(-1)}
+            aria-label={scrollUp}
+            className={BILLING_SCROLL_BTN}
+          >
+            <ChevronUp className="h-10 w-10" strokeWidth={3} aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByRow(1)}
+            aria-label={scrollDown}
+            className={BILLING_SCROLL_BTN}
+          >
+            <ChevronDown className="h-10 w-10" strokeWidth={3} aria-hidden />
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export default function AccountPage() {
   const { language } = useLanguage();
@@ -638,26 +747,6 @@ export default function AccountPage() {
     return () => window.removeEventListener('hashchange', sync);
   }, []);
 
-  useEffect(() => {
-    if (!data) return;
-    const nodes = ACCOUNT_HASH_IDS.map((id) => document.getElementById(id)).filter(
-      (el): el is HTMLElement => el != null,
-    );
-    if (nodes.length === 0) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const id = visible[0]?.target.id;
-        if (id && isAccountHashId(id)) setActiveSection(id);
-      },
-      { rootMargin: '-15% 0px -55% 0px', threshold: [0.15, 0.35, 0.6] },
-    );
-    for (const node of nodes) observer.observe(node);
-    return () => observer.disconnect();
-  }, [data]);
-
   const handleCheckout = async (plan: CheckoutPlanType, amountUsd?: string) => {
     setBusyPlan(plan);
     setError(null);
@@ -746,7 +835,7 @@ export default function AccountPage() {
         data-fit-ref="account"
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <BrandLogo size="nav" showIcon />
+          <BrandLogo size="hero" showIcon />
           <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
             <LanguageSwitcher variant="dark" size="lg" />
             <LoginButton redirectTo="/account" />
@@ -788,8 +877,9 @@ export default function AccountPage() {
 
             <div className={SAMPLE_RAIL_ROW}>
             <AccountSectionNav language={language} activeId={activeSection} />
-            <div className="min-w-0 flex-1 space-y-8 sm:space-y-10">
+            <div className="min-w-0 flex-1">
 
+            {activeSection === 'overview' ? (
             <section id="overview" className={ACCOUNT_CARD}>
               <h2 className={ACCOUNT_HEADING}>{navCopy.overview}</h2>
               <dl className="grid gap-3 text-lg sm:grid-cols-2">
@@ -829,7 +919,9 @@ export default function AccountPage() {
                 </div>
               </dl>
             </section>
+            ) : null}
 
+            {activeSection === 'career-context' ? (
             <section id="career-context" className={ACCOUNT_CARD}>
               <div className="flex items-start gap-3">
                 <Target className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
@@ -849,7 +941,9 @@ export default function AccountPage() {
                   : t.careerContextCta}
               </Link>
             </section>
+            ) : null}
 
+            {activeSection === 'plans' ? (
             <section id="plans" className={`${ACCOUNT_CARD} space-y-5`}>
               <div className="flex items-start gap-3">
                 <CreditCard className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
@@ -925,7 +1019,7 @@ export default function AccountPage() {
 
               <div className="flex flex-col gap-3 border-t border-blue-500/30 pt-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="min-w-0 sm:flex-1">
-                  <h3 className={ACCOUNT_HEADING}>{t.sponsorTitle}</h3>
+                  <h3 className={ACCOUNT_SUBHEADING}>{t.sponsorTitle}</h3>
                   <p className="text-base text-zinc-400 mt-1">{t.sponsorNote}</p>
                 </div>
                 <div className="flex flex-wrap items-end gap-3 shrink-0">
@@ -957,48 +1051,29 @@ export default function AccountPage() {
                 </div>
               </div>
             </section>
+            ) : null}
 
+            {activeSection === 'billing' ? (
             <section id="billing" className={ACCOUNT_CARD}>
               <h2 className={ACCOUNT_HEADING}>{navCopy.billing}</h2>
               {data.orders.length === 0 ? (
                 <p className="text-lg text-zinc-400">{t.billingEmpty}</p>
               ) : (
-                <div
-                  className="overflow-x-auto overflow-y-auto overscroll-contain"
-                  data-billing-history-visible-rows={BILLING_HISTORY_VISIBLE_ROWS}
-                >
-                  <table className="w-full border-separate border-spacing-0 text-lg text-left">
-                    <thead className="sticky top-0 z-10 bg-blue-950 text-zinc-400 shadow-[0_1px_0_0_rgb(59_130_246)]">
-                      <tr>
-                        <th className="py-3 pr-4 font-medium">{t.date}</th>
-                        <th className="py-3 pr-4 font-medium">{t.plan}</th>
-                        <th className="py-3 pr-4 font-medium">{t.amount}</th>
-                        <th className="py-3 pr-3 font-medium">{t.status}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.orders.map((o) => (
-                        <tr key={o.id}>
-                          <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-300 whitespace-nowrap">
-                            {formatDate(o.created_at, language)}
-                          </td>
-                          <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-100 whitespace-nowrap">
-                            {o.plan_type}
-                          </td>
-                          <td className="border-b border-blue-500/20 py-3 pr-4 text-zinc-100 whitespace-nowrap">
-                            {formatMoney(Number(o.amount), o.currency)}
-                          </td>
-                          <td className="border-b border-blue-500/20 py-3 pr-3 text-zinc-400 whitespace-nowrap">
-                            {o.status}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <BillingHistoryTable
+                  orders={data.orders}
+                  dateLabel={t.date}
+                  planLabel={t.plan}
+                  amountLabel={t.amount}
+                  statusLabel={t.status}
+                  scrollUp={t.billingScrollUp}
+                  scrollDown={t.billingScrollDown}
+                  language={language}
+                />
               )}
             </section>
+            ) : null}
 
+            {activeSection === 'referrals' ? (
             <section id="referrals" className={`${ACCOUNT_CARD} space-y-5`}>
               <div className="flex items-start gap-3">
                 <Gift className="w-[1em] h-[1em] text-blue-300 shrink-0 mt-0.5" />
@@ -1046,6 +1121,7 @@ export default function AccountPage() {
                 </ul>
               )}
             </section>
+            ) : null}
             </div>
             </div>
           </>

@@ -482,6 +482,23 @@ button.launch-submit:disabled,
 
 .account-font-large [data-billing-history-visible-rows] {
   max-height: calc((1.35em + 1.2em + 1px) * 6 + 0.25rem);
+  scrollbar-width: auto;
+  scrollbar-color: rgb(125 211 252) rgb(30 58 138);
+}
+
+.account-font-large [data-billing-history-visible-rows]::-webkit-scrollbar {
+  width: 1.1rem;
+}
+
+.account-font-large [data-billing-history-visible-rows]::-webkit-scrollbar-track {
+  background: rgb(30 58 138);
+  border-radius: 9999px;
+}
+
+.account-font-large [data-billing-history-visible-rows]::-webkit-scrollbar-thumb {
+  background: rgb(125 211 252);
+  border-radius: 9999px;
+  border: 3px solid rgb(30 58 138);
 }
 
 @media (min-width: 640px) {

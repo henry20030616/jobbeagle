@@ -369,11 +369,16 @@ describe('seven-item report layout', () => {
     expect(source).toContain("fit: '匹配度分析'");
     expect(source).not.toContain('匹配分數、履歷分析');
     expect(source).not.toContain('Fit score and resume');
+    expect(source).not.toContain('匹配分數與燈號');
+    expect(source).not.toContain('Score and signal');
     const fitBody = source.slice(
       source.indexOf('function FitBody'),
       source.indexOf('export function SnapshotItemStack'),
     );
-    expect(fitBody.indexOf('{copy.score}')).toBeLessThan(fitBody.indexOf('{scoreInfo.level}'));
+    expect(fitBody).not.toContain('{copy.score}');
+    expect(fitBody).toContain('min-w-0 flex items-center justify-center');
+    expect(fitBody).toContain('h-40 w-40');
+    expect(fitBody).toContain('h-56 w-56');
     expect(fitBody.indexOf('{scoreInfo.level}')).toBeLessThan(fitBody.indexOf('{copy.analysisSummary}'));
     expect(fitBody.indexOf('{copy.analysisSummary}')).toBeLessThan(fitBody.indexOf('{copy.apply}'));
     expect(fitBody.indexOf('{copy.apply}')).toBeLessThan(fitBody.indexOf('{copy.keywords}'));
@@ -412,8 +417,13 @@ describe('seven-item report layout', () => {
       expect(html).not.toContain('欠缺的硬性關鍵字');
       expect(html).not.toContain('履歷缺少的關鍵項目');
       expect(html).not.toContain('建議履歷調整後再應徵');
-      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('匹配分數與燈號'));
-      expect(html.indexOf('匹配分數與燈號')).toBeLessThan(html.indexOf('藍寶米格魯'));
+      expect(html).not.toContain('匹配分數與燈號');
+      expect(html).not.toContain('匹配分数与灯号');
+      expect(html).not.toContain('Score and signal');
+      expect(html).toContain('h-40 w-40');
+      expect(html).toContain('h-56 w-56');
+      expect(html).toContain('min-w-0 flex items-center justify-center');
+      expect(html.indexOf('匹配度分析')).toBeLessThan(html.indexOf('藍寶米格魯'));
       expect(html.indexOf('藍寶米格魯')).toBeLessThan(html.indexOf('總結分析'));
       expect(html.indexOf('總結分析')).toBeLessThan(html.indexOf('應徵建議'));
       expect(html.indexOf('應徵建議')).toBeLessThan(html.indexOf('履歷缺少的關鍵'));
@@ -488,6 +498,7 @@ describe('seven-item report layout', () => {
     expect(source).toContain('<QuestionsSummaryCard');
     expect(source).toContain('professionalTitle={copy.professionalAnalysis}');
     expect(source).toContain('behavioralTitle={copy.behavioralAnalysis}');
+    expect(source).toContain('<SectionCard title={copy.playbook}>');
     expect(source).toContain('<InnerSection title={copy.pay}>');
     expect(source).toContain('<InnerSection title={copy.benefits}>');
     expect(source).toContain('title={copy.say}');
@@ -496,6 +507,8 @@ describe('seven-item report layout', () => {
     expect(source).not.toContain('<SectionCard title={copy.benefits}>');
     expect(source).not.toContain('<SectionCard title={copy.say}');
     expect(source).toContain('<SectionCard title={copy.askCompany}>');
+    expect(source).toContain('playbook: n.playbook');
+    expect(source).toContain("playbook: '談薪策略'");
     expect(source).toContain('<SectionCard title={copy.professional} heading={REPORT_H1}>');
     expect(source).toContain('<SectionCard title={copy.behavioral} heading={REPORT_H1}>');
     expect(source).toContain('<h2 className={REPORT_H1}>{copy.land}</h2>');
@@ -632,18 +645,29 @@ describe('seven-item report layout', () => {
         language: 'zh-TW',
       }),
     );
-    expect(html).toContain('薪資籌碼策略');
-    expect(html).toContain('權益與福利爭取');
-    expect(html).toContain('開口這樣說');
+    expect(html).toContain('談薪策略');
+    expect(html).toContain('籌碼');
+    expect(html).toContain('福利');
+    expect(html).toContain('開口稿');
     expect(html).toContain('先報總薪酬');
+    expect(html).toContain('先鎖底薪');
+    expect(html).toContain('font-bold text-blue-300');
+    expect(html).toContain('report-h2');
     expect(html).toContain('report-h3');
     const playbook = html.slice(
-      html.indexOf('薪資籌碼策略'),
-      html.indexOf('開口這樣說') + '開口這樣說'.length,
+      html.indexOf('談薪策略'),
+      html.indexOf('開口稿') + '開口稿'.length,
     );
-    expect(playbook).toContain('權益與福利爭取');
+    expect(playbook).toContain('籌碼');
+    expect(playbook).toContain('福利');
     expect(playbook).not.toContain('border-2 border-blue-500');
-    expect(html).toContain('建議問公司的問題');
+    expect(html).toContain('問公司的問題');
+    expect(html).not.toContain('建議問公司的問題');
+    expect(html).toContain('面試後信件');
+    expect(html).not.toContain('建議面試後寄給公司的信');
+    expect(html).toContain('面試結束、對方還沒開始談薪資時寄');
+    expect(html).toContain('text-lg font-medium leading-snug text-slate-100 mb-4');
+    expect(html).not.toContain('text-lg text-slate-400 mb-4');
     expect(html.split('border-2 border-blue-500').length - 1).toBe(4);
   });
 

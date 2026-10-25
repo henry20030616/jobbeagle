@@ -13,7 +13,11 @@ import {
   resolveGuideModuleRoute,
   selectInterviewBank,
 } from '@/lib/guide-modules';
-import { QUESTION_ANSWER_PROMPT, QUESTION_RETRIEVAL_PROMPT } from '@/lib/prompts/guide-modules';
+import {
+  NEGOTIATION_MODULE_PROMPT,
+  QUESTION_ANSWER_PROMPT,
+  QUESTION_RETRIEVAL_PROMPT,
+} from '@/lib/prompts/guide-modules';
 import type { GuideInterviewBank, GuideQuestion } from '@/types';
 import { isCitableSourceUrl } from '@/lib/provenance';
 
@@ -79,6 +83,13 @@ describe('guide module routes', () => {
         search: false,
       });
     }
+  });
+
+  it('asks negotiation pay and benefits bullets for short titles, not question lines', () => {
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('Short title: gist then body');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('先報總薪酬');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix a bullet title');
+    expect(NEGOTIATION_MODULE_PROMPT).toContain('Do not prefix titles onto the questions');
   });
 
   it('labels the questions summary process line as Hiring process / 招募流程', () => {

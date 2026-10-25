@@ -138,7 +138,7 @@ export default function CareerContextPageClient() {
           data-fit-ref="career-context"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <BrandLogo size="nav" showIcon />
+            <BrandLogo size="hero" showIcon />
             <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
               <LanguageSwitcher variant="dark" size="lg" />
               <LoginButton redirectTo="/career-context" />

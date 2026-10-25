@@ -247,7 +247,7 @@ export default function DangerZonePageClient() {
           data-fit-ref="account-danger"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <BrandLogo size="nav" showIcon />
+            <BrandLogo size="hero" showIcon />
             <div className="account-header-controls flex flex-wrap items-center justify-end gap-2">
               <LanguageSwitcher variant="dark" size="lg" />
               <LoginButton redirectTo="/account/danger" />
@@ -285,7 +285,7 @@ export default function DangerZonePageClient() {
           )}
 
           {!loading && signedIn === false && (
-            <div className="rounded-xl border border-blue-500 bg-blue-950/40 p-8 text-center space-y-4">
+            <div className="rounded-xl border border-blue-500 bg-slate-950 p-8 text-center space-y-4">
               <p className="text-xl text-zinc-200">{t.needLogin}</p>
               <LoginButton redirectTo="/account/danger" />
             </div>
@@ -299,9 +299,10 @@ export default function DangerZonePageClient() {
                 </p>
               )}
 
-              <section className="rounded-xl border border-blue-500 bg-blue-950/40 p-7 space-y-4">
+              <div className="space-y-12 sm:space-y-[3.75rem]">
+              <section className="rounded-xl border border-blue-500 bg-slate-950 p-7 space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-xl font-semibold text-zinc-100">{t.pauseTitle}</h2>
+                  <h2 className="text-3xl font-black tracking-tight text-sky-300">{t.pauseTitle}</h2>
                   {deactivated && (
                     <span className="rounded-full border border-blue-500/50 bg-blue-900/40 px-3 py-1 text-sm font-semibold text-zinc-100">
                       {t.pausedBadge}
@@ -335,11 +336,12 @@ export default function DangerZonePageClient() {
                 )}
               </section>
 
-              <section className="rounded-xl border border-red-800/70 bg-red-950/20 p-7 space-y-4">
-                <h2 className="text-xl font-semibold text-red-100">{t.deleteTitle}</h2>
+              <section className="rounded-xl border border-red-500/80 bg-slate-950 p-7 space-y-4">
+                <h2 className="text-3xl font-black tracking-tight text-red-300">{t.deleteTitle}</h2>
                 <p className="text-lg text-zinc-400 leading-snug">{t.deleteBody}</p>
                 <DeleteAccountButton language={language} />
               </section>
+              </div>
             </>
           )}
         </main>

@@ -313,9 +313,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '面试谈判建议',
     },
     help: help(
-      'What to say on pay and benefits, questions to ask the company, and a post-interview note when one is needed.',
-      '薪資與福利怎麼開口、建議問公司的問題，以及需要時的面試後信件。',
-      '薪资与福利怎么开口、建议问公司的问题，以及需要时的面试后信件。',
+      'Pay strategy, company questions, and a follow-up note when one is needed.',
+      '談薪策略、問公司的問題，以及需要時的面試後信件。',
+      '谈薪策略、问公司的问题，以及需要时的面试后信件。',
     ),
     snapshot: t('—', '—', '—'),
     guide: t('Script, asks, follow-up note', '談薪說法、提問、面試後信', '谈薪说法、提问、面试后信'),

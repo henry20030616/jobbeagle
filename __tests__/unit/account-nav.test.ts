@@ -85,10 +85,16 @@ describe('account function nav', () => {
     expect(ACCOUNT_PAGE).not.toContain('我的帳號管理');
   });
 
-  it('stacks every section and uses nav copy for headings', () => {
-    expect(ACCOUNT_PAGE).not.toContain('panel ===');
+  it('shows one selected function panel at a time and uses nav copy for headings', () => {
+    expect(ACCOUNT_PAGE).toContain("activeSection === 'overview'");
+    expect(ACCOUNT_PAGE).toContain("activeSection === 'career-context'");
+    expect(ACCOUNT_PAGE).toContain("activeSection === 'plans'");
+    expect(ACCOUNT_PAGE).toContain("activeSection === 'billing'");
+    expect(ACCOUNT_PAGE).toContain("activeSection === 'referrals'");
     expect(ACCOUNT_PAGE).not.toContain('role="tabpanel"');
-    expect(ACCOUNT_PAGE).toContain('min-w-0 flex-1 space-y-8 sm:space-y-10');
+    expect(ACCOUNT_PAGE).not.toContain('IntersectionObserver');
+    expect(ACCOUNT_PAGE).toContain('min-w-0 flex-1');
+    expect(ACCOUNT_PAGE).not.toContain('min-w-0 flex-1 space-y-8 sm:space-y-10');
     expect(ACCOUNT_PAGE).toContain('{navCopy.overview}');
     expect(ACCOUNT_PAGE).toContain('{navCopy.careerContext}');
     expect(ACCOUNT_PAGE).toContain('{navCopy.plans}');
@@ -139,7 +145,8 @@ describe('account function nav', () => {
   });
 
   it('uses the navy/blue account palette instead of mixed accent islands', () => {
-    expect(ACCOUNT_PAGE).toContain('border-blue-500 bg-blue-950/40');
+    expect(ACCOUNT_PAGE).toContain('border border-blue-500 bg-slate-950');
+    expect(ACCOUNT_PAGE).not.toContain('bg-blue-950/40 p-7');
     expect(ACCOUNT_PAGE).toContain('bg-blue-600 hover:bg-blue-500');
     expect(ACCOUNT_PAGE).toContain('bg-amber-600 hover:bg-amber-500');
     expect(ACCOUNT_PAGE).not.toContain('bg-emerald-');
@@ -147,6 +154,26 @@ describe('account function nav', () => {
     expect(ACCOUNT_PAGE).not.toContain('text-emerald-');
     expect(ACCOUNT_PAGE).not.toContain('bg-indigo-');
     expect(ACCOUNT_PAGE).not.toContain('bg-violet-');
+  });
+
+  it('makes in-page section titles larger and brighter than body copy', () => {
+    expect(ACCOUNT_PAGE).toContain(
+      "ACCOUNT_HEADING = 'text-3xl font-black tracking-tight text-sky-300'",
+    );
+    expect(ACCOUNT_PAGE).not.toContain(
+      "ACCOUNT_HEADING = 'text-xl font-semibold tracking-wide text-zinc-100'",
+    );
+    expect(ACCOUNT_PAGE).toContain('<BrandLogo size="hero" showIcon />');
+    expect(ACCOUNT_PAGE).not.toContain('<BrandLogo size="nav" showIcon />');
+  });
+
+  it('adds high-contrast billing history up/down controls when the list overflows', () => {
+    expect(ACCOUNT_PAGE).toContain('function BillingHistoryTable');
+    expect(ACCOUNT_PAGE).toContain('ChevronUp');
+    expect(ACCOUNT_PAGE).toContain('ChevronDown');
+    expect(ACCOUNT_PAGE).toContain('h-10 w-10');
+    expect(ACCOUNT_PAGE).toContain('border-2 border-sky-300 bg-blue-600');
+    expect(ACCOUNT_PAGE).toContain('BILLING_HISTORY_VISIBLE_ROWS = 5');
   });
 
   it('renders a samples-sized left stack without duplicating the header title', () => {
@@ -180,7 +207,10 @@ describe('account function nav', () => {
     expect(html).not.toContain('flex-wrap');
     expect(html).not.toContain('role="tablist"');
     expect(html).toContain('bg-blue-900');
-    expect(html).toContain('border-red-700');
+    expect(html).toContain('border-red-500');
+    expect(html).toContain('bg-red-600');
+    expect(html).not.toContain('bg-red-950');
+    expect(html).not.toContain('border-red-700');
     expect(html).not.toContain('indigo-500');
     expect(html).not.toContain('我的帳號管理');
     expect(html).not.toContain('帳戶管理');

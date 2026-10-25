@@ -5,6 +5,7 @@ import type { FullReport, GuideQuestion } from '@/types';
 import { ExternalLink } from 'lucide-react';
 import {
   BODY,
+  BODY_COPY,
   BODY_MUTED,
   GuideSlideShell,
   HeroDualRow,
@@ -61,8 +62,8 @@ function copyFor(language: AppLanguage) {
       extraRule: extraRuleFor(language),
       answer: s ? '建议答案' : '建議答案',
       process: s ? '面试流程' : '面試流程',
-      pay: s ? '薪资筹码策略' : '薪資籌碼策略',
-      benefits: s ? '权益与福利争取' : '權益與福利爭取',
+      pay: s ? '筹码' : '籌碼',
+      benefits: s ? '福利' : '福利',
       source: s ? '资料来源' : '資料來源',
     };
   }
@@ -92,8 +93,8 @@ function copyFor(language: AppLanguage) {
     extraRule: extraRuleFor(language),
     answer: 'Suggested answer',
     process: 'Interview process',
-    pay: 'Pay leverage',
-    benefits: 'Benefits to negotiate',
+    pay: 'Leverage',
+    benefits: 'Benefits',
     source: 'Data sources',
   };
 }
@@ -141,7 +142,7 @@ function QuestionList({
           </div>
           <div className="min-w-0 border-l border-white/10 bg-black/25 p-4">
             <p className="text-xl font-black text-slate-100">{answerLabel}</p>
-            <p className={`${BODY} mt-2 text-slate-100 leading-relaxed`}>{item.answer || '—'}</p>
+            <p className={`${BODY_COPY} mt-2`}>{item.answer || '—'}</p>
           </div>
         </li>
       ))}

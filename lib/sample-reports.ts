@@ -784,7 +784,7 @@ function sampleGuideModules(language: AppLanguage = 'en'): GuideModules {
   const copy = SAMPLE_GUIDE_NARRATIVE[language];
   const answers = SAMPLE_GUIDE_ANSWERS[language];
   // Guide sample fields map to GUIDE_SECTION_FRAME cards.
-  // Pay / benefits / script share one negotiate playbook frame;
+  // Pay / benefits / script share one negotiate playbook frame titled 談薪策略;
   // 總結分析, 公司評價, 職位評價, questions, ask-company, and follow-up stay their own cards.
   // Sample sources are English web posts, so the question text stays English.
   const sourceQuestions = SAMPLE_GUIDE_NARRATIVE.en;

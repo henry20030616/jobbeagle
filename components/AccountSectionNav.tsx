@@ -35,11 +35,11 @@ const ICONS: Record<AccountNavItem['id'], typeof LayoutList> = {
   danger: ShieldAlert,
 };
 
-/** Same card size as /samples idle/active tabs; red fill only. */
+/** Same card size as /samples idle/active tabs; lighter red fill, white type. */
 const DANGER_IDLE =
-  'rounded-2xl border border-red-700 bg-red-950 text-white hover:bg-red-900';
+  'rounded-2xl border border-red-500 bg-red-600 text-white hover:bg-red-500';
 const DANGER_ACTIVE =
-  'rounded-2xl border border-white bg-red-900 text-white ring-4 ring-white/90';
+  'rounded-2xl border border-white bg-red-600 text-white ring-4 ring-white/90';
 
 function itemClassName(item: AccountNavItem, active: boolean): string {
   if (item.id === 'danger') {

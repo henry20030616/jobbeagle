@@ -225,7 +225,7 @@ describe('Guide inner section cards', () => {
       'utf8',
     );
     const negotiate = pages.slice(pages.indexOf("if (item === 'negotiate')"));
-    expect(negotiate).toContain('<section className={GUIDE_SECTION_FRAME}>');
+    expect(negotiate).toContain('<SectionCard title={copy.playbook}>');
     expect(negotiate).toContain('<InnerSection title={copy.pay}>');
     expect(negotiate).toContain('<InnerSection title={copy.benefits}>');
     expect(negotiate).toContain('title={copy.say}');
@@ -237,6 +237,9 @@ describe('Guide inner section cards', () => {
     expect(negotiate).not.toContain('<SectionCard title={copy.benefits}>');
     expect(negotiate).not.toContain('<SectionCard title={copy.say}');
     expect(negotiate).toContain('<SectionCard title={copy.askCompany}>');
+    expect(negotiate).toContain('labeled');
+    expect(negotiate).toContain('${BODY_COPY} mb-4');
+    expect(negotiate).not.toContain('${BODY_MUTED} mb-4');
     expect(pages).toContain('<h3 className={REPORT_H3}>{title}</h3>');
   });
 });
