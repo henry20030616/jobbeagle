@@ -152,7 +152,7 @@ describe('LiteReport Spec v3', () => {
     expect(report.hard_filter.status).toBe('Pass');
   });
 
-  it('clears salary numbers on evidence tier D', () => {
+  it('keeps numeric salary numbers even when the model labels tier D', () => {
     const report = normalizeLiteReport({
       fit_score: {
         score: 55,
@@ -162,12 +162,45 @@ describe('LiteReport Spec v3', () => {
         breakdown: [],
       },
       expected_offer: {
-        posted_range: '$90–110K',
-        p25: '$90K',
-        p50: '$100K',
-        p75: '$110K',
-        currency: 'USD',
-        region: 'US',
+        posted_range: null,
+        p25: 'TWD 1.2M',
+        p50: 'TWD 1.5M',
+        p75: 'TWD 1.8M',
+        currency: 'TWD',
+        region: '台北市板橋區',
+        target_gap: 'Closed-book Taiwan PM band',
+        evidence_tier: 'D',
+        sources: [],
+      },
+      proof_map: {
+        strengths: [{ point: 'A', description: 'a' }],
+        gaps: [{ gap: 'B', description: 'b' }],
+        resume_actions: [],
+        screenability_note: '',
+      },
+    } as Partial<LiteReport>);
+
+    expect(report.expected_offer.p25).toBe('TWD 1.2M');
+    expect(report.expected_offer.p75).toBe('TWD 1.8M');
+    expect(report.expected_offer.evidence_tier).toBe('C');
+  });
+
+  it('clears non-numeric salary placeholders on evidence tier D', () => {
+    const report = normalizeLiteReport({
+      fit_score: {
+        score: 55,
+        band: 'Stretch',
+        evidence_coverage: 'Low',
+        sharp_verdict: 'Thin inputs',
+        breakdown: [],
+      },
+      expected_offer: {
+        posted_range: '區間',
+        p25: '區間',
+        p50: '面議',
+        p75: null,
+        currency: 'TWD',
+        region: '台北',
         target_gap: 'Cannot estimate',
         evidence_tier: 'D',
         sources: [],
@@ -183,6 +216,8 @@ describe('LiteReport Spec v3', () => {
     expect(report.expected_offer.p25).toBeNull();
     expect(report.expected_offer.p50).toBeNull();
     expect(report.expected_offer.p75).toBeNull();
+    expect(report.expected_offer.posted_range).toBeNull();
+    expect(report.expected_offer.evidence_tier).toBe('D');
   });
 });
 

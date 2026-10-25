@@ -52,6 +52,7 @@ describe('calibrateLiteReport', () => {
     });
     const out = calibrateLiteReport(report);
     expect(out.apply_decision.label).toBe('Apply after fixes');
+    expect(out.apply_decision.next_best_action).toMatch(/Apply with caution/);
     expect(out.apply_decision.next_best_action).toContain('ACH returns');
     expect(out.fit_score.score).toBe(report.fit_score.score);
   });

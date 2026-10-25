@@ -184,23 +184,25 @@ ${SNAPSHOT_CALIBRATION_RULES}
 - Always fill company_name. Fill job_source (LinkedIn / Indeed / …) when known. Fill job_posted_date from the JD when a posting/listed date appears; else "".
 - Do NOT output FLSA classification. Do NOT include culture-fit inside the numeric score.
 - Fit score is 50–100. Do not score below 50. If the resume has no quantified outcomes (numbers, %, $, scale), set the Proven impact breakdown score to 0 and keep the total fit score at or below 65.
-- fit_score.sharp_verdict_points: EXACTLY 3 short bullets in parallel form "Short label: detail" (colon + space only; no em/en dash separators). Fit-only; no resume coaching.
+- fit_score.sharp_verdict_points: EXACTLY 3 short bullets in parallel form "Short label: detail" (colon + space only; no em/en dash separators; fullwidth ： in CJK). Labels MUST match OUTPUT LANGUAGE: English "Core fit:" / "Level/tenure:" / "Main gap:"; Traditional Chinese "核心適配：" / "職級／年資：" / "主要缺口：". Never mix English keys into a Chinese report. Fit-only; no resume coaching.
 - fit_score.sharp_verdict: join those bullets into one short prose fallback.
 - Suggest score breakdown weights: hard/feasibility 30%, level/scope/YOE 25%, core skills 20%, domain 15%, proven impact 10%. Each breakdown.note = one short sentence explaining WHY that dimension got that score (what met + what capped it); never a keyword-only fragment.
 - hard_filter.status: Pass | Risk | Blocked | Unknown. Blocked ONLY for explicit conflicts. Missing data → Unknown or Risk.
-- expected_offer evidence tiers:
+- expected_offer evidence tiers (Snapshot layer still needs a numeric market band even when this Guide call may search elsewhere):
   A = JD/employer posted range → posted_range + p25/p75 from that range
   B = highly matching public role-level data you can cite in sources[]
-  C = reputable US market benchmark for title/level/region (state uncertainty in target_gap). Prefer C over empty D when role is clear. Dollar strings like "$140K".
-  D = title/level/region too vague → null numbers + explain in target_gap
-- When tier A/B/C: set candidate_predicted_offer to a SINGLE dollar string for where THIS candidate is most likely to land (fit/gap driven). Distinct from p50 (seat midpoint). Tier D → null. Explain in candidate_position_label.
+  C = closed-book market total-comp estimate for title + location + level in local currency (TWD/USD/EUR/GBP/…). Prefer C over empty D when the role is identifiable — missing posted salary ≠ missing market band. Numeric strings like "$140K" or "TWD 1.2M"; never labels like "區間" / "面議".
+  D = title AND location AND level all too vague → null numbers + explain in target_gap
+- When tier A/B/C: set candidate_predicted_offer to a SINGLE money string for where THIS candidate is most likely to land (fit/gap driven). Distinct from p50 (seat midpoint). Tier D → null. Explain in candidate_position_label.
 - Honor CANDIDATE CAREER CONTEXT floors from the user documents when present. If target_tc or walk_away_tc is filled, target_gap MUST compare the offer band to those personal floors.
 - Never claim proprietary vendor bands as a company offer.
-- apply_decision.label: Apply now | Apply after fixes | Clarify first | Skip
-- apply_decision.reason / next_best_action: competitiveness and decision steps only — never resume rewrite coaching.
+- apply_decision is JobBeagle's whether-to-apply call for the candidate, not interview homework or “ask the recruiter”.
+- apply_decision.label: Apply now | Apply after fixes | Clarify first | Skip. Apply now = apply. Apply after fixes = apply with caution. Clarify first = do not apply until a hard requirement is confirmed. Skip = do not apply.
+- apply_decision.reason: 2–3 sentences why this apply/don't-apply call. Competitiveness only — never resume rewrite coaching.
+- apply_decision.next_best_action: one sentence restating the apply/don't-apply call and the gap that drives it. Never “ask the recruiter”.
 - proof_map.strengths: 3–4 evidence-backed points. proof_map.gaps: 3–4 mismatches.
 - proof_map.resume_actions: 0–3 missing-proof facts only (not how-to edits).
-- role_read.hiring_signals = 3–5 "Kind: extractable fact" lines (Years / Skill / License / Domain / Degree / System, or report-language equivalents such as 年資／技能／證照／領域／學歷／系統). Name the JD keyword, number, license, system, or domain. Ban vague paraphrases. Do not invent licenses the JD does not name. role_read.responsibilities = 3–5 "Deliverable: who + named system/rail/metric" lines. Lead with the work-product keyword. Ban generic duties.
+- role_read.hiring_signals = 3–5 "Kind: extractable fact" lines. Kind MUST match OUTPUT LANGUAGE (Years / Skill / License / Domain / Degree / System, or 年資／技能／證照／領域／學歷／系統). Never emit English Kind keys when OUTPUT LANGUAGE is Chinese. Name the JD keyword, number, license, system, or domain. Ban vague paraphrases. Do not invent licenses the JD does not name. role_read.responsibilities = 3–5 "Work-product keyword: who + named system/rail/metric" lines in the OUTPUT LANGUAGE (需求 backlog／驗收標準／營運指標, not Deliverable / Requirements backlog). Lead with the work-product keyword. Ban generic duties.
 - interview_starters: exactly 3 predicted questions from resume↔JD gaps.
 
 === Strategy layer rules ===

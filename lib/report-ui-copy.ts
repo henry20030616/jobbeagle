@@ -2,6 +2,7 @@ import {
   normalizeReportLanguage,
   type AppLanguage,
 } from '@/lib/report-language';
+import type { ApplyDecisionLabel } from '@/types';
 
 /** Snapshot slide chrome (labels only — body comes from the model). */
 export interface SnapshotUiCopy {
@@ -14,7 +15,7 @@ export interface SnapshotUiCopy {
   noOfferBand: string;
   topStrengths: string;
   applyDecisionFallback: string;
-  applyLabels: Record<string, string>;
+  applyLabels: Record<ApplyDecisionLabel, string>;
   criticalGaps: string;
   scoreSummary: string;
   applyDecision: string;
@@ -186,9 +187,9 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecisionFallback: 'Apply advice',
     applyLabels: {
       'Apply now': 'Apply now',
-      'Apply after fixes': 'Apply advice',
+      'Apply after fixes': 'Apply with caution',
       'Clarify first': 'Clarify first',
-      Skip: 'Skip',
+      Skip: "Don't apply",
     },
     hardSkill: 'Hard skill',
     softSkill: 'Soft skill',
@@ -220,10 +221,10 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecision: '應徵建議',
     applyDecisionFallback: '應徵建議',
     applyLabels: {
-      'Apply now': '立即投遞',
-      'Apply after fixes': '應徵建議',
+      'Apply now': '應徵',
+      'Apply after fixes': '謹慎應徵',
       'Clarify first': '先釐清再投',
-      Skip: '略過',
+      Skip: '不建議應徵',
     },
     hardSkill: '硬技能',
     softSkill: '軟技能',
@@ -255,10 +256,10 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecision: '应征建议',
     applyDecisionFallback: '应征建议',
     applyLabels: {
-      'Apply now': '立即投递',
-      'Apply after fixes': '应征建议',
+      'Apply now': '应征',
+      'Apply after fixes': '谨慎应征',
       'Clarify first': '先澄清再投',
-      Skip: '跳过',
+      Skip: '不建议应征',
     },
     hardSkill: '硬技能',
     softSkill: '软技能',
@@ -291,9 +292,9 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecisionFallback: 'Consejo para postular',
     applyLabels: {
       'Apply now': 'Postular ahora',
-      'Apply after fixes': 'Consejo para postular',
+      'Apply after fixes': 'Postular con cautela',
       'Clarify first': 'Aclarar primero',
-      Skip: 'Omitir',
+      Skip: 'No postular',
     },
     hardSkill: 'Hard skill',
     softSkill: 'Soft skill',
@@ -326,9 +327,9 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecisionFallback: 'आवेदन सलाह',
     applyLabels: {
       'Apply now': 'अभी आवेदन करें',
-      'Apply after fixes': 'आवेदन सलाह',
+      'Apply after fixes': 'सावधानी से आवेदन करें',
       'Clarify first': 'पहले स्पष्ट करें',
-      Skip: 'छोड़ें',
+      Skip: 'आवेदन न करें',
     },
     hardSkill: 'हार्ड स्किल',
     softSkill: 'सॉफ्ट स्किल',
@@ -361,9 +362,9 @@ const SNAPSHOT: Dict<SnapshotUiCopy> = {
     applyDecisionFallback: 'نصيحة التقديم',
     applyLabels: {
       'Apply now': 'قدّم الآن',
-      'Apply after fixes': 'نصيحة التقديم',
+      'Apply after fixes': 'قدّم بحذر',
       'Clarify first': 'وضّح أولًا',
-      Skip: 'تخطَّ',
+      Skip: 'لا تقدّم',
     },
     hardSkill: 'مهارة صلبة',
     softSkill: 'مهارة ناعمة',
@@ -1244,6 +1245,25 @@ const GUIDE: Dict<GuideUiCopy> = {
 export function getSnapshotUiCopy(language?: string | null): SnapshotUiCopy {
   const lang = normalizeReportLanguage(language);
   return SNAPSHOT[lang] ?? SNAPSHOT.en;
+}
+
+function isApplyDecisionLabel(value: string): value is ApplyDecisionLabel {
+  return (
+    value === 'Apply now'
+    || value === 'Apply after fixes'
+    || value === 'Clarify first'
+    || value === 'Skip'
+  );
+}
+
+/** Localized apply / don't-apply call for Snapshot 應徵建議. */
+export function applyCallLabel(
+  label: string | null | undefined,
+  language?: string | null,
+): string {
+  const copy = getSnapshotUiCopy(language);
+  if (label && isApplyDecisionLabel(label)) return copy.applyLabels[label];
+  return copy.applyDecisionFallback;
 }
 
 export function getGuideUiCopy(language?: string | null): GuideUiCopy {

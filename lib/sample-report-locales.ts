@@ -161,7 +161,7 @@ const ZH_TW: SampleLocalePack = {
       label: 'Apply after fixes',
       reason:
         '六年金融科技營運經驗與可量化的對帳成果，在需求擁有權上已過 Senior BA 門檻。JD 將 ACH 退件與清算列為核心，而履歷僅顯示相鄰的銀行營運經驗。此標籤反映核心要求尚未確認，而非履歷薄弱。',
-      next_best_action: '先向招募確認 ACH／退票擁有權是必備還是加分，再投入完整投遞週期。',
+      next_best_action: '謹慎應徵：ACH／退票擁有權僅有相鄰證明，不是明確建議應徵。',
     },
     role_read: {
       mission:
@@ -856,7 +856,7 @@ const ZH_CN: SampleLocalePack = {
       label: 'Apply after fixes',
       reason:
         '六年金融科技运营经验与可量化的对账成果，在需求所有权上已过 Senior BA 门槛。JD 将 ACH 退件与清算列为核心，而简历仅显示相邻的银行运营经验。此标签反映核心要求尚未确认，而非简历薄弱。',
-      next_best_action: '先向招聘确认 ACH／退票所有权是必备还是加分，再投入完整投递周期。',
+      next_best_action: '谨慎应征：ACH／退票所有权仅有相邻证明，不是明确建议应征。',
     },
     role_read: {
       mission:
@@ -1538,7 +1538,7 @@ const ES: SampleLocalePack = {
       reason:
         'Seis años en operaciones fintech y resultados de conciliación cuantificados superan el listón de Senior BA en propiedad de requisitos. El JD trata las devoluciones y la liquidación ACH como núcleo, y el CV solo muestra operaciones bancarias adyacentes. La etiqueta refleja un requisito central sin confirmar, no un perfil débil.',
       next_best_action:
-        'Aclara con el reclutador si ownership ACH/returns es required o preferred antes de invertir un ciclo completo.',
+        'Postular con cautela: la propiedad de ACH/returns es solo adyacente, no es un sí claro.',
     },
     role_read: {
       mission:
@@ -2149,7 +2149,7 @@ const HI: SampleLocalePack = {
       reason:
         'छह साल का fintech ops अनुभव और मापित reconciliation नतीजे requirements ownership पर Senior BA बार पार करते हैं। JD ACH returns और settlement को core मानता है, जबकि रिज़्यूमे में केवल आसन्न बैंकिंग ops दिखती है। यह लेबल अपुष्ट core आवश्यकता दर्शाता है, कमज़ोर प्रोफ़ाइल नहीं।',
       next_best_action:
-        'पूरा आवेदन चक्र लगाने से पहले रिक्रूटर से पूछें ACH/returns ownership required है या preferred।',
+        'सावधानी से आवेदन करें: ACH/returns ownership केवल आसन्न है, यह स्पष्ट आवेदन नहीं है।',
     },
     role_read: {
       mission:
@@ -2306,7 +2306,7 @@ const AR: SampleLocalePack = {
       reason:
         'ست سنوات في عمليات fintech ونتائج مطابقة مُقاسة تجتاز عتبة Senior BA في ملكية المتطلبات. يعتبر الـ JD مرتجعات ACH والتسوية أساسيين، بينما تُظهر السيرة عمليات مصرفية مجاورة فقط. التسمية تعكس شرطًا أساسيًا غير مؤكد وليس ملفًا ضعيفًا.',
       next_best_action:
-        'وضّح مع المسؤول إن كانت ملكية ACH/returns مطلوبة أم مفضلة قبل استثمار دورة تقديم كاملة.',
+        'قدّم بحذر: ملكية ACH/returns مجاورة فقط، وليست توصية تقديم واضحة.',
     },
     role_read: {
       mission:

@@ -38,5 +38,35 @@ export function geminiLanguageDirective(language: AppLanguage): string {
       : language === 'zh-CN'
         ? 'A job opening is 职位 / 这职位 — never 席位, 这席, 该席, 此席, 一席, or 本席. Do not change 主席, 出席, 联席, 筵席, or 主席台.'
         : '',
+    fieldLabelDirective(language),
   ].filter(Boolean).join('\n');
+}
+
+/** Labeled Snapshot prefixes must match OUTPUT LANGUAGE — not leftover English keys. */
+function fieldLabelDirective(language: AppLanguage): string {
+  if (language === 'zh-TW') {
+    return [
+      'LABELED BULLET PREFIXES (CRITICAL): every "Label: detail" prefix must be Traditional Chinese. Never emit English keys.',
+      'fit_score.sharp_verdict_points use 核心適配： / 職級／年資： / 主要缺口： — never "Core fit:", "Level/tenure:", or "Main gap:".',
+      'role_read.hiring_signals Kind is 年資／技能／系統／領域／證照／學歷 — never Years, Skill, System, Domain, License, or Degree.',
+      'role_read.responsibilities lead with a Chinese work-product keyword (需求 backlog、驗收標準、營運指標、儀表板、操作手冊、專案執行計畫) — never Deliverable, Requirements backlog, or Acceptance criteria.',
+    ].join('\n');
+  }
+  if (language === 'zh-CN') {
+    return [
+      'LABELED BULLET PREFIXES (CRITICAL): every "Label: detail" prefix must be Simplified Chinese. Never emit English keys.',
+      'fit_score.sharp_verdict_points use 核心适配： / 职级／年资： / 主要缺口： — never "Core fit:", "Level/tenure:", or "Main gap:".',
+      'role_read.hiring_signals Kind is 年资／技能／系统／领域／证照／学历 — never Years, Skill, System, Domain, License, or Degree.',
+      'role_read.responsibilities lead with a Chinese work-product keyword (需求 backlog、验收标准、运营指标、仪表板、操作手册、项目执行计划) — never Deliverable, Requirements backlog, or Acceptance criteria.',
+    ].join('\n');
+  }
+  if (language === 'en') {
+    return [
+      'LABELED BULLET PREFIXES: every "Label: detail" prefix must be English.',
+      'fit_score.sharp_verdict_points use "Core fit:" / "Level/tenure:" / "Main gap:".',
+      'role_read.hiring_signals Kind is Years / Skill / System / Domain / License / Degree.',
+      'role_read.responsibilities lead with Requirements backlog / Acceptance criteria / Ops KPI pack / Dashboard / Runbook.',
+    ].join('\n');
+  }
+  return 'LABELED BULLET PREFIXES: write every "Label: detail" prefix in the output language. Do not leave English keys such as Core fit, Years, Skill, System, or Domain when the output language is not English.';
 }

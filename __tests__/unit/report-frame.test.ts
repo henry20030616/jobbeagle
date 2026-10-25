@@ -398,8 +398,8 @@ describe('pay-range widths', () => {
     expect(pages).toContain('PAY_RANGE_SNAPSHOT_COLUMN');
     expect(pages).toContain('PAY_RANGE_SNAPSHOT_WIDTH');
     expect(pages).toContain('md:flex-row md:items-center');
-    expect(pages).toContain('space-y-6');
-    expect(pages).toContain('bodyClassName="mt-6"');
+    expect(pages).toContain('space-y-8');
+    expect(pages).toContain('bodyClassName="mt-8"');
     expect(pages).not.toContain('PAY_RANGE_LINE_MARKET_WIDTH');
   });
 });

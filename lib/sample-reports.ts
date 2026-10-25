@@ -169,7 +169,7 @@ const SAMPLE_SNAPSHOT_RAW: Partial<LiteReport> = {
     reason:
       'Six years of fintech ops and quantified reconciliation results clear the Senior BA bar on requirements ownership. The JD treats ACH returns and settlement as core, and the resume shows adjacent banking ops only. The label reflects an unconfirmed core requirement, not a weak profile.',
     next_best_action:
-      'Clarify with the recruiter whether ACH/returns ownership is required or preferred before investing a full application cycle.',
+      'Apply with caution: ACH/returns ownership is adjacent only, so this is not a clear apply.',
   },
   role_read: {
     mission:

@@ -56,6 +56,7 @@ import {
   normalizeMarketPositioning,
   normalizeRiskAssessment,
 } from '@/lib/normalize-executive-layer';
+import { numericOfferBand, parseMoneyAmount } from '@/lib/offer-display';
 
 const HARD_STATUSES: HardFilterStatus[] = ['Pass', 'Risk', 'Blocked', 'Unknown'];
 const FIT_BANDS: FitBand[] = ['Strong', 'Viable', 'Stretch', 'Mismatch'];
@@ -276,20 +277,46 @@ function normalizeStructuredLevers(raw: unknown): OfferLever[] {
     .slice(0, 8);
 }
 
+/** Keep parseable money strings; drop placeholders like 「區間」 / 「面議». */
+function moneyStringOrNull(v: unknown): string | null {
+  const s = asString(v);
+  if (!s) return null;
+  return parseMoneyAmount(s) !== null ? s : null;
+}
+
 function normalizeExpectedOffer(
   raw: Partial<LiteReport>,
   careerContext?: CareerContext | null,
 ): ExpectedOfferRange {
   if (raw.expected_offer) {
-    const tier = TIERS.includes(raw.expected_offer.evidence_tier)
+    let tier = TIERS.includes(raw.expected_offer.evidence_tier)
       ? raw.expected_offer.evidence_tier
       : 'D';
-    const blankNums = tier === 'D';
+    const posted_range = moneyStringOrNull(raw.expected_offer.posted_range);
+    const p25 = moneyStringOrNull(raw.expected_offer.p25);
+    const p50 = moneyStringOrNull(raw.expected_offer.p50);
+    const p75 = moneyStringOrNull(raw.expected_offer.p75);
+    const predicted = moneyStringOrNull(raw.expected_offer.candidate_predicted_offer);
+    const band = numericOfferBand({
+      posted_range,
+      p25,
+      p50,
+      p75,
+      currency: asString(raw.expected_offer.currency, 'USD'),
+      region: asString(raw.expected_offer.region, 'US'),
+      target_gap: '',
+      evidence_tier: tier,
+      sources: [],
+    });
+    // Model may mark Taiwan/TWD (or any non-US) as D even after emitting numbers.
+    // A parseable closed-book band is tier C, not empty D.
+    if (band && tier === 'D') tier = 'C';
+    const blankNums = !band && tier === 'D';
     return {
-      posted_range: blankNums ? null : (raw.expected_offer.posted_range ?? null),
-      p25: blankNums ? null : (raw.expected_offer.p25 ?? null),
-      p50: blankNums ? null : (raw.expected_offer.p50 ?? null),
-      p75: blankNums ? null : (raw.expected_offer.p75 ?? null),
+      posted_range: blankNums ? null : posted_range,
+      p25: blankNums ? null : p25,
+      p50: blankNums ? null : p50,
+      p75: blankNums ? null : p75,
       currency: asString(raw.expected_offer.currency, 'USD'),
       region: asString(raw.expected_offer.region, 'US'),
       target_gap: enrichTargetGapWithCareerContext(
@@ -298,9 +325,7 @@ function normalizeExpectedOffer(
       ),
       evidence_tier: tier,
       sources: asStringArray(raw.expected_offer.sources),
-      candidate_predicted_offer: blankNums
-        ? null
-        : asString(raw.expected_offer.candidate_predicted_offer) || null,
+      candidate_predicted_offer: blankNums ? null : predicted,
       candidate_position_label: asString(raw.expected_offer.candidate_position_label) || undefined,
       tc_breakdown: normalizeTcBreakdown(raw.expected_offer.tc_breakdown),
     };

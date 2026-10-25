@@ -8,7 +8,7 @@ import {
   getSampleStrategyGuideReport,
 } from '@/lib/sample-reports';
 import { GUIDE_ITEM_IDS, GuideItemPage, SnapshotItemStack, guideItemNav } from '@/components/report/SevenItemPages';
-import { isFullReport, isLiteReport } from '@/lib/normalize-lite-report';
+import { isFullReport, isLiteReport, normalizeLiteReport } from '@/lib/normalize-lite-report';
 import { fitBandFromScore } from '@/lib/report-rules';
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import { splitLabeledFact } from '@/lib/score-summary';
@@ -55,6 +55,12 @@ describe('sample reports', () => {
     expect(en.role_read.hiring_signals.join('\n')).toMatch(/Skill: SQL/);
     expect(en.role_read.hiring_signals.join('\n')).toMatch(/Domain:[\s\S]*ACH/);
     expect(en.role_read.responsibilities.join('\n')).toMatch(/Acceptance criteria:[\s\S]*ACH/);
+    const zhPoints = zh.fit_score.sharp_verdict_points ?? [];
+    const enPoints = en.fit_score.sharp_verdict_points ?? [];
+    expect(zhPoints[0]).toMatch(/^核心適配：/);
+    expect(zhPoints[1]).toMatch(/^職級／年資：/);
+    expect(zhPoints[2]).toMatch(/^主要缺口：/);
+    expect(enPoints[0]).toMatch(/^Core fit:/);
   });
 
   it('gives each Snapshot and Guide sample section a summary paragraph', () => {
@@ -431,8 +437,10 @@ describe('seven-item report layout', () => {
     expect(fitBody).toContain('flex items-baseline gap-3');
     expect(fitBody).toContain('<p className={BODY_COPY}>{scoreInfo.label}</p>');
     expect(fitBody).not.toContain('${BODY_COPY} mt-1');
-    expect(fitBody).toContain('<span className={BODY_COPY}>{point}</span>');
+    expect(fitBody).toContain('<span className={BODY_COPY}>{localizeLabeledFactLine(point, language)}</span>');
     expect(fitBody).toContain('<p className={BODY_COPY}>{summaryPoints[0]}</p>');
+    expect(fitBody).toContain('<ApplyCallBody apply={apply} language={language} empty={copy.empty} />');
+    expect(fitBody).not.toContain('next_best_action');
     expect(fitBody).not.toContain('text-slate-300 mt-1');
     expect(fitBody).not.toContain('text-slate-200 leading-snug');
     const stack = source.slice(source.indexOf('export function SnapshotItemStack'));
@@ -446,6 +454,13 @@ describe('seven-item report layout', () => {
     expect(advice.indexOf('{copy.keywords}')).toBeLessThan(advice.indexOf('{copy.rewriteDirection}'));
     expect(advice).toContain('md:grid-cols-2');
     expect(advice).toContain('md:grid-rows-subgrid');
+    expect(advice).toContain('<p className={BODY_COPY}>{copy.keywordsNote}</p>');
+    expect(advice).toContain('<p className={`flex gap-2.5 ${BODY_COPY}`}>');
+    expect(advice).toContain('<p className={BODY_COPY}>{copy.lockRewrite}</p>');
+    expect(advice).not.toContain('leading-relaxed text-slate-300');
+    expect(advice).not.toContain('text-slate-200 leading-snug');
+    expect(advice).not.toContain('text-slate-300"> — ');
+    expect(advice).not.toContain('text-base font-semibold text-slate-300');
     expect(source).not.toContain('{beforeLabel}');
     expect(source).not.toContain('{afterLabel}');
     expect(source).not.toContain("before: 'Before'");
@@ -478,6 +493,10 @@ describe('seven-item report layout', () => {
       expect(html).toContain('匹配度分析');
       expect(html).not.toContain('匹配分數、履歷分析');
       expect(html).toContain('應徵建議');
+      expect(html).toContain('謹慎應徵');
+      expect(html).toContain(snapshot.apply_decision.reason);
+      expect(html).not.toContain(snapshot.apply_decision.next_best_action);
+      expect(html).not.toMatch(/先向招募|詢問招募/);
       expect(html).toContain('藍寶米格魯');
       expect(html).toContain('待優化改善');
       expect(html).toContain('調整建議');
@@ -535,8 +554,34 @@ describe('seven-item report layout', () => {
     expect(snapHtml).toContain('ACH／支付軌道深度');
     expect(snapHtml).not.toContain('用 SQL 與 Looker 把對帳週期縮短 28%');
     expect(snapHtml).toContain('（🔒 升級 Interview Guide 可解鎖對應調整建議）');
-    expect(snapHtml).toContain(snapshot.apply_decision.next_best_action);
-    expect(guideHtml).toContain(guide.apply_decision.next_best_action);
+    const note = '這些是人資篩選系統用來比對履歷的重要關鍵字';
+    const noteIdx = snapHtml.indexOf(note);
+    expect(noteIdx).toBeGreaterThan(-1);
+    const noteSlice = snapHtml.slice(Math.max(0, noteIdx - 80), noteIdx);
+    expect(noteSlice).toContain('report-body');
+    expect(noteSlice).not.toContain('text-slate-300');
+    const lockIdx = snapHtml.indexOf('升級 Interview Guide 可解鎖對應調整建議');
+    const lockSlice = snapHtml.slice(Math.max(0, lockIdx - 80), lockIdx);
+    expect(lockSlice).toContain('report-body');
+    expect(lockSlice).not.toContain('text-slate-300');
+    const gapDetail = 'JD 強調 ACH 退票與清算';
+    const gapIdx = snapHtml.indexOf(gapDetail);
+    expect(gapIdx).toBeGreaterThan(-1);
+    const gapSlice = snapHtml.slice(Math.max(0, gapIdx - 200), gapIdx);
+    expect(gapSlice).toContain('report-body');
+    expect(gapSlice).not.toContain('text-slate-300');
+    const rewrite = '用 SQL 與 Looker 把對帳週期縮短 28%';
+    const rewriteIdx = guideHtml.indexOf(rewrite);
+    expect(rewriteIdx).toBeGreaterThan(-1);
+    const rewriteSlice = guideHtml.slice(Math.max(0, rewriteIdx - 120), rewriteIdx);
+    expect(rewriteSlice).toContain('report-body');
+    expect(rewriteSlice).not.toContain('text-slate-200');
+    expect(snapHtml).toContain('謹慎應徵');
+    expect(snapHtml).toContain(snapshot.apply_decision.reason);
+    expect(snapHtml).not.toContain(snapshot.apply_decision.next_best_action);
+    expect(guideHtml).toContain('謹慎應徵');
+    expect(guideHtml).toContain(guide.apply_decision.reason);
+    expect(guideHtml).not.toContain(guide.apply_decision.next_best_action);
   });
 
   it('renders Snapshot market pay as a visual range with a short caveat', () => {
@@ -579,7 +624,7 @@ describe('seven-item report layout', () => {
       expect(bandSlice).toContain('report-body');
       expect(html.indexOf('市場總薪酬區間')).toBeLessThan(html.indexOf(' · USD'));
       expect(html.indexOf(' · USD')).toBeLessThan(html.indexOf('$145K'));
-      expect(html).toContain('mt-1.5 mb-2');
+      expect(html).toContain('min-w-[8rem]');
       expect(html).not.toContain('mt-16 mb-16');
       expect(html).not.toContain('text-lg mb-1 font-semibold text-white');
       expect(html).toContain(caveat);
@@ -599,6 +644,59 @@ describe('seven-item report layout', () => {
     expect(guideHtml).not.toContain('data-range-label="target"');
     expect(guideHtml).not.toContain('data-range-label="ceiling"');
     expect(guideHtml).not.toContain('（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
+  });
+
+  it('renders TWD min/max on the Snapshot bar and skips a 區間 placeholder sliver', () => {
+    const base = getSampleSnapshotReport('zh-TW');
+    const numbered = normalizeLiteReport({
+      ...base,
+      expected_offer: {
+        ...base.expected_offer,
+        posted_range: null,
+        p25: 'TWD 1.2M',
+        p50: 'TWD 1.5M',
+        p75: 'TWD 1.8M',
+        currency: 'TWD',
+        region: '台北市板橋區',
+      },
+    });
+    const numberedHtml = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: numbered,
+        language: 'zh-TW',
+        locked: true,
+      }),
+    );
+    expect(numberedHtml).toContain('data-pay-range="hero"');
+    expect(numberedHtml).toContain('TWD 1.2M');
+    expect(numberedHtml).toContain('TWD 1.8M');
+    expect(numberedHtml).toContain(' · TWD');
+    expect(numberedHtml).toContain('min-w-[8rem]');
+    expect(numberedHtml).toContain('data-pay-low');
+    expect(numberedHtml).toContain('data-pay-high');
+
+    const placeholder = normalizeLiteReport({
+      ...base,
+      expected_offer: {
+        ...base.expected_offer,
+        posted_range: '區間',
+        p25: '區間',
+        p50: null,
+        p75: null,
+        currency: 'TWD',
+        region: '台北市板橋區',
+        evidence_tier: 'D',
+      },
+    });
+    const placeholderHtml = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: placeholder,
+        language: 'zh-TW',
+        locked: true,
+      }),
+    );
+    expect(placeholderHtml).not.toContain('data-pay-range="hero"');
+    expect(placeholderHtml).toContain('這次沒有足夠的薪酬信號');
   });
 
   it('frames company, pay, questions, and negotiate inner blocks with GUIDE_SECTION_FRAME', () => {
@@ -631,7 +729,7 @@ describe('seven-item report layout', () => {
     expect(source).toContain('PAY_RANGE_SNAPSHOT_WIDTH');
     expect(source).toContain('PAY_RANGE_LINE_WIDTH');
     expect(source).toContain('md:flex-row md:items-center');
-    expect(source).toContain('bodyClassName="mt-6"');
+    expect(source).toContain('bodyClassName="mt-8"');
     expect(source).toContain('className="w-full lg:flex-1"');
     expect(source).toContain('max-w-[12rem]');
     expect(source).toContain('mt-16 mb-16');
@@ -757,7 +855,7 @@ describe('seven-item report layout', () => {
     expect(coreHtml).not.toContain('w-1/2 max-w-[50%]');
     expect(coreHtml).not.toContain('w-full mx-auto min-w-0');
     expect(coreHtml).toContain(' · USD');
-    expect(coreHtml).toContain('mt-1.5 mb-2');
+    expect(coreHtml).toContain('min-w-[8rem]');
     expect(coreHtml).not.toContain('mt-16 mb-16');
     const coreBand = coreHtml.slice(
       coreHtml.indexOf('市場總薪酬區間'),
@@ -1040,6 +1138,63 @@ describe('guide page copy', () => {
     expect(zh.questionSourceLabel).toBe('來源');
     expect(zh.categoryBehavioral).toMatch(/行為/);
     expect(zh.systemAnalysisSourceNote).toMatch(/系統分析/);
+  });
+});
+
+describe('report field labels on the page language', () => {
+  it('shows Chinese stance and role-core prefixes for English-keyed reports on zh-TW', () => {
+    const report = getSampleSnapshotReport('en');
+    const snapHtml = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report,
+        language: 'zh-TW',
+        locked: true,
+      }),
+    );
+    const guideHtml = renderToStaticMarkup(
+      createElement(GuideItemPage, {
+        report: getSampleStrategyGuideReport('en'),
+        item: 'core',
+        language: 'zh-TW',
+      }),
+    );
+    for (const html of [snapHtml, guideHtml]) {
+      expect(html).toContain('核心適配');
+      expect(html).toContain('職級／年資');
+      expect(html).toContain('主要缺口');
+      expect(html).toContain('年資');
+      expect(html).toContain('技能');
+      expect(html).toContain('系統');
+      expect(html).toContain('領域');
+      expect(html).toContain('需求 backlog');
+      expect(html).toContain('驗收標準');
+      expect(html).toContain('營運指標');
+      expect(html).not.toContain('Core fit');
+      expect(html).not.toContain('Level/tenure');
+      expect(html).not.toContain('Main gap');
+      expect(html).not.toContain('Years:');
+      expect(html).not.toContain('Skill:');
+      expect(html).not.toContain('System:');
+      expect(html).not.toContain('Domain:');
+      expect(html).not.toContain('Requirements backlog');
+    }
+  });
+
+  it('keeps English prefixes when the page language is English', () => {
+    const html = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: getSampleSnapshotReport('zh-TW'),
+        language: 'en',
+        locked: true,
+      }),
+    );
+    expect(html).toContain('Core fit');
+    expect(html).toContain('Level/tenure');
+    expect(html).toContain('Main gap');
+    expect(html).toContain('Years');
+    expect(html).toContain('Skill');
+    expect(html).not.toContain('核心適配');
+    expect(html).not.toContain('主要缺口');
   });
 });
 

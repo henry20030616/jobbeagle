@@ -194,27 +194,98 @@ export function evidenceTierLabel(
   return labels.default;
 }
 
+export type NumericOfferBand = {
+  low: string;
+  high: string;
+  lowAmount: number;
+  highAmount: number;
+};
+
+function splitRangeParts(range: string): { low: string; high: string } | null {
+  const parts = range.split(/\s*[–—-]\s*/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  const low = parts[0];
+  const high = parts[parts.length - 1];
+  if (!low || !high) return null;
+  return { low, high };
+}
+
 /**
- * Display Expected Offer as a single human range — never P25/P50/P75 labels.
- * Prefers posted JD range; otherwise low–high from stored percentiles.
+ * Parse "$155K" / "$1.2M" / "TWD 1.2M" / "120萬" / "$155,000" into a number.
+ * Suffixes must be applied or TWD “M” vs full-digit mix collapses the bar.
  */
-export function formatOfferRange(offer: ExpectedOfferRange | null | undefined): string | null {
+export function parseMoneyAmount(v: string | null | undefined): number | null {
+  const s = cleanMoney(v);
+  if (!s) return null;
+  const take = (m: RegExpMatchArray | null, mul: number): number | null => {
+    if (!m?.[1]) return null;
+    const raw = parseFloat(m[1].replace(/,/g, ''));
+    return Number.isFinite(raw) ? raw * mul : null;
+  };
+  const yi = take(s.match(/([\d,]+(?:\.\d+)?)\s*億/), 100_000_000);
+  if (yi !== null) return yi;
+  const wan = take(s.match(/([\d,]+(?:\.\d+)?)\s*萬/), 10_000);
+  if (wan !== null) return wan;
+  const million = take(s.match(/([\d,]+(?:\.\d+)?)\s*[Mm](?:illion)?\b/), 1_000_000);
+  if (million !== null) return million;
+  const thousand = take(s.match(/([\d,]+(?:\.\d+)?)\s*(?:[Kk]\b|千)/), 1_000);
+  if (thousand !== null) return thousand;
+  const n = s.match(/([\d,]+(?:\.\d+)?)/);
+  if (!n) return null;
+  const raw = parseFloat(n[1].replace(/,/g, ''));
+  return Number.isFinite(raw) ? raw : null;
+}
+
+/**
+ * Parseable min–max the Snapshot / Guide bar can actually draw.
+ * Ignores placeholders like 「區間」 / 「面議」 / "competitive".
+ */
+export function numericOfferBand(
+  offer: ExpectedOfferRange | null | undefined,
+): NumericOfferBand | null {
   if (!offer) return null;
   const posted = cleanMoney(offer.posted_range);
-  if (posted) return posted;
+  const p25 = cleanMoney(offer.p25);
+  const p50 = cleanMoney(offer.p50);
+  const p75 = cleanMoney(offer.p75);
+  const pairs: Array<{ low: string; high: string }> = [];
+  if (posted) {
+    const split = splitRangeParts(posted);
+    if (split) pairs.push(split);
+  }
+  if (p25 && p75) pairs.push({ low: p25, high: p75 });
+  if (p25 && p50) pairs.push({ low: p25, high: p50 });
+  if (p50 && p75) pairs.push({ low: p50, high: p75 });
 
-  const low = cleanMoney(offer.p25);
-  const mid = cleanMoney(offer.p50);
-  const high = cleanMoney(offer.p75);
+  for (const pair of pairs) {
+    const lowAmount = parseMoneyAmount(pair.low);
+    const highAmount = parseMoneyAmount(pair.high);
+    if (lowAmount !== null && highAmount !== null && highAmount > lowAmount) {
+      return { ...pair, lowAmount, highAmount };
+    }
+  }
+  return null;
+}
 
-  if (low && high) return `${low} – ${high}`;
-  if (low && mid) return `${low} – ${mid}`;
-  if (mid && high) return `${mid} – ${high}`;
-  return mid || low || high || null;
+/**
+ * Display Expected Offer as a single human range — never P25/P50/P75 labels.
+ * Prefers a parseable numeric band so the bar is not a placeholder sliver.
+ */
+export function formatOfferRange(offer: ExpectedOfferRange | null | undefined): string | null {
+  const band = numericOfferBand(offer);
+  if (band) return `${band.low} – ${band.high}`;
+  if (!offer) return null;
+  const posted = cleanMoney(offer.posted_range);
+  if (posted && parseMoneyAmount(posted) !== null) return posted;
+  return null;
 }
 
 export function hasOfferRange(offer: ExpectedOfferRange | null | undefined): boolean {
-  return Boolean(formatOfferRange(offer));
+  return numericOfferBand(offer) !== null;
+}
+
+export function hasNumericOfferRange(offer: ExpectedOfferRange | null | undefined): boolean {
+  return numericOfferBand(offer) !== null;
 }
 
 /** Single-point prediction for this candidate inside the seat band. */
@@ -223,18 +294,6 @@ export function formatPredictedOffer(
 ): string | null {
   if (!offer) return null;
   return cleanMoney(offer.candidate_predicted_offer) || null;
-}
-
-/** Parse "$155K" / "$155,000" into a number for gauge positioning. */
-export function parseMoneyAmount(v: string | null | undefined): number | null {
-  const s = cleanMoney(v);
-  if (!s) return null;
-  const k = s.match(/([\d,]+(?:\.\d+)?)\s*[Kk]\b/);
-  if (k) return parseFloat(k[1].replace(/,/g, '')) * 1000;
-  const n = s.match(/([\d,]+(?:\.\d+)?)/);
-  if (!n) return null;
-  const raw = parseFloat(n[1].replace(/,/g, ''));
-  return Number.isFinite(raw) ? raw : null;
 }
 
 /**

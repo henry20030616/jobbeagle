@@ -19,9 +19,19 @@ import {
   REPORT_H2,
   REPORT_H3,
 } from '@/constants/report-frame';
-import { formatOfferRange, marketBandDisclaimer, parseMoneyAmount, payEstimateScope } from '@/lib/offer-display';
+import {
+  formatOfferRange,
+  marketBandDisclaimer,
+  numericOfferBand,
+  parseMoneyAmount,
+  payEstimateScope,
+} from '@/lib/offer-display';
 import { isCitableSourceUrl } from '@/lib/provenance';
 import { splitDecisionBrief } from '@/lib/decision-brief';
+import {
+  localizeLabeledFactLine,
+  localizeLabeledFactParts,
+} from '@/lib/report-field-labels';
 import { splitLabeledFact } from '@/lib/score-summary';
 import { followUpLetterParagraphs, parseFollowUpEmail } from '@/lib/follow-up-email';
 import { parseQuestionsSummary, type AnalysisPoint } from '@/lib/questions-summary';
@@ -30,6 +40,7 @@ import { guideItemSummaries, snapshotItemSummaries, splitSummaryPoints } from '@
 import { splitBuyerSellerStances } from '@/lib/stance-bullets';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
+import { ApplyCallBody } from '@/components/report/ApplyCallBody';
 
 export const GUIDE_ITEM_IDS = [
   'core',
@@ -506,13 +517,9 @@ function PayMixPie({
 }
 
 function bandEnds(offer: LiteReport['expected_offer']): { low: string | null; high: string | null } {
-  const range = formatOfferRange(offer);
-  if (!range) return { low: null, high: null };
-  const parts = range.split(/\s*[–—-]\s*/).map((part) => part.trim()).filter(Boolean);
-  if (parts.length >= 2) {
-    return { low: parts[0] ?? null, high: parts[parts.length - 1] ?? null };
-  }
-  return { low: range, high: null };
+  const band = numericOfferBand(offer);
+  if (band) return { low: band.low, high: band.high };
+  return { low: null, high: null };
 }
 
 function markerPercent(value: number | null, min: number, span: number): number | null {
@@ -594,6 +601,7 @@ function PayRangeLine({
   const { low, high } = bandEnds(offer);
   const rangeText = formatOfferRange(offer);
   const money = currency?.trim() || offer?.currency || 'USD';
+  if (!low || !high || !rangeText) return null;
   const amounts = [
     parseMoneyAmount(low),
     parseMoneyAmount(high),
@@ -609,11 +617,15 @@ function PayRangeLine({
   const ceilingPct = min !== null ? markerPercent(parseMoneyAmount(ceilingValue), min, span) : null;
   const fillLeft = lowPct ?? 0;
   const fillRight = 100 - (highPct ?? 100);
+  const collapsed = span <= 0 || fillLeft + fillRight >= 99;
   const staggerCeiling =
     targetPct !== null && ceilingPct !== null;
   const hero = variant === 'hero';
+  const fillStyle = hero || collapsed
+    ? { left: '0%', right: '0%' }
+    : { left: `${fillLeft}%`, right: `${fillRight}%` };
   const aria = [
-    rangeText ? `${rangeText} (${money})` : money,
+    `${rangeText} (${money})`,
     targetLabel && targetValue ? `${targetLabel} ${targetValue}` : null,
     ceilingLabel && ceilingValue ? `${ceilingLabel} ${ceilingValue}` : null,
   ].filter(Boolean).join('. ');
@@ -627,11 +639,19 @@ function PayRangeLine({
       {rangeText && !hero ? (
         <p className={`${BODY} mb-2 font-semibold text-white`}>{rangeText}</p>
       ) : null}
-      <div className="px-16">
-        <div className={`relative h-2.5 rounded-full bg-slate-700 ${hero ? 'mt-1.5 mb-2' : 'mt-16 mb-16'}`}>
+      <div className={`flex items-center gap-3 ${hero ? 'py-1' : ''}`}>
+        <span
+          className={`${BODY} shrink-0 whitespace-nowrap tabular-nums text-slate-300`}
+          data-pay-low=""
+        >
+          {low}
+        </span>
+        <div
+          className={`relative h-2.5 min-w-[8rem] flex-1 rounded-full bg-slate-700 ${hero ? '' : 'mt-16 mb-16'}`}
+        >
           <span
             className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
-            style={{ left: `${fillLeft}%`, right: `${fillRight}%` }}
+            style={fillStyle}
           />
           {targetPct !== null && targetValue ? (
             <PayRangeMark
@@ -651,28 +671,35 @@ function PayRangeLine({
               side={staggerCeiling ? 'below' : 'above'}
             />
           ) : null}
-          <span
-            className={`pointer-events-none absolute left-0 top-1/2 -translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
-          >
-            {low ?? ''}
-          </span>
-          <span
-            className={`pointer-events-none absolute right-0 top-1/2 translate-x-[calc(100%+0.5rem)] -translate-y-1/2 ${BODY} tabular-nums text-slate-300`}
-          >
-            {high ?? ''}
-          </span>
         </div>
+        <span
+          className={`${BODY} shrink-0 whitespace-nowrap tabular-nums text-slate-300`}
+          data-pay-high=""
+        >
+          {high}
+        </span>
       </div>
     </div>
   );
 }
 
-function BriefRows({ items }: { items: string[] }) {
+function BriefRows({
+  items,
+  language,
+}: {
+  items: string[];
+  language?: AppLanguage;
+}) {
   if (items.length === 0) return null;
   return (
     <ul className="space-y-2 py-1">
       {items.map((item) => {
-        const { label, detail } = splitLabeledFact(item);
+        const { label, detail, separator } = language
+          ? localizeLabeledFactParts(item, language)
+          : {
+              ...splitLabeledFact(item),
+              separator: item.includes('：') ? '：' : ': ',
+            };
         return (
           <li key={item} className="flex gap-2.5">
             <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
@@ -680,7 +707,7 @@ function BriefRows({ items }: { items: string[] }) {
               {detail ? (
                 <>
                   <span className="font-bold text-blue-300">{label}</span>
-                  {item.includes('：') ? '：' : ': '}
+                  {separator}
                   {detail}
                 </>
               ) : (
@@ -1042,16 +1069,32 @@ function ItemBlock({
   );
 }
 
-function CoreBody({ report, copy }: { report: LiteReport; copy: ItemCopy }) {
+function CoreBody({
+  report,
+  copy,
+  language,
+}: {
+  report: LiteReport;
+  copy: ItemCopy;
+  language: AppLanguage;
+}) {
   const conditions = (report.role_read?.hiring_signals ?? []).slice(0, 5);
   const duties = (report.role_read?.responsibilities ?? []).slice(0, 5);
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <BriefColumn title={copy.conditions}>
-        {conditions.length > 0 ? <BriefRows items={conditions} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
+        {conditions.length > 0 ? (
+          <BriefRows items={conditions} language={language} />
+        ) : (
+          <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+        )}
       </BriefColumn>
       <BriefColumn title={copy.duties}>
-        {duties.length > 0 ? <BriefRows items={duties} /> : <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>}
+        {duties.length > 0 ? (
+          <BriefRows items={duties} language={language} />
+        ) : (
+          <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
+        )}
       </BriefColumn>
     </div>
   );
@@ -1069,7 +1112,7 @@ function MarketBody({
   locked: boolean;
 }) {
   const offer = report.expected_offer;
-  const range = formatOfferRange(offer);
+  const range = numericOfferBand(offer);
   const scope = payEstimateScope(report, language);
   const levelLines = scope.level.split(' — ').map((part) => part.trim()).filter(Boolean);
   const money = offer?.currency || 'USD';
@@ -1081,9 +1124,9 @@ function MarketBody({
     { title: copy.level, lines: levelLines.length > 0 ? levelLines : [scope.level] },
   ];
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center">
-        <p className={`${REPORT_H2} flex shrink-0 flex-wrap items-baseline gap-x-2`}>
+    <div className="space-y-8">
+      <div className="flex flex-col gap-6 pt-2 pb-2 md:flex-row md:items-center">
+        <p className={`${REPORT_H2} flex min-w-0 flex-wrap items-baseline gap-x-2 md:w-1/2`}>
           <span>{copy.band}</span>
           {range ? <span className={BODY_COPY}> · {money}</span> : null}
         </p>
@@ -1184,7 +1227,7 @@ function FitBody({
                 {verdictLines.map((point) => (
                   <li key={point} className="flex gap-2.5">
                     <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
-                    <span className={BODY_COPY}>{point}</span>
+                    <span className={BODY_COPY}>{localizeLabeledFactLine(point, language)}</span>
                   </li>
                 ))}
               </ul>
@@ -1202,13 +1245,7 @@ function FitBody({
           </section>
           <section className="min-w-0">
             <h3 className={`mb-2 ${REPORT_H1}`}>{copy.apply}</h3>
-            {apply?.next_best_action ? (
-              <p className={`${BODY} font-medium text-slate-100 leading-snug`}>
-                {apply.next_best_action}
-              </p>
-            ) : (
-              <p className={`${BODY_MUTED} py-3`}>{copy.empty}</p>
-            )}
+            <ApplyCallBody apply={apply} language={language} empty={copy.empty} />
           </section>
         </div>
       </section>
@@ -1245,7 +1282,7 @@ function ResumeAdviceBody({
   const layout = resumeAdviceLayout(pairs.length);
   return (
     <div className="space-y-4">
-      <p className={`${BODY} leading-relaxed text-slate-300`}>{copy.keywordsNote}</p>
+      <p className={BODY_COPY}>{copy.keywordsNote}</p>
       {keywords.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {keywords.slice(0, 8).map((word) => (
@@ -1261,11 +1298,11 @@ function ResumeAdviceBody({
           {pairs.length > 0 ? (
             pairs.map((item) => (
               <div key={item.key} className="mt-4 min-w-0 md:mt-0">
-                <p className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                <p className={`flex gap-2.5 ${BODY_COPY}`}>
                   <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
                   <span>
                     <span className="font-semibold text-slate-100">{item.left}</span>
-                    {item.leftDetail ? <span className="text-slate-300"> — {item.leftDetail}</span> : null}
+                    {item.leftDetail ? <span> — {item.leftDetail}</span> : null}
                   </span>
                 </p>
               </div>
@@ -1278,13 +1315,13 @@ function ResumeAdviceBody({
           <h3 className={REPORT_H3}>{copy.rewriteDirection}</h3>
           {locked ? (
             <div className={`mt-4 min-w-0 md:mt-0 ${layout.dataSpan}`}>
-              <p className="text-base font-semibold text-slate-300">{copy.lockRewrite}</p>
+              <p className={BODY_COPY}>{copy.lockRewrite}</p>
             </div>
           ) : pairs.some((item) => item.right) ? (
             pairs.map((item) => (
               <div key={item.key} className="mt-4 min-w-0 md:mt-0">
                 {item.right ? (
-                  <p className={`flex gap-2.5 ${BODY} text-slate-200 leading-snug`}>
+                  <p className={`flex gap-2.5 ${BODY_COPY}`}>
                     <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-indigo-300/90" aria-hidden />
                     <span>{item.right}</span>
                   </p>
@@ -1324,7 +1361,7 @@ export function SnapshotItemStack({
           analysisSummary={summaries.fit}
         />
       </ItemBlock>
-      <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market} bodyClassName="mt-6">
+      <ItemBlock title={copy.market} summaryLabel={copy.analysisSummary} summary={summaries.market} bodyClassName="mt-8">
         <MarketBody
           report={report}
           copy={copy}
@@ -1333,7 +1370,7 @@ export function SnapshotItemStack({
         />
       </ItemBlock>
       <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
-        <CoreBody report={report} copy={copy} />
+        <CoreBody report={report} copy={copy} language={lang} />
       </ItemBlock>
       <ItemBlock title={copy.resumeAdvice}>
         <ResumeAdviceBody

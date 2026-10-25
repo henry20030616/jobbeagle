@@ -27,6 +27,28 @@ export function deriveApplyDecision(input: {
   return 'Apply after fixes';
 }
 
+/** Restate the apply/don't-apply call — never recruiter-question homework. */
+export function restateApplyCall(
+  label: ApplyDecisionLabel,
+  weakCompetency?: string,
+): string {
+  const gap = weakCompetency?.trim();
+  switch (label) {
+    case 'Apply now':
+      return 'Apply — evidenced core requirements clear the bar.';
+    case 'Apply after fixes':
+      return gap
+        ? `Apply with caution: ${gap} lacks direct resume proof.`
+        : 'Apply with caution: a core requirement lacks direct resume proof.';
+    case 'Clarify first':
+      return gap
+        ? `Do not apply until ${gap} is confirmed as required or preferred.`
+        : 'Do not apply until the largest unconfirmed requirement is resolved.';
+    case 'Skip':
+      return 'Do not apply — a hard requirement conflicts with the resume.';
+  }
+}
+
 /** Prefer model decision if valid; otherwise derive. */
 export function resolveApplyDecision(
   report: {
@@ -60,6 +82,6 @@ export function resolveApplyDecision(
       || `Decision based on fit ${report.fit_score?.score ?? '—'} and hard filter ${report.hard_filter?.status ?? 'Unknown'}.`,
     next_best_action:
       report.apply_decision?.next_best_action?.trim()
-      || 'Confirm the largest hard-filter risk or gap with the recruiter before you invest more time.',
+      || restateApplyCall(label),
   };
 }

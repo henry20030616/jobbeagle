@@ -4,6 +4,7 @@ import {
   formatOfferRange,
   formatPredictedOffer,
   hasOfferRange,
+  numericOfferBand,
   marketBandDisclaimer,
   offerEvaluationSummary,
   payEstimateScope,
@@ -63,6 +64,64 @@ describe('formatOfferRange', () => {
       evidence_tier: 'D',
       sources: [],
     })).toBe(false);
+  });
+});
+
+describe('parseMoneyAmount / numericOfferBand', () => {
+  it('parses K, M, and TWD 萬 so mixed formats still form a band', () => {
+    expect(parseMoneyAmount('$155K')).toBe(155000);
+    expect(parseMoneyAmount('TWD 1.2M')).toBe(1_200_000);
+    expect(parseMoneyAmount('1.8M')).toBe(1_800_000);
+    expect(parseMoneyAmount('120萬')).toBe(1_200_000);
+    expect(parseMoneyAmount('180萬')).toBe(1_800_000);
+    expect(parseMoneyAmount('區間')).toBeNull();
+    expect(parseMoneyAmount('面議')).toBeNull();
+  });
+
+  it('rejects placeholder 區間 text and accepts a TWD closed-book band', () => {
+    expect(
+      numericOfferBand({
+        posted_range: '區間',
+        p25: '區間',
+        p50: null,
+        p75: null,
+        currency: 'TWD',
+        region: '台北',
+        target_gap: 'qualitative',
+        evidence_tier: 'D',
+        sources: [],
+      }),
+    ).toBeNull();
+    const band = numericOfferBand({
+      posted_range: null,
+      p25: 'TWD 1.2M',
+      p50: 'TWD 1.5M',
+      p75: 'TWD 1.8M',
+      currency: 'TWD',
+      region: '台北市板橋區',
+      target_gap: 'Qualitative Taiwan PM talk',
+      evidence_tier: 'C',
+      sources: [],
+    });
+    expect(band).toEqual({
+      low: 'TWD 1.2M',
+      high: 'TWD 1.8M',
+      lowAmount: 1_200_000,
+      highAmount: 1_800_000,
+    });
+    expect(
+      numericOfferBand({
+        posted_range: null,
+        p25: '1,200,000',
+        p50: null,
+        p75: '1.8M',
+        currency: 'TWD',
+        region: '台北',
+        target_gap: '',
+        evidence_tier: 'C',
+        sources: [],
+      })?.lowAmount,
+    ).toBe(1_200_000);
   });
 });
 

@@ -256,13 +256,13 @@ const LITE_RESPONSE_SCHEMA = {
           type: Type.ARRAY,
           items: { type: Type.STRING },
           description:
-            '3–5 "Deliverable: who + named system/rail/metric" lines. Lead with the work-product keyword. No generic duties.',
+            '3–5 "Work-product keyword: who + named system/rail/metric" lines in the OUTPUT LANGUAGE. Lead with the work-product keyword. No generic duties. No English keys in Chinese output.',
         },
         hiring_signals: {
           type: Type.ARRAY,
           items: { type: Type.STRING },
           description:
-            '3–5 "Kind: fact" lines. Kind = Years, Skill, License, Domain, Degree, or System (report-language equivalent OK). Fact names the JD keyword, years, license, system, or domain. No vague paraphrases.',
+            '3–5 "Kind: fact" lines. Kind matches OUTPUT LANGUAGE (Years/Skill/System/Domain or 年資／技能／系統／領域). Fact names the JD keyword, years, license, system, or domain. No English Kind keys in Chinese output. No vague paraphrases.',
         },
       },
       required: ['mission', 'responsibilities', 'hiring_signals'],

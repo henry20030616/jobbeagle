@@ -1,4 +1,5 @@
 import type { ApplyDecision, FitScoreBreakdownItem, LiteReport, RiskAssessmentItem } from '@/types';
+import { restateApplyCall } from '@/lib/report-rules';
 
 /**
  * Deterministic consistency guards applied after normalization.
@@ -61,9 +62,7 @@ export function calibrateLiteReport(report: LiteReport): LiteReport {
   if (BARE_NEXT_STEP.test(apply.next_best_action)) {
     apply = {
       ...apply,
-      next_best_action: weak
-        ? `Ask the recruiter whether ${weak.competency} is required or preferred before investing a full application.`
-        : 'Confirm the approved cash range and leveling with the recruiter before you invest interview time.',
+      next_best_action: restateApplyCall(apply.label, weak?.competency),
     };
   }
 
