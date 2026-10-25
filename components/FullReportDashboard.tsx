@@ -63,6 +63,10 @@ export default function FullReportDashboard({
     else window.location.href = '/';
   };
 
+  const isZh = lang === 'zh-TW' || lang === 'zh-CN';
+  const companyLine = report.company_name || (isZh ? '' : 'Company');
+  const roleLine = report.job_title || (isZh ? '' : 'Role');
+
   return (
     <div
       className={`w-full min-w-0 mx-auto ${
@@ -88,11 +92,8 @@ export default function FullReportDashboard({
             <p className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
               {copy.productTitle}
             </p>
-            <p className={`${REPORT_HEADER_JOB_LINE} mt-1.5`}>
-              {lang === 'zh-TW' || lang === 'zh-CN'
-                ? `${report.job_title || ''} · ${report.company_name || ''}`
-                : `${report.job_title || 'Role'} · ${report.company_name || 'Company'}`}
-            </p>
+            <p className={`${REPORT_HEADER_JOB_LINE} mt-1.5`}>{companyLine}</p>
+            <p className={REPORT_HEADER_JOB_LINE}>{roleLine}</p>
           </div>
           {isSample ? (
             <div className="shrink-0 self-start">
