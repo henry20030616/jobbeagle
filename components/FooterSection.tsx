@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { MessageCircle, Send, CheckCircle, ChevronDown } from 'lucide-react';
 
 import { AppLanguage } from '@/lib/language-context';
-import { isShortsEnabled } from '@/constants/features';
+import { isHomepageShortsBannerEnabled, isShortsEnabled } from '@/constants/features';
 import { createClient } from '@/lib/supabase/browser';
 
 interface FooterSectionProps {
@@ -186,7 +186,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ language }) => {
         <Link href="/privacy" className="hover:text-slate-300 transition-colors">{t.privacy}</Link>
         <span className="text-slate-700">·</span>
         <Link href="/terms" className="hover:text-slate-300 transition-colors">{t.terms}</Link>
-        {isShortsEnabled() && (
+        {isHomepageShortsBannerEnabled() && isShortsEnabled() && (
           <>
             <span className="text-slate-700">·</span>
             <Link href="/shorts" className="hover:text-slate-300 transition-colors">Shorts</Link>

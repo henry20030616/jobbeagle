@@ -8,6 +8,7 @@ test.describe('Smoke — core pages load', () => {
     await expect(
       page.getByRole('button').or(page.locator('textarea')).first(),
     ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('link', { name: /Explore Job Shorts/i })).toHaveCount(0);
   });
 
   test('shorts feed loads', async ({ page }) => {

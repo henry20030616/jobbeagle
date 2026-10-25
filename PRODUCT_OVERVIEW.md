@@ -217,7 +217,7 @@ Stripe、Lemon Squeezy、Paddle **不是現在的收款路徑**。程式裡已�
 | `/extension` | 安裝外掛 |
 | `/privacy`、`/terms` | 法律 |
 | `/career-context` | 個人底線 |
-| `/shorts`、`/employer/*` | 短影片。`isShortsEnabled()` 預設開，`NEXT_PUBLIC_SHORTS_ENABLED=false` 才凍結。首頁 banner `isHomepageShortsBannerEnabled()` 開 |
+| `/shorts`、`/employer/*` | 短影片。`isShortsEnabled()` 預設開，`NEXT_PUBLIC_SHORTS_ENABLED=false` 才凍結。首頁 banner `isHomepageShortsBannerEnabled()` **寫死 false** |
 
 ### 主要 API
 

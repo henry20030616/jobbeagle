@@ -22,7 +22,7 @@ alwaysApply: true
 
 ## Product focus (do / don't)
 - **DO** invest in: extension → `/confirm` → analyze → Job Fit Snapshot / Interview Strategy Guide → paywall/checkout.
-- **Shorts / employer video:** routes enabled by default (`NEXT_PUBLIC_SHORTS_ENABLED=false` to freeze). Homepage **"Explore Job Shorts" banner is on** via `isHomepageShortsBannerEnabled()`.
+- **Shorts / employer video:** routes enabled by default (`NEXT_PUBLIC_SHORTS_ENABLED=false` to freeze). Homepage **"Explore Job Shorts" banner is hidden** via `isHomepageShortsBannerEnabled()` — do not re-enable unless the user asks.
 - **Stripe / Lemon Squeezy:** not the payment path. Do not reintroduce them.
 
 ## Conversion UX

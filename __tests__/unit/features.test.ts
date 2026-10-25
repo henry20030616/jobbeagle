@@ -26,7 +26,7 @@ describe('shorts feature flags', () => {
     expect(isShortsEnabled()).toBe(false);
   });
 
-  it('shows the homepage Explore Job Shorts banner', () => {
-    expect(isHomepageShortsBannerEnabled()).toBe(true);
+  it('hides the homepage Explore Job Shorts banner', () => {
+    expect(isHomepageShortsBannerEnabled()).toBe(false);
   });
 });

@@ -11,8 +11,10 @@ export function isShortsEnabled(): boolean {
 
 /**
  * Homepage "Explore Job Shorts" promo banner.
- * Restored 2026-10-25 so the /shorts entry is visible from the homepage.
+ * Hidden (2026-10-25) so the analyze funnel stays primary on jobbeagle.com.
+ * Routes stay live via isShortsEnabled(); set this to `true` to restore the
+ * homepage banner (and the matching footer Shorts link).
  */
 export function isHomepageShortsBannerEnabled(): boolean {
-  return true;
+  return false;
 }

@@ -243,7 +243,7 @@ Stripe、Lemon Squeezy、Paddle **都不是現在的收款路徑**。不要建�
 | `/extension` | 安裝外掛 |
 | `/privacy`、`/terms` | 法律 |
 | `/career-context` | 個人底線 |
-| `/shorts`、`/shorts/upload`、`/employer/*` | 短影片／雇主。預設開；`NEXT_PUBLIC_SHORTS_ENABLED=false` 才凍結。首頁 banner 開 |
+| `/shorts`、`/shorts/upload`、`/employer/*` | 短影片／雇主。預設開；`NEXT_PUBLIC_SHORTS_ENABLED=false` 才凍結。首頁 banner 寫死關閉 |
 
 ### 主要 API
 
