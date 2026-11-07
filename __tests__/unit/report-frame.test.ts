@@ -104,10 +104,10 @@ describe('report chrome type scale', () => {
     expect(accountNav).toContain('FunctionRail');
     expect(accountNav).toContain('sampleReportTabClass');
     expect(accountPage).toContain('SAMPLE_RAIL_ROW');
-    expect(report).toContain('FunctionRail');
-    expect(report).toContain('sampleReportTabClass');
-    expect(report).toContain('SAMPLE_RAIL_ROW');
-    expect(report).toContain('hideInnerNav');
+    // Live Guide uses in-slide horizontal tabs (FullReportDashboard), not the left FunctionRail.
+    expect(report).not.toContain('FunctionRail');
+    expect(report).not.toContain('hideInnerNav');
+    expect(report).not.toContain('SAMPLE_RAIL_ROW');
   });
 });
 
@@ -465,7 +465,7 @@ describe('page shell gutters', () => {
     expect(samples).toContain('SAMPLE_RAIL_ROW');
     expect(report).toContain('PAGE_SHELL_GUTTER_LEFT');
     expect(report).toContain('PAGE_SHELL_GUTTER_RIGHT');
-    expect(report).toContain('SAMPLE_RAIL_ROW');
+    expect(report).not.toContain('SAMPLE_RAIL_ROW');
     expect(account).toContain('PAGE_SHELL_GUTTER_LEFT');
     expect(account).toContain('PAGE_SHELL_GUTTER_RIGHT');
     expect(account).toContain('SAMPLE_RAIL_ROW');
