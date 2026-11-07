@@ -8,7 +8,33 @@ import {
   resolveOrderCheckoutPlanType,
 } from '@/constants/checkout-plans';
 
-/** Idempotent post-payment fulfillment. */
+export type FulfillClaimResult = 'fulfilled' | 'idempotent' | 'missing';
+
+function entitlementAmounts(plan: (typeof CHECKOUT_PLANS)[CheckoutPlanType]): {
+  snapshot: number;
+  strategy: number;
+  membershipTier: 'standard_sub' | 'advanced_sub' | null;
+} {
+  if (plan.membershipTier) {
+    const allowance = SUBSCRIPTION_ALLOWANCES[plan.membershipTier];
+    return {
+      snapshot: allowance.job_fit_snapshot,
+      strategy: allowance.interview_strategy_guide,
+      membershipTier: plan.membershipTier,
+    };
+  }
+  return {
+    snapshot: plan.jobFitSnapshotCredits ?? plan.liteCredits ?? 0,
+    strategy: plan.interviewStrategyGuideCredits ?? plan.fullCredits ?? 0,
+    membershipTier: null,
+  };
+}
+
+/**
+ * Idempotent post-payment fulfillment.
+ * Credits + order status flip run in one DB transaction (FOR UPDATE claim)
+ * so paypal-return and webhook cannot both increment.
+ */
 export async function fulfillOrder(
   admin: SupabaseClient,
   orderId: string,
@@ -18,95 +44,180 @@ export async function fulfillOrder(
   externalPaymentId: string | null,
 ): Promise<void> {
   const canonical = normalizeCheckoutPlanType(planType) ?? planType;
+  const plan = CHECKOUT_PLANS[canonical] ?? CHECKOUT_PLANS[planType];
+  if (!plan) {
+    throw new Error(`Unknown plan type: ${planType}`);
+  }
 
+  const { snapshot, strategy, membershipTier } = entitlementAmounts(plan);
+
+  const { data: claimResult, error: claimErr } = await admin.rpc(
+    'claim_and_fulfill_order_entitlements',
+    {
+      p_order_id: orderId,
+      p_user_id: userId,
+      p_job_fit_snapshot: snapshot,
+      p_interview_strategy_guide: strategy,
+      p_membership_tier: membershipTier,
+      p_external_payment_id: externalPaymentId,
+    },
+  );
+
+  if (claimErr) {
+    if (isClaimRpcMissing(claimErr.message)) {
+      console.warn(
+        '[fulfill] claim_and_fulfill_order_entitlements missing — using claim-first legacy path. Apply migration 015.',
+      );
+      await fulfillOrderLegacyClaimFirst(
+        admin,
+        orderId,
+        userId,
+        planType,
+        canonical,
+        reportId,
+        externalPaymentId,
+        snapshot,
+        strategy,
+        membershipTier,
+      );
+      return;
+    }
+    throw new Error(claimErr.message);
+  }
+
+  const result = (typeof claimResult === 'string' ? claimResult : '') as FulfillClaimResult;
+  if (result === 'missing') {
+    throw new Error(`Order not found: ${orderId}`);
+  }
+  if (result === 'idempotent') {
+    return;
+  }
+  if (result !== 'fulfilled') {
+    throw new Error(`Unexpected fulfill claim result: ${String(claimResult)}`);
+  }
+
+  await applyFulfillSideEffects(admin, {
+    canonical,
+    planType,
+    userId,
+    reportId,
+  });
+}
+
+function isClaimRpcMissing(message: string): boolean {
+  return /claim_and_fulfill_order_entitlements|Could not find the function|PGRST202|42883/i.test(
+    message,
+  );
+}
+
+/**
+ * Fallback when migration 015 is not applied yet.
+ * Claims the order (pending → succeeded) before granting credits so concurrent
+ * return+webhook cannot both increment. Prefer the SQL RPC in production.
+ */
+async function fulfillOrderLegacyClaimFirst(
+  admin: SupabaseClient,
+  orderId: string,
+  userId: string,
+  planType: CheckoutPlanType,
+  canonical: CheckoutPlanType,
+  reportId: string | null,
+  externalPaymentId: string | null,
+  snapshot: number,
+  strategy: number,
+  membershipTier: 'standard_sub' | 'advanced_sub' | null,
+): Promise<void> {
   const { data: existing } = await admin
     .from('orders')
     .select('status')
     .eq('id', orderId)
     .maybeSingle();
 
-  if (existing?.status === 'succeeded') {
+  if (!existing) {
+    throw new Error(`Order not found: ${orderId}`);
+  }
+  if (existing.status === 'succeeded') {
     return;
   }
 
-  const plan = CHECKOUT_PLANS[canonical] ?? CHECKOUT_PLANS[planType];
-  if (!plan) {
-    throw new Error(`Unknown plan type: ${planType}`);
-  }
-
-  // Grant entitlements BEFORE marking succeeded so webhook retries can recover.
-  if (plan.membershipTier) {
-    const allowance = SUBSCRIPTION_ALLOWANCES[plan.membershipTier];
-    let { error } = await admin.rpc('increment_profile_credits', {
-      p_user_id: userId,
-      p_job_fit_snapshot: allowance.job_fit_snapshot,
-      p_interview_strategy_guide: allowance.interview_strategy_guide,
-    });
-    if (error) {
-      const retry = await admin.rpc('increment_profile_credits', {
-        p_user_id: userId,
-        p_lite: allowance.job_fit_snapshot,
-        p_full: allowance.interview_strategy_guide,
-      });
-      error = retry.error;
-    }
-    if (error) throw new Error(error.message);
-
-    const { error: tierErr } = await admin
-      .from('profiles')
-      .update({
-        membership_tier: plan.membershipTier,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', userId);
-    if (tierErr) throw new Error(tierErr.message);
-  } else {
-    const snapshot = plan.jobFitSnapshotCredits ?? plan.liteCredits ?? 0;
-    const strategy = plan.interviewStrategyGuideCredits ?? plan.fullCredits ?? 0;
-    if (snapshot || strategy) {
-      let { error } = await admin.rpc('increment_profile_credits', {
-        p_user_id: userId,
-        p_job_fit_snapshot: snapshot,
-        p_interview_strategy_guide: strategy,
-      });
-      if (error) {
-        const retry = await admin.rpc('increment_profile_credits', {
-          p_user_id: userId,
-          p_lite: snapshot,
-          p_full: strategy,
-        });
-        error = retry.error;
-      }
-      if (error) throw new Error(error.message);
-    }
-  }
-
-  if (canonical === 'single_interview_strategy_guide' && reportId) {
-    await admin
-      .from('analysis_reports')
-      .update({ is_premium: true })
-      .eq('id', reportId)
-      .eq('user_id', userId);
-  }
-
-  if (planType === 'basic_overage') {
-    try {
-      await admin.rpc('increment_bonus_credits', { p_user_id: userId, p_amount: 1 });
-    } catch {
-      /* legacy RPC may be absent */
-    }
-  }
-
-  const { error: orderErr } = await admin
+  const { data: claimed, error: claimErr } = await admin
     .from('orders')
     .update({
       status: 'succeeded',
       stripe_payment_intent_id: externalPaymentId,
       updated_at: new Date().toISOString(),
     })
-    .eq('id', orderId);
+    .eq('id', orderId)
+    .eq('status', 'pending')
+    .select('id')
+    .maybeSingle();
 
-  if (orderErr) throw new Error(orderErr.message);
+  if (claimErr) throw new Error(claimErr.message);
+  if (!claimed) {
+    // Lost the race to another fulfiller (or status was not pending).
+    return;
+  }
+
+  if (snapshot || strategy) {
+    let { error } = await admin.rpc('increment_profile_credits', {
+      p_user_id: userId,
+      p_job_fit_snapshot: snapshot,
+      p_interview_strategy_guide: strategy,
+    });
+    if (error) {
+      const retry = await admin.rpc('increment_profile_credits', {
+        p_user_id: userId,
+        p_lite: snapshot,
+        p_full: strategy,
+      });
+      error = retry.error;
+    }
+    if (error) throw new Error(error.message);
+  }
+
+  if (membershipTier) {
+    const { error: tierErr } = await admin
+      .from('profiles')
+      .update({
+        membership_tier: membershipTier,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId);
+    if (tierErr) throw new Error(tierErr.message);
+  }
+
+  await applyFulfillSideEffects(admin, {
+    canonical,
+    planType,
+    userId,
+    reportId,
+  });
+}
+
+async function applyFulfillSideEffects(
+  admin: SupabaseClient,
+  params: {
+    canonical: CheckoutPlanType;
+    planType: CheckoutPlanType;
+    userId: string;
+    reportId: string | null;
+  },
+): Promise<void> {
+  if (params.canonical === 'single_interview_strategy_guide' && params.reportId) {
+    await admin
+      .from('analysis_reports')
+      .update({ is_premium: true })
+      .eq('id', params.reportId)
+      .eq('user_id', params.userId);
+  }
+
+  if (params.planType === 'basic_overage') {
+    try {
+      await admin.rpc('increment_bonus_credits', { p_user_id: params.userId, p_amount: 1 });
+    } catch {
+      /* legacy RPC may be absent */
+    }
+  }
 }
 
 export async function fulfillPaidOrderById(

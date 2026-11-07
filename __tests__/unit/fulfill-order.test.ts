@@ -11,41 +11,17 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 type Call = { op: string; table?: string; payload?: unknown; rpc?: string };
 
-function createFulfillMock(opts: {
-  orderStatus?: string | null;
-  rpcErrorFirst?: boolean;
+function createClaimMock(opts: {
+  /** Results returned by successive claim_and_fulfill_order_entitlements calls */
+  claimResults?: Array<'fulfilled' | 'idempotent' | 'missing' | Error>;
 }) {
   const calls: Call[] = [];
-  let orderSelectDone = false;
+  const results = [...(opts.claimResults ?? ['fulfilled'])];
+  let claimIndex = 0;
 
   const admin = {
     from: (table: string) => {
       const chain: Record<string, unknown> = {};
-      const self = () => chain;
-      chain.select = vi.fn(self);
-      chain.eq = vi.fn(self);
-      chain.maybeSingle = vi.fn(async () => {
-        if (table === 'orders' && !orderSelectDone) {
-          orderSelectDone = true;
-          calls.push({ op: 'select', table });
-          return {
-            data: opts.orderStatus ? { status: opts.orderStatus } : null,
-            error: null,
-          };
-        }
-        return { data: null, error: null };
-      });
-      chain.update = vi.fn((payload: unknown) => {
-        calls.push({ op: 'update', table, payload });
-        return {
-          eq: vi.fn(() => ({
-            eq: vi.fn(async () => ({ error: null })),
-            then: undefined,
-            error: null,
-          })),
-        };
-      });
-      // Make update().eq() awaitable as { error }
       chain.update = vi.fn((payload: unknown) => {
         calls.push({ op: 'update', table, payload });
         const result = Promise.resolve({ error: null });
@@ -59,8 +35,13 @@ function createFulfillMock(opts: {
     },
     rpc: vi.fn(async (name: string, args: unknown) => {
       calls.push({ op: 'rpc', rpc: name, payload: args });
-      if (opts.rpcErrorFirst && calls.filter((c) => c.op === 'rpc').length === 1) {
-        return { error: { message: 'legacy schema' } };
+      if (name === 'claim_and_fulfill_order_entitlements') {
+        const next = results[Math.min(claimIndex, results.length - 1)];
+        claimIndex += 1;
+        if (next instanceof Error) {
+          return { data: null, error: { message: next.message } };
+        }
+        return { data: next, error: null };
       }
       return { error: null };
     }),
@@ -74,43 +55,59 @@ describe('fulfillOrder idempotency', () => {
     vi.clearAllMocks();
   });
 
-  it('no-ops when order already succeeded (does not grant credits twice)', async () => {
-    const { admin, calls } = createFulfillMock({ orderStatus: 'succeeded' });
+  it('no-ops when claim RPC reports idempotent (does not re-touch reports)', async () => {
+    const { admin, calls } = createClaimMock({ claimResults: ['idempotent'] });
     await fulfillOrder(
       admin,
       'order-1',
       'user-1',
       'single_job_fit_snapshot',
-      null,
-      'ls_pay_1',
+      'report-1',
+      'pay_1',
     );
-    expect(calls.filter((c) => c.op === 'rpc')).toHaveLength(0);
-    expect(calls.filter((c) => c.op === 'update' && c.table === 'orders')).toHaveLength(0);
+    expect(calls.filter((c) => c.op === 'rpc')).toHaveLength(1);
+    expect(calls.filter((c) => c.op === 'update')).toHaveLength(0);
   });
 
-  it('grants snapshot credits then marks order succeeded', async () => {
-    const { admin, calls } = createFulfillMock({ orderStatus: 'pending' });
+  it('grants snapshot credits via atomic claim RPC', async () => {
+    const { admin, calls } = createClaimMock({ claimResults: ['fulfilled'] });
     await fulfillOrder(
       admin,
       'order-2',
       'user-2',
       'single_job_fit_snapshot',
       null,
-      'ls_pay_2',
+      'pay_2',
     );
-    const rpc = calls.find((c) => c.op === 'rpc' && c.rpc === 'increment_profile_credits');
-    expect(rpc).toBeTruthy();
+    const rpc = calls.find((c) => c.op === 'rpc' && c.rpc === 'claim_and_fulfill_order_entitlements');
     expect(rpc?.payload).toMatchObject({
+      p_order_id: 'order-2',
       p_user_id: 'user-2',
       p_job_fit_snapshot: 1,
       p_interview_strategy_guide: 0,
+      p_membership_tier: null,
+      p_external_payment_id: 'pay_2',
     });
-    const orderUpdate = calls.find((c) => c.op === 'update' && c.table === 'orders');
-    expect(orderUpdate?.payload).toMatchObject({ status: 'succeeded' });
   });
 
-  it('adds subscription allowance instead of replacing leftover credits', async () => {
-    const { admin, calls } = createFulfillMock({ orderStatus: 'pending' });
+  it('second concurrent fulfill is idempotent — claim RPC only grants once', async () => {
+    const { admin, calls } = createClaimMock({
+      claimResults: ['fulfilled', 'idempotent'],
+    });
+    await fulfillOrder(admin, 'order-race', 'user-race', 'single_job_fit_snapshot', null, 'pay-a');
+    await fulfillOrder(admin, 'order-race', 'user-race', 'single_job_fit_snapshot', null, 'pay-b');
+    const claims = calls.filter(
+      (c) => c.op === 'rpc' && c.rpc === 'claim_and_fulfill_order_entitlements',
+    );
+    expect(claims).toHaveLength(2);
+    expect(claims[0]?.payload).toMatchObject({ p_job_fit_snapshot: 1 });
+    expect(claims[1]?.payload).toMatchObject({ p_job_fit_snapshot: 1 });
+    // Side effects only after first fulfilled — no duplicate report updates here.
+    expect(calls.filter((c) => c.op === 'update')).toHaveLength(0);
+  });
+
+  it('passes subscription allowance + tier into the atomic claim', async () => {
+    const { admin, calls } = createClaimMock({ claimResults: ['fulfilled'] });
     await fulfillOrder(
       admin,
       'order-sub',
@@ -119,24 +116,38 @@ describe('fulfillOrder idempotency', () => {
       null,
       'paypal-sub-1',
     );
-    const rpc = calls.find((c) => c.op === 'rpc' && c.rpc === 'increment_profile_credits');
+    const rpc = calls.find((c) => c.op === 'rpc' && c.rpc === 'claim_and_fulfill_order_entitlements');
     expect(rpc?.payload).toMatchObject({
       p_user_id: 'user-sub',
       p_job_fit_snapshot: 100,
       p_interview_strategy_guide: 15,
+      p_membership_tier: 'advanced_sub',
     });
-    const profileUpdates = calls.filter((c) => c.op === 'update' && c.table === 'profiles');
-    expect(profileUpdates).toHaveLength(1);
-    expect(profileUpdates[0]?.payload).toMatchObject({ membership_tier: 'advanced_sub' });
-    expect(profileUpdates[0]?.payload).not.toHaveProperty('available_job_fit_snapshot_credits');
   });
 
-  it('author_sponsor marks the order paid without granting credits', async () => {
-    const { admin, calls } = createFulfillMock({ orderStatus: 'pending' });
+  it('author_sponsor claims success without credit amounts', async () => {
+    const { admin, calls } = createClaimMock({ claimResults: ['fulfilled'] });
     await fulfillOrder(admin, 'order-tip', 'user-tip', 'author_sponsor', null, 'paypal-tip-1');
-    expect(calls.filter((c) => c.op === 'rpc')).toHaveLength(0);
-    const orderUpdate = calls.find((c) => c.op === 'update' && c.table === 'orders');
-    expect(orderUpdate?.payload).toMatchObject({ status: 'succeeded' });
+    const rpc = calls.find((c) => c.op === 'rpc' && c.rpc === 'claim_and_fulfill_order_entitlements');
+    expect(rpc?.payload).toMatchObject({
+      p_job_fit_snapshot: 0,
+      p_interview_strategy_guide: 0,
+      p_membership_tier: null,
+    });
+  });
+
+  it('marks Guide report premium only after a successful claim', async () => {
+    const { admin, calls } = createClaimMock({ claimResults: ['fulfilled'] });
+    await fulfillOrder(
+      admin,
+      'order-guide',
+      'user-guide',
+      'single_interview_strategy_guide',
+      'report-9',
+      'pay-g',
+    );
+    const reportUpdate = calls.find((c) => c.op === 'update' && c.table === 'analysis_reports');
+    expect(reportUpdate?.payload).toMatchObject({ is_premium: true });
   });
 });
 
