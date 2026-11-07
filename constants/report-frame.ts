@@ -246,6 +246,18 @@ export const PAY_RANGE_LINE_WIDTH = 'w-1/2 mx-auto min-w-0';
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,
  * then scales uniformly to fill the stage width — proportions stay fixed.
  * Narrower canvas → higher CSS zoom (text + images scale together).
- * 1400 = prior 1680 ÷ 1.2 so the slide reads ~20% larger on the same viewport.
+ * 1050 = prior 1400 ÷ ≈1.33 so the slide reads ~33% larger on the same viewport
+ * (closer to a near-full-bleed report frame on large monitors).
  */
-export const REPORT_SLIDE_DESIGN_WIDTH = 1400;
+export const REPORT_SLIDE_DESIGN_WIDTH = 1050;
+
+/**
+ * Tighter horizontal inset for /report (+ samples stage column) so the
+ * zoomed slide can claim more of the viewport than PAGE_SHELL_GUTTER (~4vw).
+ */
+export const REPORT_STAGE_GUTTER =
+  'px-[1vw] sm:px-[1.25vw] lg:px-[1.5vw]';
+export const REPORT_STAGE_GUTTER_LEFT =
+  'pl-[1vw] sm:pl-[1.25vw] lg:pl-[1.5vw]';
+export const REPORT_STAGE_GUTTER_RIGHT =
+  'pr-[1vw] sm:pr-[1.25vw] lg:pr-[1.5vw]';

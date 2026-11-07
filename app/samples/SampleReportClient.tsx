@@ -119,7 +119,7 @@ export default function SampleReportClient() {
         <main className="min-w-0 w-full flex-1">
           <ReportFitStage
             designWidth={REPORT_SLIDE_DESIGN_WIDTH}
-            maxScale={2.4}
+            maxScale={2.8}
             className="w-full"
           >
             {isGuide ? (

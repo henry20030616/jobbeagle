@@ -21,7 +21,7 @@ export function ReportFitStage({
   children,
   className = '',
   designWidth = REPORT_SLIDE_DESIGN_WIDTH,
-  maxScale = 2.4,
+  maxScale = 2.8,
 }: ReportFitStageProps) {
   return (
     <FitStage

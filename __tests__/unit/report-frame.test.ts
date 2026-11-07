@@ -434,7 +434,7 @@ describe('pay-mix legend', () => {
 });
 
 describe('page shell gutters', () => {
-  it('matches homepage left/right vw padding on samples and live report shells', () => {
+  it('matches homepage left/right vw padding on samples; live report uses tighter stage gutters', () => {
     expect(PAGE_SHELL_GUTTER).toBe('px-[3.5vw] sm:px-[4vw] lg:px-[4vw] xl:px-[4.5vw]');
     expect(PAGE_SHELL_GUTTER_LEFT).toBe(
       'pl-[3.5vw] sm:pl-[4vw] lg:pl-[4vw] xl:pl-[4.5vw]',
@@ -444,8 +444,8 @@ describe('page shell gutters', () => {
     );
     expect(REPORT_SHELL_WIDTH).toBe('w-full max-w-full');
     expect(REPORT_SHELL_WIDTH).not.toMatch(/\d+rem/);
-    // 1400 = prior 1680 ÷ 1.2 → ReportFitStage CSS zoom ~20% larger
-    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(1400);
+    // 1050 = prior 1400 ÷ ≈1.33 → ReportFitStage CSS zoom ~33% larger
+    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(1050);
 
     const homepage = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
     const samples = readFileSync(
@@ -463,8 +463,9 @@ describe('page shell gutters', () => {
     expect(samples).toContain('PAGE_SHELL_GUTTER_LEFT');
     expect(samples).toContain('PAGE_SHELL_GUTTER_RIGHT');
     expect(samples).toContain('SAMPLE_RAIL_ROW');
-    expect(report).toContain('PAGE_SHELL_GUTTER_LEFT');
-    expect(report).toContain('PAGE_SHELL_GUTTER_RIGHT');
+    expect(report).toContain('REPORT_STAGE_GUTTER_LEFT');
+    expect(report).toContain('REPORT_STAGE_GUTTER_RIGHT');
+    expect(report).not.toContain('PAGE_SHELL_GUTTER_LEFT');
     expect(report).not.toContain('SAMPLE_RAIL_ROW');
     expect(account).toContain('PAGE_SHELL_GUTTER_LEFT');
     expect(account).toContain('PAGE_SHELL_GUTTER_RIGHT');
