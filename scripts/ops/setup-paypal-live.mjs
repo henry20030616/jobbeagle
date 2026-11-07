@@ -156,7 +156,7 @@ async function main() {
       token,
       subscriptionProductId,
       'JobBeagle Standard',
-      'Standard plan: 100 Fit Snapshots + 5 Interview Guides per month',
+      'Standard plan: 50 Fit Snapshots + 5 Interview Guides per month',
       '19.99'
     );
     console.log(`  ✅ Standard Plan ID: ${standardPlanId}`);
@@ -166,7 +166,7 @@ async function main() {
       token,
       subscriptionProductId,
       'JobBeagle Advanced',
-      'Advanced plan: 300 Fit Snapshots + 15 Interview Guides per month',
+      'Advanced plan: 100 Fit Snapshots + 15 Interview Guides per month',
       '39.99'
     );
     console.log(`  ✅ Advanced Plan ID: ${advancedPlanId}\n`);
@@ -179,7 +179,7 @@ async function main() {
     console.log(`PAYPAL_PLAN_ADVANCED_SUB=${advancedPlanId}\n`);
     console.log('═══════════════════════════════════════════════════════════════\n');
 
-    console.log('⚠️  Note: One-time products ($3 Snapshot / $9.99 Guide) use');
+    console.log('⚠️  Note: One-time products ($9.99 Snapshot / $14.99 Guide) use');
     console.log('   PayPal Checkout API (no pre-created product ID needed).\n');
 
     return { standardPlanId, advancedPlanId };

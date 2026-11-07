@@ -26,7 +26,7 @@ alwaysApply: true
 - **Stripe / Lemon Squeezy:** not the payment path. Do not reintroduce them.
 
 ## Conversion UX
-- Pre-Flight → `QuotaPaywallCard` funnel must stay clear for $3 / $9.99 / $19.99 (100 Snapshot + 5 Guide) / $39.99 (300 Snapshot + 15 Guide).
+- Pre-Flight → `QuotaPaywallCard` funnel must stay clear for $9.99 / $14.99 / $19.99 (50 Snapshot + 5 Guide) / $39.99 (100 Snapshot + 15 Guide).
 - Dual-track cost rules (Snapshot offline / Guide online) override any urge to “just add Search” to free Snapshot.
 
 Role triggers: `@FrontendExpert` (funnel), `@ExtensionExpert` (store review).

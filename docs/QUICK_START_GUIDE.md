@@ -46,7 +46,7 @@ JobBeagle 是一個 **AI 驅動的職缺分析工具**，幫助求職者：
 
 ### 🔷 Job Fit Snapshot（匹配快照）
 
-**價格：** $3 / 次（或訂閱方案包含）
+**價格：** $9.99 / 次（或訂閱方案包含）
 
 **內容：**
 - 適配分數（0-100 分）
@@ -63,7 +63,7 @@ JobBeagle 是一個 **AI 驅動的職缺分析工具**，幫助求職者：
 
 ### 🔶 Interview Strategy Guide（面試策略指南）
 
-**價格：** $9.99 / 次（或訂閱方案包含）
+**價格：** $14.99 / 次（或訂閱方案包含）
 
 **內容：**
 - 包含完整 Snapshot 內容
@@ -82,12 +82,12 @@ JobBeagle 是一個 **AI 驅動的職缺分析工具**，幫助求職者：
 ## 💳 訂閱方案
 
 ### 🥈 Standard - $19.99/月
-- 100 次 Job Fit Snapshot
+- 50 次 Job Fit Snapshot
 - 5 次 Interview Strategy Guide
 - 自動續訂，隨時取消
 
 ### 🥇 Advanced - $39.99/月
-- 300 次 Job Fit Snapshot
+- 100 次 Job Fit Snapshot
 - 15 次 Interview Strategy Guide
 - 自動續訂，隨時取消
 

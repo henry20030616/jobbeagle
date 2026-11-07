@@ -167,7 +167,7 @@ describe('report-compare', () => {
     expect(resume?.guide.text['zh-TW']).toContain('調整建議');
   });
 
-  it('keeps $3 / $9.99 in separate Snapshot and Guide cells', () => {
+  it('keeps $9.99 / $14.99 in separate Snapshot and Guide cells', () => {
     const html = renderToStaticMarkup(
       createElement(ReportCompareTable, {
         language: 'zh-TW',
@@ -186,8 +186,8 @@ describe('report-compare', () => {
     expect(html).toContain('compare-row-label text-base sm:text-lg font-medium');
     expect(html).toContain('compare-col-snapshot');
     expect(html).toContain('compare-col-guide');
-    expect(html).toMatch(/compare-col-snapshot[\s\S]*?\$3/);
-    expect(html).toMatch(/compare-col-guide[\s\S]*?\$9\.99/);
-    expect(html).not.toMatch(/\$3\s*\$9\.99/);
+    expect(html).toMatch(/compare-col-snapshot[\s\S]*?\$9\.99/);
+    expect(html).toMatch(/compare-col-guide[\s\S]*?\$14\.99/);
+    expect(html).not.toMatch(/\$9\.99\s*\$14\.99/);
   });
 });

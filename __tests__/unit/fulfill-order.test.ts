@@ -115,7 +115,7 @@ describe('fulfillOrder idempotency', () => {
     const rpc = calls.find((c) => c.op === 'rpc' && c.rpc === 'increment_profile_credits');
     expect(rpc?.payload).toMatchObject({
       p_user_id: 'user-sub',
-      p_job_fit_snapshot: 300,
+      p_job_fit_snapshot: 100,
       p_interview_strategy_guide: 15,
     });
     const profileUpdates = calls.filter((c) => c.op === 'update' && c.table === 'profiles');
@@ -150,7 +150,7 @@ describe('fulfillSubscriptionRenewal', () => {
     await fulfillSubscriptionRenewal(admin, 'user-sub', 'standard_sub');
     expect(updates[0]).toMatchObject({
       membership_tier: 'standard_sub',
-      available_job_fit_snapshot_credits: 100,
+      available_job_fit_snapshot_credits: 50,
       available_interview_strategy_guide_credits: 5,
     });
   });

@@ -15,7 +15,7 @@ const COPY = {
     alert: 'Hidden Risks Detected',
     message:
       'System has identified 2 potential ATS auto-reject triggers and untapped salary negotiation leverage.',
-    unlock: 'Unlock Interview Guide — $9.99',
+    unlock: 'Unlock Interview Guide — $14.99',
     features: [
       '20 interview questions with source links and resume-grounded answers',
       'Your pay landing plus base, equity, and bonus',
@@ -26,7 +26,7 @@ const COPY = {
   'zh-TW': {
     alert: '偵測到隱性風險',
     message: '系統已偵測到 2 項可能導致 ATS 秒刷的隱性要求，與潛在的談薪溢價空間。',
-    unlock: '解鎖完整面試指南 — $9.99',
+    unlock: '解鎖完整面試指南 — $14.99',
     features: [
       '20 題附來源的面試題，答法只引用履歷',
       '個人落點，以及底薪、股票、獎金拆解',
@@ -37,7 +37,7 @@ const COPY = {
   'zh-CN': {
     alert: '检测到隐性风险',
     message: '系统已检测到 2 项可能导致 ATS 秒刷的隐性要求，与潜在的谈薪溢价空间。',
-    unlock: '解锁完整面试指南 — $9.99',
+    unlock: '解锁完整面试指南 — $14.99',
     features: [
       '20 题附来源的面试题，答法只引用简历',
       '个人落点，以及底薪、股票、奖金拆解',
@@ -49,7 +49,7 @@ const COPY = {
 
 /**
  * Curiosity Gap Paywall — Frosted Glass overlay at bottom of Snapshot
- * Teases hidden insights to drive upgrade from free Snapshot → $9.99 Guide
+ * Teases hidden insights to drive upgrade from free Snapshot → $14.99 Guide
  */
 export default function CuriosityGapPaywall({
   language = 'en',

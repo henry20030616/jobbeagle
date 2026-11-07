@@ -9,8 +9,8 @@ import {
 
 describe('checkout plans (Unified Master Spec 2026)', () => {
   it('defines canonical pricing plans', () => {
-    expect(CHECKOUT_PLANS.single_job_fit_snapshot.amountCents).toBe(300);
-    expect(CHECKOUT_PLANS.single_interview_strategy_guide.amountCents).toBe(999);
+    expect(CHECKOUT_PLANS.single_job_fit_snapshot.amountCents).toBe(999);
+    expect(CHECKOUT_PLANS.single_interview_strategy_guide.amountCents).toBe(1499);
     expect(CHECKOUT_PLANS.standard_subscription.amountCents).toBe(1999);
     expect(CHECKOUT_PLANS.advanced_subscription.amountCents).toBe(3999);
   });
@@ -51,9 +51,9 @@ describe('checkout plans (Unified Master Spec 2026)', () => {
   });
 
   it('subscription plans grant snapshot and strategy credits', () => {
-    expect(CHECKOUT_PLANS.standard_subscription.jobFitSnapshotCredits).toBe(100);
+    expect(CHECKOUT_PLANS.standard_subscription.jobFitSnapshotCredits).toBe(50);
     expect(CHECKOUT_PLANS.standard_subscription.interviewStrategyGuideCredits).toBe(5);
-    expect(CHECKOUT_PLANS.advanced_subscription.jobFitSnapshotCredits).toBe(300);
+    expect(CHECKOUT_PLANS.advanced_subscription.jobFitSnapshotCredits).toBe(100);
     expect(CHECKOUT_PLANS.advanced_subscription.interviewStrategyGuideCredits).toBe(15);
   });
 });

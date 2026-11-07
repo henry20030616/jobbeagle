@@ -15,11 +15,11 @@ const apiBase =
 const PLAN_COPY = {
   PAYPAL_PLAN_STANDARD_SUB: {
     name: 'JobBeagle Standard',
-    description: 'Standard plan: 100 Fit Snapshots + 5 Interview Guides per month',
+    description: 'Standard plan: 50 Fit Snapshots + 5 Interview Guides per month',
   },
   PAYPAL_PLAN_ADVANCED_SUB: {
     name: 'JobBeagle Advanced',
-    description: 'Advanced plan: 300 Fit Snapshots + 15 Interview Guides per month',
+    description: 'Advanced plan: 100 Fit Snapshots + 15 Interview Guides per month',
   },
 };
 

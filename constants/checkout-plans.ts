@@ -1,6 +1,11 @@
 /**
  * Checkout plans — PayPal
  * Canonical plan codes use Fit Snapshot / Interview Guide terminology.
+ *
+ * US pricing (2026-11): Snapshot $9.99 · Guide $14.99 ·
+ * Standard $19.99/mo (50+5) · Advanced $39.99/mo (100+15).
+ * Subscription dollar amounts on PayPal Billing Plans must match these figures
+ * in the PayPal dashboard (`PAYPAL_PLAN_STANDARD_SUB` / `PAYPAL_PLAN_ADVANCED_SUB`).
  */
 
 export type CheckoutPlanType =
@@ -39,44 +44,44 @@ function withCreditAliases<T extends CheckoutPlan>(plan: T): T {
 export const CHECKOUT_PLANS: Record<CheckoutPlanType, CheckoutPlan> = {
   single_job_fit_snapshot: withCreditAliases({
     type: 'single_job_fit_snapshot',
-    amountCents: 300,
-    labelEn: 'Fit Snapshot — $3',
-    labelZhTW: '適配快照 — $3',
+    amountCents: 999,
+    labelEn: 'Fit Snapshot — $9.99',
+    labelZhTW: '適配快照 — $9.99',
     jobFitSnapshotCredits: 1,
     isSubscription: false,
   }),
   single_interview_strategy_guide: withCreditAliases({
     type: 'single_interview_strategy_guide',
-    amountCents: 999,
-    labelEn: 'Interview Guide — $9.99',
-    labelZhTW: '面試指南 — $9.99',
+    amountCents: 1499,
+    labelEn: 'Interview Guide — $14.99',
+    labelZhTW: '面試指南 — $14.99',
     interviewStrategyGuideCredits: 1,
     isSubscription: false,
   }),
   /** @deprecated alias → single_job_fit_snapshot */
   single_lite: withCreditAliases({
     type: 'single_lite',
-    amountCents: 300,
-    labelEn: 'Fit Snapshot — $3',
-    labelZhTW: '適配快照 — $3',
+    amountCents: 999,
+    labelEn: 'Fit Snapshot — $9.99',
+    labelZhTW: '適配快照 — $9.99',
     jobFitSnapshotCredits: 1,
     isSubscription: false,
   }),
   /** @deprecated alias → single_interview_strategy_guide */
   single_full: withCreditAliases({
     type: 'single_full',
-    amountCents: 999,
-    labelEn: 'Interview Guide — $9.99',
-    labelZhTW: '面試指南 — $9.99',
+    amountCents: 1499,
+    labelEn: 'Interview Guide — $14.99',
+    labelZhTW: '面試指南 — $14.99',
     interviewStrategyGuideCredits: 1,
     isSubscription: false,
   }),
   standard_subscription: withCreditAliases({
     type: 'standard_subscription',
     amountCents: 1999,
-    labelEn: 'Standard — $19.99/mo (100 Fit Snapshot + 5 Interview Guide)',
-    labelZhTW: '標準版 — $19.99/月（100 次適配快照 + 5 次面試指南）',
-    jobFitSnapshotCredits: 100,
+    labelEn: 'Standard — $19.99/mo (50 Fit Snapshot + 5 Interview Guide)',
+    labelZhTW: '標準版 — $19.99/月（50 次適配快照 + 5 次面試指南）',
+    jobFitSnapshotCredits: 50,
     interviewStrategyGuideCredits: 5,
     membershipTier: 'standard_sub',
     isSubscription: true,
@@ -84,18 +89,18 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanType, CheckoutPlan> = {
   advanced_subscription: withCreditAliases({
     type: 'advanced_subscription',
     amountCents: 3999,
-    labelEn: 'Advanced — $39.99/mo (300 Fit Snapshot + 15 Interview Guide)',
-    labelZhTW: '高級版 — $39.99/月（300 次適配快照 + 15 次面試指南）',
-    jobFitSnapshotCredits: 300,
+    labelEn: 'Advanced — $39.99/mo (100 Fit Snapshot + 15 Interview Guide)',
+    labelZhTW: '高級版 — $39.99/月（100 次適配快照 + 15 次面試指南）',
+    jobFitSnapshotCredits: 100,
     interviewStrategyGuideCredits: 15,
     membershipTier: 'advanced_sub',
     isSubscription: true,
   }),
   basic_overage: withCreditAliases({
     type: 'basic_overage',
-    amountCents: 300,
-    labelEn: 'Extra Fit Snapshot — $3',
-    labelZhTW: '加購適配快照 — $3',
+    amountCents: 999,
+    labelEn: 'Extra Fit Snapshot — $9.99',
+    labelZhTW: '加購適配快照 — $9.99',
     jobFitSnapshotCredits: 1,
     isSubscription: false,
   }),
@@ -131,8 +136,8 @@ export function isCheckoutPlanType(value: string): value is CheckoutPlanType {
 }
 
 export const SUBSCRIPTION_ALLOWANCES = {
-  standard_sub: { job_fit_snapshot: 100, interview_strategy_guide: 5 },
-  advanced_sub: { job_fit_snapshot: 300, interview_strategy_guide: 15 },
+  standard_sub: { job_fit_snapshot: 50, interview_strategy_guide: 5 },
+  advanced_sub: { job_fit_snapshot: 100, interview_strategy_guide: 15 },
 } as const;
 
 /** PayPal USD one-time orders: $0.50 avoids many card-minimum failures. */

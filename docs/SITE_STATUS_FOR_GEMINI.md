@@ -109,7 +109,7 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 | 薪酬區間＋個人落點 | 區間＋預測落點 | 區間＋落點＋談判槓桿 |
 | 面試／STAR | 約 3 個預測開場 | 完整 playbook＋STAR 大綱 |
 | 即時網搜、招募情報、疑慮答辯、談薪腳本、錄取論點 | 無（或僅 JD+履歷） | 有 |
-| 單次價格 | $3 | $9.99 |
+| 單次價格 | $9.99 | $14.99 |
 
 ---
 
@@ -123,7 +123,7 @@ JobBeagle **不是履歷教練**。Snapshot 的分數說明只解釋匹配／不
 | 使用者要的結論 | 要不要投：分數、Apply Decision、五維、薪酬粗估 | 怎麼面、怎麼談；內含完整 Snapshot |
 | 薪酬 | 閉卷估計 | 開卷薪酬 + 證據層級標籤 |
 | 引用 | 不要求網址 | 引用的網頁聲明要有出處；後端驗 URL |
-| 單價 | $3 | $9.99 |
+| 單價 | $9.99 | $14.99 |
 | 額度池 | Snapshot credits（分開扣） | Guide credits（分開扣） |
 
 定義：`constants/models.ts`。分析：`lib/gemini-analyze.ts`。Prompt：`lib/prompts/`。
@@ -205,16 +205,16 @@ Stripe、Lemon Squeezy、Paddle **都不是現在的收款路徑**。不要建�
 
 | 方案 | 價格 | 內容 |
 |------|------|------|
-| 單次 Snapshot | $3 | +1 Snapshot |
-| 單次 Guide | $9.99 | +1 Guide |
-| Standard 月訂 | $19.99 | 100 Snapshot + 5 Guide |
-| Advanced 月訂 | $39.99 | 300 Snapshot + 15 Guide |
+| 單次 Snapshot | $9.99 | +1 Snapshot |
+| 單次 Guide | $14.99 | +1 Guide |
+| Standard 月訂 | $19.99 | 50 Snapshot + 5 Guide |
+| Advanced 月訂 | $39.99 | 100 Snapshot + 15 Guide |
 
 付費牆元件：`QuotaPaywallCard`。這四個價格必須在漏斗裡講清楚。程式裡正在賣的方案是 `ACTIVE_CHECKOUT_PLAN_TYPES` 這四檔。
 
 推薦：`?ref=`。好友達成條件後發獎勵。
 
-同價舊名會對到現在的 $3 / $9.99。$4.99 與 $8.99 已從結帳方案拿掉。`author_sponsor` 是帳戶頁小費，不加點數，也不在 `ACTIVE_CHECKOUT_PLAN_TYPES`。**對外漏斗以上面四檔為準**。訂閱要對到 PayPal plan id：`PAYPAL_PLAN_STANDARD_SUB`、`PAYPAL_PLAN_ADVANCED_SUB`。
+同價舊名會對到現在的 $9.99 / $14.99。$4.99 與 $8.99 已從結帳方案拿掉。`author_sponsor` 是帳戶頁小費，不加點數，也不在 `ACTIVE_CHECKOUT_PLAN_TYPES`。**對外漏斗以上面四檔為準**。訂閱要對到 PayPal plan id：`PAYPAL_PLAN_STANDARD_SUB`、`PAYPAL_PLAN_ADVANCED_SUB`。
 
 ---
 

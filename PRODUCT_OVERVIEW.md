@@ -96,7 +96,7 @@ DB／API code 維持舊值，以免弄壞額度與訂單。正在賣的方案代
 - 視窗外緣與框內都有留白；左右比上下更寬
 - Fit Snapshot 欄靠右，靠近 Interview Guide
 - 有的功能：綠色勾在文字前面、垂直置中、大小跟字一樣，後面不要破折號。沒有的功能仍用「—」
-- 單次價：$3 / $9.99
+- 單次價：$9.99 / $14.99
 
 ### 4.3 兩種報告
 
@@ -106,7 +106,7 @@ DB／API code 維持舊值，以免弄壞額度與訂單。正在賣的方案代
 | 網路 | 禁止 Search | Google Search grounding 可以 |
 | 結論 | 要不要投：分數、Apply Decision、五維、閉卷薪酬粗估 | 怎麼面、怎麼談；內含完整 Snapshot |
 | 引用 | 不要求網址 | 網頁聲明要有出處；後端驗 URL |
-| 單價 | $3 | $9.99 |
+| 單價 | $9.99 | $14.99 |
 | 額度 | Snapshot credits | Guide credits（分開扣） |
 
 定義：`constants/models.ts`。分析：`lib/gemini-analyze.ts`。
@@ -181,12 +181,12 @@ Stripe、Lemon Squeezy、Paddle **不是現在的收款路徑**。程式裡已�
 
 | 方案 code | 價格 | 內容 |
 |-----------|------|------|
-| `single_job_fit_snapshot` | $3 | +1 Snapshot |
-| `single_interview_strategy_guide` | $9.99 | +1 Guide |
-| `standard_subscription` | $19.99/月 | 100 Snapshot + 5 Guide |
-| `advanced_subscription` | $39.99/月 | 300 Snapshot + 15 Guide |
+| `single_job_fit_snapshot` | $9.99 | +1 Snapshot |
+| `single_interview_strategy_guide` | $14.99 | +1 Guide |
+| `standard_subscription` | $19.99/月 | 50 Snapshot + 5 Guide |
+| `advanced_subscription` | $39.99/月 | 100 Snapshot + 15 Guide |
 
-同價舊名 `single_lite`、`single_full`、`basic_overage` 會對到現在的 $3 / $9.99，不再另開一檔。$4.99 與 $8.99 已從結帳方案拿掉。`author_sponsor` 是帳戶頁小費，不進這四檔、不加點數。對外漏斗只講上面四檔。
+同價舊名 `single_lite`、`single_full`、`basic_overage` 會對到現在的 $9.99 / $14.99，不再另開一檔。$4.99 與 $8.99 已從結帳方案拿掉。`author_sponsor` 是帳戶頁小費，不進這四檔、不加點數。對外漏斗只講上面四檔。
 
 推薦：`?ref=`。
 
@@ -307,4 +307,4 @@ Next.js on Vercel
 
 ## 13. 現況總結
 
-JobBeagle 是已上線的 **Next.js 15 + Supabase + Gemini + PayPal** 求職分析站。核心是額度制 **Fit Snapshot**（Flash-Lite、不上網、$3、免費終身 3 次）與 **Interview Guide**（Pro + Search、$9.99、起始 0 次），另有 $19.99／$39.99 月訂。外掛 **1.3.2 已在 Chrome Web Store**，抓完 JD 開首頁 `/?sid=`。Shorts 預設關閉。
+JobBeagle 是已上線的 **Next.js 15 + Supabase + Gemini + PayPal** 求職分析站。核心是額度制 **Fit Snapshot**（Flash-Lite、不上網、$9.99、免費終身 3 次）與 **Interview Guide**（Pro + Search、$14.99、起始 0 次），另有 $19.99／$39.99 月訂（50+5／100+15）。外掛 **1.3.2 已在 Chrome Web Store**，抓完 JD 開首頁 `/?sid=`。Shorts 預設關閉。
