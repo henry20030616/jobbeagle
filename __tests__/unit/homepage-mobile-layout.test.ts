@@ -13,8 +13,10 @@ describe('homepage mobile layout guards', () => {
     const home = read('app/page.tsx');
 
     expect(wrapper).toContain('InputFormMobile');
-    expect(wrapper).toMatch(/className="hidden min-h-0 lg:flex lg:flex-1 lg:flex-col"/);
-    expect(wrapper).toMatch(/className="block lg:hidden"/);
+    expect(wrapper).toContain('jb-desktop-only');
+    expect(wrapper).toContain('jb-mobile-only');
+    expect(wrapper).not.toMatch(/lg:flex lg:flex-1 lg:flex-col/);
+    expect(wrapper).not.toMatch(/lg:hidden/);
     expect(wrapper).toMatch(/<InputForm \{\.\.\.props\} \/>/);
     expect(wrapper).toMatch(/<InputFormMobile \{\.\.\.props\} \/>/);
 

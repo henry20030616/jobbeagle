@@ -1,14 +1,14 @@
 'use client';
 
 /**
- * InputFormWrapper - Responsive switcher between desktop and mobile forms
- * 
- * Breakpoint: lg (1024px)
- * - Desktop (≥1024px): uses InputForm (original)
- * - Mobile (<1024px): uses InputFormMobile (optimized)
- * 
- * This component is a pure UI switch with no logic.
- * All props are passed through to both child components.
+ * InputFormWrapper — desktop vs mobile form switch.
+ *
+ * Desktop requires BOTH min-width 1024px AND min-height 700px
+ * (`DESKTOP_LAYOUT_MEDIA` in constants/desktop-layout.ts). Phone landscape
+ * often has width ≥1024 with a short height; keeping the mobile form there
+ * prevents the 4-col desktop layout from "breaking" after rotate.
+ *
+ * Visibility is CSS-driven (`.jb-desktop-only` / `.jb-mobile-only` in globals.css).
  */
 
 import React from 'react';
@@ -19,13 +19,10 @@ import type { InputFormProps } from '@/components/InputFormMobile';
 const InputFormWrapper: React.FC<InputFormProps> = (props) => {
   return (
     <>
-      {/* Desktop version: ≥1024px (lg+) */}
-      <div className="hidden min-h-0 lg:flex lg:flex-1 lg:flex-col">
+      <div className="jb-desktop-only min-h-0 flex-1 flex-col">
         <InputForm {...props} />
       </div>
-      
-      {/* Mobile version: <1024px */}
-      <div className="block lg:hidden">
+      <div className="jb-mobile-only">
         <InputFormMobile {...props} />
       </div>
     </>

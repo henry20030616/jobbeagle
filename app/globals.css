@@ -231,11 +231,57 @@ main input {
 }
 
 /*
+ * Desktop vs phone form switch (InputFormWrapper).
+ * Phone landscape often has width ≥1024 with height ~350–450 — keep mobile.
+ * Keep in sync with constants/desktop-layout.ts DESKTOP_LAYOUT_MEDIA.
+ */
+.jb-desktop-only {
+  display: none;
+}
+.jb-mobile-only {
+  display: block;
+}
+@media (min-width: 1024px) and (min-height: 700px) {
+  .jb-desktop-only {
+    display: flex;
+  }
+  .jb-mobile-only {
+    display: none;
+  }
+}
+
+/*
+ * Phone landscape still matches Tailwind `lg:` (width-only). Cap header chrome
+ * so History / login buttons do not jump to desktop 4rem height on a ~400px tall screen.
+ */
+@media (min-width: 1024px) and (max-height: 699px) {
+  .homepage-font-large .homepage-header-controls .lg\:h-16 {
+    height: 2.5rem !important;
+  }
+  .homepage-font-large .homepage-header-controls .lg\:w-7,
+  .homepage-font-large .homepage-header-controls .lg\:h-7 {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+  .homepage-font-large .homepage-header-controls .lg\:gap-2\.5 {
+    gap: 0.375rem !important;
+  }
+  .homepage-font-large .homepage-header-controls .lg\:px-5 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  .homepage-font-large .homepage-header-controls .lg\:gap-3 {
+    gap: 0.5rem !important;
+  }
+}
+
+/*
  * Desktop homepage type — hero / UI / step / chrome.
  * Header, features, and footer use the same scale as the operator.
  * Homepage referral type is 80% of that scale (see .homepage-referral).
+ * Also gated on min-height so phone landscape does not get 3–4rem type.
  */
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (min-height: 700px) {
   .homepage-font-large {
     --type-hero: 4rem;
     --type-ui: 2.75rem;
@@ -585,7 +631,7 @@ button.launch-submit:disabled,
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (min-height: 700px) {
   .account-font-large {
     --type-ui: 2.75rem;
     --type-step: 3.75rem;

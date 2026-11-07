@@ -129,14 +129,31 @@ export function FitStage({
       }
     };
 
+    let orientTimer: ReturnType<typeof setTimeout> | null = null;
+    const updateSoon = () => {
+      // iOS fires orientationchange before layout settles — remeasure twice.
+      update();
+      if (orientTimer) clearTimeout(orientTimer);
+      orientTimer = setTimeout(() => {
+        update();
+        requestAnimationFrame(update);
+      }, 120);
+    };
+
     update();
     const ro = new ResizeObserver(update);
     ro.observe(outer);
     if (outer.parentElement) ro.observe(outer.parentElement);
     window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', updateSoon);
+    const vv = typeof window !== 'undefined' ? window.visualViewport : null;
+    vv?.addEventListener('resize', update);
     return () => {
       ro.disconnect();
       window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', updateSoon);
+      vv?.removeEventListener('resize', update);
+      if (orientTimer) clearTimeout(orientTimer);
       if (publishZoomVar) {
         document.documentElement.style.removeProperty(FIT_ZOOM_CSS_VAR);
       }
