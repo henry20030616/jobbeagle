@@ -44,6 +44,47 @@ const ANALYZE_LABEL: Record<AppLanguage, string> = {
   ar: 'حلّل الآن بالذكاء الاصطناعي',
 };
 
+/** Sample rail notice — spell out Snapshot vs Guide pay / depth gap. */
+const SAMPLE_NOTICE_BLURB: Record<
+  AppLanguage,
+  { snapshot: string; guide: string }
+> = {
+  en: {
+    snapshot:
+      'Sample Fit Snapshot: fast apply triage with a market pay band (title / location / level) — not your personal landing.',
+    guide:
+      'Sample Interview Guide: deeper analysis with live web search, plus a more accurate personal pay landing and TC split than the Snapshot market band.',
+  },
+  'zh-TW': {
+    snapshot: '適配快照範例：快速應徵分流，含市場薪資區間（職稱／地點／年資）——非個人精準落點。',
+    guide:
+      '面試指南範例：更強模型＋即時網搜的更深分析，個人薪資落點與 TC 拆解比適配快照市場區間更準。',
+  },
+  'zh-CN': {
+    snapshot: '适配快照范例：快速应征分流，含市场薪资区间（职称／地点／年资）——非个人精准落点。',
+    guide:
+      '面试指南范例：更强模型＋即时网搜的更深分析，个人薪资落点与 TC 拆解比适配快照市场区间更准。',
+  },
+  es: {
+    snapshot:
+      'Muestra Fit Snapshot: cribado rápido con franja de mercado (título / ubicación / nivel) — no tu aterrizaje personal.',
+    guide:
+      'Muestra Interview Guide: análisis más profundo con búsqueda web, y aterrizaje salarial personal + TC más preciso que la franja del Snapshot.',
+  },
+  hi: {
+    snapshot:
+      'Fit Snapshot नमूना: तेज़ ट्राइएज और बाज़ार वेतन बैंड (शीर्षक / स्थान / स्तर) — व्यक्तिगत लैंडिंग नहीं।',
+    guide:
+      'Interview Guide नमूना: लाइव वेब सर्च से गहरा विश्लेषण, Snapshot बाज़ार बैंड से ज़्यादा सटीक व्यक्तिगत वेतन लैंडिंग + TC।',
+  },
+  ar: {
+    snapshot:
+      'عينة Fit Snapshot: فرز سريع مع نطاق سوق (مسمى / موقع / مستوى) — ليس هبوطك الشخصي.',
+    guide:
+      'عينة Interview Guide: تحليل أعمق ببحث ويب مباشر، وهبوط راتب شخصي + TC أدق من نطاق سوق Snapshot.',
+  },
+};
+
 export default function SampleReportClient() {
   const searchParams = useSearchParams();
   const { language } = useLanguage();
@@ -87,6 +128,11 @@ export default function SampleReportClient() {
           >
             <p className={`${SAMPLE_RAIL_TEXT} text-slate-100`}>
               {isGuide ? guideLabel : snapshotLabel}
+            </p>
+            <p className="text-base leading-snug text-slate-300">
+              {(SAMPLE_NOTICE_BLURB[language] ?? SAMPLE_NOTICE_BLURB.en)[
+                isGuide ? 'guide' : 'snapshot'
+              ]}
             </p>
             <Link
               href="/"

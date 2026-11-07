@@ -27,6 +27,9 @@ describe('report-compare', () => {
   it('explains why Pro / deep report matters', () => {
     expect(REPORT_COMPARE_WHY_PRO.bullets.length).toBeGreaterThanOrEqual(3);
     expect(REPORT_COMPARE_WHY_PRO.title.en).toMatch(/professional/i);
+    expect(REPORT_COMPARE_WHY_PRO.bullets.some((b) => /more accurate pay|薪資更準|薪资更准/i.test(b.en + b['zh-TW']))).toBe(
+      true,
+    );
   });
 
   it('puts Best for first, then shared (stars) → guide-only → price', () => {

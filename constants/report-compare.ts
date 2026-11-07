@@ -60,16 +60,16 @@ export const REPORT_COMPARE_SUBTITLE_LINES: Record<
   readonly [string, string]
 > = {
   en: [
-    'Fit Snapshot: decide whether to apply.',
-    'Interview Guide: how to interview and negotiate — includes the Snapshot.',
+    'Fit Snapshot: decide whether to apply — market pay band only.',
+    'Interview Guide: deeper analysis + a more accurate personal pay landing — includes the Snapshot.',
   ],
   'zh-TW': [
-    '適配快照：決定要不要投。',
-    '面試指南：怎麼面、怎麼談——含完整適配快照。',
+    '適配快照：決定要不要投——僅市場薪資區間。',
+    '面試指南：更專業的分析＋更準的個人薪資落點——含完整適配快照。',
   ],
   'zh-CN': [
-    '适配快照：决定要不要投。',
-    '面试指南：怎么面、怎么谈——含完整适配快照。',
+    '适配快照：决定要不要投——仅市场薪资区间。',
+    '面试指南：更专业的分析＋更准的个人薪资落点——含完整适配快照。',
   ],
 };
 
@@ -102,14 +102,14 @@ export const REPORT_COMPARE_WHY_PRO: {
       'zh-CN': '即时网搜：公司评价、裁员与 H-1B 信号、20 题面试题、薪资贴文——尽量附网址＋日期。',
     },
     {
-      en: 'Depth = usable scripts: a TC split, answers grounded in YOUR resume, and a headhunter script for pay and benefits.',
-      'zh-TW': '深度＝可照做：TC 拆解、依你履歷的答法、獵頭級薪資與福利說法。',
-      'zh-CN': '深度＝可照做：TC 拆解、依你简历的答法、猎头级薪资与福利说法。',
+      en: 'More accurate pay: live public salary pages → your personal landing, TC split, and negotiation script — tighter than the Snapshot market band.',
+      'zh-TW': '薪資更準：網搜公開薪酬頁 → 個人落點、TC 拆解與談薪說法——比適配快照的市場區間更精準。',
+      'zh-CN': '薪资更准：网搜公开薪酬页 → 个人落点、TC 拆解与谈薪说法——比适配快照的市场区间更精准。',
     },
     {
-      en: 'Fit Snapshot is triage speed; Interview Guide is prep when this role is worth the fight.',
-      'zh-TW': '適配快照是快速分流；面試指南是這間值得拚時的備戰。',
-      'zh-CN': '适配快照是快速分流；面试指南是这家值得拼时的备战。',
+      en: 'Fit Snapshot is triage speed; Interview Guide is deeper prep when this role is worth the fight.',
+      'zh-TW': '適配快照是快速分流；面試指南是這間值得拚時更深的備戰。',
+      'zh-CN': '适配快照是快速分流；面试指南是这家值得拼时更深的备战。',
     },
   ],
 };
@@ -288,9 +288,9 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       'zh-CN': '个人薪资落点',
     },
     help: help(
-      'Where you are likely to land, with a base / equity / bonus split, a ceiling, and company vs candidate stance. Uses live public pay pages when search finds them.',
-      '你比較可能落到的總薪酬，含底薪／股票／獎金、議價上限，以及公司與求職者立場。有公開薪酬頁時會附來源。',
-      '你比较可能落到的总薪酬，含底薪／股票／奖金、议价上限，以及公司与求职者立场。有公开薪酬页时会附来源。',
+      'More accurate than the Snapshot market band: where YOU are likely to land, with base / equity / bonus, a ceiling, and company vs candidate stance — from live public pay pages when search finds them.',
+      '比適配快照市場區間更準：你比較可能落到的總薪酬，含底薪／股票／獎金、議價上限，以及雙方立場——有公開薪酬頁時附來源。',
+      '比适配快照市场区间更准：你比较可能落到的总薪酬，含底薪／股票／奖金、议价上限，以及双方立场——有公开薪酬页时附来源。',
     ),
     snapshot: t('—', '—', '—'),
     guide: t('Landing, TC split, stances', '落點、TC 拆解、雙方立場', '落点、TC 拆解、双方立场', 5),

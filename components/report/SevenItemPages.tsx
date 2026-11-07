@@ -294,8 +294,8 @@ function itemCopy(language: AppLanguage): ItemCopy {
       resumeAdvice: resumeAdviceTitle(language),
       apply: s ? '应征建议' : '應徵建議',
       lockPay: s
-        ? '（🔒 升级 Interview Guide 可解锁个人化精准落点与 TC 结构拆解）'
-        : '（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）',
+        ? '（🔒 升级 Interview Guide：更专业分析 + 比市场区间更准的个人落点与 TC 拆解）'
+        : '（🔒 升級 Interview Guide：更專業分析 + 比市場區間更準的個人落點與 TC 拆解）',
       lockRewrite: s
         ? '（🔒 升级 Interview Guide 可解锁对应调整建议）'
         : '（🔒 升級 Interview Guide 可解鎖對應調整建議）',
@@ -379,7 +379,7 @@ function itemCopy(language: AppLanguage): ItemCopy {
     rewriteDirection: rewriteDirectionTitle(language),
     resumeAdvice: resumeAdviceTitle(language),
     apply: 'Apply advice',
-    lockPay: '(🔒 Upgrade to Interview Guide for your pay landing and TC split)',
+    lockPay: '(🔒 Upgrade to Interview Guide: deeper analysis + a more accurate personal pay landing & TC split)',
     lockRewrite: '(🔒 Upgrade to Interview Guide to unlock matching adjustment advice)',
     target: 'Personal target compensation',
     ceiling: 'Ceiling',

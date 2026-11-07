@@ -15,10 +15,10 @@ const COPY = {
     alert: 'Hidden Risks Detected',
     message:
       'System has identified 2 potential ATS auto-reject triggers and untapped salary negotiation leverage.',
-    unlock: 'Unlock Interview Guide — $14.99',
+    unlock: 'Unlock Interview Guide — deeper analysis + accurate pay — $14.99',
     features: [
       '20 interview questions with source links and resume-grounded answers',
-      'Your pay landing plus base, equity, and bonus',
+      'More accurate personal pay landing + base / equity / bonus (vs Snapshot market band)',
       'H-1B, layoff, and remote or sponsorship check',
       'Headhunter script for pay and benefits',
     ],
@@ -26,10 +26,10 @@ const COPY = {
   'zh-TW': {
     alert: '偵測到隱性風險',
     message: '系統已偵測到 2 項可能導致 ATS 秒刷的隱性要求，與潛在的談薪溢價空間。',
-    unlock: '解鎖完整面試指南 — $14.99',
+    unlock: '解鎖面試指南 — 更專業分析＋更準薪資 — $14.99',
     features: [
       '20 題附來源的面試題，答法只引用履歷',
-      '個人落點，以及底薪、股票、獎金拆解',
+      '比市場區間更準的個人落點，以及底薪／股票／獎金拆解',
       'H-1B、裁員、遠端或贊助檢查',
       '獵頭級薪資與福利說法',
     ],
@@ -37,10 +37,10 @@ const COPY = {
   'zh-CN': {
     alert: '检测到隐性风险',
     message: '系统已检测到 2 项可能导致 ATS 秒刷的隐性要求，与潜在的谈薪溢价空间。',
-    unlock: '解锁完整面试指南 — $14.99',
+    unlock: '解锁面试指南 — 更专业分析＋更准薪资 — $14.99',
     features: [
       '20 题附来源的面试题，答法只引用简历',
-      '个人落点，以及底薪、股票、奖金拆解',
+      '比市场区间更准的个人落点，以及底薪／股票／奖金拆解',
       'H-1B、裁员、远程或赞助检查',
       '猎头级薪资与福利说法',
     ],

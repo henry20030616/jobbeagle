@@ -941,7 +941,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT} />
                       </span>
-                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-3 leading-snug text-indigo-100`}>{t.snapshotBlurb}</p>
+                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-4 leading-snug text-indigo-100`}>{t.snapshotBlurb}</p>
                     </button>
                   </div>
                   <div
@@ -962,7 +962,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE} />
                       </span>
-                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-3 leading-snug text-indigo-100`}>{t.strategyBlurb}</p>
+                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-4 leading-snug text-indigo-100`}>{t.strategyBlurb}</p>
                     </button>
                   </div>
                   {!compactChrome && (

@@ -113,6 +113,8 @@ const copy: Record<
     statusDeactivated: string;
     subscription: string;
     subscriptionNote: string;
+    snapshotPlanNote: string;
+    guidePlanNote: string;
     manageBilling: string;
     managingBilling: string;
     cancelSub: string;
@@ -173,7 +175,9 @@ const copy: Record<
     statusDeactivated: 'Deactivated',
     subscription: 'Subscription & credits',
     subscriptionNote:
-      'Buy or upgrade below. Cancel a monthly plan here with one click — you keep access until the current period ends.',
+      'Buy or upgrade below. Interview Guide uses a stronger model + live search for deeper analysis and a more accurate personal pay landing than Fit Snapshot market band. Cancel a monthly plan here with one click — you keep access until the current period ends.',
+    snapshotPlanNote: 'Market pay band + apply call — fast triage.',
+    guidePlanNote: 'Deeper analysis + more accurate personal pay landing / TC — includes Snapshot.',
     manageBilling: 'Manage billing',
     managingBilling: 'Opening portal…',
     cancelSub: 'Cancel subscription',
@@ -237,7 +241,9 @@ const copy: Record<
     statusDeactivated: '已停用',
     subscription: '訂閱與額度',
     subscriptionNote:
-      '可在下方購買或升級。月費可在本頁一鍵取消；本期結束前仍可使用。',
+      '可在下方購買或升級。面試指南用更強模型＋即時網搜，分析更深、個人薪資落點比適配快照的市場區間更準。月費可在本頁一鍵取消；本期結束前仍可使用。',
+    snapshotPlanNote: '市場薪資區間＋應徵判定——快速分流。',
+    guidePlanNote: '更深分析＋更準個人薪資落點／TC——含適配快照。',
     manageBilling: '管理帳單',
     managingBilling: '開啟中…',
     cancelSub: '取消訂閱',
@@ -299,7 +305,9 @@ const copy: Record<
     statusActive: '启用中',
     statusDeactivated: '已停用',
     subscription: '订阅与额度',
-    subscriptionNote: '可在下方购买或升级。月费可在本页一键取消；本期结束前仍可使用。',
+    subscriptionNote: '可在下方购买或升级。面试指南用更强模型＋即时网搜，分析更深、个人薪资落点比适配快照的市场区间更准。月费可在本页一键取消；本期结束前仍可使用。',
+    snapshotPlanNote: '市场薪资区间＋应征判定——快速分流。',
+    guidePlanNote: '更深分析＋更准个人薪资落点／TC——含适配快照。',
     manageBilling: '管理账单',
     managingBilling: '打开中…',
     cancelSub: '取消订阅',
@@ -361,7 +369,9 @@ const copy: Record<
     statusDeactivated: 'Desactivada',
     subscription: 'Suscripción y créditos',
     subscriptionNote:
-      'Compra o mejora abajo. Cancela el plan mensual aquí con un clic — sigues teniendo acceso hasta el fin del periodo.',
+      'Compra o mejora abajo. Interview Guide usa un modelo más fuerte + búsqueda en vivo: análisis más profundo y aterrizaje salarial personal más preciso que la franja de mercado del Snapshot. Cancela el plan mensual aquí con un clic — sigues hasta fin del periodo.',
+    snapshotPlanNote: 'Franja de mercado + decisión de aplicar — cribado rápido.',
+    guidePlanNote: 'Análisis más profundo + aterrizaje salarial personal más preciso / TC — incluye Snapshot.',
     manageBilling: 'Gestionar facturación',
     managingBilling: 'Abriendo…',
     cancelSub: 'Cancelar suscripción',
@@ -425,7 +435,9 @@ const copy: Record<
     statusDeactivated: 'निष्क्रिय',
     subscription: 'सदस्यता और क्रेडिट',
     subscriptionNote:
-      'नीचे खरीदें या अपग्रेड करें। मासिक योजना यहाँ एक क्लिक में रद्द करें — अवधि खत्म होने तक ऐक्सेस रहेगा।',
+      'नीचे खरीदें या अपग्रेड करें। Interview Guide मज़बूत मॉडल + लाइव सर्च से Snapshot बाज़ार बैंड से गहरा विश्लेषण और ज़्यादा सटीक व्यक्तिगत वेतन लैंडिंग देता है। मासिक योजना यहाँ एक क्लिक में रद्द — अवधि खत्म तक पहुँच रहती है।',
+    snapshotPlanNote: 'बाज़ार वेतन बैंड + आवेदन निर्णय — तेज़ ट्राइएज।',
+    guidePlanNote: 'गहरा विश्लेषण + ज़्यादा सटीक व्यक्तिगत वेतन लैंडिंग / TC — Snapshot शामिल।',
     manageBilling: 'बिलिंग प्रबंधित करें',
     managingBilling: 'खुल रहा है…',
     cancelSub: 'सदस्यता रद्द करें',
@@ -488,7 +500,9 @@ const copy: Record<
     statusDeactivated: 'معطّل',
     subscription: 'الاشتراك والرصيد',
     subscriptionNote:
-      'اشترِ أو رقِّ أدناه. ألغِ الخطة الشهرية من هنا بنقرة واحدة — يبقى الوصول حتى نهاية الفترة.',
+      'اشترِ أو رقِّ أدناه. يستخدم Interview Guide نموذجاً أقوى وبحثاً مباشراً لتحليل أعمق وهبوط راتب شخصي أدق من نطاق سوق Snapshot. ألغِ الخطة الشهرية بنقرة — تبقى حتى نهاية الفترة.',
+    snapshotPlanNote: 'نطاق سوق + قرار التقديم — فرز سريع.',
+    guidePlanNote: 'تحليل أعمق + هبوط راتب شخصي أدق / TC — يشمل Snapshot.',
     manageBilling: 'إدارة الفوترة',
     managingBilling: 'جارٍ الفتح…',
     cancelSub: 'إلغاء الاشتراك',
@@ -1018,12 +1032,23 @@ export default function AccountPage() {
                   const plan = CHECKOUT_PLANS[planType];
                   const label =
                     language === 'zh-TW' || language === 'zh-CN' ? plan.labelZhTW : plan.labelEn;
+                  const planNote =
+                    planType === 'single_job_fit_snapshot'
+                      ? t.snapshotPlanNote
+                      : planType === 'single_interview_strategy_guide'
+                        ? t.guidePlanNote
+                        : null;
                   return (
                     <li
                       key={planType}
                       className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-500/40 bg-slate-950/50 px-5 py-3.5"
                     >
-                      <span className="text-lg text-zinc-100">{label}</span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-lg text-zinc-100">{label}</span>
+                        {planNote ? (
+                          <p className="mt-1 text-sm leading-snug text-zinc-400">{planNote}</p>
+                        ) : null}
+                      </div>
                       <button
                         type="button"
                         disabled={Boolean(busyPlan) || deactivated}

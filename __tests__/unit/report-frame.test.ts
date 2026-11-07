@@ -100,6 +100,8 @@ describe('report chrome type scale', () => {
     expect(samples).toContain('sampleReportTabClass');
     expect(samples).toContain('SAMPLE_RAIL_ROW');
     expect(samples).toContain('SAMPLE_NOTICE_SURFACE');
+    expect(samples).toContain('SAMPLE_NOTICE_BLURB');
+    expect(samples).toMatch(/more accurate personal pay landing/i);
     expect(samples).not.toContain('border-r border-slate-800 p-10');
     expect(accountNav).toContain('FunctionRail');
     expect(accountNav).toContain('sampleReportTabClass');

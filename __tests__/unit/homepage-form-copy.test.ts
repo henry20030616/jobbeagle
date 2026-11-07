@@ -64,7 +64,7 @@ describe('homepage form copy', () => {
   it('puts live web search on Guide, not Fit Snapshot', () => {
     const noWebPitch =
       /no web|closed-book|flash-lite|不上網|不聯網|不联网|sin búsqueda|वेब सर्च नहीं|بلا بحث/i;
-    const webSearchPitch = /web search|網搜|网搜|búsqueda web|वेब सर्च|الويب/i;
+    const webSearchPitch = /web search|網搜|网搜|búsqueda web|वेब सर्च|الويب|بحث ويب/i;
     for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
       expect(copy.snapshotBlurb).not.toMatch(noWebPitch);
       expect(copy.snapshotBlurb).not.toMatch(webSearchPitch);
@@ -85,8 +85,8 @@ describe('homepage form copy', () => {
   it('calls a job opening 職位, not 席', () => {
     expect(HOMEPAGE_FORM_COPY['zh-TW'].interviewPrepDesc).toContain('該職位');
     expect(HOMEPAGE_FORM_COPY['zh-CN'].interviewPrepDesc).toContain('该职位');
-    expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toContain('此職位市場薪資水準');
-    expect(HOMEPAGE_FORM_COPY['zh-CN'].snapshotBlurb).toContain('此职位市场薪资水准');
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toMatch(/市場薪資區間/);
+    expect(HOMEPAGE_FORM_COPY['zh-CN'].snapshotBlurb).toMatch(/市场薪资区间/);
     for (const copy of [HOMEPAGE_FORM_COPY['zh-TW'], HOMEPAGE_FORM_COPY['zh-CN']]) {
       expect(JSON.stringify(copy)).not.toMatch(/席位|這席|该席|該席|此席|一席|本席|这席/);
     }
@@ -97,7 +97,7 @@ describe('homepage form copy', () => {
       '內建專業 HR 級 ATS 評分框架，抓出履歷缺漏的硬性關鍵字，解決一般 AI「每次問分數都不一樣」的盲點。',
     );
     expect(HOMEPAGE_FORM_COPY['zh-TW'].salaryResearchDesc).toBe(
-      '串聯多款頂尖推理模型交叉定價，算準您的真實市場身價，並直接給出能多談下 10% 薪水的談判籌碼。',
+      '面試指南用更強模型＋網搜公開薪酬頁，給出比適配快照市場區間更準的個人落點、TC 拆解與談薪說法。',
     );
     expect(HOMEPAGE_FORM_COPY['zh-TW'].industryAnalysisDesc).toBe(
       '結合深度檢索工作流，自動過濾網路農場文、深挖目標職缺的真實部門痛點，省去爬文一整天的苦工。',
@@ -109,13 +109,24 @@ describe('homepage form copy', () => {
       '内建专业 HR 级 ATS 评分框架，抓出简历缺漏的硬性关键字，解决一般 AI「每次问分数都不一样」的盲点。',
     );
     expect(HOMEPAGE_FORM_COPY.en.matchAnalysisDesc).toMatch(/ATS/);
-    expect(HOMEPAGE_FORM_COPY.en.salaryResearchDesc).toMatch(/10%/);
+    expect(HOMEPAGE_FORM_COPY.en.salaryResearchDesc).toMatch(
+      /more accurate personal landing|Interview Guide/i,
+    );
     expect(HOMEPAGE_FORM_COPY.en.industryAnalysisDesc).toMatch(/content-farm|deep-retrieval/i);
     expect(HOMEPAGE_FORM_COPY.en.interviewPrepDesc).toMatch(/three years|practice answers/i);
     for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
       expect(copy.matchAnalysisDesc).toMatch(/ATS/);
-      expect(copy.salaryResearchDesc).toMatch(/10%/);
+      expect(copy.salaryResearchDesc).toMatch(
+        /Interview Guide|面試指南|面试指南|más preciso|सटीक|أدق/i,
+      );
     }
+  });
+
+  it('states Guide is deeper and more accurate on personal pay than Snapshot', () => {
+    expect(HOMEPAGE_FORM_COPY.en.strategyBlurb).toMatch(/more accurate personal pay|stronger model/i);
+    expect(HOMEPAGE_FORM_COPY.en.snapshotBlurb).toMatch(/not your personal landing/i);
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].strategyBlurb).toMatch(/更準.*落點|更強模型/);
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toMatch(/非個人精準落點/);
   });
 
   it('covers every app language', () => {

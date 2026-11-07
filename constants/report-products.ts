@@ -25,8 +25,8 @@ export const REPORT_PRODUCT = {
     shortEn: 'Fit Snapshot',
     shortZh: '適配快照',
     blurbEn:
-      'HR-screen this seat before you apply: hard requirements, missing keywords, an apply call, and the market pay band.',
-    blurbZh: '投遞前用人資標準核對：硬性門檻、缺漏關鍵字、應徵判定，以及此職位市場薪資水準。',
+      'Fast HR triage before you apply: hard requirements, missing keywords, an apply call, and a market pay band by title/location/level — not your personal landing.',
+    blurbZh: '投遞前快速人資分流：硬性門檻、缺漏關鍵字、應徵判定，以及依職稱／地點／年資推估的市場薪資區間（非個人精準落點）。',
     legacyCodes: ['lite'] as const,
     creditField: 'job_fit_snapshot_credits' as const,
     dbCreditColumn: 'available_job_fit_snapshot_credits' as const,
@@ -39,9 +39,9 @@ export const REPORT_PRODUCT = {
     shortEn: 'Interview Guide',
     shortZh: '面試指南',
     blurbEn:
-      'Includes the Snapshot, then live web search intel for this interview: company and role risk, real questions with resume-backed answers, and a defendable pay strategy.',
+      'Includes the Snapshot, then a stronger model with live web search: deeper company/role intel, real questions with resume-backed answers, and a more accurate personal pay landing + TC split.',
     blurbZh:
-      '含適配快照，再用網搜情報備戰這場面試：公司與職位風險、真題對答，以及可守住的談薪落點。',
+      '含適配快照，再用更強模型＋即時網搜：更深的公司／職位情報、履歷對齊真題，以及更準的個人薪資落點與 TC 拆解。',
     legacyCodes: ['full'] as const,
     creditField: 'interview_strategy_guide_credits' as const,
     dbCreditColumn: 'available_interview_strategy_guide_credits' as const,
