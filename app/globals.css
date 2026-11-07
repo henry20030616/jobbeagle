@@ -623,6 +623,26 @@ button.launch-submit:disabled,
   width: 6rem !important;
   height: 6rem !important;
 }
+
+/* Analysis error dialog icons — match compare/homepage type scale */
+.compare-font-large .analysis-error-icon-well {
+  width: 8rem !important;
+  height: 8rem !important;
+}
+.compare-font-large .analysis-error-icon {
+  width: 4.5rem !important;
+  height: 4.5rem !important;
+}
+@media (min-width: 640px) {
+  .compare-font-large .analysis-error-icon-well {
+    width: 10rem !important;
+    height: 10rem !important;
+  }
+  .compare-font-large .analysis-error-icon {
+    width: 5.5rem !important;
+    height: 5.5rem !important;
+  }
+}
 /* 1em = cell copy (parent has text-base / text-lg, remapped above). */
 .compare-font-large .compare-star {
   width: 1em !important;
