@@ -22,7 +22,7 @@ const PRIVACY_EN: LegalDocument = {
     {
       title: 'Information We Collect',
       paragraphs: [
-        'Account data: When you sign in with Google, we receive your name, email, and profile photo via Supabase Auth.',
+        'Account data: When you sign in (Google or email magic link), we receive your email and, for Google, your name and profile photo via Supabase Auth.',
         'Job seeker data: Job descriptions you paste or capture, resumes (text/PDF/DOCX) you submit for analysis, and AI analysis reports. Successful analyses automatically save a resume version in your account library (deduplicated by content) and link each report to that version.',
         'Chrome extension data: On supported job boards only, the extension reads the active job posting page (title, company, description, URL) when you click the extension icon, then sends that text to JobBeagle over HTTPS for Pre-Flight review. We do not scrape your browsing history or unrelated tabs.',
         'Technical data: IP address (for rate limiting), browser type, device fingerprint (to prevent free-credit abuse), and cookies for session management.',
@@ -107,7 +107,7 @@ const PRIVACY_ZH_TW: LegalDocument = {
     {
       title: '我們收集的資訊',
       paragraphs: [
-        '帳號資料：使用 Google 登入時，我們透過 Supabase Auth 取得您的姓名、Email 與大頭照。',
+        '帳號資料：使用 Google 或 Email 登入連結時，我們透過 Supabase Auth 取得 Email；Google 另可能提供姓名與大頭照。',
         '求職者資料：您貼上或外掛抓取的職缺描述、上傳的履歷（文字／PDF／DOCX）與 AI 分析報告。成功分析後，系統會自動將履歷版本存入您的帳號履歷庫（依內容去重），並把每份報告與該履歷版本對應。',
         'Chrome 外掛資料：僅在您點擊外掛圖示時，於支援的職缺網站讀取當前職缺頁（職稱、公司、描述、網址），並以 HTTPS 傳至 JobBeagle 供 Pre-Flight 確認。我們不會抓取瀏覽紀錄或其他分頁。',
         '技術資料：IP（用於限流）、瀏覽器類型、裝置指紋（防止濫用免費額度）及登入 Cookie。',
@@ -203,7 +203,7 @@ const TERMS_EN: LegalDocument = {
     {
       title: 'Accounts & Credits',
       paragraphs: [
-        'You must provide accurate information and keep your account secure. Analysis requires Google sign-in.',
+        'You must provide accurate information and keep your account secure. Analysis requires a signed-in account (Google or email).',
         'Free accounts receive a limited lifetime Lite allowance. Paid credits and subscriptions are fulfilled via PayPal after successful payment.',
         'You can cancel a monthly Standard or Advanced subscription from Account management with one click. Access continues until the end of the current billing period; leftover credits remain.',
         'Credits are non-transferable. Refunds follow PayPal and applicable law.',
@@ -275,7 +275,7 @@ const TERMS_ZH_TW: LegalDocument = {
     {
       title: '帳號與額度',
       paragraphs: [
-        '您應提供正確資訊並妥善保管帳號。分析需 Google 登入。',
+        '您應提供正確資訊並妥善保管帳號。分析需先登入（Google 或 Email）。',
         '免費帳號享有有限終身 Lite 額度；付費額度與訂閱於 PayPal 付款成功後發放。',
         '您可在帳戶管理頁一鍵取消月費 Standard／Advanced 訂閱。本期結束前仍可使用；剩餘額度會保留。',
         '額度不可轉讓；退款依 PayPal 與適用法律辦理。',
