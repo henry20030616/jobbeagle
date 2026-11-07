@@ -347,7 +347,9 @@ describe('report item heading scale', () => {
     );
     expect(dashboard).toContain('REPORT_GUIDE_TAB_TYPE');
     expect(dashboard).toContain('REPORT_GUIDE_TAB_GAP');
-    expect(dashboard).toContain('sm:flex-nowrap');
+    expect(dashboard).toContain('flex flex-wrap');
+    expect(dashboard).toContain('whitespace-nowrap');
+    expect(dashboard).not.toContain('sm:flex-nowrap');
     expect(dashboard).not.toMatch(/flex flex-wrap gap-2"/);
     expect(dashboard).not.toMatch(/text-base sm:text-lg font-bold/);
 
