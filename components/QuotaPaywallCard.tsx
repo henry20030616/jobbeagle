@@ -28,6 +28,7 @@ type PaywallCopy = {
   unlockPaypal: string;
   checkoutError: string;
   loggingIn: string;
+  couponLabel: string;
 };
 
 const copy: Record<AppLanguage, PaywallCopy> = {
@@ -44,6 +45,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     unlockPaypal: '用 PayPal 解鎖面試指南：H-1B、20 題真題與談薪說法。',
     checkoutError: '無法啟動付款，請稍後再試。',
     loggingIn: '正在跳轉登入…',
+    couponLabel: '優惠碼（選填，僅單次快照／指南）',
   },
   'zh-CN': {
     thanks: '感谢您使用 JobBeagle！',
@@ -58,6 +60,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     unlockPaypal: '用 PayPal 解锁面试指南：H-1B、20 题真题与谈薪说法。',
     checkoutError: '无法启动付款，请稍后再试。',
     loggingIn: '正在跳转登录…',
+    couponLabel: '优惠码（选填，仅单次快照／指南）',
   },
   en: {
     thanks: 'Thanks for using JobBeagle!',
@@ -72,6 +75,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     unlockPaypal: 'Unlock Interview Guide with PayPal: H-1B, 20 questions, and a negotiation script.',
     checkoutError: 'Could not start checkout.',
     loggingIn: 'Redirecting to sign in…',
+    couponLabel: 'Coupon (optional — Snapshot / Guide one-time only)',
   },
   es: {
     thanks: '¡Gracias por usar JobBeagle!',
@@ -86,6 +90,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     unlockPaypal: 'Desbloquea Interview Guide con PayPal: H-1B, 20 preguntas y negociación.',
     checkoutError: 'No se pudo iniciar el pago.',
     loggingIn: 'Redirigiendo…',
+    couponLabel: 'Cupón (opcional — solo Snapshot / Guide únicos)',
   },
   hi: {
     thanks: 'JobBeagle उपयोग के लिए धन्यवाद!',
@@ -100,6 +105,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     unlockPaypal: 'PayPal से Interview Guide अनलॉक करें: H-1B, 20 प्रश्न और बातचीत।',
     checkoutError: 'चेकआउट शुरू नहीं हो सका।',
     loggingIn: 'साइन इन…',
+    couponLabel: 'कूपन (वैकल्पिक — केवल एकमुश्त Snapshot / Guide)',
   },
   ar: {
     thanks: 'شكرًا لاستخدام JobBeagle!',
@@ -114,6 +120,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
     unlockPaypal: 'Unlock Interview Guide with PayPal: H-1B, 20 questions, and a negotiation script.',
     checkoutError: 'تعذر بدء الدفع.',
     loggingIn: 'جارٍ التحويل…',
+    couponLabel: 'قسيمة (اختياري — Snapshot / Guide لمرة واحدة)',
   },
 };
 
@@ -133,6 +140,7 @@ export default function QuotaPaywallCard({
   const t = copy[language] ?? copy.en;
   const [busy, setBusy] = useState<CheckoutPlanType | 'login' | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState('');
 
   useEffect(() => {
     trackEvent(ANALYTICS_EVENTS.paywallView, {
@@ -166,7 +174,14 @@ export default function QuotaPaywallCard({
     }
     setBusy(planType);
     setErr(null);
-    const result = await startCheckout(planType);
+    const oneTime =
+      planType === 'single_job_fit_snapshot' || planType === 'single_interview_strategy_guide';
+    const result = await startCheckout(
+      planType,
+      undefined,
+      undefined,
+      oneTime ? couponCode : undefined,
+    );
     if (!result.ok) {
       setErr(result.error);
       setBusy(null);
@@ -213,6 +228,21 @@ export default function QuotaPaywallCard({
           )}
         </div>
       </div>
+
+      {isLoggedIn ? (
+        <label className="mt-5 flex flex-col gap-1">
+          <span className="text-xs text-slate-400">{t.couponLabel}</span>
+          <input
+            type="text"
+            value={couponCode}
+            disabled={busy != null}
+            onChange={(e) => setCouponCode(e.target.value)}
+            autoComplete="off"
+            spellCheck={false}
+            className="rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+          />
+        </label>
+      ) : null}
 
       <div className="mt-5 grid gap-2 sm:grid-cols-2">
         {!isLoggedIn ? (

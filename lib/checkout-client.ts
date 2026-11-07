@@ -11,6 +11,7 @@ export async function startCheckout(
   planType: CheckoutPlanType,
   reportId?: string | null,
   amountUsd?: string,
+  couponCode?: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const value = checkoutValueUsd(planType, amountUsd);
   rememberPendingCheckout(planType, value);
@@ -20,6 +21,7 @@ export async function startCheckout(
     items: [checkoutItem(planType, value)],
   });
 
+  const trimmedCoupon = couponCode?.trim();
   const res = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -27,6 +29,7 @@ export async function startCheckout(
       planType,
       reportId: reportId ?? undefined,
       ...(amountUsd != null ? { amountUsd } : {}),
+      ...(trimmedCoupon ? { couponCode: trimmedCoupon } : {}),
     }),
   });
 

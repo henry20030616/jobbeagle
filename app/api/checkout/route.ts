@@ -16,6 +16,7 @@ import {
   getPayPalConfig,
   resolvePayPalPlanId,
 } from '@/lib/paypal';
+import { applyCheckoutCoupon } from '@/lib/checkout-coupon';
 import { ensureProfile } from '@/lib/profiles';
 import { notifyFailure } from '@/lib/transactional-email';
 
@@ -50,7 +51,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: { planType?: string; reportId?: string; amountUsd?: unknown };
+  let body: {
+    planType?: string;
+    reportId?: string;
+    amountUsd?: unknown;
+    couponCode?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -80,6 +86,9 @@ export async function POST(request: NextRequest) {
   }
 
   let amountCents = plan.amountCents;
+  let listAmountCents = plan.amountCents;
+  let couponMeta: Record<string, unknown> | null = null;
+
   if (planType === 'author_sponsor') {
     const parsed = parseSponsorAmountCents(body.amountUsd);
     if (parsed == null) {
@@ -92,6 +101,29 @@ export async function POST(request: NextRequest) {
       );
     }
     amountCents = parsed;
+    listAmountCents = parsed;
+  } else {
+    const priced = applyCheckoutCoupon({
+      planType: planType as CheckoutPlanType,
+      couponCode: body.couponCode,
+    });
+    if (!priced.ok) {
+      return NextResponse.json(
+        { error: priced.error, errorCode: priced.errorCode },
+        { status: 400 },
+      );
+    }
+    amountCents = priced.amountCents;
+    listAmountCents = priced.listAmountCents;
+    if (priced.coupon) {
+      couponMeta = {
+        coupon_code: priced.coupon.code,
+        coupon_percent_off: priced.coupon.percentOff,
+        list_amount_cents: priced.coupon.listAmountCents,
+        discount_cents: priced.coupon.discountCents,
+        paid_amount_cents: priced.coupon.amountCents,
+      };
+    }
   }
 
   const reportId: string | null = body.reportId ?? null;
@@ -110,9 +142,12 @@ export async function POST(request: NextRequest) {
 
   const baseMetadata: Record<string, unknown> = {
     plan_label: plan.labelEn,
+    list_amount_cents: listAmountCents,
+    paid_amount_cents: amountCents,
     ...(planType === 'author_sponsor'
       ? { amount_cents: amountCents, fulfillment_plan_type: 'author_sponsor' }
       : {}),
+    ...(couponMeta ?? {}),
   };
 
   let { data: order, error: orderErr } = await admin
@@ -184,9 +219,17 @@ export async function POST(request: NextRequest) {
       email: user.email ?? undefined,
       returnUrl: paypalReturnUrl,
       cancelUrl,
-      ...(planType === 'author_sponsor' ? { amountCents } : {}),
+      // One-time SKUs (incl. coupon / sponsor): charge this cents amount. Subs use PayPal plan id.
+      ...(!plan.isSubscription ? { amountCents } : {}),
     });
-    return NextResponse.json({ url: checkoutUrl, orderId: order.id, provider: 'paypal' });
+    return NextResponse.json({
+      url: checkoutUrl,
+      orderId: order.id,
+      provider: 'paypal',
+      amountCents,
+      listAmountCents,
+      ...(couponMeta ? { coupon: couponMeta } : {}),
+    });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'PayPal checkout error';
     console.error('[checkout] create failed:', message);

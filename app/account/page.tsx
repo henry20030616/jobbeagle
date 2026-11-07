@@ -155,6 +155,8 @@ const copy: Record<
     sponsorInvalid: string;
     goAnalyze: string;
     goCompare: string;
+    couponLabel: string;
+    couponHint: string;
   }
 > = {
   en: {
@@ -218,6 +220,8 @@ const copy: Record<
     sponsorInvalid: 'Enter an amount between $0.50 and $1,000.00.',
     goAnalyze: 'Report analysis',
     goCompare: 'Report comparison',
+    couponLabel: 'Coupon code',
+    couponHint: 'Optional. Applies to Fit Snapshot / Interview Guide one-time buys only.',
   },
   'zh-TW': {
     title: '帳戶管理',
@@ -279,6 +283,8 @@ const copy: Record<
     sponsorInvalid: '請輸入 $0.50 到 $1,000.00 之間的金額。',
     goAnalyze: '報告分析',
     goCompare: '報告比較',
+    couponLabel: '優惠碼',
+    couponHint: '選填。僅適用適配快照／面試指南單次購買。',
   },
   'zh-CN': {
     title: '账户管理',
@@ -338,6 +344,8 @@ const copy: Record<
     sponsorInvalid: '请输入 $0.50 到 $1,000.00 之间的金额。',
     goAnalyze: '报告分析',
     goCompare: '报告比较',
+    couponLabel: '优惠码',
+    couponHint: '选填。仅适用于适配快照／面试指南单次购买。',
   },
   es: {
     title: 'Gestión de cuenta',
@@ -400,6 +408,8 @@ const copy: Record<
     sponsorInvalid: 'Ingresa un monto entre $0.50 y $1,000.00.',
     goAnalyze: 'Análisis de informe',
     goCompare: 'Comparación de informes',
+    couponLabel: 'Código de cupón',
+    couponHint: 'Opcional. Solo compras únicas de Fit Snapshot / Interview Guide.',
   },
   hi: {
     title: 'खाता प्रबंधन',
@@ -461,6 +471,8 @@ const copy: Record<
     sponsorInvalid: '$0.50 से $1,000.00 के बीच राशि दर्ज करें।',
     goAnalyze: 'रिपोर्ट विश्लेषण',
     goCompare: 'रिपोर्ट तुलना',
+    couponLabel: 'कूपन कोड',
+    couponHint: 'वैकल्पिक। केवल Fit Snapshot / Interview Guide एकमुश्त खरीद।',
   },
   ar: {
     title: 'إدارة الحساب',
@@ -522,6 +534,8 @@ const copy: Record<
     sponsorInvalid: 'أدخل مبلغًا بين $0.50 و $1,000.00.',
     goAnalyze: 'تحليل التقرير',
     goCompare: 'مقارنة التقارير',
+    couponLabel: 'رمز القسيمة',
+    couponHint: 'اختياري. لمشتريات Fit Snapshot / Interview Guide لمرة واحدة فقط.',
   },
 };
 
@@ -668,6 +682,7 @@ export default function AccountPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyPlan, setBusyPlan] = useState<CheckoutPlanType | null>(null);
   const [sponsorAmount, setSponsorAmount] = useState('0.50');
+  const [couponCode, setCouponCode] = useState('');
   const [billing, setBilling] = useState<BillingView | null>(null);
   const [billingLoaded, setBillingLoaded] = useState(false);
   const [portalBusy, setPortalBusy] = useState(false);
@@ -768,7 +783,12 @@ export default function AccountPage() {
   const handleCheckout = async (plan: CheckoutPlanType, amountUsd?: string) => {
     setBusyPlan(plan);
     setError(null);
-    const result = await startCheckout(plan, undefined, amountUsd);
+    const result = await startCheckout(
+      plan,
+      undefined,
+      amountUsd,
+      plan === 'author_sponsor' ? undefined : couponCode,
+    );
     if (!result.ok) setError(result.error);
     setBusyPlan(null);
   };
@@ -980,6 +1000,19 @@ export default function AccountPage() {
                   || data.profile.membership_tier === 'advanced_sub') ? (
                 <p className="text-lg text-zinc-200">{t.subUnmatched}</p>
               ) : null}
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-zinc-400">{t.couponLabel}</span>
+                <input
+                  type="text"
+                  value={couponCode}
+                  disabled={Boolean(busyPlan) || deactivated}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="w-full max-w-md rounded-lg border border-blue-500/50 bg-slate-950 px-3 py-2 text-lg text-zinc-100"
+                />
+                <span className="text-sm text-zinc-500">{t.couponHint}</span>
+              </label>
               <ul className="space-y-3">
                 {ACTIVE_CHECKOUT_PLAN_TYPES.map((planType) => {
                   const plan = CHECKOUT_PLANS[planType];
