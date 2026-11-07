@@ -11,13 +11,13 @@ type Localized = Record<AppLanguage, string>;
 
 const AI_QUOTA: Localized = {
   'zh-TW':
-    '分析服務暫時無法回應（AI 服務額度已用完）。這不是您的報告額度問題，系統也未扣除您的報告次數。請稍後再試。',
+    '目前系統分析請求量較大，服務暫時忙碌中。這不是您的帳號問題，系統也未扣除您的報告額度，請稍後再試。',
   'zh-CN':
-    '分析服务暂时无法响应（AI 服务额度已用完）。这不是您的报告额度问题，系统也未扣除您的报告次数。请稍后再试。',
-  en: 'The analysis service is temporarily unavailable (AI provider quota exhausted). This is not your JobBeagle report-credit balance, and your report credits were not charged. Please try again later.',
-  es: 'El servicio de análisis no está disponible temporalmente (cuota del proveedor de IA agotada). No es el saldo de créditos de informe de JobBeagle, y no se cobró ningún crédito. Inténtalo más tarde.',
-  hi: 'विश्लेषण सेवा अस्थायी रूप से अनुपलब्ध है (AI कोटा समाप्त)। यह आपके JobBeagle रिपोर्ट क्रेडिट नहीं हैं, और कोई क्रेडिट नहीं कटा। बाद में पुनः प्रयास करें।',
-  ar: 'خدمة التحليل غير متاحة مؤقتًا (نفد رصيد مزود الذكاء الاصطناعي). هذا ليس رصيد تقارير JobBeagle، ولم يُخصم أي رصيد. حاول لاحقًا.',
+    '目前系统分析请求量较大，服务暂时忙碌中。这不是您的账号问题，系统也未扣除您的报告额度，请稍后再试。',
+  en: 'Analysis demand is high right now and the service is temporarily busy. This is not an issue with your account, and your report credits were not charged. Please try again shortly.',
+  es: 'La demanda de análisis es alta en este momento y el servicio está temporalmente ocupado. No es un problema de tu cuenta, y no se cobró ningún crédito de informe. Inténtalo de nuevo en breve.',
+  hi: 'अभी विश्लेषण अनुरोधों की संख्या अधिक है और सेवा अस्थायी रूप से व्यस्त है। यह आपके खाते की समस्या नहीं है, और कोई रिपोर्ट क्रेडिट नहीं कटा। कृपया थोड़ी देर बाद पुनः प्रयास करें।',
+  ar: 'حجم طلبات التحليل مرتفع حاليًا والخدمة مشغولة مؤقتًا. هذه ليست مشكلة في حسابك، ولم يُخصم أي رصيد تقارير. حاول مرة أخرى بعد قليل.',
 };
 
 const RESUME_PDF: Localized = {

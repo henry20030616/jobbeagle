@@ -26,19 +26,19 @@ describe('classifyAnalyzeError', () => {
 });
 
 describe('toUserFacingAnalyzeError', () => {
-  it('returns Traditional Chinese without JSON or AI Studio links', () => {
+  it('returns Traditional Chinese without JSON or billing wording', () => {
     const { message, code, kind } = toUserFacingAnalyzeError(geminiJson, 'zh-TW');
     expect(kind).toBe('ai_quota');
     expect(code).toBe('AI_QUOTA_EXHAUSTED');
-    expect(message).toContain('分析服務暫時無法回應');
-    expect(message).toContain('不是您的報告額度');
-    expect(message).not.toMatch(/\{|ai\.studio|RESOURCE_EXHAUSTED|402/);
+    expect(message).toContain('請求量較大');
+    expect(message).toContain('未扣除您的報告額度');
+    expect(message).not.toMatch(/\{|ai\.studio|RESOURCE_EXHAUSTED|402|額度已用完|AI 服務/);
   });
 
-  it('localizes English', () => {
+  it('localizes English as high load without quota wording', () => {
     const { message } = toUserFacingAnalyzeError(geminiJson, 'en');
-    expect(message).toContain('temporarily unavailable');
-    expect(message).not.toContain('ai.studio');
+    expect(message).toContain('temporarily busy');
+    expect(message.toLowerCase()).not.toMatch(/quota|depleted|billing|ai\.studio|provider/);
   });
 
   it('falls back to a generic sentence for technical unknown errors', () => {
@@ -49,7 +49,8 @@ describe('toUserFacingAnalyzeError', () => {
   });
 
   it('keeps a clean API sentence already localized for the user', () => {
-    const prior = '分析服務暫時無法回應（AI 服務額度已用完）。這不是您的報告額度問題，系統也未扣除您的報告次數。請稍後再試。';
+    const prior =
+      '目前系統分析請求量較大，服務暫時忙碌中。這不是您的帳號問題，系統也未扣除您的報告額度，請稍後再試。';
     const { message, kind } = toUserFacingAnalyzeError(prior, 'zh-TW');
     expect(kind).toBe('generic');
     expect(message).toBe(prior);
