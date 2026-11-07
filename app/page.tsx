@@ -526,16 +526,133 @@ export default function Home() {
     }
   };
 
-  const translations: Record<AppLanguage, { backToHome: string; analysisFailed: string; suggestions: string; checkConsole: string; retryLater: string; checkApiKey: string; history: string; historyTitle: string; noHistory: string; unknownJob: string; autoSaved: string; rateTitle: string; exploreShorts: string; exploreShortsDesc: string }> = {
-    'zh-TW': { backToHome: '返回首頁列表', analysisFailed: '分析失敗', suggestions: '建議', checkConsole: '檢查瀏覽器控制台 (F12) 查看詳細錯誤信息', retryLater: '稍後重試，可能是 Gemini API 暫時性問題', checkApiKey: '如果持續發生，請檢查 API Key 是否正確', history: '報告歷史紀錄', historyTitle: '報告歷史紀錄', noHistory: '尚無歷史記錄', unknownJob: '未知職缺', autoSaved: '完成一次分析後會自動儲存', rateTitle: '⏳ 今日免費次數已用完', exploreShorts: '探索 Shorts 職缺影片', exploreShortsDesc: '像刷短影片一樣找工作 · AI 匹配 · 一鍵申請' },
-    'zh-CN': { backToHome: '返回首页列表', analysisFailed: '分析失败', suggestions: '建议', checkConsole: '检查浏览器控制台 (F12) 查看详细错误信息', retryLater: '稍后重试，可能是 Gemini API 暂时性问题', checkApiKey: '如果持续发生，请检查 API Key 是否正确', history: '报告历史记录', historyTitle: '报告历史记录', noHistory: '暂无历史记录', unknownJob: '未知职位', autoSaved: '完成一次分析后会自动保存', rateTitle: '⏳ 今日免费次数已用完', exploreShorts: '探索 Shorts 职位视频', exploreShortsDesc: '像刷短视频一样找工作 · AI 匹配 · 一键申请' },
-    en: { backToHome: 'Back to Home', analysisFailed: 'Analysis Failed', suggestions: 'Suggestions', checkConsole: 'Check browser console (F12) for detailed error information', retryLater: 'Retry later, may be a temporary Gemini API issue', checkApiKey: 'If it persists, check if the API Key is correct', history: 'Report history', historyTitle: 'Report history', noHistory: 'No history yet', unknownJob: 'Unknown Job', autoSaved: 'Records are saved after each analysis', rateTitle: '⏳ Daily Free Limit Reached', exploreShorts: 'Explore Job Shorts', exploreShortsDesc: 'Swipe job videos · AI match · One-tap apply' },
-    es: { backToHome: 'Volver al Inicio', analysisFailed: 'Análisis Fallido', suggestions: 'Sugerencias', checkConsole: 'Revisa la consola del navegador (F12) para ver el error detallado', retryLater: 'Reintenta más tarde, puede ser un problema temporal de la API de Gemini', checkApiKey: 'Si persiste, verifica si la clave API es correcta', history: 'Historial de informes', historyTitle: 'Historial de informes', noHistory: 'Sin historial aún', unknownJob: 'Trabajo Desconocido', autoSaved: 'Los registros se guardan después de cada análisis', rateTitle: '⏳ Límite Diario Alcanzado', exploreShorts: 'Explorar Job Shorts', exploreShortsDesc: 'Desliza videos de empleo · Match IA · Aplicar' },
-    hi: { backToHome: 'होम पर वापस जाएं', analysisFailed: 'विश्लेषण विफल', suggestions: 'सुझाव', checkConsole: 'विस्तृत त्रुटि के लिए ब्राउज़र कंसोल (F12) जांचें', retryLater: 'बाद में पुनः प्रयास करें, Gemini API की अस्थायी समस्या हो सकती है', checkApiKey: 'यदि जारी रहे, तो API Key सही है या नहीं जांचें', history: 'रिपोर्ट इतिहास', historyTitle: 'रिपोर्ट इतिहास', noHistory: 'अभी तक कोई इतिहास नहीं', unknownJob: 'अज्ञात नौकरी', autoSaved: 'प्रत्येक विश्लेषण के बाद रिकॉर्ड सहेजे जाते हैं', rateTitle: '⏳ दैनिक मुफ़्त सीमा समाप्त', exploreShorts: 'Job Shorts देखें', exploreShortsDesc: 'नौकरी वीडियो स्वाइप करें · AI मिलान · आवेदन' },
-    ar: { backToHome: 'العودة إلى الرئيسية', analysisFailed: 'فشل التحليل', suggestions: 'اقتراحات', checkConsole: 'تحقق من وحدة تحكم المتصفح (F12) لمعرفة تفاصيل الخطأ', retryLater: 'حاول لاحقًا، قد تكون المشكلة مؤقتة في Gemini API', checkApiKey: 'إذا استمرت المشكلة، تحقق من صحة مفتاح API', history: 'سجل التقارير', historyTitle: 'سجل التقارير', noHistory: 'لا يوجد سجل بعد', unknownJob: 'وظيفة غير معروفة', autoSaved: 'يتم حفظ السجلات بعد كل تحليل', rateTitle: '⏳ تم بلوغ الحد المجاني اليومي', exploreShorts: 'استكشف Job Shorts', exploreShortsDesc: 'تصفح فيديوهات الوظائف · تطابق AI · تقديم' },
+  type HomeCopy = {
+    backToHome: string;
+    analysisFailed: string;
+    suggestions: string;
+    tipRetry: string;
+    tipReupload: string;
+    tipPaste: string;
+    tipFooter: string;
+    history: string;
+    historyTitle: string;
+    noHistory: string;
+    unknownJob: string;
+    autoSaved: string;
+    rateTitle: string;
+    exploreShorts: string;
+    exploreShortsDesc: string;
+  };
+  const translations: Record<AppLanguage, HomeCopy> = {
+    'zh-TW': {
+      backToHome: '返回首頁列表',
+      analysisFailed: '分析沒有完成',
+      suggestions: '你可以這樣做',
+      tipRetry: '稍等半分鐘再按一次開始分析',
+      tipReupload: '重新上傳履歷：請用 PDF 或 Word（.docx），不要用舊版 .doc',
+      tipPaste: '或把履歷文字直接貼到履歷欄再試',
+      tipFooter: '若一直失敗，請到頁面底部留言給我們',
+      history: '報告歷史紀錄',
+      historyTitle: '報告歷史紀錄',
+      noHistory: '尚無歷史記錄',
+      unknownJob: '未知職缺',
+      autoSaved: '完成一次分析後會自動儲存',
+      rateTitle: '⏳ 今日免費次數已用完',
+      exploreShorts: '探索 Shorts 職缺影片',
+      exploreShortsDesc: '像刷短影片一樣找工作 · AI 匹配 · 一鍵申請',
+    },
+    'zh-CN': {
+      backToHome: '返回首页列表',
+      analysisFailed: '分析没有完成',
+      suggestions: '你可以这样做',
+      tipRetry: '稍等半分钟再按一次开始分析',
+      tipReupload: '重新上传简历：请用 PDF 或 Word（.docx），不要用旧版 .doc',
+      tipPaste: '或把简历文字直接贴到简历栏再试',
+      tipFooter: '若一直失败，请到页面底部留言给我们',
+      history: '报告历史记录',
+      historyTitle: '报告历史记录',
+      noHistory: '暂无历史记录',
+      unknownJob: '未知职位',
+      autoSaved: '完成一次分析后会自动保存',
+      rateTitle: '⏳ 今日免费次数已用完',
+      exploreShorts: '探索 Shorts 职位视频',
+      exploreShortsDesc: '像刷短视频一样找工作 · AI 匹配 · 一键申请',
+    },
+    en: {
+      backToHome: 'Back to Home',
+      analysisFailed: "Couldn't finish analysis",
+      suggestions: 'What you can try',
+      tipRetry: 'Wait half a minute, then start analysis again',
+      tipReupload: 'Re-upload your resume as PDF or Word (.docx) — not an old .doc file',
+      tipPaste: 'Or paste your resume text into the resume box',
+      tipFooter: 'If it keeps failing, leave us a message at the bottom of the page',
+      history: 'Report history',
+      historyTitle: 'Report history',
+      noHistory: 'No history yet',
+      unknownJob: 'Unknown Job',
+      autoSaved: 'Records are saved after each analysis',
+      rateTitle: '⏳ Daily Free Limit Reached',
+      exploreShorts: 'Explore Job Shorts',
+      exploreShortsDesc: 'Swipe job videos · AI match · One-tap apply',
+    },
+    es: {
+      backToHome: 'Volver al Inicio',
+      analysisFailed: 'No se pudo terminar el análisis',
+      suggestions: 'Qué puedes probar',
+      tipRetry: 'Espera medio minuto y vuelve a iniciar el análisis',
+      tipReupload: 'Vuelve a subir tu CV en PDF o Word (.docx), no un .doc antiguo',
+      tipPaste: 'O pega el texto del CV en el cuadro de currículum',
+      tipFooter: 'Si sigue fallando, déjanos un mensaje al final de la página',
+      history: 'Historial de informes',
+      historyTitle: 'Historial de informes',
+      noHistory: 'Sin historial aún',
+      unknownJob: 'Trabajo Desconocido',
+      autoSaved: 'Los registros se guardan después de cada análisis',
+      rateTitle: '⏳ Límite Diario Alcanzado',
+      exploreShorts: 'Explorar Job Shorts',
+      exploreShortsDesc: 'Desliza videos de empleo · Match IA · Aplicar',
+    },
+    hi: {
+      backToHome: 'होम पर वापस जाएं',
+      analysisFailed: 'विश्लेषण पूरा नहीं हो सका',
+      suggestions: 'आप यह आज़मा सकते हैं',
+      tipRetry: 'आधा मिनट रुकें, फिर विश्लेषण फिर शुरू करें',
+      tipReupload: 'रिज़्यूमे PDF या Word (.docx) में फिर अपलोड करें — पुराना .doc नहीं',
+      tipPaste: 'या रिज़्यूमे टेक्स्ट बॉक्स में पेस्ट करें',
+      tipFooter: 'अगर बार-बार फेल हो, पेज के नीचे संदेश छोड़ें',
+      history: 'रिपोर्ट इतिहास',
+      historyTitle: 'रिपोर्ट इतिहास',
+      noHistory: 'अभी तक कोई इतिहास नहीं',
+      unknownJob: 'अज्ञात नौकरी',
+      autoSaved: 'प्रत्येक विश्लेषण के बाद रिकॉर्ड सहेजे जाते हैं',
+      rateTitle: '⏳ दैनिक मुफ़्त सीमा समाप्त',
+      exploreShorts: 'Job Shorts देखें',
+      exploreShortsDesc: 'नौकरी वीडियो स्वाइप करें · AI मिलान · आवेदन',
+    },
+    ar: {
+      backToHome: 'العودة إلى الرئيسية',
+      analysisFailed: 'تعذّر إكمال التحليل',
+      suggestions: 'جرّب هذا',
+      tipRetry: 'انتظر نصف دقيقة ثم ابدأ التحليل مجددًا',
+      tipReupload: 'أعد رفع سيرتك كـ PDF أو Word (.docx) — وليس ملف .doc قديم',
+      tipPaste: 'أو الصق نص السيرة في مربع السيرة',
+      tipFooter: 'إن استمر الفشل، اترك رسالة أسفل الصفحة',
+      history: 'سجل التقارير',
+      historyTitle: 'سجل التقارير',
+      noHistory: 'لا يوجد سجل بعد',
+      unknownJob: 'وظيفة غير معروفة',
+      autoSaved: 'يتم حفظ السجلات بعد كل تحليل',
+      rateTitle: '⏳ تم بلوغ الحد المجاني اليومي',
+      exploreShorts: 'استكشف Job Shorts',
+      exploreShortsDesc: 'تصفح فيديوهات الوظائف · تطابق AI · تقديم',
+    },
   };
 
   const t = translations[language] ?? translations['en'];
+  const analysisSuggestions =
+    errorCode === 'RESUME_PDF_UNREADABLE'
+      ? [t.tipReupload, t.tipPaste, t.tipFooter]
+      : [t.tipRetry, t.tipReupload, t.tipFooter];
 
   return (
     <div className="homepage-font-large flex min-h-dvh w-full flex-col items-stretch justify-start overflow-x-hidden overscroll-x-none bg-zinc-950 text-slate-200">
@@ -735,11 +852,7 @@ export default function Home() {
             message={error}
             language={language}
             suggestionsTitle={t.suggestions}
-            suggestions={
-              error.includes('JSON 解析失敗') || error.includes('JSON parsing')
-                ? [t.retryLater, t.checkConsole, t.checkApiKey]
-                : []
-            }
+            suggestions={analysisSuggestions}
             onDismiss={() => { setError(null); setErrorCode(null); }}
           />
         )}

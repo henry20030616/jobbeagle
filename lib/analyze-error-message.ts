@@ -41,12 +41,14 @@ const RATE_LIMIT: Localized = {
 };
 
 const GENERIC: Localized = {
-  'zh-TW': '分析暫時失敗，請稍後再試。若持續發生，請聯絡客服。',
-  'zh-CN': '分析暂时失败，请稍后再试。若持续发生，请联系客服。',
-  en: 'Analysis failed temporarily. Please try again later. If it keeps happening, contact support.',
-  es: 'El análisis falló temporalmente. Inténtalo más tarde. Si continúa, contacta con soporte.',
-  hi: 'विश्लेषण अस्थायी रूप से विफल रहा। बाद में पुनः प्रयास करें।',
-  ar: 'فشل التحليل مؤقتًا. حاول لاحقًا.',
+  'zh-TW':
+    '這次沒能完成分析。請稍等一下再試一次；若還是不行，可重新上傳履歷（PDF 或 Word），或到頁面底部留言給我們。',
+  'zh-CN':
+    '这次没能完成分析。请稍等一下再试一次；若还是不行，可重新上传简历（PDF 或 Word），或到页面底部留言给我们。',
+  en: "We couldn't finish this analysis. Wait a moment and try again. If it still fails, re-upload your resume as PDF or Word, or leave us a note at the bottom of the page.",
+  es: 'No pudimos terminar este análisis. Espera un momento e inténtalo de nuevo. Si sigue fallando, vuelve a subir tu CV en PDF o Word, o déjanos un mensaje al final de la página.',
+  hi: 'हम यह विश्लेषण पूरा नहीं कर सके। थोड़ी देर बाद पुनः प्रयास करें। अगर फिर भी न चले, तो PDF/Word फिर अपलोड करें या पेज के नीचे संदेश छोड़ें।',
+  ar: 'تعذّر إكمال هذا التحليل. انتظر قليلًا ثم حاول مرة أخرى. إن استمر، أعد رفع سيرتك كـ PDF أو Word، أو اترك رسالة أسفل الصفحة.',
 };
 
 function flattenErrorText(raw: unknown): string {

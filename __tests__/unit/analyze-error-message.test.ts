@@ -65,8 +65,9 @@ describe('toUserFacingAnalyzeError', () => {
   it('falls back to a generic sentence for technical unknown errors', () => {
     const { message, kind } = toUserFacingAnalyzeError('Error: socket hang up', 'zh-TW');
     expect(kind).toBe('generic');
-    expect(message).toContain('分析暫時失敗');
+    expect(message).toContain('沒能完成分析');
     expect(message).not.toContain('socket hang up');
+    expect(message).not.toMatch(/Gemini|API Key|F12|JSON|jszip/i);
   });
 
   it('keeps a clean API sentence already localized for the user', () => {
