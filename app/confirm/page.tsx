@@ -320,6 +320,9 @@ export default function ConfirmPage() {
           elapsed={loadingJob ? 0 : analysisElapsed}
           stageLabel={loadingJob ? 'Loading job capture...' : analysisStage}
           language={language}
+          estimateKind={
+            reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? 'guide' : 'snapshot'
+          }
         />
       </div>
     );
