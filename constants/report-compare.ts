@@ -339,7 +339,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
     ),
     snapshot: t('—', '—', '—'),
     guide: t('Pay strategy, opening script, follow-up note', '談薪策略、開場講稿、面試後信件', '谈薪策略、开场讲稿、面试后信件', 5),
-  }
+  },
   // ── C. Price ──
   {
     section: 'meta',
