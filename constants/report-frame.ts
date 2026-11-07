@@ -247,10 +247,9 @@ export const PAY_RANGE_LINE_WIDTH = 'w-1/2 mx-auto min-w-0';
  * then scales uniformly to fill the stage width — proportions stay fixed.
  * Below this width the stage goes fluid (100% of the column) so the blue frame
  * never collapses to a centered island.
- * 1210 = prior island 840 × 1.44 — report frame reads 1.44× wider when scale≈1,
- * and still fills the column when the viewport is larger (/report + /samples).
+ * 1573 = prior 1210 × 1.3 — wider canvas so Guide tabs / dense copy don’t clip.
  */
-export const REPORT_SLIDE_DESIGN_WIDTH = 1210;
+export const REPORT_SLIDE_DESIGN_WIDTH = 1573;
 
 /**
  * Tighter horizontal inset for /report (+ samples stage column) so the

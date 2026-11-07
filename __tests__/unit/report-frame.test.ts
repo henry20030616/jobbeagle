@@ -444,8 +444,8 @@ describe('page shell gutters', () => {
     );
     expect(REPORT_SHELL_WIDTH).toBe('w-full max-w-full');
     expect(REPORT_SHELL_WIDTH).not.toMatch(/\d+rem/);
-    // 1210 = prior island 840 × 1.44 → report frame 1.44× wider
-    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(1210);
+    // 1573 = prior 1210 × 1.3 → report frame wide enough for Guide tabs
+    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(1573);
 
     const homepage = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
     const samples = readFileSync(

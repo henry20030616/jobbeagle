@@ -41,6 +41,11 @@ const SECTION_TITLE_MD =
   'compare-section-title text-sm sm:text-base font-bold tracking-wide';
 const ROW_LABEL_LG = 'compare-row-label text-base sm:text-lg font-medium';
 const ROW_LABEL_MD = 'compare-row-label text-xs sm:text-sm font-medium';
+/** Must use text-* so `.compare-font-large` remaps overlay headers. */
+const COL_HEADER_LG = 'text-xl sm:text-2xl font-bold tracking-tight';
+const COL_HEADER_MD = 'text-sm sm:text-base font-semibold';
+const COL_HINT_LG = 'text-sm sm:text-base font-medium normal-case tracking-normal text-slate-500';
+const COL_HINT_MD = 'text-xs sm:text-sm font-medium normal-case tracking-normal text-slate-500';
 
 function StarRating({
   value,
@@ -228,26 +233,28 @@ export default function ReportCompareTable({
         <div role="rowgroup" className={COMPARE_GRID_COLS}>
           <div
             role="columnheader"
-            className={`border-b border-slate-700 font-semibold text-slate-400 ${headerPad}`}
+            className={`border-b border-slate-700 text-slate-300 ${headerPad} ${
+              large ? COL_HEADER_LG : COL_HEADER_MD
+            }`}
           >
             <span className="block">{REPORT_COMPARE_COL.feature[lang]}</span>
-            <span
-              className={`mt-0.5 block font-medium normal-case tracking-normal text-slate-500 ${
-                large ? 'text-sm' : 'text-[10px] sm:text-[11px]'
-              }`}
-            >
+            <span className={`mt-1 block ${large ? COL_HINT_LG : COL_HINT_MD}`}>
               {REPORT_COMPARE_FIELD_HELP_HINT[lang]}
             </span>
           </div>
           <div
             role="columnheader"
-            className={`compare-col-snapshot border-b border-slate-700 text-left font-semibold text-violet-300 ${headerPad}`}
+            className={`compare-col-snapshot border-b border-slate-700 text-left text-violet-300 ${headerPad} ${
+              large ? COL_HEADER_LG : COL_HEADER_MD
+            }`}
           >
             {REPORT_COMPARE_COL.snapshot[lang]}
           </div>
           <div
             role="columnheader"
-            className={`compare-col-guide border-b border-slate-700 text-left font-semibold text-emerald-300 ${headerPad}`}
+            className={`compare-col-guide border-b border-slate-700 text-left text-emerald-300 ${headerPad} ${
+              large ? COL_HEADER_LG : COL_HEADER_MD
+            }`}
           >
             {REPORT_COMPARE_COL.guide[lang]}
           </div>
@@ -308,8 +315,8 @@ export default function ReportCompareTable({
             }`}
           >
             <h3
-              className={`mb-3 font-semibold ${
-                large ? 'text-lg' : 'text-sm'
+              className={`mb-3 ${
+                large ? COL_HEADER_LG : COL_HEADER_MD
               } ${col === 'snapshot' ? 'text-violet-300' : 'text-emerald-300'}`}
             >
               {REPORT_COMPARE_COL[col][lang]}

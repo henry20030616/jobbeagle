@@ -1,6 +1,6 @@
 /**
  * Snapshot vs Strategy Guide — comparison rows for homepage + samples modal.
- * Structure: Best for → shared (star depth) → Guide-only → price.
+ * Structure: Best for → shared (star depth) → Guide-only (Guide stars) → price.
  *
  * Keep shared + Guide-only labels in lockstep with SnapshotItemStack and
  * GUIDE_PAGE_IDS in `components/report/SevenItemPages.tsx` (core page = the
@@ -17,8 +17,9 @@ export const REPORT_COMPARE_STAR_MAX = 5;
 export interface ReportCompareCell {
   text: Record<ReportCompareLang, string>;
   /**
-   * 1–5 depth rating when both products include the feature.
-   * Omit for Guide-only (✓) / Snapshot missing (—) / meta rows.
+   * 1–5 depth rating. Shared rows rate both products; Guide-only rows
+   * rate the Guide cell only (Snapshot stays — without stars).
+   * Omit for Best for / price rows.
    */
   stars?: number;
 }
@@ -124,9 +125,9 @@ export const REPORT_COMPARE_SECTION_HINT: Record<
     'zh-CN': '星星＝深度（满分 5）。这四项就是适配快照；面试指南含这四项，简历优化会解锁调整建议。',
   },
   guide_only: {
-    en: 'Interview Guide only: personal pay landing, company & role review, web interview questions, and interview negotiation.',
-    'zh-TW': '僅面試指南：個人薪資落點、公司及職位評價、網路真實題目、面試談判建議。',
-    'zh-CN': '仅面试指南：个人薪资落点、公司及职位评价、网络真实题目、面试谈判建议。',
+    en: 'Interview Guide only — stars rate Guide depth (out of 5). Snapshot has no equivalent (—).',
+    'zh-TW': '僅面試指南——星星＝指南深度（滿分 5）。適配快照無對應項（—）。',
+    'zh-CN': '仅面试指南——星星＝指南深度（满分 5）。适配快照无对应项（—）。',
   },
   meta: null,
 };
@@ -292,7 +293,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '你比较可能落到的总薪酬，含底薪／股票／奖金、议价上限，以及公司与求职者立场。有公开薪酬页时会附来源。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Landing, TC split, stances', '落點、TC 拆解、雙方立場', '落点、TC 拆解、双方立场'),
+    guide: t('Landing, TC split, stances', '落點、TC 拆解、雙方立場', '落点、TC 拆解、双方立场', 5),
   },
   {
     section: 'guide_only',
@@ -307,7 +308,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '有来源的公开情报：雇主文化、裁员或 WARN、签证赞助，以及这个职位的评价。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Culture, layoff, visa, reviews', '文化、裁員、簽證、職位評價', '文化、裁员、签证、职位评价'),
+    guide: t('Culture, layoff, visa, reviews', '文化、裁員、簽證、職位評價', '文化、裁员、签证、职位评价', 5),
   },
   {
     section: 'guide_only',
@@ -322,7 +323,7 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '近三年专业题与行为题各 10 题。真题附来源，答法对照你的简历。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('20 questions with sources', '20 題附來源與答法', '20 题附来源与答法'),
+    guide: t('20 questions with sources', '20 題附來源與答法', '20 题附来源与答法', 5),
   },
   {
     section: 'guide_only',
@@ -337,8 +338,8 @@ export const REPORT_COMPARE_ROWS: ReportCompareRow[] = [
       '谈薪策略、问公司问题，以及需要时的面试后信件。',
     ),
     snapshot: t('—', '—', '—'),
-    guide: t('Pay strategy, opening script, follow-up note', '談薪策略、開場講稿、面試後信件', '谈薪策略、开场讲稿、面试后信件'),
-  },
+    guide: t('Pay strategy, opening script, follow-up note', '談薪策略、開場講稿、面試後信件', '谈薪策略、开场讲稿、面试后信件', 5),
+  }
   // ── C. Price ──
   {
     section: 'meta',

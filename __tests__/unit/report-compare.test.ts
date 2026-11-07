@@ -88,6 +88,10 @@ describe('report-compare', () => {
         expect(row.snapshot.stars).toBeGreaterThanOrEqual(1);
         expect(row.guide.stars).toBeGreaterThanOrEqual(row.snapshot.stars!);
         expect(row.guide.stars).toBeLessThanOrEqual(5);
+      } else if (row.section === 'guide_only') {
+        expect(row.snapshot.stars).toBeUndefined();
+        expect(row.guide.stars).toBeGreaterThanOrEqual(4);
+        expect(row.guide.stars).toBeLessThanOrEqual(5);
       } else {
         expect(row.snapshot.stars).toBeUndefined();
         expect(row.guide.stars).toBeUndefined();
@@ -184,10 +188,12 @@ describe('report-compare', () => {
     expect(html).toContain('談薪策略、開場講稿、面試後信件');
     expect(html).toContain('compare-section-title text-lg sm:text-xl font-bold');
     expect(html).toContain('compare-row-label text-base sm:text-lg font-medium');
+    expect(html).toContain('text-xl sm:text-2xl font-bold tracking-tight');
     expect(html).toContain('compare-col-snapshot');
     expect(html).toContain('compare-col-guide');
     expect(html).toMatch(/compare-col-snapshot[\s\S]*?\$9\.99/);
     expect(html).toMatch(/compare-col-guide[\s\S]*?\$14\.99/);
     expect(html).not.toMatch(/\$9\.99\s*\$14\.99/);
+    expect(html).toMatch(/aria-label="5 of 5 stars"/);
   });
 });
