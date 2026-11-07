@@ -14,16 +14,12 @@ import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
 import BrandLogo from '@/components/BrandLogo';
 import { ReportFitStage } from '@/components/ReportFitStage';
-import FunctionRail, { FunctionRailCheck } from '@/components/FunctionRail';
 import {
   PAGE_SHELL_GUTTER_LEFT,
   PAGE_SHELL_GUTTER_RIGHT,
   REPORT_ACTION_BTN,
   REPORT_ACTION_ICON,
-  SAMPLE_RAIL_ROW,
-  sampleReportTabClass,
 } from '@/constants/report-frame';
-import { guideItemNav, type GuideItemId } from '@/components/report/SevenItemPages';
 import { Loader2, Home, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
@@ -35,7 +31,6 @@ export default function ReportPage() {
   const { language: appLanguage } = useLanguage();
   const [payload, setPayload] = useState<StoredReportPayload | null>(null);
   const [ready, setReady] = useState(false);
-  const [guideItem, setGuideItem] = useState<GuideItemId>('core');
 
   useEffect(() => {
     const stored = loadReportSession();
@@ -105,30 +100,7 @@ export default function ReportPage() {
             : getSnapshotUiCopy(lang).productTitle}
         </span>
       </header>
-      <div
-        className={`py-6 ${
-          strategy ? SAMPLE_RAIL_ROW : `flex flex-col items-center ${PAGE_SHELL_GUTTER_LEFT}`
-        }`}
-      >
-        {strategy ? (
-          <FunctionRail label={chrome.productTitle}>
-            {guideItemNav(lang).map((item) => {
-              const active = guideItem === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setGuideItem(item.id)}
-                  className={sampleReportTabClass(active)}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <FunctionRailCheck active={active} />
-                  <span className="min-w-0 text-left">{item.label}</span>
-                </button>
-              );
-            })}
-          </FunctionRail>
-        ) : null}
+      <div className={`py-6 flex flex-col items-center ${PAGE_SHELL_GUTTER_LEFT}`}>
         <main className="min-w-0 w-full flex-1">
           <ReportFitStage className="w-full">
             {strategy ? (
@@ -136,9 +108,6 @@ export default function ReportPage() {
                 report={normalizeFullReport(payload.report as FullReport)}
                 language={lang}
                 embedded
-                hideInnerNav
-                activeItem={guideItem}
-                onItemChange={setGuideItem}
                 onNewAnalysis={handleNewAnalysis}
               />
             ) : (
