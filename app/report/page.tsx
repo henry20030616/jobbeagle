@@ -92,9 +92,9 @@ export default function ReportPage() {
         </div>
       </div>
 
-      <header className={`border-b border-slate-800 py-4 flex items-center justify-between shrink-0 ${PAGE_SHELL_GUTTER_LEFT}`}>
-        <BrandLogo size="nav" showIcon />
-        <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+      <header className={`border-b border-slate-800 py-6 flex flex-wrap items-center justify-between gap-4 shrink-0 ${PAGE_SHELL_GUTTER_LEFT}`}>
+        <BrandLogo size="hero" showIcon />
+        <span className="text-sm sm:text-base font-semibold uppercase tracking-widest text-slate-500">
           {strategy
             ? getGuideUiCopy(lang).productTitle
             : getSnapshotUiCopy(lang).productTitle}
