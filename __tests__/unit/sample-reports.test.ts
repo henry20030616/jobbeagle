@@ -616,7 +616,8 @@ describe('seven-item report layout', () => {
     );
     expect(snapHtml).toContain('ACH／支付軌道深度');
     expect(snapHtml).not.toContain('用 SQL 與 Looker 把對帳週期縮短 28%');
-    expect(snapHtml).toContain('（🔒 升級 Interview Guide 可解鎖對應調整建議）');
+    expect(snapHtml).toContain('（升級 Interview Guide 可解鎖對應調整建議）');
+    expect(snapHtml).toContain('report-upgrade-lock');
     const snapClickable = renderToStaticMarkup(
       createElement(SnapshotItemStack, {
         report: snapshot,
@@ -625,8 +626,10 @@ describe('seven-item report layout', () => {
         onUpgrade: () => undefined,
       }),
     );
-    expect(snapClickable).toMatch(/<button[^>]*>（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）<\/button>/);
-    expect(snapClickable).toMatch(/<button[^>]*>（🔒 升級 Interview Guide 可解鎖對應調整建議）<\/button>/);
+    expect(snapClickable).toMatch(/<button[^>]*class="[^"]*report-upgrade-lock[^"]*"[^>]*>/);
+    expect(snapClickable).toContain('（升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
+    expect(snapClickable).toContain('（升級 Interview Guide 可解鎖對應調整建議）');
+    expect((snapClickable.match(/report-upgrade-lock-icon/g) || []).length).toBe(2);
     const note = '這些是人資篩選系統用來比對履歷的重要關鍵字';
     const noteIdx = snapHtml.indexOf(note);
     expect(noteIdx).toBeGreaterThan(-1);
@@ -634,8 +637,10 @@ describe('seven-item report layout', () => {
     expect(noteSlice).toContain('report-body');
     expect(noteSlice).not.toContain('text-slate-300');
     const lockIdx = snapHtml.indexOf('升級 Interview Guide 可解鎖對應調整建議');
-    const lockSlice = snapHtml.slice(Math.max(0, lockIdx - 80), lockIdx);
-    expect(lockSlice).toContain('report-body');
+    expect(lockIdx).toBeGreaterThan(-1);
+    const lockSlice = snapHtml.slice(Math.max(0, lockIdx - 400), lockIdx);
+    expect(lockSlice).toContain('report-upgrade-lock');
+    expect(lockSlice).toContain('report-upgrade-lock-icon');
     expect(lockSlice).not.toContain('text-slate-300');
     const gapDetail = 'JD 強調 ACH 退票與清算';
     const gapIdx = snapHtml.indexOf(gapDetail);
@@ -720,13 +725,13 @@ describe('seven-item report layout', () => {
     expect(snapHtml).not.toContain('個人目標');
     expect(snapHtml).not.toContain('data-range-label="target"');
     expect(snapHtml).not.toContain('data-range-label="ceiling"');
-    expect(snapHtml).toContain('（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
+    expect(snapHtml).toContain('（升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
     expect(guideHtml).not.toContain('議價天花板');
     expect(guideHtml).not.toContain('個人目標');
     expect(guideHtml).not.toContain('$168K');
     expect(guideHtml).not.toContain('data-range-label="target"');
     expect(guideHtml).not.toContain('data-range-label="ceiling"');
-    expect(guideHtml).not.toContain('（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
+    expect(guideHtml).not.toContain('（升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
   });
 
   it('renders TWD min/max on the Snapshot bar and skips a 區間 placeholder sliver', () => {

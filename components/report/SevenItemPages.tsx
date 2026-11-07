@@ -2,7 +2,7 @@
 
 import React from 'react';
 import type { FullReport, GuideQuestion, GuideResumeRewrite, GuideSource, LiteReport } from '@/types';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Lock } from 'lucide-react';
 import { Cell, Pie, PieChart, PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from 'recharts';
 import { BeagleIcon, getScoreInfo } from '@/components/AnalysisDashboard';
 import {
@@ -739,6 +739,10 @@ function BriefColumn({
   );
 }
 
+function lockLineLabel(raw: string): string {
+  return raw.replace(/\s*🔒\s*/g, ' ').replace(/\(\s+/g, '(').replace(/（\s+/g, '（').trim();
+}
+
 function LockLine({
   children,
   onUpgrade,
@@ -746,16 +750,21 @@ function LockLine({
   children: string;
   onUpgrade?: () => void;
 }) {
+  const label = lockLineLabel(children);
+  const inner = (
+    <span className="inline-flex items-center gap-1.5">
+      <Lock className="report-upgrade-lock-icon" aria-hidden strokeWidth={2.25} />
+      <span>{label}</span>
+    </span>
+  );
+  const className =
+    'report-upgrade-lock mt-3 text-left transition-colors hover:text-indigo-200';
   if (!onUpgrade) {
-    return <p className={`mt-3 font-semibold ${BODY_COPY}`}>{children}</p>;
+    return <p className={className}>{inner}</p>;
   }
   return (
-    <button
-      type="button"
-      onClick={onUpgrade}
-      className={`mt-3 text-left font-semibold ${BODY_COPY} underline decoration-dotted underline-offset-4 transition-colors hover:text-indigo-200`}
-    >
-      {children}
+    <button type="button" onClick={onUpgrade} className={`${className} underline decoration-dotted underline-offset-4`}>
+      {inner}
     </button>
   );
 }

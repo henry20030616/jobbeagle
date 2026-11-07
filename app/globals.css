@@ -159,6 +159,21 @@ body > div {
   color: rgb(241 245 249); /* slate-100 */
 }
 
+/* Snapshot upgrade locks (pay + rewrite) — identical size for text + mark. */
+.report-upgrade-lock,
+button.report-upgrade-lock {
+  font-size: 1.125rem !important;
+  line-height: 1.375 !important;
+  font-weight: 500 !important;
+  color: rgb(241 245 249); /* slate-100 */
+  font-family: inherit;
+}
+.report-upgrade-lock-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
 /* Compare modal: always viewport-centered (escape parent transforms via portal + fixed). */
 .jb-compare-overlay {
   position: fixed !important;
