@@ -31,6 +31,7 @@ import {
 } from '@/lib/payload';
 import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
 import ExtensionScrapeBanner from '@/components/ExtensionScrapeBanner';
+import AnalysisErrorDialog from '@/components/AnalysisErrorDialog';
 
 interface ReportSummary {
   id: string;
@@ -722,30 +723,18 @@ export default function Home() {
           />
         ) : null}
         {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'AUTH_REQUIRED' && (
-          <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h3 className="text-red-400 font-bold mb-2">❌ {t.analysisFailed}</h3>
-                <pre className="text-sm text-red-300 whitespace-pre-wrap font-mono">{error}</pre>
-                {(error.includes('JSON 解析失敗') || error.includes('JSON parsing')) && (
-                  <div className="mt-3 text-xs text-red-400/80">
-                    <p>💡 {t.suggestions}：</p>
-                    <ul className="list-disc list-inside mt-1 space-y-1">
-                      <li>{t.checkConsole}</li>
-                      <li>{t.retryLater}</li>
-                      <li>{t.checkApiKey}</li>
-                    </ul>
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() => { setError(null); setErrorCode(null); }}
-                className="ml-4 text-red-400 hover:text-red-300"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
+          <AnalysisErrorDialog
+            title={t.analysisFailed}
+            message={error}
+            language={language}
+            suggestionsTitle={t.suggestions}
+            suggestions={
+              error.includes('JSON 解析失敗') || error.includes('JSON parsing')
+                ? [t.retryLater, t.checkConsole, t.checkApiKey]
+                : []
+            }
+            onDismiss={() => { setError(null); setErrorCode(null); }}
+          />
         )}
 
         {!report ? (
