@@ -1,0 +1,142 @@
+import type { AppLanguage } from '@/lib/language-context';
+import { normalizeReportLanguage } from '@/lib/report-language';
+
+export type AnalyzeErrorKind =
+  | 'ai_quota'
+  | 'resume_pdf'
+  | 'rate_limit'
+  | 'generic';
+
+type Localized = Record<AppLanguage, string>;
+
+const AI_QUOTA: Localized = {
+  'zh-TW':
+    '分析服務暫時無法回應（AI 服務額度已用完）。這不是您的報告額度問題，系統也未扣除您的報告次數。請稍後再試。',
+  'zh-CN':
+    '分析服务暂时无法响应（AI 服务额度已用完）。这不是您的报告额度问题，系统也未扣除您的报告次数。请稍后再试。',
+  en: 'The analysis service is temporarily unavailable (AI provider quota exhausted). This is not your JobBeagle report-credit balance, and your report credits were not charged. Please try again later.',
+  es: 'El servicio de análisis no está disponible temporalmente (cuota del proveedor de IA agotada). No es el saldo de créditos de informe de JobBeagle, y no se cobró ningún crédito. Inténtalo más tarde.',
+  hi: 'विश्लेषण सेवा अस्थायी रूप से अनुपलब्ध है (AI कोटा समाप्त)। यह आपके JobBeagle रिपोर्ट क्रेडिट नहीं हैं, और कोई क्रेडिट नहीं कटा। बाद में पुनः प्रयास करें।',
+  ar: 'خدمة التحليل غير متاحة مؤقتًا (نفد رصيد مزود الذكاء الاصطناعي). هذا ليس رصيد تقارير JobBeagle، ولم يُخصم أي رصيد. حاول لاحقًا.',
+};
+
+const RESUME_PDF: Localized = {
+  'zh-TW': '履歷 PDF 無法讀取。請重新上傳 PDF（不要沿用舊的已存履歷捷徑），再重新分析。',
+  'zh-CN': '简历 PDF 无法读取。请重新上传 PDF（不要沿用旧的已存简历捷径），再重新分析。',
+  en: 'Resume PDF could not be read. Please re-upload the PDF (do not reuse an old Saved Resume stub), then try again.',
+  es: 'No se pudo leer el PDF del currículum. Vuelve a subirlo (no reutilices un atajo antiguo) e inténtalo de nuevo.',
+  hi: 'रिज़्यूमे PDF पढ़ा नहीं जा सका। कृपया PDF फिर से अपलोड करें, फिर पुनः प्रयास करें।',
+  ar: 'تعذّر قراءة ملف PDF للسيرة. أعد رفع الملف ثم حاول مرة أخرى.',
+};
+
+const RATE_LIMIT: Localized = {
+  'zh-TW': '請求過於頻繁，請稍候再試。',
+  'zh-CN': '请求过于频繁，请稍后再试。',
+  en: 'Too many requests. Please wait a moment and try again.',
+  es: 'Demasiadas solicitudes. Espera un momento e inténtalo de nuevo.',
+  hi: 'बहुत अधिक अनुरोध। कृपया थोड़ी देर बाद पुनः प्रयास करें।',
+  ar: 'طلبات كثيرة جدًا. انتظر قليلًا ثم حاول مرة أخرى.',
+};
+
+const GENERIC: Localized = {
+  'zh-TW': '分析暫時失敗，請稍後再試。若持續發生，請聯絡客服。',
+  'zh-CN': '分析暂时失败，请稍后再试。若持续发生，请联系客服。',
+  en: 'Analysis failed temporarily. Please try again later. If it keeps happening, contact support.',
+  es: 'El análisis falló temporalmente. Inténtalo más tarde. Si continúa, contacta con soporte.',
+  hi: 'विश्लेषण अस्थायी रूप से विफल रहा। बाद में पुनः प्रयास करें।',
+  ar: 'فشل التحليل مؤقتًا. حاول لاحقًا.',
+};
+
+function flattenErrorText(raw: unknown): string {
+  if (raw == null) return '';
+  if (typeof raw === 'string') return raw;
+  if (raw instanceof Error) return raw.message;
+  try {
+    return JSON.stringify(raw);
+  } catch {
+    return String(raw);
+  }
+}
+
+/** Classify provider / pipeline failures so the UI never shows raw JSON. */
+export function classifyAnalyzeError(raw: unknown): AnalyzeErrorKind {
+  const text = flattenErrorText(raw).toLowerCase();
+  if (
+    text.includes('base64 decoding failed')
+    || text.includes('inline_data.data')
+  ) {
+    return 'resume_pdf';
+  }
+  if (
+    text.includes('resource_exhausted')
+    || text.includes('prepayment credits are depleted')
+    || text.includes('quota has been reached')
+    || text.includes('quota exceeded')
+    || text.includes('billing')
+    || (text.includes('"code":402') && text.includes('quota'))
+    || (text.includes('"code":429') && text.includes('resource'))
+  ) {
+    return 'ai_quota';
+  }
+  if (
+    text.includes('rate limit')
+    || text.includes('too many requests')
+    || text.includes('429')
+  ) {
+    return 'rate_limit';
+  }
+  return 'generic';
+}
+
+export function analyzeErrorCode(kind: AnalyzeErrorKind): string {
+  switch (kind) {
+    case 'ai_quota':
+      return 'AI_QUOTA_EXHAUSTED';
+    case 'resume_pdf':
+      return 'RESUME_PDF_UNREADABLE';
+    case 'rate_limit':
+      return 'RATE_LIMITED';
+    default:
+      return 'ANALYSIS_ERROR';
+  }
+}
+
+function isAlreadyUserFacing(text: string): boolean {
+  if (!text || text.length > 400) return false;
+  if (text.includes('{') || text.includes('}')) return false;
+  if (/https?:\/\//i.test(text)) return false;
+  if (/RESOURCE_EXHAUSTED|UNAUTHENTICATED|PERMISSION_DENIED/i.test(text)) return false;
+  if (/^Error\b/i.test(text)) return false;
+  return true;
+}
+
+/**
+ * Turn Gemini / pipeline exceptions into a short user-language sentence.
+ * Never returns JSON blobs or AI Studio billing URLs.
+ */
+export function toUserFacingAnalyzeError(
+  raw: unknown,
+  language?: string | null,
+): { message: string; kind: AnalyzeErrorKind; code: string } {
+  const lang = normalizeReportLanguage(language);
+  const kind = classifyAnalyzeError(raw);
+  const code = analyzeErrorCode(kind);
+  if (kind === 'generic') {
+    const text = flattenErrorText(raw).trim();
+    if (isAlreadyUserFacing(text)) {
+      return { kind, code, message: text };
+    }
+    return { kind, code, message: GENERIC[lang] ?? GENERIC.en };
+  }
+  const table =
+    kind === 'ai_quota'
+      ? AI_QUOTA
+      : kind === 'resume_pdf'
+        ? RESUME_PDF
+        : RATE_LIMIT;
+  return {
+    kind,
+    code,
+    message: table[lang] ?? table.en,
+  };
+}

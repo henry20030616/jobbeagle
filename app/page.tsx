@@ -32,6 +32,7 @@ import {
 import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
 import ExtensionScrapeBanner from '@/components/ExtensionScrapeBanner';
 import AnalysisErrorDialog from '@/components/AnalysisErrorDialog';
+import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 
 interface ReportSummary {
   id: string;
@@ -456,15 +457,17 @@ export default function Home() {
           return;
         }
 
+        const friendly = toUserFacingAnalyzeError(
+          result.error || result.message || 'Analysis failed',
+          reportLang,
+        );
         trackEvent(ANALYTICS_EVENTS.analyzeError, {
           report_type: reportType,
           source: 'home',
-          error_code: code || 'ANALYSIS_ERROR',
+          error_code: code || friendly.code,
         });
-        setError(
-          result.error
-            || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗' : 'Analysis failed'),
-        );
+        setErrorCode(code || friendly.code);
+        setError(friendly.message);
         return;
       }
 
@@ -512,8 +515,9 @@ export default function Home() {
         source: 'home',
         error_code: 'CLIENT_EXCEPTION',
       });
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      setError(message);
+      const friendly = toUserFacingAnalyzeError(err, language);
+      setErrorCode(friendly.code);
+      setError(friendly.message);
     } finally {
       stopProgressSimulation();
       setLoading(false);

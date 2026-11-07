@@ -49,6 +49,7 @@ import {
   isInterviewStrategyGuide,
   normalizeReportType,
 } from '@/constants/report-products';
+import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 
 export const maxDuration = 180;
 
@@ -155,9 +156,11 @@ async function resolveInput(
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
+  let requestLanguage = 'en';
 
   try {
     const body = (await request.json()) as AnalyzeRequestBody;
+    requestLanguage = body.language || 'en';
     const reportType = normalizeReportType(body.report_type);
 
     const supabase = await createClient();
@@ -437,14 +440,10 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Analysis failed';
     console.error('[Analyze] Error:', message);
-    const friendly =
-      message.includes('Base64 decoding failed')
-      || message.includes('inline_data.data')
-        ? 'Resume PDF could not be read. Please re-upload the PDF file (do not reuse an old Saved Resume stub), then launch again.'
-        : message;
+    const friendly = toUserFacingAnalyzeError(message, requestLanguage);
     return NextResponse.json(
-      { error: friendly, code: 'ANALYSIS_ERROR' },
-      { status: 500 },
+      { error: friendly.message, code: friendly.code },
+      { status: friendly.kind === 'ai_quota' ? 503 : 500 },
     );
   }
 }
