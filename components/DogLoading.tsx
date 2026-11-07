@@ -15,6 +15,8 @@ interface DogLoadingProps {
   stageLabel?: string;
   elapsed?: number;
   language?: AppLanguage;
+  /** Snapshot stays shorter; Guide uses Gemini Pro+Search + Claude writing. */
+  estimateKind?: 'snapshot' | 'guide';
 }
 
 const DogLoading: React.FC<DogLoadingProps> = ({
@@ -23,6 +25,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
   stageLabel,
   elapsed = 0,
   language = 'en',
+  estimateKind = 'snapshot',
 }) => {
   const displayProgress = Math.min(Math.max(Math.round(progress), 0), 99);
   const [zoom, setZoom] = useState(1);
@@ -44,14 +47,23 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     hi: 'बीगल डेटा खोज रहा है...',
     ar: 'يقوم البيغل بالبحث عن البيانات...',
   };
-  const estimatedMap: Record<AppLanguage, string> = {
-    'zh-TW': '通常需要 30–90 秒，請稍候',
-    'zh-CN': '通常需要 30–90 秒，请稍候',
-    en: 'Usually takes 45–120 seconds for Strategy Guide',
-    es: 'Normalmente tarda 30–90 segundos',
-    hi: 'आमतौर पर 30–90 सेकंड लगते हैं',
-    ar: 'عادةً يستغرق 30–90 ثانية',
+  const estimatedMapSnapshot: Record<AppLanguage, string> = {
+    'zh-TW': '適配快照通常需要 15–45 秒，請稍候',
+    'zh-CN': '适配快照通常需要 15–45 秒，请稍候',
+    en: 'Fit Snapshot usually takes 15–45 seconds',
+    es: 'Fit Snapshot suele tardar 15–45 segundos',
+    hi: 'Fit Snapshot आमतौर पर 15–45 सेकंड लेता है',
+    ar: 'Fit Snapshot يستغرق عادةً 15–45 ثانية',
   };
+  const estimatedMapGuide: Record<AppLanguage, string> = {
+    'zh-TW': '面試指南含網路搜尋與撰寫，通常需要 1–3 分鐘（Gemini＋Claude）',
+    'zh-CN': '面试指南含网络搜索与撰写，通常需要 1–3 分钟（Gemini＋Claude）',
+    en: 'Interview Guide usually takes 1–3 minutes (Gemini search + Claude writing)',
+    es: 'Interview Guide suele tardar 1–3 minutos (búsqueda Gemini + redacción Claude)',
+    hi: 'Interview Guide आमतौर पर 1–3 मिनट लेता है (Gemini खोज + Claude लेखन)',
+    ar: 'Interview Guide يستغرق عادةً 1–3 دقائق (بحث Gemini + كتابة Claude)',
+  };
+  const estimatedMap = estimateKind === 'guide' ? estimatedMapGuide : estimatedMapSnapshot;
   const elapsedMap: Record<AppLanguage, string> = {
     'zh-TW': `已分析 ${elapsed} 秒`,
     'zh-CN': `已分析 ${elapsed} 秒`,

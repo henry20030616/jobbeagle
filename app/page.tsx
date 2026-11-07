@@ -687,6 +687,9 @@ export default function Home() {
             stage={analysisStage}
             elapsed={analysisElapsed}
             language={language}
+            estimateKind={
+              reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE ? 'guide' : 'snapshot'
+            }
           />
         )}
         {checkoutNotice && (

@@ -6,6 +6,7 @@ import {
   GEMINI_LITE_MODEL,
   GEMINI_FULL_MODEL,
   GEMINI_TOKEN_COUNT_MODEL,
+  ANTHROPIC_WRITING_MODEL,
   MAX_COMBINED_TOKENS,
 } from '@/constants/models';
 import { LITE_SYSTEM_PROMPT } from '@/lib/prompts/lite';
@@ -432,20 +433,24 @@ export async function executeFullAnalysis(
   language: AppLanguage | string = 'en',
 ): Promise<{ report: FullReport; model: string }> {
   const opts = { careerContext };
-  const snapshot = await executeLiteAnalysis(
-    resumeText,
-    rawJd,
-    pdfInline,
-    careerContext,
-    pageUrl,
-    language,
-  );
-  const modules = await runPaidGuideModules({
-    parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl),
-    language,
-    companyName,
-    jobTitle,
-  });
+  // Snapshot (Flash-Lite) and Guide wave-1 (Pro+Search intel + Claude rewrite) are independent
+  // until overlay — run them together so Guide wall-clock drops by one Snapshot pass.
+  const [snapshot, modules] = await Promise.all([
+    executeLiteAnalysis(
+      resumeText,
+      rawJd,
+      pdfInline,
+      careerContext,
+      pageUrl,
+      language,
+    ),
+    runPaidGuideModules({
+      parts: buildUserParts(rawJd, resumeText, pdfInline, careerContext, pageUrl),
+      language,
+      companyName,
+      jobTitle,
+    }),
+  ]);
   const merged = overlayGuideModules(
     applyJobSourceFallback(snapshot.report, pageUrl),
     modules,
@@ -454,5 +459,8 @@ export async function executeFullAnalysis(
     normalizeFullReport(merged, opts),
   ).report;
 
-  return { report, model: `${snapshot.model}+${GEMINI_FULL_MODEL}` };
+  return {
+    report,
+    model: `${snapshot.model}+${GEMINI_FULL_MODEL}+${ANTHROPIC_WRITING_MODEL}`,
+  };
 }
