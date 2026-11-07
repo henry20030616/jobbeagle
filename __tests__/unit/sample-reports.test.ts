@@ -111,7 +111,8 @@ describe('sample reports', () => {
     expect(applySource).toContain('<ReportProse text={reason} className="mt-3" />');
     const liteDash = readFileSync(join(process.cwd(), 'components/LiteReportDashboard.tsx'), 'utf8');
     expect(liteDash).not.toContain('guide_modules');
-    expect(liteDash).toContain("/account#plans");
+    expect(liteDash).toContain("router.push('/account#plans')");
+    expect(liteDash).toContain("router.prefetch('/account')");
     expect(liteDash).toContain('onUpgrade={locked ? handleUpgrade : undefined}');
     expect(liteDash).not.toContain('QuotaPaywallCard');
     expect(pages).toContain('function LockLine');

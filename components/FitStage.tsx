@@ -66,7 +66,8 @@ export function FitStage({
 }: FitStageProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
-  const [ready, setReady] = useState(false);
+  // fill stages do not zoom — show content immediately (account felt blank while waiting).
+  const [ready, setReady] = useState(mode === 'fill');
   /** When enlarge-only and viewport is narrower than design, use fluid width. */
   const [fluid, setFluid] = useState(mode === 'fill');
 

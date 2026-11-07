@@ -353,14 +353,31 @@ export async function listUserPayPalSubscriptionIds(
   return ids;
 }
 
+/** Cap live PayPal GETs — older I-* rows are almost never still ACTIVE. */
+const LIVE_SUBSCRIPTION_PROBE_LIMIT = 3;
+
 export async function findLivePayPalSubscription(
   admin: SupabaseClient,
   userId: string,
 ): Promise<{ id: string; status: string; customId: string | null; nextBillingTime: string | null } | null> {
-  const ids = await listUserPayPalSubscriptionIds(admin, userId);
-  for (const id of ids) {
-    const sub = await getPayPalSubscription(id);
-    if (sub.status === 'ACTIVE' || sub.status === 'SUSPENDED') return sub;
+  const ids = [...new Set(await listUserPayPalSubscriptionIds(admin, userId))].slice(
+    0,
+    LIVE_SUBSCRIPTION_PROBE_LIMIT,
+  );
+  if (ids.length === 0) return null;
+
+  // Parallel probes beat sequential PayPal round-trips (was N × ~0.5–2s).
+  const results = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        return await getPayPalSubscription(id);
+      } catch {
+        return null;
+      }
+    }),
+  );
+  for (const sub of results) {
+    if (sub && (sub.status === 'ACTIVE' || sub.status === 'SUSPENDED')) return sub;
   }
   return null;
 }

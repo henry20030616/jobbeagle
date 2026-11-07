@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   getMissingPayPalPlanIds,
   isAllowedPayPalCertUrl,
@@ -7,6 +9,16 @@ import {
   paypalApiBase,
   usdAmountFromCents,
 } from '@/lib/paypal';
+
+describe('live subscription lookup', () => {
+  it('probes recent PayPal subscription ids in parallel instead of sequentially', () => {
+    const src = readFileSync(join(process.cwd(), 'lib/paypal.ts'), 'utf8');
+    const fn = src.slice(src.indexOf('export async function findLivePayPalSubscription'));
+    expect(fn).toContain('LIVE_SUBSCRIPTION_PROBE_LIMIT');
+    expect(fn).toContain('Promise.all');
+    expect(fn).not.toMatch(/for \(const id of ids\) \{\s*const sub = await getPayPalSubscription/);
+  });
+});
 
 describe('PayPal money and API host', () => {
   it('formats USD amounts from cents', () => {

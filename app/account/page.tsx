@@ -730,26 +730,26 @@ export default function AccountPage() {
       }
       setSignedIn(true);
       setData(await res.json());
-      void loadBilling();
     } catch {
       setError(t.loadError);
     } finally {
       setLoading(false);
     }
-  }, [t.loadError, loadBilling]);
+  }, [t.loadError]);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
+    // getSession is local/cached; API routes still verify the user server-side.
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) {
         setSignedIn(false);
         setLoading(false);
         return;
       }
       setSignedIn(true);
-      void load();
+      void Promise.all([load(), loadBilling()]);
     });
-  }, [load]);
+  }, [load, loadBilling]);
 
   useEffect(() => {
     const sync = () => {

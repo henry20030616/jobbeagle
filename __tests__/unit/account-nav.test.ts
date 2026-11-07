@@ -112,6 +112,13 @@ describe('account function nav', () => {
     expect(isAccountHashId('subscription-actions')).toBe(false);
   });
 
+  it('loads account data and PayPal billing in parallel after a local session read', () => {
+    expect(ACCOUNT_PAGE).toContain('getSession()');
+    expect(ACCOUNT_PAGE).toContain('Promise.all([load(), loadBilling()])');
+    expect(ACCOUNT_PAGE).not.toContain('getUser().then');
+    expect(ACCOUNT_PAGE).not.toContain('void loadBilling();');
+  });
+
   it('folds cancel and sponsor into the purchase card, not separate panels', () => {
     const plansIdx = ACCOUNT_PAGE.indexOf('id="plans"');
     const cancelIdx = ACCOUNT_PAGE.indexOf('t.cancelSub', plansIdx);

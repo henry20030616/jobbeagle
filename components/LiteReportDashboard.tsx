@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import type { GuideResumeRewrite, LiteReport } from '@/types';
 import {
   Home,
@@ -41,20 +42,26 @@ export default function LiteReportDashboard({
   edition = 'snapshot',
   rewrites = [],
 }: LiteReportDashboardProps) {
+  const router = useRouter();
   const lang = normalizeReportLanguage(language);
   const t = getSnapshotUiCopy(lang);
   const locked = edition === 'snapshot';
+
+  useEffect(() => {
+    if (!locked) return;
+    router.prefetch('/account');
+  }, [locked, router]);
 
   const handleBack = () => {
     if (onNewAnalysis) {
       onNewAnalysis();
       return;
     }
-    window.location.href = '/';
+    router.push('/');
   };
 
   const handleUpgrade = () => {
-    window.location.href = '/account#plans';
+    router.push('/account#plans');
   };
 
   return (
