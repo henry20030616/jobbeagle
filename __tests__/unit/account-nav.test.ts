@@ -131,6 +131,10 @@ describe('account function nav', () => {
     expect(ACCOUNT_PAGE).not.toContain('id="subscription-actions"');
     expect(ACCOUNT_PAGE).not.toContain('id="sponsor"');
     expect(ACCOUNT_PAGE).toContain('{t.cancelNone}');
+    expect(ACCOUNT_PAGE).toContain(
+      "cancelNone: 'No active monthly plan yet — buy Standard or Advanced above anytime.'",
+    );
+    expect(ACCOUNT_PAGE).not.toContain('No monthly subscription on this account.');
     expect(ACCOUNT_PAGE).toContain('handleSponsor');
     expect(ACCOUNT_PAGE).toContain('href="/"');
     expect(ACCOUNT_PAGE).toContain('href="/samples"');
