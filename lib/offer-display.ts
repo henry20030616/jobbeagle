@@ -236,6 +236,40 @@ export function parseMoneyAmount(v: string | null | undefined): number | null {
   return Number.isFinite(raw) ? raw : null;
 }
 
+const COMPACT_MONEY_UNIT = /(?:[KkMm](?:illion)?\b|萬|億|千)/;
+
+function formatSingleMoneyDisplay(s: string): string {
+  // Compact forms ($155K, TWD 1.2M, 120萬) are already standard — leave them.
+  if (COMPACT_MONEY_UNIT.test(s)) return s;
+  return s.replace(/(\d[\d,]*(?:\.\d+)?)/, (raw) => {
+    const cleaned = raw.replace(/,/g, '');
+    if (!cleaned) return raw;
+    if (cleaned.includes('.')) {
+      const [intPart, frac] = cleaned.split('.');
+      const intNum = Number(intPart);
+      if (!Number.isFinite(intNum)) return raw;
+      return `${intNum.toLocaleString('en-US')}.${frac}`;
+    }
+    const n = Number(cleaned);
+    if (!Number.isFinite(n)) return raw;
+    return n.toLocaleString('en-US');
+  });
+}
+
+/**
+ * Standard salary writing: thousand separators on full-digit amounts.
+ * `$163000` → `$163,000`; ranges → both ends; `$155K` / `120萬` unchanged.
+ */
+export function formatMoneyDisplay(v: string | null | undefined): string {
+  const s = cleanMoney(v);
+  if (!s) return '';
+  const split = splitRangeParts(s);
+  if (split) {
+    return `${formatSingleMoneyDisplay(split.low)} – ${formatSingleMoneyDisplay(split.high)}`;
+  }
+  return formatSingleMoneyDisplay(s);
+}
+
 /**
  * Parseable min–max the Snapshot / Guide bar can actually draw.
  * Ignores placeholders like 「區間」 / 「面議」 / "competitive".
@@ -261,7 +295,12 @@ export function numericOfferBand(
     const lowAmount = parseMoneyAmount(pair.low);
     const highAmount = parseMoneyAmount(pair.high);
     if (lowAmount !== null && highAmount !== null && highAmount > lowAmount) {
-      return { ...pair, lowAmount, highAmount };
+      return {
+        low: formatMoneyDisplay(pair.low),
+        high: formatMoneyDisplay(pair.high),
+        lowAmount,
+        highAmount,
+      };
     }
   }
   return null;
@@ -276,7 +315,7 @@ export function formatOfferRange(offer: ExpectedOfferRange | null | undefined): 
   if (band) return `${band.low} – ${band.high}`;
   if (!offer) return null;
   const posted = cleanMoney(offer.posted_range);
-  if (posted && parseMoneyAmount(posted) !== null) return posted;
+  if (posted && parseMoneyAmount(posted) !== null) return formatMoneyDisplay(posted);
   return null;
 }
 
@@ -293,7 +332,8 @@ export function formatPredictedOffer(
   offer: ExpectedOfferRange | null | undefined,
 ): string | null {
   if (!offer) return null;
-  return cleanMoney(offer.candidate_predicted_offer) || null;
+  const raw = cleanMoney(offer.candidate_predicted_offer);
+  return raw ? formatMoneyDisplay(raw) : null;
 }
 
 /**

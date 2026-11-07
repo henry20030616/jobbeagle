@@ -20,6 +20,7 @@ import {
   REPORT_H3,
 } from '@/constants/report-frame';
 import {
+  formatMoneyDisplay,
   formatOfferRange,
   marketBandDisclaimer,
   numericOfferBand,
@@ -605,19 +606,21 @@ function PayRangeLine({
   const rangeText = formatOfferRange(offer);
   const money = currency?.trim() || offer?.currency || 'USD';
   if (!low || !high || !rangeText) return null;
+  const displayTarget = targetValue ? formatMoneyDisplay(targetValue) : '';
+  const displayCeiling = ceilingValue ? formatMoneyDisplay(ceilingValue) : '';
   const amounts = [
     parseMoneyAmount(low),
     parseMoneyAmount(high),
-    parseMoneyAmount(targetValue),
-    parseMoneyAmount(ceilingValue),
+    parseMoneyAmount(displayTarget),
+    parseMoneyAmount(displayCeiling),
   ].filter((n): n is number => n !== null);
   const min = amounts.length > 0 ? Math.min(...amounts) : null;
   const max = amounts.length > 0 ? Math.max(...amounts) : null;
   const span = min !== null && max !== null && max > min ? max - min : 0;
   const lowPct = min !== null ? markerPercent(parseMoneyAmount(low), min, span) : null;
   const highPct = min !== null ? markerPercent(parseMoneyAmount(high), min, span) : null;
-  const targetPct = min !== null ? markerPercent(parseMoneyAmount(targetValue), min, span) : null;
-  const ceilingPct = min !== null ? markerPercent(parseMoneyAmount(ceilingValue), min, span) : null;
+  const targetPct = min !== null ? markerPercent(parseMoneyAmount(displayTarget), min, span) : null;
+  const ceilingPct = min !== null ? markerPercent(parseMoneyAmount(displayCeiling), min, span) : null;
   const fillLeft = lowPct ?? 0;
   const fillRight = 100 - (highPct ?? 100);
   const collapsed = span <= 0 || fillLeft + fillRight >= 99;
@@ -629,8 +632,8 @@ function PayRangeLine({
     : { left: `${fillLeft}%`, right: `${fillRight}%` };
   const aria = [
     `${rangeText} (${money})`,
-    targetLabel && targetValue ? `${targetLabel} ${targetValue}` : null,
-    ceilingLabel && ceilingValue ? `${ceilingLabel} ${ceilingValue}` : null,
+    targetLabel && displayTarget ? `${targetLabel} ${displayTarget}` : null,
+    ceilingLabel && displayCeiling ? `${ceilingLabel} ${displayCeiling}` : null,
   ].filter(Boolean).join('. ');
   return (
     <div
@@ -653,20 +656,20 @@ function PayRangeLine({
             className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
             style={fillStyle}
           />
-          {targetPct !== null && targetValue ? (
+          {targetPct !== null && displayTarget ? (
             <PayRangeMark
               pct={targetPct}
               label={targetLabel || ''}
-              value={targetValue}
+              value={displayTarget}
               tone="target"
               side="above"
             />
           ) : null}
-          {ceilingPct !== null && ceilingValue ? (
+          {ceilingPct !== null && displayCeiling ? (
             <PayRangeMark
               pct={ceilingPct}
               label={ceilingLabel || ''}
-              value={ceilingValue}
+              value={displayCeiling}
               tone="ceiling"
               side={staggerCeiling ? 'below' : 'above'}
             />
@@ -1603,10 +1606,11 @@ export function GuideItemPage({
   }
   if (item === 'land') {
     const salary = guideSalaryLand(report);
+    const landTarget = salary?.target ? formatMoneyDisplay(salary.target) : '';
     const mix = [
-      [copy.base, salary?.base],
-      [copy.equity, salary?.equity],
-      [copy.bonus, salary?.bonus],
+      [copy.base, salary?.base ? formatMoneyDisplay(salary.base) : ''],
+      [copy.equity, salary?.equity ? formatMoneyDisplay(salary.equity) : ''],
+      [copy.bonus, salary?.bonus ? formatMoneyDisplay(salary.bonus) : ''],
     ].filter((row): row is [string, string] => Boolean(row[1]));
     const stances = splitBuyerSellerStances(salary?.buyer_seller ?? '');
     const landPoints = splitSummaryPoints(salary?.rationale ?? '');
@@ -1616,9 +1620,9 @@ export function GuideItemPage({
           <h2 className={REPORT_H1}>{copy.land}</h2>
           <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             {mix.length > 0 ? (
-              <PayMixPie rows={mix} totalLabel={salary.target || '—'} bare />
+              <PayMixPie rows={mix} totalLabel={landTarget || '—'} bare />
             ) : (
-              <p className="text-3xl font-black text-white">{salary.target || '—'}</p>
+              <p className="text-3xl font-black text-white">{landTarget || '—'}</p>
             )}
             <InnerSection
               title={copy.band}

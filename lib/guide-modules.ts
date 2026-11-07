@@ -14,10 +14,16 @@ import {
   GEMINI_FULL_MODEL,
   GEMINI_LITE_MODEL,
 } from '@/constants/models';
+import { formatMoneyDisplay } from '@/lib/offer-display';
 import { isCitableSourceUrl } from '@/lib/provenance';
 import { QUESTIONS_SUMMARY_MAX } from '@/lib/questions-summary';
 import { resolveCompanyEvalSummaries } from '@/lib/company-eval-summary';
 import { groundInterviewSummary } from '@/lib/questions-analysis-grounding';
+
+function moneyField(v: unknown, max: number): string {
+  const raw = asString(v).slice(0, max);
+  return raw ? formatMoneyDisplay(raw) : '';
+}
 
 /** Company/role 總結分析 is a multi-point recruiter brief, not three one-liners. */
 export const COMPANY_EVAL_SUMMARY_MAX = 2500;
@@ -317,12 +323,15 @@ function sources(raw: unknown): GuideSource[] {
 export function parseSalaryLand(raw: unknown): GuideModules['salary_land'] | null {
   if (!raw || typeof raw !== 'object') return null;
   const row = raw as Record<string, unknown>;
+  const base = moneyField(row.base, 80);
+  const equity = moneyField(row.equity, 80);
+  const bonus = moneyField(row.bonus, 80);
   return {
-    target: asString(row.target).slice(0, 200),
-    ceiling: asString(row.ceiling).slice(0, 200),
-    base: asString(row.base).slice(0, 80) || null,
-    equity: asString(row.equity).slice(0, 80) || null,
-    bonus: asString(row.bonus).slice(0, 80) || null,
+    target: moneyField(row.target, 200),
+    ceiling: moneyField(row.ceiling, 200),
+    base: base || null,
+    equity: equity || null,
+    bonus: bonus || null,
     rationale: asString(row.rationale).slice(0, 1200),
     buyer_seller: asString(row.buyer_seller).slice(0, 1200),
     sources: sources(row.sources),

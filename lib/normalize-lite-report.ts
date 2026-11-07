@@ -56,7 +56,7 @@ import {
   normalizeMarketPositioning,
   normalizeRiskAssessment,
 } from '@/lib/normalize-executive-layer';
-import { numericOfferBand, parseMoneyAmount } from '@/lib/offer-display';
+import { formatMoneyDisplay, numericOfferBand, parseMoneyAmount } from '@/lib/offer-display';
 
 const HARD_STATUSES: HardFilterStatus[] = ['Pass', 'Risk', 'Blocked', 'Unknown'];
 const FIT_BANDS: FitBand[] = ['Strong', 'Viable', 'Stretch', 'Mismatch'];
@@ -281,7 +281,7 @@ function normalizeStructuredLevers(raw: unknown): OfferLever[] {
 function moneyStringOrNull(v: unknown): string | null {
   const s = asString(v);
   if (!s) return null;
-  return parseMoneyAmount(s) !== null ? s : null;
+  return parseMoneyAmount(s) !== null ? formatMoneyDisplay(s) : null;
 }
 
 function normalizeExpectedOffer(

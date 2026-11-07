@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   evidenceTierLabel,
+  formatMoneyDisplay,
   formatOfferRange,
   formatPredictedOffer,
   hasOfferRange,
@@ -12,6 +13,24 @@ import {
   parseMoneyAmount,
   predictedLandGaugeValue,
 } from '@/lib/offer-display';
+
+describe('formatMoneyDisplay', () => {
+  it('adds thousand separators to full-digit USD amounts', () => {
+    expect(formatMoneyDisplay('$163000')).toBe('$163,000');
+    expect(formatMoneyDisplay('$236000')).toBe('$236,000');
+    expect(formatMoneyDisplay('$163000 – $236000')).toBe('$163,000 – $236,000');
+  });
+
+  it('keeps compact K/M and 萬 forms', () => {
+    expect(formatMoneyDisplay('$155K')).toBe('$155K');
+    expect(formatMoneyDisplay('TWD 1.2M')).toBe('TWD 1.2M');
+    expect(formatMoneyDisplay('120萬')).toBe('120萬');
+  });
+
+  it('is idempotent on already-formatted amounts', () => {
+    expect(formatMoneyDisplay('$163,000')).toBe('$163,000');
+  });
+});
 
 describe('evidenceTierLabel', () => {
   it('maps tiers to plain English', () => {
@@ -37,6 +56,22 @@ describe('formatOfferRange', () => {
         sources: [],
       }),
     ).toBe('$150K – $180K');
+  });
+
+  it('formats full-digit band ends with thousand separators', () => {
+    expect(
+      formatOfferRange({
+        posted_range: null,
+        p25: '$163000',
+        p50: null,
+        p75: '$236000',
+        currency: 'USD',
+        region: 'US',
+        target_gap: '',
+        evidence_tier: 'C',
+        sources: [],
+      }),
+    ).toBe('$163,000 – $236,000');
   });
 
   it('builds low–high from percentiles without P labels', () => {
