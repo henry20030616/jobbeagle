@@ -7,6 +7,7 @@ import {
   normalizeCheckoutPlanType,
   ACTIVE_CHECKOUT_PLAN_TYPES,
   parseSponsorAmountCents,
+  SPONSOR_ORDERS_PLAN_TYPE_FALLBACK,
   type CheckoutPlanType,
 } from '@/constants/checkout-plans';
 import {
@@ -107,7 +108,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { data: order, error: orderErr } = await admin
+  const baseMetadata: Record<string, unknown> = {
+    plan_label: plan.labelEn,
+    ...(planType === 'author_sponsor'
+      ? { amount_cents: amountCents, fulfillment_plan_type: 'author_sponsor' }
+      : {}),
+  };
+
+  let { data: order, error: orderErr } = await admin
     .from('orders')
     .insert({
       user_id: user.id,
@@ -117,13 +125,38 @@ export async function POST(request: NextRequest) {
       currency: 'usd',
       status: 'pending',
       payment_provider: 'paypal',
-      metadata: {
-        plan_label: plan.labelEn,
-        ...(planType === 'author_sponsor' ? { amount_cents: amountCents } : {}),
-      },
+      metadata: baseMetadata,
     })
     .select('id')
     .single();
+
+  // Live DB may still reject author_sponsor until migration 014 is applied.
+  if (
+    planType === 'author_sponsor' &&
+    orderErr &&
+    /orders_plan_type_check|23514/.test(orderErr.message ?? '')
+  ) {
+    const retry = await admin
+      .from('orders')
+      .insert({
+        user_id: user.id,
+        report_id: reportId,
+        plan_type: SPONSOR_ORDERS_PLAN_TYPE_FALLBACK,
+        amount,
+        currency: 'usd',
+        status: 'pending',
+        payment_provider: 'paypal',
+        metadata: {
+          ...baseMetadata,
+          fulfillment_plan_type: 'author_sponsor',
+          db_plan_type_fallback: SPONSOR_ORDERS_PLAN_TYPE_FALLBACK,
+        },
+      })
+      .select('id')
+      .single();
+    order = retry.data;
+    orderErr = retry.error;
+  }
 
   if (orderErr || !order) {
     console.error('[checkout] order insert failed:', orderErr?.message);

@@ -3,8 +3,10 @@ import {
   CHECKOUT_PLANS,
   isCheckoutPlanType,
   normalizeCheckoutPlanType,
+  resolveOrderCheckoutPlanType,
   ACTIVE_CHECKOUT_PLAN_TYPES,
   parseSponsorAmountCents,
+  SPONSOR_ORDERS_PLAN_TYPE_FALLBACK,
 } from '@/constants/checkout-plans';
 
 describe('checkout plans (Unified Master Spec 2026)', () => {
@@ -40,6 +42,17 @@ describe('checkout plans (Unified Master Spec 2026)', () => {
     expect(CHECKOUT_PLANS.author_sponsor.jobFitSnapshotCredits).toBeUndefined();
     expect(CHECKOUT_PLANS.author_sponsor.labelEn).toBe('Sponsor JobBeagle');
     expect(CHECKOUT_PLANS.author_sponsor.labelZhTW).toBe('贊助 JobBeagle');
+  });
+
+  it('resolves sponsor fulfillment when DB column used legacy fallback plan_type', () => {
+    expect(SPONSOR_ORDERS_PLAN_TYPE_FALLBACK).toBe('premium_report');
+    expect(normalizeCheckoutPlanType('premium_report')).toBeNull();
+    expect(
+      resolveOrderCheckoutPlanType('premium_report', {
+        fulfillment_plan_type: 'author_sponsor',
+      }),
+    ).toBe('author_sponsor');
+    expect(resolveOrderCheckoutPlanType('author_sponsor', {})).toBe('author_sponsor');
   });
 
   it('parses sponsor USD amounts', () => {

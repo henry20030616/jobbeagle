@@ -131,6 +131,27 @@ export function normalizeCheckoutPlanType(value: string): CheckoutPlanType | nul
   return null;
 }
 
+/**
+ * Legacy `orders.plan_type` CHECK allowed this value before `author_sponsor`
+ * existed. Used only as a DB column stand-in when the live constraint still
+ * rejects `author_sponsor`; real SKU is always in metadata.fulfillment_plan_type.
+ */
+export const SPONSOR_ORDERS_PLAN_TYPE_FALLBACK = 'premium_report';
+
+export function resolveOrderCheckoutPlanType(
+  planType: unknown,
+  metadata: unknown,
+): CheckoutPlanType | null {
+  if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
+    const fulfillment = (metadata as Record<string, unknown>).fulfillment_plan_type;
+    if (typeof fulfillment === 'string' && isCheckoutPlanType(fulfillment)) {
+      return normalizeCheckoutPlanType(fulfillment) ?? fulfillment;
+    }
+  }
+  if (typeof planType !== 'string') return null;
+  return normalizeCheckoutPlanType(planType);
+}
+
 export function isCheckoutPlanType(value: string): value is CheckoutPlanType {
   return CHECKOUT_PLAN_TYPES.includes(value as CheckoutPlanType);
 }

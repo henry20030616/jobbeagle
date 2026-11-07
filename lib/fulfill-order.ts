@@ -5,6 +5,7 @@ import {
   SUBSCRIPTION_ALLOWANCES,
   isCheckoutPlanType,
   normalizeCheckoutPlanType,
+  resolveOrderCheckoutPlanType,
 } from '@/constants/checkout-plans';
 
 /** Idempotent post-payment fulfillment. */
@@ -116,15 +117,14 @@ export async function fulfillPaidOrderById(
 ): Promise<'fulfilled' | 'idempotent' | 'missing'> {
   const { data: order } = await admin
     .from('orders')
-    .select('id, user_id, plan_type, report_id, status')
+    .select('id, user_id, plan_type, report_id, status, metadata')
     .eq('id', orderId)
     .maybeSingle();
 
   if (!order) return 'missing';
   if (order.status === 'succeeded') return 'idempotent';
 
-  const planRaw = typeof order.plan_type === 'string' ? order.plan_type : '';
-  const planType = normalizeCheckoutPlanType(planRaw);
+  const planType = resolveOrderCheckoutPlanType(order.plan_type, order.metadata);
   if (!planType || !isCheckoutPlanType(planType)) {
     throw new Error('Invalid plan_type on order');
   }
@@ -234,7 +234,7 @@ export async function recordSubscriptionSaleAndMaybeRenew(
   },
   saleId: string,
 ): Promise<SubscriptionSaleResult> {
-  const planType = normalizeCheckoutPlanType(order.plan_type);
+  const planType = resolveOrderCheckoutPlanType(order.plan_type, order.metadata);
   if (!planType || !isCheckoutPlanType(planType)) return 'not_subscription';
   const plan = CHECKOUT_PLANS[planType];
   if (!plan.isSubscription || !plan.membershipTier) return 'not_subscription';

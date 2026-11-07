@@ -16,7 +16,7 @@ import {
 import {
   CHECKOUT_PLANS,
   isCheckoutPlanType,
-  normalizeCheckoutPlanType,
+  resolveOrderCheckoutPlanType,
 } from '@/constants/checkout-plans';
 import { clientIpFromRequest, rateLimit } from '@/lib/rate-limit';
 import { lookupUserEmail, notifyFailure } from '@/lib/transactional-email';
@@ -126,7 +126,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
     }
 
     if (orderRow.status === 'succeeded') {
-      const planType = normalizeCheckoutPlanType(orderRow.plan_type);
+      const planType = resolveOrderCheckoutPlanType(orderRow.plan_type, orderRow.metadata);
       const plan = planType && isCheckoutPlanType(planType) ? CHECKOUT_PLANS[planType] : null;
       if (plan?.isSubscription && event.resourceId) {
         try {
@@ -155,7 +155,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
       return NextResponse.json({ received: true, idempotent: true });
     }
 
-    const planType = normalizeCheckoutPlanType(orderRow.plan_type);
+    const planType = resolveOrderCheckoutPlanType(orderRow.plan_type, orderRow.metadata);
     if (!planType || !isCheckoutPlanType(planType)) {
       return NextResponse.json({ error: 'Invalid plan_type' }, { status: 400 });
     }
@@ -218,7 +218,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
       return NextResponse.json({ received: true, idempotent: true });
     }
 
-    const planType = normalizeCheckoutPlanType(orderRow.plan_type);
+    const planType = resolveOrderCheckoutPlanType(orderRow.plan_type, orderRow.metadata);
     if (!planType || !isCheckoutPlanType(planType)) {
       return NextResponse.json({ error: 'Invalid plan_type' }, { status: 400 });
     }
