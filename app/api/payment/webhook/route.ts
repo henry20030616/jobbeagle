@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
-import { fulfillOrder } from '@/lib/fulfill-order';
+import {
+  downgradeExpiredSubscription,
+  fulfillOrder,
+  markSubscriptionActivated,
+  recordSubscriptionSaleAndMaybeRenew,
+} from '@/lib/fulfill-order';
 import {
   getPayPalConfig,
   isPayPalWebhookRequest,
@@ -8,7 +13,11 @@ import {
   readPayPalWebhookHeaders,
   verifyPayPalWebhook,
 } from '@/lib/paypal';
-import { isCheckoutPlanType, normalizeCheckoutPlanType } from '@/constants/checkout-plans';
+import {
+  CHECKOUT_PLANS,
+  isCheckoutPlanType,
+  normalizeCheckoutPlanType,
+} from '@/constants/checkout-plans';
 import { clientIpFromRequest, rateLimit } from '@/lib/rate-limit';
 import { lookupUserEmail, notifyFailure } from '@/lib/transactional-email';
 
@@ -72,12 +81,42 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
   if (eventType === 'PAYMENT.CAPTURE.COMPLETED' || eventType === 'PAYMENT.SALE.COMPLETED') {
     const customId = event.customId;
     if (!customId) {
+      // Subscription renewals sometimes omit custom_id — resolve via billing agreement.
+      if (event.billingAgreementId) {
+        const { data: subOrder } = await admin
+          .from('orders')
+          .select('id, user_id, plan_type, report_id, status, external_checkout_id, metadata')
+          .eq('external_checkout_id', event.billingAgreementId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (subOrder?.status === 'succeeded' && event.resourceId) {
+          try {
+            const result = await recordSubscriptionSaleAndMaybeRenew(
+              admin,
+              {
+                id: subOrder.id,
+                user_id: subOrder.user_id,
+                plan_type: subOrder.plan_type,
+                metadata: subOrder.metadata,
+              },
+              event.resourceId,
+            );
+            return NextResponse.json({ received: true, provider: 'paypal', renewal: result });
+          } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Renewal failed';
+            console.error('[webhook] renewal error:', message);
+            await notifyFulfillFailure(admin, subOrder.user_id, subOrder.id, message);
+            return NextResponse.json({ error: message }, { status: 500 });
+          }
+        }
+      }
       return NextResponse.json({ error: 'Missing custom_id in resource' }, { status: 400 });
     }
 
     const { data: orderRow } = await admin
       .from('orders')
-      .select('id, user_id, plan_type, report_id, status, external_checkout_id')
+      .select('id, user_id, plan_type, report_id, status, external_checkout_id, metadata')
       .eq('id', customId)
       .maybeSingle();
 
@@ -87,6 +126,32 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
     }
 
     if (orderRow.status === 'succeeded') {
+      const planType = normalizeCheckoutPlanType(orderRow.plan_type);
+      const plan = planType && isCheckoutPlanType(planType) ? CHECKOUT_PLANS[planType] : null;
+      if (plan?.isSubscription && event.resourceId) {
+        try {
+          const result = await recordSubscriptionSaleAndMaybeRenew(
+            admin,
+            {
+              id: orderRow.id,
+              user_id: orderRow.user_id,
+              plan_type: orderRow.plan_type,
+              metadata: orderRow.metadata,
+            },
+            event.resourceId,
+          );
+          return NextResponse.json({
+            received: true,
+            provider: 'paypal',
+            renewal: result,
+          });
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : 'Renewal failed';
+          console.error('[webhook] renewal error:', message);
+          await notifyFulfillFailure(admin, orderRow.user_id, orderRow.id, message, planType ?? undefined);
+          return NextResponse.json({ error: message }, { status: 500 });
+        }
+      }
       return NextResponse.json({ received: true, idempotent: true });
     }
 
@@ -114,6 +179,9 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
         orderRow.report_id,
         externalId,
       );
+      if (CHECKOUT_PLANS[planType].isSubscription) {
+        await markSubscriptionActivated(admin, orderRow.id, orderRow.metadata);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Fulfillment failed';
       console.error('[webhook] fulfill error:', message);
@@ -132,7 +200,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
 
     const { data: orderRow } = await admin
       .from('orders')
-      .select('id, user_id, plan_type, report_id, status')
+      .select('id, user_id, plan_type, report_id, status, metadata')
       .eq('id', customId)
       .maybeSingle();
 
@@ -142,6 +210,11 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
     }
 
     if (orderRow.status === 'succeeded') {
+      try {
+        await markSubscriptionActivated(admin, orderRow.id, orderRow.metadata);
+      } catch (err: unknown) {
+        console.warn('[webhook] mark activated failed:', err);
+      }
       return NextResponse.json({ received: true, idempotent: true });
     }
 
@@ -172,6 +245,7 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
         orderRow.report_id,
         subscriptionId,
       );
+      await markSubscriptionActivated(admin, orderRow.id, orderRow.metadata);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Fulfillment failed';
       console.error('[webhook] fulfill subscription error:', message);
@@ -220,7 +294,31 @@ async function handlePayPalWebhook(request: NextRequest, rawBody: string) {
     || eventType === 'BILLING.SUBSCRIPTION.SUSPENDED'
   ) {
     console.log('[webhook] subscription lifecycle event:', eventType);
-    return NextResponse.json({ received: true, lifecycle: eventType });
+    let userId: string | null = null;
+    if (event.customId) {
+      const { data } = await admin
+        .from('orders')
+        .select('user_id')
+        .eq('id', event.customId)
+        .maybeSingle();
+      userId = typeof data?.user_id === 'string' ? data.user_id : null;
+    }
+    if (!userId && event.resourceId) {
+      const { data } = await admin
+        .from('orders')
+        .select('user_id')
+        .eq('external_checkout_id', event.resourceId)
+        .maybeSingle();
+      userId = typeof data?.user_id === 'string' ? data.user_id : null;
+    }
+    if (userId && (eventType === 'BILLING.SUBSCRIPTION.CANCELLED' || eventType === 'BILLING.SUBSCRIPTION.EXPIRED')) {
+      try {
+        await downgradeExpiredSubscription(admin, userId);
+      } catch (err: unknown) {
+        console.error('[webhook] downgrade failed:', err);
+      }
+    }
+    return NextResponse.json({ received: true, lifecycle: eventType, downgraded: Boolean(userId) });
   }
 
   return NextResponse.json({ received: true, skipped: eventType });

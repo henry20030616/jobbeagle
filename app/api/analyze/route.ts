@@ -51,7 +51,8 @@ import {
 } from '@/constants/report-products';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 
-export const maxDuration = 180;
+/** Guide runs multi-step Gemini Pro+Search + Claude; 180s was tight under load. */
+export const maxDuration = 300;
 
 function paymentRequiredResponse(profile: ProfileRow) {
   return NextResponse.json(

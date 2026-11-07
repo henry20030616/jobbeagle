@@ -1,5 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fulfillOrder, fulfillSubscriptionRenewal, downgradeExpiredSubscription } from '@/lib/fulfill-order';
+import {
+  fulfillOrder,
+  fulfillSubscriptionRenewal,
+  downgradeExpiredSubscription,
+  markSubscriptionActivated,
+  recordSubscriptionSaleAndMaybeRenew,
+  SUBSCRIPTION_ACTIVATED_MARKER,
+} from '@/lib/fulfill-order';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type Call = { op: string; table?: string; payload?: unknown; rpc?: string };
@@ -174,5 +181,94 @@ describe('downgradeExpiredSubscription', () => {
     expect(updates).toHaveLength(1);
     expect(updates[0]).toMatchObject({ membership_tier: 'free' });
     expect(updates[0]).not.toHaveProperty('available_job_fit_snapshot_credits');
+  });
+});
+
+describe('recordSubscriptionSaleAndMaybeRenew', () => {
+  function createRenewalMock() {
+    const updates: unknown[] = [];
+    const admin = {
+      from: () => ({
+        update: (payload: unknown) => {
+          updates.push(payload);
+          return {
+            eq: async () => ({ error: null }),
+          };
+        },
+      }),
+    } as unknown as SupabaseClient;
+    return { admin, updates };
+  }
+
+  it('records the first sale after activation without renewing credits', async () => {
+    const { admin, updates } = createRenewalMock();
+    const result = await recordSubscriptionSaleAndMaybeRenew(
+      admin,
+      {
+        id: 'order-1',
+        user_id: 'user-1',
+        plan_type: 'standard_subscription',
+        metadata: { processed_sale_ids: [SUBSCRIPTION_ACTIVATED_MARKER] },
+      },
+      'sale-first',
+    );
+    expect(result).toBe('initial_sale_recorded');
+    expect(updates).toHaveLength(1);
+    expect(updates[0]).toMatchObject({
+      metadata: {
+        processed_sale_ids: [SUBSCRIPTION_ACTIVATED_MARKER, 'sale-first'],
+      },
+    });
+  });
+
+  it('resets monthly allowance on a later sale id', async () => {
+    const { admin, updates } = createRenewalMock();
+    const result = await recordSubscriptionSaleAndMaybeRenew(
+      admin,
+      {
+        id: 'order-1',
+        user_id: 'user-1',
+        plan_type: 'standard_subscription',
+        metadata: {
+          processed_sale_ids: [SUBSCRIPTION_ACTIVATED_MARKER, 'sale-first'],
+        },
+      },
+      'sale-month-2',
+    );
+    expect(result).toBe('renewed');
+    expect(updates.length).toBeGreaterThanOrEqual(2);
+    expect(updates.some((u) => {
+      const row = u as Record<string, unknown>;
+      return row.available_job_fit_snapshot_credits === 50;
+    })).toBe(true);
+  });
+
+  it('is idempotent when the same sale id is replayed', async () => {
+    const { admin, updates } = createRenewalMock();
+    const result = await recordSubscriptionSaleAndMaybeRenew(
+      admin,
+      {
+        id: 'order-1',
+        user_id: 'user-1',
+        plan_type: 'advanced_subscription',
+        metadata: {
+          processed_sale_ids: [SUBSCRIPTION_ACTIVATED_MARKER, 'sale-1'],
+        },
+      },
+      'sale-1',
+    );
+    expect(result).toBe('idempotent');
+    expect(updates).toHaveLength(0);
+  });
+
+  it('markSubscriptionActivated stamps the activation marker once', async () => {
+    const { admin, updates } = createRenewalMock();
+    await markSubscriptionActivated(admin, 'order-1', { plan_label: 'Standard' });
+    expect(updates[0]).toMatchObject({
+      metadata: {
+        plan_label: 'Standard',
+        processed_sale_ids: [SUBSCRIPTION_ACTIVATED_MARKER],
+      },
+    });
   });
 });

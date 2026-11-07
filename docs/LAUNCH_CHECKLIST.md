@@ -31,9 +31,10 @@
 
 - [ ] **订阅计划已创建**
   - [ ] 运行 `node scripts/ops/setup-paypal.mjs` 创建 Live 计划
-  - [ ] Standard 订阅：$19.99/月（100 Snapshot + 5 Guide）
-  - [ ] Advanced 订阅：$39.99/月（300 Snapshot + 15 Guide）
-  - [ ] 单次购买：$3（1 Snapshot）和 $9.99（1 Guide）
+  - [ ] Standard 订阅：$19.99/月（50 Snapshot + 5 Guide）
+  - [ ] Advanced 订阅：$39.99/月（100 Snapshot + 15 Guide）
+  - [ ] 单次购买：$9.99（1 Snapshot）和 $14.99（1 Guide）
+  - [ ] 价格以 `constants/checkout-plans.ts` 为准（勿再用旧 Lemon/$3 文案）
 
 - [ ] **Webhook 配置**
   - [ ] Live webhook URL: `https://www.jobbeagle.com/api/payment/webhook`
@@ -51,7 +52,7 @@
   ```
 
 - [ ] **测试流程**
-  - [ ] 用真实 PayPal 账户购买 $3 单次 Snapshot
+  - [ ] 用真实 PayPal 账户购买 $9.99 单次 Snapshot
   - [ ] 确认额度增加 1 次
   - [ ] 购买 Standard 订阅
   - [ ] 确认额度增加到 100 + 5

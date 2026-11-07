@@ -210,7 +210,7 @@ Auth：Supabase Auth（Google OAuth）。RLS 開啟；信用點數有 entitlemen
    實務已出現 `RESOURCE_EXHAUSTED`／預付額度耗盡 → 付費用戶等 2 分鐘後失敗。無穩定 AI 供應＝無法交貨。
 
 2. **Guide 交付時間與可靠性**  
-   多段 Pro+Search + Claude，常 **1–3 分鐘**；需監控超時（`maxDuration` 180s）、失敗退點、客服話術；否則「付了錢卻交不出完整指南」。
+   多段 Pro+Search + Claude，常 **1–3 分鐘**；需監控超時（`maxDuration` 300s）、失敗退點、客服話術；否則「付了錢卻交不出完整指南」。
 
 3. **職缺輸入依賴外掛或貼文，伺服器無法破 LinkedIn**  
    美國主力流量在 LinkedIn：必須外掛轉換或極清楚的「貼完整 JD」UX；只貼 URL **會失敗**，易造成付費前流失或客訴。

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getPayPalConfig, getMissingPayPalPlanIds } from '@/lib/paypal';
 
 /**
  * Environment & Supabase health-check endpoint.
@@ -20,18 +21,25 @@ export async function GET(request: NextRequest) {
   }
 
   const geminiKey = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_GEMINI_API_KEY;
-  const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anthropicKey = process.env.ANTHROPIC_API_KEY?.trim();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const resendKey    = process.env.RESEND_API_KEY;
+  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const resendKey = process.env.RESEND_API_KEY;
+  const cronSecret = process.env.CRON_SECRET;
+  const paypal = getPayPalConfig();
+  const missingPayPalPlans = getMissingPayPalPlanIds();
 
   // ── Supabase connectivity + table checks ─────────────────────
-  let supabaseOk        = false;
+  let supabaseOk = false;
   let tablesFound: string[] = [];
   let tablesMissing: string[] = [];
-  let storageOk         = false;
+  let storageOk = false;
   let storageError: string | null = null;
 
   const requiredTables = [
+    'profiles',
+    'orders',
     'analysis_reports',
     'shorts_videos',
     'job_applications',
@@ -45,7 +53,6 @@ export async function GET(request: NextRequest) {
     if (supabaseUrl && supabaseAnon) {
       const supabase = await createClient();
 
-      // Check each table by selecting a single row (head = true → no data returned)
       for (const table of requiredTables) {
         const { error } = await supabase.from(table).select('*', { head: true, count: 'exact' });
         if (error) {
@@ -56,8 +63,7 @@ export async function GET(request: NextRequest) {
       }
       supabaseOk = tablesMissing.length === 0;
 
-      // Check storage bucket
-      const { data: bucketData, error: bucketError } = await supabase.storage
+      const { error: bucketError } = await supabase.storage
         .from('shorts-videos')
         .list('', { limit: 1 });
       storageOk = !bucketError;
@@ -71,19 +77,33 @@ export async function GET(request: NextRequest) {
     gemini: {
       ok: !!geminiKey,
       envVars: {
-        GEMINI_API_KEY:        !!process.env.GEMINI_API_KEY,
+        GEMINI_API_KEY: !!process.env.GEMINI_API_KEY,
         GOOGLE_GEMINI_API_KEY: !!process.env.GOOGLE_GEMINI_API_KEY,
       },
       preview: geminiKey ? `${geminiKey.slice(0, 6)}…${geminiKey.slice(-4)}` : null,
     },
+    anthropic: {
+      ok: !!anthropicKey,
+      note: anthropicKey
+        ? 'Guide writing uses Claude Sonnet'
+        : 'Missing ANTHROPIC_API_KEY — Guide writing falls back to Gemini Pro',
+    },
+    paypal: {
+      ok: Boolean(paypal?.clientId && paypal.clientSecret && paypal.webhookId && missingPayPalPlans.length === 0),
+      configured: Boolean(paypal),
+      environment: paypal?.environment ?? null,
+      webhookIdSet: Boolean(paypal?.webhookId),
+      missingPlans: missingPayPalPlans,
+    },
     supabase: {
-      ok: !!(supabaseUrl && supabaseAnon),
-      urlSet:  !!supabaseUrl,
+      ok: !!(supabaseUrl && supabaseAnon && serviceRole),
+      urlSet: !!supabaseUrl,
       anonKeySet: !!supabaseAnon,
+      serviceRoleSet: !!serviceRole,
     },
     supabaseTables: {
       ok: supabaseOk,
-      found:   tablesFound,
+      found: tablesFound,
       missing: tablesMissing,
     },
     storage: {
@@ -95,23 +115,40 @@ export async function GET(request: NextRequest) {
       ok: !!resendKey,
       preview: resendKey ? `${resendKey.slice(0, 6)}…` : null,
     },
+    cron: {
+      ok: !!cronSecret,
+    },
+    checkEnvSecret: {
+      ok: !!secret,
+      note: secret ? 'Production gate configured' : 'Set CHECK_ENV_SECRET for production access',
+    },
     environment: {
-      nodeEnv:   process.env.NODE_ENV,
+      nodeEnv: process.env.NODE_ENV,
       vercelEnv: process.env.VERCEL_ENV ?? 'local',
-      vercelUrl: process.env.VERCEL_URL  ?? 'localhost',
+      vercelUrl: process.env.VERCEL_URL ?? 'localhost',
     },
   };
 
+  const launchCriticalOk =
+    checks.gemini.ok
+    && checks.paypal.ok
+    && checks.supabase.ok
+    && checks.supabaseTables.ok;
+
   const allOk =
-    checks.gemini.ok &&
-    checks.supabase.ok &&
-    checks.supabaseTables.ok &&
-    checks.storage.ok &&
-    checks.resend.ok;
+    launchCriticalOk
+    && checks.storage.ok
+    && checks.resend.ok
+    && checks.cron.ok
+    && checks.anthropic.ok;
 
   return NextResponse.json({
-    status: allOk ? 'ok' : 'partial',
-    message: allOk ? 'All environment variables and services are configured.' : 'Some checks failed — see details below.',
+    status: allOk ? 'ok' : launchCriticalOk ? 'partial' : 'blocked',
+    message: allOk
+      ? 'All environment variables and services are configured.'
+      : launchCriticalOk
+        ? 'Launch-critical checks passed; some optional checks failed — see details.'
+        : 'Launch-critical checks failed — see details below.',
     checks,
     timestamp: new Date().toISOString(),
   });

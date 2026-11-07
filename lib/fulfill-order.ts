@@ -175,6 +175,98 @@ export async function fulfillSubscriptionRenewal(
   }
 }
 
+/** Marker stored on subscription orders after BILLING.SUBSCRIPTION.ACTIVATED. */
+export const SUBSCRIPTION_ACTIVATED_MARKER = '__activated__';
+
+function readProcessedSaleIds(metadata: unknown): string[] {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return [];
+  const raw = (metadata as Record<string, unknown>).processed_sale_ids;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((id): id is string => typeof id === 'string' && id.length > 0);
+}
+
+/**
+ * After ACTIVATED fulfillment: stamp the order so the paired first SALE
+ * does not reset monthly credits again.
+ */
+export async function markSubscriptionActivated(
+  admin: SupabaseClient,
+  orderId: string,
+  existingMetadata: unknown,
+): Promise<void> {
+  const processed = readProcessedSaleIds(existingMetadata);
+  if (processed.includes(SUBSCRIPTION_ACTIVATED_MARKER)) return;
+  const base =
+    existingMetadata && typeof existingMetadata === 'object' && !Array.isArray(existingMetadata)
+      ? { ...(existingMetadata as Record<string, unknown>) }
+      : {};
+  const { error } = await admin
+    .from('orders')
+    .update({
+      metadata: {
+        ...base,
+        processed_sale_ids: [...processed, SUBSCRIPTION_ACTIVATED_MARKER],
+      },
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', orderId);
+  if (error) throw new Error(error.message);
+}
+
+export type SubscriptionSaleResult =
+  | 'idempotent'
+  | 'initial_sale_recorded'
+  | 'renewed'
+  | 'not_subscription';
+
+/**
+ * Handle PAYMENT.SALE/CAPTURE on an already-succeeded subscription order.
+ * - First sale after ACTIVATED → record only (credits already granted).
+ * - Later sales (new sale id) → reset monthly allowance via fulfillSubscriptionRenewal.
+ */
+export async function recordSubscriptionSaleAndMaybeRenew(
+  admin: SupabaseClient,
+  order: {
+    id: string;
+    user_id: string;
+    plan_type: string;
+    metadata?: unknown;
+  },
+  saleId: string,
+): Promise<SubscriptionSaleResult> {
+  const planType = normalizeCheckoutPlanType(order.plan_type);
+  if (!planType || !isCheckoutPlanType(planType)) return 'not_subscription';
+  const plan = CHECKOUT_PLANS[planType];
+  if (!plan.isSubscription || !plan.membershipTier) return 'not_subscription';
+
+  const processed = readProcessedSaleIds(order.metadata);
+  if (processed.includes(saleId)) return 'idempotent';
+
+  const priorSales = processed.filter((id) => id !== SUBSCRIPTION_ACTIVATED_MARKER);
+  const nextProcessed = [...processed, saleId];
+  const base =
+    order.metadata && typeof order.metadata === 'object' && !Array.isArray(order.metadata)
+      ? { ...(order.metadata as Record<string, unknown>) }
+      : {};
+
+  const { error: metaErr } = await admin
+    .from('orders')
+    .update({
+      metadata: { ...base, processed_sale_ids: nextProcessed },
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', order.id);
+  if (metaErr) throw new Error(metaErr.message);
+
+  // Credits already granted on ACTIVATED (or on first pending→succeeded SALE).
+  if (priorSales.length === 0) {
+    return 'initial_sale_recorded';
+  }
+
+  await fulfillSubscriptionRenewal(admin, order.user_id, plan.membershipTier);
+  return 'renewed';
+}
+
 /** Period ended: drop paid tier, keep leftover credits. */
 export async function downgradeExpiredSubscription(
   admin: SupabaseClient,
