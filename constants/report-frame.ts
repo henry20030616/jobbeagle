@@ -245,6 +245,7 @@ export const PAY_RANGE_LINE_WIDTH = 'w-1/2 mx-auto min-w-0';
 /**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,
  * then scales uniformly to fill the stage width — proportions stay fixed.
- * Wider canvas = less empty side margin on desktop monitors.
+ * Narrower canvas → higher CSS zoom (text + images scale together).
+ * 1400 = prior 1680 ÷ 1.2 so the slide reads ~20% larger on the same viewport.
  */
-export const REPORT_SLIDE_DESIGN_WIDTH = 1680;
+export const REPORT_SLIDE_DESIGN_WIDTH = 1400;

@@ -21,6 +21,7 @@ import {
   REPORT_ACTION_TEXT,
   REPORT_FRAME_BORDER,
   REPORT_SHELL_WIDTH,
+  REPORT_SLIDE_DESIGN_WIDTH,
   REPORT_TYPE_CARD_ACTIVE,
   REPORT_TYPE_CARD_FILL,
   REPORT_TYPE_CARD_IDLE,
@@ -443,6 +444,8 @@ describe('page shell gutters', () => {
     );
     expect(REPORT_SHELL_WIDTH).toBe('w-full max-w-full');
     expect(REPORT_SHELL_WIDTH).not.toMatch(/\d+rem/);
+    // 1400 = prior 1680 ÷ 1.2 → ReportFitStage CSS zoom ~20% larger
+    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(1400);
 
     const homepage = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
     const samples = readFileSync(
