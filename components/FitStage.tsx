@@ -75,12 +75,35 @@ export function FitStage({
     if (!outer) return;
 
     const update = () => {
-      // Measure the parent (or self) width — never the zoomed canvas. If we
-      // read only outer.clientWidth while the canvas is still at designWidth,
-      // contain-mode stages can lock into a centered island (scale ≈ 1).
+      // Prefer the direct parent's width (report column / samples main).
+      // Fall back to self. Never trust a shrink-wrapped measurement that is
+      // ≈ designWidth while the viewport is clearly wider — that is the
+      // centered-island lock (canvas dictates parent width).
       const parent = outer.parentElement;
-      const availW =
-        parent && parent.clientWidth > 0 ? parent.clientWidth : outer.clientWidth;
+      const parentW = parent?.clientWidth ?? 0;
+      const selfW = outer.clientWidth;
+      const vw = typeof window !== 'undefined' ? window.innerWidth : 0;
+      let availW = parentW > 0 ? parentW : selfW;
+      if (
+        availW > 0
+        && availW <= designWidth * 1.08
+        && vw >= designWidth * 1.3
+        && parentW >= vw * 0.65
+      ) {
+        // Full-bleed column that collapsed to the canvas — use content box.
+        availW = parentW;
+      }
+      if (
+        availW > 0
+        && availW <= designWidth * 1.08
+        && vw >= designWidth * 1.3
+        && parentW < vw * 0.65
+        && parentW <= designWidth * 1.08
+      ) {
+        // Parent also collapsed (island). Climb one level if it is wider.
+        const grandW = parent?.parentElement?.clientWidth ?? 0;
+        if (grandW > availW * 1.2) availW = grandW;
+      }
       const availH = outer.clientHeight > 0 ? outer.clientHeight : window.innerHeight;
       if (availW <= 0) return;
 
@@ -129,6 +152,7 @@ export function FitStage({
       data-fit-mode={mode}
       data-fit-fluid={fluid ? 'true' : 'false'}
       className={`flex w-full min-w-0 max-w-full self-stretch justify-center ${fillLayout ? 'h-full' : ''} ${mode === 'shorts' ? 'overflow-hidden' : ''} ${className}`}
+      style={{ width: '100%' }}
     >
       <div
         data-fit-canvas

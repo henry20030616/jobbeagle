@@ -53,8 +53,8 @@ describe('report chrome type scale', () => {
   });
 
   it('shares type-switcher card layout, rail width, and content gap across account / report / samples', () => {
-    expect(SAMPLE_RAIL_WIDTH).toBe('w-[42rem]');
-    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[42rem]');
+    expect(SAMPLE_RAIL_WIDTH).toBe('w-[26rem]');
+    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[26rem]');
     expect(SAMPLE_RAIL_ITEM_GAP).toBe('gap-6');
     expect(SAMPLE_RAIL_CONTENT_GAP).toBe('gap-6 lg:gap-24');
     expect(SAMPLE_RAIL_ROW).toContain(SAMPLE_RAIL_CONTENT_GAP);
@@ -444,8 +444,8 @@ describe('page shell gutters', () => {
     );
     expect(REPORT_SHELL_WIDTH).toBe('w-full max-w-full');
     expect(REPORT_SHELL_WIDTH).not.toMatch(/\d+rem/);
-    // 840 = prior 1050 ÷ 1.25 → ReportFitStage CSS zoom 1.25× larger
-    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(840);
+    // 1210 = prior island 840 × 1.44 → report frame 1.44× wider
+    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(1210);
 
     const homepage = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
     const samples = readFileSync(

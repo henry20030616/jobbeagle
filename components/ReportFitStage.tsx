@@ -15,7 +15,8 @@ type ReportFitStageProps = {
 
 /**
  * Report / samples slide stage — thin wrapper over FitStage.
- * Layout at designWidth, then enlarge with CSS zoom.
+ * minScale=1: below designWidth use fluid 100% width (no centered island);
+ * at/above designWidth enlarge with CSS zoom up to maxScale.
  */
 export function ReportFitStage({
   children,
@@ -26,7 +27,7 @@ export function ReportFitStage({
   return (
     <FitStage
       designWidth={designWidth}
-      minScale={0.5}
+      minScale={1}
       maxScale={maxScale}
       className={className}
     >

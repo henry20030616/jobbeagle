@@ -100,9 +100,9 @@ export default function ReportPage() {
             : getSnapshotUiCopy(lang).productTitle}
         </span>
       </header>
-      <div className={`w-full min-w-0 py-4 ${REPORT_STAGE_GUTTER_LEFT}`}>
-        <main className="min-w-0 w-full flex-1">
-          <ReportFitStage className="w-full" maxScale={2.8}>
+      <div className={`w-full min-w-0 max-w-full py-4 ${REPORT_STAGE_GUTTER_LEFT}`}>
+        <main className="min-w-0 w-full max-w-full flex-1" data-report-stage>
+          <ReportFitStage className="w-full max-w-full" maxScale={2.8}>
             {strategy ? (
               <FullReportDashboard
                 report={normalizeFullReport(payload.report as FullReport)}

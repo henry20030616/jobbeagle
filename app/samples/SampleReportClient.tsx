@@ -116,11 +116,11 @@ export default function SampleReportClient() {
           <ReportCompareModal language={language} variant="button" className="w-full" />
         </FunctionRail>
 
-        <main className="min-w-0 w-full flex-1">
+        <main className="min-w-0 w-full max-w-full flex-1" data-report-stage>
           <ReportFitStage
             designWidth={REPORT_SLIDE_DESIGN_WIDTH}
             maxScale={2.8}
-            className="w-full"
+            className="w-full max-w-full"
           >
             {isGuide ? (
               <FullReportDashboard

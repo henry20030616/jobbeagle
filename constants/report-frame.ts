@@ -174,7 +174,7 @@ export const PAGE_SHELL_GUTTER_RIGHT =
   'pr-[3.5vw] sm:pr-[4vw] lg:pr-[4vw] xl:pr-[4.5vw]';
 
 /**
- * Desktop sticky FunctionRail inset. Margin (not padding) so the 42rem card
+ * Desktop sticky FunctionRail inset. Margin (not padding) so the rail card
  * width is unchanged. Lives on the sticky element: parent `px` gutters are
  * lost when `html { overflow-x: hidden }` makes the viewport the sticky
  * containing block, and FitStage zoom overflow must not be clipped with
@@ -185,12 +185,12 @@ export const SAMPLE_RAIL_SHELL_GUTTER = 'lg:ml-[4vw] xl:ml-[4.5vw]';
 /** Stacked (sub-lg) left inset on the FunctionRail row; lg+ uses SAMPLE_RAIL_SHELL_GUTTER. */
 export const SAMPLE_RAIL_ROW_GUTTER_LEFT = 'pl-[3.5vw] sm:pl-[4vw] lg:pl-0';
 
-/** Desktop left-rail width for /samples, /account, and live /report. */
-export const SAMPLE_RAIL_WIDTH = 'w-[42rem]';
+/** Desktop left-rail width for /samples and /account (narrower → wider report column). */
+export const SAMPLE_RAIL_WIDTH = 'w-[26rem]';
 
-/** Sticky top-left rail under the header (42rem on desktop, full width when stacked). */
+/** Sticky top-left rail under the header (26rem on desktop, full width when stacked). */
 export const SAMPLE_RAIL_SHELL =
-  `w-full lg:sticky lg:top-6 lg:w-[42rem] lg:shrink-0 lg:self-start ${SAMPLE_RAIL_SHELL_GUTTER}`;
+  `w-full lg:sticky lg:top-6 lg:w-[26rem] lg:shrink-0 lg:self-start ${SAMPLE_RAIL_SHELL_GUTTER}`;
 
 /** Vertical gap BETWEEN rail cards. */
 export const SAMPLE_RAIL_ITEM_GAP = 'gap-6';
@@ -245,11 +245,12 @@ export const PAY_RANGE_LINE_WIDTH = 'w-1/2 mx-auto min-w-0';
 /**
  * Fixed presentation canvas width (px). ReportFitStage lays out at this width,
  * then scales uniformly to fill the stage width — proportions stay fixed.
- * Narrower canvas → higher CSS zoom (text + images scale together).
- * 840 = prior 1050 ÷ 1.25 → slide reads 1.25× wider/larger on the same viewport
- * (/report + /samples share this constant).
+ * Below this width the stage goes fluid (100% of the column) so the blue frame
+ * never collapses to a centered island.
+ * 1210 = prior island 840 × 1.44 — report frame reads 1.44× wider when scale≈1,
+ * and still fills the column when the viewport is larger (/report + /samples).
  */
-export const REPORT_SLIDE_DESIGN_WIDTH = 840;
+export const REPORT_SLIDE_DESIGN_WIDTH = 1210;
 
 /**
  * Tighter horizontal inset for /report (+ samples stage column) so the

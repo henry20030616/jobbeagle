@@ -28,6 +28,6 @@ When adjusting **either** report product UI or content rules, **always update bo
 - All report surfaces (Snapshot, Guide, `/samples`, `/report`) center as a column; **sample pages** place an independent Sample notice card on the **left**, top-aligned with the report frame (`sm:items-start`).
 - Sample notice **SAMPLE** uses `SampleMark variant="notice"` (narrow-card sizing). Report frames use default `variant="report"`. Do not override size/tracking via className — Tailwind utility conflicts will clip to “SAMP”.
 - Frame borders use bright blue (`border-blue-500`). Shell width: `REPORT_SHELL_WIDTH` = `w-full max-w-full` — **never rem-cap** (e.g. 100rem≈1600px creates a centered island on large monitors). Live `/report` uses tighter `REPORT_STAGE_GUTTER` (~1–1.5vw).
-- Samples + `/report` wrap content in `ReportFitStage` (CSS `zoom`, design canvas `REPORT_SLIDE_DESIGN_WIDTH` = 840) so the slide scales up on large displays.
+- Samples + `/report` wrap content in `ReportFitStage` (CSS `zoom`, design canvas `REPORT_SLIDE_DESIGN_WIDTH` = 1210 = 840×1.44; fluid below that width) so the slide fills the column and scales up on large displays.
 - Tailwind `content` must include `./constants/**` so shell width utilities in `report-frame.ts` are generated.
 
