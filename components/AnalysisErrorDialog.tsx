@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, X } from 'lucide-react';
 import type { AppLanguage } from '@/lib/language-context';
@@ -23,6 +23,9 @@ const CLOSE_LABEL: Record<AppLanguage, string> = {
   ar: 'إغلاق',
 };
 
+/** Matches InputForm STEP_BODY_MIN when the upload zone is not on screen. */
+const FALLBACK_BOX_PX = 288;
+
 type AnalysisErrorDialogProps = {
   title: string;
   message: string;
@@ -32,9 +35,18 @@ type AnalysisErrorDialogProps = {
   onDismiss: () => void;
 };
 
+function measureResumeUploadBoxPx(): number {
+  const zone = document.querySelector('[data-jb-resume-upload-zone]');
+  if (!(zone instanceof HTMLElement)) return FALLBACK_BOX_PX;
+  const height = zone.getBoundingClientRect().height;
+  // Width and height of the dialog both must not exceed this upload-zone height.
+  if (!Number.isFinite(height) || height < 120) return FALLBACK_BOX_PX;
+  return Math.round(height);
+}
+
 /**
- * Full-viewport modal for analysis failures. Portaled to <body>, and uses
- * `compare-font-large` so type matches the homepage operator scale (~4rem body).
+ * Centered analysis-error modal. Box width and height are both capped to the
+ * homepage “Click to upload resume” zone height so the dialog never outgrows that card.
  */
 export default function AnalysisErrorDialog({
   title,
@@ -45,6 +57,7 @@ export default function AnalysisErrorDialog({
   onDismiss,
 }: AnalysisErrorDialogProps) {
   const [mounted, setMounted] = useState(false);
+  const [boxPx, setBoxPx] = useState(FALLBACK_BOX_PX);
   const titleId = useId();
   const bodyId = useId();
   const dismissRef = useRef<HTMLButtonElement>(null);
@@ -54,6 +67,14 @@ export default function AnalysisErrorDialog({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!mounted) return;
+    const update = () => setBoxPx(measureResumeUploadBoxPx());
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -72,9 +93,11 @@ export default function AnalysisErrorDialog({
 
   if (!mounted) return null;
 
+  const side = `min(${boxPx}px, 96vw, 92vh)`;
+
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 sm:p-6 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 backdrop-blur-md animate-fade-in"
       onClick={onDismiss}
     >
       <div
@@ -82,51 +105,49 @@ export default function AnalysisErrorDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={bodyId}
-        className="compare-font-large relative flex max-h-[92vh] w-[min(96vw,72rem)] flex-col overflow-hidden rounded-3xl border-2 border-blue-500 bg-zinc-950 shadow-2xl shadow-blue-950/50"
+        className="relative flex flex-col overflow-hidden rounded-2xl border-2 border-blue-500 bg-zinc-950 shadow-2xl shadow-blue-950/50"
+        style={{ width: side, height: side, maxWidth: side, maxHeight: side }}
         onClick={(e) => e.stopPropagation()}
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400"
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400"
         />
 
         <button
           type="button"
           onClick={onDismiss}
           aria-label={CLOSE_LABEL[language]}
-          className="absolute right-4 top-4 z-10 rounded-xl p-3 text-slate-400 transition-colors hover:bg-white/5 hover:text-white sm:right-6 sm:top-6"
+          className="absolute right-2 top-2 z-10 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
         >
-          <X className="analysis-error-icon h-8 w-8" />
+          <X className="h-5 w-5" />
         </button>
 
-        <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 py-10 text-center sm:px-12 sm:py-14">
-          <div className="analysis-error-icon-well flex items-center justify-center rounded-3xl border-2 border-amber-400/50 bg-amber-500/15">
-            <AlertTriangle
-              className="analysis-error-icon text-amber-300"
-              strokeWidth={2.25}
-            />
+        <div className="flex min-h-0 flex-1 flex-col items-center overflow-hidden px-4 pb-4 pt-5 text-center sm:px-5 sm:pb-5 sm:pt-6">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-amber-400/50 bg-amber-500/15 sm:h-14 sm:w-14">
+            <AlertTriangle className="h-6 w-6 text-amber-300 sm:h-7 sm:w-7" strokeWidth={2.25} />
           </div>
 
           <h2
             id={titleId}
-            className="mt-6 text-2xl font-bold tracking-tight text-white sm:text-3xl"
+            className="mt-3 shrink-0 text-xl font-bold tracking-tight text-white sm:text-2xl"
           >
             {title}
           </h2>
 
           <p
             id={bodyId}
-            className="mt-5 w-full max-w-5xl whitespace-pre-wrap break-words text-left text-base leading-snug text-slate-100 sm:mt-8 sm:text-center sm:text-lg"
+            className="mt-3 min-h-0 w-full flex-1 overflow-y-auto whitespace-pre-wrap break-words text-left text-sm leading-relaxed text-slate-100 sm:text-center sm:text-base"
           >
             {message}
           </p>
 
           {suggestions.length > 0 ? (
-            <div className="mt-6 w-full max-w-5xl rounded-2xl border border-slate-700 bg-slate-900/80 px-6 py-5 text-left sm:mt-8">
+            <div className="mt-3 w-full shrink-0 overflow-y-auto rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-left">
               {suggestionsTitle ? (
-                <p className="text-lg font-semibold text-slate-100">{suggestionsTitle}</p>
+                <p className="text-sm font-semibold text-slate-100">{suggestionsTitle}</p>
               ) : null}
-              <ul className="mt-3 list-disc space-y-2 pl-8 text-base leading-snug text-slate-200">
+              <ul className="mt-1 list-disc space-y-1 pl-4 text-xs leading-snug text-slate-200 sm:text-sm">
                 {suggestions.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
@@ -138,7 +159,7 @@ export default function AnalysisErrorDialog({
             ref={dismissRef}
             type="button"
             onClick={onDismiss}
-            className="mt-8 w-full max-w-5xl rounded-2xl bg-indigo-500 px-6 py-4 text-lg font-semibold text-white transition-colors hover:bg-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 sm:mt-10 sm:py-5 sm:text-xl"
+            className="mt-3 w-full shrink-0 rounded-xl bg-indigo-500 px-4 py-2.5 text-base font-semibold text-white transition-colors hover:bg-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 sm:mt-4 sm:py-3 sm:text-lg"
           >
             {DISMISS_LABEL[language]}
           </button>

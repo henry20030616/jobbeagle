@@ -814,7 +814,7 @@ const InputForm: React.FC<InputFormProps> = ({
                   </>
                 )}
               </div>
-              <div className={STEP_BODY}>
+              <div className={STEP_BODY} data-jb-resume-upload-zone>
                 {!resume ? (
                   <div className="relative flex h-full w-full flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-600 bg-slate-900/30 transition-all">
                     <label
