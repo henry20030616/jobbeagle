@@ -53,8 +53,8 @@ describe('report chrome type scale', () => {
   });
 
   it('shares type-switcher card layout, rail width, and content gap across account / report / samples', () => {
-    expect(SAMPLE_RAIL_WIDTH).toBe('w-[26rem]');
-    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[26rem]');
+    expect(SAMPLE_RAIL_WIDTH).toBe('w-[33.8rem]');
+    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[33.8rem]');
     expect(SAMPLE_RAIL_ITEM_GAP).toBe('gap-6');
     expect(SAMPLE_RAIL_CONTENT_GAP).toBe('gap-6 lg:gap-24');
     expect(SAMPLE_RAIL_ROW).toContain(SAMPLE_RAIL_CONTENT_GAP);

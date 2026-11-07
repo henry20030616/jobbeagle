@@ -212,7 +212,7 @@ describe('account function nav', () => {
     expect(html).not.toContain('贊助 JobBeagle');
     expect(html).toContain('flex-col');
     expect(html).toContain('gap-6');
-    expect(html).toContain('lg:w-[26rem]');
+    expect(html).toContain('lg:w-[33.8rem]');
     expect(html).toContain('text-6xl');
     expect(html).toContain('px-8');
     expect(html).toContain('py-6');
@@ -234,7 +234,7 @@ describe('account function nav', () => {
       join(process.cwd(), 'components/AccountSectionNav.tsx'),
       'utf8',
     );
-    expect(SAMPLE_RAIL_WIDTH).toBe('w-[26rem]');
+    expect(SAMPLE_RAIL_WIDTH).toBe('w-[33.8rem]');
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain(SAMPLE_RAIL_TEXT);
     expect(SAMPLE_REPORT_TAB_LAYOUT).toContain('px-8 py-6');
     expect(SAMPLE_RAIL_TEXT).toMatch(/lg:text-6xl/);
@@ -244,7 +244,7 @@ describe('account function nav', () => {
     expect(nav).toContain('SAMPLE_RAIL_ICON');
     expect(nav).toContain('FunctionRail');
     expect(nav).toContain('SAMPLE_RAIL_ITEM_GAP');
-    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[26rem]');
+    expect(SAMPLE_RAIL_SHELL).toContain('lg:w-[33.8rem]');
     expect(nav).not.toContain('lg:w-[22rem]');
     expect(nav).not.toContain('text-base');
     expect(nav).not.toContain('px-3 py-2');

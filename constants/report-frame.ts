@@ -185,12 +185,12 @@ export const SAMPLE_RAIL_SHELL_GUTTER = 'lg:ml-[4vw] xl:ml-[4.5vw]';
 /** Stacked (sub-lg) left inset on the FunctionRail row; lg+ uses SAMPLE_RAIL_SHELL_GUTTER. */
 export const SAMPLE_RAIL_ROW_GUTTER_LEFT = 'pl-[3.5vw] sm:pl-[4vw] lg:pl-0';
 
-/** Desktop left-rail width for /samples and /account (narrower → wider report column). */
-export const SAMPLE_RAIL_WIDTH = 'w-[26rem]';
+/** Desktop left-rail width for /samples and /account (1.3× prior 26rem). */
+export const SAMPLE_RAIL_WIDTH = 'w-[33.8rem]';
 
-/** Sticky top-left rail under the header (26rem on desktop, full width when stacked). */
+/** Sticky top-left rail under the header (33.8rem on desktop, full width when stacked). */
 export const SAMPLE_RAIL_SHELL =
-  `w-full lg:sticky lg:top-6 lg:w-[26rem] lg:shrink-0 lg:self-start ${SAMPLE_RAIL_SHELL_GUTTER}`;
+  `w-full lg:sticky lg:top-6 lg:w-[33.8rem] lg:shrink-0 lg:self-start ${SAMPLE_RAIL_SHELL_GUTTER}`;
 
 /** Vertical gap BETWEEN rail cards. */
 export const SAMPLE_RAIL_ITEM_GAP = 'gap-6';
