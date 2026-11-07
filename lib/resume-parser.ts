@@ -53,15 +53,37 @@ export async function extractResumeText(
     resume.fileName?.toLowerCase().endsWith('.docx');
 
   if (resume.type === 'file' && isWordFile && typeof resume.content === 'string') {
-    const buffer = Buffer.from(resume.content, 'base64');
-    const { value } = await mammoth.extractRawText({ buffer });
-    const text = (value || '').trim();
-    if (!text) {
+    const buffer = Buffer.from(resume.content.replace(/\s+/g, ''), 'base64');
+    // DOCX is a ZIP; reject .doc / PDF / truncated uploads before mammoth/jszip.
+    const isZip =
+      buffer.length >= 4
+      && buffer[0] === 0x50
+      && buffer[1] === 0x4b
+      && (buffer[2] === 0x03 || buffer[2] === 0x05 || buffer[2] === 0x07)
+      && (buffer[3] === 0x04 || buffer[3] === 0x06 || buffer[3] === 0x08);
+    if (!isZip) {
       throw new Error(
-        'Could not extract text from Word file. Please upload PDF or paste resume text.',
+        'This Word resume could not be read. Please re-upload a .docx or PDF (legacy .doc is not supported), or paste resume text.',
       );
     }
-    return truncateText(text, MAX_RESUME_CHARS);
+    try {
+      const { value } = await mammoth.extractRawText({ buffer });
+      const text = (value || '').trim();
+      if (!text) {
+        throw new Error(
+          'Could not extract text from Word file. Please upload PDF or paste resume text.',
+        );
+      }
+      return truncateText(text, MAX_RESUME_CHARS);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/central directory|zip file|corrupt|invalid/i.test(msg)) {
+        throw new Error(
+          'This Word resume is damaged or incomplete. Please re-upload the .docx / PDF, then try again.',
+        );
+      }
+      throw err instanceof Error ? err : new Error(msg);
+    }
   }
 
   if (resume.type === 'file' && resume.mimeType === 'application/pdf') {

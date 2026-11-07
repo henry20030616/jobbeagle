@@ -23,6 +23,27 @@ describe('classifyAnalyzeError', () => {
   it('detects resume PDF decode failures', () => {
     expect(classifyAnalyzeError('Base64 decoding failed for inline_data.data')).toBe('resume_pdf');
   });
+
+  it('detects broken Word/DOCX (jszip) failures', () => {
+    expect(
+      classifyAnalyzeError(
+        "Can't find end of central directory : is this a zip file ? If it is, see https://stuk.github.io/jszip/documentation/howto/read_zip.html",
+      ),
+    ).toBe('resume_pdf');
+  });
+});
+
+describe('toUserFacingAnalyzeError for resume files', () => {
+  it('maps jszip Word failures to a clear re-upload message', () => {
+    const { message, kind, code } = toUserFacingAnalyzeError(
+      "Can't find end of central directory : is this a zip file ?",
+      'en',
+    );
+    expect(kind).toBe('resume_pdf');
+    expect(code).toBe('RESUME_PDF_UNREADABLE');
+    expect(message.toLowerCase()).toMatch(/pdf|\.docx|re-upload|paste/);
+    expect(message).not.toMatch(/central directory|jszip/i);
+  });
 });
 
 describe('toUserFacingAnalyzeError', () => {

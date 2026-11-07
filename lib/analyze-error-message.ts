@@ -21,12 +21,14 @@ const AI_QUOTA: Localized = {
 };
 
 const RESUME_PDF: Localized = {
-  'zh-TW': '履歷 PDF 無法讀取。請重新上傳 PDF（不要沿用舊的已存履歷捷徑），再重新分析。',
-  'zh-CN': '简历 PDF 无法读取。请重新上传 PDF（不要沿用旧的已存简历捷径），再重新分析。',
-  en: 'Resume PDF could not be read. Please re-upload the PDF (do not reuse an old Saved Resume stub), then try again.',
-  es: 'No se pudo leer el PDF del currículum. Vuelve a subirlo (no reutilices un atajo antiguo) e inténtalo de nuevo.',
-  hi: 'रिज़्यूमे PDF पढ़ा नहीं जा सका। कृपया PDF फिर से अपलोड करें, फिर पुनः प्रयास करें।',
-  ar: 'تعذّر قراءة ملف PDF للسيرة. أعد رفع الملف ثم حاول مرة أخرى.',
+  'zh-TW':
+    '履歷檔無法讀取。請重新上傳 PDF 或 .docx（不要用舊的已存履歷捷徑，也不支援舊版 .doc），或改貼上履歷文字後再分析。',
+  'zh-CN':
+    '简历文件无法读取。请重新上传 PDF 或 .docx（不要用旧的已存简历捷径，也不支持旧版 .doc），或改粘贴简历文字后再分析。',
+  en: 'Resume file could not be read. Please re-upload a PDF or .docx (do not reuse an old Saved Resume stub; legacy .doc is not supported), or paste resume text, then try again.',
+  es: 'No se pudo leer el currículum. Vuelve a subir un PDF o .docx (no reutilices un atajo antiguo; .doc antiguo no es compatible), o pega el texto e inténtalo de nuevo.',
+  hi: 'रिज़्यूमे फ़ाइल पढ़ी नहीं जा सकी। कृपया PDF या .docx फिर से अपलोड करें, या टेक्स्ट पेस्ट करें।',
+  ar: 'تعذّر قراءة ملف السيرة. أعد رفع PDF أو .docx، أو الصق النص ثم حاول مرة أخرى.',
 };
 
 const RATE_LIMIT: Localized = {
@@ -64,6 +66,14 @@ export function classifyAnalyzeError(raw: unknown): AnalyzeErrorKind {
   if (
     text.includes('base64 decoding failed')
     || text.includes('inline_data.data')
+    || text.includes('central directory')
+    || text.includes('is this a zip file')
+    || text.includes('word resume')
+    || text.includes('word file')
+    || text.includes('saved pdf resume')
+    || text.includes('resume pdf')
+    || text.includes('resume file could not')
+    || text.includes('extract text from word')
   ) {
     return 'resume_pdf';
   }
