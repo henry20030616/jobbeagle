@@ -125,6 +125,10 @@ describe('account function nav', () => {
     expect(ACCOUNT_PAGE).not.toContain('id="sponsor"');
     expect(ACCOUNT_PAGE).toContain('{t.cancelNone}');
     expect(ACCOUNT_PAGE).toContain('handleSponsor');
+    expect(ACCOUNT_PAGE).toContain('href="/"');
+    expect(ACCOUNT_PAGE).toContain('href="/samples"');
+    expect(ACCOUNT_PAGE).toContain('{t.goAnalyze}');
+    expect(ACCOUNT_PAGE).toContain('{t.goCompare}');
     // Amount field tracks account-font-large (text-lg → 3.15rem at lg); w-32 clips $0.50.
     expect(ACCOUNT_PAGE).toContain(
       'w-[8em] min-w-[8em] shrink-0 rounded-lg border border-blue-500/50',

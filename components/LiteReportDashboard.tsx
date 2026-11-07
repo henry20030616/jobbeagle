@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import type { GuideResumeRewrite, LiteReport } from '@/types';
 import {
   Home,
@@ -14,8 +14,6 @@ import {
 } from '@/constants/report-frame';
 import { ReportJobHeader } from '@/components/report/ReportJobHeader';
 import { SnapshotItemStack } from '@/components/report/SevenItemPages';
-import QuotaPaywallCard from '@/components/QuotaPaywallCard';
-import { createClient } from '@/lib/supabase/browser';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getSnapshotUiCopy } from '@/lib/report-ui-copy';
@@ -46,15 +44,6 @@ export default function LiteReportDashboard({
   const lang = normalizeReportLanguage(language);
   const t = getSnapshotUiCopy(lang);
   const locked = edition === 'snapshot';
-  const [paywallOpen, setPaywallOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    void supabase.auth.getUser().then(({ data }) => {
-      setIsLoggedIn(Boolean(data.user));
-    });
-  }, []);
 
   const handleBack = () => {
     if (onNewAnalysis) {
@@ -62,6 +51,10 @@ export default function LiteReportDashboard({
       return;
     }
     window.location.href = '/';
+  };
+
+  const handleUpgrade = () => {
+    window.location.href = '/account#plans';
   };
 
   return (
@@ -98,38 +91,9 @@ export default function LiteReportDashboard({
           language={lang}
           locked={locked}
           rewrites={rewrites}
-          onUpgrade={locked ? () => setPaywallOpen(true) : undefined}
+          onUpgrade={locked ? handleUpgrade : undefined}
         />
       </article>
-
-      {paywallOpen ? (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
-          role="presentation"
-          onClick={() => setPaywallOpen(false)}
-        >
-          <div
-            className="w-full max-w-2xl"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={t.productTitle}
-          >
-            <QuotaPaywallCard
-              language={lang}
-              isLoggedIn={isLoggedIn}
-              message={
-                lang === 'zh-TW'
-                  ? '解鎖面試指南：個人薪資落點、調整建議、真題與談薪說法。'
-                  : lang === 'zh-CN'
-                    ? '解锁面试指南：个人薪资落点、调整建议、真题与谈薪说法。'
-                    : 'Unlock Interview Guide: pay landing, adjustment advice, real questions, and negotiation scripts.'
-              }
-              onDismiss={() => setPaywallOpen(false)}
-            />
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

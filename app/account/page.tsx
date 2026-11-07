@@ -153,6 +153,8 @@ const copy: Record<
     sponsorAmount: string;
     sponsorCta: string;
     sponsorInvalid: string;
+    goAnalyze: string;
+    goCompare: string;
   }
 > = {
   en: {
@@ -214,6 +216,8 @@ const copy: Record<
     sponsorAmount: 'USD amount',
     sponsorCta: 'Sponsor',
     sponsorInvalid: 'Enter an amount between $0.50 and $1,000.00.',
+    goAnalyze: 'Report analysis',
+    goCompare: 'Report comparison',
   },
   'zh-TW': {
     title: '帳戶管理',
@@ -273,6 +277,8 @@ const copy: Record<
     sponsorAmount: '美元金額',
     sponsorCta: '贊助',
     sponsorInvalid: '請輸入 $0.50 到 $1,000.00 之間的金額。',
+    goAnalyze: '報告分析',
+    goCompare: '報告比較',
   },
   'zh-CN': {
     title: '账户管理',
@@ -330,6 +336,8 @@ const copy: Record<
     sponsorAmount: '美元金额',
     sponsorCta: '赞助',
     sponsorInvalid: '请输入 $0.50 到 $1,000.00 之间的金额。',
+    goAnalyze: '报告分析',
+    goCompare: '报告比较',
   },
   es: {
     title: 'Gestión de cuenta',
@@ -390,6 +398,8 @@ const copy: Record<
     sponsorAmount: 'Monto en USD',
     sponsorCta: 'Patrocinar',
     sponsorInvalid: 'Ingresa un monto entre $0.50 y $1,000.00.',
+    goAnalyze: 'Análisis de informe',
+    goCompare: 'Comparación de informes',
   },
   hi: {
     title: 'खाता प्रबंधन',
@@ -449,6 +459,8 @@ const copy: Record<
     sponsorAmount: 'USD राशि',
     sponsorCta: 'स्पॉन्सर',
     sponsorInvalid: '$0.50 से $1,000.00 के बीच राशि दर्ज करें।',
+    goAnalyze: 'रिपोर्ट विश्लेषण',
+    goCompare: 'रिपोर्ट तुलना',
   },
   ar: {
     title: 'إدارة الحساب',
@@ -508,6 +520,8 @@ const copy: Record<
     sponsorAmount: 'المبلغ بالدولار',
     sponsorCta: 'ادعم',
     sponsorInvalid: 'أدخل مبلغًا بين $0.50 و $1,000.00.',
+    goAnalyze: 'تحليل التقرير',
+    goCompare: 'مقارنة التقارير',
   },
 };
 
@@ -1057,6 +1071,15 @@ export default function AccountPage() {
                     {busyPlan === 'author_sponsor' ? t.buying : t.sponsorCta}
                   </button>
                 </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 border-t border-blue-500/30 pt-5">
+                <Link href="/" className={`inline-flex items-center ${PRIMARY_BTN}`}>
+                  {t.goAnalyze}
+                </Link>
+                <Link href="/samples" className={`inline-flex items-center ${SECONDARY_BTN}`}>
+                  {t.goCompare}
+                </Link>
               </div>
             </section>
             ) : null}
