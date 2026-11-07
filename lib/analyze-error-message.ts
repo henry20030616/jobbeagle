@@ -22,13 +22,13 @@ const AI_QUOTA: Localized = {
 
 const RESUME_PDF: Localized = {
   'zh-TW':
-    '履歷檔無法讀取。請重新上傳 PDF 或 .docx（不要用舊的已存履歷捷徑，也不支援舊版 .doc），或改貼上履歷文字後再分析。',
+    '我們讀不到這份履歷。請從電腦重新選一次檔案上傳（請用 PDF 或 Word），或把履歷文字貼上後再按分析。',
   'zh-CN':
-    '简历文件无法读取。请重新上传 PDF 或 .docx（不要用旧的已存简历捷径，也不支持旧版 .doc），或改粘贴简历文字后再分析。',
-  en: 'Resume file could not be read. Please re-upload a PDF or .docx (do not reuse an old Saved Resume stub; legacy .doc is not supported), or paste resume text, then try again.',
-  es: 'No se pudo leer el currículum. Vuelve a subir un PDF o .docx (no reutilices un atajo antiguo; .doc antiguo no es compatible), o pega el texto e inténtalo de nuevo.',
-  hi: 'रिज़्यूमे फ़ाइल पढ़ी नहीं जा सकी। कृपया PDF या .docx फिर से अपलोड करें, या टेक्स्ट पेस्ट करें।',
-  ar: 'تعذّر قراءة ملف السيرة. أعد رفع PDF أو .docx، أو الصق النص ثم حاول مرة أخرى.',
+    '我们读不到这份简历。请从电脑重新选一次文件上传（请用 PDF 或 Word），或把简历文字贴上后再按分析。',
+  en: "We couldn't read your resume. Please choose the file again from your computer (PDF or Word), or paste the text into the resume box, then try again.",
+  es: 'No pudimos leer tu currículum. Vuelve a elegir el archivo en tu ordenador (PDF o Word), o pega el texto en el cuadro y vuelve a intentarlo.',
+  hi: 'हम आपका रिज़्यूमे नहीं पढ़ सके। कृपया कंप्यूटर से फ़ाइल फिर चुनें (PDF या Word), या टेक्स्ट पेस्ट करके फिर कोशिश करें।',
+  ar: 'تعذّر قراءة سيرتك. اختر الملف من جهازك مرة أخرى (PDF أو Word)، أو الصق النص في المربع ثم حاول مجددًا.',
 };
 
 const RATE_LIMIT: Localized = {

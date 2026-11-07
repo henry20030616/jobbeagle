@@ -34,15 +34,15 @@ describe('classifyAnalyzeError', () => {
 });
 
 describe('toUserFacingAnalyzeError for resume files', () => {
-  it('maps jszip Word failures to a clear re-upload message', () => {
+  it('maps jszip Word failures to plain-language re-upload guidance', () => {
     const { message, kind, code } = toUserFacingAnalyzeError(
       "Can't find end of central directory : is this a zip file ?",
       'en',
     );
     expect(kind).toBe('resume_pdf');
     expect(code).toBe('RESUME_PDF_UNREADABLE');
-    expect(message.toLowerCase()).toMatch(/pdf|\.docx|re-upload|paste/);
-    expect(message).not.toMatch(/central directory|jszip/i);
+    expect(message.toLowerCase()).toMatch(/couldn't read|resume|pdf|word|paste/);
+    expect(message).not.toMatch(/central directory|jszip|stub|\.docx|legacy/i);
   });
 });
 

@@ -63,7 +63,7 @@ export async function extractResumeText(
       && (buffer[3] === 0x04 || buffer[3] === 0x06 || buffer[3] === 0x08);
     if (!isZip) {
       throw new Error(
-        'This Word resume could not be read. Please re-upload a .docx or PDF (legacy .doc is not supported), or paste resume text.',
+        "We couldn't read your resume. Please choose the file again from your computer (PDF or Word), or paste the text into the resume box.",
       );
     }
     try {
@@ -71,15 +71,15 @@ export async function extractResumeText(
       const text = (value || '').trim();
       if (!text) {
         throw new Error(
-          'Could not extract text from Word file. Please upload PDF or paste resume text.',
+          "We couldn't read your resume. Please upload a PDF or Word file, or paste the text into the resume box.",
         );
       }
       return truncateText(text, MAX_RESUME_CHARS);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (/central directory|zip file|corrupt|invalid/i.test(msg)) {
+      if (/central directory|zip file|corrupt|invalid|couldn't read your resume/i.test(msg)) {
         throw new Error(
-          'This Word resume is damaged or incomplete. Please re-upload the .docx / PDF, then try again.',
+          "We couldn't read your resume. Please choose the file again from your computer (PDF or Word), or paste the text into the resume box.",
         );
       }
       throw err instanceof Error ? err : new Error(msg);

@@ -32,6 +32,6 @@ describe('Word resume extract', () => {
         mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         fileName: 'resume.docx',
       }),
-    ).rejects.toThrow(/Word resume could not be read|\.docx|PDF/i);
+    ).rejects.toThrow(/couldn't read your resume|PDF|Word/i);
   });
 });
