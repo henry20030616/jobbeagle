@@ -75,6 +75,7 @@ export function classifyAnalyzeError(raw: unknown): AnalyzeErrorKind {
     || text.includes('saved pdf resume')
     || text.includes('resume pdf')
     || text.includes('resume file could not')
+    || text.includes("couldn't read your resume")
     || text.includes('extract text from word')
   ) {
     return 'resume_pdf';

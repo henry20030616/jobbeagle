@@ -33,8 +33,9 @@ type AnalysisErrorDialogProps = {
 };
 
 /**
- * Full-viewport-weight error dialog. Uses `compare-font-large` so type matches
- * the zoomed homepage (plain rem looked tiny against homepage-font-large).
+ * Error dialog at ~2.5× visual size vs the previous compact chip.
+ * Base width × zoom 2.5 ≈ most of the viewport; type stays readable
+ * against the zoomed homepage.
  */
 export default function AnalysisErrorDialog({
   title,
@@ -74,7 +75,7 @@ export default function AnalysisErrorDialog({
 
   return createPortal(
     <div
-      className="compare-font-large fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-[3vw] backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-auto bg-black/85 p-4 backdrop-blur-md animate-fade-in"
       onClick={onDismiss}
     >
       <div
@@ -82,51 +83,52 @@ export default function AnalysisErrorDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={bodyId}
-        className="relative flex w-[min(92vw,56rem)] max-h-[88vh] flex-col overflow-hidden rounded-[1.25rem] border-[3px] border-blue-500 bg-zinc-950 shadow-2xl shadow-blue-950/50"
+        className="relative my-4 flex w-[min(38vw,22rem)] flex-col overflow-hidden rounded-2xl border-[3px] border-blue-500 bg-zinc-950 shadow-2xl shadow-blue-950/50"
+        style={{ zoom: 2.5 }}
         onClick={(e) => e.stopPropagation()}
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400"
+          className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400"
         />
 
         <button
           type="button"
           onClick={onDismiss}
           aria-label={CLOSE_LABEL[language]}
-          className="absolute right-4 top-4 z-10 rounded-xl p-2 text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
+          className="absolute right-2 top-2 z-10 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
         >
-          <X className="h-8 w-8 sm:h-10 sm:w-10" />
+          <X className="h-5 w-5" />
         </button>
 
-        <div className="flex flex-col items-center gap-6 overflow-y-auto px-8 py-10 text-center sm:gap-8 sm:px-12 sm:py-12">
-          <div className="analysis-error-icon-well flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border-2 border-amber-400/50 bg-amber-500/15">
+        <div className="flex max-h-[34vh] flex-col items-center gap-3 overflow-y-auto px-4 py-5 text-center sm:gap-4 sm:px-5 sm:py-6">
+          <div className="analysis-error-icon-well flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-amber-400/50 bg-amber-500/15">
             <AlertTriangle
-              className="analysis-error-icon h-10 w-10 text-amber-300"
+              className="analysis-error-icon h-7 w-7 text-amber-300"
               strokeWidth={2.25}
             />
           </div>
 
           <h2
             id={titleId}
-            className="shrink-0 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl"
+            className="shrink-0 text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl"
           >
             {title}
           </h2>
 
           <p
             id={bodyId}
-            className="w-full shrink-0 whitespace-pre-wrap break-words text-center text-2xl font-medium leading-snug text-slate-100 sm:text-3xl sm:leading-snug"
+            className="w-full shrink-0 whitespace-pre-wrap break-words text-center text-base font-medium leading-snug text-slate-100 sm:text-lg"
           >
             {message}
           </p>
 
           {suggestions.length > 0 ? (
-            <div className="w-full shrink-0 rounded-2xl border border-slate-600 bg-slate-900/90 px-6 py-5 text-left">
+            <div className="w-full shrink-0 rounded-xl border border-slate-600 bg-slate-900/90 px-3 py-3 text-left">
               {suggestionsTitle ? (
-                <p className="text-2xl font-semibold text-slate-100">{suggestionsTitle}</p>
+                <p className="text-base font-semibold text-slate-100">{suggestionsTitle}</p>
               ) : null}
-              <ul className="mt-4 list-disc space-y-3 pl-8 text-xl leading-snug text-slate-200 sm:text-2xl">
+              <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-snug text-slate-200 sm:text-base">
                 {suggestions.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
@@ -138,7 +140,7 @@ export default function AnalysisErrorDialog({
             ref={dismissRef}
             type="button"
             onClick={onDismiss}
-            className="w-full shrink-0 rounded-2xl bg-indigo-500 px-6 py-5 text-3xl font-semibold text-white transition-colors hover:bg-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 sm:text-4xl"
+            className="w-full shrink-0 rounded-xl bg-indigo-500 px-4 py-3 text-xl font-semibold text-white transition-colors hover:bg-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
           >
             {DISMISS_LABEL[language]}
           </button>

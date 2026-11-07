@@ -3,7 +3,13 @@ import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { upsertResumeForUser } from '@/lib/resumes';
 import type { ResumeInput } from '@/types';
-import { extractResumeText, isPdfResume, isValidPdfBase64, sanitizePdfBase64 } from '@/lib/resume-parser';
+import {
+  extractResumeText,
+  isPdfResume,
+  isValidPdfBase64,
+  isWordResume,
+  sanitizePdfBase64,
+} from '@/lib/resume-parser';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 
 /**
@@ -34,6 +40,11 @@ export async function POST(request: NextRequest) {
     let contentText: string;
     let hashMaterial: string;
 
+    // Word is extracted to plain text for the library. Keep type=text so a later
+    // pick is not re-parsed as DOCX base64 (that used to break analysis).
+    let storeType: 'file' | 'text' = resume.type === 'file' ? 'file' : 'text';
+    let storeMime: string | null = resume.mimeType ?? null;
+
     if (isPdfResume(resume)) {
       // Must persist real PDF base64 — placeholder stubs break Gemini inline_data on library pick.
       if (!isValidPdfBase64(resume.content)) {
@@ -48,6 +59,11 @@ export async function POST(request: NextRequest) {
       }
       contentText = sanitizePdfBase64(resume.content);
       hashMaterial = `pdf:${contentText.slice(0, 64)}:${contentText.length}`;
+    } else if (isWordResume(resume)) {
+      contentText = await extractResumeText(resume);
+      hashMaterial = contentText;
+      storeType = 'text';
+      storeMime = 'text/plain';
     } else {
       contentText = await extractResumeText(resume);
       hashMaterial = contentText;
@@ -57,8 +73,8 @@ export async function POST(request: NextRequest) {
       contentText,
       hashMaterial,
       fileName: resume.fileName ?? null,
-      mimeType: resume.mimeType ?? null,
-      type: resume.type === 'file' ? 'file' : 'text',
+      mimeType: storeMime,
+      type: storeType,
       source: 'manual_save',
       pin: true,
     });

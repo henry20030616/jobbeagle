@@ -121,7 +121,25 @@ export default function ResumeInputPanel({
       file.name.toLowerCase().endsWith('.docx') ||
       file.name.toLowerCase().endsWith('.doc');
 
-    if (isPdf || isWord) {
+    if (isWord) {
+      void (async () => {
+        try {
+          const { extractDocxTextFromFile } = await import('@/lib/resume-client');
+          const text = await extractDocxTextFromFile(file);
+          onChange({
+            type: 'text',
+            content: text,
+            mimeType: 'text/plain',
+            fileName: file.name,
+          });
+        } catch (err: unknown) {
+          alert(err instanceof Error ? err.message : zh ? '無法讀取 Word 檔案' : 'Could not read Word file');
+        }
+      })();
+      return;
+    }
+
+    if (isPdf) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -130,9 +148,7 @@ export default function ResumeInputPanel({
         onChange({
           type: 'file',
           content: base64,
-          mimeType: isPdf
-            ? 'application/pdf'
-            : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          mimeType: 'application/pdf',
           fileName: file.name,
         });
       };

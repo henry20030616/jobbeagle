@@ -44,53 +44,88 @@ export function isValidPdfBase64(content: string | null | undefined): boolean {
   }
 }
 
+function looksLikeBase64Payload(raw: string): boolean {
+  const data = raw.replace(/\s+/g, '');
+  if (data.length < 64) return false;
+  return /^[A-Za-z0-9+/]+=*$/.test(data.slice(0, 120));
+}
+
+/** DOCX is a ZIP (PK…). */
+export function isDocxZipBuffer(buffer: Buffer): boolean {
+  return (
+    buffer.length >= 4
+    && buffer[0] === 0x50
+    && buffer[1] === 0x4b
+    && (buffer[2] === 0x03 || buffer[2] === 0x05 || buffer[2] === 0x07)
+    && (buffer[3] === 0x04 || buffer[3] === 0x06 || buffer[3] === 0x08)
+  );
+}
+
+/** True when content is real DOCX bytes in base64 (not already-extracted text). */
+export function isValidDocxBase64(content: string | null | undefined): boolean {
+  if (!content || !looksLikeBase64Payload(content)) return false;
+  try {
+    const buffer = Buffer.from(sanitizePdfBase64(content).slice(0, 64), 'base64');
+    return isDocxZipBuffer(buffer);
+  } catch {
+    return false;
+  }
+}
+
+export function isWordResume(resume: ResumeInput): boolean {
+  const mime = resume.mimeType ?? '';
+  const name = resume.fileName?.toLowerCase() ?? '';
+  return (
+    mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    || mime === 'application/msword'
+    || name.endsWith('.docx')
+    || name.endsWith('.doc')
+  );
+}
+
+const READ_RESUME_FAIL =
+  "We couldn't read your resume. Please choose the file again from your computer (PDF or Word), or paste the text into the resume box.";
+
+async function extractDocxBase64(content: string): Promise<string> {
+  const buffer = Buffer.from(sanitizePdfBase64(content), 'base64');
+  if (!isDocxZipBuffer(buffer)) {
+    throw new Error(READ_RESUME_FAIL);
+  }
+  try {
+    const { value } = await mammoth.extractRawText({ buffer });
+    const text = (value || '').trim();
+    if (!text) throw new Error(READ_RESUME_FAIL);
+    return truncateText(text, MAX_RESUME_CHARS);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/central directory|zip file|corrupt|invalid|couldn't read your resume/i.test(msg)) {
+      throw new Error(READ_RESUME_FAIL);
+    }
+    throw err instanceof Error ? err : new Error(msg);
+  }
+}
+
 export async function extractResumeText(
   resume: ResumeInput,
 ): Promise<string> {
-  const isWordFile =
-    resume.mimeType ===
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-    resume.fileName?.toLowerCase().endsWith('.docx');
+  const isWordFile = isWordResume(resume);
 
   if (resume.type === 'file' && isWordFile && typeof resume.content === 'string') {
-    const buffer = Buffer.from(resume.content.replace(/\s+/g, ''), 'base64');
-    // DOCX is a ZIP; reject .doc / PDF / truncated uploads before mammoth/jszip.
-    const isZip =
-      buffer.length >= 4
-      && buffer[0] === 0x50
-      && buffer[1] === 0x4b
-      && (buffer[2] === 0x03 || buffer[2] === 0x05 || buffer[2] === 0x07)
-      && (buffer[3] === 0x04 || buffer[3] === 0x06 || buffer[3] === 0x08);
-    if (!isZip) {
-      throw new Error(
-        "We couldn't read your resume. Please choose the file again from your computer (PDF or Word), or paste the text into the resume box.",
-      );
+    // Fresh upload: base64 DOCX → mammoth.
+    if (isValidDocxBase64(resume.content)) {
+      return extractDocxBase64(resume.content);
     }
-    try {
-      const { value } = await mammoth.extractRawText({ buffer });
-      const text = (value || '').trim();
-      if (!text) {
-        throw new Error(
-          "We couldn't read your resume. Please upload a PDF or Word file, or paste the text into the resume box.",
-        );
-      }
-      return truncateText(text, MAX_RESUME_CHARS);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      if (/central directory|zip file|corrupt|invalid|couldn't read your resume/i.test(msg)) {
-        throw new Error(
-          "We couldn't read your resume. Please choose the file again from your computer (PDF or Word), or paste the text into the resume box.",
-        );
-      }
-      throw err instanceof Error ? err : new Error(msg);
+    // Library / after-save rows often keep .docx mime but store extracted plain text.
+    const plain = resume.content.trim();
+    if (plain.length >= 40 && !looksLikeBase64Payload(plain)) {
+      return truncateText(plain, MAX_RESUME_CHARS);
     }
+    throw new Error(READ_RESUME_FAIL);
   }
 
   if (resume.type === 'file' && resume.mimeType === 'application/pdf') {
     if (!isValidPdfBase64(resume.content)) {
-      throw new Error(
-        'This saved PDF resume is incomplete. Please re-upload the PDF file (Saved Resumes that only show a name must be uploaded again).',
-      );
+      throw new Error(READ_RESUME_FAIL);
     }
     const approxLen = Math.ceil((sanitizePdfBase64(resume.content).length * 3) / 4);
     if (approxLen > MAX_RESUME_CHARS * 2) {
@@ -114,9 +149,7 @@ export async function resolveResumeForAnalysis(
 ): Promise<{ text: string; pdfInline?: { data: string; mimeType: string } }> {
   if (isPdfResume(resume)) {
     if (!isValidPdfBase64(resume.content)) {
-      throw new Error(
-        'This saved PDF resume is incomplete. Please re-upload the PDF file, then launch again.',
-      );
+      throw new Error(READ_RESUME_FAIL);
     }
     return {
       text: '[Resume provided as PDF attachment — analyze the document content.]',

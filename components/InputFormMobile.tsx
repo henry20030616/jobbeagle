@@ -256,20 +256,38 @@ const InputFormMobile: React.FC<InputFormProps> = ({
                    file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
                    fileName.endsWith('.doc') || fileName.endsWith('.docx');
     
-    if (isPdf || isWord) {
+    if (isWord) {
+      void (async () => {
+        try {
+          const { extractDocxTextFromFile } = await import('@/lib/resume-client');
+          const text = await extractDocxTextFromFile(file);
+          setResume({
+            type: 'text',
+            content: text,
+            mimeType: 'text/plain',
+            fileName: file.name,
+          });
+        } catch (err: unknown) {
+          alert(err instanceof Error ? err.message : '無法讀取 Word 檔案');
+        }
+      })();
+      return;
+    }
+
+    if (isPdf) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
         if (!result) {
-          alert(`讀取 ${isPdf ? 'PDF' : 'Word'} 文件失敗，請重試`);
+          alert('讀取 PDF 文件失敗，請重試');
           return;
         }
         const base64String = result.split(',')[1];
         if (!base64String) {
-          alert(`${isPdf ? 'PDF' : 'Word'} 文件編碼失敗，請重試`);
+          alert('PDF 文件編碼失敗，請重試');
           return;
         }
-        processFile(base64String, isPdf, isWord);
+        processFile(base64String, true, false);
       };
       reader.readAsDataURL(file);
     } else {

@@ -491,27 +491,48 @@ const InputForm: React.FC<InputFormProps> = ({
                    file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
                    fileName.endsWith('.doc') || fileName.endsWith('.docx');
     
-    if (isPdf || isWord) {
-      console.log(`📄 [File Upload] 处理 ${isPdf ? 'PDF' : 'Word'} 文件`);
+    if (isWord) {
+      // Extract text in-browser — posting DOCX as base64 exceeds Vercel body limits and corrupts the file.
+      void (async () => {
+        try {
+          const { extractDocxTextFromFile } = await import('@/lib/resume-client');
+          const text = await extractDocxTextFromFile(file);
+          setResume({
+            type: 'text',
+            content: text,
+            mimeType: 'text/plain',
+            fileName: file.name,
+          });
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : 'Could not read Word file';
+          console.error('❌ [File Upload] Word extract failed:', msg);
+          alert(msg);
+        }
+      })();
+      return;
+    }
+
+    if (isPdf) {
+      console.log('📄 [File Upload] 处理 PDF 文件');
       const reader = new FileReader();
       reader.onerror = (error) => {
-        console.error(`❌ [File Upload] ${isPdf ? 'PDF' : 'Word'} 读取错误:`, error);
-        alert(`读取 ${isPdf ? 'PDF' : 'Word'} 文件时发生错误，请重试`);
+        console.error('❌ [File Upload] PDF 读取错误:', error);
+        alert('读取 PDF 文件时发生错误，请重试');
       };
       reader.onloadend = () => {
         const result = reader.result as string;
         if (!result) {
-          console.error(`❌ [File Upload] ${isPdf ? 'PDF' : 'Word'} 读取结果为空`);
-          alert(`读取 ${isPdf ? 'PDF' : 'Word'} 文件失败，请重试`);
+          console.error('❌ [File Upload] PDF 读取结果为空');
+          alert('读取 PDF 文件失败，请重试');
           return;
         }
         const base64String = result.split(',')[1];
         if (!base64String) {
           console.error('❌ [File Upload] Base64 编码失败');
-          alert(`${isPdf ? 'PDF' : 'Word'} 文件编码失败，请重试`);
+          alert('PDF 文件编码失败，请重试');
           return;
         }
-        processFile(base64String, isPdf, isWord);
+        processFile(base64String, true, false);
       };
       reader.readAsDataURL(file);
     } else {

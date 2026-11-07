@@ -23,7 +23,7 @@ describe('PDF resume base64 guards', () => {
 });
 
 describe('Word resume extract', () => {
-  it('rejects non-ZIP bytes labeled as docx before mammoth', async () => {
+  it('rejects fake base64 that is not a DOCX zip', async () => {
     const fake = Buffer.from('%PDF-1.4 not a docx').toString('base64');
     await expect(
       extractResumeText({
@@ -33,5 +33,18 @@ describe('Word resume extract', () => {
         fileName: 'resume.docx',
       }),
     ).rejects.toThrow(/couldn't read your resume|PDF|Word/i);
+  });
+
+  it('accepts library rows that kept .docx mime but stored extracted plain text', async () => {
+    const plain =
+      '許瀚文\nBusiness Analyst\n5 years experience in payments and product operations.';
+    const text = await extractResumeText({
+      type: 'file',
+      content: plain,
+      mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      fileName: '許瀚文中英文履歷20261025.docx',
+    });
+    expect(text).toContain('許瀚文');
+    expect(text).toContain('Business Analyst');
   });
 });

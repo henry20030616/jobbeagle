@@ -9,13 +9,11 @@ const SRC = readFileSync(
 const PAGE = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
 
 describe('AnalysisErrorDialog sizing + copy', () => {
-  it('matches homepage type scale and uses a wide modal', () => {
-    expect(SRC).toContain('compare-font-large');
-    expect(SRC).toContain('w-[min(92vw,56rem)]');
+  it('scales the dialog ~2.5× so it is readable on the zoomed homepage', () => {
+    expect(SRC).toContain('zoom: 2.5');
+    expect(SRC).toContain('w-[min(38vw,22rem)]');
     expect(SRC).not.toContain('FALLBACK_CAP_PX');
     expect(SRC).not.toContain('measureResumeUploadCapPx');
-    expect(SRC).toContain('text-4xl');
-    expect(SRC).toContain('sm:text-5xl');
   });
 
   it('homepage suggestions stay human — no F12 / Gemini / API Key / stub jargon', () => {
