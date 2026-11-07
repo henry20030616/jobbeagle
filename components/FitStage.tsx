@@ -75,7 +75,12 @@ export function FitStage({
     if (!outer) return;
 
     const update = () => {
-      const availW = outer.clientWidth;
+      // Measure the parent (or self) width — never the zoomed canvas. If we
+      // read only outer.clientWidth while the canvas is still at designWidth,
+      // contain-mode stages can lock into a centered island (scale ≈ 1).
+      const parent = outer.parentElement;
+      const availW =
+        parent && parent.clientWidth > 0 ? parent.clientWidth : outer.clientWidth;
       const availH = outer.clientHeight > 0 ? outer.clientHeight : window.innerHeight;
       if (availW <= 0) return;
 
@@ -103,6 +108,7 @@ export function FitStage({
     update();
     const ro = new ResizeObserver(update);
     ro.observe(outer);
+    if (outer.parentElement) ro.observe(outer.parentElement);
     window.addEventListener('resize', update);
     return () => {
       ro.disconnect();
@@ -122,7 +128,7 @@ export function FitStage({
       data-fit-stage
       data-fit-mode={mode}
       data-fit-fluid={fluid ? 'true' : 'false'}
-      className={`flex w-full min-w-0 justify-center ${fillLayout ? 'h-full self-stretch' : ''} ${mode === 'shorts' ? 'overflow-hidden' : ''} ${className}`}
+      className={`flex w-full min-w-0 max-w-full self-stretch justify-center ${fillLayout ? 'h-full' : ''} ${mode === 'shorts' ? 'overflow-hidden' : ''} ${className}`}
     >
       <div
         data-fit-canvas

@@ -444,8 +444,8 @@ describe('page shell gutters', () => {
     );
     expect(REPORT_SHELL_WIDTH).toBe('w-full max-w-full');
     expect(REPORT_SHELL_WIDTH).not.toMatch(/\d+rem/);
-    // 1050 = prior 1400 ÷ ≈1.33 → ReportFitStage CSS zoom ~33% larger
-    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(1050);
+    // 840 = prior 1050 ÷ 1.25 → ReportFitStage CSS zoom 1.25× larger
+    expect(REPORT_SLIDE_DESIGN_WIDTH).toBe(840);
 
     const homepage = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
     const samples = readFileSync(
