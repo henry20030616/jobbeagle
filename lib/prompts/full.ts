@@ -1,6 +1,10 @@
 import { EXECUTIVE_SNAPSHOT_RULES, SNAPSHOT_CALIBRATION_RULES } from '@/lib/prompts/lite';
 
-/** Interview Guide — Spec v3 (Pro + Search grounding, single pass) */
+/**
+ * @deprecated Legacy Interview Guide prompt (Spec v3, single pass). Not wired into the live path;
+ * use `lib/prompts/guide-modules.ts`. Do not revive: it forces `site:` scraping-style searches and
+ * verbatim review quotes, which conflict with the public-source / paraphrase rules.
+ */
 
 export const FULL_SYSTEM_PROMPT = `
 ╔═══════════════════════════════════════════════════════════════════════════╗

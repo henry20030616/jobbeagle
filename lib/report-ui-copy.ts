@@ -527,7 +527,7 @@ const GUIDE: Dict<GuideUiCopy> = {
     manualVerifyPrefix: 'Retrieval summary & suggested manual-verify keywords: ',
     noDirectLinkParen: '(no direct link)',
     provenanceFooter:
-      'Purpose: keep trust high so you can independently trace original sources.',
+      'This guide is an AI summary of public search results. JobBeagle is not affiliated with the cited sites or the employer.\nPay figures are estimates, not an offer. Interview questions are not confirmed by the employer. Open the source links to verify before you decide.',
     emptyRoleContent: 'Role content not extracted in this run.',
     emptyRequirements: 'Requirements not extracted in this run.',
   },
@@ -665,7 +665,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     noDirectUrl: '無直接 URL — 請手動查證',
     manualVerifyPrefix: '檢索數據摘要與建議手動查證關鍵字：',
     noDirectLinkParen: '（無直接連結）',
-    provenanceFooter: '定位：確保可信度，讓求職者可自主深度追蹤原始來源。',
+    provenanceFooter:
+      '本指南由 AI 依公開搜尋結果整理，JobBeagle 與所引用網站及雇主皆無關聯。\n薪資為估計值，並非錄取條件；面試題未經雇主確認。決策前請點開資料來源自行核對。',
     emptyRoleContent: '本次未抽出職位內容。',
     emptyRequirements: '本次未抽出要求條件。',
   },
@@ -803,7 +804,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     noDirectUrl: '无直接 URL — 请手动查证',
     manualVerifyPrefix: '检索数据摘要与建议手动查证关键词：',
     noDirectLinkParen: '（无直接链接）',
-    provenanceFooter: '定位：确保可信度，让求职者可自主深度追踪原始来源。',
+    provenanceFooter:
+      '本指南由 AI 依公开搜索结果整理，JobBeagle 与所引用网站及雇主均无关联。\n薪资为估计值，并非录用条件；面试题未经雇主确认。决策前请点开资料来源自行核对。',
     emptyRoleContent: '本次未抽出职位内容。',
     emptyRequirements: '本次未抽出要求条件。',
   },
@@ -948,7 +950,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     noDirectUrl: 'Sin URL directa — verifica manualmente',
     manualVerifyPrefix: 'Resumen y keywords sugeridas: ',
     noDirectLinkParen: '(sin enlace directo)',
-    provenanceFooter: 'Objetivo: mantener confianza para que puedas rastrear fuentes originales.',
+    provenanceFooter:
+      'Esta guía es un resumen hecho por IA a partir de resultados de búsqueda públicos. JobBeagle no está afiliado a los sitios citados ni al empleador.\nLas cifras salariales son estimaciones, no una oferta. Las preguntas de entrevista no están confirmadas por el empleador. Abre las fuentes para verificar antes de decidir.',
     emptyRoleContent: 'No se extrajo contenido del rol en esta ejecución.',
     emptyRequirements: 'No se extrajeron requisitos en esta ejecución.',
   },
@@ -1092,7 +1095,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     noDirectUrl: 'सीधा URL नहीं — मैन्युअल जाँच करें',
     manualVerifyPrefix: 'सारांश और सुझाए कीवर्ड: ',
     noDirectLinkParen: '(कोई सीधा लिंक नहीं)',
-    provenanceFooter: 'उद्देश्य: विश्वास बनाए रखें ताकि आप मूल स्रोत खुद ट्रेस कर सकें।',
+    provenanceFooter:
+      'यह गाइड सार्वजनिक सर्च परिणामों का AI सारांश है। JobBeagle का उद्धृत साइटों या नियोक्ता से कोई संबंध नहीं है।\nवेतन आंकड़े अनुमान हैं, ऑफ़र नहीं। इंटरव्यू प्रश्न नियोक्ता द्वारा पुष्ट नहीं हैं। निर्णय से पहले स्रोत लिंक खोलकर जाँच करें।',
     emptyRoleContent: 'इस रन में रोल सामग्री नहीं निकली।',
     emptyRequirements: 'इस रन में आवश्यकताएँ नहीं निकलीं।',
   },
@@ -1236,7 +1240,8 @@ const GUIDE: Dict<GuideUiCopy> = {
     noDirectUrl: 'لا رابط مباشر — تحقق يدويًا',
     manualVerifyPrefix: 'ملخص الاسترجاع وكلمات التحقق المقترحة: ',
     noDirectLinkParen: '(لا رابط مباشر)',
-    provenanceFooter: 'الهدف: الحفاظ على الثقة لتتبع المصادر الأصلية بنفسك.',
+    provenanceFooter:
+      'هذا الدليل ملخص بالذكاء الاصطناعي لنتائج بحث عامة. JobBeagle غير تابع للمواقع المذكورة أو لجهة التوظيف.\nأرقام الرواتب تقديرات وليست عرضًا. أسئلة المقابلة غير مؤكدة من جهة التوظيف. افتح روابط المصادر للتحقق قبل اتخاذ القرار.',
     emptyRoleContent: 'لم يُستخرج محتوى الدور في هذا التشغيل.',
     emptyRequirements: 'لم تُستخرج المتطلبات في هذا التشغيل.',
   },

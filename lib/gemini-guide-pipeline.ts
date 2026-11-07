@@ -28,6 +28,13 @@ import {
 } from '@/lib/prompts/guide-modules';
 import { parseJsonResponse } from '@/lib/parse-gemini-json';
 import {
+  auditQuestions,
+  auditSources,
+  collectGuideSourceUrls,
+  findDeadSourceUrls,
+  type SourceFetch,
+} from '@/lib/guide-source-audit';
+import {
   withUntrustedContentPolicy,
   wrapUntrusted,
 } from '@/lib/prompt-injection-guard';
@@ -44,6 +51,8 @@ export interface PaidGuideInput {
   language: AppLanguage | string;
   companyName: string;
   jobTitle: string;
+  /** Override for cited-link checks (tests). Defaults to global fetch. */
+  sourceFetch?: SourceFetch;
 }
 
 function getAI(): GoogleGenAI {
@@ -58,11 +67,17 @@ function withTask(parts: GuideContentPart[], task: string): GuideContentPart[] {
   return [{ text: `${task}\n\n${first.text}` }, ...rest];
 }
 
+interface ModuleResult {
+  value: unknown;
+  /** False when the module ran without Google Search, so nothing in it is web-sourced. */
+  searchUsed: boolean;
+}
+
 async function generateGeminiJson(options: {
   system: string;
   parts: GuideContentPart[];
   search: boolean;
-}): Promise<unknown> {
+}): Promise<ModuleResult> {
   const ai = getAI();
   const run = async (search: boolean) => {
     const response = await ai.models.generateContent({
@@ -76,7 +91,7 @@ async function generateGeminiJson(options: {
       },
     });
     if (!response.text) throw new Error('Empty module response');
-    return parseJsonResponse<unknown>(response.text);
+    return { value: parseJsonResponse<unknown>(response.text), searchUsed: search };
   };
 
   try {
@@ -119,14 +134,15 @@ async function generateModuleJson(options: {
   moduleId: PaidGuideModuleId;
   system: string;
   parts: GuideContentPart[];
-}): Promise<unknown> {
+}): Promise<ModuleResult> {
   const route = resolveGuideModuleRoute(options.moduleId, Boolean(getAnthropicApiKey()));
   if (route.provider === 'anthropic') {
     try {
-      return await generateClaudeJson({
+      const value = await generateClaudeJson({
         system: options.system,
         parts: options.parts,
       });
+      return { value, searchUsed: false };
     } catch (err) {
       console.error(
         `[Guide writing] Claude failed for ${options.moduleId}; falling back to Gemini Pro (search off):`,
@@ -197,36 +213,62 @@ export async function runPaidGuideModules(input: PaidGuideInput): Promise<GuideM
   const modules = emptyGuideModules();
 
   if (rewriteRes.status === 'fulfilled') {
-    const row = rewriteRes.value;
+    const row = rewriteRes.value.value;
     const list = row && typeof row === 'object' ? (row as { rewrites?: unknown }).rewrites : undefined;
     modules.resume_rewrites = parseRewrites(list);
   } else {
     limitations.push('Resume rewrite module failed.');
   }
 
+  let salarySearched = false;
   if (salaryRes.status === 'fulfilled') {
-    modules.salary_land = parseSalaryLand(salaryRes.value) ?? modules.salary_land;
+    salarySearched = salaryRes.value.searchUsed;
+    modules.salary_land = parseSalaryLand(salaryRes.value.value) ?? modules.salary_land;
+    if (!salarySearched) limitations.push('Salary search unavailable; pay landing is a closed-book estimate.');
   } else {
     limitations.push('Salary landing module failed.');
   }
 
+  let companySearched = false;
   if (companyRes.status === 'fulfilled') {
-    modules.company_eval = parseCompanyEval(companyRes.value) ?? modules.company_eval;
+    companySearched = companyRes.value.searchUsed;
+    modules.company_eval = parseCompanyEval(companyRes.value.value) ?? modules.company_eval;
+    if (!companySearched) limitations.push('Company search unavailable; company and role notes are not web-sourced.');
   } else {
     limitations.push('Company evaluation module failed.');
   }
 
   let retrievedQuestions: ReturnType<typeof parseGuideQuestions> = [];
+  let retrievalSearched = false;
   let process = '';
   let questionSummary = '';
-  if (retrievalRes.status === 'fulfilled' && retrievalRes.value && typeof retrievalRes.value === 'object') {
-    const row = retrievalRes.value as { questions?: unknown; process?: unknown; summary?: unknown };
+  const retrieval = retrievalRes.status === 'fulfilled' ? retrievalRes.value : null;
+  if (retrieval && retrieval.value && typeof retrieval.value === 'object') {
+    const row = retrieval.value as { questions?: unknown; process?: unknown; summary?: unknown };
+    retrievalSearched = retrieval.searchUsed;
     retrievedQuestions = parseGuideQuestions(row.questions);
     process = typeof row.process === 'string' ? row.process : '';
     questionSummary = typeof row.summary === 'string' ? row.summary : '';
+    if (!retrievalSearched) limitations.push('Interview search unavailable; all questions are predicted.');
   } else {
     limitations.push('Interview question retrieval failed.');
   }
+
+  const dead = await findDeadSourceUrls(
+    collectGuideSourceUrls(retrievedQuestions, modules.salary_land, modules.company_eval),
+    input.sourceFetch,
+  );
+  if (dead.size > 0) limitations.push(`Dropped ${dead.size} cited link(s) that returned 404/410.`);
+  retrievedQuestions = auditQuestions(retrievedQuestions, dead, retrievalSearched);
+  modules.salary_land = {
+    ...modules.salary_land,
+    sources: auditSources(modules.salary_land.sources, dead, salarySearched),
+  };
+  modules.company_eval = {
+    ...modules.company_eval,
+    sources: auditSources(modules.company_eval.sources, dead, companySearched),
+    role_sources: auditSources(modules.company_eval.role_sources, dead, companySearched),
+  };
   modules.interview_bank = selectInterviewBank(retrievedQuestions, process, questionSummary);
 
   const answerTask = wrapUntrusted(
@@ -252,13 +294,13 @@ export async function runPaidGuideModules(input: PaidGuideInput): Promise<GuideM
   ]);
 
   if (writing[0].status === 'fulfilled') {
-    modules.interview_bank = applyInterviewAnswers(modules.interview_bank, writing[0].value);
+    modules.interview_bank = applyInterviewAnswers(modules.interview_bank, writing[0].value.value);
   } else {
     limitations.push('Interview answer module failed.');
   }
 
   if (writing[1].status === 'fulfilled') {
-    modules.negotiation = parseNegotiation(writing[1].value) ?? modules.negotiation;
+    modules.negotiation = parseNegotiation(writing[1].value.value) ?? modules.negotiation;
   } else {
     limitations.push('Negotiation module failed.');
   }

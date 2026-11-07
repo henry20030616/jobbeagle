@@ -16,7 +16,7 @@ type LegalDocKey = 'privacy' | 'terms';
 
 const PRIVACY_EN: LegalDocument = {
   title: 'Privacy Policy',
-  lastUpdated: 'July 12, 2026',
+  lastUpdated: 'November 7, 2026',
   intro: 'JobBeagle ("we", "us") operates jobbeagle.com and the JobBeagle Chrome extension. This policy explains what we collect and how we use it. We do not sell personal information.',
   sections: [
     {
@@ -38,6 +38,14 @@ const PRIVACY_EN: LegalDocument = {
       ],
     },
     {
+      title: 'Interview Guide — Public Search Sources',
+      paragraphs: [
+        'Interview Guide company, role, pay, and interview-question sections are AI summaries of public web search results (Google Search grounding). JobBeagle does not run crawlers against review sites, does not log in to third-party sites, and does not bypass paywalls.',
+        'We do not store copies of third-party pages. Reports keep our own summary plus the link to each cited page, and links that no longer exist are removed before the report is saved.',
+        'JobBeagle is not affiliated with Glassdoor, Blind, Reddit, Levels.fyi, or any employer named in a report.',
+      ],
+    },
+    {
       title: 'How We Use Your Information',
       paragraphs: [
         'Provide AI job-match analysis (Lite / Full reports) and Pre-Flight confirmation.',
@@ -49,7 +57,7 @@ const PRIVACY_EN: LegalDocument = {
     {
       title: 'Sharing Your Information',
       paragraphs: [
-        'We use third-party processors: Supabase (database & auth), Google Gemini (AI analysis), PayPal (payments), Vercel (hosting), Resend (email, if enabled), Google Analytics (if enabled).',
+        'We use third-party processors: Supabase (database & auth), Google Gemini (AI analysis and public web search), Anthropic Claude (Interview Guide writing), PayPal (payments), Vercel (hosting), Resend (email, if enabled), Google Analytics (if enabled).',
         'We do not sell your personal information to third parties.',
         'We may disclose information if required by law or to protect our rights and users.',
       ],
@@ -93,7 +101,7 @@ const PRIVACY_EN: LegalDocument = {
 
 const PRIVACY_ZH_TW: LegalDocument = {
   title: '隱私權政策',
-  lastUpdated: '2026 年 7 月 12 日',
+  lastUpdated: '2026 年 11 月 7 日',
   intro: 'JobBeagle（「我們」）營運 jobbeagle.com 與 JobBeagle Chrome 外掛。本政策說明我們收集哪些資料及如何使用。我們不會出售個人資料。',
   sections: [
     {
@@ -115,6 +123,14 @@ const PRIVACY_ZH_TW: LegalDocument = {
       ],
     },
     {
+      title: '面試指南 — 公開搜尋來源',
+      paragraphs: [
+        '面試指南中的公司、職位、薪資與面試題內容，由 AI 依公開網路搜尋結果（Google Search grounding）整理。JobBeagle 不對評論網站執行爬蟲、不登入第三方網站，也不繞過付費牆。',
+        '我們不儲存第三方網頁副本；報告只保留我們的整理內容與各來源連結，已失效的連結會在報告儲存前移除。',
+        'JobBeagle 與 Glassdoor、Blind、Reddit、Levels.fyi 及報告中提及的任何雇主皆無關聯。',
+      ],
+    },
+    {
       title: '我們如何使用您的資訊',
       paragraphs: [
         '提供 AI 職缺分析（Lite／Full）與 Pre-Flight 確認。',
@@ -126,7 +142,7 @@ const PRIVACY_ZH_TW: LegalDocument = {
     {
       title: '資訊分享',
       paragraphs: [
-        '我們使用第三方處理者：Supabase、Google Gemini、PayPal、Vercel、Resend（若啟用）、Google Analytics（若啟用）。',
+        '我們使用第三方處理者：Supabase、Google Gemini（AI 分析與公開網路搜尋）、Anthropic Claude（面試指南撰寫）、PayPal、Vercel、Resend（若啟用）、Google Analytics（若啟用）。',
         '我們不會將您的個人資料出售給第三方。',
         '若法律要求或為保護權益，我們可能依法揭露資訊。',
       ],
@@ -166,7 +182,7 @@ const PRIVACY_ZH_TW: LegalDocument = {
 
 const TERMS_EN: LegalDocument = {
   title: 'Terms of Service',
-  lastUpdated: 'August 24, 2026',
+  lastUpdated: 'November 7, 2026',
   intro: 'By using JobBeagle (website and Chrome extension), you agree to these Terms. If you do not agree, please do not use the service.',
   sections: [
     {
@@ -198,6 +214,7 @@ const TERMS_EN: LegalDocument = {
       paragraphs: [
         'AI-generated scores and reports are for informational purposes only and do not constitute hiring, legal, or financial advice.',
         'You should verify all job and salary information independently.',
+        'Interview Guide content summarizes public search results. Pay figures are estimates, not offers; interview questions are not confirmed by the employer; JobBeagle is not affiliated with cited sites or employers.',
       ],
     },
     {
@@ -237,7 +254,7 @@ const TERMS_EN: LegalDocument = {
 
 const TERMS_ZH_TW: LegalDocument = {
   title: '服務條款',
-  lastUpdated: '2026 年 8 月 24 日',
+  lastUpdated: '2026 年 11 月 7 日',
   intro: '使用 JobBeagle（網站與 Chrome 外掛）即表示您同意本條款。若不同意，請勿使用本服務。',
   sections: [
     {
@@ -269,6 +286,7 @@ const TERMS_ZH_TW: LegalDocument = {
       paragraphs: [
         'AI 分數與報告僅供參考，不構成錄用、法律或財務建議。',
         '請自行核實職缺與薪資資訊。',
+        '面試指南內容為公開搜尋結果的整理：薪資為估計值，並非錄取條件；面試題未經雇主確認；JobBeagle 與所引用網站及雇主皆無關聯。',
       ],
     },
     {
@@ -310,13 +328,13 @@ const TERMS_ZH_TW: LegalDocument = {
 const PRIVACY_ZH_CN: LegalDocument = {
   ...PRIVACY_ZH_TW,
   title: '隐私权政策',
-  lastUpdated: '2026 年 7 月 11 日',
+  lastUpdated: '2026 年 11 月 7 日',
 };
 
 const TERMS_ZH_CN: LegalDocument = {
   ...TERMS_ZH_TW,
   title: '服务条款',
-  lastUpdated: '2026 年 8 月 24 日',
+  lastUpdated: '2026 年 11 月 7 日',
 };
 
 const DOCS: Record<LegalDocKey, Partial<Record<AppLanguage, LegalDocument>>> = {

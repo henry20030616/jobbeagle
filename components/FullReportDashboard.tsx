@@ -5,6 +5,7 @@ import type { FullReport } from '@/types';
 import { Home, RotateCcw } from 'lucide-react';
 import { GuideItemPage, guideItemNav, type GuideItemId } from '@/components/report/SevenItemPages';
 import { ReportJobHeader } from '@/components/report/ReportJobHeader';
+import { BODY } from '@/components/guide/GuideSlideChrome';
 import type { AppLanguage } from '@/lib/language-context';
 import { normalizeReportLanguage } from '@/lib/report-language';
 import { getGuideUiCopy } from '@/lib/report-ui-copy';
@@ -116,6 +117,10 @@ export default function FullReportDashboard({
             <GuideItemPage report={report} item={tab} language={lang} />
           </div>
         </section>
+
+        <footer className={`px-4 sm:px-6 py-4 border-t border-slate-700 bg-slate-900/60 ${BODY} leading-relaxed text-slate-300 whitespace-pre-line`}>
+          {copy.provenanceFooter}
+        </footer>
       </div>
     </div>
   );
