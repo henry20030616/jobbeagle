@@ -34,7 +34,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   'zh-TW': {
     thanks: '感謝您使用 JobBeagle！',
     subtitle: '您的終身 3 次適配快照額度已用完。訂閱可解鎖每月 50 次適配快照 + 5 次面試指南。',
-    loginHint: '請先登入（Google 或 Email）— 註冊即送 3 次適配快照。',
+    loginHint: '請先 Google 登入 — 註冊即送 3 次適配快照。',
     loginBtn: 'Google 登入',
     singleLite: '適配快照 · $9.99',
     singleFull: '面試指南 · $14.99',
@@ -48,7 +48,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   'zh-CN': {
     thanks: '感谢您使用 JobBeagle！',
     subtitle: '您的终身 3 次适配快照额度已用完。订阅可解锁每月 50 次适配快照 + 5 次面试指南。',
-    loginHint: '请先登录（Google 或 Email）— 注册即送 3 次适配快照。',
+    loginHint: '请先 Google 登录 — 注册即送 3 次适配快照。',
     loginBtn: 'Google 登录',
     singleLite: '适配快照 · $9.99',
     singleFull: '面试指南 · $14.99',
@@ -62,7 +62,7 @@ const copy: Record<AppLanguage, PaywallCopy> = {
   en: {
     thanks: 'Thanks for using JobBeagle!',
     subtitle: 'Your lifetime 3 Fit Snapshot credits are used up. Subscribe for 50 Fit Snapshot + 5 Interview Guide reports per month.',
-    loginHint: 'Sign in with Google or Email — 3 free Fit Snapshot analyses on signup.',
+    loginHint: 'Sign in with Google — 3 free Fit Snapshot analyses on signup.',
     loginBtn: 'Sign in with Google',
     singleLite: 'Fit Snapshot · $9.99',
     singleFull: 'Interview Guide · $14.99',

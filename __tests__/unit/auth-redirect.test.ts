@@ -1,18 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildAuthCallbackUrl, isValidSignInEmail } from '@/lib/auth-redirect';
-
-describe('isValidSignInEmail', () => {
-  it('accepts normal emails', () => {
-    expect(isValidSignInEmail('ada@jobbeagle.com')).toBe(true);
-    expect(isValidSignInEmail('  ada@jobbeagle.com ')).toBe(true);
-  });
-
-  it('rejects garbage', () => {
-    expect(isValidSignInEmail('')).toBe(false);
-    expect(isValidSignInEmail('not-an-email')).toBe(false);
-    expect(isValidSignInEmail('@x.com')).toBe(false);
-  });
-});
+import { buildAuthCallbackUrl } from '@/lib/auth-redirect';
 
 describe('buildAuthCallbackUrl', () => {
   it('includes redirect and referral when provided', () => {

@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LogOut, User, Mail } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 import { useLanguage } from '@/lib/language-context';
 import { getLoginButtonCopy, type LoginButtonCopy } from '@/constants/login-button-copy';
-import { buildAuthCallbackUrl, isValidSignInEmail } from '@/lib/auth-redirect';
+import { buildAuthCallbackUrl } from '@/lib/auth-redirect';
 import type { User as AuthUser } from '@supabase/supabase-js';
 
 export const HEADER_ACCOUNT_HREF = '/account';
@@ -19,9 +19,6 @@ const HEADER_LOGOUT_BTN =
 
 const GOOGLE_BTN =
   'inline-flex h-9 sm:h-10 lg:h-16 items-center gap-2 lg:gap-3 px-2.5 sm:px-3 lg:px-5 bg-white hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-semibold border border-gray-300';
-
-const EMAIL_TOGGLE_BTN =
-  'inline-flex h-9 sm:h-10 lg:h-16 items-center gap-2 px-2.5 sm:px-3 lg:px-5 bg-slate-800/80 hover:bg-slate-700 text-slate-100 rounded-lg transition-colors text-sm font-semibold border border-slate-600';
 
 type LoggedInHeaderControlsProps = {
   avatarUrl: string | undefined;
@@ -96,11 +93,6 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
   const copy = getLoginButtonCopy(language);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [emailOpen, setEmailOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [emailBusy, setEmailBusy] = useState(false);
-  const [emailMsg, setEmailMsg] = useState<string | null>(null);
-  const [emailErr, setEmailErr] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -119,16 +111,6 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
     return () => subscription.unsubscribe();
   }, []);
 
-  const resolveCallbackUrl = () => {
-    const refFromStorage =
-      typeof window !== 'undefined' ? localStorage.getItem('jb_referral_code') : null;
-    return buildAuthCallbackUrl({
-      origin: window.location.origin,
-      redirectTo,
-      referralCode: referralCode || refFromStorage,
-    });
-  };
-
   const handleGoogleLogin = async () => {
     try {
       const supabase = createClient();
@@ -140,10 +122,16 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
         return;
       }
 
+      const refFromStorage =
+        typeof window !== 'undefined' ? localStorage.getItem('jb_referral_code') : null;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: resolveCallbackUrl(),
+          redirectTo: buildAuthCallbackUrl({
+            origin: window.location.origin,
+            redirectTo,
+            referralCode: referralCode || refFromStorage,
+          }),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -166,37 +154,6 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : '未知錯誤';
       alert(`登入時發生錯誤：${message}`);
-    }
-  };
-
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setEmailErr(null);
-    setEmailMsg(null);
-    const trimmed = email.trim();
-    if (!isValidSignInEmail(trimmed)) {
-      setEmailErr(copy.emailInvalid);
-      return;
-    }
-    setEmailBusy(true);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        email: trimmed,
-        options: {
-          emailRedirectTo: resolveCallbackUrl(),
-          shouldCreateUser: true,
-        },
-      });
-      if (error) {
-        setEmailErr(error.message || copy.emailError);
-        return;
-      }
-      setEmailMsg(copy.emailSent);
-    } catch {
-      setEmailErr(copy.emailError);
-    } finally {
-      setEmailBusy(false);
     }
   };
 
@@ -237,56 +194,11 @@ const LoginButton: React.FC<{ redirectTo?: string; referralCode?: string }> = ({
   }
 
   return (
-    <div className="relative flex flex-col items-end gap-2">
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        <button type="button" onClick={handleGoogleLogin} className={GOOGLE_BTN}>
-          <GoogleGlyph className="w-4 h-4 lg:w-7 lg:h-7" />
-          <span>{copy.google}</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setEmailOpen((v) => !v);
-            setEmailErr(null);
-            setEmailMsg(null);
-          }}
-          className={EMAIL_TOGGLE_BTN}
-          aria-expanded={emailOpen}
-        >
-          <Mail className="w-4 h-4 lg:w-6 lg:h-6" aria-hidden />
-          <span className="hidden sm:inline">{copy.email}</span>
-        </button>
-      </div>
-
-      {emailOpen ? (
-        <form
-          onSubmit={handleEmailLogin}
-          className="z-50 w-[min(100vw-2rem,20rem)] rounded-xl border border-slate-600 bg-slate-900 p-3 shadow-xl space-y-2"
-        >
-          <label className="block text-xs font-semibold text-slate-400" htmlFor="jb-signin-email">
-            {copy.email}
-          </label>
-          <input
-            id="jb-signin-email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(ev) => setEmail(ev.target.value)}
-            placeholder={copy.emailPlaceholder}
-            className="w-full rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
-            disabled={emailBusy}
-          />
-          <button
-            type="submit"
-            disabled={emailBusy}
-            className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 px-3 py-2 text-sm font-semibold text-white"
-          >
-            {emailBusy ? copy.emailSending : copy.emailSend}
-          </button>
-          {emailMsg ? <p className="text-xs text-emerald-300 leading-snug">{emailMsg}</p> : null}
-          {emailErr ? <p className="text-xs text-rose-300 leading-snug">{emailErr}</p> : null}
-        </form>
-      ) : null}
+    <div className="flex items-center">
+      <button type="button" onClick={handleGoogleLogin} className={GOOGLE_BTN}>
+        <GoogleGlyph className="w-4 h-4 lg:w-7 lg:h-7" />
+        <span>{copy.google}</span>
+      </button>
     </div>
   );
 };

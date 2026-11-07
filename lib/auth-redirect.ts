@@ -16,9 +16,3 @@ export function buildAuthCallbackUrl(options: {
   }
   return callbackUrl.toString();
 }
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export function isValidSignInEmail(raw: string): boolean {
-  return EMAIL_RE.test(raw.trim());
-}
