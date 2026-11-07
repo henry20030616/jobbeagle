@@ -81,7 +81,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 px-6">
       {/* Portal to body so homepage-font-large does not double-scale; CSS zoom adapts to viewport */}
       <div
-        className="flex flex-col items-center space-y-8"
+        className="flex flex-col items-center space-y-10"
         style={{
           width: DOG_LOADING_CARD_WIDTH,
           zoom,
@@ -89,24 +89,24 @@ const DogLoading: React.FC<DogLoadingProps> = ({
       >
         <div className="animate-pulse transform scale-110">
           <BeagleIcon
-            className="h-32 w-32 drop-shadow-xl"
+            className="h-48 w-48 drop-shadow-xl sm:h-56 sm:w-56"
             color="#cbd5e1"
             spotColor="#5d4037"
             bellyColor="#94a3b8"
           />
         </div>
 
-        <p className="min-h-[2rem] text-center text-lg font-semibold leading-snug text-slate-300 transition-all duration-500">
+        <p className="min-h-[2.75rem] text-center text-2xl font-semibold leading-snug text-slate-300 transition-all duration-500 sm:text-3xl">
           {currentStage}
         </p>
 
-        <div className="w-full space-y-2">
-          <div className="flex items-center justify-between text-sm text-slate-500">
+        <div className="w-full space-y-3">
+          <div className="flex items-center justify-between text-lg text-slate-400 sm:text-xl">
             <span>{elapsedLabel}</span>
             <span className="font-mono font-bold text-indigo-400">{displayProgress}%</span>
           </div>
 
-          <div className="relative h-3 w-full overflow-hidden rounded-full bg-slate-800">
+          <div className="relative h-4 w-full overflow-hidden rounded-full bg-slate-800 sm:h-5">
             <div className="absolute inset-0 animate-[shimmer_1.8s_infinite] bg-[length:200%_100%] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
             <div
               className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.6)] transition-all duration-500 ease-out"
@@ -114,7 +114,7 @@ const DogLoading: React.FC<DogLoadingProps> = ({
             />
           </div>
 
-          <p className="text-center text-sm text-slate-600">{estimatedLabel}</p>
+          <p className="text-center text-base text-slate-500 sm:text-lg">{estimatedLabel}</p>
         </div>
       </div>
     </div>

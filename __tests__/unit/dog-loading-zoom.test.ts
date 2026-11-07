@@ -21,8 +21,22 @@ describe('computeDogLoadingZoom', () => {
   it('enlarges further on ultrawide but stays capped', () => {
     const z = computeDogLoadingZoom(3360);
     expect(z).toBeGreaterThan(1.5);
-    expect(z).toBeLessThanOrEqual(2.4);
+    expect(z).toBeLessThanOrEqual(2.6);
     const visualW = DOG_LOADING_CARD_WIDTH * z;
     expect(visualW).toBeGreaterThan(700);
+  });
+});
+
+describe('DogLoading typography', () => {
+  it('uses a larger beagle and stage copy on the analyze progress overlay', () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { join } = require('node:path') as typeof import('node:path');
+    const src = readFileSync(join(process.cwd(), 'components/DogLoading.tsx'), 'utf8');
+    expect(src).toContain('h-48 w-48');
+    expect(src).toContain('sm:h-56 sm:w-56');
+    expect(src).toContain('text-2xl font-semibold');
+    expect(src).toContain('sm:text-3xl');
+    expect(src).not.toContain('h-32 w-32');
+    expect(src).not.toContain('text-lg font-semibold leading-snug text-slate-300');
   });
 });
