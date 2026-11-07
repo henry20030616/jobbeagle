@@ -23,13 +23,14 @@ describe('desktop layout media — phone landscape stays mobile', () => {
 
   it('treats a real laptop / tall tablet as desktop', () => {
     expect(isDesktopLayoutViewport(1280, 800)).toBe(true);
+    expect(isDesktopLayoutViewport(1280, 600)).toBe(true);
     expect(isDesktopLayoutViewport(1024, DESKTOP_LAYOUT_MIN_HEIGHT)).toBe(true);
     expect(isDesktopLayoutViewport(1194, 834)).toBe(true);
   });
 
   it('exposes the shared media string used by CSS + wrapper', () => {
     expect(DESKTOP_LAYOUT_MIN_WIDTH).toBe(1024);
-    expect(DESKTOP_LAYOUT_MIN_HEIGHT).toBe(700);
+    expect(DESKTOP_LAYOUT_MIN_HEIGHT).toBe(560);
     expect(DESKTOP_LAYOUT_MAX_SHORT_HEIGHT).toBe(DESKTOP_LAYOUT_MIN_HEIGHT - 1);
     expect(DESKTOP_LAYOUT_MEDIA).toBe(
       `(min-width: ${DESKTOP_LAYOUT_MIN_WIDTH}px) and (min-height: ${DESKTOP_LAYOUT_MIN_HEIGHT}px)`,

@@ -33,8 +33,7 @@ KEYS=(
   PAYPAL_WEBHOOK_ID
   PAYPAL_PLAN_STANDARD_SUB
   PAYPAL_PLAN_ADVANCED_SUB
-  CHECKOUT_COUPON_CODE
-  CHECKOUT_COUPON_PERCENT_OFF
+  # Test coupons (CHECKOUT_COUPON_*) are intentionally NOT synced — add only for short-lived QA, then remove in Vercel.
 )
 
 get_val() {

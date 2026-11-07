@@ -29,8 +29,9 @@ import {
 const PILL_BOX =
   `inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-3 ${HOMEPAGE_STEP_PILL_TYPE} px-3 sm:px-4 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full border transition-all`;
 const PILL = `${PILL_BOX} ${HOMEPAGE_STEP_PILL}`;
+/** Desktop-only connector cell — InputForm mounts only on tall≥desktop MQ (see InputFormWrapper). */
 const STEP_CONNECTOR =
-  'hidden lg:flex items-center justify-center self-stretch px-1';
+  'flex h-full min-h-0 items-center justify-center self-stretch px-1';
 const STEP_COL =
   `relative flex h-full min-h-0 min-w-0 flex-col ${HOMEPAGE_STEP_COL_SURFACE} p-5 sm:p-6 lg:p-7`;
 const STEP_TITLE =
@@ -78,15 +79,10 @@ function captureChipParts(capture: { company_name?: string; job_title?: string }
 
 function StepSequenceMark() {
   return (
-    <div className="flex items-center justify-center self-stretch">
-      <div className={STEP_CONNECTOR} aria-hidden>
-        <span className="flex h-24 w-24 items-center justify-center rounded-full border-[3px] border-slate-400 bg-slate-800 text-white ring-4 ring-slate-500">
-          <ChevronRight className="h-14 w-14" strokeWidth={3.25} />
-        </span>
-      </div>
-      <div className="flex justify-center py-3 text-cyan-200 lg:hidden" aria-hidden>
-        <ChevronDown className="h-16 w-16" strokeWidth={3.25} />
-      </div>
+    <div className={STEP_CONNECTOR} aria-hidden>
+      <span className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-[3px] border-slate-400 bg-slate-800 text-white ring-4 ring-slate-500">
+        <ChevronRight className="h-14 w-14" strokeWidth={3.25} />
+      </span>
     </div>
   );
 }
@@ -705,7 +701,7 @@ const InputForm: React.FC<InputFormProps> = ({
         )}
 
         {/* Classic 1→4 operator: separate cards with sequence arrows */}
-        <div className="homepage-steps grid w-full min-h-0 min-w-0 flex-1 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:gap-x-5 lg:gap-y-6">
+        <div className="homepage-steps grid w-full min-h-0 min-w-0 flex-1 grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-[minmax(0,4fr)_auto_minmax(0,3fr)_auto_minmax(0,3fr)_auto_minmax(0,2fr)] lg:items-stretch lg:gap-x-5 lg:gap-y-6">
             {/* 1. Job */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
@@ -941,7 +937,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.JOB_FIT_SNAPSHOT} />
                       </span>
-                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-4 leading-snug text-indigo-100`}>{t.snapshotBlurb}</p>
+                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-3 leading-snug text-indigo-100`}>{t.snapshotBlurb}</p>
                     </button>
                   </div>
                   <div
@@ -962,7 +958,7 @@ const InputForm: React.FC<InputFormProps> = ({
                         </span>
                         <ReportChoiceMark selected={reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE} />
                       </span>
-                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-4 leading-snug text-indigo-100`}>{t.strategyBlurb}</p>
+                      <p className={`${STEP_PROMPT_TYPE} mt-1.5 sm:mt-2 line-clamp-3 leading-snug text-indigo-100`}>{t.strategyBlurb}</p>
                     </button>
                   </div>
                   {!compactChrome && (

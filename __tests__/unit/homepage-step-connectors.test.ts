@@ -23,6 +23,12 @@ describe('homepage step sequence arrows', () => {
     expect(mark).toContain('bg-slate-800 text-white');
     expect(mark).toContain('ring-4 ring-slate-500');
     expect(mark).toContain('<ChevronRight className="h-14 w-14" strokeWidth={3.25} />');
+    expect(mark).toContain('className={STEP_CONNECTOR}');
+    expect(form).toMatch(
+      /STEP_CONNECTOR\s*=\s*\n?\s*'flex h-full min-h-0 items-center justify-center self-stretch/,
+    );
+    expect(mark).not.toContain('lg:hidden');
+    expect(mark).not.toContain('ChevronDown');
     expect(mark).not.toContain('h-14 w-14 items-center');
     expect(mark).not.toContain('border-cyan-300');
     expect(mark).not.toContain('bg-indigo-600');
@@ -31,6 +37,5 @@ describe('homepage step sequence arrows', () => {
     expect(mark).not.toContain('border-2 border-indigo-400');
     expect(mark).not.toContain('text-indigo-200');
     expect(mark).not.toContain('text-slate-300');
-    expect(mark).toContain('<ChevronDown className="h-16 w-16" strokeWidth={3.25} />');
   });
 });

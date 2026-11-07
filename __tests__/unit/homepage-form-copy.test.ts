@@ -126,7 +126,7 @@ describe('homepage form copy', () => {
     expect(HOMEPAGE_FORM_COPY.en.strategyBlurb).toMatch(/more accurate personal pay|stronger model/i);
     expect(HOMEPAGE_FORM_COPY.en.snapshotBlurb).toMatch(/not your personal landing/i);
     expect(HOMEPAGE_FORM_COPY['zh-TW'].strategyBlurb).toMatch(/更準.*落點|更強模型/);
-    expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toMatch(/非個人精準落點/);
+    expect(HOMEPAGE_FORM_COPY['zh-TW'].snapshotBlurb).toMatch(/非個人落點/);
   });
 
   it('covers every app language', () => {

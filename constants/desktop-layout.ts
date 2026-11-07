@@ -2,13 +2,15 @@
  * Desktop vs phone layout gate.
  *
  * Phone landscape often reports CSS width ≥ Tailwind `lg` (1024px) while
- * height stays ~350–450px. Treating that as desktop swaps in the 4-col form
+ * height stays ~350–480px. Treating that as desktop swaps in the 4-col form
  * and the huge homepage/account type scale — layout looks “broken” after rotate.
  *
- * Require both min width and min height before enabling desktop chrome.
+ * Require min width + a modest min height (still below typical laptop chrome
+ * heights) before enabling desktop chrome. Phone landscape stays mobile.
  */
 export const DESKTOP_LAYOUT_MIN_WIDTH = 1024;
-export const DESKTOP_LAYOUT_MIN_HEIGHT = 700;
+/** Above phone-landscape heights (~430–480); below most laptop usable heights. */
+export const DESKTOP_LAYOUT_MIN_HEIGHT = 560;
 /** Short-viewport ceiling used for “phone landscape” guards (just below min height). */
 export const DESKTOP_LAYOUT_MAX_SHORT_HEIGHT = DESKTOP_LAYOUT_MIN_HEIGHT - 1;
 
