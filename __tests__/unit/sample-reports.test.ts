@@ -111,6 +111,11 @@ describe('sample reports', () => {
     expect(applySource).toContain('<ReportProse text={reason} className="mt-3" />');
     const liteDash = readFileSync(join(process.cwd(), 'components/LiteReportDashboard.tsx'), 'utf8');
     expect(liteDash).not.toContain('guide_modules');
+    expect(liteDash).toContain('QuotaPaywallCard');
+    expect(liteDash).toContain('onUpgrade={locked ? () => setPaywallOpen(true) : undefined}');
+    expect(pages).toContain('function LockLine');
+    expect(pages).toContain('onClick={onUpgrade}');
+    expect(pages).toContain('<LockLine onUpgrade={onUpgrade}>{copy.lockPay}</LockLine>');
   });
 
   it('builds a valid Strategy Guide sample with STAR templates', () => {
@@ -499,7 +504,7 @@ describe('seven-item report layout', () => {
     expect(advice).toContain('md:grid-rows-subgrid');
     expect(advice).toContain('<p className={BODY_COPY}>{copy.keywordsNote}</p>');
     expect(advice).toContain('<p className={`flex gap-2.5 ${BODY_COPY}`}>');
-    expect(advice).toContain('<p className={BODY_COPY}>{copy.lockRewrite}</p>');
+    expect(advice).toContain('<LockLine onUpgrade={onUpgrade}>{copy.lockRewrite}</LockLine>');
     expect(advice).not.toContain('leading-relaxed text-slate-300');
     expect(advice).not.toContain('text-slate-200 leading-snug');
     expect(advice).not.toContain('text-slate-300"> — ');
@@ -612,6 +617,16 @@ describe('seven-item report layout', () => {
     expect(snapHtml).toContain('ACH／支付軌道深度');
     expect(snapHtml).not.toContain('用 SQL 與 Looker 把對帳週期縮短 28%');
     expect(snapHtml).toContain('（🔒 升級 Interview Guide 可解鎖對應調整建議）');
+    const snapClickable = renderToStaticMarkup(
+      createElement(SnapshotItemStack, {
+        report: snapshot,
+        language: 'zh-TW',
+        locked: true,
+        onUpgrade: () => undefined,
+      }),
+    );
+    expect(snapClickable).toMatch(/<button[^>]*>（🔒 升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）<\/button>/);
+    expect(snapClickable).toMatch(/<button[^>]*>（🔒 升級 Interview Guide 可解鎖對應調整建議）<\/button>/);
     const note = '這些是人資篩選系統用來比對履歷的重要關鍵字';
     const noteIdx = snapHtml.indexOf(note);
     expect(noteIdx).toBeGreaterThan(-1);

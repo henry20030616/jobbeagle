@@ -739,11 +739,24 @@ function BriefColumn({
   );
 }
 
-function LockLine({ children }: { children: string }) {
+function LockLine({
+  children,
+  onUpgrade,
+}: {
+  children: string;
+  onUpgrade?: () => void;
+}) {
+  if (!onUpgrade) {
+    return <p className={`mt-3 font-semibold ${BODY_COPY}`}>{children}</p>;
+  }
   return (
-    <p className="mt-3 text-base font-semibold text-slate-300">
+    <button
+      type="button"
+      onClick={onUpgrade}
+      className={`mt-3 text-left font-semibold ${BODY_COPY} underline decoration-dotted underline-offset-4 transition-colors hover:text-indigo-200`}
+    >
       {children}
-    </p>
+    </button>
   );
 }
 
@@ -1174,11 +1187,13 @@ function MarketBody({
   copy,
   language,
   locked,
+  onUpgrade,
 }: {
   report: LiteReport;
   copy: ItemCopy;
   language: AppLanguage;
   locked: boolean;
+  onUpgrade?: () => void;
 }) {
   const offer = report.expected_offer;
   const range = numericOfferBand(offer);
@@ -1226,7 +1241,7 @@ function MarketBody({
       {range && caveat ? (
         <p className={`${BODY} font-medium leading-relaxed text-slate-200`}>{caveat}</p>
       ) : null}
-      {locked ? <LockLine>{copy.lockPay}</LockLine> : null}
+      {locked ? <LockLine onUpgrade={onUpgrade}>{copy.lockPay}</LockLine> : null}
     </div>
   );
 }
@@ -1329,11 +1344,13 @@ function ResumeAdviceBody({
   copy,
   locked,
   rewrites,
+  onUpgrade,
 }: {
   report: LiteReport;
   copy: ItemCopy;
   locked: boolean;
   rewrites: GuideResumeRewrite[];
+  onUpgrade?: () => void;
 }) {
   const keywords = report.ats_warning?.missing_keywords ?? [];
   const snapshotGaps = (report.proof_map?.gaps ?? report.critical_gaps ?? []).slice(0, 4);
@@ -1386,7 +1403,7 @@ function ResumeAdviceBody({
           <h3 className={REPORT_H3}>{copy.rewriteDirection}</h3>
           {locked ? (
             <div className={`mt-4 min-w-0 md:mt-0 ${layout.dataSpan}`}>
-              <p className={BODY_COPY}>{copy.lockRewrite}</p>
+              <LockLine onUpgrade={onUpgrade}>{copy.lockRewrite}</LockLine>
             </div>
           ) : pairs.some((item) => item.right) ? (
             pairs.map((item) => (
@@ -1413,11 +1430,14 @@ export function SnapshotItemStack({
   language = 'en',
   locked = true,
   rewrites = [],
+  onUpgrade,
 }: {
   report: LiteReport | FullReport;
   language?: AppLanguage | string;
   locked?: boolean;
   rewrites?: GuideResumeRewrite[];
+  /** Opens paywall / checkout when Snapshot upgrade locks are clicked. */
+  onUpgrade?: () => void;
 }) {
   const lang = normalizeReportLanguage(language);
   const copy = itemCopy(lang);
@@ -1438,6 +1458,7 @@ export function SnapshotItemStack({
           copy={copy}
           language={lang}
           locked={locked}
+          onUpgrade={onUpgrade}
         />
       </ItemBlock>
       <ItemBlock title={copy.core} summaryLabel={copy.summary} summary={summaries.core}>
@@ -1449,6 +1470,7 @@ export function SnapshotItemStack({
           copy={copy}
           locked={locked}
           rewrites={rewrites}
+          onUpgrade={onUpgrade}
         />
       </ItemBlock>
     </div>
