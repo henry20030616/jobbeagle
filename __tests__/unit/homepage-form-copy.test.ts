@@ -21,32 +21,32 @@ describe('homepage form copy', () => {
     expect(t.sampleLink).toBe('View report samples');
     expect(t.featuresAccordion).toBe('Jobbeagle advantages');
     expect(t.uploadSupport).toBe(
-      'Supports .pdf, .doc, .docx, .txt, .md\n(Max 2.5MB)',
+      'Supports .pdf, .doc, .docx, .txt, .md\n(Max 2MB)',
     );
   });
 
-  it('puts the Max 2.5MB resume note on its own line in every language', () => {
+  it('puts the Max 2MB resume note on its own line in every language', () => {
     expect(HOMEPAGE_FORM_COPY['zh-TW'].uploadSupport).toBe(
-      '支援 .pdf, .doc, .docx, .txt, .md\n(Max 2.5MB)',
+      '支援 .pdf, .doc, .docx, .txt, .md\n(Max 2MB)',
     );
     expect(HOMEPAGE_FORM_COPY['zh-CN'].uploadSupport).toBe(
-      '支持 .pdf, .doc, .docx, .txt, .md\n(最大 2.5MB)',
+      '支持 .pdf, .doc, .docx, .txt, .md\n(最大 2MB)',
     );
     expect(HOMEPAGE_FORM_COPY.en.uploadSupport).toBe(
-      'Supports .pdf, .doc, .docx, .txt, .md\n(Max 2.5MB)',
+      'Supports .pdf, .doc, .docx, .txt, .md\n(Max 2MB)',
     );
     expect(HOMEPAGE_FORM_COPY.es.uploadSupport).toBe(
-      'Compatible con .pdf, .doc, .docx, .txt, .md\n(Máx 2.5MB)',
+      'Compatible con .pdf, .doc, .docx, .txt, .md\n(Máx 2MB)',
     );
     expect(HOMEPAGE_FORM_COPY.hi.uploadSupport).toBe(
-      '.pdf, .doc, .docx, .txt, .md सपोर्ट करता है\n(अधिकतम 2.5MB)',
+      '.pdf, .doc, .docx, .txt, .md सपोर्ट करता है\n(अधिकतम 2MB)',
     );
     expect(HOMEPAGE_FORM_COPY.ar.uploadSupport).toBe(
-      'يدعم .pdf و .doc و .docx و .txt و .md\n(حتى 2.5MB)',
+      'يدعم .pdf و .doc و .docx و .txt و .md\n(حتى 2MB)',
     );
     for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
-      expect(copy.uploadSupport).toMatch(/\n\([^)]*2.5MB\)\s*$/u);
-      expect(copy.upload).not.toMatch(/2.5MB/);
+      expect(copy.uploadSupport).toMatch(/\n\([^)]*2MB\)\s*$/u);
+      expect(copy.upload).not.toMatch(/2MB/);
     }
     expect(HOMEPAGE_FORM_COPY['zh-TW'].upload).toBe('點擊上傳履歷');
     const form = readFileSync(join(process.cwd(), 'components/InputForm.tsx'), 'utf8');

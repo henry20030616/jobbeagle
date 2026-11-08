@@ -17,7 +17,7 @@ import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 import {
-  analyzeBodyTooLarge,
+  buildAnalyzeRequestBody,
   readAnalyzeResponseJson,
 } from '@/lib/analyze-client';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
@@ -241,14 +241,14 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     try {
       const jdText = `${jobTitle} at ${companyName}\nLocation: ${location}${salary ? `\nSalary: ${salary}` : ''}\n\n${jobDescription}`;
       const fingerprint = await getDeviceFingerprint();
-      const serialized = JSON.stringify({
-        report_type: reportType,
-        jobDescription: jdText,
+      const { serialized, tooLarge } = buildAnalyzeRequestBody({
+        reportType,
         resume: selectedResume,
-        language,
-        device_fingerprint: fingerprint,
+        language: language || 'en',
+        deviceFingerprint: fingerprint,
+        jobDescription: jdText,
       });
-      if (analyzeBodyTooLarge(serialized)) {
+      if (tooLarge) {
         const friendly = toUserFacingAnalyzeError('Request Entity Too Large', language);
         setErrorCode(friendly.code);
         setErrorMsg(friendly.message);

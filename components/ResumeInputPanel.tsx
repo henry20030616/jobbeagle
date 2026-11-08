@@ -111,7 +111,7 @@ export default function ResumeInputPanel({
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > MAX_RESUME_PDF_BYTES) {
-      alert(zh ? '檔案超過 2.5MB' : 'File exceeds 2.5MB');
+      alert(zh ? '檔案超過 2MB' : 'File exceeds 2MB');
       return;
     }
 
@@ -368,7 +368,7 @@ export default function ResumeInputPanel({
               {zh ? '點擊上傳履歷檔案' : 'Click to upload resume'}
             </span>
             <span className="text-[11px] text-slate-500">
-              {zh ? '支援 PDF / Word / TXT（最大 2.5MB）' : 'PDF / Word / TXT · max 2.5MB'}
+              {zh ? '支援 PDF / Word / TXT（最大 2MB）' : 'PDF / Word / TXT · max 2MB'}
             </span>
           </span>
         </button>

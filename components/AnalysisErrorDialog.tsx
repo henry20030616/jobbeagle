@@ -4,6 +4,7 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, X } from 'lucide-react';
 import type { AppLanguage } from '@/lib/language-context';
+import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 
 const DISMISS_LABEL: Record<AppLanguage, string> = {
   'zh-TW': '我知道了',
@@ -73,6 +74,9 @@ export default function AnalysisErrorDialog({
 
   if (!mounted) return null;
 
+  // Never surface raw JSON.parse / proxy body text in the dialog.
+  const displayMessage = toUserFacingAnalyzeError(message, language).message;
+
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-auto bg-black/85 p-4 backdrop-blur-md animate-fade-in"
@@ -120,7 +124,7 @@ export default function AnalysisErrorDialog({
             id={bodyId}
             className="w-full shrink-0 whitespace-pre-wrap break-words text-center text-base font-medium leading-snug text-slate-100 sm:text-lg"
           >
-            {message}
+            {displayMessage}
           </p>
 
           {suggestions.length > 0 ? (

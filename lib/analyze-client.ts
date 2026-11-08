@@ -1,4 +1,5 @@
-import { MAX_ANALYZE_BODY_CHARS } from '@/constants/models';
+import { MAX_ANALYZE_BODY_CHARS, MAX_JD_CHARS } from '@/constants/models';
+import type { ResumeInput } from '@/types';
 
 export type AnalyzeResponseJson = {
   status: number;
@@ -6,6 +7,52 @@ export type AnalyzeResponseJson = {
   data: Record<string, unknown>;
   rawText: string;
 };
+
+export type AnalyzeRequestParts = {
+  reportType: string;
+  resume: ResumeInput;
+  language: string;
+  deviceFingerprint?: string | null;
+  /** Prefer this over handoff/payload — already on the form, user-editable. */
+  jobDescription?: string | null;
+  handoffSid?: string | null;
+  payloadParam?: string | null;
+};
+
+/**
+ * Build the /api/analyze JSON body.
+ * Prefer truncated JD text over re-sending `handoff_sid` / legacy `payload`
+ * (those embed the full job as base64 and easily trip Vercel’s ~4.5MB cap
+ * when combined with a PDF resume).
+ */
+export function buildAnalyzeRequestBody(parts: AnalyzeRequestParts): {
+  body: Record<string, unknown>;
+  serialized: string;
+  tooLarge: boolean;
+} {
+  const jd = (parts.jobDescription ?? '').trim().slice(0, MAX_JD_CHARS);
+  const body: Record<string, unknown> = {
+    report_type: parts.reportType,
+    resume: parts.resume,
+    language: parts.language,
+    device_fingerprint: parts.deviceFingerprint ?? undefined,
+  };
+
+  if (jd) {
+    body.jobDescription = jd;
+  } else if (parts.handoffSid) {
+    body.handoff_sid = parts.handoffSid;
+  } else if (parts.payloadParam) {
+    body.payload = parts.payloadParam;
+  }
+
+  const serialized = JSON.stringify(body);
+  return {
+    body,
+    serialized,
+    tooLarge: analyzeBodyTooLarge(serialized),
+  };
+}
 
 /**
  * Read /api/analyze (or any analyze-shaped) response without throwing on

@@ -31,7 +31,7 @@ import { FitStage } from '@/components/FitStage';
 import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
 import { ANALYTICS_EVENTS, trackCheckoutReturn, trackEvent } from '@/lib/analytics';
 import {
-  analyzeBodyTooLarge,
+  buildAnalyzeRequestBody,
   readAnalyzeResponseJson,
 } from '@/lib/analyze-client';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
@@ -225,28 +225,21 @@ export default function ConfirmPage() {
     let failedAfterTrack = false;
     try {
       const fingerprint = await getDeviceFingerprint();
-
-      const body: Record<string, unknown> = {
-        report_type: reportType,
+      const reportLang = inputs.language || language || 'en';
+      const { serialized, tooLarge } = buildAnalyzeRequestBody({
+        reportType,
         resume: inputs.resume,
-        device_fingerprint: fingerprint,
-        language: inputs.language || language || 'en',
-      };
-
-      if (handoffSid) {
-        body.handoff_sid = handoffSid;
-      } else if (payloadParam) {
-        body.payload = payloadParam;
-      } else {
-        body.jobDescription = inputs.jobDescription;
-      }
-
-      const serialized = JSON.stringify(body);
-      if (analyzeBodyTooLarge(serialized)) {
+        language: reportLang,
+        deviceFingerprint: fingerprint,
+        jobDescription: inputs.jobDescription,
+        handoffSid,
+        payloadParam,
+      });
+      if (tooLarge) {
         failedAfterTrack = true;
         const friendly = toUserFacingAnalyzeError(
           'Request Entity Too Large',
-          inputs.language || language || 'en',
+          reportLang,
         );
         setErrorCode(friendly.code);
         setError(friendly.message);

@@ -34,7 +34,7 @@ import ExtensionScrapeBanner from '@/components/ExtensionScrapeBanner';
 import AnalysisErrorDialog from '@/components/AnalysisErrorDialog';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 import {
-  analyzeBodyTooLarge,
+  buildAnalyzeRequestBody,
   readAnalyzeResponseJson,
 } from '@/lib/analyze-client';
 
@@ -431,16 +431,16 @@ export default function Home() {
     try {
       const fingerprint = await getDeviceFingerprint();
       const reportLang = inputs.language || language;
-      const requestBody = JSON.stringify({
-        report_type: reportType,
-        ...(handoffSid
-          ? { handoff_sid: handoffSid }
-          : { jobDescription: inputs.jobDescription }),
+      const { serialized, tooLarge } = buildAnalyzeRequestBody({
+        reportType,
         resume: inputs.resume,
         language: reportLang,
-        device_fingerprint: fingerprint,
+        deviceFingerprint: fingerprint,
+        // Prefer form JD (truncated) — never re-POST the huge signed sid.
+        jobDescription: inputs.jobDescription || extensionJobData,
+        handoffSid,
       });
-      if (analyzeBodyTooLarge(requestBody)) {
+      if (tooLarge) {
         const friendly = toUserFacingAnalyzeError(
           'Request Entity Too Large',
           reportLang,
@@ -452,7 +452,7 @@ export default function Home() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: requestBody,
+        body: serialized,
       });
 
       const { data: result, ok } = await readAnalyzeResponseJson(response);
