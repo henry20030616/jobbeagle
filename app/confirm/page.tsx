@@ -30,6 +30,11 @@ import { useLanguage } from '@/lib/language-context';
 import { FitStage } from '@/components/FitStage';
 import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
 import { ANALYTICS_EVENTS, trackCheckoutReturn, trackEvent } from '@/lib/analytics';
+import {
+  analyzeBodyTooLarge,
+  readAnalyzeResponseJson,
+} from '@/lib/analyze-client';
+import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 
 interface JobDisplayData {
   company_name: string;
@@ -236,49 +241,71 @@ export default function ConfirmPage() {
         body.jobDescription = inputs.jobDescription;
       }
 
+      const serialized = JSON.stringify(body);
+      if (analyzeBodyTooLarge(serialized)) {
+        failedAfterTrack = true;
+        const friendly = toUserFacingAnalyzeError(
+          'Request Entity Too Large',
+          inputs.language || language || 'en',
+        );
+        setErrorCode(friendly.code);
+        setError(friendly.message);
+        return;
+      }
+
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: serialized,
       });
 
-      const data = await res.json();
+      const { data, ok, status } = await readAnalyzeResponseJson(res);
 
-      if (res.status === 401) {
-        setError(data.error || 'Please sign in to continue.');
+      if (status === 401) {
+        setError(
+          (typeof data.error === 'string' ? data.error : null) || 'Please sign in to continue.',
+        );
         setErrorCode('AUTH_REQUIRED');
         return;
       }
 
-      if (res.status === 402) {
-        setError(data.error || 'Insufficient credits.');
+      if (status === 402) {
+        setError(
+          (typeof data.error === 'string' ? data.error : null) || 'Insufficient credits.',
+        );
         setErrorCode('PAYMENT_REQUIRED');
         await loadSession();
         return;
       }
 
-      if (!res.ok) {
+      if (!ok) {
         failedAfterTrack = true;
+        const friendly = toUserFacingAnalyzeError(
+          data.error || data.message || 'Analysis failed',
+          inputs.language || language || 'en',
+        );
         trackEvent(ANALYTICS_EVENTS.analyzeError, {
           report_type: reportType,
           source: 'confirm',
-          error_code: typeof data.code === 'string' ? data.code : 'ANALYSIS_ERROR',
+          error_code: typeof data.code === 'string' ? data.code : friendly.code,
         });
-        throw new Error(
-          typeof data.error === 'string'
-            ? data.error
-            : data.error?.message || 'Analysis failed',
+        setErrorCode(
+          typeof data.code === 'string' ? data.code : friendly.code,
         );
+        setError(friendly.message);
+        return;
       }
 
       trackEvent(ANALYTICS_EVENTS.analyzeComplete, {
         report_type: reportType,
         source: 'confirm',
       });
-      const normalizedType = normalizeReportType(data.report_type);
+      const normalizedType = normalizeReportType(
+        typeof data.report_type === 'string' ? data.report_type : undefined,
+      );
       const report =
         normalizedType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
-          ? normalizeFullReport(data.report)
+          ? normalizeFullReport(data.report as Parameters<typeof normalizeFullReport>[0])
           : normalizeLiteReport(data.report as LiteReport);
 
       saveReportSession({
@@ -297,7 +324,12 @@ export default function ConfirmPage() {
           error_code: 'CLIENT_EXCEPTION',
         });
       }
-      setError(e instanceof Error ? e.message : 'Analysis failed');
+      const friendly = toUserFacingAnalyzeError(
+        e,
+        inputs.language || language || 'en',
+      );
+      setErrorCode(friendly.code);
+      setError(friendly.message);
     } finally {
       stopProgressSimulation();
       setAnalyzing(false);

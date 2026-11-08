@@ -77,6 +77,12 @@ export function classifyAnalyzeError(raw: unknown): AnalyzeErrorKind {
     || text.includes('resume file could not')
     || text.includes("couldn't read your resume")
     || text.includes('extract text from word')
+    // Vercel/proxy 413 when PDF base64 + JD exceed ~4.5MB — body is plain text, not JSON
+    || text.includes('request entity too large')
+    || text.includes('payload too large')
+    || text.includes('payload_too_large')
+    || text.includes('unexpected token')
+    || text.includes('is not valid json')
   ) {
     return 'resume_pdf';
   }
@@ -120,6 +126,9 @@ function isAlreadyUserFacing(text: string): boolean {
   if (/https?:\/\//i.test(text)) return false;
   if (/RESOURCE_EXHAUSTED|UNAUTHENTICATED|PERMISSION_DENIED/i.test(text)) return false;
   if (/^Error\b/i.test(text)) return false;
+  if (/unexpected token|not valid json|request entity|payload too large/i.test(text)) {
+    return false;
+  }
   return true;
 }
 

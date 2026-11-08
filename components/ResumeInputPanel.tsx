@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/browser';
 import type { ResumeInput } from '@/types';
 import { FileText, History, Upload, X, Save, Clock, Loader2 } from 'lucide-react';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
+import { MAX_RESUME_PDF_BYTES } from '@/constants/models';
 
 interface LibraryItem {
   id: string;
@@ -109,8 +110,8 @@ export default function ResumeInputPanel({
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 4 * 1024 * 1024) {
-      alert(zh ? '檔案超過 4MB' : 'File exceeds 4MB');
+    if (file.size > MAX_RESUME_PDF_BYTES) {
+      alert(zh ? '檔案超過 2.5MB' : 'File exceeds 2.5MB');
       return;
     }
 
@@ -367,7 +368,7 @@ export default function ResumeInputPanel({
               {zh ? '點擊上傳履歷檔案' : 'Click to upload resume'}
             </span>
             <span className="text-[11px] text-slate-500">
-              {zh ? '支援 PDF / Word / TXT（最大 4MB）' : 'PDF / Word / TXT · max 4MB'}
+              {zh ? '支援 PDF / Word / TXT（最大 2.5MB）' : 'PDF / Word / TXT · max 2.5MB'}
             </span>
           </span>
         </button>

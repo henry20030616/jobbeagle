@@ -70,6 +70,17 @@ describe('toUserFacingAnalyzeError', () => {
     expect(message).not.toMatch(/Gemini|API Key|F12|JSON|jszip/i);
   });
 
+  it('maps Vercel 413 / JSON parse of Request Entity to resume re-upload guidance', () => {
+    const raw = `Unexpected token 'R', "Request En"... is not valid JSON`;
+    expect(classifyAnalyzeError(raw)).toBe('resume_pdf');
+    expect(classifyAnalyzeError('Request Entity Too Large')).toBe('resume_pdf');
+    const { message, kind, code } = toUserFacingAnalyzeError(raw, 'en');
+    expect(kind).toBe('resume_pdf');
+    expect(code).toBe('RESUME_PDF_UNREADABLE');
+    expect(message.toLowerCase()).toMatch(/couldn't read|resume|pdf|word|paste/);
+    expect(message).not.toMatch(/Unexpected token|Request En|valid JSON/i);
+  });
+
   it('keeps a clean API sentence already localized for the user', () => {
     const prior =
       '目前系統分析請求量較大，服務暫時忙碌中。這不是您的帳號問題，系統也未扣除您的報告額度，請稍後再試。';

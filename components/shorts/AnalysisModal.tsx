@@ -16,6 +16,11 @@ import FullReportDashboard from '@/components/FullReportDashboard';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-report';
 import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
+import {
+  analyzeBodyTooLarge,
+  readAnalyzeResponseJson,
+} from '@/lib/analyze-client';
+import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 
 interface SavedResume {
   id: string;
@@ -236,37 +241,48 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     try {
       const jdText = `${jobTitle} at ${companyName}\nLocation: ${location}${salary ? `\nSalary: ${salary}` : ''}\n\n${jobDescription}`;
       const fingerprint = await getDeviceFingerprint();
+      const serialized = JSON.stringify({
+        report_type: reportType,
+        jobDescription: jdText,
+        resume: selectedResume,
+        language,
+        device_fingerprint: fingerprint,
+      });
+      if (analyzeBodyTooLarge(serialized)) {
+        const friendly = toUserFacingAnalyzeError('Request Entity Too Large', language);
+        setErrorCode(friendly.code);
+        setErrorMsg(friendly.message);
+        setStep('error');
+        return;
+      }
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          report_type: reportType,
-          jobDescription: jdText,
-          resume: selectedResume,
-          language,
-          device_fingerprint: fingerprint,
-        }),
+        body: serialized,
       });
-      const result = await res.json();
-      if (!res.ok) {
+      const { data: result, ok } = await readAnalyzeResponseJson(res);
+      if (!ok) {
         const code = (result.code || result.errorCode) as string | undefined;
+        const friendly = toUserFacingAnalyzeError(
+          result.error || result.message || 'Analysis failed',
+          language,
+        );
         if (code !== 'PAYMENT_REQUIRED' && code !== 'AUTH_REQUIRED') {
           trackEvent(ANALYTICS_EVENTS.analyzeError, {
             report_type: reportType,
             source: 'shorts',
-            error_code: code || 'ANALYSIS_ERROR',
+            error_code: code || friendly.code,
           });
         }
-        setErrorCode(code ?? null);
-        setErrorMsg(
-          result.error
-            || ((language === 'zh-TW' || language === 'zh-CN') ? '分析失敗，請稍後再試' : 'Analysis failed, please try again'),
-        );
+        setErrorCode(code || friendly.code);
+        setErrorMsg(friendly.message);
         setStep('error');
         return;
       }
-      if (normalizeReportType(result.report_type) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
-        setFullReport(normalizeFullReport(result.report));
+      if (normalizeReportType(
+        typeof result.report_type === 'string' ? result.report_type : undefined,
+      ) === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
+        setFullReport(normalizeFullReport(result.report as FullReport));
         setLiteReport(null);
       } else {
         setLiteReport(normalizeLiteReport(result.report as LiteReport));
@@ -276,7 +292,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         report_type: reportType,
         source: 'shorts',
       });
-      if (result.report_id) {
+      if (typeof result.report_id === 'string') {
         setLastReportId(result.report_id);
         setSaveState('saved');
       }
@@ -287,7 +303,9 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
         source: 'shorts',
         error_code: 'CLIENT_EXCEPTION',
       });
-      setErrorMsg(err instanceof Error ? err.message : '分析失敗，請稍後再試');
+      const friendly = toUserFacingAnalyzeError(err, language);
+      setErrorCode(friendly.code);
+      setErrorMsg(friendly.message);
       setStep('error');
     } finally {
       stopProgress();

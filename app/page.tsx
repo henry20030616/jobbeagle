@@ -33,6 +33,10 @@ import { getExtensionScrapeError } from '@/constants/extension-scrape-errors';
 import ExtensionScrapeBanner from '@/components/ExtensionScrapeBanner';
 import AnalysisErrorDialog from '@/components/AnalysisErrorDialog';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
+import {
+  analyzeBodyTooLarge,
+  readAnalyzeResponseJson,
+} from '@/lib/analyze-client';
 
 interface ReportSummary {
   id: string;
@@ -426,34 +430,48 @@ export default function Home() {
     });
     try {
       const fingerprint = await getDeviceFingerprint();
+      const reportLang = inputs.language || language;
+      const requestBody = JSON.stringify({
+        report_type: reportType,
+        ...(handoffSid
+          ? { handoff_sid: handoffSid }
+          : { jobDescription: inputs.jobDescription }),
+        resume: inputs.resume,
+        language: reportLang,
+        device_fingerprint: fingerprint,
+      });
+      if (analyzeBodyTooLarge(requestBody)) {
+        const friendly = toUserFacingAnalyzeError(
+          'Request Entity Too Large',
+          reportLang,
+        );
+        setErrorCode(friendly.code);
+        setError(friendly.message);
+        return;
+      }
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          report_type: reportType,
-          ...(handoffSid
-            ? { handoff_sid: handoffSid }
-            : { jobDescription: inputs.jobDescription }),
-          resume: inputs.resume,
-          language: inputs.language || language,
-          device_fingerprint: fingerprint,
-        }),
+        body: requestBody,
       });
 
-      const result = await response.json();
-      const reportLang = inputs.language || language;
+      const { data: result, ok } = await readAnalyzeResponseJson(response);
 
-      if (!response.ok) {
+      if (!ok) {
         const code = (result.code || result.errorCode) as string | undefined;
         if (code) setErrorCode(code);
 
         if (code === 'PAYMENT_REQUIRED' || code === 'AUTH_REQUIRED') {
-          setError(result.error || t.rateTitle);
+          setError(
+            (typeof result.error === 'string' ? result.error : null) || t.rateTitle,
+          );
           return;
         }
 
-        if (code?.startsWith('JD_')) {
-          setError(result.error || t.analysisFailed);
+        if (typeof code === 'string' && code.startsWith('JD_')) {
+          setError(
+            (typeof result.error === 'string' ? result.error : null) || t.analysisFailed,
+          );
           return;
         }
 
@@ -476,7 +494,9 @@ export default function Home() {
         source: 'home',
       });
 
-      const normalizedType = normalizeReportType(result.report_type);
+      const normalizedType = normalizeReportType(
+        typeof result.report_type === 'string' ? result.report_type : undefined,
+      );
       if (
         normalizedType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE
         || normalizedType === REPORT_CODES.JOB_FIT_SNAPSHOT
@@ -485,17 +505,18 @@ export default function Home() {
       ) {
         const reportPayload =
           normalizedType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE || isFullReport(result.report)
-            ? normalizeFullReport(result.report)
+            ? normalizeFullReport(result.report as FullReport)
             : normalizeLiteReport(result.report as LiteReport);
+        const reportId = typeof result.report_id === 'string' ? result.report_id : null;
         saveReportSession({
           report: reportPayload,
           report_type: normalizedType,
-          report_id: typeof result.report_id === 'string' ? result.report_id : null,
+          report_id: reportId,
           language: reportLang,
         });
-        if (result.report_id) {
-          setLastReportId(result.report_id);
-          sessionStorage.setItem('jb_last_report_id', result.report_id);
+        if (reportId) {
+          setLastReportId(reportId);
+          sessionStorage.setItem('jb_last_report_id', reportId);
         }
         await loadProfile();
         router.push('/report');
@@ -503,7 +524,7 @@ export default function Home() {
       }
 
       setReport(result.report as InterviewReport);
-      if (result.report_id) {
+      if (typeof result.report_id === 'string') {
         setLastReportId(result.report_id);
         sessionStorage.setItem('jb_last_report_id', result.report_id);
       }

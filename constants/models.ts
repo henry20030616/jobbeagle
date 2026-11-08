@@ -35,6 +35,14 @@ export const MAX_JD_CHARS = 8000;
 export const MAX_RESUME_CHARS = 10000;
 export const MAX_COMBINED_TOKENS = 4500;
 
+/**
+ * Vercel serverless request body hard cap is ~4.5MB. PDF base64 expands ~4/3,
+ * so keep raw PDF under this and leave room for JD + JSON wrappers.
+ */
+export const MAX_RESUME_PDF_BYTES = 2_500_000;
+/** Client-side JSON body char guard before POST /api/analyze. */
+export const MAX_ANALYZE_BODY_CHARS = 3_500_000;
+
 export default {
   lite: GEMINI_LITE_MODEL,
   full: GEMINI_FULL_MODEL,

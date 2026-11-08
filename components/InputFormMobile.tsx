@@ -19,6 +19,7 @@ import { classifyJobInput } from '@/lib/url-parser-logic';
 import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
+import { MAX_RESUME_PDF_BYTES } from '@/constants/models';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import {
   HOMEPAGE_POPOVER_OPTION,
@@ -233,7 +234,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 4 * 1024 * 1024) {
+    if (file.size > MAX_RESUME_PDF_BYTES) {
       alert(t.fileTooLarge);
       return;
     }
