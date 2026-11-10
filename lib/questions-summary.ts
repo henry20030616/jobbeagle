@@ -36,12 +36,9 @@ const PROFESSIONAL_LABELS = [
 
 const BEHAVIORAL_LABELS = [
   'Behavioral analysis',
-
   '行為題分析',
   '行为题分析',
   'Behavioral',
-  'Conductual',
-  'व्यवहारिक',
   '行為題',
   '行为题',
 ];
