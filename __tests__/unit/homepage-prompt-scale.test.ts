@@ -20,6 +20,12 @@ describe('homepage prompt type scale', () => {
     expect(input).toContain('JD_PROMPT_TYPE_COMPACT');
     expect(input).toContain('compact ? JD_PROMPT_TYPE_COMPACT : JD_PROMPT_TYPE');
     expect(input).toContain(
+      'upload-prompt mt-3 flex items-start gap-2 rounded-xl border border-red-500/50 bg-red-900/30 p-3 sm:p-4 text-red-300 animate-fade-in ${HOMEPAGE_STEP_BODY_TYPE}',
+    );
+    expect(input).not.toMatch(
+      /bg-red-900\/30[^"]*text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-red-300/,
+    );
+    expect(input).toContain(
       "'jd-paste-prompt upload-prompt text-xs leading-snug font-bold lg:text-2xl xl:text-3xl 2xl:text-4xl'",
     );
     expect(input).not.toMatch(/jd-paste-prompt text-sm/);

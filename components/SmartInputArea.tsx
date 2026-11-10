@@ -203,8 +203,11 @@ export default function SmartInputArea({
       )}
 
       {error && (
-        <div className="upload-prompt mt-3 flex items-start gap-2 p-3 bg-red-900/30 border border-red-500/50 rounded-xl text-sm lg:text-lg xl:text-2xl 2xl:text-3xl text-red-300 animate-fade-in">
-          <span>{error}</span>
+        <div
+          className={`upload-prompt mt-3 flex items-start gap-2 rounded-xl border border-red-500/50 bg-red-900/30 p-3 sm:p-4 text-red-300 animate-fade-in ${HOMEPAGE_STEP_BODY_TYPE}`}
+          role="alert"
+        >
+          <span className="min-w-0 leading-snug">{error}</span>
         </div>
       )}
     </div>
