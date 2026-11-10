@@ -6,6 +6,11 @@ import type { ResumeInput } from '@/types';
 import { FileText, History, Upload, X, Save, Clock, Loader2 } from 'lucide-react';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { MAX_RESUME_PDF_BYTES } from '@/constants/models';
+import {
+  pickDefaultSavedResume,
+  resumeLibraryTimestamp,
+  savedResumeToInput,
+} from '@/lib/resume-default';
 
 interface LibraryItem {
   id: string;
@@ -66,33 +71,55 @@ export default function ResumeInputPanel({
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(libraryLimit);
-        setLibrary(
-          (legacy.data || [])
-            .filter((i) => i.id && i.content)
-            .map((i: any) => ({
-              id: i.id,
-              type: i.type,
-              content: i.content,
-              mimeType: i.mime_type,
-              fileName: i.file_name,
-              timestamp: new Date(i.created_at).getTime(),
-            })),
-        );
-        return;
-      }
-
-      setLibrary(
-        (data || [])
+        const mappedLegacy = (legacy.data || [])
           .filter((i) => i.id && i.content)
-          .map((i: any) => ({
+          .map((i: {
+            id: string;
+            type: 'text' | 'file';
+            content: string;
+            mime_type?: string;
+            file_name?: string;
+            created_at: string;
+          }) => ({
             id: i.id,
             type: i.type,
             content: i.content,
             mimeType: i.mime_type,
-            fileName: i.file_name || i.label,
-            timestamp: new Date(i.last_used_at || i.created_at).getTime(),
-          })),
-      );
+            fileName: i.file_name,
+            timestamp: resumeLibraryTimestamp(null, i.created_at),
+          }));
+        setLibrary(mappedLegacy);
+        if (!value) {
+          const pick = pickDefaultSavedResume(mappedLegacy);
+          if (pick) onChange(savedResumeToInput(pick));
+        }
+        return;
+      }
+
+      const mapped = (data || [])
+        .filter((i) => i.id && i.content)
+        .map((i: {
+          id: string;
+          type: 'text' | 'file';
+          content: string;
+          mime_type?: string;
+          file_name?: string;
+          label?: string;
+          created_at: string;
+          last_used_at?: string | null;
+        }) => ({
+          id: i.id,
+          type: i.type,
+          content: i.content,
+          mimeType: i.mime_type,
+          fileName: i.file_name || i.label,
+          timestamp: resumeLibraryTimestamp(i.last_used_at, i.created_at),
+        }));
+      setLibrary(mapped);
+      if (!value) {
+        const pick = pickDefaultSavedResume(mapped);
+        if (pick) onChange(savedResumeToInput(pick));
+      }
     } catch {
       setLibrary([]);
     }

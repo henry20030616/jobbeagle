@@ -20,6 +20,12 @@ import SmartInputArea from '@/components/SmartInputArea';
 import type { AppLanguage } from '@/lib/language-context';
 import { RESUME_LIBRARY_LIMIT } from '@/constants/resumes';
 import { MAX_RESUME_PDF_BYTES } from '@/constants/models';
+import {
+  isIncompleteSavedPdf,
+  pickDefaultSavedResume,
+  resumeLibraryTimestamp,
+  savedResumeToInput,
+} from '@/lib/resume-default';
 import { REPORT_CODES, reportShortLabel, reportLabel } from '@/constants/report-products';
 import {
   HOMEPAGE_POPOVER_OPTION,
@@ -128,15 +134,29 @@ const InputFormMobile: React.FC<InputFormProps> = ({
       if (data && Array.isArray(data)) {
         const mappedData = data
           .filter(item => item.id && item.content && item.created_at)
-          .map((item: any) => ({
+          .map((item: {
+            id: string;
+            type: 'text' | 'file';
+            content: string;
+            mime_type?: string;
+            file_name?: string;
+            label?: string;
+            created_at: string;
+            last_used_at?: string | null;
+          }) => ({
             id: item.id,
             type: item.type,
             content: item.content,
             mimeType: item.mime_type,
             fileName: item.file_name || item.label,
-            timestamp: new Date(item.last_used_at || item.created_at).getTime()
+            timestamp: resumeLibraryTimestamp(item.last_used_at, item.created_at),
           }));
         setResumeHistory(mappedData);
+        setResume((current) => {
+          if (current) return current;
+          const pick = pickDefaultSavedResume(mappedData);
+          return pick ? savedResumeToInput(pick) : null;
+        });
       } else {
         setResumeHistory([]);
       }
@@ -351,15 +371,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
   };
 
   const handleSelectResume = (saved: SavedResume) => {
-    if (
-      saved.mimeType === 'application/pdf'
-      && typeof saved.content === 'string'
-      && (
-        saved.content.trim().startsWith('[PDF resume:')
-        || saved.content.includes('[PDF resume attached]')
-        || saved.content.includes('[Resume provided as PDF attachment]')
-      )
-    ) {
+    if (isIncompleteSavedPdf(saved)) {
       alert(
         language === 'zh-TW' || language === 'zh-CN'
           ? '這份已存 PDF 只有檔名、沒有檔案內容。請重新上傳 PDF 後再分析。'
@@ -367,12 +379,7 @@ const InputFormMobile: React.FC<InputFormProps> = ({
       );
       return;
     }
-    setResume({
-      type: saved.type,
-      content: saved.content,
-      mimeType: saved.mimeType,
-      fileName: saved.fileName
-    });
+    setResume(savedResumeToInput(saved));
     setShowHistoryDropdown(false);
   };
 
