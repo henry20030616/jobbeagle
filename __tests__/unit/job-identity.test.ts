@@ -89,5 +89,16 @@ describe('job identity', () => {
     );
     expect(r.valid).toBe(true);
   });
+
+  it('peels 【公司】out of a 職位： label line (104-style paste)', () => {
+    const jd =
+      `職位：【國泰投信】數據 / AI 轉型專案管理人員_I0002669211/03更新國泰證券投資信託股份有限公司\n` +
+      `工作內容\n負責數據與 AI 轉型專案管理\n職務類別：專案管理\n\n${enoughBody}`;
+    const id = extractJobIdentity(jd);
+    expect(id.company).toBe('國泰投信');
+    expect(id.title).toBe('數據 / AI 轉型專案管理人員');
+    expect(validateJobDescription(jd, 'zh-TW').valid).toBe(true);
+  });
 });
+
 
