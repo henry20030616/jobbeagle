@@ -55,9 +55,25 @@ import {
   normalizeReportType,
 } from '@/constants/report-products';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
+import { claimGuestFitSnapshot } from '@/lib/guest-fit-claim';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 /** Guide runs multi-step Gemini Pro+Search + Claude; 180s was tight under load. */
 export const maxDuration = 300;
+
+function guestFitUsedMessage(lang: string): string {
+  const zh = lang === 'zh-TW' || lang === 'zh-CN';
+  return zh
+    ? '免登入適配快照額度已用完。請 Google 登入 — 註冊再送 3 次終身適配快照。'
+    : 'Your free guest Fit Snapshot is used up. Sign in with Google for 3 more lifetime Snapshot credits.';
+}
+
+function guestDeviceRequiredMessage(lang: string): string {
+  const zh = lang === 'zh-TW' || lang === 'zh-CN';
+  return zh
+    ? '無法確認裝置。請用一般瀏覽器再開一次，或直接 Google 登入。'
+    : 'Could not verify this device. Retry in a normal browser, or sign in with Google.';
+}
 
 function paymentRequiredResponse(profile: ProfileRow) {
   return NextResponse.json(
@@ -159,6 +175,212 @@ async function resolveInput(
   };
 }
 
+async function validateAnalyzeInput(
+  body: AnalyzeRequestBody,
+): Promise<
+  | { ok: true; input: ResolvedInput }
+  | { ok: false; response: NextResponse }
+> {
+  let input: ResolvedInput;
+  try {
+    input = await resolveInput(body, body.resume);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Invalid input';
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: message, code: 'INVALID_INPUT' },
+        { status: 400 },
+      ),
+    };
+  }
+
+  if (!input.resume_text && !input.pdf_inline) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: 'Resume is required.', code: 'MISSING_RESUME' },
+        { status: 400 },
+      ),
+    };
+  }
+
+  const fromText = extractJobIdentity(input.raw_jd);
+  if (!isUsableCompanyName(input.company_name) && fromText.company) {
+    input.company_name = fromText.company;
+  }
+  if (!isUsableJobTitle(input.job_title) && fromText.title) {
+    input.job_title = fromText.title;
+  }
+
+  const jdCheck = validateJobDescription(input.raw_jd, body.language || 'en', {
+    requireIdentity: false,
+  });
+  if (!jdCheck.valid) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: jdCheck.message, code: jdCheck.code || 'INVALID_JD' },
+        { status: 400 },
+      ),
+    };
+  }
+
+  const lang = body.language || 'en';
+  const zh = lang === 'zh-TW' || lang === 'zh-CN';
+  if (!isUsableCompanyName(input.company_name)) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        {
+          error: zh
+            ? '⚠️ 缺少公司名稱。請在職缺開頭加上「公司：XXX」或「Company: XXX」後再分析。'
+            : '⚠️ Company name is missing. Add “Company: …” at the top of the posting before analyzing.',
+          code: 'JD_MISSING_COMPANY',
+        },
+        { status: 400 },
+      ),
+    };
+  }
+  if (!isUsableJobTitle(input.job_title)) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        {
+          error: zh
+            ? '⚠️ 缺少職缺名稱。請在職缺開頭加上「職位：XXX」或「Title: XXX」後再分析。'
+            : '⚠️ Job title is missing. Add “Title: …” at the top of the posting before analyzing.',
+          code: 'JD_MISSING_TITLE',
+        },
+        { status: 400 },
+      ),
+    };
+  }
+
+  if (
+    input.raw_jd.length > MAX_JD_CHARS
+    || (!input.pdf_inline && input.resume_text.length > MAX_RESUME_CHARS)
+  ) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: 'Text length boundary breached.', code: 'TEXT_TOO_LONG' },
+        { status: 400 },
+      ),
+    };
+  }
+
+  const tokenCount = await countCombinedTokens(
+    input.raw_jd,
+    input.pdf_inline
+      ? `${input.resume_text}\n[PDF attachment ~${Math.ceil(input.pdf_inline.data.length * 0.75)} bytes]`
+      : input.resume_text,
+  );
+  if (isTokenLimitExceeded(tokenCount)) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: 'Context window safe limit breached.', code: 'TOKEN_LIMIT' },
+        { status: 400 },
+      ),
+    };
+  }
+
+  return { ok: true, input };
+}
+
+async function runGuestFitSnapshot(opts: {
+  request: NextRequest;
+  body: AnalyzeRequestBody;
+  admin: SupabaseClient;
+  startTime: number;
+}): Promise<NextResponse> {
+  const { request, body, admin, startTime } = opts;
+  const lang = body.language || 'en';
+  const clientIp = clientIpFromRequest(request);
+
+  const ipRl = await rateLimit('analyze-guest-ip', clientIp, 5, 86400);
+  if (!ipRl.allowed) {
+    return NextResponse.json(
+      {
+        error:
+          lang === 'zh-TW' || lang === 'zh-CN'
+            ? '此網路免登入分析次數過多，請稍後再試或 Google 登入。'
+            : 'Too many guest analyses from this network. Try later or sign in with Google.',
+        code: 'RATE_LIMIT',
+      },
+      { status: 429 },
+    );
+  }
+
+  const claim = await claimGuestFitSnapshot(admin, {
+    fingerprint: body.device_fingerprint,
+    guestId: body.guest_id,
+    ip: clientIp,
+  });
+  if (!claim.ok) {
+    if (claim.code === 'GUEST_DEVICE_REQUIRED') {
+      return NextResponse.json(
+        { error: guestDeviceRequiredMessage(lang), code: 'GUEST_DEVICE_REQUIRED' },
+        { status: 401 },
+      );
+    }
+    return NextResponse.json(
+      { error: guestFitUsedMessage(lang), code: 'GUEST_FIT_USED' },
+      { status: 401 },
+    );
+  }
+
+  const validated = await validateAnalyzeInput(body);
+  if (!validated.ok) return validated.response;
+  const { input } = validated;
+
+  const careerContext = normalizeCareerContext(body.career_context);
+  let report: LiteReport;
+  let modelUsed: string;
+  try {
+    const result = await executeLiteAnalysis(
+      input.resume_text,
+      input.raw_jd,
+      input.pdf_inline,
+      careerContext,
+      input.page_url,
+      lang,
+    );
+    report = result.report;
+    modelUsed = result.model;
+  } catch (analysisErr) {
+    console.error(
+      '[Analyze] Guest Fit failed:',
+      analysisErr instanceof Error ? analysisErr.message : analysisErr,
+    );
+    throw analysisErr;
+  }
+
+  // Guest reports stay in the analyze response + client sessionStorage until
+  // migration 016 makes analysis_reports.user_id nullable for durable storage.
+  void claim.claimId;
+
+  const duration = (Date.now() - startTime) / 1000;
+  console.log(`[Analyze] guest job_fit_snapshot complete in ${duration}s model=${modelUsed}`);
+
+  return NextResponse.json({
+    report,
+    report_type: REPORT_CODES.JOB_FIT_SNAPSHOT,
+    report_id: null,
+    resume_id: null,
+    cached: false,
+    model_used: modelUsed,
+    guest: true,
+    credits_remaining: {
+      job_fit_snapshot: 0,
+      interview_strategy_guide: 0,
+      lite: 0,
+      full: 0,
+    },
+  });
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   let requestLanguage = 'en';
@@ -173,19 +395,25 @@ export async function POST(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized Login Required', code: 'AUTH_REQUIRED' },
-        { status: 401 },
-      );
-    }
-
     const admin = getSupabaseAdmin();
     if (!admin) {
       return NextResponse.json(
         { error: 'Server configuration error: quota service unavailable', code: 'SERVER_CONFIG' },
         { status: 503 },
       );
+    }
+
+    if (!user) {
+      if (reportType !== REPORT_CODES.JOB_FIT_SNAPSHOT) {
+        return NextResponse.json(
+          {
+            error: 'Sign in with Google to unlock Interview Strategy Guide.',
+            code: 'AUTH_REQUIRED',
+          },
+          { status: 401 },
+        );
+      }
+      return runGuestFitSnapshot({ request, body, admin, startTime });
     }
 
     const profile = await ensureProfile(admin, user.id, {
@@ -246,79 +474,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const input = await resolveInput(body, body.resume);
-    if (!input.resume_text && !input.pdf_inline) {
-      return NextResponse.json({ error: 'Resume is required.', code: 'MISSING_RESUME' }, { status: 400 });
-    }
-
-    // Prefer structured scrape identity; fill gaps from labeled JD text.
-    const fromText = extractJobIdentity(input.raw_jd);
-    if (!isUsableCompanyName(input.company_name) && fromText.company) {
-      input.company_name = fromText.company;
-    }
-    if (!isUsableJobTitle(input.job_title) && fromText.title) {
-      input.job_title = fromText.title;
-    }
-
-    const jdCheck = validateJobDescription(input.raw_jd, body.language || 'en', {
-      // Identity is enforced on resolved fields below (extension may carry
-      // company/title outside the raw paste).
-      requireIdentity: false,
-    });
-    if (!jdCheck.valid) {
-      return NextResponse.json(
-        { error: jdCheck.message, code: jdCheck.code || 'INVALID_JD' },
-        { status: 400 },
-      );
-    }
-
-    const lang = body.language || 'en';
-    const zh = lang === 'zh-TW' || lang === 'zh-CN';
-    if (!isUsableCompanyName(input.company_name)) {
-      return NextResponse.json(
-        {
-          error: zh
-            ? '⚠️ 缺少公司名稱。請在職缺開頭加上「公司：XXX」或「Company: XXX」後再分析。'
-            : '⚠️ Company name is missing. Add “Company: …” at the top of the posting before analyzing.',
-          code: 'JD_MISSING_COMPANY',
-        },
-        { status: 400 },
-      );
-    }
-    if (!isUsableJobTitle(input.job_title)) {
-      return NextResponse.json(
-        {
-          error: zh
-            ? '⚠️ 缺少職缺名稱。請在職缺開頭加上「職位：XXX」或「Title: XXX」後再分析。'
-            : '⚠️ Job title is missing. Add “Title: …” at the top of the posting before analyzing.',
-          code: 'JD_MISSING_TITLE',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (
-      input.raw_jd.length > MAX_JD_CHARS
-      || (!input.pdf_inline && input.resume_text.length > MAX_RESUME_CHARS)
-    ) {
-      return NextResponse.json(
-        { error: 'Text length boundary breached.', code: 'TEXT_TOO_LONG' },
-        { status: 400 },
-      );
-    }
-
-    const tokenCount = await countCombinedTokens(
-      input.raw_jd,
-      input.pdf_inline
-        ? `${input.resume_text}\n[PDF attachment ~${Math.ceil(input.pdf_inline.data.length * 0.75)} bytes]`
-        : input.resume_text,
-    );
-    if (isTokenLimitExceeded(tokenCount)) {
-      return NextResponse.json(
-        { error: 'Context window safe limit breached.', code: 'TOKEN_LIMIT' },
-        { status: 400 },
-      );
-    }
+    const validated = await validateAnalyzeInput(body);
+    if (!validated.ok) return validated.response;
+    const { input } = validated;
 
     // No analyze cache — every run spends a credit; users reopen reports from History.
     if (!canAffordReport(profile, reportType)) {

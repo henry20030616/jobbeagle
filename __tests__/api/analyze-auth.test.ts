@@ -7,6 +7,7 @@ import {
 
 const mockCreateClient = vi.fn();
 const mockGetAdmin = vi.fn();
+const mockClaimGuestFitSnapshot = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () => mockCreateClient(),
@@ -45,6 +46,10 @@ vi.mock('@/lib/resumes', () => ({
   upsertResumeForUser: vi.fn(),
 }));
 
+vi.mock('@/lib/guest-fit-claim', () => ({
+  claimGuestFitSnapshot: (...args: unknown[]) => mockClaimGuestFitSnapshot(...args),
+}));
+
 import { POST } from '@/app/api/analyze/route';
 import {
   ensureProfile,
@@ -68,18 +73,56 @@ describe('POST /api/analyze auth & rate limit seams', () => {
     __resetMemoryRateLimitForTests();
   });
 
-  it('returns 401 AUTH_REQUIRED when not signed in', async () => {
+  it('returns 401 AUTH_REQUIRED for Guide when not signed in', async () => {
     mockCreateClient.mockResolvedValue({
       auth: { getUser: async () => ({ data: { user: null }, error: null }) },
     });
+    mockGetAdmin.mockReturnValue({});
     const res = await post({
-      report_type: 'lite',
+      report_type: 'interview_strategy_guide',
       jobDescription: 'Company: Acme\nTitle: Analyst\n' + 'x'.repeat(80),
       resume: { kind: 'text', text: 'Resume body with enough characters for parse.' },
     });
     expect(res.status).toBe(401);
     const json = await res.json();
     expect(json.code).toBe('AUTH_REQUIRED');
+  });
+
+  it('returns GUEST_FIT_USED when guest Snapshot quota is already claimed', async () => {
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: async () => ({ data: { user: null }, error: null }) },
+    });
+    mockGetAdmin.mockReturnValue({});
+    mockClaimGuestFitSnapshot.mockResolvedValue({ ok: false, code: 'GUEST_FIT_USED' });
+
+    const res = await post({
+      report_type: 'job_fit_snapshot',
+      jobDescription: 'Company: Acme\nTitle: Analyst\n' + 'x'.repeat(80),
+      resume: { type: 'text', content: 'Resume body with enough characters for parse.' },
+      device_fingerprint: 'fp_abcdef12',
+      guest_id: '550e8400-e29b-41d4-a716-446655440000',
+    });
+    expect(res.status).toBe(401);
+    expect((await res.json()).code).toBe('GUEST_FIT_USED');
+  });
+
+  it('returns GUEST_DEVICE_REQUIRED when guest has no device signal', async () => {
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: async () => ({ data: { user: null }, error: null }) },
+    });
+    mockGetAdmin.mockReturnValue({});
+    mockClaimGuestFitSnapshot.mockResolvedValue({
+      ok: false,
+      code: 'GUEST_DEVICE_REQUIRED',
+    });
+
+    const res = await post({
+      report_type: 'lite',
+      jobDescription: 'Company: Acme\nTitle: Analyst\n' + 'x'.repeat(80),
+      resume: { type: 'text', content: 'Resume body with enough characters for parse.' },
+    });
+    expect(res.status).toBe(401);
+    expect((await res.json()).code).toBe('GUEST_DEVICE_REQUIRED');
   });
 
   it('returns 503 SERVER_CONFIG when admin client missing', async () => {

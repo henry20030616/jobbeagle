@@ -17,6 +17,7 @@ import {
 import DogLoading from '@/components/DogLoading';
 import LoginButton from '@/components/LoginButton';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
+import AnalysisErrorDialog from '@/components/AnalysisErrorDialog';
 import AccountDeactivatedBanner from '@/components/AccountDeactivatedBanner';
 import BrandLogo from '@/components/BrandLogo';
 import InputFormWrapper from '@/components/InputFormWrapper';
@@ -25,16 +26,19 @@ import FooterSection from '@/components/FooterSection';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { saveReportSession } from '@/lib/report-session';
 import { REPORT_CODES, normalizeReportType } from '@/constants/report-products';
-import { AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
+import type { AppLanguage } from '@/lib/language-context';
+import { AlertTriangle } from 'lucide-react';
 import { FitStage } from '@/components/FitStage';
 import { DOC_DESIGN_WIDTH } from '@/constants/fit-stage';
 import { ANALYTICS_EVENTS, trackCheckoutReturn, trackEvent } from '@/lib/analytics';
 import {
   buildAnalyzeRequestBody,
+  isAnalyzePaywallCode,
   readAnalyzeResponseJson,
 } from '@/lib/analyze-client';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
+import { getOrCreateGuestId } from '@/lib/guest-id';
 
 interface JobDisplayData {
   company_name: string;
@@ -193,8 +197,12 @@ export default function ConfirmPage() {
   const jdTooShort = jobData != null && jobData.char_count < 40;
 
   const handleSubmit = async (inputs: UserInputs) => {
-    if (!user) {
-      setError('Please sign in with Google to launch analysis.');
+    if (!user && reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
+      setError(
+        language === 'zh-TW' || language === 'zh-CN'
+          ? '面試指南需先 Google 登入。'
+          : 'Interview Strategy Guide requires Google sign-in.',
+      );
       setErrorCode('AUTH_REQUIRED');
       return;
     }
@@ -225,12 +233,14 @@ export default function ConfirmPage() {
     let failedAfterTrack = false;
     try {
       const fingerprint = await getDeviceFingerprint();
+      const guestId = user ? null : getOrCreateGuestId();
       const reportLang = inputs.language || language || 'en';
       const { serialized, tooLarge } = buildAnalyzeRequestBody({
         reportType,
         resume: inputs.resume,
         language: reportLang,
         deviceFingerprint: fingerprint,
+        guestId,
         jobDescription: inputs.jobDescription,
         handoffSid,
         payloadParam,
@@ -254,20 +264,17 @@ export default function ConfirmPage() {
 
       const { data, ok, status } = await readAnalyzeResponseJson(res);
 
-      if (status === 401) {
+      if (status === 401 || status === 402) {
+        const code =
+          (typeof data.code === 'string' ? data.code : null)
+          || (typeof data.errorCode === 'string' ? data.errorCode : null)
+          || (status === 402 ? 'PAYMENT_REQUIRED' : 'AUTH_REQUIRED');
         setError(
-          (typeof data.error === 'string' ? data.error : null) || 'Please sign in to continue.',
+          (typeof data.error === 'string' ? data.error : null)
+            || (status === 402 ? 'Insufficient credits.' : 'Please sign in to continue.'),
         );
-        setErrorCode('AUTH_REQUIRED');
-        return;
-      }
-
-      if (status === 402) {
-        setError(
-          (typeof data.error === 'string' ? data.error : null) || 'Insufficient credits.',
-        );
-        setErrorCode('PAYMENT_REQUIRED');
-        await loadSession();
+        setErrorCode(code);
+        if (status === 402) await loadSession();
         return;
       }
 
@@ -397,18 +404,16 @@ export default function ConfirmPage() {
           </p>
         )}
 
-        {error && (errorCode === 'PAYMENT_REQUIRED' || errorCode === 'AUTH_REQUIRED') && (
-          <div className="mb-6">
-            <QuotaPaywallCard
-              language={language === 'zh-TW' || language === 'zh-CN' ? language : 'en'}
-              message={error}
-              isLoggedIn={!!user}
-              onDismiss={() => {
-                setError(null);
-                setErrorCode(null);
-              }}
-            />
-          </div>
+        {error && isAnalyzePaywallCode(errorCode) && (
+          <QuotaPaywallCard
+            language={(language === 'zh-TW' || language === 'zh-CN' ? language : 'en') as AppLanguage}
+            message={error}
+            isLoggedIn={!!user}
+            onDismiss={() => {
+              setError(null);
+              setErrorCode(null);
+            }}
+          />
         )}
         {scrapeErrorKey && getExtensionScrapeError(scrapeErrorKey, language) ? (
           <ExtensionScrapeBanner
@@ -422,18 +427,20 @@ export default function ConfirmPage() {
             }}
           />
         ) : null}
-        {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'AUTH_REQUIRED' && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-200 text-sm">
-            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-            <span className="flex-1">{error}</span>
-            <button
-              type="button"
-              className="text-amber-300/80 hover:text-amber-100"
-              onClick={() => setError(null)}
-            >
-              ✕
-            </button>
-          </div>
+        {error && !isAnalyzePaywallCode(errorCode) && (
+          <AnalysisErrorDialog
+            title={
+              language === 'zh-TW' || language === 'zh-CN'
+                ? '分析沒有完成'
+                : "Couldn't finish analysis"
+            }
+            message={error}
+            language={(language === 'zh-TW' || language === 'zh-CN' ? language : 'en') as AppLanguage}
+            onDismiss={() => {
+              setError(null);
+              setErrorCode(null);
+            }}
+          />
         )}
 
         {jdTooShort && (

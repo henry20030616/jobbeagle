@@ -922,6 +922,8 @@ export interface AnalyzeRequestBody {
   resume?: ResumeInput;
   language?: UserInputs['language'];
   device_fingerprint?: string;
+  /** Anonymous guest ledger id (1× free Fit Snapshot without login) */
+  guest_id?: string;
   /** Mark as single-drop purchase snapshot */
   is_single_drop?: boolean;
   /** Optional override; otherwise loaded from profiles.career_context */

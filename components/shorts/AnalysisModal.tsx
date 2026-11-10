@@ -10,6 +10,7 @@ import { ResumeInput, LiteReport, FullReport, UserProfile, ReportType } from '@/
 import { REPORT_CODES, normalizeReportType, reportShortLabel } from '@/constants/report-products';
 import { createClient } from '@/lib/supabase/browser';
 import QuotaPaywallCard from '@/components/QuotaPaywallCard';
+import AnalysisErrorDialog from '@/components/AnalysisErrorDialog';
 import ShortsSheet from '@/components/shorts/ShortsSheet';
 import LiteReportDashboard from '@/components/LiteReportDashboard';
 import FullReportDashboard from '@/components/FullReportDashboard';
@@ -18,9 +19,11 @@ import { normalizeLiteReport, normalizeFullReport } from '@/lib/normalize-lite-r
 import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 import {
   buildAnalyzeRequestBody,
+  isAnalyzePaywallCode,
   readAnalyzeResponseJson,
 } from '@/lib/analyze-client';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
+import { getOrCreateGuestId } from '@/lib/guest-id';
 
 interface SavedResume {
   id: string;
@@ -220,12 +223,12 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
   };
 
   const handleAnalyze = async (selectedResume: ResumeInput, savedResumeId?: string) => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn && reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
       setErrorCode('AUTH_REQUIRED');
       setErrorMsg(
         language === 'zh-TW' || language === 'zh-CN'
-          ? '請先 Google 登入後再分析'
-          : 'Please sign in with Google first',
+          ? '面試指南需先 Google 登入'
+          : 'Interview Strategy Guide requires Google sign-in',
       );
       setStep('error');
       return;
@@ -237,15 +240,18 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
     trackEvent(ANALYTICS_EVENTS.analyzeStart, {
       report_type: reportType,
       source: 'shorts',
+      guest: !isLoggedIn,
     });
     try {
       const jdText = `${jobTitle} at ${companyName}\nLocation: ${location}${salary ? `\nSalary: ${salary}` : ''}\n\n${jobDescription}`;
       const fingerprint = await getDeviceFingerprint();
+      const guestId = isLoggedIn ? null : getOrCreateGuestId();
       const { serialized, tooLarge } = buildAnalyzeRequestBody({
         reportType,
         resume: selectedResume,
         language: language || 'en',
         deviceFingerprint: fingerprint,
+        guestId,
         jobDescription: jdText,
       });
       if (tooLarge) {
@@ -267,7 +273,7 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
           result.error || result.message || 'Analysis failed',
           language,
         );
-        if (code !== 'PAYMENT_REQUIRED' && code !== 'AUTH_REQUIRED') {
+        if (!isAnalyzePaywallCode(code)) {
           trackEvent(ANALYTICS_EVENTS.analyzeError, {
             report_type: reportType,
             source: 'shorts',
@@ -502,27 +508,27 @@ const AnalysisModal: React.FC<AnalysisModalProps> = ({
 
           {/* ── STEP: error ───────────────────────────────── */}
           {step === 'error' && (
-            <div className="py-4">
-              {(errorCode === 'PAYMENT_REQUIRED' || errorCode === 'AUTH_REQUIRED' || errorCode === 'RATE_LIMIT') ? (
+            <>
+              {(isAnalyzePaywallCode(errorCode) || errorCode === 'RATE_LIMIT') ? (
                 <QuotaPaywallCard
-                  language={language}
+                  language={language ?? 'en'}
                   message={errorMsg}
                   isLoggedIn={isLoggedIn}
                   onDismiss={() => setStep('resume')}
                 />
               ) : (
-                <div className="flex flex-col items-center gap-4 py-10 text-center">
-                  <div className="text-4xl">😔</div>
-                  <div className="text-sm text-red-400 font-semibold">{errorMsg}</div>
-                  <button
-                    onClick={() => setStep('resume')}
-                    className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all active:scale-95"
-                  >
-                    {(language === 'zh-TW' || language === 'zh-CN') ? '重新嘗試' : 'Try Again'}
-                  </button>
-                </div>
+                <AnalysisErrorDialog
+                  title={
+                    language === 'zh-TW' || language === 'zh-CN'
+                      ? '分析沒有完成'
+                      : "Couldn't finish analysis"
+                  }
+                  message={errorMsg}
+                  language={language ?? 'en'}
+                  onDismiss={() => setStep('resume')}
+                />
               )}
-            </div>
+            </>
           )}
 
         </div>

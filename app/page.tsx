@@ -35,8 +35,10 @@ import AnalysisErrorDialog from '@/components/AnalysisErrorDialog';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
 import {
   buildAnalyzeRequestBody,
+  isAnalyzePaywallCode,
   readAnalyzeResponseJson,
 } from '@/lib/analyze-client';
+import { getOrCreateGuestId } from '@/lib/guest-id';
 
 interface ReportSummary {
   id: string;
@@ -409,11 +411,11 @@ export default function Home() {
     setScrapeErrorKey(null);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    if (!user && reportType === REPORT_CODES.INTERVIEW_STRATEGY_GUIDE) {
       setError(
         language === 'zh-TW' || language === 'zh-CN'
-          ? '請先 Google 登入後再分析（註冊即送 3 次 Lite）'
-          : 'Please sign in with Google first (3 free Lite credits on signup)',
+          ? '面試指南需先 Google 登入（註冊即送 3 次適配快照）'
+          : 'Interview Strategy Guide requires Google sign-in (3 free Fit Snapshot credits on signup)',
       );
       setErrorCode('AUTH_REQUIRED');
       return;
@@ -427,15 +429,18 @@ export default function Home() {
     trackEvent(ANALYTICS_EVENTS.analyzeStart, {
       report_type: reportType,
       source: 'home',
+      guest: !user,
     });
     try {
       const fingerprint = await getDeviceFingerprint();
+      const guestId = user ? null : getOrCreateGuestId();
       const reportLang = inputs.language || language;
       const { serialized, tooLarge } = buildAnalyzeRequestBody({
         reportType,
         resume: inputs.resume,
         language: reportLang,
         deviceFingerprint: fingerprint,
+        guestId,
         // Prefer form JD (truncated) — never re-POST the huge signed sid.
         jobDescription: inputs.jobDescription || extensionJobData,
         handoffSid,
@@ -461,7 +466,7 @@ export default function Home() {
         const code = (result.code || result.errorCode) as string | undefined;
         if (code) setErrorCode(code);
 
-        if (code === 'PAYMENT_REQUIRED' || code === 'AUTH_REQUIRED') {
+        if (isAnalyzePaywallCode(code)) {
           setError(
             (typeof result.error === 'string' ? result.error : null) || t.rateTitle,
           );
@@ -842,7 +847,7 @@ export default function Home() {
             </button>
           </div>
         )}
-        {error && (errorCode === 'PAYMENT_REQUIRED' || errorCode === 'AUTH_REQUIRED') && (
+        {error && isAnalyzePaywallCode(errorCode) && (
           <QuotaPaywallCard
             language={language}
             message={error}
@@ -867,7 +872,7 @@ export default function Home() {
             }}
           />
         ) : null}
-        {error && errorCode !== 'PAYMENT_REQUIRED' && errorCode !== 'AUTH_REQUIRED' && (
+        {error && !isAnalyzePaywallCode(errorCode) && (
           <AnalysisErrorDialog
             title={t.analysisFailed}
             message={error}

@@ -13,6 +13,8 @@ export type AnalyzeRequestParts = {
   resume: ResumeInput;
   language: string;
   deviceFingerprint?: string | null;
+  /** Anonymous guest ledger id for the 1× free Fit Snapshot. */
+  guestId?: string | null;
   /** Prefer this over handoff/payload — already on the form, user-editable. */
   jobDescription?: string | null;
   handoffSid?: string | null;
@@ -36,6 +38,7 @@ export function buildAnalyzeRequestBody(parts: AnalyzeRequestParts): {
     resume: parts.resume,
     language: parts.language,
     device_fingerprint: parts.deviceFingerprint ?? undefined,
+    guest_id: parts.guestId ?? undefined,
   };
 
   if (jd) {
@@ -120,4 +123,14 @@ export async function readAnalyzeResponseJson(
 /** True when the serialized POST body would likely trip the platform body cap. */
 export function analyzeBodyTooLarge(serializedBody: string): boolean {
   return serializedBody.length > MAX_ANALYZE_BODY_CHARS;
+}
+
+/** Codes that should open the centered login / paywall modal. */
+export function isAnalyzePaywallCode(code: string | null | undefined): boolean {
+  return (
+    code === 'PAYMENT_REQUIRED'
+    || code === 'AUTH_REQUIRED'
+    || code === 'GUEST_FIT_USED'
+    || code === 'GUEST_DEVICE_REQUIRED'
+  );
 }

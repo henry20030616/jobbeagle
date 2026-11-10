@@ -6,14 +6,32 @@ const SRC = readFileSync(
   join(process.cwd(), 'components/AnalysisErrorDialog.tsx'),
   'utf8',
 );
+const PAYWALL = readFileSync(
+  join(process.cwd(), 'components/QuotaPaywallCard.tsx'),
+  'utf8',
+);
+const SHELL = readFileSync(
+  join(process.cwd(), 'components/CenterModalShell.tsx'),
+  'utf8',
+);
 const PAGE = readFileSync(join(process.cwd(), 'app/page.tsx'), 'utf8');
 
-describe('AnalysisErrorDialog sizing + copy', () => {
-  it('scales the dialog ~2.5× so it is readable on the zoomed homepage', () => {
-    expect(SRC).toContain('zoom: 2.5');
-    expect(SRC).toContain('w-[min(38vw,22rem)]');
-    expect(SRC).not.toContain('FALLBACK_CAP_PX');
-    expect(SRC).not.toContain('measureResumeUploadCapPx');
+describe('centered error + paywall modals', () => {
+  it('centers both dialogs in the viewport without CSS zoom hacks', () => {
+    expect(SHELL).toContain('fixed inset-0');
+    expect(SHELL).toContain('items-center justify-center');
+    expect(SHELL).toContain('createPortal');
+    expect(SRC).toContain('CenterModalShell');
+    expect(SRC).not.toContain('zoom:');
+    expect(PAYWALL).toContain('CenterModalShell');
+    expect(PAYWALL).not.toContain('zoom:');
+  });
+
+  it('uses homepage step title type scale for modal copy', () => {
+    expect(SRC).toContain('HOMEPAGE_TITLE_TYPE');
+    expect(PAYWALL).toContain('HOMEPAGE_TITLE_TYPE');
+    expect(SRC).toMatch(/text-lg sm:text-xl lg:text-2xl xl:text-3xl/);
+    expect(PAYWALL).toMatch(/text-lg sm:text-xl lg:text-2xl xl:text-3xl/);
   });
 
   it('homepage suggestions stay human — no F12 / Gemini / API Key / stub jargon', () => {

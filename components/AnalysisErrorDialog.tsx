@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useId, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { AlertTriangle, X } from 'lucide-react';
+import React, { useEffect, useId, useRef } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import type { AppLanguage } from '@/lib/language-context';
 import { toUserFacingAnalyzeError } from '@/lib/analyze-error-message';
+import { HOMEPAGE_TITLE_TYPE } from '@/constants/report-frame';
+import CenterModalShell from '@/components/CenterModalShell';
 
 const DISMISS_LABEL: Record<AppLanguage, string> = {
   'zh-TW': '我知道了',
@@ -24,6 +25,11 @@ const CLOSE_LABEL: Record<AppLanguage, string> = {
   ar: 'إغلاق',
 };
 
+/** Same scale as homepage step titles / step body prompts. */
+const MODAL_TITLE = `${HOMEPAGE_TITLE_TYPE} font-bold leading-snug text-white`;
+const MODAL_BODY =
+  'text-lg sm:text-xl lg:text-2xl xl:text-3xl font-medium leading-snug text-slate-100';
+
 type AnalysisErrorDialogProps = {
   title: string;
   message: string;
@@ -33,11 +39,7 @@ type AnalysisErrorDialogProps = {
   onDismiss: () => void;
 };
 
-/**
- * Error dialog at ~2.5× visual size vs the previous compact chip.
- * Base width × zoom 2.5 ≈ most of the viewport; type stays readable
- * against the zoomed homepage.
- */
+/** Centered analysis-error modal — type matches homepage step titles. */
 export default function AnalysisErrorDialog({
   title,
   message,
@@ -46,111 +48,63 @@ export default function AnalysisErrorDialog({
   suggestions = [],
   onDismiss,
 }: AnalysisErrorDialogProps) {
-  const [mounted, setMounted] = useState(false);
   const titleId = useId();
   const bodyId = useId();
   const dismissRef = useRef<HTMLButtonElement>(null);
-  const onDismissRef = useRef(onDismiss);
-  onDismissRef.current = onDismiss;
 
   useEffect(() => {
-    setMounted(true);
+    dismissRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    dismissRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onDismissRef.current();
-    };
-    document.addEventListener('keydown', onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [mounted]);
-
-  if (!mounted) return null;
-
-  // Never surface raw JSON.parse / proxy body text in the dialog.
   const displayMessage = toUserFacingAnalyzeError(message, language).message;
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-auto bg-black/85 p-4 backdrop-blur-md animate-fade-in"
-      onClick={onDismiss}
+  return (
+    <CenterModalShell
+      onDismiss={onDismiss}
+      labelledBy={titleId}
+      describedBy={bodyId}
+      closeLabel={CLOSE_LABEL[language]}
     >
-      <div
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={bodyId}
-        className="relative my-4 flex w-[min(38vw,22rem)] flex-col overflow-hidden rounded-2xl border-[3px] border-blue-500 bg-zinc-950 shadow-2xl shadow-blue-950/50"
-        style={{ zoom: 2.5 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400"
-        />
+      <div className="flex flex-col items-center gap-4 px-5 py-7 text-center sm:gap-5 sm:px-8 sm:py-9">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-amber-400/50 bg-amber-500/15 sm:h-16 sm:w-16">
+          <AlertTriangle
+            className="h-8 w-8 text-amber-300 sm:h-9 sm:w-9"
+            strokeWidth={2.25}
+          />
+        </div>
+
+        <h2 id={titleId} className={MODAL_TITLE}>
+          {title}
+        </h2>
+
+        <p id={bodyId} className={`w-full whitespace-pre-wrap break-words ${MODAL_BODY}`}>
+          {displayMessage}
+        </p>
+
+        {suggestions.length > 0 ? (
+          <div className="w-full rounded-xl border border-slate-600 bg-slate-900/90 px-4 py-4 text-left">
+            {suggestionsTitle ? (
+              <p className={`${HOMEPAGE_TITLE_TYPE} font-semibold text-slate-100`}>
+                {suggestionsTitle}
+              </p>
+            ) : null}
+            <ul className={`mt-3 list-disc space-y-2 pl-6 ${MODAL_BODY} text-slate-200`}>
+              {suggestions.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         <button
+          ref={dismissRef}
           type="button"
           onClick={onDismiss}
-          aria-label={CLOSE_LABEL[language]}
-          className="absolute right-2 top-2 z-10 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
+          className={`w-full rounded-xl bg-indigo-500 px-5 py-4 ${HOMEPAGE_TITLE_TYPE} font-semibold text-white transition-colors hover:bg-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300`}
         >
-          <X className="h-5 w-5" />
+          {DISMISS_LABEL[language]}
         </button>
-
-        <div className="flex max-h-[34vh] flex-col items-center gap-3 overflow-y-auto px-4 py-5 text-center sm:gap-4 sm:px-5 sm:py-6">
-          <div className="analysis-error-icon-well flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-amber-400/50 bg-amber-500/15">
-            <AlertTriangle
-              className="analysis-error-icon h-7 w-7 text-amber-300"
-              strokeWidth={2.25}
-            />
-          </div>
-
-          <h2
-            id={titleId}
-            className="shrink-0 text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl"
-          >
-            {title}
-          </h2>
-
-          <p
-            id={bodyId}
-            className="w-full shrink-0 whitespace-pre-wrap break-words text-center text-base font-medium leading-snug text-slate-100 sm:text-lg"
-          >
-            {displayMessage}
-          </p>
-
-          {suggestions.length > 0 ? (
-            <div className="w-full shrink-0 rounded-xl border border-slate-600 bg-slate-900/90 px-3 py-3 text-left">
-              {suggestionsTitle ? (
-                <p className="text-base font-semibold text-slate-100">{suggestionsTitle}</p>
-              ) : null}
-              <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-snug text-slate-200 sm:text-base">
-                {suggestions.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          <button
-            ref={dismissRef}
-            type="button"
-            onClick={onDismiss}
-            className="w-full shrink-0 rounded-xl bg-indigo-500 px-4 py-3 text-xl font-semibold text-white transition-colors hover:bg-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
-          >
-            {DISMISS_LABEL[language]}
-          </button>
-        </div>
       </div>
-    </div>,
-    document.body,
+    </CenterModalShell>
   );
 }
