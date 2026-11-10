@@ -115,7 +115,7 @@ describe('mergeInterviewSummary', () => {
 });
 
 describe('sample interview summaries', () => {
-  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+  it.each(['en', 'zh-TW', 'zh-CN'] as const)(
     'gives %s titled professional and behavioral analysis',
     (lang) => {
       const summary = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank.summary ?? '';

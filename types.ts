@@ -130,7 +130,7 @@ export interface ResumeInput {
 export interface UserInputs {
   jobDescription: string;
   resume: ResumeInput;
-  language?: 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
+  language?: 'en' | 'zh-TW' | 'zh-CN';
 }
 
 // ─── Report products: Fit Snapshot / Interview Guide ───

@@ -15,7 +15,7 @@ import { splitLabeledFact } from '@/lib/score-summary';
 import { splitProseSentences } from '@/lib/report-item-summaries';
 
 describe('sample reports', () => {
-  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+  it.each(['en', 'zh-TW', 'zh-CN', ] as const)(
     'keeps band consistent with score and avoids praise wording (%s)',
     (lang) => {
       const report = getSampleSnapshotReport(lang);
@@ -296,7 +296,7 @@ describe('sample reports', () => {
     expect('guide_modules' in getSampleSnapshotReport('en')).toBe(false);
   });
 
-  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+  it.each(['en', 'zh-TW', 'zh-CN', ] as const)(
     'keeps Guide rewrite samples as paired gap + adjustment rows (%s)',
     (lang) => {
       const snapshot = getSampleSnapshotReport(lang);
@@ -305,7 +305,7 @@ describe('sample reports', () => {
       expect(rewrites).toHaveLength(2);
       expect(rewrites[0].category).toBe(rewrites[1].category);
       expect(rewrites[0].category).toMatch(
-        /Adjustment advice|調整建議|调整建议|Ajustes sugeridos|समायोजन सुझाव|اقتراحات التعديل/,
+        /Adjustment advice|調整建議|调整建议/,
       );
       expect(rewrites[0].gap).not.toBe(rewrites[1].gap);
       expect(`${rewrites[0].gap} ${rewrites[1].gap}`).not.toMatch(
@@ -324,9 +324,6 @@ describe('sample reports', () => {
         en: { outer: 'Resume optimization advice', missing: 'To improve', direction: 'Adjustment advice' },
         'zh-TW': { outer: '履歷優化建議', missing: '待優化改善', direction: '調整建議' },
         'zh-CN': { outer: '简历优化建议', missing: '待优化改善', direction: '调整建议' },
-        es: { outer: 'Sugerencias para el CV', missing: 'Pendiente de mejorar', direction: 'Ajustes sugeridos' },
-        hi: { outer: 'रिज़्यूमे अनुकूलन सुझाव', missing: 'सुधार बाकी', direction: 'समायोजन सुझाव' },
-        ar: { outer: 'اقتراحات تحسين السيرة', missing: 'بحاجة إلى تحسين', direction: 'اقتراحات التعديل' },
       } as const;
       const snapHtml = renderToStaticMarkup(
         createElement(SnapshotItemStack, { report: snapshot, language: lang, locked: true }),
@@ -360,7 +357,7 @@ describe('sample reports', () => {
     },
   );
 
-  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+  it.each(['en', 'zh-TW', 'zh-CN', ] as const)(
     'gives each sample interview question its own answer (%s)',
     (lang) => {
       const bank = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank;
@@ -629,7 +626,7 @@ describe('seven-item report layout', () => {
       }),
     );
     expect(snapClickable).toMatch(/<button[^>]*class="[^"]*report-upgrade-lock[^"]*"[^>]*>/);
-    expect(snapClickable).toContain('（升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
+    expect(snapClickable).toContain('（升級 Interview Guide：更專業分析 + 比市場區間更準的個人落點與 TC 拆解）');
     expect(snapClickable).toContain('（升級 Interview Guide 可解鎖對應調整建議）');
     expect((snapClickable.match(/report-upgrade-lock-icon/g) || []).length).toBe(2);
     const note = '這些是人資篩選系統用來比對履歷的重要關鍵字';
@@ -727,13 +724,13 @@ describe('seven-item report layout', () => {
     expect(snapHtml).not.toContain('個人目標');
     expect(snapHtml).not.toContain('data-range-label="target"');
     expect(snapHtml).not.toContain('data-range-label="ceiling"');
-    expect(snapHtml).toContain('（升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
+    expect(snapHtml).toContain('（升級 Interview Guide：更專業分析 + 比市場區間更準的個人落點與 TC 拆解）');
     expect(guideHtml).not.toContain('議價天花板');
     expect(guideHtml).not.toContain('個人目標');
     expect(guideHtml).not.toContain('$168K');
     expect(guideHtml).not.toContain('data-range-label="target"');
     expect(guideHtml).not.toContain('data-range-label="ceiling"');
-    expect(guideHtml).not.toContain('（升級 Interview Guide 可解鎖個人化精準落點與 TC 結構拆解）');
+    expect(guideHtml).not.toContain('（升級 Interview Guide：更專業分析 + 比市場區間更準的個人落點與 TC 拆解）');
   });
 
   it('renders TWD min/max on the Snapshot bar and skips a 區間 placeholder sliver', () => {
@@ -1222,9 +1219,6 @@ describe('seven-item report layout', () => {
       en: 'Hiring process:',
       'zh-TW': '招募流程：',
       'zh-CN': '招聘流程：',
-      es: 'Proceso de contratación:',
-      hi: 'भर्ती प्रक्रिया:',
-      ar: 'عملية التوظيف:',
     } as const;
     for (const lang of Object.keys(labels) as Array<keyof typeof labels>) {
       const summary = getSampleStrategyGuideReport(lang).guide_modules!.interview_bank.summary ?? '';

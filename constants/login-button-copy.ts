@@ -34,30 +34,6 @@ export const LOGIN_BUTTON_COPY: Record<AppLanguage, LoginButtonCopy> = {
     userFallback: 'User',
     google: 'Sign in with Google',
   },
-  es: {
-    loading: 'Cargando...',
-    account: 'Cuenta',
-    accountTitle: 'Mi cuenta',
-    logout: 'Salir',
-    userFallback: 'Usuario',
-    google: 'Entrar con Google',
-  },
-  hi: {
-    loading: 'लोड हो रहा है...',
-    account: 'खाता',
-    accountTitle: 'मेरा खाता',
-    logout: 'लॉग आउट',
-    userFallback: 'उपयोगकर्ता',
-    google: 'Google से साइन इन',
-  },
-  ar: {
-    loading: 'جارٍ التحميل...',
-    account: 'الحساب',
-    accountTitle: 'حسابي',
-    logout: 'تسجيل الخروج',
-    userFallback: 'مستخدم',
-    google: 'تسجيل الدخول عبر Google',
-  },
 };
 
 export function getLoginButtonCopy(language: AppLanguage): LoginButtonCopy {

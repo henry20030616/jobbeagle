@@ -25,9 +25,6 @@ import { normalizeCareerContext } from '@/lib/career-context';
 function productName(language: string): string {
   if (language === 'zh-TW') return '個人化職涯條件';
   if (language === 'zh-CN') return '个性化职涯条件';
-  if (language === 'es') return 'Personalizar';
-  if (language === 'hi') return 'व्यक्तिगत करियर शर्तें';
-  if (language === 'ar') return 'تخصيص شروط المسار المهني';
   return 'Personalize';
 }
 

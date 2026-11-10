@@ -15,9 +15,6 @@ const AI_QUOTA: Localized = {
   'zh-CN':
     '目前系统分析请求量较大，服务暂时忙碌中。这不是您的账号问题，系统也未扣除您的报告额度，请稍后再试。',
   en: 'Analysis demand is high right now and the service is temporarily busy. This is not an issue with your account, and your report credits were not charged. Please try again shortly.',
-  es: 'La demanda de análisis es alta en este momento y el servicio está temporalmente ocupado. No es un problema de tu cuenta, y no se cobró ningún crédito de informe. Inténtalo de nuevo en breve.',
-  hi: 'अभी विश्लेषण अनुरोधों की संख्या अधिक है और सेवा अस्थायी रूप से व्यस्त है। यह आपके खाते की समस्या नहीं है, और कोई रिपोर्ट क्रेडिट नहीं कटा। कृपया थोड़ी देर बाद पुनः प्रयास करें।',
-  ar: 'حجم طلبات التحليل مرتفع حاليًا والخدمة مشغولة مؤقتًا. هذه ليست مشكلة في حسابك، ولم يُخصم أي رصيد تقارير. حاول مرة أخرى بعد قليل.',
 };
 
 const RESUME_PDF: Localized = {
@@ -26,18 +23,12 @@ const RESUME_PDF: Localized = {
   'zh-CN':
     '我们读不到这份简历。请从电脑重新选一次文件上传（请用 PDF 或 Word），或把简历文字贴上后再按分析。',
   en: "We couldn't read your resume. Please choose the file again from your computer (PDF or Word), or paste the text into the resume box, then try again.",
-  es: 'No pudimos leer tu currículum. Vuelve a elegir el archivo en tu ordenador (PDF o Word), o pega el texto en el cuadro y vuelve a intentarlo.',
-  hi: 'हम आपका रिज़्यूमे नहीं पढ़ सके। कृपया कंप्यूटर से फ़ाइल फिर चुनें (PDF या Word), या टेक्स्ट पेस्ट करके फिर कोशिश करें।',
-  ar: 'تعذّر قراءة سيرتك. اختر الملف من جهازك مرة أخرى (PDF أو Word)، أو الصق النص في المربع ثم حاول مجددًا.',
 };
 
 const RATE_LIMIT: Localized = {
   'zh-TW': '請求過於頻繁，請稍候再試。',
   'zh-CN': '请求过于频繁，请稍后再试。',
   en: 'Too many requests. Please wait a moment and try again.',
-  es: 'Demasiadas solicitudes. Espera un momento e inténtalo de nuevo.',
-  hi: 'बहुत अधिक अनुरोध। कृपया थोड़ी देर बाद पुनः प्रयास करें।',
-  ar: 'طلبات كثيرة جدًا. انتظر قليلًا ثم حاول مرة أخرى.',
 };
 
 const GENERIC: Localized = {
@@ -46,9 +37,6 @@ const GENERIC: Localized = {
   'zh-CN':
     '这次没能完成分析。请稍等一下再试一次；若还是不行，可重新上传简历（PDF 或 Word），或到页面底部留言给我们。',
   en: "We couldn't finish this analysis. Wait a moment and try again. If it still fails, re-upload your resume as PDF or Word, or leave us a note at the bottom of the page.",
-  es: 'No pudimos terminar este análisis. Espera un momento e inténtalo de nuevo. Si sigue fallando, vuelve a subir tu CV en PDF o Word, o déjanos un mensaje al final de la página.',
-  hi: 'हम यह विश्लेषण पूरा नहीं कर सके। थोड़ी देर बाद पुनः प्रयास करें। अगर फिर भी न चले, तो PDF/Word फिर अपलोड करें या पेज के नीचे संदेश छोड़ें।',
-  ar: 'تعذّر إكمال هذا التحليل. انتظر قليلًا ثم حاول مرة أخرى. إن استمر، أعد رفع سيرتك كـ PDF أو Word، أو اترك رسالة أسفل الصفحة.',
 };
 
 function flattenErrorText(raw: unknown): string {

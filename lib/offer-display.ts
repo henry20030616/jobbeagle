@@ -31,21 +31,6 @@ const PAY_SCOPE_MISSING: Record<AppLanguage, { where: string; role: string; leve
     role: '职位没有写明职位名称',
     level: '职位没有写明职级或年资',
   },
-  es: {
-    where: 'El anuncio no indica el lugar',
-    role: 'El anuncio no indica el puesto',
-    level: 'El anuncio no indica nivel ni años',
-  },
-  hi: {
-    where: 'पोस्टिंग में जगह नहीं है',
-    role: 'पोस्टिंग में पद नहीं है',
-    level: 'पोस्टिंग में स्तर या वर्षों का उल्लेख नहीं',
-  },
-  ar: {
-    where: 'الإعلان لا يذكر المكان',
-    role: 'الإعلان لا يذكر المسمى',
-    level: 'الإعلان لا يذكر المستوى أو سنوات الخبرة',
-  },
 };
 
 const YEAR_SIGNAL = /年|years?|yoe|\byrs\b/i;
@@ -93,25 +78,16 @@ export function marketBandDisclaimer(
     en: 'The posting does not list pay. This band is a market-level estimate from title, location, and seniority — not this employer’s data.',
     'zh-TW': '職缺未公布薪資；此區間依職稱、地點與年資對照市場水準，非該公司數據。',
     'zh-CN': '职位未公布薪酬；此区间依职称、地点与年资对照市场水准，非该公司数据。',
-    es: 'El anuncio no publica salario. Esta banda es una estimación de mercado por título, lugar y nivel; no son datos de la empresa.',
-    hi: 'पोस्टिंग में वेतन नहीं है। यह पट्टी पद, जगह और स्तर से बाज़ार स्तर का अनुमान है — कंपनी का डेटा नहीं।',
-    ar: 'الإعلان لا ينشر أجراً. هذا النطاق تقدير لمستوى السوق من المسمى والمكان والمستوى، وليس بيانات الشركة.',
   };
   const posted: Record<AppLanguage, string> = {
     en: 'This band is taken from the posting’s salary field.',
     'zh-TW': '此區間取自職缺刊登的薪資欄。',
     'zh-CN': '此区间取自职位刊登的薪酬栏。',
-    es: 'Esta banda sale del campo salarial del anuncio.',
-    hi: 'यह पट्टी पोस्टिंग के वेतन फ़ील्ड से ली गई है।',
-    ar: 'هذا النطاق مأخوذ من حقل الأجر في الإعلان.',
   };
   const thin: Record<AppLanguage, string> = {
     en: 'Title, location, or seniority is too thin for a reliable market band.',
     'zh-TW': '職缺的職稱、地點或年資訊號不足，無法形成可靠的市場區間。',
     'zh-CN': '职位的职称、地点或年资信号不足，无法形成可靠的市场区间。',
-    es: 'El título, el lugar o el nivel no bastan para una banda de mercado fiable.',
-    hi: 'पद, जगह या स्तर विश्वसनीय बाज़ार पट्टी के लिए पर्याप्त नहीं।',
-    ar: 'المسمى أو المكان أو المستوى لا يكفي لنطاق سوق موثوق.',
   };
   const method = tier === 'A' ? posted[lang] : tier === 'D' ? thin[lang] : closedBook[lang];
   return { nature: '', method };
@@ -131,9 +107,6 @@ export function payEstimateSentence(
     en: `Where: ${scope.where}. Role: ${scope.role}. Level or years: ${scope.level}. The market total for that scope is about ${range} (${money}). ${disclaimer.nature} ${disclaimer.method}`,
     'zh-TW': `地點：${scope.where}。職位：${scope.role}。職級或年資：${scope.level}。這個範圍的市場總薪酬大約是 ${range}（${money}）。${disclaimer.nature}${disclaimer.method}`,
     'zh-CN': `地点：${scope.where}。职位：${scope.role}。职级或年资：${scope.level}。这个范围的市场总薪酬大约是 ${range}（${money}）。${disclaimer.nature}${disclaimer.method}`,
-    es: `Lugar: ${scope.where}. Puesto: ${scope.role}. Nivel o años: ${scope.level}. El total de mercado para ese alcance ronda ${range} (${money}). ${disclaimer.nature} ${disclaimer.method}`,
-    hi: `जगह: ${scope.where}. पद: ${scope.role}. स्तर या वर्ष: ${scope.level}. इस दायरे का बाज़ार कुल लगभग ${range} (${money}) है। ${disclaimer.nature} ${disclaimer.method}`,
-    ar: `المكان: ${scope.where}. المسمى: ${scope.role}. المستوى أو السنوات: ${scope.level}. إجمالي السوق لهذا النطاق حوالي ${range} (${money}). ${disclaimer.nature} ${disclaimer.method}`,
   };
   return copy[lang];
 }
@@ -159,27 +132,6 @@ const TIER_LABELS: Record<AppLanguage, Record<'A' | 'B' | 'C' | 'D' | 'default',
     C: '市场薪资水准（非公司数据）',
     D: '薪酬数据不足',
     default: '薪酬证据不明',
-  },
-  es: {
-    A: 'Del anuncio del puesto',
-    B: 'De roles públicos comparables',
-    C: 'Nivel salarial de mercado (no datos de la empresa)',
-    D: 'Datos salariales insuficientes',
-    default: 'Evidencia salarial poco clara',
-  },
-  hi: {
-    A: 'जॉब पोस्टिंग से',
-    B: 'तुलनीय सार्वजनिक भूमिकाओं से',
-    C: 'बाज़ार वेतन स्तर (कंपनी डेटा नहीं)',
-    D: 'वेतन डेटा अपर्याप्त',
-    default: 'वेतन साक्ष्य अस्पष्ट',
-  },
-  ar: {
-    A: 'من إعلان الوظيفة',
-    B: 'من أدوار عامة مماثلة',
-    C: 'مستوى أجور السوق (ليست بيانات الشركة)',
-    D: 'بيانات الأجر ضعيفة',
-    default: 'دليل الأجر غير واضح',
   },
 };
 
@@ -382,21 +334,6 @@ export function offerEvaluationSummary(
       headline: '市场价值不明',
       emptyBody: '此职位薪酬信号不足。请先向招聘确认核定现金区间，再决定是否投入时间。',
     },
-    es: {
-      headline: 'Valor de mercado poco claro',
-      emptyBody:
-        'Aún no hay señal salarial suficiente. Confirma la banda aprobada con el reclutador antes de invertir tiempo.',
-    },
-    hi: {
-      headline: 'बाज़ार मूल्य अस्पष्ट',
-      emptyBody:
-        'इस भूमिका के लिए पर्याप्त वेतन संकेत नहीं। समय लगाने से पहले रिक्रूटर से स्वीकृत बैंड पूछें।',
-    },
-    ar: {
-      headline: 'قيمة السوق غير واضحة',
-      emptyBody:
-        'لا توجد إشارة أجر كافية بعد. اسأل المسؤول عن النطاق المعتمد قبل استثمار وقتك.',
-    },
   };
 
   if (!offer) {
@@ -408,9 +345,6 @@ export function offerEvaluationSummary(
     en: 'this market',
     'zh-TW': '此市場',
     'zh-CN': '此市场',
-    es: 'este mercado',
-    hi: 'इस बाज़ार',
-    ar: 'هذا السوق',
   };
   const region = offer.region?.trim() || defaultRegion[lang];
   const currency = offer.currency?.trim() || 'USD';
@@ -425,9 +359,6 @@ export function offerEvaluationSummary(
       en: `Public pay data for this role in ${region} is too thin to price the seat. Confirm the approved ${currency} band with the recruiter before investing interview time.`,
       'zh-TW': `此職缺在 ${region} 的公開薪資資料過薄，難以定價。投入面試前請向招募確認核定 ${currency} 區間。`,
       'zh-CN': `此职位在 ${region} 的公开薪酬数据过薄，难以定价。投入面试前请向招聘确认核定 ${currency} 区间。`,
-      es: `Los datos públicos de pago para este rol en ${region} son demasiado escasos. Confirma la banda ${currency} aprobada con el reclutador antes de invertir tiempo.`,
-      hi: `${region} में इस भूमिका के सार्वजनिक वेतन डेटा बहुत पतले हैं। इंटरव्यू समय लगाने से पहले रिक्रूटर से स्वीकृत ${currency} बैंड पुष्टि करें।`,
-      ar: `بيانات الأجر العامة لهذا الدور في ${region} ضعيفة جدًا لتسعير المقعد. أكّد نطاق ${currency} المعتمد مع المسؤول قبل استثمار وقت المقابلة.`,
     };
     return { headline: unclear[lang].headline, body: thin[lang], note };
   }
@@ -445,18 +376,6 @@ export function offerEvaluationSummary(
       'zh-CN': {
         headline: `此职位刊登薪酬为 ${range}`,
         body: `雇主在 ${region} 为此职位披露 ${range}（${currency}）。这是公开市场上最清楚的价值信号。`,
-      },
-      es: {
-        headline: `Este rol se publica a ${range}`,
-        body: `El empleador divulgó ${range} (${currency}) para este puesto en ${region}. Es la señal más clara del valor de mercado.`,
-      },
-      hi: {
-        headline: `यह भूमिका ${range} पर पोस्टेड है`,
-        body: `नियोक्ता ने ${region} में इस सीट के लिए ${range} (${currency}) बताया। यह खुले बाज़ार का सबसे स्पष्ट संकेत है।`,
-      },
-      ar: {
-        headline: `هذا الدور منشور عند ${range}`,
-        body: `أفصح صاحب العمل عن ${range} (${currency}) لهذا المقعد في ${region}. هذه أوضح إشارة لقيمة السوق المفتوحة.`,
       },
     };
     return { ...postedCopy[lang], note };
@@ -476,18 +395,6 @@ export function offerEvaluationSummary(
         headline: `相近职位约落在 ${range}`,
         body: `${region} 相近职级与地点的公开薪酬约落在 ${range}（${currency}）。可视为座位市值，谈判前请再确认公司核定区间。`,
       },
-      es: {
-        headline: `Puestos comparables pagan cerca de ${range}`,
-        body: `Datos públicos de nivel y ubicación similares en ${region} se agrupan en torno a ${range} (${currency}). Trátalo como valor de mercado — confirma la banda aprobada antes de negociar.`,
-      },
-      hi: {
-        headline: `तुलनीय सीटें लगभग ${range} देती हैं`,
-        body: `${region} में समान स्तर/स्थान के सार्वजनिक वेतन ${range} (${currency}) के आसपास हैं। इसे सीट का बाज़ार मूल्य मानें — बातचीत से पहले कंपनी बैंड पुष्टि करें।`,
-      },
-      ar: {
-        headline: `المقاعد المماثلة تدفع حوالي ${range}`,
-        body: `بيانات الأجر العامة لمستوى وموقع مشابه في ${region} تتجمع حول ${range} (${currency}). اعتبرها قيمة السوق — أكّد النطاق المعتمد قبل التفاوض.`,
-      },
     };
     return { ...b[lang], note };
   }
@@ -504,18 +411,6 @@ export function offerEvaluationSummary(
     'zh-CN': {
       headline: `市场价值 ≈ ${range}`,
         body: `在 ${region} 此职级，相近职位通常落在 ${range}（${currency}）。这是市场薪资水准，非公司数据；依职位的职称、地点与职级估计。`,
-    },
-    es: {
-      headline: `Valor de mercado ≈ ${range}`,
-      body: `Para este nivel en ${region}, roles comparables suelen situarse en torno a ${range} (${currency}). Úsalo como precio de mercado al decidir postular — no es una oferta prometida.`,
-    },
-    hi: {
-      headline: `बाज़ार मूल्य ≈ ${range}`,
-      body: `${region} में इस स्तर पर तुलनीय भूमिकाएँ आमतौर पर ${range} (${currency}) के आसपास आती हैं। आवेदन तय करते समय इसे बाज़ार कीमत मानें — यह वादा किया ऑफर नहीं।`,
-    },
-    ar: {
-      headline: `قيمة السوق ≈ ${range}`,
-      body: `لهذا المستوى في ${region}، الأدوار المماثلة تقع عادةً حول ${range} (${currency}). استخدمها كسعر سوق عند قرار التقديم — وليست عرضًا مضمونًا من الشركة.`,
     },
   };
   return { ...c[lang], note };

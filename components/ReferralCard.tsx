@@ -39,24 +39,6 @@ const copy: Record<
     copied: 'Copied',
     copy: 'Copy referral link',
   },
-  es: {
-    title: 'Invita · +1 Fit Snapshot',
-    desc: 'Ganas +1 Snapshot cuando completen su primer análisis.',
-    copied: 'Copiado',
-    copy: 'Copiar enlace',
-  },
-  hi: {
-    title: 'रेफर करें · +1 Fit Snapshot',
-    desc: 'पहला Snapshot पूरा करने पर +1 मिलता है।',
-    copied: 'कॉपी हो गया',
-    copy: 'लिंक कॉपी करें',
-  },
-  ar: {
-    title: 'أحِل صديقًا · +1 Fit Snapshot',
-    desc: 'تحصل على +1 عند إكمال أول Snapshot.',
-    copied: 'تم النسخ',
-    copy: 'نسخ رابط الإحالة',
-  },
 };
 
 export default function ReferralCard({

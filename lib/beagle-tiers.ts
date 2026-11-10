@@ -101,24 +101,6 @@ export const BEAGLE_TIER_COPY: Record<string, BeagleTierCopy[]> = {
     ['翡翠米格鲁', '竞争契合', '分数 60–74。有机会进入流程，但筛选者会盯住缺口，建议先补强再投。'],
     ['赤铜米格鲁', '挑战契合', '分数 0–59。与职位距离较大，需有清楚叙事再投，或改投更接近的职级。'],
   ],
-  es: [
-    ['Beagle Diamante', 'Encaje excepcional', 'Puntuación 90–100. Encaje de primer nivel.'],
-    ['Beagle Zafiro', 'Encaje fuerte', 'Puntuación 75–89. Cumples la mayoría de requisitos clave.'],
-    ['Beagle Esmeralda', 'Encaje competitivo', 'Puntuación 60–74. Hay camino, pero habrá preguntas sobre gaps.'],
-    ['Beagle Cobre', 'Encaje exigente', 'Puntuación 0–59. Es un stretch — aplica solo con narrativa clara.'],
-  ],
-  hi: [
-    ['डायमंड बीगल', 'उत्कृष्ट फिट', 'स्कोर 90–100। शीर्ष-स्तरीय मिलान।'],
-    ['सैफायर बीगल', 'मज़बूत फिट', 'स्कोर 75–89। अधिकांश ज़रूरी शर्तें पूरी।'],
-    ['एमरल्ड बीगल', 'प्रतिस्पर्धी फिट', 'स्कोर 60–74। रास्ता है, लेकिन gaps पर सवाल आएंगे।'],
-    ['कॉपर बीगल', 'स्ट्रेच फिट', 'स्कोर 0–59। यह भूमिका stretch है — स्पष्ट कहानी के साथ ही apply करें।'],
-  ],
-  ar: [
-    ['بيغل ماسي', 'توافق استثنائي', 'النتيجة 90–100. توافق من الدرجة الأولى.'],
-    ['بيغل ياقوتي', 'توافق قوي', 'النتيجة 75–89. تستوفي معظم المتطلبات الأساسية.'],
-    ['بيغل زمردي', 'توافق تنافسي', 'النتيجة 60–74. هناك مسار، لكن الفجوات ستُسأل عنها.'],
-    ['بيغل نحاسي', 'توافق طموح', 'النتيجة 0–59. الدور بعيد نسبيًا — قدّم فقط مع سرد واضح.'],
-  ],
 };
 
 export function beagleTierIndex(score: number): BeagleTierIndex {

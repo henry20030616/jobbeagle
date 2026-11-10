@@ -35,15 +35,6 @@ describe('homepage form copy', () => {
     expect(HOMEPAGE_FORM_COPY.en.uploadSupport).toBe(
       'Supports .pdf, .doc, .docx, .txt, .md\n(Max 2MB)',
     );
-    expect(HOMEPAGE_FORM_COPY.es.uploadSupport).toBe(
-      'Compatible con .pdf, .doc, .docx, .txt, .md\n(Máx 2MB)',
-    );
-    expect(HOMEPAGE_FORM_COPY.hi.uploadSupport).toBe(
-      '.pdf, .doc, .docx, .txt, .md सपोर्ट करता है\n(अधिकतम 2MB)',
-    );
-    expect(HOMEPAGE_FORM_COPY.ar.uploadSupport).toBe(
-      'يدعم .pdf و .doc و .docx و .txt و .md\n(حتى 2MB)',
-    );
     for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
       expect(copy.uploadSupport).toMatch(/\n\([^)]*2MB\)\s*$/u);
       expect(copy.upload).not.toMatch(/2MB/);
@@ -117,7 +108,7 @@ describe('homepage form copy', () => {
     for (const copy of Object.values(HOMEPAGE_FORM_COPY)) {
       expect(copy.matchAnalysisDesc).toMatch(/ATS/);
       expect(copy.salaryResearchDesc).toMatch(
-        /Interview Guide|面試指南|面试指南|más preciso|सटीक|أدق/i,
+        /Interview Guide|面試指南|面试指南/i,
       );
     }
   });
@@ -131,7 +122,7 @@ describe('homepage form copy', () => {
 
   it('covers every app language', () => {
     expect(Object.keys(HOMEPAGE_FORM_COPY).sort()).toEqual(
-      ['ar', 'en', 'es', 'hi', 'zh-CN', 'zh-TW'].sort(),
+      ['en', 'zh-CN', 'zh-TW'].sort(),
     );
   });
 
@@ -142,9 +133,6 @@ describe('homepage form copy', () => {
       'zh-CN':
         '请粘贴完整职位正文：公司名称、职位名称，以及条件与职责\n请勿只贴网址或片段\n推荐安装 Chrome 插件，一键抓取职位内容',
       en: 'Paste the full job posting: company name, job title, requirements, and responsibilities\nDo not paste only a URL or a short excerpt\nWe recommend installing the Chrome extension to capture the posting in one click',
-      es: 'Pega la oferta completa: empresa, puesto, requisitos y responsabilidades\nNo pegues solo una URL o un extracto\nRecomendamos instalar la extensión de Chrome para capturar la oferta en un clic',
-      hi: 'पूरी जॉब पोस्टिंग पेस्ट करें: कंपनी नाम, पदनाम, आवश्यकताएँ और जिम्मेदारियाँ\nकेवल URL या छोटा अंश न पेस्ट करें\nहम Chrome एक्सटेंशन इंस्टॉल करने की सलाह देते हैं, एक क्लिक में जॉब पोस्टिंग कैप्चर करें',
-      ar: 'الصق إعلان الوظيفة بالكامل: اسم الشركة والمسمى والمتطلبات والمسؤوليات\nلا تلصق الرابط فقط أو مقتطفًا قصيرًا\nنوصي بتثبيت إضافة Chrome لالتقاط الإعلان بنقرة واحدة',
     };
     for (const [lang, placeholder] of Object.entries(expected)) {
       expect(HOMEPAGE_FORM_COPY[lang as keyof typeof HOMEPAGE_FORM_COPY].jobUrlPlaceholder).toBe(
@@ -164,9 +152,6 @@ describe('homepage form copy', () => {
       'zh-TW': /推薦安裝 Chrome 外掛，一鍵抓取職缺內容/,
       'zh-CN': /推荐安装 Chrome 插件，一键抓取职位内容/,
       en: /We recommend installing the Chrome extension to capture the posting in one click/,
-      es: /Recomendamos instalar la extensión de Chrome/,
-      hi: /Chrome एक्सटेंशन इंस्टॉल करने की सलाह/,
-      ar: /نوصي بتثبيت إضافة Chrome/,
     };
     for (const [lang, reminder] of Object.entries(chromeReminder)) {
       const placeholder = HOMEPAGE_FORM_COPY[lang as keyof typeof HOMEPAGE_FORM_COPY].jobUrlPlaceholder;

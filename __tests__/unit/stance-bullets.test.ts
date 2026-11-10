@@ -72,7 +72,7 @@ describe('splitBuyerSellerStances', () => {
     });
   });
 
-  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+  it.each(['en', 'zh-TW', 'zh-CN'] as const)(
     'splits the Guide sample into titled bullets per column (%s)',
     (lang) => {
       const split = splitBuyerSellerStances(

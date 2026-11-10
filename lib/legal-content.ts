@@ -342,17 +342,11 @@ const DOCS: Record<LegalDocKey, Partial<Record<AppLanguage, LegalDocument>>> = {
     en: PRIVACY_EN,
     'zh-TW': PRIVACY_ZH_TW,
     'zh-CN': PRIVACY_ZH_CN,
-    es: PRIVACY_EN,
-    hi: PRIVACY_EN,
-    ar: PRIVACY_EN,
   },
   terms: {
     en: TERMS_EN,
     'zh-TW': TERMS_ZH_TW,
     'zh-CN': TERMS_ZH_CN,
-    es: TERMS_EN,
-    hi: TERMS_EN,
-    ar: TERMS_EN,
   },
 };
 
@@ -365,7 +359,4 @@ export const LEGAL_UI: Record<AppLanguage, { lastUpdated: string; backHome: stri
   en: { lastUpdated: 'Last updated', backHome: '← Back to Home', privacy: 'Privacy Policy', terms: 'Terms of Service' },
   'zh-TW': { lastUpdated: '最後更新', backHome: '← 返回首頁', privacy: '隱私權政策', terms: '服務條款' },
   'zh-CN': { lastUpdated: '最后更新', backHome: '← 返回首页', privacy: '隐私权政策', terms: '服务条款' },
-  es: { lastUpdated: 'Última actualización', backHome: '← Volver al inicio', privacy: 'Política de privacidad', terms: 'Términos de servicio' },
-  hi: { lastUpdated: 'अंतिम अपडेट', backHome: '← होम पर वापस', privacy: 'गोपनीयता नीति', terms: 'सेवा की शर्तें' },
-  ar: { lastUpdated: 'آخر تحديث', backHome: '← العودة للرئيسية', privacy: 'سياسة الخصوصية', terms: 'شروط الخدمة' },
 };

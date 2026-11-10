@@ -330,7 +330,7 @@ describe('marketBandDisclaimer', () => {
     sources: ['Market benchmark for Senior BA / fintech ops (US)'],
   };
 
-  it.each(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'] as const)(
+  it.each(['en', 'zh-TW', 'zh-CN'] as const)(
     'keeps %s copy short and does not repeat labeled fields or sources',
     (lang) => {
       const scope = payEstimateScope(

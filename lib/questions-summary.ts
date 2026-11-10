@@ -21,33 +21,22 @@ type AnalysisInput = AnalysisPoint[] | string[] | string | undefined;
 
 const PROCESS_LABELS = [
   'Hiring process',
-  'Proceso de contratación',
-  'भर्ती प्रक्रिया',
-  'عملية التوظيف',
   '招募流程',
   '招聘流程',
 ];
 
 const PROFESSIONAL_LABELS = [
   'Professional analysis',
-  'Análisis profesional',
-  'पेशेवर विश्लेषण',
-  'التحليل المهني',
   '專業題分析',
   '专业题分析',
   'Professional',
-  'Profesional',
-  'पेशेवर',
   '專業題',
   '专业题',
-  'مهني',
 ];
 
 const BEHAVIORAL_LABELS = [
   'Behavioral analysis',
-  'Análisis conductual',
-  'व्यवहारिक विश्लेषण',
-  'التحليل السلوكي',
+
   '行為題分析',
   '行为题分析',
   'Behavioral',
@@ -55,7 +44,6 @@ const BEHAVIORAL_LABELS = [
   'व्यवहारिक',
   '行為題',
   '行为题',
-  'سلوكي',
 ];
 
 const SECTION_LABELS: Record<AppLanguage, { process: string; professional: string; behavioral: string }> = {
@@ -74,26 +62,11 @@ const SECTION_LABELS: Record<AppLanguage, { process: string; professional: strin
     professional: '专业题分析',
     behavioral: '行为题分析',
   },
-  es: {
-    process: 'Proceso de contratación',
-    professional: 'Análisis profesional',
-    behavioral: 'Análisis conductual',
-  },
-  hi: {
-    process: 'भर्ती प्रक्रिया',
-    professional: 'पेशेवर विश्लेषण',
-    behavioral: 'व्यवहारिक विश्लेषण',
-  },
-  ar: {
-    process: 'عملية التوظيف',
-    professional: 'التحليل المهني',
-    behavioral: 'التحليل السلوكي',
-  },
 };
 
 /** Sentence-shaped labels that must stay body text, not inner titles. */
 const TITLE_BLOCKLIST =
-  /^(準備兩則|准备两则|面試在測|面试在测|這份|这份|The |This |Prepare |La ronda|Este puesto)/i;
+  /^(準備兩則|准备两则|面試在測|面试在测|這份|这份|The |This |Prepare )/i;
 
 function foldLabel(value: string): string {
   return value.trim().toLowerCase();
@@ -119,7 +92,7 @@ function bodyLines(text: string): string[] {
 }
 
 function pointSep(locale: AppLanguage): string {
-  return locale === 'en' || locale === 'es' ? ': ' : '：';
+  return locale === 'en' ? ': ' : '：';
 }
 
 function asText(value: unknown): string {
@@ -129,9 +102,6 @@ function asText(value: unknown): string {
 export function detectQuestionsSummaryLocale(text: string): AppLanguage {
   if (/招聘流程|专业题/.test(text)) return 'zh-CN';
   if (/招募流程|專業題/.test(text)) return 'zh-TW';
-  if (/Proceso de contratación|Análisis profesional|Análisis conductual/.test(text)) return 'es';
-  if (/भर्ती प्रक्रिया|पेशेवर विश्लेषण|व्यवहारिक विश्लेषण/.test(text)) return 'hi';
-  if (/عملية التوظيف|التحليل المهني|التحليل السلوكي/.test(text)) return 'ar';
   return 'en';
 }
 

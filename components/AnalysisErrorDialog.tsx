@@ -11,18 +11,12 @@ const DISMISS_LABEL: Record<AppLanguage, string> = {
   'zh-TW': '我知道了',
   'zh-CN': '我知道了',
   en: 'Got it',
-  es: 'Entendido',
-  hi: 'ठीक है',
-  ar: 'حسنًا',
 };
 
 const CLOSE_LABEL: Record<AppLanguage, string> = {
   'zh-TW': '關閉',
   'zh-CN': '关闭',
   en: 'Close',
-  es: 'Cerrar',
-  hi: 'बंद करें',
-  ar: 'إغلاق',
 };
 
 /** Same scale as homepage step titles / step body prompts. */

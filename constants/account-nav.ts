@@ -70,33 +70,6 @@ export const ACCOUNT_NAV_COPY: Record<AppLanguage, AccountNavCopy> = {
     referrals: '推荐记录',
     danger: '暂停／删除账户',
   },
-  es: {
-    ariaLabel: 'Funciones de la cuenta',
-    overview: 'Resumen',
-    careerContext: 'Personalizar',
-    plans: 'Comprar créditos',
-    billing: 'Historial de facturación',
-    referrals: 'Referidos',
-    danger: 'Pausar / eliminar cuenta',
-  },
-  hi: {
-    ariaLabel: 'खाता फ़ंक्शन',
-    overview: 'अवलोकन',
-    careerContext: 'व्यक्तिगत करियर शर्तें',
-    plans: 'क्रेडिट खरीदें',
-    billing: 'बिलिंग इतिहास',
-    referrals: 'रेफरल',
-    danger: 'खाता रोकें / हटाएं',
-  },
-  ar: {
-    ariaLabel: 'وظائف الحساب',
-    overview: 'نظرة عامة',
-    careerContext: 'تخصيص شروط المسار المهني',
-    plans: 'شراء الرصيد',
-    billing: 'سجل الفوترة',
-    referrals: 'الإحالات',
-    danger: 'إيقاف / حذف الحساب',
-  },
 };
 
 export function getAccountNavCopy(language: AppLanguage): AccountNavCopy {

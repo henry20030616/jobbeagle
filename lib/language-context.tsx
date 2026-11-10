@@ -16,9 +16,6 @@ export const LANGUAGE_OPTIONS: LanguageOption[] = [
   { code: 'en',    name: 'English',             nativeName: 'English',      flag: '🇺🇸' },
   { code: 'zh-TW', name: 'Traditional Chinese', nativeName: '繁體中文',     flag: '🇹🇼' },
   { code: 'zh-CN', name: 'Simplified Chinese',  nativeName: '简体中文',     flag: '🇨🇳' },
-  { code: 'es',    name: 'Spanish',             nativeName: 'Español',      flag: '🇪🇸' },
-  { code: 'hi',    name: 'Hindi',               nativeName: 'हिन्दी',       flag: '🇮🇳' },
-  { code: 'ar',    name: 'Arabic',              nativeName: 'العربية',      flag: '🇸🇦' },
 ];
 
 interface LanguageContextValue {
@@ -41,6 +38,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       const raw = saved as string;
       const resolved: AppLanguage | null =
         raw === 'zh' ? 'zh-TW' :
+        (raw === 'es' || raw === 'hi' || raw === 'ar') ? 'en' :
         (raw && LANGUAGE_OPTIONS.some(o => o.code === raw)) ? (raw as AppLanguage) : null;
       if (resolved) setLanguageState(resolved);
     } catch { /* SSR / private mode */ }

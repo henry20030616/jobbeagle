@@ -53,12 +53,6 @@ function extraRuleFor(language: AppLanguage): string {
       return '以下十題為近期最重要的面試題；近三年其餘真題列於補充資料列表。專業題／行為題分析只引用有網址的真題；預測題另標為預測。舊報告請重新分析以更新。';
     case 'zh-CN':
       return '以下十题为近期最重要的面试题；近三年其余真题列于补充资料列表。专业题／行为题分析只引用有网址的真题；预测题另标为预测。旧报告请重新分析以更新。';
-    case 'es':
-      return 'Estas diez son las de mayor prioridad reciente. El resto de preguntas reales de los últimos tres años aparece abajo.';
-    case 'hi':
-      return 'ये दस हाल की प्राथमिकता वाले प्रश्न हैं। पिछले तीन वर्षों के शेष वास्तविक प्रश्न नीचे हैं।';
-    case 'ar':
-      return 'هذه العشر هي المجموعة الأحدث والأولى أولوية. بقية الأسئلة الحقيقية من السنوات الثلاث الماضية أدناه.';
     default:
       return 'These ten are the most recent priority set. Remaining reported questions from the last three years appear below. Professional and behavioral analysis uses retrieved reported questions only; predicted questions stay labeled. Re-run analysis on older reports to refresh.';
   }

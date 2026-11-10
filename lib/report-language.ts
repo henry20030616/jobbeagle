@@ -1,7 +1,7 @@
 /** Shared language codes — keep free of React/client imports (used by API routes). */
-export type AppLanguage = 'en' | 'zh-TW' | 'zh-CN' | 'es' | 'hi' | 'ar';
+export type AppLanguage = 'en' | 'zh-TW' | 'zh-CN';
 
-const CODES = new Set<string>(['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar']);
+const CODES = new Set<string>(['en', 'zh-TW', 'zh-CN']);
 
 export function normalizeReportLanguage(raw: unknown): AppLanguage {
   if (raw === 'zh') return 'zh-TW';
@@ -13,9 +13,6 @@ const NATIVE_LABEL: Record<AppLanguage, string> = {
   en: 'English',
   'zh-TW': 'Traditional Chinese (繁體中文)',
   'zh-CN': 'Simplified Chinese (简体中文)',
-  es: 'Spanish (Español)',
-  hi: 'Hindi (हिन्दी)',
-  ar: 'Arabic (العربية)',
 };
 
 /**

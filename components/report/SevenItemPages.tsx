@@ -129,12 +129,6 @@ function extraRuleCopy(language: AppLanguage): string {
       return '以下十題為近期最重要的面試題；近三年其餘真題列於補充資料列表。專業題／行為題分析只引用有網址的真題；預測題另標為預測。舊報告請重新分析以更新。';
     case 'zh-CN':
       return '以下十题为近期最重要的面试题；近三年其余真题列于补充资料列表。专业题／行为题分析只引用有网址的真题；预测题另标为预测。旧报告请重新分析以更新。';
-    case 'es':
-      return 'Estas diez son las de mayor prioridad reciente. El resto de preguntas reales de los últimos tres años aparece abajo. El análisis profesional y conductual usa solo preguntas reportadas con URL; las predichas se etiquetan aparte. Vuelva a analizar informes antiguos.';
-    case 'hi':
-      return 'ये दस हाल की प्राथमिकता वाले प्रश्न हैं। पिछले तीन वर्षों के शेष वास्तविक प्रश्न नीचे हैं। पेशेवर/व्यवहार विश्लेषण केवल उद्धरण योग्य असली प्रश्नों पर है; अनुमानित प्रश्न अलग लेबल रहते हैं। पुरानी रिपोर्ट फिर से विश्लेषण करें।';
-    case 'ar':
-      return 'هذه العشر هي المجموعة الأحدث والأولى أولوية. بقية الأسئلة الحقيقية من السنوات الثلاث الماضية أدناه. تحليل الأسئلة المهنية والسلوكية يعتمد على الأسئلة المبلّغ عنها بروابط فقط؛ المتوقعة تُوسم كذلك. أعد التحليل للتقارير القديمة.';
     default:
       return 'These ten are the most recent priority set. Remaining reported questions from the last three years appear below. Professional and behavioral analysis uses retrieved reported questions only; predicted questions stay labeled. Re-run analysis on older reports to refresh.';
   }
@@ -146,12 +140,6 @@ function missingKeysTitle(language: AppLanguage): string {
       return '待优化改善';
     case 'zh-TW':
       return '待優化改善';
-    case 'es':
-      return 'Pendiente de mejorar';
-    case 'hi':
-      return 'सुधार बाकी';
-    case 'ar':
-      return 'بحاجة إلى تحسين';
     default:
       return 'To improve';
   }
@@ -163,12 +151,6 @@ function rewriteDirectionTitle(language: AppLanguage): string {
       return '调整建议';
     case 'zh-TW':
       return '調整建議';
-    case 'es':
-      return 'Ajustes sugeridos';
-    case 'hi':
-      return 'समायोजन सुझाव';
-    case 'ar':
-      return 'اقتراحات التعديل';
     default:
       return 'Adjustment advice';
   }
@@ -180,12 +162,6 @@ function resumeAdviceTitle(language: AppLanguage): string {
       return '简历优化建议';
     case 'zh-TW':
       return '履歷優化建議';
-    case 'es':
-      return 'Sugerencias para el CV';
-    case 'hi':
-      return 'रिज़्यूमे अनुकूलन सुझाव';
-    case 'ar':
-      return 'اقتراحات تحسين السيرة';
     default:
       return 'Resume optimization advice';
   }
@@ -217,33 +193,6 @@ function negotiateHeadings(language: AppLanguage): {
         say: '開場講稿',
         askCompany: '問公司問題',
         followUp: '面試後信件',
-      };
-    case 'es':
-      return {
-        playbook: 'Estrategia salarial',
-        pay: 'Palancas',
-        benefits: 'Beneficios',
-        say: 'Guion',
-        askCompany: 'Preguntas a la empresa',
-        followUp: 'Nota post-entrevista',
-      };
-    case 'hi':
-      return {
-        playbook: 'वेतन रणनीति',
-        pay: 'मोलभाव',
-        benefits: 'लाभ',
-        say: 'स्क्रिप्ट',
-        askCompany: 'कंपनी से प्रश्न',
-        followUp: 'इंटरव्यू के बाद पत्र',
-      };
-    case 'ar':
-      return {
-        playbook: 'استراتيجية الراتب',
-        pay: 'المساومة',
-        benefits: 'المزايا',
-        say: 'نص الافتتاح',
-        askCompany: 'أسئلة للشركة',
-        followUp: 'رسالة بعد المقابلة',
       };
     default:
       return {

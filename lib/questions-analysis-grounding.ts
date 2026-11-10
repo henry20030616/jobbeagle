@@ -33,24 +33,6 @@ const EMPTY_TRACK_COPY: Record<AppLanguage, { professional: string; behavioral: 
     behavioral:
       '这次没有找到可引用的行为题。公开搜索没有带出可引用网址的真题，因此不做主题分析。预测题另标为预测，不会当成真实题目来分析。',
   },
-  es: {
-    professional:
-      'Esta vez no hay preguntas profesionales citables. La búsqueda pública no devolvió una pregunta real con URL citable, así que este lado no tiene análisis temático. Las preguntas predichas se etiquetan aparte y no se analizan como preguntas reales.',
-    behavioral:
-      'Esta vez no hay preguntas conductuales citables. La búsqueda pública no devolvió una pregunta real con URL citable, así que este lado no tiene análisis temático. Las preguntas predichas se etiquetan aparte y no se analizan como preguntas reales.',
-  },
-  hi: {
-    professional:
-      'इस बार कोई उद्धरण योग्य पेशेवर प्रश्न नहीं मिला। सार्वजनिक खोज में उद्धरण योग्य URL वाली असली प्रश्न नहीं आई, इसलिए इस ओर विषय विश्लेषण नहीं है। अनुमानित प्रश्न अलग लेबल रहते हैं और असली प्रश्नों की तरह विश्लेषित नहीं होते।',
-    behavioral:
-      'इस बार कोई उद्धरण योग्य व्यवहारिक प्रश्न नहीं मिला। सार्वजनिक खोज में उद्धरण योग्य URL वाली असली प्रश्न नहीं आई, इसलिए इस ओर विषय विश्लेषण नहीं है। अनुमानित प्रश्न अलग लेबल रहते हैं और असली प्रश्नों की तरह विश्लेषित नहीं होते।',
-  },
-  ar: {
-    professional:
-      'لم يُعثر هذه المرة على أسئلة مهنية قابلة للاقتباس. البحث العلني لم يُرجع سؤالاً حقيقياً برابط قابل للاستشهاد، لذلك لا تحليل موضوعياً لهذا الجانب. الأسئلة المتوقعة تبقى موسومة كذلك ولا تُحلَّل كأسئلة حقيقية.',
-    behavioral:
-      'لم يُعثر هذه المرة على أسئلة سلوكية قابلة للاقتباس. البحث العلني لم يُرجع سؤالاً حقيقياً برابط قابل للاستشهاد، لذلك لا تحليل موضوعياً لهذا الجانب. الأسئلة المتوقعة تبقى موسومة كذلك ولا تُحلَّل كأسئلة حقيقية.',
-  },
 };
 
 const QUESTION_LEAD_IN =

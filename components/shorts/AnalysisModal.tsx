@@ -92,24 +92,6 @@ const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
     { minProgress: 72, label: '🔎 Evaluating resume match...' }, { minProgress: 85, label: '🎯 Researching interview insights...' },
     { minProgress: 93, label: '📊 Compiling report...' },
   ],
-  es: [
-    { minProgress: 0,  label: '🔍 Leyendo descripción...' }, { minProgress: 15, label: '📋 Analizando requisitos...' },
-    { minProgress: 35, label: '🌐 Recopilando datos del mercado...' }, { minProgress: 55, label: '💰 Comparando salarios...' },
-    { minProgress: 72, label: '🔎 Evaluando coincidencia...' }, { minProgress: 85, label: '🎯 Investigando entrevistas...' },
-    { minProgress: 93, label: '📊 Compilando informe...' },
-  ],
-  hi: [
-    { minProgress: 0,  label: '🔍 नौकरी विवरण पढ़ रहे हैं...' }, { minProgress: 15, label: '📋 आवश्यकताओं का विश्लेषण...' },
-    { minProgress: 35, label: '🌐 बाजार डेटा एकत्र...' }, { minProgress: 55, label: '💰 वेतन की तुलना...' },
-    { minProgress: 72, label: '🔎 मिलान का मूल्यांकन...' }, { minProgress: 85, label: '🎯 साक्षात्कार शोध...' },
-    { minProgress: 93, label: '📊 रिपोर्ट संकलन...' },
-  ],
-  ar: [
-    { minProgress: 0,  label: '🔍 قراءة الوصف...' }, { minProgress: 15, label: '📋 تحليل المتطلبات...' },
-    { minProgress: 35, label: '🌐 جمع بيانات السوق...' }, { minProgress: 55, label: '💰 مقارنة الرواتب...' },
-    { minProgress: 72, label: '🔎 تقييم التوافق...' }, { minProgress: 85, label: '🎯 البحث عن المقابلات...' },
-    { minProgress: 93, label: '📊 إعداد التقرير...' },
-  ],
 };
 
 function getStageLabel(progress: number, lang: AppLanguage = 'en'): string {

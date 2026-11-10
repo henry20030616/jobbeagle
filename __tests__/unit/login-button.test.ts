@@ -26,9 +26,6 @@ describe('login button copy', () => {
     expect(LOGIN_BUTTON_COPY['zh-TW'].accountTitle).toBe('我的帳號管理');
     expect(LOGIN_BUTTON_COPY['zh-CN'].accountTitle).toBe('我的帐号管理');
     expect(LOGIN_BUTTON_COPY.en.accountTitle).toBe('My account');
-    expect(LOGIN_BUTTON_COPY.es.accountTitle).toBe('Mi cuenta');
-    expect(LOGIN_BUTTON_COPY.hi.accountTitle).toBe('मेरा खाता');
-    expect(LOGIN_BUTTON_COPY.ar.accountTitle).toBe('حسابي');
   });
 });
 

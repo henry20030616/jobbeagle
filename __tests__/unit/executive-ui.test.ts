@@ -13,7 +13,7 @@ import { HOMEPAGE_FORM_COPY } from '@/constants/homepage-form-copy';
 import { normalizeFullReport } from '@/lib/normalize-lite-report';
 import type { FullReport } from '@/types';
 
-const SAMPLE_LANGUAGES = ['en', 'zh-TW', 'zh-CN', 'es'] as const;
+const SAMPLE_LANGUAGES = ['en', 'zh-TW', 'zh-CN'] as const;
 
 describe('executive sample fixtures', () => {
   it.each(SAMPLE_LANGUAGES)('Snapshot sample (%s) carries the executive layer', (lang) => {
@@ -99,7 +99,7 @@ describe('executive panels', () => {
   });
 
   it('has a copy pack for every report language', () => {
-    for (const lang of ['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar']) {
+    for (const lang of ['en', 'zh-TW', 'zh-CN']) {
       const t = getExecutiveUiCopy(lang);
       expect(t.competencyMap.length).toBeGreaterThan(0);
       expect(Object.keys(t.category)).toHaveLength(5);

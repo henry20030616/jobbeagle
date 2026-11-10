@@ -16,18 +16,6 @@ const copy: Record<AppLanguage, { message: string; cta: string }> = {
     message: '账户已停用，目前无法分析与结账。',
     cta: '重新启用账户',
   },
-  es: {
-    message: 'Tu cuenta está desactivada. Análisis y checkout pausados.',
-    cta: 'Reactivar cuenta',
-  },
-  hi: {
-    message: 'आपका खाता निष्क्रिय है। विश्लेषण और चेकआउट रुके हैं।',
-    cta: 'खाता पुनः सक्रिय करें',
-  },
-  ar: {
-    message: 'حسابك معطّل. التحليل والدفع متوقفان.',
-    cta: 'إعادة تفعيل الحساب',
-  },
 };
 
 export default function AccountDeactivatedBanner({

@@ -24,7 +24,6 @@ describe('report language', () => {
     expect(geminiLanguageDirective('zh-CN')).toMatch(/职位 \/ 这职位/);
     expect(geminiLanguageDirective('en')).toMatch(/English/);
     expect(geminiLanguageDirective('en')).not.toMatch(/席位/);
-    expect(geminiLanguageDirective('es')).toMatch(/Spanish/);
     expect(geminiLanguageDirective('zh-TW')).toMatch(/核心適配/);
     expect(geminiLanguageDirective('zh-TW')).toMatch(/never "Core fit:/);
     expect(geminiLanguageDirective('zh-TW')).toMatch(/年資／技能／系統／領域/);

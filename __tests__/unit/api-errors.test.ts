@@ -18,7 +18,7 @@ const ALL_CODES: ApiErrorCode[] = [
   'SERVER_ERROR',
 ];
 
-const LANGS: AppLanguage[] = ['en', 'zh-TW', 'zh-CN', 'es', 'hi', 'ar'];
+const LANGS: AppLanguage[] = ['en', 'zh-TW', 'zh-CN'];
 
 describe('translateApiError', () => {
   it.each(ALL_CODES)('returns non-empty message for code %s in en', (code) => {

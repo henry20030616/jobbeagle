@@ -84,13 +84,7 @@ export default function CareerContextForm({
       ? '個人化職涯條件'
       : language === 'zh-CN'
         ? '个性化职涯条件'
-        : language === 'es'
-          ? 'Personalizar'
-          : language === 'hi'
-            ? 'व्यक्तिगत करियर शर्तें'
-            : language === 'ar'
-              ? 'تخصيص شروط المسار المهني'
-              : 'Personalize';
+        : 'Personalize';
   const [form, setForm] = useState<CareerContext>(
     normalizeCareerContext(initial ?? EMPTY_CAREER_CONTEXT),
   );

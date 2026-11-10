@@ -103,33 +103,6 @@ const STAGES: Record<string, Array<{ minProgress: number; label: string }>> = {
     { minProgress: 85, label: '🎯 Researching interview insights...' },
     { minProgress: 93, label: '📊 Compiling strategic report...' },
   ],
-  es: [
-    { minProgress: 0,  label: '🔍 Leyendo descripción del puesto...' },
-    { minProgress: 15, label: '📋 Analizando requisitos del trabajo...' },
-    { minProgress: 35, label: '🌐 Recopilando inteligencia de mercado...' },
-    { minProgress: 55, label: '💰 Comparando datos salariales...' },
-    { minProgress: 72, label: '🔎 Evaluando coincidencia del CV...' },
-    { minProgress: 85, label: '🎯 Investigando perspectivas de entrevista...' },
-    { minProgress: 93, label: '📊 Compilando informe estratégico...' },
-  ],
-  hi: [
-    { minProgress: 0,  label: '🔍 नौकरी विवरण पढ़ा जा रहा है...' },
-    { minProgress: 15, label: '📋 नौकरी की आवश्यकताओं का विश्लेषण...' },
-    { minProgress: 35, label: '🌐 बाजार की जानकारी एकत्र की जा रही है...' },
-    { minProgress: 55, label: '💰 वेतन डेटा की तुलना की जा रही है...' },
-    { minProgress: 72, label: '🔎 CV मिलान का मूल्यांकन...' },
-    { minProgress: 85, label: '🎯 साक्षात्कार जानकारी शोध किया जा रहा है...' },
-    { minProgress: 93, label: '📊 रणनीतिक रिपोर्ट संकलित की जा रही है...' },
-  ],
-  ar: [
-    { minProgress: 0,  label: '🔍 قراءة وصف الوظيفة...' },
-    { minProgress: 15, label: '📋 تحليل متطلبات الوظيفة...' },
-    { minProgress: 35, label: '🌐 جمع معلومات السوق...' },
-    { minProgress: 55, label: '💰 مقارنة بيانات الرواتب...' },
-    { minProgress: 72, label: '🔎 تقييم توافق السيرة الذاتية...' },
-    { minProgress: 85, label: '🎯 البحث عن معلومات المقابلات...' },
-    { minProgress: 93, label: '📊 إعداد التقرير الاستراتيجي...' },
-  ],
 };
 
 function getStageLabel(progress: number, lang: AppLanguage): string {
@@ -621,57 +594,6 @@ export default function Home() {
       exploreShorts: 'Explore Job Shorts',
       exploreShortsDesc: 'Swipe job videos · AI match · One-tap apply',
     },
-    es: {
-      backToHome: 'Volver al Inicio',
-      analysisFailed: 'No se pudo terminar el análisis',
-      suggestions: 'Qué puedes probar',
-      tipRetry: 'Espera medio minuto y vuelve a iniciar el análisis',
-      tipReupload: 'Elige de nuevo el archivo del CV en tu ordenador (PDF o Word)',
-      tipPaste: 'O pega el texto del CV en el cuadro de currículum',
-      tipFooter: 'Si sigue fallando, déjanos un mensaje al final de la página',
-      history: 'Historial de informes',
-      historyTitle: 'Historial de informes',
-      noHistory: 'Sin historial aún',
-      unknownJob: 'Trabajo Desconocido',
-      autoSaved: 'Los registros se guardan después de cada análisis',
-      rateTitle: '⏳ Límite Diario Alcanzado',
-      exploreShorts: 'Explorar Job Shorts',
-      exploreShortsDesc: 'Desliza videos de empleo · Match IA · Aplicar',
-    },
-    hi: {
-      backToHome: 'होम पर वापस जाएं',
-      analysisFailed: 'विश्लेषण पूरा नहीं हो सका',
-      suggestions: 'आप यह आज़मा सकते हैं',
-      tipRetry: 'आधा मिनट रुकें, फिर विश्लेषण फिर शुरू करें',
-      tipReupload: 'कंप्यूटर से रिज़्यूमे फ़ाइल फिर चुनें (PDF या Word)',
-      tipPaste: 'या रिज़्यूमे टेक्स्ट बॉक्स में पेस्ट करें',
-      tipFooter: 'अगर बार-बार फेल हो, पेज के नीचे संदेश छोड़ें',
-      history: 'रिपोर्ट इतिहास',
-      historyTitle: 'रिपोर्ट इतिहास',
-      noHistory: 'अभी तक कोई इतिहास नहीं',
-      unknownJob: 'अज्ञात नौकरी',
-      autoSaved: 'प्रत्येक विश्लेषण के बाद रिकॉर्ड सहेजे जाते हैं',
-      rateTitle: '⏳ दैनिक मुफ़्त सीमा समाप्त',
-      exploreShorts: 'Job Shorts देखें',
-      exploreShortsDesc: 'नौकरी वीडियो स्वाइप करें · AI मिलान · आवेदन',
-    },
-    ar: {
-      backToHome: 'العودة إلى الرئيسية',
-      analysisFailed: 'تعذّر إكمال التحليل',
-      suggestions: 'جرّب هذا',
-      tipRetry: 'انتظر نصف دقيقة ثم ابدأ التحليل مجددًا',
-      tipReupload: 'اختر ملف السيرة من جهازك مرة أخرى (PDF أو Word)',
-      tipPaste: 'أو الصق نص السيرة في مربع السيرة',
-      tipFooter: 'إن استمر الفشل، اترك رسالة أسفل الصفحة',
-      history: 'سجل التقارير',
-      historyTitle: 'سجل التقارير',
-      noHistory: 'لا يوجد سجل بعد',
-      unknownJob: 'وظيفة غير معروفة',
-      autoSaved: 'يتم حفظ السجلات بعد كل تحليل',
-      rateTitle: '⏳ تم بلوغ الحد المجاني اليومي',
-      exploreShorts: 'استكشف Job Shorts',
-      exploreShortsDesc: 'تصفح فيديوهات الوظائف · تطابق AI · تقديم',
-    },
   };
 
   const t = translations[language] ?? translations['en'];
@@ -803,7 +725,7 @@ export default function Home() {
                               {item.job_title || t.unknownJob}
                             </p>
                             <p className="text-slate-500 text-sm mt-1.5">
-                              {new Date(item.created_at).toLocaleDateString(language === 'zh-TW' || language === 'zh-CN' ? 'zh-TW' : language === 'es' ? 'es-ES' : language === 'hi' ? 'hi-IN' : language === 'ar' ? 'ar-SA' : 'en-US', {
+                              {new Date(item.created_at).toLocaleDateString(language === 'zh-TW' || language === 'zh-CN' ? 'zh-TW' : 'en-US', {
                                 month: 'short', day: 'numeric', year: 'numeric',
                               })}
                             </p>

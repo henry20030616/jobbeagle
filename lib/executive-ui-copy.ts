@@ -290,9 +290,6 @@ const EXECUTIVE_UI_COPY: Record<AppLanguage, ExecutiveUiCopy> = {
   en: EN,
   'zh-TW': ZH_TW,
   'zh-CN': ZH_CN,
-  es: ES,
-  hi: HI,
-  ar: AR,
 };
 
 export function getExecutiveUiCopy(language?: string | null): ExecutiveUiCopy {

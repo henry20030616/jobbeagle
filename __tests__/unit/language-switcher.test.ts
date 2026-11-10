@@ -9,14 +9,11 @@ const source = readFileSync(
 );
 
 describe('LanguageSwitcher label layout', () => {
-  it('keeps the six shipped locales', () => {
+  it('keeps the three shipped locales', () => {
     expect(LANGUAGE_OPTIONS.map(o => o.code)).toEqual([
       'en',
       'zh-TW',
       'zh-CN',
-      'es',
-      'hi',
-      'ar',
     ]);
   });
 

@@ -117,7 +117,7 @@ describe('formatCapturedJd', () => {
 describe('getExtensionScrapeError', () => {
   it('returns English copy for unknown language codes', () => {
     expect(getExtensionScrapeError('no_job_page', 'en')).toContain('LinkedIn');
-    expect(getExtensionScrapeError('no_job_page', 'es')).toContain('LinkedIn');
+    expect(getExtensionScrapeError('no_job_page', 'en')).toContain('LinkedIn');
   });
 
   it('returns Traditional Chinese for scrape_failed when the UI is zh-TW', () => {

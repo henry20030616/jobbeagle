@@ -43,34 +43,22 @@ const DogLoading: React.FC<DogLoadingProps> = ({
     'zh-TW': '小獵犬正在努力嗅探資料中...',
     'zh-CN': '小猎犬正在努力嗅探数据中...',
     en: 'Beagle is sniffing for data...',
-    es: 'El Beagle está olfateando datos...',
-    hi: 'बीगल डेटा खोज रहा है...',
-    ar: 'يقوم البيغل بالبحث عن البيانات...',
   };
   const estimatedMapSnapshot: Record<AppLanguage, string> = {
     'zh-TW': '適配快照通常需要 15–45 秒，請稍候',
     'zh-CN': '适配快照通常需要 15–45 秒，请稍候',
     en: 'Fit Snapshot usually takes 15–45 seconds',
-    es: 'Fit Snapshot suele tardar 15–45 segundos',
-    hi: 'Fit Snapshot आमतौर पर 15–45 सेकंड लेता है',
-    ar: 'Fit Snapshot يستغرق عادةً 15–45 ثانية',
   };
   const estimatedMapGuide: Record<AppLanguage, string> = {
     'zh-TW': '面試指南含網路搜尋與撰寫，通常需要 1–3 分鐘（Gemini＋Claude）',
     'zh-CN': '面试指南含网络搜索与撰写，通常需要 1–3 分钟（Gemini＋Claude）',
     en: 'Interview Guide usually takes 1–3 minutes (Gemini search + Claude writing)',
-    es: 'Interview Guide suele tardar 1–3 minutos (búsqueda Gemini + redacción Claude)',
-    hi: 'Interview Guide आमतौर पर 1–3 मिनट लेता है (Gemini खोज + Claude लेखन)',
-    ar: 'Interview Guide يستغرق عادةً 1–3 دقائق (بحث Gemini + كتابة Claude)',
   };
   const estimatedMap = estimateKind === 'guide' ? estimatedMapGuide : estimatedMapSnapshot;
   const elapsedMap: Record<AppLanguage, string> = {
     'zh-TW': `已分析 ${elapsed} 秒`,
     'zh-CN': `已分析 ${elapsed} 秒`,
     en: `${elapsed}s elapsed`,
-    es: `${elapsed}s transcurridos`,
-    hi: `${elapsed} सेकंड बीते`,
-    ar: `مرت ${elapsed} ثانية`,
   };
 
   const currentStage = stage || stageLabel || defaultStageMap[language];

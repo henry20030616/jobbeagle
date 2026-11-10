@@ -39,9 +39,6 @@ const ANALYZE_LABEL: Record<AppLanguage, string> = {
   en: 'Analyze now with AI',
   'zh-TW': '立刻AI分析',
   'zh-CN': '立刻AI分析',
-  es: 'Analizar ya con IA',
-  hi: 'अभी AI से विश्लेषण करें',
-  ar: 'حلّل الآن بالذكاء الاصطناعي',
 };
 
 export default function SampleReportClient() {

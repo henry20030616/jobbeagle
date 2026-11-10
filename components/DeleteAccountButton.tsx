@@ -24,24 +24,6 @@ const copy: Record<AppLanguage, { label: string; confirm: string; deleting: stri
     deleting: 'Deleting…',
     error: 'Delete failed. Try again later.',
   },
-  es: {
-    label: 'Eliminar cuenta',
-    confirm: '¿Eliminar permanentemente tu cuenta y todos los informes? No se puede deshacer.',
-    deleting: 'Eliminando…',
-    error: 'Error al eliminar. Inténtalo más tarde.',
-  },
-  hi: {
-    label: 'खाता हटाएं',
-    confirm: 'अपना खाता और सभी रिपोर्ट स्थायी रूप से हटाएं? यह पूर्ववत नहीं हो सकता।',
-    deleting: 'हटाया जा रहा है…',
-    error: 'हटाना विफल। बाद में पुनः प्रयास करें।',
-  },
-  ar: {
-    label: 'حذف الحساب',
-    confirm: 'حذف حسابك وجميع التقارير نهائيًا؟ لا يمكن التراجع.',
-    deleting: 'جارٍ الحذف…',
-    error: 'فشل الحذف. حاول لاحقًا.',
-  },
 };
 
 export default function DeleteAccountButton({ language = 'en' }: { language?: AppLanguage }) {
