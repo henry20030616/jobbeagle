@@ -234,8 +234,8 @@ async function validateAnalyzeInput(
       response: NextResponse.json(
         {
           error: zh
-            ? '⚠️ 缺少公司名稱。請在職缺開頭加上「公司：XXX」或「Company: XXX」後再分析。'
-            : '⚠️ Company name is missing. Add “Company: …” at the top of the posting before analyzing.',
+            ? '⚠️ 缺少公司名稱。請在職缺開頭加上「公司：XXX」、「【公司名】職缺名」或 “Company: …” 後再分析。'
+            : '⚠️ Company name is missing. Add “Company: …”, or a first line like “[Company] Job title”, before analyzing.',
           code: 'JD_MISSING_COMPANY',
         },
         { status: 400 },
