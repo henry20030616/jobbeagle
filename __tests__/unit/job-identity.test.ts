@@ -67,4 +67,27 @@ describe('job identity', () => {
     );
     expect(r.valid).toBe(true);
   });
+
+  it('extracts company from 【】 / [] on the first line (104 / APAC boards)', () => {
+    const id = extractJobIdentity(
+      `【國泰投信】數據 / AI 轉型專案管理人員_I00026692\n\n${enoughBody}`,
+    );
+    expect(id.company).toBe('國泰投信');
+    expect(id.title).toBe('數據 / AI 轉型專案管理人員');
+
+    const id2 = extractJobIdentity(
+      `[Cathay SITE] Data / AI Transformation PM\n\n${enoughBody}`,
+    );
+    expect(id2.company).toBe('Cathay SITE');
+    expect(id2.title).toMatch(/Data \/ AI Transformation PM/i);
+  });
+
+  it('accepts a bracket-headed Chinese JD without Company: label', () => {
+    const r = validateJobDescription(
+      `【國泰投信】數據 / AI 轉型專案管理人員_I00026692\n\n${enoughBody}`,
+      'zh-TW',
+    );
+    expect(r.valid).toBe(true);
+  });
 });
+

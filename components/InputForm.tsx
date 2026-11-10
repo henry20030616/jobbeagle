@@ -998,7 +998,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
             <StepSequenceMark />
 
-            {/* 4. Launch — same title/pill spacers so content box aligns */}
+            {/* Launch — unnumbered trigger column; steps 1–3 stay numbered */}
             <div className={STEP_COL}>
               <h2 className={STEP_TITLE}>
                 <span className="mr-3 sm:mr-4 lg:mr-5 h-8 sm:h-9 lg:h-12 w-2 sm:w-2.5 shrink-0 rounded-full bg-indigo-400" />

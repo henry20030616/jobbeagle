@@ -12,7 +12,7 @@ describe('homepage form copy', () => {
     expect(t.generate).toBe('AI Strategy Analysis');
     expect(t.upload).toBe('Click to upload Resume');
     expect(t.reportTypeStep).toBe('3. Choose report type');
-    expect(t.launchStep).toBe('4. Launch');
+    expect(t.launchStep).toBe('Launch');
     expect(t.jobUrlPlaceholder).toBe(
       'Paste the full job posting: company name, job title, requirements, and responsibilities\nDo not paste only a URL or a short excerpt\nWe recommend installing the Chrome extension to capture the posting in one click',
     );
