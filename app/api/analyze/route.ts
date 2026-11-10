@@ -42,6 +42,11 @@ import { clientIpFromRequest, rateLimit, rateLimitAnalyze } from '@/lib/rate-lim
 import { tryActivateReferralMilestone } from '@/lib/referrals';
 import { upsertResumeForUser } from '@/lib/resumes';
 import { MAX_JD_CHARS, MAX_RESUME_CHARS } from '@/constants/models';
+import {
+  extractJobIdentity,
+  isUsableCompanyName,
+  isUsableJobTitle,
+} from '@/lib/job-identity';
 import { validateJobDescription } from '@/lib/validate-job-description';
 import { notifyFailure } from '@/lib/transactional-email';
 import {
@@ -140,14 +145,13 @@ async function resolveInput(
   if (!resume) throw new Error('Resume is required.');
 
   const resolved = await resolveResumeForAnalysis(resume);
-  const companyMatch = jd.match(/(?:Company|公司)[：:]\s*(.+)/i);
-  const titleMatch = jd.match(/(?:職位|Position|Title)[：:]\s*(.+)/i);
+  const identity = extractJobIdentity(jd);
 
   return {
-    company_name: companyMatch?.[1]?.trim().split('\n')[0] || 'Unknown Company',
-    job_title: titleMatch?.[1]?.trim().split('\n')[0] || 'Unknown Role',
+    company_name: identity.company || '',
+    job_title: identity.title || '',
     raw_jd: jd,
-    linkedin_job_id: deriveJobId(undefined, jd, companyMatch?.[1] || 'unknown'),
+    linkedin_job_id: deriveJobId(undefined, jd, identity.company || 'unknown'),
     resume_text: resolved.pdfInline
       ? '[PDF resume attached]'
       : truncateText(resolved.text, MAX_RESUME_CHARS),
@@ -247,10 +251,48 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Resume is required.', code: 'MISSING_RESUME' }, { status: 400 });
     }
 
-    const jdCheck = validateJobDescription(input.raw_jd, body.language || 'en');
+    // Prefer structured scrape identity; fill gaps from labeled JD text.
+    const fromText = extractJobIdentity(input.raw_jd);
+    if (!isUsableCompanyName(input.company_name) && fromText.company) {
+      input.company_name = fromText.company;
+    }
+    if (!isUsableJobTitle(input.job_title) && fromText.title) {
+      input.job_title = fromText.title;
+    }
+
+    const jdCheck = validateJobDescription(input.raw_jd, body.language || 'en', {
+      // Identity is enforced on resolved fields below (extension may carry
+      // company/title outside the raw paste).
+      requireIdentity: false,
+    });
     if (!jdCheck.valid) {
       return NextResponse.json(
         { error: jdCheck.message, code: jdCheck.code || 'INVALID_JD' },
+        { status: 400 },
+      );
+    }
+
+    const lang = body.language || 'en';
+    const zh = lang === 'zh-TW' || lang === 'zh-CN';
+    if (!isUsableCompanyName(input.company_name)) {
+      return NextResponse.json(
+        {
+          error: zh
+            ? '⚠️ 缺少公司名稱。請在職缺開頭加上「公司：XXX」或「Company: XXX」後再分析。'
+            : '⚠️ Company name is missing. Add “Company: …” at the top of the posting before analyzing.',
+          code: 'JD_MISSING_COMPANY',
+        },
+        { status: 400 },
+      );
+    }
+    if (!isUsableJobTitle(input.job_title)) {
+      return NextResponse.json(
+        {
+          error: zh
+            ? '⚠️ 缺少職缺名稱。請在職缺開頭加上「職位：XXX」或「Title: XXX」後再分析。'
+            : '⚠️ Job title is missing. Add “Title: …” at the top of the posting before analyzing.',
+          code: 'JD_MISSING_TITLE',
+        },
         { status: 400 },
       );
     }

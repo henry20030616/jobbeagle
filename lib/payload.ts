@@ -1,4 +1,5 @@
 import type { ExtensionJobPayload, PreFlightJobData } from '@/types';
+import { isUsableCompanyName, isUsableJobTitle } from '@/lib/job-identity';
 
 /** Decode base64 UTF-8 payload (works in browser + Node) */
 export function decodeBase64Utf8(encoded: string): string {
@@ -130,14 +131,20 @@ export function formatCapturedJd(job: {
   job_title: string;
   raw_jd: string;
 }): string {
+  // Never paste placeholder identity into the form — user must supply real names.
+  const company = isUsableCompanyName(job.company_name) ? job.company_name.trim() : '';
+  const title = isUsableJobTitle(job.job_title) ? job.job_title.trim() : '';
   const header = [
-    job.company_name ? `Company: ${job.company_name}` : '',
-    job.job_title ? `Title: ${job.job_title}` : '',
+    company ? `Company: ${company}` : '',
+    title ? `Title: ${title}` : '',
   ]
     .filter(Boolean)
     .join('\n');
   if (!header) return job.raw_jd;
-  if (job.raw_jd.includes(job.company_name) || job.raw_jd.includes(job.job_title)) {
+  if (
+    (company && job.raw_jd.includes(company))
+    || (title && job.raw_jd.includes(title))
+  ) {
     return job.raw_jd;
   }
   return `${header}\n\n${job.raw_jd}`;

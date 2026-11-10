@@ -101,6 +101,17 @@ describe('formatCapturedJd', () => {
       }),
     ).toBe(`Company: Acme\nTitle: PM\n\n${raw}`);
   });
+
+  it('does not prepend Unknown Company / Unknown Role placeholders', () => {
+    const raw = 'Own the roadmap and ship weekly.'.repeat(2);
+    expect(
+      formatCapturedJd({
+        company_name: 'Unknown Company',
+        job_title: 'Unknown Role',
+        raw_jd: raw,
+      }),
+    ).toBe(raw);
+  });
 });
 
 describe('getExtensionScrapeError', () => {

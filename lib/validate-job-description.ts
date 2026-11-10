@@ -1,4 +1,5 @@
 import { MAX_JD_CHARS } from '@/constants/models';
+import { extractJobIdentity } from '@/lib/job-identity';
 import { jdTooShortMessage, jdUrlOnlyMessage, MIN_JD_CHARS } from '@/lib/jd-paste-help';
 
 export type JdValidationCode =
@@ -9,7 +10,9 @@ export type JdValidationCode =
   | 'JD_LOW_READABLE_RATIO'
   | 'JD_UNRELATED_CONTENT'
   | 'JD_PROMPT_INJECTION'
-  | 'JD_TOO_LONG';
+  | 'JD_TOO_LONG'
+  | 'JD_MISSING_COMPANY'
+  | 'JD_MISSING_TITLE';
 
 export interface JdValidationResult {
   valid: boolean;
@@ -58,7 +61,9 @@ const INJECTION_PATTERNS = [
 export function validateJobDescription(
   text: string,
   language: string = 'en',
+  options?: { requireIdentity?: boolean },
 ): JdValidationResult {
+  const requireIdentity = options?.requireIdentity !== false;
   const lang: Lang = language === 'zh-TW' || language === 'zh-CN' ? 'zh' : 'en';
   const trimmed = text.trim();
 
@@ -167,6 +172,32 @@ export function validateJobDescription(
         '⚠️ Content does not resemble a job posting. Include responsibilities, requirements, or compensation.',
       ),
     };
+  }
+
+  if (requireIdentity) {
+    const identity = extractJobIdentity(trimmed);
+    if (!identity.company) {
+      return {
+        valid: false,
+        code: 'JD_MISSING_COMPANY',
+        message: msg(
+          lang,
+          '⚠️ 缺少公司名稱。請在職缺開頭加上「公司：XXX」或「Company: XXX」後再分析。',
+          '⚠️ Company name is missing. Add “Company: …” at the top of the posting before analyzing.',
+        ),
+      };
+    }
+    if (!identity.title) {
+      return {
+        valid: false,
+        code: 'JD_MISSING_TITLE',
+        message: msg(
+          lang,
+          '⚠️ 缺少職缺名稱。請在職缺開頭加上「職位：XXX」或「Title: XXX」後再分析。',
+          '⚠️ Job title is missing. Add “Title: …” at the top of the posting before analyzing.',
+        ),
+      };
+    }
   }
 
   return { valid: true, message: '' };
